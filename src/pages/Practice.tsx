@@ -12,6 +12,7 @@ export default function Practice() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [checklistState, setChecklistState] = useState<Record<string, boolean[]>>({});
   const [verificationResults, setVerificationResults] = useState<Record<string, boolean[]>>({});
+  const [showChecklistModal, setShowChecklistModal] = useState(false);
 
   const filteredTasks = useMemo(
     () => data.tasks.filter((task) => task.category === categoryKey),
@@ -65,6 +66,9 @@ export default function Practice() {
       ...prev,
       [selectedTask.id]: results,
     }));
+
+    // Show modal with verification summary
+    setShowChecklistModal(true);
   }
 
   function handleDraftChange(value: string) {
@@ -130,8 +134,14 @@ export default function Practice() {
   return (
     <div className="practice-page practice-wizard">
       {/* Mobile sticky header that shows current task title when top panel is hidden */}
-      <div className="practice-mobile-header" aria-hidden={showInstructions ? "false" : "false"}>
+      <div
+        className="practice-mobile-header"
+        onClick={() => setShowInstructions((s) => !s)}
+        role="button"
+        aria-pressed={showInstructions}
+      >
         <div className="mobile-title">{selectedTask.title}</div>
+        <div className="mobile-toggle">{showInstructions ? "▾" : "▸"}</div>
       </div>
       <section className="practice-top-panel panel">
         <div className="practice-top-copy">
@@ -183,9 +193,7 @@ export default function Practice() {
                 </ol>
               </div>
 
-              <button type="button" className="verify-button" onClick={verifyCode}>
-                🔍 Verify Code
-              </button>
+              {/* Verify moved to footer action bar on purpose */}
             </div>
           ) : (
             <div className="panel-body">Instructions hidden. Tap show to review the checklist.</div>
@@ -233,11 +241,38 @@ export default function Practice() {
           <button type="button" className="footer-button" onClick={handleReset}>
             Reset
           </button>
+          <button type="button" className="footer-button" onClick={() => verifyCode()}>
+            🔍 Verify
+          </button>
           <button type="button" className="footer-button" onClick={handleNext} disabled={currentIndex === filteredTasks.length - 1}>
             Next
           </button>
         </div>
       </footer>
+
+      {/* Checklist / verification modal */}
+      {showChecklistModal && (
+        <div className="modal-backdrop" onClick={() => setShowChecklistModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Verification Results</h3>
+              <button className="modal-close" onClick={() => setShowChecklistModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <ul>
+                {(verificationResults[selectedTask.id] ?? checklist.map(() => false)).map((v, i) => (
+                  <li key={i} className={v ? "verified" : "not-verified"}>
+                    {v ? "✓" : "✗"} {instructionLines[i] ?? checklist[i] ?? "Step"}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="modal-footer">
+              <button className="footer-button" onClick={() => setShowChecklistModal(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
