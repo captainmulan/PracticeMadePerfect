@@ -665,6 +665,32 @@ textarea {
   }
 }
 
+/* Mobile sticky task header shown when top panel is hidden */
+.practice-mobile-header {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .practice-mobile-header {
+    display: flex;
+    position: sticky;
+    top: 64px;
+    z-index: 30;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    padding: 10px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+  }
+
+  .practice-mobile-header .mobile-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0f172a;
+  }
+}
+
 .page-home {
   min-height: calc(100vh - 112px);
 }

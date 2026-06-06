@@ -11,7 +11,6 @@ function App() {
             <div className="app-logo">PMP</div>
             <div>
               <p className="page-tag">PracticeMadePerfect</p>
-              <h1 className="page-title">Interview practice built for busy schedules</h1>
             </div>
           </div>
 

@@ -57,7 +57,7 @@ export const tasks: PracticeTask[] = [
       ["onClick", "count - 1", "-"],
       ["onClick", "setCount(0)", "Reset"],
     ],
-    starterCode: "function Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <div>Count: {count}</div>\n      <button onClick={() => setCount(count + 1)}>+</button>\n      <button onClick={() => setCount(count - 1)}>-</button>\n      <button onClick={() => setCount(0)}>Reset</button>\n    </div>\n  );\n}",
+    starterCode: "// 1: Import useState from React\n// 2: Create state variable 'count' with setCount(0)\n// 3: Render the current count (e.g. Count: {count})\n// 4: Add increment button (+1)\n// 5: Add decrement button (-1)\n// 6: Add reset button (back to 0)",
     type: "code",
   },
   {
@@ -87,7 +87,7 @@ export const tasks: PracticeTask[] = [
       ["onChange", "e.target.value", "setName"],
       ["Current value", "{name}"],
     ],
-    starterCode: "function NameForm() {\n  const [name, setName] = useState(\"\");\n\n  return (\n    <form>\n      <label>Enter your name</label>\n      <input value={name} onChange={(e) => setName(e.target.value)} />\n      <p>Current value: {name}</p>\n    </form>\n  );\n}",
+    starterCode: "// 1: Import useState from React\n// 2: Create state variable 'name' with setName(\"\")\n// 3: Add an input element with value={name}\n// 4: Add onChange handler to update state with e.target.value\n// 5: Render current value below the form",
     type: "code",
   },
   {
@@ -118,7 +118,7 @@ export const tasks: PracticeTask[] = [
       ["temp", "items[j]"],
       ["return", "items"],
     ],
-    starterCode: "public int[] BubbleSort(int[] items) {\n  for (int i = 0; i < items.Length - 1; i++) {\n    for (int j = 0; j < items.Length - 1 - i; j++) {\n      if (items[j] > items[j + 1]) {\n        int temp = items[j];\n        items[j] = items[j + 1];\n        items[j + 1] = temp;\n      }\n    }\n  }\n  return items;\n}",
+    starterCode: "// 1: Create outer loop (i) to iterate through the array\n// 2: Create inner loop (j) to compare adjacent elements\n// 3: If items[j] > items[j+1], swap using a temp variable\n// 4: Continue passes until sorted\n// 5: Return the sorted array",
     type: "code",
   },
   {
@@ -170,7 +170,7 @@ export const tasks: PracticeTask[] = [
       ["ProjectName", "P1"],
       ["EmployeeCount"],
     ],
-    starterCode: "SELECT COUNT(*) AS EmployeeCount\nFROM EmployeeDetails\nWHERE ProjectName = 'P1';",
+    starterCode: "-- 1: Use SELECT COUNT(*) to count rows\n-- 2: FROM EmployeeDetails\n-- 3: WHERE ProjectName = 'P1'\n-- 4: Add AS EmployeeCount to label result",
     type: "sql",
   },
   {

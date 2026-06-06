@@ -118,6 +118,10 @@ export default function Practice() {
 
   return (
     <div className="practice-page practice-wizard">
+      {/* Mobile sticky header that shows current task title when top panel is hidden */}
+      <div className="practice-mobile-header" aria-hidden={showInstructions ? "false" : "false"}>
+        <div className="mobile-title">{selectedTask.title}</div>
+      </div>
       <section className="practice-top-panel panel">
         <div className="practice-top-copy">
           <p className="page-tag">{selectedCategory.label}</p>
