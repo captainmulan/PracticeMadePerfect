@@ -30,6 +30,17 @@ export default function Practice() {
   const checklistValues = checklistState[selectedTask?.id ?? ""] ?? checklist.map(() => false);
   const verificationValues = verificationResults[selectedTask?.id ?? ""] ?? checklist.map(() => false);
 
+  // Build instruction lines preferring starterCode comment lines
+  const instructionLines = (() => {
+    if (!selectedTask) return [] as string[];
+    const code = selectedTask.starterCode ?? "";
+    const lines = code.split(/\r?\n/).map((l) => l.trim());
+    const commentLines = lines.filter((l) => l.startsWith("//") || l.startsWith("--"));
+    if (commentLines.length > 0) return commentLines.map((l) => l.replace(/^\/\/\s?/, "// ").replace(/^--\s?/, "-- "));
+    if (selectedTask.detailedInstructions && selectedTask.detailedInstructions.length) return selectedTask.detailedInstructions.map((d, i) => `// ${i + 1}: ${d}`);
+    return checklist.map((c, i) => `// ${i + 1}: ${c}`);
+  })();
+
   function verifyCode() {
     if (!selectedTask || !selectedTask.verificationKeywords) {
       setVerificationResults((prev) => ({
@@ -151,32 +162,25 @@ export default function Practice() {
 
           {showInstructions ? (
             <div className="instructions-section">
-              {selectedTask.detailedInstructions && (
-                <div className="detailed-instructions">
-                  <div className="instructions-title">📋 Step-by-step Guide</div>
-                  <ol className="instructions-list">
-                    {selectedTask.detailedInstructions.map((instruction, index) => (
-                      <li key={index} className="instruction-item">
-                        {instruction}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-
-              <div className="checklist">
-                <div className="checklist-title">✅ Completion Checklist</div>
-                {checklist.map((item, index) => (
-                  <label key={index} className={`checklist-item ${checklistValues[index] ? "checked" : ""}`}>
-                    <input
-                      type="checkbox"
-                      checked={checklistValues[index] ?? false}
-                      onChange={() => handleToggleChecklist(index)}
-                    />
-                    <span className="checklist-text">{item}</span>
-                    {verificationValues[index] && <span className="verified-badge">✓ Verified</span>}
-                  </label>
-                ))}
+              <div className="detailed-instructions">
+                <div className="instructions-title">📋 Steps & Checklist</div>
+                <ol className="instructions-list">
+                  {instructionLines.map((instruction, index) => (
+                    <li key={index} className={`instruction-item ${checklistValues[index] ? "checked" : ""}`}>
+                      <label className="checklist-item">
+                        <input
+                          type="checkbox"
+                          checked={checklistValues[index] ?? false}
+                          onChange={() => handleToggleChecklist(index)}
+                        />
+                        <div className="instruction-content">
+                          <pre className="instruction-text" style={{ margin: 0 }}>{instruction}</pre>
+                        </div>
+                        {verificationValues[index] && <span className="verified-badge">✓ Verified</span>}
+                      </label>
+                    </li>
+                  ))}
+                </ol>
               </div>
 
               <button type="button" className="verify-button" onClick={verifyCode}>
