@@ -6,15 +6,24 @@ export interface PracticeTask {
   title: string;
   description: string;
   checklist: string[];
+  detailedInstructions?: string[]; // Step-by-step instructions
+  verificationKeywords?: string[][]; // Keywords to verify for each checklist item
   starterCode?: string;
   type: TaskType;
 }
 
-export const categories = [
-  { key: "react", label: "React" },
-  { key: "angular", label: "Angular" },
-  { key: "csharp", label: "C#" },
-  { key: "sql", label: "SQL" },
+export interface Category {
+  key: string;
+  label: string;
+  color?: string; // hex color for Netflix-style display
+  icon?: string; // emoji or icon
+}
+
+export const categories: Category[] = [
+  { key: "react", label: "React", color: "#61dafb", icon: "⚛️" },
+  { key: "angular", label: "Angular", color: "#dd0031", icon: "🅰️" },
+  { key: "csharp", label: "C#", color: "#239120", icon: "🔷" },
+  { key: "sql", label: "SQL", color: "#336791", icon: "🗄️" },
 ];
 
 export const tasks: PracticeTask[] = [
@@ -25,10 +34,28 @@ export const tasks: PracticeTask[] = [
     description:
       "Build a simple React counter using useState. Include increment, decrement, and reset actions.",
     checklist: [
-      "Use useState for count state",
-      "Render current value to the screen",
-      "Add increment and decrement buttons",
-      "Provide a reset action",
+      "Import useState hook",
+      "Create state variable with initial value 0",
+      "Display count on screen",
+      "Add increment button (+1)",
+      "Add decrement button (-1)",
+      "Add reset button (back to 0)",
+    ],
+    detailedInstructions: [
+      "Step 1: Import useState from React at the top of your file - this is the hook we need to manage state",
+      "Step 2: Create a state variable called 'count' with setCount function and initial value of 0",
+      "Step 3: Render the current count value inside a div so users can see it",
+      "Step 4: Create a button that increments the count (add 1) when clicked",
+      "Step 5: Create a button that decrements the count (subtract 1) when clicked",
+      "Step 6: Create a button that resets the count back to 0",
+    ],
+    verificationKeywords: [
+      ["useState", "import"],
+      ["useState", "count", "0"],
+      ["Count:", "count", "{count}"],
+      ["onClick", "count + 1", "+"],
+      ["onClick", "count - 1", "-"],
+      ["onClick", "setCount(0)", "Reset"],
     ],
     starterCode: "function Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <div>Count: {count}</div>\n      <button onClick={() => setCount(count + 1)}>+</button>\n      <button onClick={() => setCount(count - 1)}>-</button>\n      <button onClick={() => setCount(0)}>Reset</button>\n    </div>\n  );\n}",
     type: "code",
@@ -40,9 +67,25 @@ export const tasks: PracticeTask[] = [
     description:
       "Create a React form with a controlled input field. Display the typed value live below the form.",
     checklist: [
-      "Use value and onChange on the input",
-      "Store input text in state",
-      "Render the current text below the form",
+      "Import useState hook",
+      "Create state for form input",
+      "Create controlled input with value prop",
+      "Add onChange handler to update state",
+      "Display current input value below form",
+    ],
+    detailedInstructions: [
+      "Step 1: Import useState hook from React",
+      "Step 2: Create a state variable called 'name' to store the input value",
+      "Step 3: Add an input element with value={name} to make it controlled",
+      "Step 4: Add onChange handler that updates the state with e.target.value",
+      "Step 5: Display the current input value using the state variable",
+    ],
+    verificationKeywords: [
+      ["useState", "import"],
+      ["useState", "name"],
+      ["value", "name"],
+      ["onChange", "e.target.value", "setName"],
+      ["Current value", "{name}"],
     ],
     starterCode: "function NameForm() {\n  const [name, setName] = useState(\"\");\n\n  return (\n    <form>\n      <label>Enter your name</label>\n      <input value={name} onChange={(e) => setName(e.target.value)} />\n      <p>Current value: {name}</p>\n    </form>\n  );\n}",
     type: "code",
@@ -54,10 +97,26 @@ export const tasks: PracticeTask[] = [
     description:
       "Write a C# method that sorts an integer array in ascending order using bubble sort.",
     checklist: [
-      "Use nested loops",
-      "Compare adjacent values",
-      "Swap when needed",
-      "Return the sorted array",
+      "Create outer loop (i) to iterate through array",
+      "Create inner loop (j) to compare adjacent elements",
+      "Add comparison logic (if items[j] > items[j+1])",
+      "Implement swap logic using temp variable",
+      "Return sorted array",
+    ],
+    detailedInstructions: [
+      "Step 1: Start with an outer for loop that goes from 0 to array length - 1",
+      "Step 2: Inside, create an inner for loop that compares adjacent pairs",
+      "Step 3: Check if the current element is greater than the next element",
+      "Step 4: If yes, swap them using a temporary variable to hold one value",
+      "Step 5: After all passes, the array is sorted in ascending order",
+      "Step 6: Return the sorted array",
+    ],
+    verificationKeywords: [
+      ["for", "i", "items.Length"],
+      ["for", "j", "items.Length"],
+      ["if", "items[j]", "items[j + 1]"],
+      ["temp", "items[j]"],
+      ["return", "items"],
     ],
     starterCode: "public int[] BubbleSort(int[] items) {\n  for (int i = 0; i < items.Length - 1; i++) {\n    for (int j = 0; j < items.Length - 1 - i; j++) {\n      if (items[j] > items[j + 1]) {\n        int temp = items[j];\n        items[j] = items[j + 1];\n        items[j + 1] = temp;\n      }\n    }\n  }\n  return items;\n}",
     type: "code",
@@ -69,10 +128,20 @@ export const tasks: PracticeTask[] = [
     description:
       "Given an initial height, calculate the total distance traveled by a bouncing ball and the number of bounces until it stops.",
     checklist: [
-      "Use a loop to simulate bouncing",
-      "Track bounce count",
-      "Calculate total distance traveled",
-      "Stop when the height becomes negligible",
+      "Initialize bounce counter to 0",
+      "Initialize distance to 0",
+      "Create while loop for ball bouncing",
+      "Add up distance from down and up movement",
+      "Calculate bounce height (usually 2/3 or similar)",
+      "Stop when height becomes negligible",
+    ],
+    detailedInstructions: [
+      "Step 1: Create variables to track bounce count and total distance",
+      "Step 2: Start with the initial height as distance traveled (falling down)",
+      "Step 3: Use a loop that continues while the height is still significant",
+      "Step 4: In each iteration: increment bounce count, add up distance, calculate new height",
+      "Step 5: Add up and down distances for each bounce",
+      "Step 6: When height becomes too small, exit loop and return results",
     ],
     type: "text",
   },
@@ -83,9 +152,23 @@ export const tasks: PracticeTask[] = [
     description:
       "Write a SQL query that returns the number of employees working in project 'P1'.",
     checklist: [
-      "Use COUNT()",
-      "Filter by project name 'P1'",
-      "Return a single numeric result",
+      "Use SELECT COUNT(*) to count rows",
+      "Reference the EmployeeDetails table",
+      "Filter WHERE ProjectName = 'P1'",
+      "Provide a result alias like AS EmployeeCount",
+    ],
+    detailedInstructions: [
+      "Step 1: Start with SELECT COUNT(*) to get the count of records",
+      "Step 2: Add AS EmployeeCount to label the result column",
+      "Step 3: Specify FROM EmployeeDetails table",
+      "Step 4: Add WHERE clause to filter for ProjectName = 'P1'",
+      "Step 5: Execute to get the count",
+    ],
+    verificationKeywords: [
+      ["COUNT(*)"],
+      ["EmployeeDetails"],
+      ["ProjectName", "P1"],
+      ["EmployeeCount"],
     ],
     starterCode: "SELECT COUNT(*) AS EmployeeCount\nFROM EmployeeDetails\nWHERE ProjectName = 'P1';",
     type: "sql",
@@ -97,9 +180,23 @@ export const tasks: PracticeTask[] = [
     description:
       "Write a SQL query to identify duplicate rows in a table based on one or more columns.",
     checklist: [
-      "Group by the target column(s)",
-      "Use HAVING COUNT(*) > 1",
+      "Select the columns to check for duplicates",
+      "Use GROUP BY on those columns",
+      "Add HAVING COUNT(*) > 1 to filter duplicates",
       "Return the duplicate values",
+    ],
+    detailedInstructions: [
+      "Step 1: SELECT the columns you want to find duplicates for",
+      "Step 2: GROUP BY those same columns to group identical values together",
+      "Step 3: Use HAVING COUNT(*) > 1 to show only groups with more than 1 record",
+      "Step 4: This shows you which values appear multiple times",
+      "Step 5: You can also SELECT COUNT(*) to see how many times each appears",
+    ],
+    verificationKeywords: [
+      ["SELECT"],
+      ["GROUP BY"],
+      ["HAVING", "COUNT(*)"],
+      [">", "1"],
     ],
     type: "sql",
   },

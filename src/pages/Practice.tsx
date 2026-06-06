@@ -11,6 +11,7 @@ export default function Practice() {
   const [showInstructions, setShowInstructions] = useState(true);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [checklistState, setChecklistState] = useState<Record<string, boolean[]>>({});
+  const [verificationResults, setVerificationResults] = useState<Record<string, boolean[]>>({});
 
   const filteredTasks = useMemo(
     () => data.tasks.filter((task) => task.category === categoryKey),
@@ -27,6 +28,33 @@ export default function Practice() {
   const taskContent = drafts[selectedTask?.id ?? ""] ?? selectedTask?.starterCode ?? "";
   const checklist = selectedTask?.checklist ?? [];
   const checklistValues = checklistState[selectedTask?.id ?? ""] ?? checklist.map(() => false);
+  const verificationValues = verificationResults[selectedTask?.id ?? ""] ?? checklist.map(() => false);
+
+  function verifyCode() {
+    if (!selectedTask || !selectedTask.verificationKeywords) {
+      setVerificationResults((prev) => ({
+        ...prev,
+        [selectedTask?.id ?? ""]: checklist.map(() => true),
+      }));
+      return;
+    }
+
+    const code = taskContent.toLowerCase();
+    const results = selectedTask.verificationKeywords.map((keywords) => {
+      return keywords.every((keyword) => code.includes(keyword.toLowerCase()));
+    });
+
+    setVerificationResults((prev) => ({
+      ...prev,
+      [selectedTask.id]: results,
+    }));
+
+    // Auto-update checklist based on verification
+    setChecklistState((prev) => ({
+      ...prev,
+      [selectedTask.id]: results,
+    }));
+  }
 
   function handleDraftChange(value: string) {
     if (!selectedTask) return;
@@ -47,6 +75,7 @@ export default function Practice() {
     if (!selectedTask) return;
     setDrafts((prev) => ({ ...prev, [selectedTask.id]: selectedTask.starterCode ?? "" }));
     setChecklistState((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
+    setVerificationResults((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
   }
 
   function handleNext() {
@@ -85,6 +114,8 @@ export default function Practice() {
     );
   }
 
+  const allChecklistComplete = checklistValues.every((val) => val);
+
   return (
     <div className="practice-page practice-wizard">
       <section className="practice-top-panel panel">
@@ -98,6 +129,7 @@ export default function Practice() {
             {currentIndex + 1} / {filteredTasks.length}
           </span>
           <span>{selectedTask.type.toUpperCase()}</span>
+          {allChecklistComplete && <span className="status-badge complete">✓ Complete</span>}
         </div>
       </section>
 
@@ -105,8 +137,8 @@ export default function Practice() {
         <aside className={`practice-left panel ${showInstructions ? "visible" : "hidden"}`}>
           <div className="practice-left-header">
             <div>
-              <div className="panel-heading">Instructions</div>
-              <p className="panel-body">Review the checklist and expand the workspace as needed.</p>
+              <div className="panel-heading">Instructions & Checklist</div>
+              <p className="panel-body">Follow the steps below to complete this task.</p>
             </div>
             <button type="button" className="panel-toggle" onClick={() => setShowInstructions((current) => !current)}>
               {showInstructions ? "Hide" : "Show"}
@@ -114,13 +146,38 @@ export default function Practice() {
           </div>
 
           {showInstructions ? (
-            <div className="checklist">
-              {checklist.map((item, index) => (
-                <label key={index} className="checklist-item">
-                  <input type="checkbox" checked={checklistValues[index] ?? false} onChange={() => handleToggleChecklist(index)} />
-                  <span>{item}</span>
-                </label>
-              ))}
+            <div className="instructions-section">
+              {selectedTask.detailedInstructions && (
+                <div className="detailed-instructions">
+                  <div className="instructions-title">📋 Step-by-step Guide</div>
+                  <ol className="instructions-list">
+                    {selectedTask.detailedInstructions.map((instruction, index) => (
+                      <li key={index} className="instruction-item">
+                        {instruction}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              <div className="checklist">
+                <div className="checklist-title">✅ Completion Checklist</div>
+                {checklist.map((item, index) => (
+                  <label key={index} className={`checklist-item ${checklistValues[index] ? "checked" : ""}`}>
+                    <input
+                      type="checkbox"
+                      checked={checklistValues[index] ?? false}
+                      onChange={() => handleToggleChecklist(index)}
+                    />
+                    <span className="checklist-text">{item}</span>
+                    {verificationValues[index] && <span className="verified-badge">✓ Verified</span>}
+                  </label>
+                ))}
+              </div>
+
+              <button type="button" className="verify-button" onClick={verifyCode}>
+                🔍 Verify Code
+              </button>
             </div>
           ) : (
             <div className="panel-body">Instructions hidden. Tap show to review the checklist.</div>

@@ -19,9 +19,21 @@ export default function Home() {
         <div className="panel-heading">Choose a practice type</div>
         <div className="home-category-grid">
           {categories.map((category) => (
-            <Link key={category.key} to={`/practice/${category.key}`} className="category-card">
-              <div className="category-card-title">{category.label}</div>
-              <p className="category-card-subtitle">Tap to start a focused task sequence</p>
+            <Link 
+              key={category.key} 
+              to={`/practice/${category.key}`} 
+              className="category-card-netflix"
+              style={{ 
+                borderLeftColor: category.color,
+                backgroundColor: `${category.color}15`
+              }}
+            >
+              <div className="category-netflix-icon">{category.icon}</div>
+              <div className="category-netflix-content">
+                <div className="category-netflix-title">{category.label}</div>
+                <p className="category-netflix-subtitle">Master coding fundamentals</p>
+              </div>
+              <div className="category-netflix-arrow">→</div>
             </Link>
           ))}
         </div>
