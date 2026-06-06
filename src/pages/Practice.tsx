@@ -8,7 +8,6 @@ export default function Practice() {
   const { categoryKey } = useParams<{ categoryKey: string }>();
   const data = practicePageData;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showInstructions, setShowInstructions] = useState(true);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [checklistState, setChecklistState] = useState<Record<string, boolean[]>>({});
   const [verificationResults, setVerificationResults] = useState<Record<string, boolean[]>>({});
@@ -133,16 +132,6 @@ export default function Practice() {
 
   return (
     <div className="practice-page practice-wizard">
-      {/* Mobile sticky header that shows current task title when top panel is hidden */}
-      <div
-        className="practice-mobile-header"
-        onClick={() => setShowInstructions((s) => !s)}
-        role="button"
-        aria-pressed={showInstructions}
-      >
-        <div className="mobile-title">{selectedTask.title}</div>
-        <div className="mobile-toggle">{showInstructions ? "▾" : "▸"}</div>
-      </div>
       <section className="practice-top-panel panel">
         <div className="practice-top-copy">
           <p className="page-tag">{selectedCategory.label}</p>
@@ -158,48 +147,7 @@ export default function Practice() {
         </div>
       </section>
 
-      <section className={`practice-layout ${showInstructions ? "" : "full-code"}`}>
-        <aside className={`practice-left panel ${showInstructions ? "visible" : "hidden"}`}>
-          <div className="practice-left-header">
-            <div>
-              <div className="panel-heading">Instructions & Checklist</div>
-              <p className="panel-body">Follow the steps below to complete this task.</p>
-            </div>
-            <button type="button" className="panel-toggle" onClick={() => setShowInstructions((current) => !current)}>
-              {showInstructions ? "Hide" : "Show"}
-            </button>
-          </div>
-
-          {showInstructions ? (
-            <div className="instructions-section">
-              <div className="detailed-instructions">
-                <div className="instructions-title">📋 Steps & Checklist</div>
-                <ol className="instructions-list">
-                  {instructionLines.map((instruction, index) => (
-                    <li key={index} className={`instruction-item ${checklistValues[index] ? "checked" : ""}`}>
-                      <label className="checklist-item">
-                        <input
-                          type="checkbox"
-                          checked={checklistValues[index] ?? false}
-                          onChange={() => handleToggleChecklist(index)}
-                        />
-                        <div className="instruction-content">
-                          <pre className="instruction-text" style={{ margin: 0 }}>{instruction}</pre>
-                        </div>
-                        {verificationValues[index] && <span className="verified-badge">✓ Verified</span>}
-                      </label>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              {/* Verify moved to footer action bar on purpose */}
-            </div>
-          ) : (
-            <div className="panel-body">Instructions hidden. Tap show to review the checklist.</div>
-          )}
-        </aside>
-
+      <section className="practice-layout full-code">
         <section className="practice-right panel">
           <div className="practice-right-header">
             <div className="panel-heading">
@@ -209,11 +157,6 @@ export default function Practice() {
                 ? "SQL editor"
                 : "Code editor"}
             </div>
-            {!showInstructions && (
-              <button type="button" className="panel-toggle" onClick={() => setShowInstructions(true)}>
-                Show Instructions
-              </button>
-            )}
           </div>
 
           <label className="practice-text-label">
@@ -242,7 +185,7 @@ export default function Practice() {
             Reset
           </button>
           <button type="button" className="footer-button" onClick={() => verifyCode()}>
-            🔍 Verify
+            Verify
           </button>
           <button type="button" className="footer-button" onClick={handleNext} disabled={currentIndex === filteredTasks.length - 1}>
             Next

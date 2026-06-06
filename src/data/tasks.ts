@@ -15,6 +15,7 @@ export interface PracticeTask {
 export interface Category {
   key: string;
   label: string;
+  description?: string;
   color?: string; // hex color for Netflix-style display
   icon?: string; // emoji or icon
 }
