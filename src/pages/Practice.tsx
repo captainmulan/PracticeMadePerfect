@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { practicePageData } from "../pageData/practicePage";
-import type { PracticeTask } from "../data/tasks";
+import { runCompileCheck } from "../utils/compileVerifier";
+import { getCommentHints, verifyTaskFull } from "../utils/taskHints";
 
 export default function Practice() {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ export default function Practice() {
   const [checklistState, setChecklistState] = useState<Record<string, boolean[]>>({});
   const [verificationResults, setVerificationResults] = useState<Record<string, boolean[]>>({});
   const [showChecklistModal, setShowChecklistModal] = useState(false);
+  const [compileErrors, setCompileErrors] = useState<string[]>([]);
+  const [compileLanguage, setCompileLanguage] = useState("");
+  const [heroExpanded, setHeroExpanded] = useState(true);
 
   const filteredTasks = useMemo(
     () => data.tasks.filter((task) => task.category === categoryKey),
@@ -25,48 +29,27 @@ export default function Practice() {
   }, [categoryKey]);
 
   const selectedTask = filteredTasks[currentIndex];
-  const taskContent = drafts[selectedTask?.id ?? ""] ?? selectedTask?.starterCode ?? "";
+  const taskHints = selectedTask ? getCommentHints(selectedTask) : "";
+  const taskContent = drafts[selectedTask?.id ?? ""] ?? taskHints;
   const checklist = selectedTask?.checklist ?? [];
   const checklistValues = checklistState[selectedTask?.id ?? ""] ?? checklist.map(() => false);
-  const verificationValues = verificationResults[selectedTask?.id ?? ""] ?? checklist.map(() => false);
-
-  // Build instruction lines preferring starterCode comment lines
-  const instructionLines = (() => {
-    if (!selectedTask) return [] as string[];
-    const code = selectedTask.starterCode ?? "";
-    const lines = code.split(/\r?\n/).map((l) => l.trim());
-    const commentLines = lines.filter((l) => l.startsWith("//") || l.startsWith("--"));
-    if (commentLines.length > 0) return commentLines.map((l) => l.replace(/^\/\/\s?/, "// ").replace(/^--\s?/, "-- "));
-    if (selectedTask.detailedInstructions && selectedTask.detailedInstructions.length) return selectedTask.detailedInstructions.map((d, i) => `// ${i + 1}: ${d}`);
-    return checklist.map((c, i) => `// ${i + 1}: ${c}`);
-  })();
 
   function verifyCode() {
-    if (!selectedTask || !selectedTask.verificationKeywords) {
-      setVerificationResults((prev) => ({
-        ...prev,
-        [selectedTask?.id ?? ""]: checklist.map(() => true),
-      }));
-      return;
-    }
+    if (!selectedTask) return;
 
-    const code = taskContent.toLowerCase();
-    const results = selectedTask.verificationKeywords.map((keywords) => {
-      return keywords.every((keyword) => code.includes(keyword.toLowerCase()));
-    });
+    const compile = runCompileCheck(selectedTask, taskContent);
+    const outcome = verifyTaskFull(selectedTask, taskContent, compile);
 
+    setCompileErrors(outcome.compileErrors);
+    setCompileLanguage(outcome.compileLanguage);
     setVerificationResults((prev) => ({
       ...prev,
-      [selectedTask.id]: results,
+      [selectedTask.id]: outcome.checklistResults,
     }));
-
-    // Auto-update checklist based on verification
     setChecklistState((prev) => ({
       ...prev,
-      [selectedTask.id]: results,
+      [selectedTask.id]: outcome.checklistResults,
     }));
-
-    // Show modal with verification summary
     setShowChecklistModal(true);
   }
 
@@ -75,21 +58,13 @@ export default function Practice() {
     setDrafts((prev) => ({ ...prev, [selectedTask.id]: value }));
   }
 
-  function handleToggleChecklist(index: number) {
-    if (!selectedTask) return;
-    setChecklistState((prev) => {
-      const current = prev[selectedTask.id] ?? checklist.map(() => false);
-      const next = [...current];
-      next[index] = !next[index];
-      return { ...prev, [selectedTask.id]: next };
-    });
-  }
-
   function handleReset() {
     if (!selectedTask) return;
-    setDrafts((prev) => ({ ...prev, [selectedTask.id]: selectedTask.starterCode ?? "" }));
+    setDrafts((prev) => ({ ...prev, [selectedTask.id]: getCommentHints(selectedTask) }));
     setChecklistState((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
     setVerificationResults((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
+    setCompileErrors([]);
+    setCompileLanguage("");
   }
 
   function handleNext() {
@@ -132,19 +107,33 @@ export default function Practice() {
 
   return (
     <div className="practice-page practice-wizard">
-      <section className="practice-top-panel panel">
-        <div className="practice-top-copy">
-          <p className="page-tag">{selectedCategory.label}</p>
-          <h2 className="practice-title">{selectedTask.title}</h2>
-          <p className="practice-description">{selectedTask.description}</p>
-        </div>
-        <div className="practice-status">
-          <span className="task-count">
-            {currentIndex + 1} / {filteredTasks.length}
+      <section className={`hero-banner panel ${heroExpanded ? "expanded" : "collapsed"}`}>
+        <button
+          type="button"
+          className="hero-banner-header"
+          onClick={() => setHeroExpanded((s) => !s)}
+          aria-expanded={heroExpanded}
+        >
+          <div className="hero-banner-summary">
+            <div className="hero-banner-title-row">
+              <span className="hero-category-tag">{selectedCategory.label}</span>
+              <h2 className="practice-title">{selectedTask.title}</h2>
+              <span className="task-count">
+                {currentIndex + 1}/{filteredTasks.length}
+              </span>
+              <span className="task-type-badge">{selectedTask.type.toUpperCase()}</span>
+              {allChecklistComplete && <span className="status-badge complete">✓</span>}
+            </div>
+          </div>
+          <span className="hero-chevron" aria-hidden="true">
+            {heroExpanded ? "▾" : "▸"}
           </span>
-          <span>{selectedTask.type.toUpperCase()}</span>
-          {allChecklistComplete && <span className="status-badge complete">✓ Complete</span>}
-        </div>
+        </button>
+        {heroExpanded && (
+          <div className="hero-banner-body">
+            <p className="practice-description">{selectedTask.description}</p>
+          </div>
+        )}
       </section>
 
       <section className="practice-layout full-code">
@@ -164,7 +153,7 @@ export default function Practice() {
               ? "Free text answer"
               : selectedTask.type === "sql"
               ? "SQL query"
-              : "Starter code"}
+              : "Write your code (hints are comments only)"}
             <textarea
               className={selectedTask.type === "text" ? "practice-textarea" : "practice-codearea"}
               value={taskContent}
@@ -202,10 +191,22 @@ export default function Practice() {
               <button className="modal-close" onClick={() => setShowChecklistModal(false)}>✕</button>
             </div>
             <div className="modal-body">
+              {compileErrors.length > 0 && (
+                <div className="compile-error-box">
+                  <p className="compile-error-title">
+                    Compile failed ({compileLanguage})
+                  </p>
+                  <ul className="compile-error-list">
+                    {compileErrors.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <ul>
                 {(verificationResults[selectedTask.id] ?? checklist.map(() => false)).map((v, i) => (
                   <li key={i} className={v ? "verified" : "not-verified"}>
-                    {v ? "✓" : "✗"} {instructionLines[i] ?? checklist[i] ?? "Step"}
+                    {v ? "✓" : "✗"} {checklist[i] ?? "Step"}
                   </li>
                 ))}
               </ul>

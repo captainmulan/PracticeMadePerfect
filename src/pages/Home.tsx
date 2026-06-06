@@ -10,41 +10,60 @@ export default function Home() {
 
   return (
     <div className="page-content page-home">
-      <section className="home-hero panel">
-        <div className="hero-copy">
-          <p className="page-tag">{data.title}</p>
-          <h2 className="hero-title">{data.headline}</h2>
-          <p className={`hero-description ${heroExpanded ? "expanded" : "clamped"}`}>{data.summary}</p>
-          <button className="panel-toggle" onClick={() => setHeroExpanded((s) => !s)}>{heroExpanded ? "Show Less" : "Read More"}</button>
-        </div>
+      <section className={`hero-banner panel ${heroExpanded ? "expanded" : "collapsed"}`}>
+        <button
+          type="button"
+          className="hero-banner-header"
+          onClick={() => setHeroExpanded((s) => !s)}
+          aria-expanded={heroExpanded}
+        >
+          <div className="hero-banner-summary">
+            <div className="hero-banner-title-row">
+              <h2 className="hero-title">{data.headline}</h2>
+            </div>
+          </div>
+          <span className="hero-chevron" aria-hidden="true">
+            {heroExpanded ? "▾" : "▸"}
+          </span>
+        </button>
+        {heroExpanded && (
+          <div className="hero-banner-body">
+            <p className="hero-description">{data.summary}</p>
+          </div>
+        )}
       </section>
 
       <section className="home-categories panel">
         <div className="panel-heading">Choose a practice type</div>
         <div className="home-category-grid">
           {categories.map((category) => (
-            <Link 
-              key={category.key} 
-              to={`/practice/${category.key}`} 
+            <Link
+              key={category.key}
+              to={`/practice/${category.key}`}
               className={`category-card-netflix ${expandedCard === category.key ? "expanded" : ""}`}
-              style={{ 
+              style={{
                 borderLeftColor: category.color,
-                backgroundColor: `${category.color}15`
+                backgroundColor: `${category.color}15`,
               }}
               onClick={() => setExpandedCard(null)}
             >
               <div className="category-netflix-icon">{category.icon}</div>
               <div className="category-netflix-content">
                 <div className="category-netflix-title">{category.label}</div>
-                <p className={`category-netflix-subtitle ${expandedCard === category.key ? "expanded" : "clamped"}`}>
-                  {category.description ?? "Master coding fundamentals"}
-                </p>
+                {expandedCard === category.key && (
+                  <p className="category-netflix-subtitle expanded">{category.description}</p>
+                )}
               </div>
-              <div className="category-netflix-arrow">→</div>
               <button
+                type="button"
                 className="card-expand"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpandedCard(expandedCard === category.key ? null : category.key); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setExpandedCard(expandedCard === category.key ? null : category.key);
+                }}
                 aria-expanded={expandedCard === category.key}
+                aria-label={expandedCard === category.key ? "Collapse details" : "Expand details"}
               >
                 {expandedCard === category.key ? "▾" : "▸"}
               </button>
