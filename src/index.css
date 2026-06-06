@@ -467,6 +467,11 @@ textarea {
   gap: 16px;
 }
 
+/* 2-up card grid for home categories */
+.home-category-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .category-card {
   display: grid;
   gap: 10px;
@@ -637,6 +642,26 @@ textarea {
   .practice-top-actions,
   .practice-category-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile-first: focus editor by default and hide top panel */
+@media (max-width: 640px) {
+  .practice-top-panel {
+    display: none;
+  }
+
+  .practice-left {
+    display: none;
+  }
+
+  .practice-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-right .practice-codearea,
+  .practice-right .practice-textarea {
+    min-height: calc(100vh - 48px);
   }
 }
 
