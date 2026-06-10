@@ -1,0 +1,64 @@
+import { homePageData } from "../pageData/homePage";
+import { practicePageData } from "../pageData/practicePage";
+
+const ADMIN_STORAGE_KEY = "pmp-admin-data";
+
+export interface ContentStoreData {
+  homePageData: typeof homePageData;
+  practicePageData: typeof practicePageData;
+}
+
+export function loadAdminData(): ContentStoreData {
+  if (typeof window === "undefined") {
+    return {
+      homePageData,
+      practicePageData,
+    };
+  }
+
+  const raw = window.localStorage.getItem(ADMIN_STORAGE_KEY);
+  if (!raw) {
+    return {
+      homePageData,
+      practicePageData,
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<ContentStoreData>;
+    return {
+      homePageData: parsed.homePageData ?? homePageData,
+      practicePageData: parsed.practicePageData ?? practicePageData,
+    };
+  } catch {
+    return {
+      homePageData,
+      practicePageData,
+    };
+  }
+}
+
+export function saveAdminData(data: ContentStoreData) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(data));
+}
+
+export function resetAdminData() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(ADMIN_STORAGE_KEY);
+}
+
+export function getHomePageData(): typeof homePageData {
+  return loadAdminData().homePageData;
+}
+
+export function getPracticePageData(): typeof practicePageData {
+  return loadAdminData().practicePageData;
+}
+
+export function loadDefaultAdminData(): ContentStoreData {
+  return {
+    homePageData,
+    practicePageData,
+  };
+}

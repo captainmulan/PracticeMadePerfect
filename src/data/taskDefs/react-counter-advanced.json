@@ -1,0 +1,80 @@
+{
+  "id": "react-counter-advanced",
+  "category": "react",
+  "title": "Counter Variations",
+  "description": "Extend a counter with step control using Math.max/min, reset, multiple counters, and double/triple increment buttons.",
+  "checklist": [
+    "Import useState from React",
+    "Use Math.max or Math.min to clamp count or step",
+    "Support configurable step increment",
+    "Add reset button to return count to 0",
+    "Render multiple counter instances or values",
+    "Add double (+2) and triple (+3) increment actions",
+    "Export default CounterComponent"
+  ],
+  "verificationKeywords": [
+    [
+      "import React",
+      "{ useState }",
+      "from 'react'"
+    ],
+    [
+      "Math.max",
+      "Math.min"
+    ],
+    [
+      "step"
+    ],
+    [
+      "reset",
+      "0"
+    ],
+    [
+      "count"
+    ],
+    [
+      "double",
+      "2",
+      "triple",
+      "3"
+    ],
+    [
+      "export default CounterComponent;"
+    ]
+  ],
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "// guide hints: Import: React, and useState from react",
+          "code": "import React, { useState } from 'react';"
+        },
+        {
+          "guide": "// guide hints: Use Math.max or Math.min to clamp count or step",
+          "code": "const clampValue = (value) => Math.max(0, Math.min(value, 100));\n  const [count, setCount] = useState(0);\n  const [step, setStep] = useState(1);"
+        },
+        {
+          "guide": "// guide hints: Support configurable step increment",
+          "code": "const increment = () => {\n    setCount(clampValue(count + step));\n  };\n  const decrement = () => {\n    setCount(clampValue(count - step));\n  };"
+        },
+        {
+          "guide": "// guide hints: Add reset button to return count to 0",
+          "code": "<button onClick={() => setCount(0)}>Reset</button>"
+        },
+        {
+          "guide": "// guide hints: Render multiple counter instances or values",
+          "code": "<h2>Count: {count}</h2>\n      <button onClick={increment}>Increment</button>\n      <button onClick={decrement}>Decrement</button>"
+        },
+        {
+          "guide": "// guide hints: Add double (+2) and triple (+3) increment actions",
+          "code": "const incrementDouble = () => setCount(count + 2);\n  const incrementTriple = () => setCount(count + 3);"
+        },
+        {
+          "guide": "// guide hints: Export: export default CounterComponent;",
+          "code": "export default CounterComponent;"
+        }
+      ]
+    }
+  },
+  "type": "code"
+}

@@ -1,38 +1,49 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { practicePageData } from "../pageData/practicePage";
+import type { PracticeTask } from "../data/tasks";
+import { getPracticePageData } from "../utils/contentStore";
 import { runCompileCheck } from "../utils/compileVerifier";
-import { getCommentHints, verifyTaskFull } from "../utils/taskHints";
+import { buildEditorContent, getFullExampleCode, verifyTaskFull } from "../utils/taskHints";
 
 export default function Practice() {
   const navigate = useNavigate();
   const { categoryKey } = useParams<{ categoryKey: string }>();
-  const data = practicePageData;
+  const data = getPracticePageData();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [draftTouched, setDraftTouched] = useState<Record<string, boolean>>({});
   const [checklistState, setChecklistState] = useState<Record<string, boolean[]>>({});
   const [verificationResults, setVerificationResults] = useState<Record<string, boolean[]>>({});
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [compileErrors, setCompileErrors] = useState<string[]>([]);
   const [compileLanguage, setCompileLanguage] = useState("");
+  const [showExampleCode, setShowExampleCode] = useState(false);
   const [heroExpanded, setHeroExpanded] = useState(true);
 
   const filteredTasks = useMemo(
-    () => data.tasks.filter((task) => task.category === categoryKey),
+    () => data.tasks.filter((task: PracticeTask) => task.category === categoryKey),
     [categoryKey, data.tasks],
   );
 
-  const selectedCategory = data.categories.find((category) => category.key === categoryKey);
+  const selectedCategory = data.categories.find((category: { key: string }) => category.key === categoryKey);
 
   useEffect(() => {
     setCurrentIndex(0);
   }, [categoryKey]);
 
   const selectedTask = filteredTasks[currentIndex];
-  const taskHints = selectedTask ? getCommentHints(selectedTask) : "";
-  const taskContent = drafts[selectedTask?.id ?? ""] ?? taskHints;
+  const currentDraft = drafts[selectedTask?.id ?? ""];
+  const currentDraftTouched = selectedTask ? draftTouched[selectedTask.id] : false;
   const checklist = selectedTask?.checklist ?? [];
   const checklistValues = checklistState[selectedTask?.id ?? ""] ?? checklist.map(() => false);
+  const hintsText = selectedTask ? buildEditorContent(selectedTask, false) : "";
+
+  const initialEditorContent =
+    currentDraft !== undefined && currentDraftTouched
+      ? currentDraft
+      : hintsText;
+
+  const taskContent = initialEditorContent;
 
   function verifyCode() {
     if (!selectedTask) return;
@@ -56,11 +67,19 @@ export default function Practice() {
   function handleDraftChange(value: string) {
     if (!selectedTask) return;
     setDrafts((prev) => ({ ...prev, [selectedTask.id]: value }));
+    setDraftTouched((prev) => ({ ...prev, [selectedTask.id]: true }));
   }
 
   function handleReset() {
     if (!selectedTask) return;
-    setDrafts((prev) => ({ ...prev, [selectedTask.id]: getCommentHints(selectedTask) }));
+    setDrafts((prev) => ({
+      ...prev,
+      [selectedTask.id]: initialEditorContent,
+    }));
+    setDraftTouched((prev) => ({
+      ...prev,
+      [selectedTask.id]: false,
+    }));
     setChecklistState((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
     setVerificationResults((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
     setCompileErrors([]);
@@ -108,27 +127,21 @@ export default function Practice() {
   return (
     <div className="practice-page practice-wizard">
       <section className={`hero-banner panel ${heroExpanded ? "expanded" : "collapsed"}`}>
-        <button
-          type="button"
-          className="hero-banner-header"
-          onClick={() => setHeroExpanded((s) => !s)}
-          aria-expanded={heroExpanded}
-        >
-          <div className="hero-banner-summary">
-            <div className="hero-banner-title-row">
-              <span className="hero-category-tag">{selectedCategory.label}</span>
-              <h2 className="practice-title">{selectedTask.title}</h2>
-              <span className="task-count">
-                {currentIndex + 1}/{filteredTasks.length}
-              </span>
-              <span className="task-type-badge">{selectedTask.type.toUpperCase()}</span>
-              {allChecklistComplete && <span className="status-badge complete">✓</span>}
+        <div className="hero-banner-header">
+          <div className="hero-banner-title-row">
+            <div className="hero-title">Question</div>
+            <div className="hero-page-index">
+              {currentIndex + 1}/{filteredTasks.length}
             </div>
           </div>
-          <span className="hero-chevron" aria-hidden="true">
-            {heroExpanded ? "▾" : "▸"}
-          </span>
-        </button>
+          <button
+            type="button"
+            className="panel-toggle"
+            onClick={() => setHeroExpanded((value) => !value)}
+          >
+            {heroExpanded ? "−" : "+"}
+          </button>
+        </div>
         {heroExpanded && (
           <div className="hero-banner-body">
             <p className="practice-description">{selectedTask.description}</p>
@@ -136,51 +149,69 @@ export default function Practice() {
         )}
       </section>
 
+      <section className="practice-action-panel panel">
+        <div className="action-panel-header">
+          <span className="action-panel-title">Actions</span>
+          <div className="action-panel-actions">
+            <button
+              type="button"
+              className="action-button"
+              onClick={() => setShowExampleCode((value) => !value)}
+            >
+              {showExampleCode ? "Hide Peek" : "Peek Code"}
+            </button>
+            <button
+              type="button"
+              className="action-button"
+              onClick={() => setHeroExpanded((value) => !value)}
+            >
+              {heroExpanded ? "Hide Question" : "Show Question"}
+            </button>
+            <button type="button" className="action-button" onClick={handlePrevious} disabled={currentIndex === 0}>
+              Previous
+            </button>
+            <button type="button" className="action-button" onClick={handleReset}>
+              Reset
+            </button>
+            <button type="button" className="action-button" onClick={() => verifyCode()}>
+              Verify
+            </button>
+            <button
+              type="button"
+              className="action-button"
+              onClick={handleNext}
+              disabled={currentIndex === filteredTasks.length - 1}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </section>
       <section className="practice-layout full-code">
         <section className="practice-right panel">
           <div className="practice-right-header">
-            <div className="panel-heading">
-              {selectedTask.type === "text"
-                ? "Answer area"
-                : selectedTask.type === "sql"
-                ? "SQL editor"
-                : "Code editor"}
-            </div>
+            <div className="panel-heading">Answer</div>
           </div>
 
           <label className="practice-text-label">
-            {selectedTask.type === "text"
-              ? "Free text answer"
-              : selectedTask.type === "sql"
-              ? "SQL query"
-              : "Write your code (hints are comments only)"}
             <textarea
               className={selectedTask.type === "text" ? "practice-textarea" : "practice-codearea"}
               value={taskContent}
               onChange={(event) => handleDraftChange(event.target.value)}
               placeholder={data.placeholder}
+              spellCheck={false}
+              autoComplete="off"
             />
           </label>
         </section>
-      </section>
 
-      <footer className="practice-footer panel">
-        <div className="practice-footer-row">
-          <button type="button" className="footer-button secondary" onClick={() => navigate("/")}>Exit</button>
-          <button type="button" className="footer-button" onClick={handlePrevious} disabled={currentIndex === 0}>
-            Previous
-          </button>
-          <button type="button" className="footer-button" onClick={handleReset}>
-            Reset
-          </button>
-          <button type="button" className="footer-button" onClick={() => verifyCode()}>
-            Verify
-          </button>
-          <button type="button" className="footer-button" onClick={handleNext} disabled={currentIndex === filteredTasks.length - 1}>
-            Next
-          </button>
-        </div>
-      </footer>
+        {showExampleCode && (
+          <section className="practice-preview panel">
+            <div className="practice-preview-header">Peek Code</div>
+            <pre>{buildEditorContent(selectedTask, true)}</pre>
+          </section>
+        )}
+      </section>
 
       {/* Checklist / verification modal */}
       {showChecklistModal && (
@@ -217,6 +248,7 @@ export default function Practice() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

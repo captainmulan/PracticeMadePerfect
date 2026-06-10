@@ -1,0 +1,74 @@
+{
+  "id": "csharp-bubble-sort",
+  "category": "csharp",
+  "title": "Bubble Sort Implementation",
+  "description": "Write a C# method that sorts an integer array in ascending order using bubble sort.",
+  "checklist": [
+    "Create outer loop (i) to iterate through array",
+    "Create inner loop (j) to compare adjacent elements",
+    "Add comparison logic (if items[j] > items[j+1])",
+    "Implement swap logic using temp variable",
+    "Return sorted array"
+  ],
+  "detailedInstructions": [
+    "Step 1: Start with an outer for loop that goes from 0 to array length - 1",
+    "Step 2: Inside, create an inner for loop that compares adjacent pairs",
+    "Step 3: Check if the current element is greater than the next element",
+    "Step 4: If yes, swap them using a temporary variable to hold one value",
+    "Step 5: After all passes, the array is sorted in ascending order",
+    "Step 6: Return the sorted array"
+  ],
+  "verificationKeywords": [
+    [
+      "for",
+      "i",
+      "items.Length"
+    ],
+    [
+      "for",
+      "j",
+      "items.Length"
+    ],
+    [
+      "if",
+      "items[j]",
+      "items[j + 1]"
+    ],
+    [
+      "temp",
+      "items[j]"
+    ],
+    [
+      "return",
+      "items"
+    ]
+  ],
+  "starterCode": "// 1: Create outer loop (i) to iterate through the array\n// 2: Create inner loop (j) to compare adjacent elements\n// 3: If items[j] > items[j+1], swap using a temp variable\n// 4: Continue passes until sorted\n// 5: Return the sorted array",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "// guide hints: Define the bubble sort method signature",
+          "code": "public static int[] BubbleSort(int[] items)\n{"
+        },
+        {
+          "guide": "// guide hints: Outer loop for passes",
+          "code": "    int n = items.Length;\n    for (int i = 0; i < n - 1; i++)\n    {"
+        },
+        {
+          "guide": "// guide hints: Inner loop to compare adjacent elements",
+          "code": "        for (int j = 0; j < n - i - 1; j++)\n        {"
+        },
+        {
+          "guide": "// guide hints: Swap when items[j] > items[j+1]",
+          "code": "            if (items[j] > items[j + 1])\n            {\n                int temp = items[j];\n                items[j] = items[j + 1];\n                items[j + 1] = temp;\n            }"
+        },
+        {
+          "guide": "// guide hints: Close loops and return sorted array",
+          "code": "        }\n    }\n    return items;\n}"
+        }
+      ]
+    }
+  },
+  "type": "code"
+}

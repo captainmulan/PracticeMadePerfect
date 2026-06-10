@@ -133,7 +133,14 @@ Current approach: **TypeScript data modules** (`pageData/`, `data/tasks.ts`). Co
 - Requires a dev rebuild to change content
 - Not editable by a non-developer admin
 - `homePageData.featureHtml` exists but is **not rendered** on Home yet
+### 2.6 Recent updates
 
+Since the last review, the project now includes:
+- A browser-based admin editor at `/admin` for editing `homePageData` and `practicePageData` via localStorage
+- `Home` and `Practice` pages wired to load editable content from `utils/contentStore.ts`
+- React task starter comments updated to include explicit import/export hint lines
+- More precise React verification keyword checks for `useState`, `useReducer`, Redux, toggle, form input, and fetch tasks
+- Mobile hero collapse height improved on the home page for the initial collapsed state
 ---
 
 ## 3. Gap Analysis — Prompt vs Current Build

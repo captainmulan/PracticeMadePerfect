@@ -1,0 +1,51 @@
+{
+  "id": "csharp-character-count",
+  "category": "csharp",
+  "title": "Character Count in a String",
+  "description": "Count the occurrence of each character in a string, ignoring spaces.",
+  "checklist": [
+    "Accept a string parameter",
+    "Iterate through each character",
+    "Ignore spaces while counting",
+    "Use a Dictionary<char, int> to store counts",
+    "Return the dictionary of character counts"
+  ],
+  "detailedInstructions": [
+    "Step 1: Define a method that accepts a string input",
+    "Step 2: Create a Dictionary<char, int> for counts",
+    "Step 3: Loop through each character in the string",
+    "Step 4: Skip space characters",
+    "Step 5: Increment counts and return the dictionary"
+  ],
+  "verificationKeywords": [
+    ["Dictionary<char, int>"],
+    ["foreach (char c in input)"],
+    ["if (c != ' ')"],
+    ["charCount[c++]"],
+    ["return charCount"]
+  ],
+  "starterCode": "// 1: Accept a string input\n// 2: Use a Dictionary<char, int> to count characters\n// 3: Ignore spaces while counting\n// 4: Return the character counts",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "// guide hints: Define the character count method",
+          "code": "public static Dictionary<char, int> CountCharacters(string input)\n{"
+        },
+        {
+          "guide": "// guide hints: Create the dictionary to store counts",
+          "code": "    Dictionary<char, int> charCount = new Dictionary<char, int>();"
+        },
+        {
+          "guide": "// guide hints: Iterate through each character and skip spaces",
+          "code": "    foreach (char c in input)\n    {\n        if (c != ' ')\n        {\n            if (charCount.ContainsKey(c))\n            {\n                charCount[c]++;\n            }\n            else\n            {\n                charCount[c] = 1;\n            }\n        }\n    }"
+        },
+        {
+          "guide": "// guide hints: Return the character count dictionary",
+          "code": "    return charCount;\n}"
+        }
+      ]
+    }
+  },
+  "type": "code"
+}

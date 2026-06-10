@@ -1,0 +1,40 @@
+{
+  "id": "sql-managers",
+  "category": "sql",
+  "title": "Employees Who Are Managers",
+  "description": "Write a query to fetch all employees who are also managers in the EmployeeDetails table.",
+  "checklist": [
+    "Use EmployeeDetails table",
+    "Check ManagerId values present in the table",
+    "Return records for employees who appear as managers",
+    "Avoid duplicate results if necessary"
+  ],
+  "detailedInstructions": [
+    "Step 1: Identify manager IDs from EmployeeDetails",
+    "Step 2: Fetch employees whose EmpId matches a manager ID",
+    "Step 3: Return the matching employee records"
+  ],
+  "verificationKeywords": [
+    ["EmpId IN (SELECT ManagerId"],
+    ["FROM EmployeeDetails"],
+    ["ManagerId IS NOT NULL"],
+    ["SELECT *"]
+  ],
+  "starterCode": "-- 1: Select all columns from EmployeeDetails\n-- 2: Filter employees whose EmpId appears as a ManagerId\n-- 3: Return manager employee rows",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Select all employee columns",
+          "code": "SELECT *"
+        },
+        {
+          "guide": "Use a subquery to find manager IDs",
+          "code": "FROM EmployeeDetails\nWHERE EmpId IN (SELECT ManagerId FROM EmployeeDetails WHERE ManagerId IS NOT NULL);"
+        }
+      ]
+    }
+  },
+  "type": "sql"
+}
+

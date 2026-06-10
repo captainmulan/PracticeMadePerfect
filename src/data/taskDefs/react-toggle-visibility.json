@@ -1,0 +1,78 @@
+{
+  "id": "react-toggle-visibility",
+  "category": "react",
+  "title": "Toggle Visibility",
+  "description": "Toggle message visibility using useReducer with a TOGGLE_VISIBILITY action and conditional rendering.",
+  "checklist": [
+    "Import useReducer from React",
+    "Define TOGGLE_VISIBILITY action type",
+    "Set initialState with visible: true",
+    "Reducer flips visible on TOGGLE_VISIBILITY",
+    "Conditionally render message when visible",
+    "Button label switches between Hide and Show",
+    "Export default ToggleVisibility"
+  ],
+  "verificationKeywords": [
+    [
+      "import React",
+      "{ useReducer }",
+      "from 'react'"
+    ],
+    [
+      "const TOGGLE_VISIBILITY = 'TOGGLE_VISIBILITY'"
+    ],
+    [
+      "const initialState = { visible: true }"
+    ],
+    [
+      "case TOGGLE_VISIBILITY:",
+      "return { visible: !state.visible }"
+    ],
+    [
+      "state.visible && <p",
+      "{state.visible ? 'Hide' : 'Show'}"
+    ],
+    [
+      "<button onClick={() => dispatch({ type: TOGGLE_VISIBILITY })}"
+    ],
+    [
+      "export default ToggleVisibility;"
+    ]
+  ],
+  "starterCode": "// 1: Import: import React, { useReducer } from 'react';\n\nconst TOGGLE_VISIBILITY = 'TOGGLE_VISIBILITY';\nconst initialState = { visible: true };\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    default:\n      return state;\n  }\n}\n\nfunction ToggleVisibility() {\n  // 2: useReducer with reducer and initialState\n  // 3: Conditionally render message when state.visible\n  // 4: Button dispatches TOGGLE_VISIBILITY, label Hide / Show\n\n  return (\n    <div>\n    </div>\n  );\n}\n\n// 5: Export: export default ToggleVisibility;",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "// guide hints: Import: import React, { useReducer } from react",
+          "code": "import React, { useReducer } from 'react';"
+        },
+        {
+          "guide": "// guide hints: Define TOGGLE_VISIBILITY action type and initialState",
+          "code": "const TOGGLE_VISIBILITY = 'TOGGLE_VISIBILITY';\nconst initialState = { visible: true };"
+        },
+        {
+          "guide": "// guide hints: Reducer flips visible on TOGGLE_VISIBILITY",
+          "code": "function reducer(state, action) {\n  switch (action.type) {\n    case TOGGLE_VISIBILITY:\n      return { visible: !state.visible };\n    default:\n      return state;\n  }\n}"
+        },
+        {
+          "guide": "// guide hints: useReducer with reducer and initialState",
+          "code": "const [state, dispatch] = useReducer(reducer, initialState);"
+        },
+        {
+          "guide": "// guide hints: Conditionally render message when state.visible",
+          "code": "{state.visible && <p>The message is visible.</p>}"
+        },
+        {
+          "guide": "// guide hints: Button dispatches TOGGLE_VISIBILITY, label Hide / Show",
+          "code": "<button onClick={() => dispatch({ type: TOGGLE_VISIBILITY })}>{state.visible ? 'Hide' : 'Show'}</button>"
+        },
+        {
+          "guide": "// guide hints: Export: export default ToggleVisibility;",
+          "code": "export default ToggleVisibility;"
+        }
+      ]
+    }
+  },
+  "type": "code"
+}

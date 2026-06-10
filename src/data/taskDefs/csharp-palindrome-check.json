@@ -1,0 +1,43 @@
+{
+  "id": "csharp-palindrome-check",
+  "category": "csharp",
+  "title": "Palindrome Check",
+  "description": "Build a method that returns true when the input string reads the same forward and backward.",
+  "checklist": [
+    "Accept a string parameter",
+    "Normalize or trim the input if needed",
+    "Compare the input to its reversed version",
+    "Return true for palindromes",
+    "Return false otherwise"
+  ],
+  "detailedInstructions": [
+    "Step 1: Define a method to check palindromes",
+    "Step 2: Create a reversed version of the input string",
+    "Step 3: Compare the original and reversed strings",
+    "Step 4: Return true if they match",
+    "Step 5: Return false if they differ"
+  ],
+  "verificationKeywords": [
+    ["string input"],
+    ["SequenceEqual"],
+    ["input.Reverse"],
+    ["return"],
+    ["bool"]
+  ],
+  "starterCode": "// 1: Accept a string input\n// 2: Reverse the string or compare to its reverse\n// 3: Return true when the string is a palindrome\n// 4: Return false otherwise",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "// guide hints: Define the palindrome check method",
+          "code": "public static bool IsPalindrome(string input)\n{"
+        },
+        {
+          "guide": "// guide hints: Compare input with reversed sequence",
+          "code": "    return input.SequenceEqual(input.Reverse());\n}"
+        }
+      ]
+    }
+  },
+  "type": "code"
+}

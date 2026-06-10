@@ -1,0 +1,59 @@
+{
+  "id": "csharp-api-json-deserialization",
+  "category": "csharp",
+  "title": "Api Call and JSON Deserialization",
+  "description": "Write an async method that calls an API and deserializes the JSON response into a generic object.",
+  "checklist": [
+    "Create an async method that accepts a URL",
+    "Use HttpClient to perform a GET request",
+    "Read the response content as a string",
+    "Deserialize JSON into type T",
+    "Throw an exception when the request fails"
+  ],
+  "detailedInstructions": [
+    "Step 1: Define an async generic method with apiUrl parameter",
+    "Step 2: Use HttpClient.GetAsync to call the API",
+    "Step 3: Read the response content using ReadAsStringAsync",
+    "Step 4: Deserialize the JSON into type T",
+    "Step 5: Throw an exception when the response is not successful"
+  ],
+  "verificationKeywords": [
+    ["async Task<T>"],
+    ["GetAsync("],
+    ["ReadAsStringAsync"],
+    ["JsonConvert.DeserializeObject<T>"],
+    ["throw new Exception"]
+  ],
+  "starterCode": "// 1: Create an async generic method accepting apiUrl\n// 2: Use HttpClient to call the endpoint\n// 3: Read the response content\n// 4: Deserialize JSON into type T\n// 5: Throw when the call fails",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "// guide hints: Define the async generic method",
+          "code": "public async Task<T> GetData<T>(string apiUrl)\n{"
+        },
+        {
+          "guide": "// guide hints: Send the HTTP GET request",
+          "code": "    HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);"
+        },
+        {
+          "guide": "// guide hints: Read the response body as a string",
+          "code": "    string json = await response.Content.ReadAsStringAsync();"
+        },
+        {
+          "guide": "// guide hints: Deserialize the JSON into T",
+          "code": "    T data = JsonConvert.DeserializeObject<T>(json);"
+        },
+        {
+          "guide": "// guide hints: Throw if the response is not successful",
+          "code": "    if (!response.IsSuccessStatusCode)\n    {\n        throw new Exception(\"Failed\");\n    }"
+        },
+        {
+          "guide": "// guide hints: Return the deserialized object",
+          "code": "    return data;\n}"
+        }
+      ]
+    }
+  },
+  "type": "code"
+}
