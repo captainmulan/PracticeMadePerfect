@@ -18,6 +18,9 @@
       "from 'react'"
     ],
     [
+      "import { combineReducers } from 'redux'"
+    ],
+    [
       "case 'INCREMENT':",
       "case 'DECREMENT':"
     ],
@@ -41,7 +44,7 @@
       "export default CounterComponent;"
     ]
   ],
-  "starterCode": "// 1: Import: import React from 'react';\n// 2: Import: import { useSelector, useDispatch } from 'react-redux';\n\n// counterReducer.js\n// 3: initialState { count: 0 }, reducer with INCREMENT / DECREMENT\n\n// reducers/index.js\n// 4: combineReducers({ counter: counterReducer })\n\n// CounterComponent.js\nconst CounterComponent = () => {\n  // 5: useSelector(state => state.counter.count)\n  // 6: useDispatch() for INCREMENT / DECREMENT\n  // 7: Render count with Increment / Decrement buttons\n\n  return (\n    <div>\n    </div>\n  );\n};\n\n// 8: Export: export default CounterComponent;",
+  "starterCode": "// 1: Import: import React from 'react';\n// 2: Import: import { combineReducers } from 'redux';\n// 3: Import: import { useSelector, useDispatch } from 'react-redux';\n\n// counterReducer.js\nconst initialState = { count: 0 };\nconst counterReducer = (state = initialState, action) => {\n  switch (action.type) {\n    case 'INCREMENT':\n      return { count: state.count + 1 };\n    case 'DECREMENT':\n      return { count: state.count - 1 };\n    default:\n      return state;\n  }\n};\n\nconst rootReducer = combineReducers({ counter: counterReducer });\n\nfunction CounterComponent() {\n  const count = useSelector((state) => state.counter.count);\n  const dispatch = useDispatch();\n\n  const increment = () => dispatch({ type: 'INCREMENT' });\n  const decrement = () => dispatch({ type: 'DECREMENT' });\n\n  return (\n    <div>\n      <h2>Count: {count}</h2>\n      <button onClick={increment}>Increment</button>\n      <button onClick={decrement}>Decrement</button>\n    </div>\n  );\n};\n\nexport default CounterComponent;",
   "page": {
     "editor": {
       "hints": [
@@ -50,8 +53,8 @@
           "code": "import React from 'react';"
         },
         {
-          "guide": "// guide hints: Import: useSelector and useDispatch from react-redux",
-          "code": "import { useSelector, useDispatch } from 'react-redux';"
+          "guide": "// guide hints: Import: useSelector and useDispatch from react-redux, and combineReducers from redux",
+          "code": "import { combineReducers } from 'redux';\nimport { useSelector, useDispatch } from 'react-redux';"
         },
         {
           "guide": "// guide hints: initialState { count: 0 }, reducer with INCREMENT / DECREMENT",
@@ -80,5 +83,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 3
 }

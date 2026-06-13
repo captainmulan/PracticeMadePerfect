@@ -1,98 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import type { PracticeTask } from "../data/tasks";
+import { useMemo } from "react";
+import { Link, useParams } from "react-router-dom";
 import { getPracticePageData } from "../utils/contentStore";
-import { runCompileCheck } from "../utils/compileVerifier";
-import { buildEditorContent, getFullExampleCode, verifyTaskFull } from "../utils/taskHints";
+import PracticeCode from "./PracticeCode";
+import PracticeText from "./PracticeText";
 
 export default function Practice() {
-  const navigate = useNavigate();
   const { categoryKey } = useParams<{ categoryKey: string }>();
   const data = getPracticePageData();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
-  const [draftTouched, setDraftTouched] = useState<Record<string, boolean>>({});
-  const [checklistState, setChecklistState] = useState<Record<string, boolean[]>>({});
-  const [verificationResults, setVerificationResults] = useState<Record<string, boolean[]>>({});
-  const [showChecklistModal, setShowChecklistModal] = useState(false);
-  const [compileErrors, setCompileErrors] = useState<string[]>([]);
-  const [compileLanguage, setCompileLanguage] = useState("");
-  const [showExampleCode, setShowExampleCode] = useState(false);
-  const [heroExpanded, setHeroExpanded] = useState(true);
+  const selectedCategory = data.categories.find((category) => category.key === categoryKey);
 
   const filteredTasks = useMemo(
-    () => data.tasks.filter((task: PracticeTask) => task.category === categoryKey),
+    () => data.tasks.filter((task) => task.category === categoryKey),
     [categoryKey, data.tasks],
   );
-
-  const selectedCategory = data.categories.find((category: { key: string }) => category.key === categoryKey);
-
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [categoryKey]);
-
-  const selectedTask = filteredTasks[currentIndex];
-  const currentDraft = drafts[selectedTask?.id ?? ""];
-  const currentDraftTouched = selectedTask ? draftTouched[selectedTask.id] : false;
-  const checklist = selectedTask?.checklist ?? [];
-  const checklistValues = checklistState[selectedTask?.id ?? ""] ?? checklist.map(() => false);
-  const hintsText = selectedTask ? buildEditorContent(selectedTask, false) : "";
-
-  const initialEditorContent =
-    currentDraft !== undefined && currentDraftTouched
-      ? currentDraft
-      : hintsText;
-
-  const taskContent = initialEditorContent;
-
-  function verifyCode() {
-    if (!selectedTask) return;
-
-    const compile = runCompileCheck(selectedTask, taskContent);
-    const outcome = verifyTaskFull(selectedTask, taskContent, compile);
-
-    setCompileErrors(outcome.compileErrors);
-    setCompileLanguage(outcome.compileLanguage);
-    setVerificationResults((prev) => ({
-      ...prev,
-      [selectedTask.id]: outcome.checklistResults,
-    }));
-    setChecklistState((prev) => ({
-      ...prev,
-      [selectedTask.id]: outcome.checklistResults,
-    }));
-    setShowChecklistModal(true);
-  }
-
-  function handleDraftChange(value: string) {
-    if (!selectedTask) return;
-    setDrafts((prev) => ({ ...prev, [selectedTask.id]: value }));
-    setDraftTouched((prev) => ({ ...prev, [selectedTask.id]: true }));
-  }
-
-  function handleReset() {
-    if (!selectedTask) return;
-    setDrafts((prev) => ({
-      ...prev,
-      [selectedTask.id]: initialEditorContent,
-    }));
-    setDraftTouched((prev) => ({
-      ...prev,
-      [selectedTask.id]: false,
-    }));
-    setChecklistState((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
-    setVerificationResults((prev) => ({ ...prev, [selectedTask.id]: checklist.map(() => false) }));
-    setCompileErrors([]);
-    setCompileLanguage("");
-  }
-
-  function handleNext() {
-    setCurrentIndex((value) => Math.min(value + 1, filteredTasks.length - 1));
-  }
-
-  function handlePrevious() {
-    setCurrentIndex((value) => Math.max(value - 1, 0));
-  }
 
   if (!selectedCategory) {
     return (
@@ -108,7 +28,7 @@ export default function Practice() {
     );
   }
 
-  if (!selectedTask) {
+  if (filteredTasks.length === 0) {
     return (
       <div className="practice-page panel">
         <div className="panel-heading">No tasks available</div>
@@ -122,133 +42,10 @@ export default function Practice() {
     );
   }
 
-  const allChecklistComplete = checklistValues.every((val) => val);
+  const pageType = selectedCategory.pageType ?? filteredTasks[0]?.type ?? "code";
+  if (pageType === "text") {
+    return <PracticeText />;
+  }
 
-  return (
-    <div className="practice-page practice-wizard">
-      <section className={`hero-banner panel ${heroExpanded ? "expanded" : "collapsed"}`}>
-        <div className="hero-banner-header">
-          <div className="hero-banner-title-row">
-            <div className="hero-title">Question</div>
-            <div className="hero-page-index">
-              {currentIndex + 1}/{filteredTasks.length}
-            </div>
-          </div>
-          <button
-            type="button"
-            className="panel-toggle"
-            onClick={() => setHeroExpanded((value) => !value)}
-          >
-            {heroExpanded ? "−" : "+"}
-          </button>
-        </div>
-        {heroExpanded && (
-          <div className="hero-banner-body">
-            <p className="practice-description">{selectedTask.description}</p>
-          </div>
-        )}
-      </section>
-
-      <section className="practice-action-panel panel">
-        <div className="action-panel-header">
-          <span className="action-panel-title">Actions</span>
-          <div className="action-panel-actions">
-            <button
-              type="button"
-              className="action-button"
-              onClick={() => setShowExampleCode((value) => !value)}
-            >
-              {showExampleCode ? "Hide Peek" : "Peek Code"}
-            </button>
-            <button
-              type="button"
-              className="action-button"
-              onClick={() => setHeroExpanded((value) => !value)}
-            >
-              {heroExpanded ? "Hide Question" : "Show Question"}
-            </button>
-            <button type="button" className="action-button" onClick={handlePrevious} disabled={currentIndex === 0}>
-              Previous
-            </button>
-            <button type="button" className="action-button" onClick={handleReset}>
-              Reset
-            </button>
-            <button type="button" className="action-button" onClick={() => verifyCode()}>
-              Verify
-            </button>
-            <button
-              type="button"
-              className="action-button"
-              onClick={handleNext}
-              disabled={currentIndex === filteredTasks.length - 1}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </section>
-      <section className="practice-layout full-code">
-        <section className="practice-right panel">
-          <div className="practice-right-header">
-            <div className="panel-heading">Answer</div>
-          </div>
-
-          <label className="practice-text-label">
-            <textarea
-              className={selectedTask.type === "text" ? "practice-textarea" : "practice-codearea"}
-              value={taskContent}
-              onChange={(event) => handleDraftChange(event.target.value)}
-              placeholder={data.placeholder}
-              spellCheck={false}
-              autoComplete="off"
-            />
-          </label>
-        </section>
-
-        {showExampleCode && (
-          <section className="practice-preview panel">
-            <div className="practice-preview-header">Peek Code</div>
-            <pre>{buildEditorContent(selectedTask, true)}</pre>
-          </section>
-        )}
-      </section>
-
-      {/* Checklist / verification modal */}
-      {showChecklistModal && (
-        <div className="modal-backdrop" onClick={() => setShowChecklistModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Verification Results</h3>
-              <button className="modal-close" onClick={() => setShowChecklistModal(false)}>✕</button>
-            </div>
-            <div className="modal-body">
-              {compileErrors.length > 0 && (
-                <div className="compile-error-box">
-                  <p className="compile-error-title">
-                    Compile failed ({compileLanguage})
-                  </p>
-                  <ul className="compile-error-list">
-                    {compileErrors.map((error) => (
-                      <li key={error}>{error}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <ul>
-                {(verificationResults[selectedTask.id] ?? checklist.map(() => false)).map((v, i) => (
-                  <li key={i} className={v ? "verified" : "not-verified"}>
-                    {v ? "✓" : "✗"} {checklist[i] ?? "Step"}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="modal-footer">
-              <button className="footer-button" onClick={() => setShowChecklistModal(false)}>Close</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
+  return <PracticeCode />;
 }

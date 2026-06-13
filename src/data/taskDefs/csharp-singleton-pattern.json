@@ -18,11 +18,21 @@
     "Step 5: Implement a public Instance getter that lazily creates the instance inside a lock"
   ],
   "verificationKeywords": [
-    ["sealed class Singleton"],
-    ["private static Singleton instance"],
-    ["private static readonly object lockObject"],
-    ["private Singleton()"],
-    ["public static Singleton Instance"]
+    [
+      "sealed class Singleton"
+    ],
+    [
+      "private static Singleton instance"
+    ],
+    [
+      "private static readonly object lockObject"
+    ],
+    [
+      "private Singleton()"
+    ],
+    [
+      "public static Singleton Instance"
+    ]
   ],
   "starterCode": "// 1: Create a sealed Singleton class\n// 2: Use a private static instance field and lock object\n// 3: Make the constructor private\n// 4: Return a singleton instance in the Instance property",
   "page": {
@@ -47,5 +57,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 12
 }

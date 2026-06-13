@@ -16,11 +16,22 @@
     "Step 4: Return the combined result"
   ],
   "verificationKeywords": [
-    ["LEFT JOIN"],
-    ["EmployeeDetails ED"],
-    ["EmployeeSalary ES"],
-    ["ED.EmpId = ES.EmpId"],
-    ["SELECT ED.FullName", "ES.Salary"]
+    [
+      "LEFT JOIN"
+    ],
+    [
+      "EmployeeDetails ED"
+    ],
+    [
+      "EmployeeSalary ES"
+    ],
+    [
+      "ED.EmpId = ES.EmpId"
+    ],
+    [
+      "SELECT ED.FullName",
+      "ES.Salary"
+    ]
   ],
   "starterCode": "-- 1: Select employee name and salary\n-- 2: Use LEFT JOIN on EmpId\n-- 3: Return all employee records",
   "page": {
@@ -37,6 +48,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 4
 }
-

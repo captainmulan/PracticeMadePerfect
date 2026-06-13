@@ -16,11 +16,21 @@
     "Step 4: Return name, position, and salary"
   ],
   "verificationKeywords": [
-    ["UNION"],
-    ["MIN(Salary)"],
-    ["MAX(Salary)"],
-    ["SELECT Name, Position, Salary"],
-    ["FROM employee"]
+    [
+      "UNION"
+    ],
+    [
+      "MIN(Salary)"
+    ],
+    [
+      "MAX(Salary)"
+    ],
+    [
+      "SELECT Name, Position, Salary"
+    ],
+    [
+      "FROM employee"
+    ]
   ],
   "starterCode": "-- 1: Use min and max salary in a single query\n-- 2: Select employee name, position, salary\n-- 3: Combine the two results",
   "page": {
@@ -37,6 +47,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 6
 }
-

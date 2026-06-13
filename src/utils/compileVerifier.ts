@@ -8,34 +8,82 @@ export interface CompileResult {
   language: string;
 }
 
+interface Position {
+  line: number;
+  column: number;
+}
+
+function getSourcePosition(source: string, index: number): Position {
+  let line = 1;
+  let column = 1;
+
+  for (let i = 0; i < index; i += 1) {
+    if (source[i] === "\n") {
+      line += 1;
+      column = 1;
+    } else {
+      column += 1;
+    }
+  }
+
+  return { line, column };
+}
+
+function parseErrorLocation(stack: string): Position | undefined {
+  const match = stack.match(/<anonymous>:(\d+):(\d+)/) || stack.match(/\[eval\]:(\d+):(\d+)/) || stack.match(/evalmachine\.<anonymous>:(\d+):(\d+)/);
+  if (!match) return undefined;
+  return { line: Number(match[1]), column: Number(match[2]) };
+}
+
+function formatCompilerMessage(message: string, position?: Position): string {
+  if (!position) return message;
+  return `${message} at line ${position.line}, column ${position.column}`;
+}
+
 function checkDelimiterBalance(source: string): string | null {
-  const stack: string[] = [];
+  type DelimiterState = { ch: string; line: number; column: number };
+  const stack: DelimiterState[] = [];
   const pairs: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
   let inString: "'" | '"' | "`" | null = null;
+  let stringStart: Position = { line: 1, column: 1 };
+
+  let line = 1;
+  let column = 1;
 
   for (let i = 0; i < source.length; i += 1) {
     const ch = source[i];
     const prev = source[i - 1];
 
     if (inString) {
-      if (ch === inString && prev !== "\\") inString = null;
-      continue;
-    }
-
-    if (ch === "'" || ch === '"' || ch === "`") {
+      if (ch === inString && prev !== "\\") {
+        inString = null;
+      }
+    } else if (ch === "'" || ch === '"' || ch === "`") {
       inString = ch;
-      continue;
+      stringStart = { line, column };
+    } else if ("({[".includes(ch)) {
+      stack.push({ ch, line, column });
+    } else if (")}]".includes(ch)) {
+      const expected = pairs[ch];
+      const top = stack.pop();
+      if (!top || top.ch !== expected) {
+        return `Syntax error: unexpected '${ch}' at line ${line}`;
+      }
     }
 
-    if ("({[".includes(ch)) stack.push(ch);
-    if (")}]".includes(ch)) {
-      const expected = pairs[ch];
-      if (stack.pop() !== expected) return `Syntax error: unexpected '${ch}'`;
+    if (ch === "\n") {
+      line += 1;
+      column = 1;
+    } else {
+      column += 1;
     }
   }
 
-  if (inString) return `Syntax error: unclosed string (${inString})`;
-  if (stack.length) return `Syntax error: unclosed '${stack[stack.length - 1]}'`;
+  if (inString) return `Syntax error: unclosed string (${inString}) at line ${stringStart.line}`;
+  if (stack.length) {
+    const top = stack[stack.length - 1];
+    return `Syntax error: unclosed '${top.ch}' at line ${top.line}`;
+  }
   return null;
 }
 
@@ -45,7 +93,12 @@ function tryParseJavaScript(source: string): CompileResult {
     return { ok: true, errors: [], language: "javascript" };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    return { ok: false, errors: [`JavaScript syntax error: ${message}`], language: "javascript" };
+    const position = error instanceof Error && error.stack ? parseErrorLocation(error.stack) : undefined;
+    return {
+      ok: false,
+      errors: [`JavaScript syntax error: ${formatCompilerMessage(message, position)}`],
+      language: "javascript",
+    };
   }
 }
 

@@ -1,0 +1,65 @@
+{
+  "id": "angular-tab-navigation",
+  "category": "angular",
+  "title": "Tab Navigation",
+  "description": "Build a simple tabbed interface that switches content using Angular event binding and conditional rendering.",
+  "checklist": [
+    "Import Component from @angular/core",
+    "Create selectedTab property",
+    "Implement selectTab() method",
+    "Render tab labels and change selected tab on click",
+    "Use *ngIf to display the active tab content",
+    "Export the TabNavigationComponent"
+  ],
+  "verificationKeywords": [
+    [
+      "import { Component } from '@angular/core'",
+      "@Component({"
+    ],
+    [
+      "selectedTab = 'home'",
+      "selectTab(tab: string)"
+    ],
+    [
+      "(click)=\"selectTab('home')\"",
+      "(click)=\"selectTab('profile')\"",
+      "(click)=\"selectTab('settings')\""
+    ],
+    [
+      "*ngIf=\"selectedTab === 'home'\"",
+      "*ngIf=\"selectedTab === 'profile'\""
+    ],
+    [
+      "export class TabNavigationComponent"
+    ]
+  ],
+  "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tab-navigation',\n  template: `\n    <div>\n      <button (click)=\"selectTab('home')\">Home</button>\n      <button (click)=\"selectTab('profile')\">Profile</button>\n      <button (click)=\"selectTab('settings')\">Settings</button>\n      <div *ngIf=\"selectedTab === 'home'\">Home content</div>\n      <div *ngIf=\"selectedTab === 'profile'\">Profile content</div>\n      <div *ngIf=\"selectedTab === 'settings'\">Settings content</div>\n    </div>\n  `\n})\nexport class TabNavigationComponent {\n  selectedTab = 'home';\n\n  selectTab(tab: string) {\n    this.selectedTab = tab;\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Import Component and define the component metadata",
+          "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tab-navigation',\n  template: `\n    <div>\n      <button (click)=\"selectTab('home')\">Home</button>\n      <button (click)=\"selectTab('profile')\">Profile</button>\n      <button (click)=\"selectTab('settings')\">Settings</button>\n      <div *ngIf=\"selectedTab === 'home'\">Home content</div>\n      <div *ngIf=\"selectedTab === 'profile'\">Profile content</div>\n      <div *ngIf=\"selectedTab === 'settings'\">Settings content</div>\n    </div>\n  `\n})"
+        },
+        {
+          "guide": "Create a selectedTab property to track the active tab",
+          "code": "export class TabNavigationComponent {\n  selectedTab = 'home';"
+        },
+        {
+          "guide": "Add a method to update the selectedTab value",
+          "code": "  selectTab(tab: string) {\n    this.selectedTab = tab;\n  }\n}"
+        },
+        {
+          "guide": "Use event binding on buttons to switch tabs",
+          "code": "<button (click)=\"selectTab('home')\">Home</button>\n<button (click)=\"selectTab('profile')\">Profile</button>\n<button (click)=\"selectTab('settings')\">Settings</button>"
+        },
+        {
+          "guide": "Render active tab content with *ngIf",
+          "code": "<div *ngIf=\"selectedTab === 'home'\">Home content</div>"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 13
+}

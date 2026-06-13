@@ -1,0 +1,68 @@
+{
+  "id": "angular-lifecycle-hooks",
+  "category": "angular",
+  "title": "Lifecycle Hooks",
+  "description": "Implement ngOnInit and ngOnDestroy to initialize data and clean up a timer in an Angular component.",
+  "checklist": [
+    "Import Component, OnInit, and OnDestroy from @angular/core",
+    "Create a message property and timerId property",
+    "Set message in ngOnInit and start a timer",
+    "Clear the timer in ngOnDestroy",
+    "Render the message in the template",
+    "Export the LifecycleHooksComponent"
+  ],
+  "verificationKeywords": [
+    [
+      "import { Component, OnInit, OnDestroy } from '@angular/core'",
+      "implements OnInit, OnDestroy"
+    ],
+    [
+      "message = ''",
+      "timerId: any"
+    ],
+    [
+      "ngOnInit()",
+      "setInterval(() =>",
+      "this.message = 'Initialized'"
+    ],
+    [
+      "ngOnDestroy()",
+      "clearInterval(this.timerId)"
+    ],
+    [
+      "{{ message }}"
+    ],
+    [
+      "export class LifecycleHooksComponent"
+    ]
+  ],
+  "starterCode": "import { Component, OnInit, OnDestroy } from '@angular/core';\n\n@Component({\n  selector: 'app-lifecycle-hooks',\n  template: `\n    <div>\n      <h2>Lifecycle Example</h2>\n      <p>{{ message }}</p>\n    </div>\n  `\n})\nexport class LifecycleHooksComponent implements OnInit, OnDestroy {\n  message = '';\n  timerId: any;\n\n  ngOnInit() {\n    this.message = 'Initialized';\n    this.timerId = setInterval(() => {\n      this.message = `Tick: ${new Date().toLocaleTimeString()}`;\n    }, 1000);\n  }\n\n  ngOnDestroy() {\n    clearInterval(this.timerId);\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Import Component, OnInit, and OnDestroy from @angular/core",
+          "code": "import { Component, OnInit, OnDestroy } from '@angular/core';\n\n@Component({\n  selector: 'app-lifecycle-hooks',\n  template: `\n    <div>\n      <h2>Lifecycle Example</h2>\n      <p>{{ message }}</p>\n    </div>\n  `\n})"
+        },
+        {
+          "guide": "Implement the component class with lifecycle interfaces",
+          "code": "export class LifecycleHooksComponent implements OnInit, OnDestroy {\n  message = '';\n  timerId: any;"
+        },
+        {
+          "guide": "Set initial state in ngOnInit and start a repeating timer",
+          "code": "  ngOnInit() {\n    this.message = 'Initialized';\n    this.timerId = setInterval(() => {\n      this.message = `Tick: ${new Date().toLocaleTimeString()}`;\n    }, 1000);\n  }"
+        },
+        {
+          "guide": "Clean up the timer in ngOnDestroy",
+          "code": "  ngOnDestroy() {\n    clearInterval(this.timerId);\n  }\n}"
+        },
+        {
+          "guide": "Render the current message using interpolation",
+          "code": "<p>{{ message }}</p>"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 8
+}

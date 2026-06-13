@@ -1,0 +1,53 @@
+{
+  "id": "angular-auth-routing",
+  "category": "angular",
+  "title": "AuthGuard & Routing",
+  "description": "Create a route guard to protect authenticated routes and understand Angular routing flow.",
+  "checklist": [
+    "Add an AuthGuard service using CanActivate",
+    "Register the guard with providedIn or module providers",
+    "Protect a secure route with canActivate",
+    "Use Router.navigate to redirect unauthenticated users",
+    "Handle route parameters and child route structure"
+  ],
+  "verificationKeywords": [
+    [
+      "implements CanActivate",
+      "canActivate"
+    ],
+    [
+      "providedIn: 'root'",
+      "providers"
+    ],
+    [
+      "canActivate: [AuthGuard]",
+      "Router.navigate"
+    ],
+    [
+      "/secure",
+      ":id",
+      "children"
+    ]
+  ],
+  "starterCode": "import { Injectable } from '@angular/core';\nimport { CanActivate, Router } from '@angular/router';\n\n@Injectable({\n  providedIn: 'root',\n})\nexport class AuthGuard implements CanActivate {\n  constructor(private router: Router) {}\n\n  canActivate(): boolean {\n    const authenticated = false;\n    if (!authenticated) {\n      this.router.navigate(['/login']);\n    }\n    return authenticated;\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Create an injectable route guard that implements CanActivate",
+          "code": "import { Injectable } from '@angular/core';\nimport { CanActivate, Router } from '@angular/router';\n\n@Injectable({ providedIn: 'root' })\nexport class AuthGuard implements CanActivate {\n  constructor(private router: Router) {}"
+        },
+        {
+          "guide": "Redirect unauthenticated users and return a boolean from canActivate",
+          "code": "  canActivate(): boolean {\n    const authenticated = false;\n    if (!authenticated) {\n      this.router.navigate(['/login']);\n    }\n    return authenticated;\n  }\n}"
+        },
+        {
+          "guide": "Use the guard in your route definition",
+          "code": "const routes = [\n  { path: 'secure', component: SecureComponent, canActivate: [AuthGuard] },\n  { path: 'login', component: LoginComponent }\n];"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 1
+}

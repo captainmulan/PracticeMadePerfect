@@ -1,0 +1,60 @@
+{
+  "id": "angular-fetch-data",
+  "category": "angular",
+  "title": "Fetch Data in ngOnInit",
+  "description": "Create a component that loads data from an API endpoint in ngOnInit and renders the result with *ngFor.",
+  "checklist": [
+    "Import Component and OnInit from @angular/core",
+    "Create an items array property",
+    "Implement ngOnInit to fetch data asynchronously",
+    "Update the items array with the response",
+    "Render items with *ngFor",
+    "Export the FetchDataComponent"
+  ],
+  "verificationKeywords": [
+    [
+      "import { Component, OnInit } from '@angular/core'",
+      "implements OnInit"
+    ],
+    [
+      "items: string[] = []",
+      "async ngOnInit()"
+    ],
+    [
+      "fetch('https://api.example.com/items')",
+      "await response.json()"
+    ],
+    [
+      "*ngFor=\"let item of items\"",
+      "{{ item }}"
+    ],
+    [
+      "export class FetchDataComponent"
+    ]
+  ],
+  "starterCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-fetch-data',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})\nexport class FetchDataComponent implements OnInit {\n  items: string[] = [];\n\n  async ngOnInit() {\n    const response = await fetch('https://api.example.com/items');\n    const data = await response.json();\n    this.items = data.items || [];\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Import Component and OnInit, then define the component metadata",
+          "code": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-fetch-data',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})"
+        },
+        {
+          "guide": "Create an array property to hold fetched items",
+          "code": "export class FetchDataComponent implements OnInit {\n  items: string[] = [];"
+        },
+        {
+          "guide": "Fetch JSON data in ngOnInit and assign it to items",
+          "code": "  async ngOnInit() {\n    const response = await fetch('https://api.example.com/items');\n    const data = await response.json();\n    this.items = data.items || [];\n  }\n}"
+        },
+        {
+          "guide": "Render fetched data using *ngFor",
+          "code": "<li *ngFor=\"let item of items\">{{ item }}</li>"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 5
+}

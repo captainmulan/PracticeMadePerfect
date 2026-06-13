@@ -1,0 +1,210 @@
+FILE: csharp-api-json-deserialization.json
+ title: Api Call and JSON Deserialization
+ desc: Write an async method that calls an API and deserializes the JSON response into a generic object.
+ checklist len: 5
+ starterCode: True
+ hints: 6
+
+FILE: csharp-bouncing-ball.json
+ title: Bounce Count and Distance
+ desc: Given an initial height, calculate the total distance traveled by a bouncing ball and the number of bounces until it stops.
+ checklist len: 6
+ starterCode: False
+ hints: 6
+
+FILE: csharp-bubble-sort.json
+ title: Bubble Sort Implementation
+ desc: Write a C# method that sorts an integer array in ascending order using bubble sort.
+ checklist len: 5
+ starterCode: True
+ hints: 5
+
+FILE: csharp-character-count.json
+ title: Character Count in a String
+ desc: Count the occurrence of each character in a string, ignoring spaces.
+ checklist len: 5
+ starterCode: True
+ hints: 4
+
+FILE: csharp-dependency-injection.json
+ title: Dependency Injection Example
+ desc: Implement a simple service and client class to demonstrate constructor dependency injection.
+ checklist len: 5
+ starterCode: True
+ hints: 3
+
+FILE: csharp-exception-handling.json
+ title: C# Exception Handling
+ desc: Implement a method that divides two integers and demonstrates correct exception handling with specific catch blocks.
+ checklist len: 5
+ starterCode: True
+ hints: 6
+
+FILE: csharp-first-duplicate.json
+ title: Find First Duplicate
+ desc: Create a method that returns the first duplicate value found in an integer array.
+ checklist len: 5
+ starterCode: True
+ hints: 5
+
+FILE: csharp-linq-filter-array.json
+ title: LINQ Array Filtering
+ desc: Use LINQ to filter an integer array and return values between two bounds.
+ checklist len: 5
+ starterCode: True
+ hints: 3
+
+FILE: csharp-multithreading.json
+ title: Multithreading Example
+ desc: Write a method that starts a background thread, runs a simple action, and waits for it to complete.
+ checklist len: 5
+ starterCode: True
+ hints: 4
+
+FILE: csharp-palindrome-check.json
+ title: Palindrome Check
+ desc: Build a method that returns true when the input string reads the same forward and backward.
+ checklist len: 5
+ starterCode: True
+ hints: 2
+
+FILE: csharp-reverse-string.json
+ title: Reverse a String
+ desc: Write a method that returns a reversed copy of the input string.
+ checklist len: 5
+ starterCode: True
+ hints: 4
+
+FILE: csharp-singleton-pattern.json
+ title: Singleton Design Pattern
+ desc: Create a thread-safe singleton class with lazy initialization.
+ checklist len: 5
+ starterCode: True
+ hints: 4
+
+FILE: react-counter-advanced.json
+ title: Counter Variations
+ desc: Extend a counter with step control using Math.max/min, reset, multiple counters, and double/triple increment buttons.
+ checklist len: 6
+ starterCode: False
+ hints: 6
+
+FILE: react-counter-redux.json
+ title: Counter with Redux
+ desc: Wire a counter to Redux using combineReducers, a counterReducer, useSelector, and useDispatch.
+ checklist len: 7
+ starterCode: True
+ hints: 8
+
+FILE: react-fetch-data.json
+ title: Fetch Data on Button Click
+ desc: Fetch API data on button click using useReducer with FETCH_SUCCESS and FETCH_ERROR actions.
+ checklist len: 8
+ starterCode: True
+ hints: 7
+
+FILE: react-form-input.json
+ title: Form Input Handling
+ desc: Build a controlled form input with useReducer. Display the typed value live as the user types.
+ checklist len: 7
+ starterCode: True
+ hints: 7
+
+FILE: react-manage-list.json
+ title: Manage List of Items
+ desc: Add and remove list items using useReducer for the list and useState for the input field.
+ checklist len: 8
+ starterCode: True
+ hints: 7
+
+FILE: react-tab-navigation.json
+ title: Tab Navigation
+ desc: Build tab navigation with useReducer. Switch between Tab1, Tab2, and Tab3 content panels.
+ checklist len: 8
+ starterCode: True
+ hints: 7
+
+FILE: react-toggle-visibility.json
+ title: Toggle Visibility
+ desc: Toggle message visibility using useReducer with a TOGGLE_VISIBILITY action and conditional rendering.
+ checklist len: 7
+ starterCode: True
+ hints: 7
+
+FILE: sql-duplicate-records.json
+ title: Find Duplicate Records
+ desc: Write a SQL query to identify duplicate rows in a table based on one or more columns.
+ checklist len: 4
+ starterCode: True
+ hints: 4
+
+FILE: sql-first-name-from-fullname.json
+ title: Extract First Name
+ desc: Write a SQL query to fetch only the first name from the FullName column.
+ checklist len: 4
+ starterCode: True
+ hints: 2
+
+FILE: sql-inner-join-employee-salary.json
+ title: Employees with Salary Records
+ desc: Write a SQL query that returns employee records only when they have a salary record.
+ checklist len: 4
+ starterCode: True
+ hints: 2
+
+FILE: sql-left-join-employee-salary.json
+ title: Employee Details with Optional Salary
+ desc: Write a query to return employee names and salary, including employees without salary records.
+ checklist len: 4
+ starterCode: True
+ hints: 2
+
+FILE: sql-managers.json
+ title: Employees Who Are Managers
+ desc: Write a query to fetch all employees who are also managers in the EmployeeDetails table.
+ checklist len: 4
+ starterCode: True
+ hints: 2
+
+FILE: sql-min-max-salary.json
+ title: Min and Max Salary in One Query
+ desc: Write a SQL query to display the employee with minimum and maximum salary in a single query.
+ checklist len: 4
+ starterCode: True
+ hints: 2
+
+FILE: sql-project-count.json
+ title: Count Employees in Project P1
+ desc: Write a SQL query that returns the number of employees working in project 'P1'.
+ checklist len: 4
+ starterCode: True
+ hints: 4
+
+FILE: sql-project-employee-count-desc.json
+ title: Project-wise Employee Count
+ desc: Write a SQL query to fetch project-wise employee counts sorted by count descending.
+ checklist len: 4
+ starterCode: True
+ hints: 4
+
+FILE: sql-remove-duplicates.json
+ title: Remove Duplicate Records
+ desc: Write a SQL query to remove duplicate rows from a table without using a temporary table.
+ checklist len: 4
+ starterCode: True
+ hints: 2
+
+FILE: sql-salary-range.json
+ title: Salary Range Query
+ desc: Write a SQL query to fetch employee names whose salary is between 5000 and 10000 inclusive.
+ checklist len: 5
+ starterCode: True
+ hints: 4
+
+FILE: sql-second-largest-salary.json
+ title: Second Largest Salary
+ desc: Write a SQL query to fetch the second highest salary using ranking or OFFSET.
+ checklist len: 4
+ starterCode: True
+ hints: 2
+

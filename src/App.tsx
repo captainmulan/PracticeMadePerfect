@@ -11,7 +11,7 @@ function App() {
           <div className="app-brand">
             <div className="app-logo">PMP</div>
             <div>
-              <p className="page-tag">PracticeMadePerfect</p>
+              <p className="page-tag">PracticeMadePerfect (ကျောက်သင်ပုန်း)</p>
             </div>
           </div>
 

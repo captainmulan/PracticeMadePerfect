@@ -1,0 +1,16 @@
+{
+  "id": "angular-flashcards-unit-testing",
+  "category": "angular-flashcards",
+  "title": "Unit Testing",
+  "description": "Review Angular unit testing with TestBed, mock services, and component assertions.",
+  "checklist": [
+    "Explain TestBed configuration for a component test",
+    "Describe how to mock a service dependency",
+    "Write an expectation for component rendering",
+    "Use async utilities for observable or promise-based code",
+    "Explain the benefit of isolated unit tests"
+  ],
+  "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is TestBed?</td><td>Angular testing module builder</td><td>Sets up component fixtures and providers</td><td>TestBed.configureTestingModule({ declarations: [MyComponent] })</td><td>Creates isolated test environments</td></tr>\n        <tr><td>How do you mock a service?</td><td>Create a fake provider</td><td>Replace real dependency with test double</td><td>{ provide: DataService, useValue: mockService }</td><td>Tests stay stable and focused</td></tr>\n        <tr><td>How do you assert rendered output?</td><td>Query fixture.nativeElement</td><td>Inspect DOM after change detection</td><td>expect(element.textContent).toContain('Policy')</td><td>Verifies UI behavior</td></tr>\n        <tr><td>Why use async utilities?</td><td>Handle observables and promises in tests</td><td>Makes async code deterministic</td><td>waitForAsync(() => { ... })</td><td>Prevents flaky tests</td></tr>\n        <tr><td>Why isolate unit tests?</td><td>Focus on one component or service</td><td>Avoid dependency on external systems</td><td>mock providers and simple fixtures</td><td>Faster, more reliable feedback</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+  "type": "text",
+  "index": 7
+}

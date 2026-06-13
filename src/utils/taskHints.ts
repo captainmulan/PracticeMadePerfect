@@ -353,11 +353,20 @@ export function verifyTaskAgainstCode(task: PracticeTask, userCode: string): boo
   }
 
   // default: keyword substring matching (backwards compatible)
-  const verifiable = getVerifiableCode(userCode, task.type);
+  // Use a best-effort case-sensitive check when the provided keyword contains uppercase letters
+  const verifiableRaw = getExecutableCode(userCode, task.type);
+  const verifiableLower = verifiableRaw.toLowerCase();
   task.verificationKeywords.slice(0, count).forEach((keywords, index) => {
     if (keywords.length === 0) return;
-    // pass if any synonym keyword appears
-    results[index] = keywords.some((keyword) => verifiable.includes(keyword.toLowerCase()));
+    const ok = keywords.some((keyword: string) => {
+      if (/[A-Z]/.test(keyword)) {
+        // keyword contains uppercase: require case-sensitive match against raw code
+        return verifiableRaw.includes(keyword);
+      }
+      // otherwise use case-insensitive match
+      return verifiableLower.includes(keyword.toLowerCase());
+    });
+    results[index] = ok;
   });
 
   return results;

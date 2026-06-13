@@ -12,12 +12,30 @@
     "Stop when height becomes negligible"
   ],
   "verificationKeywords": [
-    ["bounces = 0", "int bounces"],
-    ["distance = 0", "double distance"],
-    ["while (", "while (current"],
-    ["distance +=", "2 * current"],
-    ["current = current * factor", "factor"],
-    ["threshold", "while (current > threshold)"]
+    [
+      "bounces = 0",
+      "int bounces"
+    ],
+    [
+      "distance = 0",
+      "double distance"
+    ],
+    [
+      "while (",
+      "while (current"
+    ],
+    [
+      "distance +=",
+      "2 * current"
+    ],
+    [
+      "current = current * factor",
+      "factor"
+    ],
+    [
+      "threshold",
+      "while (current > threshold)"
+    ]
   ],
   "verificationMode": "regex",
   "detailedInstructions": [
@@ -58,5 +76,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 2
 }

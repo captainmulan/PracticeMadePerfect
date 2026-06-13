@@ -16,11 +16,22 @@
     "Step 4: Keep one unique row per duplicate set"
   ],
   "verificationKeywords": [
-    ["WITH", "AS"],
-    ["ROW_NUMBER() OVER"],
-    ["DELETE"],
-    ["WHERE rowNo > 1"],
-    ["PARTITION BY"]
+    [
+      "WITH",
+      "AS"
+    ],
+    [
+      "ROW_NUMBER() OVER"
+    ],
+    [
+      "DELETE"
+    ],
+    [
+      "WHERE rowNo > 1"
+    ],
+    [
+      "PARTITION BY"
+    ]
   ],
   "starterCode": "-- 1: Use a CTE with ROW_NUMBER() to identify duplicates\n-- 2: Delete rows with row number > 1\n-- 3: Keep one unique row per group",
   "page": {
@@ -37,6 +48,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 9
 }
-

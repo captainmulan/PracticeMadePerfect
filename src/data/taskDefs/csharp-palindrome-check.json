@@ -18,11 +18,21 @@
     "Step 5: Return false if they differ"
   ],
   "verificationKeywords": [
-    ["string input"],
-    ["SequenceEqual"],
-    ["input.Reverse"],
-    ["return"],
-    ["bool"]
+    [
+      "string input"
+    ],
+    [
+      "SequenceEqual"
+    ],
+    [
+      "input.Reverse"
+    ],
+    [
+      "return"
+    ],
+    [
+      "bool"
+    ]
   ],
   "starterCode": "// 1: Accept a string input\n// 2: Reverse the string or compare to its reverse\n// 3: Return true when the string is a palindrome\n// 4: Return false otherwise",
   "page": {
@@ -39,5 +49,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 10
 }

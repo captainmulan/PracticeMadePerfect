@@ -15,10 +15,18 @@
     "Step 3: Return the matching employee records"
   ],
   "verificationKeywords": [
-    ["EmpId IN (SELECT ManagerId"],
-    ["FROM EmployeeDetails"],
-    ["ManagerId IS NOT NULL"],
-    ["SELECT *"]
+    [
+      "EmpId IN (SELECT ManagerId"
+    ],
+    [
+      "FROM EmployeeDetails"
+    ],
+    [
+      "ManagerId IS NOT NULL"
+    ],
+    [
+      "SELECT *"
+    ]
   ],
   "starterCode": "-- 1: Select all columns from EmployeeDetails\n-- 2: Filter employees whose EmpId appears as a ManagerId\n-- 3: Return manager employee rows",
   "page": {
@@ -35,6 +43,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 5
 }
-

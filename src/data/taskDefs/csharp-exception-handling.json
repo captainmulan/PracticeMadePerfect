@@ -18,11 +18,22 @@
     "Step 5: Return a formatted result string or an error description"
   ],
   "verificationKeywords": [
-    ["try"],
-    ["catch (DivideByZeroException"],
-    ["catch (Exception"],
-    ["/", "divisor"],
-    ["return"]
+    [
+      "try"
+    ],
+    [
+      "catch (DivideByZeroException"
+    ],
+    [
+      "catch (Exception"
+    ],
+    [
+      "/",
+      "divisor"
+    ],
+    [
+      "return"
+    ]
   ],
   "starterCode": "// 1: Create a method that accepts dividend and divisor\n// 2: Wrap the division in try/catch blocks\n// 3: Catch DivideByZeroException first\n// 4: Catch Exception afterward\n// 5: Return a success or error message",
   "page": {
@@ -55,5 +66,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 6
 }

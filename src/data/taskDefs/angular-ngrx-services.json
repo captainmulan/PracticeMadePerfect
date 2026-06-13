@@ -1,0 +1,49 @@
+{
+  "id": "angular-ngrx-services",
+  "category": "angular",
+  "title": "NgRx, Services & Dependency Injection",
+  "description": "Use Angular services and NgRx patterns to manage state and inject dependencies cleanly.",
+  "checklist": [
+    "Create an Angular service and provide it in root",
+    "Inject HttpClient into the service",
+    "Define actions and select state from the store",
+    "Dispatch a store action from a component",
+    "Explain the benefit of DI for testable state management"
+  ],
+  "verificationKeywords": [
+    [
+      "@Injectable({ providedIn: 'root' })",
+      "constructor(private http: HttpClient)"
+    ],
+    [
+      "createAction",
+      "createReducer",
+      "on("
+    ],
+    [
+      "store.dispatch",
+      "store.select"
+    ]
+  ],
+  "starterCode": "import { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Injectable({ providedIn: 'root' })\nexport class DataService {\n  constructor(private http: HttpClient) {}\n\n  loadPolicies() {\n    return this.http.get('/api/policies');\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Create a service and inject HttpClient",
+          "code": "import { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Injectable({ providedIn: 'root' })\nexport class DataService {\n  constructor(private http: HttpClient) {}"
+        },
+        {
+          "guide": "Add a method that calls a backend endpoint",
+          "code": "  loadPolicies() {\n    return this.http.get('/api/policies');\n  }\n}"
+        },
+        {
+          "guide": "Use a store and dispatch actions from a component",
+          "code": "// store.dispatch(loadPolicies());\n// store.select(selectPolicyData);"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 10
+}

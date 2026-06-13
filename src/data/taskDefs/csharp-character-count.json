@@ -18,11 +18,21 @@
     "Step 5: Increment counts and return the dictionary"
   ],
   "verificationKeywords": [
-    ["Dictionary<char, int>"],
-    ["foreach (char c in input)"],
-    ["if (c != ' ')"],
-    ["charCount[c++]"],
-    ["return charCount"]
+    [
+      "Dictionary<char, int>"
+    ],
+    [
+      "foreach (char c in input)"
+    ],
+    [
+      "if (c != ' ')"
+    ],
+    [
+      "charCount[c++]"
+    ],
+    [
+      "return charCount"
+    ]
   ],
   "starterCode": "// 1: Accept a string input\n// 2: Use a Dictionary<char, int> to count characters\n// 3: Ignore spaces while counting\n// 4: Return the character counts",
   "page": {
@@ -47,5 +57,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 4
 }

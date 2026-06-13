@@ -1,0 +1,48 @@
+{
+  "id": "angular-dotnet-integration",
+  "category": "angular",
+  "title": "Angular & .NET Core Integration",
+  "description": "Connect Angular to a .NET Core API, handle CORS and secure API calls, and describe app structure.",
+  "checklist": [
+    "Use HttpClient to call a .NET Core endpoint",
+    "Handle API errors cleanly in the component",
+    "Configure CORS and secure communication",
+    "Describe the Angular and .NET app folder structure",
+    "Explain how environment settings support backend URLs"
+  ],
+  "verificationKeywords": [
+    [
+      "HttpClient",
+      "this.http.get"
+    ],
+    [
+      "catchError",
+      "subscribe"
+    ],
+    [
+      "UseCors",
+      "AllowAnyOrigin"
+    ],
+    [
+      "environment.apiUrl",
+      "appsettings.json"
+    ]
+  ],
+  "starterCode": "import { Component } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Component({\n  selector: 'app-dotnet-integration',\n  template: `\n    <button (click)=\"loadData()\">Load policies</button>\n    <div *ngIf=\"policies\">{{ policies | json }}</div>\n  `\n})\nexport class DotnetIntegrationComponent {\n  policies: any;\n\n  constructor(private http: HttpClient) {}\n\n  loadData() {\n    this.http.get('/api/policies').subscribe({\n      next: (result) => (this.policies = result),\n      error: (error) => console.error('API error', error),\n    });\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Inject HttpClient and call the .NET Core API endpoint",
+          "code": "constructor(private http: HttpClient) {}\n\nloadData() {\n  this.http.get('/api/policies').subscribe({\n    next: (result) => (this.policies = result),\n    error: (error) => console.error('API error', error),\n  });\n}"
+        },
+        {
+          "guide": "Use environment configuration and explain backend app structure",
+          "code": "// Angular app: src/app, src/environments\n// .NET Core API: Controllers, appsettings.json, Program.cs"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 4
+}

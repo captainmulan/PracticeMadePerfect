@@ -18,11 +18,21 @@
     "Step 5: Return the reversed string"
   ],
   "verificationKeywords": [
-    ["ToCharArray"],
-    ["Array.Reverse"],
-    ["new string"],
-    ["return"],
-    ["string input"]
+    [
+      "ToCharArray"
+    ],
+    [
+      "Array.Reverse"
+    ],
+    [
+      "new string"
+    ],
+    [
+      "return"
+    ],
+    [
+      "string input"
+    ]
   ],
   "starterCode": "// 1: Accept a string input parameter\n// 2: Convert input to a char array\n// 3: Reverse the char array\n// 4: Return a new string based on the reversed array",
   "page": {
@@ -47,5 +57,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 11
 }

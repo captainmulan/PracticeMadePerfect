@@ -16,11 +16,21 @@
     "Step 4: Use a single SQL query"
   ],
   "verificationKeywords": [
-    ["RANK() OVER"],
-    ["ORDER BY Salary DESC"],
-    ["WHERE SalaryRank = 2"],
-    ["OFFSET 1 ROW"],
-    ["SELECT DISTINCT Salary"]
+    [
+      "RANK() OVER"
+    ],
+    [
+      "ORDER BY Salary DESC"
+    ],
+    [
+      "WHERE SalaryRank = 2"
+    ],
+    [
+      "OFFSET 1 ROW"
+    ],
+    [
+      "SELECT DISTINCT Salary"
+    ]
   ],
   "starterCode": "-- 1: Use ranking or OFFSET to locate the second largest salary\n-- 2: Return the salary value or row\n-- 3: Keep the query in a single statement",
   "page": {
@@ -37,6 +47,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 11
 }
-

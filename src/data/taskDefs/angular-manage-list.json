@@ -1,0 +1,69 @@
+{
+  "id": "angular-manage-list",
+  "category": "angular",
+  "title": "Manage List",
+  "description": "Build a list manager that adds and removes items using Angular binding and ngFor.",
+  "checklist": [
+    "Import Component from @angular/core",
+    "Create items array and newItem property",
+    "Add addItem() and removeItem() methods",
+    "Render the list with *ngFor",
+    "Bind input value and button click handlers",
+    "Export the ManageListComponent"
+  ],
+  "verificationKeywords": [
+    [
+      "import { Component } from '@angular/core'",
+      "@Component({"
+    ],
+    [
+      "items: string[] = []",
+      "newItem = ''",
+      "addItem()"
+    ],
+    [
+      "removeItem(index: number)",
+      "this.items.splice(index, 1)"
+    ],
+    [
+      "*ngFor=\"let item of items; let i = index\"",
+      "{{ item }}"
+    ],
+    [
+      "(click)=\"addItem()\"",
+      "(click)=\"removeItem(i)\""
+    ],
+    [
+      "export class ManageListComponent"
+    ]
+  ],
+  "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-manage-list',\n  template: `\n    <div>\n      <label>New item:\n        <input type=\"text\" [(ngModel)]=\"newItem\" />\n      </label>\n      <button (click)=\"addItem()\">Add</button>\n      <ul>\n        <li *ngFor=\"let item of items; let i = index\">\n          {{ item }} <button (click)=\"removeItem(i)\">Remove</button>\n        </li>\n      </ul>\n    </div>\n  `\n})\nexport class ManageListComponent {\n  items: string[] = [];\n  newItem = '';\n\n  addItem() {\n    if (this.newItem.trim()) {\n      this.items.push(this.newItem.trim());\n      this.newItem = '';\n    }\n  }\n\n  removeItem(index: number) {\n    this.items.splice(index, 1);\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Import Component and define the component metadata",
+          "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-manage-list',\n  template: `\n    <div>\n      <label>New item:\n        <input type=\"text\" [(ngModel)]=\"newItem\" />\n      </label>\n      <button (click)=\"addItem()\">Add</button>\n      <ul>\n        <li *ngFor=\"let item of items; let i = index\">\n          {{ item }} <button (click)=\"removeItem(i)\">Remove</button>\n        </li>\n      </ul>\n    </div>\n  `\n})"
+        },
+        {
+          "guide": "Create state properties for the item list and the new item text",
+          "code": "export class ManageListComponent {\n  items: string[] = [];\n  newItem = '';"
+        },
+        {
+          "guide": "Add an addItem method that appends valid text and clears the input",
+          "code": "  addItem() {\n    if (this.newItem.trim()) {\n      this.items.push(this.newItem.trim());\n      this.newItem = '';\n    }\n  }"
+        },
+        {
+          "guide": "Add a removeItem method that deletes the item by index",
+          "code": "  removeItem(index: number) {\n    this.items.splice(index, 1);\n  }\n}"
+        },
+        {
+          "guide": "Render list items with *ngFor and bind remove button clicks",
+          "code": "<li *ngFor=\"let item of items; let i = index\">\n  {{ item }} <button (click)=\"removeItem(i)\">Remove</button>\n</li>"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 9
+}

@@ -9,7 +9,9 @@ export interface PracticeTask {
   detailedInstructions?: string[]; // Step-by-step instructions
   verificationKeywords?: string[][]; // Keywords to verify for each checklist item
   starterCode?: string;
+  answerHtml?: string;
   type: TaskType;
+  loadError?: string;
 }
 
 export interface Category {
@@ -18,16 +20,35 @@ export interface Category {
   description?: string;
   color?: string; // hex color for Netflix-style display
   icon?: string; // emoji or icon
+  pageType?: TaskType;
 }
 
 export const categories: Category[] = [
+  {
+    key: "angular-concepts",
+    label: "Angular",
+    color: "#7c3aed",
+    icon: "🧠",
+    pageType: "text",
+    description:
+      "Concept review flashcards for Angular interview topics like routing, lifecycle, services, testing, and state management.",
+  },
+  {
+    key: "solid",
+    label: "SOLID",
+    color: "#f59e0b",
+    icon: "🏗️",
+    pageType: "text",
+    description:
+      "Interview-facing flashcards for SOLID design principles and architectural patterns.",
+  },
   {
     key: "react",
     label: "React",
     color: "#61dafb",
     icon: "⚛️",
     description:
-      "React concepts crucial for technical interviews — hooks, state, props, JSX, Redux, and component lifecycle.",
+      "React code practice — hooks, state, props, JSX, Redux, and component lifecycle.",
   },
   {
     key: "angular",
@@ -35,7 +56,7 @@ export const categories: Category[] = [
     color: "#dd0031",
     icon: "🅰️",
     description:
-      "Angular concepts vital for interviews — lifecycle hooks, services, routing, directives, and NgRx.",
+      "Angular code practice — components, services, routing, directives, and forms.",
   },
   {
     key: "csharp",
@@ -43,7 +64,7 @@ export const categories: Category[] = [
     color: "#239120",
     icon: "🔷",
     description:
-      "C# essentials for technical interviews — async/await, LINQ, OOP patterns, and algorithm problems.",
+      "C# code practice — async/await, LINQ, OOP patterns, and algorithm problems.",
   },
   {
     key: "sql",
@@ -51,13 +72,72 @@ export const categories: Category[] = [
     color: "#336791",
     icon: "🗄️",
     description:
-      "SQL skills for technical interviews — JOINs, views, aggregations, and query writing.",
+      "SQL code practice — JOINs, views, aggregations, and query optimization.",
   },
 ];
 
-type TaskModule = { default: PracticeTask };
-const taskModules = import.meta.glob("./taskDefs/*.json", { eager: true }) as Record<string, TaskModule>;
+const categoryOrder = categories.reduce<Record<string, number>>((acc, category, index) => {
+  acc[category.key] = index;
+  return acc;
+}, {});
 
-export const tasks: PracticeTask[] = Object.values(taskModules)
-  .map((module) => module.default)
-  .sort((a, b) => a.id.localeCompare(b.id));
+type RawTaskModule = string;
+const rawTaskModules = import.meta.glob("./taskDefs/*.json", {
+  eager: true,
+  as: "raw",
+}) as Record<string, string>;
+
+function inferCategoryFromFileName(fileName: string): string {
+  if (fileName.startsWith("react-")) return "react";
+  if (fileName.startsWith("angular-concepts-")) return "angular-concepts";
+  if (fileName.startsWith("angular-flashcards-")) return "angular-concepts";
+  if (fileName.startsWith("angular-")) return "angular";
+  if (fileName.startsWith("csharp-")) return "csharp";
+  if (fileName.startsWith("sql-")) return "sql";
+  if (fileName.startsWith("solid-")) return "solid";
+  return "angular";
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function createInvalidJsonTask(filePath: string, error: string): PracticeTask {
+  const fileName = filePath.split("/").pop() ?? filePath;
+  const key = fileName.replace(/\.json$/i, "");
+  const category = inferCategoryFromFileName(key);
+
+  return {
+    id: `invalid-${key}`,
+    category,
+    title: `Invalid JSON: ${key}`,
+    description: "This task file could not be loaded because the JSON was invalid.",
+    checklist: [],
+    answerHtml: `<div class="practice-error-message"><strong>Task load error</strong><pre>${escapeHtml(error)}</pre></div>`,
+    type: "text",
+    loadError: error,
+  };
+}
+
+const taskModules = Object.entries(rawTaskModules).flatMap(([path, raw]) => {
+  try {
+    return [JSON.parse(raw) as PracticeTask];
+  } catch (error) {
+    return [createInvalidJsonTask(path, String(error))];
+  }
+});
+
+export const tasks: PracticeTask[] = taskModules.sort((a, b) => {
+  const categoryDifference = (categoryOrder[a.category] ?? 0) - (categoryOrder[b.category] ?? 0);
+  if (categoryDifference !== 0) return categoryDifference;
+
+  const indexDifference = (a.index ?? 0) - (b.index ?? 0);
+  if (indexDifference !== 0) return indexDifference;
+
+  return a.title.localeCompare(b.title);
+});

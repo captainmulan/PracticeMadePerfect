@@ -18,11 +18,23 @@
     "Step 5: Return the filtered collection"
   ],
   "verificationKeywords": [
-    ["Where("],
-    ["=>", "n >"],
-    ["n <"],
-    ["return", "filteredNumbers"],
-    ["using System.Linq"]
+    [
+      "Where("
+    ],
+    [
+      "=>",
+      "n >"
+    ],
+    [
+      "n <"
+    ],
+    [
+      "return",
+      "filteredNumbers"
+    ],
+    [
+      "using System.Linq"
+    ]
   ],
   "starterCode": "// 1: Accept an integer array input\n// 2: Use LINQ Where with a lambda predicate\n// 3: Filter numbers within the bounds\n// 4: Return the filtered result",
   "page": {
@@ -43,5 +55,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 8
 }

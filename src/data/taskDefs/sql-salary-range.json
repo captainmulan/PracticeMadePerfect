@@ -17,11 +17,24 @@
     "Step 4: Return the matching employee names"
   ],
   "verificationKeywords": [
-    ["WHERE Salary >= 5000", "Salary <= 10000"],
-    ["JOIN", "EmployeeSalary"],
-    ["EmployeeDetails", "EmpId"],
-    ["FullName"],
-    ["SELECT"]
+    [
+      "WHERE Salary >= 5000",
+      "Salary <= 10000"
+    ],
+    [
+      "JOIN",
+      "EmployeeSalary"
+    ],
+    [
+      "EmployeeDetails",
+      "EmpId"
+    ],
+    [
+      "FullName"
+    ],
+    [
+      "SELECT"
+    ]
   ],
   "starterCode": "-- 1: Join EmployeeDetails with EmployeeSalary\n-- 2: Filter salary between 5000 and 10000\n-- 3: Select employee names",
   "page": {
@@ -46,6 +59,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 10
 }
-

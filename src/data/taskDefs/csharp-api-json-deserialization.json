@@ -18,11 +18,21 @@
     "Step 5: Throw an exception when the response is not successful"
   ],
   "verificationKeywords": [
-    ["async Task<T>"],
-    ["GetAsync("],
-    ["ReadAsStringAsync"],
-    ["JsonConvert.DeserializeObject<T>"],
-    ["throw new Exception"]
+    [
+      "async Task<T>"
+    ],
+    [
+      "GetAsync("
+    ],
+    [
+      "ReadAsStringAsync"
+    ],
+    [
+      "JsonConvert.DeserializeObject<T>"
+    ],
+    [
+      "throw new Exception"
+    ]
   ],
   "starterCode": "// 1: Create an async generic method accepting apiUrl\n// 2: Use HttpClient to call the endpoint\n// 3: Read the response content\n// 4: Deserialize JSON into type T\n// 5: Throw when the call fails",
   "page": {
@@ -55,5 +65,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 1
 }

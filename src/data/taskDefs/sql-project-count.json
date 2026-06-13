@@ -54,6 +54,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 7
 }
-

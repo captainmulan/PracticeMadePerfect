@@ -1,0 +1,64 @@
+{
+  "id": "angular-toggle-visibility",
+  "category": "angular",
+  "title": "Toggle Visibility",
+  "description": "Create a component that shows or hides content using Angular property binding and structural directives.",
+  "checklist": [
+    "Import Component from @angular/core",
+    "Create a visible boolean property",
+    "Add a toggle() method",
+    "Use *ngIf to conditionally render the message",
+    "Switch the button label between Hide and Show",
+    "Export the ToggleVisibilityComponent"
+  ],
+  "verificationKeywords": [
+    [
+      "import { Component } from '@angular/core'",
+      "@Component({"
+    ],
+    [
+      "visible = true",
+      "toggle()"
+    ],
+    [
+      "*ngIf=\"visible\"",
+      "{{ visible ? 'Hide' : 'Show' }}"
+    ],
+    [
+      "button (click)=\"toggle()\"",
+      "<p *ngIf=\"visible\">"
+    ],
+    [
+      "export class ToggleVisibilityComponent"
+    ]
+  ],
+  "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-toggle-visibility',\n  template: `\n    <div>\n      <button (click)=\"toggle()\">{{ visible ? 'Hide' : 'Show' }}</button>\n      <p *ngIf=\"visible\">The message is visible.</p>\n    </div>\n  `\n})\nexport class ToggleVisibilityComponent {\n  visible = true;\n\n  toggle() {\n    this.visible = !this.visible;\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Import Component and define the Angular component metadata",
+          "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-toggle-visibility',\n  template: `\n    <div>\n      <button (click)=\"toggle()\">{{ visible ? 'Hide' : 'Show' }}</button>\n      <p *ngIf=\"visible\">The message is visible.</p>\n    </div>\n  `\n})"
+        },
+        {
+          "guide": "Create a boolean state property for visibility",
+          "code": "export class ToggleVisibilityComponent {\n  visible = true;"
+        },
+        {
+          "guide": "Add a toggle method that flips the visible property",
+          "code": "  toggle() {\n    this.visible = !this.visible;\n  }\n}"
+        },
+        {
+          "guide": "Use *ngIf to render the message only when visible",
+          "code": "<p *ngIf=\"visible\">The message is visible.</p>"
+        },
+        {
+          "guide": "Use Angular interpolation to switch the button label",
+          "code": "<button (click)=\"toggle()\">{{ visible ? 'Hide' : 'Show' }}</button>"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 14
+}

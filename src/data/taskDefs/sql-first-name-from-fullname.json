@@ -16,10 +16,18 @@
     "Step 4: Return the result as FirstName"
   ],
   "verificationKeywords": [
-    ["LEFT(FullName"],
-    ["CHARINDEX(' ', FullName"],
-    ["FROM EmployeeDetails"],
-    ["AS FirstName"]
+    [
+      "LEFT(FullName"
+    ],
+    [
+      "CHARINDEX(' ', FullName"
+    ],
+    [
+      "FROM EmployeeDetails"
+    ],
+    [
+      "AS FirstName"
+    ]
   ],
   "starterCode": "-- 1: Select the first name from FullName\n-- 2: Use LEFT and CHARINDEX\n-- 3: Return FirstName",
   "page": {
@@ -36,6 +44,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 2
 }
-

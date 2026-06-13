@@ -18,11 +18,21 @@
     "Step 5: Use the client to invoke the service"
   ],
   "verificationKeywords": [
-    ["class Service"],
-    ["class Client"],
-    ["private readonly Service"],
-    ["public Client(Service service)"],
-    ["_service.PerformOperation"]
+    [
+      "class Service"
+    ],
+    [
+      "class Client"
+    ],
+    [
+      "private readonly Service"
+    ],
+    [
+      "public Client(Service service)"
+    ],
+    [
+      "_service.PerformOperation"
+    ]
   ],
   "starterCode": "// 1: Create a Service class with PerformOperation\n// 2: Create a Client class that receives Service through constructor injection\n// 3: Store the service in a readonly field\n// 4: Call the service method from the client",
   "page": {
@@ -43,5 +53,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 5
 }

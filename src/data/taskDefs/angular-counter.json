@@ -1,0 +1,69 @@
+{
+  "id": "angular-counter",
+  "category": "angular",
+  "title": "Counter Component",
+  "description": "Build a counter component with increment, decrement, reset controls, and step/min/max bounds using Angular component state and event binding.",
+  "checklist": [
+    "Import Component from @angular/core",
+    "Create a CounterComponent with count, step, min, and max properties",
+    "Add increment, decrement, and reset methods",
+    "Clamp count updates to min and max",
+    "Bind buttons to click handlers",
+    "Render the current count with interpolation",
+    "Export the CounterComponent class"
+  ],
+  "verificationKeywords": [
+    [
+      "import { Component } from '@angular/core'",
+      "@Component({"
+    ],
+    [
+      "count = 0",
+      "step = 1",
+      "min = 0",
+      "max = 10"
+    ],
+    [
+      "(click)=\"increment()\"",
+      "(click)=\"decrement()\"",
+      "(click)=\"reset()\""
+    ],
+    [
+      "{{ count }}",
+      "Reset"
+    ],
+    [
+      "export class CounterComponent",
+      "selector: 'app-counter'"
+    ]
+  ],
+  "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-counter',\n  template: `\n    <div>\n      <h2>Count: {{ count }}</h2>\n      <p>Step: {{ step }} | Min: {{ min }} | Max: {{ max }}</p>\n\n      <button (click)=\"decrement()\">-</button>\n      <button (click)=\"increment()\">+</button>\n      <button (click)=\"reset()\">Reset</button>\n    </div>\n  `\n})\nexport class CounterComponent {\n  count = 0;\n  step = 1;\n  min = 0;\n  max = 10;\n\n  increment() {\n    const next = this.count + this.step;\n    this.count = next <= this.max ? next : this.max;\n  }\n\n  decrement() {\n    const next = this.count - this.step;\n    this.count = next >= this.min ? next : this.min;\n  }\n\n  reset() {\n    this.count = 0;\n  }\n}\n",
+  "page": {
+    "editor": {
+      "hints": [
+        {
+          "guide": "Import Component from Angular core and define the component metadata",
+          "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-counter',\n  template: `\n    <div>\n      <h2>Count: {{ count }}</h2>\n      <p>Step: {{ step }} | Min: {{ min }} | Max: {{ max }}</p>\n\n      <button (click)=\"decrement()\">-</button>\n      <button (click)=\"increment()\">+</button>\n      <button (click)=\"reset()\">Reset</button>\n    </div>\n  `\n})"
+        },
+        {
+          "guide": "Create numeric state properties for count, step, min, and max",
+          "code": "export class CounterComponent {\n  count = 0;\n  step = 1;\n  min = 0;\n  max = 10;"
+        },
+        {
+          "guide": "Add methods to change count for increment, decrement, and reset while clamping to min/max",
+          "code": "  increment() {\n    const next = this.count + this.step;\n    this.count = next <= this.max ? next : this.max;\n  }\n\n  decrement() {\n    const next = this.count - this.step;\n    this.count = next >= this.min ? next : this.min;\n  }\n\n  reset() {\n    this.count = 0;\n  }"
+        },
+        {
+          "guide": "Bind buttons to the component click handlers",
+          "code": "<button (click)=\"decrement()\">-</button>\n<button (click)=\"increment()\">+</button>\n<button (click)=\"reset()\">Reset</button>"
+        },
+        {
+          "guide": "Export the component class",
+          "code": "export class CounterComponent { }"
+        }
+      ]
+    }
+  },
+  "type": "code",
+  "index": 2
+}

@@ -18,11 +18,21 @@
     "Step 5: Return or log results after the thread finishes"
   ],
   "verificationKeywords": [
-    ["new Thread"],
-    ["Start()"],
-    ["Join()"],
-    ["Thread(() =>"],
-    ["System.Threading"]
+    [
+      "new Thread"
+    ],
+    [
+      "Start()"
+    ],
+    [
+      "Join()"
+    ],
+    [
+      "Thread(() =>"
+    ],
+    [
+      "System.Threading"
+    ]
   ],
   "starterCode": "// 1: Create a thread with a lambda or ThreadStart delegate\n// 2: Start the thread\n// 3: Join the thread to wait for completion\n// 4: Return after the work is done",
   "page": {
@@ -47,5 +57,6 @@
       ]
     }
   },
-  "type": "code"
+  "type": "code",
+  "index": 9
 }

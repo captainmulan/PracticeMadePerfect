@@ -16,10 +16,18 @@
     "Step 4: Return only matched employee records"
   ],
   "verificationKeywords": [
-    ["INNER JOIN"],
-    ["ON ED.EmpId = ES.EmpId"],
-    ["FROM EmployeeDetails ED"],
-    ["EmployeeSalary ES"]
+    [
+      "INNER JOIN"
+    ],
+    [
+      "ON ED.EmpId = ES.EmpId"
+    ],
+    [
+      "FROM EmployeeDetails ED"
+    ],
+    [
+      "EmployeeSalary ES"
+    ]
   ],
   "starterCode": "-- 1: Select employee fields from EmployeeDetails\n-- 2: Inner join EmployeeSalary on EmpId\n-- 3: Return matched employee records",
   "page": {
@@ -36,6 +44,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 3
 }
-

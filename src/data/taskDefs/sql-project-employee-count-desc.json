@@ -16,10 +16,18 @@
     "Step 4: Return project counts"
   ],
   "verificationKeywords": [
-    ["GROUP BY Project"],
-    ["COUNT(EmpId)"],
-    ["ORDER BY EmployeeCount DESC"],
-    ["SELECT Project"]
+    [
+      "GROUP BY Project"
+    ],
+    [
+      "COUNT(EmpId)"
+    ],
+    [
+      "ORDER BY EmployeeCount DESC"
+    ],
+    [
+      "SELECT Project"
+    ]
   ],
   "starterCode": "-- 1: Count rows per project in EmployeeSalary\n-- 2: Group by project\n-- 3: Order results by descending count",
   "page": {
@@ -44,6 +52,6 @@
       ]
     }
   },
-  "type": "sql"
+  "type": "sql",
+  "index": 8
 }
-
