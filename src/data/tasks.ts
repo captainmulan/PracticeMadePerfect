@@ -6,10 +6,22 @@ export interface PracticeTask {
   title: string;
   description: string;
   checklist: string[];
+  categoryIndex?: number;
+  taskIndex?: number;
+  /** @deprecated Use taskIndex */
+  index?: number;
   detailedInstructions?: string[]; // Step-by-step instructions
   verificationKeywords?: string[][]; // Keywords to verify for each checklist item
   starterCode?: string;
   answerHtml?: string;
+  page?: {
+    editor?: {
+      hints?: Array<{
+        guide?: string;
+        code?: string;
+      }>;
+    };
+  };
   type: TaskType;
   loadError?: string;
 }
@@ -81,22 +93,10 @@ const categoryOrder = categories.reduce<Record<string, number>>((acc, category, 
   return acc;
 }, {});
 
-type RawTaskModule = string;
-const rawTaskModules = import.meta.glob("./taskDefs/*.json", {
-  eager: true,
-  as: "raw",
-}) as Record<string, string>;
+export const categoryIndexByKey = categoryOrder;
 
-function inferCategoryFromFileName(fileName: string): string {
-  if (fileName.startsWith("react-")) return "react";
-  if (fileName.startsWith("angular-concepts-")) return "angular-concepts";
-  if (fileName.startsWith("angular-flashcards-")) return "angular-concepts";
-  if (fileName.startsWith("angular-")) return "angular";
-  if (fileName.startsWith("csharp-")) return "csharp";
-  if (fileName.startsWith("sql-")) return "sql";
-  if (fileName.startsWith("solid-")) return "solid";
-  return "angular";
-}
+// Runtime task loading now happens from the browser SQLite database.
+// This module only exports static category metadata.
 
 function escapeHtml(value: string): string {
   return value
@@ -110,7 +110,7 @@ function escapeHtml(value: string): string {
 function createInvalidJsonTask(filePath: string, error: string): PracticeTask {
   const fileName = filePath.split("/").pop() ?? filePath;
   const key = fileName.replace(/\.json$/i, "");
-  const category = inferCategoryFromFileName(key);
+  const category = "angular";
 
   return {
     id: `invalid-${key}`,
@@ -123,21 +123,3 @@ function createInvalidJsonTask(filePath: string, error: string): PracticeTask {
     loadError: error,
   };
 }
-
-const taskModules = Object.entries(rawTaskModules).flatMap(([path, raw]) => {
-  try {
-    return [JSON.parse(raw) as PracticeTask];
-  } catch (error) {
-    return [createInvalidJsonTask(path, String(error))];
-  }
-});
-
-export const tasks: PracticeTask[] = taskModules.sort((a, b) => {
-  const categoryDifference = (categoryOrder[a.category] ?? 0) - (categoryOrder[b.category] ?? 0);
-  if (categoryDifference !== 0) return categoryDifference;
-
-  const indexDifference = (a.index ?? 0) - (b.index ?? 0);
-  if (indexDifference !== 0) return indexDifference;
-
-  return a.title.localeCompare(b.title);
-});

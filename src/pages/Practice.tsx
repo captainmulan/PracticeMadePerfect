@@ -1,16 +1,17 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getPracticePageData } from "../utils/contentStore";
+import { usePracticeData } from "../utils/usePracticeData";
+import { sortTasksInCategory } from "../utils/taskSort";
 import PracticeCode from "./PracticeCode";
 import PracticeText from "./PracticeText";
 
 export default function Practice() {
   const { categoryKey } = useParams<{ categoryKey: string }>();
-  const data = getPracticePageData();
+  const data = usePracticeData();
   const selectedCategory = data.categories.find((category) => category.key === categoryKey);
 
   const filteredTasks = useMemo(
-    () => data.tasks.filter((task) => task.category === categoryKey),
+    () => sortTasksInCategory(data.tasks.filter((task) => task.category === categoryKey)),
     [categoryKey, data.tasks],
   );
 

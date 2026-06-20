@@ -1,16 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import PracticeQuestionHero from "../components/PracticeQuestionHero";
 import type { PracticeTask } from "../data/tasks";
-import { getPracticePageData } from "../utils/contentStore";
+import { usePracticeData } from "../utils/usePracticeData";
+import { sortTasksInCategory } from "../utils/taskSort";
 
 export default function PracticeText() {
   const { categoryKey } = useParams<{ categoryKey: string }>();
-  const data = getPracticePageData();
+  const data = usePracticeData();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [heroExpanded, setHeroExpanded] = useState(true);
 
   const filteredTasks = useMemo(
-    () => data.tasks.filter((task: PracticeTask) => task.category === categoryKey),
+    () => sortTasksInCategory(data.tasks.filter((task: PracticeTask) => task.category === categoryKey)),
     [categoryKey, data.tasks],
   );
   const selectedCategory = data.categories.find((category) => category.key === categoryKey);
@@ -59,61 +61,21 @@ export default function PracticeText() {
   }
 
   return (
-    <div className="practice-page practice-wizard">
-      <section className={`hero-banner panel ${heroExpanded ? "expanded" : "collapsed"}`}>
-        <div className="hero-banner-header">
-          <div className="hero-banner-title-row">
-            <div className="hero-title">Question</div>
-            <div className="hero-category-tag">{selectedCategory.label}</div>
-            <div className="task-type-badge">{selectedTask.type.toUpperCase()}</div>
-            <div className="hero-page-index">
-              {currentIndex + 1}/{filteredTasks.length}
-            </div>
-          </div>
-          <button
-            type="button"
-            className="panel-toggle"
-            onClick={() => setHeroExpanded((value) => !value)}
-          >
-            {heroExpanded ? "−" : "+"}
-          </button>
-        </div>
-        {heroExpanded && (
-          <div className="hero-banner-body">
-            <p className="practice-description">{selectedTask.description}</p>
-          </div>
-        )}
-      </section>
+    <div className="practice-page practice-wizard practice-text-page">      <PracticeQuestionHero
+        selectedTask={selectedTask}
+        selectedCategory={selectedCategory}
+        currentIndex={currentIndex}
+        totalTasks={filteredTasks.length}
+        heroExpanded={heroExpanded}
+        onToggleHero={() => setHeroExpanded((value) => !value)}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+      />
 
       <section className="practice-layout full-code">
         <section className="practice-right panel">
           <div className="practice-right-header">
             <div className="panel-heading">Answer</div>
-            <div className="practice-header-actions">
-              <button
-                type="button"
-                className="action-button practice-header-button"
-                onClick={() => setHeroExpanded((value) => !value)}
-              >
-                {heroExpanded ? "Hide Question" : "Show Question"}
-              </button>
-              <button
-                type="button"
-                className="action-button practice-header-button"
-                onClick={handlePrevious}
-                disabled={currentIndex === 0}
-              >
-                Previous
-              </button>
-              <button
-                type="button"
-                className="action-button practice-header-button"
-                onClick={handleNext}
-                disabled={currentIndex === filteredTasks.length - 1}
-              >
-                Next
-              </button>
-            </div>
           </div>
           {loadError ? (
             <div className="practice-error-message">

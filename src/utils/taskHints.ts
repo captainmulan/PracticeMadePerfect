@@ -173,6 +173,26 @@ export function getStarterCode(task: PracticeTask): string {
   return lines.filter((l) => l.trim() !== "").join("\n");
 }
 
+function getStarterCodeSections(task: PracticeTask): string[] {
+  if (!task.starterCode) return [];
+
+  const cleaned = task.starterCode
+    .split(/\r?\n/)
+    .map((line) =>
+      line
+        .replace(/^\s*\/\/\s?/, "")
+        .replace(/^\s*--\s?/, "")
+        .replace(/^\s*\d+[:.]\s*/g, "")
+        .replace(/^\s*(Import|Export|1|2|3)[:]\s*/i, ""),
+    )
+    .join("\n");
+
+  return cleaned
+    .split(/\r?\n\s*\r?\n/)
+    .map((section) => section.trim())
+    .filter(Boolean);
+}
+
 function prefixCommentLinesLocal(text: string, prefix: string) {
   return text
     .split(/\r?\n/)
@@ -183,21 +203,73 @@ function prefixCommentLinesLocal(text: string, prefix: string) {
     .join("\n");
 }
 
+function ensureHintGuideText(guide: string, prefix: string, index: number) {
+  const cleaned = String(guide ?? "")
+    .replace(/^\s*(?:\/\/|--)\s*/g, "")
+    .replace(/^\s*(?:guide(?:\s+hint(?:s)?)?|hint)\s*:\s*/i, "")
+    .trim();
+
+  return prefixCommentLinesLocal(`hint${index}: ${cleaned}`, prefix);
+}
+
+function normalizeHintCode(code: string): string {
+  return String(code ?? "")
+    .split(/\r?\n/)
+    .map((line) =>
+      line
+        .replace(/^\s*(?:\/\/|--)\s?/, "")
+        .replace(/^\s*(?:hint|guide(?:\s+hint(?:s)?)?)\s*:\s*/i, ""),
+    )
+    .join("\n")
+    .trim();
+}
+
+function splitCodeIntoSections(code: string): string[] {
+  return code
+    .split(/\r?\n\s*\r?\n/)
+    .map((section) => section.trim())
+    .filter(Boolean);
+}
+
+function buildExampleCodeFromChecklist(task: PracticeTask): string {
+  const prefix = getCommentPrefix(task.type);
+  const sections = getStarterCodeSections(task);
+  const hints = task.checklist.length ? task.checklist : ["Example code"];
+  const result: string[] = [];
+
+  if (sections.length === 0) {
+    const commentGuide = prefixCommentLinesLocal(`hint1: ${hints[0]}`, prefix);
+    return commentGuide;
+  }
+
+  hints.forEach((hint, index) => {
+    const commentGuide = prefixCommentLinesLocal(`hint${index + 1}: ${hint}`, prefix);
+    const section = sections[index] ?? "";
+    result.push(section ? `${commentGuide}\n${section}` : commentGuide);
+  });
+
+  if (sections.length > hints.length) {
+    const extra = sections.slice(hints.length).join("\n\n");
+    result.push(extra);
+  }
+
+  return result.join("\n\n");
+}
+
 export function getFullExampleCode(task: PracticeTask): string {
+  const prefix = getCommentPrefix(task.type);
   const editorHints = (task as any)?.page?.editor?.hints ?? [];
   if (editorHints.length) {
     return editorHints
-      .map((h: any) => {
-        let code = String(h.code ?? "").trim();
-        // Remove comment prefix if present
-        code = code.replace(/^\s*(?:\/\/|--)\s?/, "");
-        // Remove any remaining hint: or guide hints: labels
-        code = code.replace(/^\s*(?:hint|guide(?:\s+hint(?:s)?)?)\s*:\s*/i, "");
-        return code;
+      .map((h: any, index: number) => {
+        const commentGuide = ensureHintGuideText(String(h.guide ?? ""), prefix, index + 1);
+        const code = normalizeHintCode(String(h.code ?? ""));
+        return code ? `${commentGuide}\n${code}` : commentGuide;
       })
       .join("\n\n");
   }
-  return getStarterCode(task);
+
+  return buildExampleCodeFromChecklist(task);
 }
 
 export function buildEditorContent(task: PracticeTask, includeCode: boolean): string {
@@ -254,7 +326,14 @@ export function buildEditorContent(task: PracticeTask, includeCode: boolean): st
         }
 
         const commentGuide = prefixCommentLinesLocal(`hint${index + 1}: ${guide}`, prefix);
-        return includeCode ? `${commentGuide}\n${code}` : commentGuide;
+        if (!includeCode) return commentGuide;
+
+        // Heuristic: treat a hint's code as a full example if it contains import/export/class/function
+        // or multiple lines and top-level structure. Otherwise keep the code commented so the
+        // editor stays syntactically valid when hints are shown inline.
+        const looksLikeExample = /\b(import|export|class|function)\b/i.test(code) || /\n/.test(String(h.code ?? "")) && String(h.code ?? "").trim().length > 80;
+        const codeToInclude = looksLikeExample ? code : prefixCommentLinesLocal(code, prefix);
+        return `${commentGuide}\n${codeToInclude}`;
       })
       .join("\n\n");
   }
@@ -265,8 +344,13 @@ export function buildEditorContent(task: PracticeTask, includeCode: boolean): st
 
   const commentHints = getCommentHints(task);
   if (includeCode) {
-    const commentedStarter = prefixCommentLinesLocal(getStarterCode(task), prefix);
-    const codeBlockHint = commentedStarter ? `${prefix} Example code:\n${commentedStarter}` : "";
+    const starterRaw = getStarterCode(task);
+    if (!starterRaw) return commentHints;
+    // Append the starter/example code as an additional numbered hint label (commented),
+    // but include the starter code raw (uncommented) so it can be executed/observed.
+    const existingHintsCount = (commentHints.match(new RegExp(`^${prefix}\s*hint\\d+:`, 'gm')) || []).length;
+    const exampleHintLabel = prefixCommentLinesLocal(`hint${existingHintsCount + 1}: Example code`, prefix);
+    const codeBlockHint = `${exampleHintLabel}\n${starterRaw}`;
     return [commentHints, codeBlockHint].filter(Boolean).join("\n\n");
   }
   return commentHints;

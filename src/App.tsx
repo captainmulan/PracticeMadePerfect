@@ -1,6 +1,7 @@
 import { BrowserRouter, NavLink, Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
+import CourseWizard from "./pages/CourseWizard";
 import Admin from "./pages/Admin";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/practice" element={<Navigate to="/" replace />} />
             <Route path="/practice/:categoryKey" element={<Practice />} />
+            <Route path="/courses/:courseId" element={<CourseWizard />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

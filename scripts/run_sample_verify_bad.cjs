@@ -142,7 +142,18 @@ function runChecklist(task, code) {
 }
 
 // Load the task file to get checklist/keywords
-const taskJson = JSON.parse(readFileSync(__dirname + '/../src/data/taskDefs/react-counter-advanced.json', 'utf8'));
+const bundlePath = __dirname + '/../src/data/tasks_bundle.json';
+let taskJson;
+try {
+  if (fs.existsSync(bundlePath)) {
+    const bundle = JSON.parse(readFileSync(bundlePath, 'utf8'));
+    taskJson = bundle.find((t) => t.id === 'react-counter-advanced') || bundle[0];
+  } else {
+    taskJson = JSON.parse(readFileSync(__dirname + '/../src/data/taskDefs/react-counter-advanced.json', 'utf8'));
+  }
+} catch (e) {
+  taskJson = JSON.parse(readFileSync(__dirname + '/../src/data/taskDefs/react-counter-advanced.json', 'utf8'));
+}
 
 console.log('Running compile + checklist on broken sample');
 const compileRes = compileJsx(badCode);

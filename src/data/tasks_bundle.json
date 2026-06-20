@@ -1,0 +1,2956 @@
+[
+  {
+    "id": "angular-auth-routing",
+    "category": "angular",
+    "title": "AuthGuard & Routing",
+    "description": "Create a route guard to protect authenticated routes and understand Angular routing flow.",
+    "checklist": [
+      "Add an AuthGuard service using CanActivate",
+      "Register the guard with providedIn or module providers",
+      "Protect a secure route with canActivate",
+      "Use Router.navigate to redirect unauthenticated users",
+      "Handle route parameters and child route structure"
+    ],
+    "verificationKeywords": [
+      [
+        "implements CanActivate",
+        "canActivate"
+      ],
+      [
+        "providedIn: 'root'",
+        "providers"
+      ],
+      [
+        "canActivate: [AuthGuard]",
+        "Router.navigate"
+      ],
+      [
+        "/secure",
+        ":id",
+        "children"
+      ]
+    ],
+    "starterCode": "import { Injectable } from '@angular/core';\nimport { CanActivate, Router } from '@angular/router';\n\n@Injectable({\n  providedIn: 'root',\n})\nexport class AuthGuard implements CanActivate {\n  constructor(private router: Router) {}\n\n  canActivate(): boolean {\n    const authenticated = false;\n    if (!authenticated) {\n      this.router.navigate(['/login']);\n    }\n    return authenticated;\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Create an injectable route guard that implements CanActivate",
+            "code": "import { Injectable } from '@angular/core';\nimport { CanActivate, Router } from '@angular/router';\n\n@Injectable({ providedIn: 'root' })\nexport class AuthGuard implements CanActivate {\n  constructor(private router: Router) {}"
+          },
+          {
+            "guide": "Redirect unauthenticated users and return a boolean from canActivate",
+            "code": "  canActivate(): boolean {\n    const authenticated = false;\n    if (!authenticated) {\n      this.router.navigate(['/login']);\n    }\n    return authenticated;\n  }\n}"
+          },
+          {
+            "guide": "Use the guard in your route definition",
+            "code": "const routes = [\n  { path: 'secure', component: SecureComponent, canActivate: [AuthGuard] },\n  { path: 'login', component: LoginComponent }\n];"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 1
+  },
+  {
+    "id": "angular-counter",
+    "category": "angular",
+    "title": "Counter Component",
+    "description": "Build a counter component with increment, decrement, reset controls, and step/min/max bounds using Angular component state and event binding.",
+    "checklist": [
+      "Import Component from @angular/core",
+      "Create a CounterComponent with count, step, min, and max properties",
+      "Add increment, decrement, and reset methods",
+      "Clamp count updates to min and max",
+      "Bind buttons to click handlers",
+      "Render the current count with interpolation",
+      "Export the CounterComponent class"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component } from '@angular/core'",
+        "@Component({"
+      ],
+      [
+        "count = 0",
+        "step = 1",
+        "min = 0",
+        "max = 10"
+      ],
+      [
+        "(click)=\"increment()\"",
+        "(click)=\"decrement()\"",
+        "(click)=\"reset()\""
+      ],
+      [
+        "{{ count }}",
+        "Reset"
+      ],
+      [
+        "export class CounterComponent",
+        "selector: 'app-counter'"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-counter',\n  template: `\n    <div>\n      <h2>Count: {{ count }}</h2>\n      <p>Step: {{ step }} | Min: {{ min }} | Max: {{ max }}</p>\n\n      <button (click)=\"decrement()\">-</button>\n      <button (click)=\"increment()\">+</button>\n      <button (click)=\"reset()\">Reset</button>\n    </div>\n  `\n})\nexport class CounterComponent {\n  count = 0;\n  step = 1;\n  min = 0;\n  max = 10;\n\n  increment() {\n    const next = this.count + this.step;\n    this.count = next <= this.max ? next : this.max;\n  }\n\n  decrement() {\n    const next = this.count - this.step;\n    this.count = next >= this.min ? next : this.min;\n  }\n\n  reset() {\n    this.count = 0;\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component from Angular core and define the component metadata",
+            "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-counter',\n  template: `\n    <div>\n      <h2>Count: {{ count }}</h2>\n      <p>Step: {{ step }} | Min: {{ min }} | Max: {{ max }}</p>\n\n      <button (click)=\"decrement()\">-</button>\n      <button (click)=\"increment()\">+</button>\n      <button (click)=\"reset()\">Reset</button>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Create numeric state properties for count, step, min, and max",
+            "code": "export class CounterComponent {\n  count = 0;\n  step = 1;\n  min = 0;\n  max = 10;"
+          },
+          {
+            "guide": "Add methods to change count for increment, decrement, and reset while clamping to min/max",
+            "code": "  increment() {\n    const next = this.count + this.step;\n    this.count = next <= this.max ? next : this.max;\n  }\n\n  decrement() {\n    const next = this.count - this.step;\n    this.count = next >= this.min ? next : this.min;\n  }\n\n  reset() {\n    this.count = 0;\n  }"
+          },
+          {
+            "guide": "Bind buttons to the component click handlers",
+            "code": "<button (click)=\"decrement()\">-</button>\n<button (click)=\"increment()\">+</button>\n<button (click)=\"reset()\">Reset</button>"
+          },
+          {
+            "guide": "Export the component class",
+            "code": "export class CounterComponent { }"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 2
+  },
+  {
+    "id": "angular-custom-pipe",
+    "category": "angular",
+    "title": "Custom Pipe",
+    "description": "Create a reusable pipe that transforms text, then apply it in a template.",
+    "checklist": [
+      "Import Pipe and PipeTransform from @angular/core",
+      "Create a pipe decorator with a name",
+      "Implement transform() to modify the input string",
+      "Use the custom pipe in the component template",
+      "Display transformed text with interpolation",
+      "Export the CustomPipeComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Pipe, PipeTransform } from '@angular/core'",
+        "@Pipe({ name: 'reverseText' })"
+      ],
+      [
+        "transform(value: string)",
+        "return value.split('').reverse().join('')"
+      ],
+      [
+        "{{ text | reverseText }}",
+        "text = 'Angular'"
+      ],
+      [
+        "export class CustomPipeComponent"
+      ]
+    ],
+    "starterCode": "import { Component, Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({\n  name: 'reverseText'\n})\nexport class ReverseTextPipe implements PipeTransform {\n  transform(value: string): string {\n    return value.split('').reverse().join('');\n  }\n}\n\n@Component({\n  selector: 'app-custom-pipe',\n  template: `\n    <div>\n      <p>Original: {{ text }}</p>\n      <p>Transformed: {{ text | reverseText }}</p>\n    </div>\n  `\n})\nexport class CustomPipeComponent {\n  text = 'Angular';\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Pipe and PipeTransform and define a custom pipe",
+            "code": "import { Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({\n  name: 'reverseText'\n})\nexport class ReverseTextPipe implements PipeTransform {\n  transform(value: string): string {\n    return value.split('').reverse().join('');\n  }\n}"
+          },
+          {
+            "guide": "Create a component that uses the custom pipe in its template",
+            "code": "@Component({\n  selector: 'app-custom-pipe',\n  template: `\n    <div>\n      <p>Original: {{ text }}</p>\n      <p>Transformed: {{ text | reverseText }}</p>\n    </div>\n  `\n})\nexport class CustomPipeComponent {\n  text = 'Angular';\n}"
+          },
+          {
+            "guide": "Use interpolation with the pipe operator to transform the text",
+            "code": "<p>Transformed: {{ text | reverseText }}</p>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 3
+  },
+  {
+    "id": "angular-dotnet-integration",
+    "category": "angular",
+    "title": "Angular & .NET Core Integration",
+    "description": "Connect Angular to a .NET Core API, handle CORS and secure API calls, and describe app structure.",
+    "checklist": [
+      "Use HttpClient to call a .NET Core endpoint",
+      "Handle API errors cleanly in the component",
+      "Configure CORS and secure communication",
+      "Describe the Angular and .NET app folder structure",
+      "Explain how environment settings support backend URLs"
+    ],
+    "verificationKeywords": [
+      [
+        "HttpClient",
+        "this.http.get"
+      ],
+      [
+        "catchError",
+        "subscribe"
+      ],
+      [
+        "UseCors",
+        "AllowAnyOrigin"
+      ],
+      [
+        "environment.apiUrl",
+        "appsettings.json"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Component({\n  selector: 'app-dotnet-integration',\n  template: `\n    <button (click)=\"loadData()\">Load policies</button>\n    <div *ngIf=\"policies\">{{ policies | json }}</div>\n  `\n})\nexport class DotnetIntegrationComponent {\n  policies: any;\n\n  constructor(private http: HttpClient) {}\n\n  loadData() {\n    this.http.get('/api/policies').subscribe({\n      next: (result) => (this.policies = result),\n      error: (error) => console.error('API error', error),\n    });\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Inject HttpClient and call the .NET Core API endpoint",
+            "code": "constructor(private http: HttpClient) {}\n\nloadData() {\n  this.http.get('/api/policies').subscribe({\n    next: (result) => (this.policies = result),\n    error: (error) => console.error('API error', error),\n  });\n}"
+          },
+          {
+            "guide": "Use environment configuration and explain backend app structure",
+            "code": "// Angular app: src/app, src/environments\n// .NET Core API: Controllers, appsettings.json, Program.cs"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 4
+  },
+  {
+    "id": "angular-fetch-data",
+    "category": "angular",
+    "title": "Fetch Data in ngOnInit",
+    "description": "Create a component that loads data from an API endpoint in ngOnInit and renders the result with *ngFor.",
+    "checklist": [
+      "Import Component and OnInit from @angular/core",
+      "Create an items array property",
+      "Implement ngOnInit to fetch data asynchronously",
+      "Update the items array with the response",
+      "Render items with *ngFor",
+      "Export the FetchDataComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component, OnInit } from '@angular/core'",
+        "implements OnInit"
+      ],
+      [
+        "items: string[] = []",
+        "async ngOnInit()"
+      ],
+      [
+        "fetch('https://api.example.com/items')",
+        "await response.json()"
+      ],
+      [
+        "*ngFor=\"let item of items\"",
+        "{{ item }}"
+      ],
+      [
+        "export class FetchDataComponent"
+      ]
+    ],
+    "starterCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-fetch-data',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})\nexport class FetchDataComponent implements OnInit {\n  items: string[] = [];\n\n  async ngOnInit() {\n    const response = await fetch('https://api.example.com/items');\n    const data = await response.json();\n    this.items = data.items || [];\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component and OnInit, then define the component metadata",
+            "code": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-fetch-data',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Create an array property to hold fetched items",
+            "code": "export class FetchDataComponent implements OnInit {\n  items: string[] = [];"
+          },
+          {
+            "guide": "Fetch JSON data in ngOnInit and assign it to items",
+            "code": "  async ngOnInit() {\n    const response = await fetch('https://api.example.com/items');\n    const data = await response.json();\n    this.items = data.items || [];\n  }\n}"
+          },
+          {
+            "guide": "Render fetched data using *ngFor",
+            "code": "<li *ngFor=\"let item of items\">{{ item }}</li>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 5
+  },
+  {
+    "id": "angular-flashcards-performance",
+    "category": "angular",
+    "title": "Performance",
+    "description": "Review Angular performance considerations, change detection, and when to optimize templates and observations.",
+    "checklist": [
+      "Explain how change detection impacts Angular performance",
+      "Describe when to use OnPush change detection",
+      "Identify expensive template expressions to avoid",
+      "Summarize lazy loading and module splitting benefits",
+      "Mention the cost of large watch lists or observable subscriptions"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>How does change detection affect performance?</td><td>More checks mean more work</td><td>Angular inspects bindings on each change detection cycle</td><td>Large component trees run slower</td><td>Understand render cost</td></tr>\n        <tr><td>When use OnPush?</td><td>For immutable inputs and fewer checks</td><td>Component only checks when inputs change or events occur</td><td>@Component({ changeDetection: ChangeDetectionStrategy.OnPush })</td><td>Reduces unnecessary cycles</td></tr>\n        <tr><td>What are expensive template expressions?</td><td>Functions or complex logic inside templates</td><td>They run on every change detection pass</td><td>{{ computeValue(item) }}</td><td>Prefer pipes and memoized values</td></tr>\n        <tr><td>How does lazy loading help?</td><td>Load modules only when needed</td><td>Reduces initial bundle size and startup cost</td><td>{ path: 'admin', loadChildren: () => import('./admin/admin.module') }</td><td>Faster initial load</td></tr>\n        <tr><td>Why limit subscriptions and watchers?</td><td>Each one adds runtime overhead</td><td>Unmanaged subscriptions can leak and slow the app</td><td>takeUntil(destroy$)</td><td>More stable, efficient code</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 5
+  },
+  {
+    "id": "angular-form-input",
+    "category": "angular",
+    "title": "Form Input Binding",
+    "description": "Build an input form that updates component state and displays a greeting message in real time.",
+    "checklist": [
+      "Import Component from @angular/core",
+      "Create a name property for form state",
+      "Bind the input value to the component property",
+      "Update the name property on each input event",
+      "Display a greeting using interpolation",
+      "Export the FormInputComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component } from '@angular/core'",
+        "@Component({"
+      ],
+      [
+        "name = ''",
+        "updateName(event)"
+      ],
+      [
+        "[value]=\"name\"",
+        "(input)=\"updateName($event)\""
+      ],
+      [
+        "Hello, {{ name || 'Guest' }}",
+        "<input type=\"text\""
+      ],
+      [
+        "export class FormInputComponent"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-form-input',\n  template: `\n    <div>\n      <label>Enter your name:\n        <input type=\"text\" [value]=\"name\" (input)=\"updateName($event)\" />\n      </label>\n      <p>Hello, {{ name || 'Guest' }}!</p>\n    </div>\n  `\n})\nexport class FormInputComponent {\n  name = '';\n\n  updateName(event: Event) {\n    const input = event.target as HTMLInputElement;\n    this.name = input.value;\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component and define the template with an input field",
+            "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-form-input',\n  template: `\n    <div>\n      <label>Enter your name:\n        <input type=\"text\" [value]=\"name\" (input)=\"updateName($event)\" />\n      </label>\n      <p>Hello, {{ name || 'Guest' }}!</p>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Declare a name property for the form value",
+            "code": "export class FormInputComponent {\n  name = '';"
+          },
+          {
+            "guide": "Implement an input handler to update the name property",
+            "code": "  updateName(event: Event) {\n    const input = event.target as HTMLInputElement;\n    this.name = input.value;\n  }\n}"
+          },
+          {
+            "guide": "Render a greeting using Angular interpolation",
+            "code": "<p>Hello, {{ name || 'Guest' }}!</p>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 6
+  },
+  {
+    "id": "angular-forms-directives",
+    "category": "angular",
+    "title": "Forms, Directives & ngLocale",
+    "description": "Build a form with two-way binding, a custom directive, and locale-aware formatting support.",
+    "checklist": [
+      "Use ngModel for two-way data binding",
+      "Create a custom directive and apply it in the template",
+      "Add a template-driven form with validation hints",
+      "Use a locale-aware pipe or formatting approach",
+      "Explain how FormsModule and ngLocale are configured"
+    ],
+    "verificationKeywords": [
+      [
+        "[(ngModel)]",
+        "FormsModule"
+      ],
+      [
+        "@Directive",
+        "selector: '[appHighlight]'"
+      ],
+      [
+        "form#",
+        "ngModel"
+      ],
+      [
+        "DatePipe",
+        "LOCALE_ID"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-form-directives',\n  template: `\n    <form>\n      <label>Policy name\n        <input [(ngModel)]=\"policyName\" name=\"policyName\" />\n      </label>\n      <p appHighlight>Current policy: {{ policyName }}</p>\n    </form>\n  `\n})\nexport class FormDirectivesComponent {\n  policyName = '';\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Bind form input to a component property using ngModel",
+            "code": "<input [(ngModel)]=\"policyName\" name=\"policyName\" />"
+          },
+          {
+            "guide": "Add a simple directive and apply it in the template",
+            "code": "import { Directive, ElementRef, Renderer2 } from '@angular/core';\n\n@Directive({ selector: '[appHighlight]' })\nexport class HighlightDirective {\n  constructor(el: ElementRef, renderer: Renderer2) {\n    renderer.setStyle(el.nativeElement, 'backgroundColor', '#f0f9ff');\n  }\n}"
+          },
+          {
+            "guide": "Use a locale-aware pipe or LOCALE_ID to format values",
+            "code": "{{ today | date:'fullDate' }}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 7
+  },
+  {
+    "id": "angular-lifecycle-hooks",
+    "category": "angular",
+    "title": "Lifecycle Hooks",
+    "description": "Implement ngOnInit and ngOnDestroy to initialize data and clean up a timer in an Angular component.",
+    "checklist": [
+      "Import Component, OnInit, and OnDestroy from @angular/core",
+      "Create a message property and timerId property",
+      "Set message in ngOnInit and start a timer",
+      "Clear the timer in ngOnDestroy",
+      "Render the message in the template",
+      "Export the LifecycleHooksComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component, OnInit, OnDestroy } from '@angular/core'",
+        "implements OnInit, OnDestroy"
+      ],
+      [
+        "message = ''",
+        "timerId: any"
+      ],
+      [
+        "ngOnInit()",
+        "setInterval(() =>",
+        "this.message = 'Initialized'"
+      ],
+      [
+        "ngOnDestroy()",
+        "clearInterval(this.timerId)"
+      ],
+      [
+        "{{ message }}"
+      ],
+      [
+        "export class LifecycleHooksComponent"
+      ]
+    ],
+    "starterCode": "import { Component, OnInit, OnDestroy } from '@angular/core';\n\n@Component({\n  selector: 'app-lifecycle-hooks',\n  template: `\n    <div>\n      <h2>Lifecycle Example</h2>\n      <p>{{ message }}</p>\n    </div>\n  `\n})\nexport class LifecycleHooksComponent implements OnInit, OnDestroy {\n  message = '';\n  timerId: any;\n\n  ngOnInit() {\n    this.message = 'Initialized';\n    this.timerId = setInterval(() => {\n      this.message = `Tick: ${new Date().toLocaleTimeString()}`;\n    }, 1000);\n  }\n\n  ngOnDestroy() {\n    clearInterval(this.timerId);\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component, OnInit, and OnDestroy from @angular/core",
+            "code": "import { Component, OnInit, OnDestroy } from '@angular/core';\n\n@Component({\n  selector: 'app-lifecycle-hooks',\n  template: `\n    <div>\n      <h2>Lifecycle Example</h2>\n      <p>{{ message }}</p>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Implement the component class with lifecycle interfaces",
+            "code": "export class LifecycleHooksComponent implements OnInit, OnDestroy {\n  message = '';\n  timerId: any;"
+          },
+          {
+            "guide": "Set initial state in ngOnInit and start a repeating timer",
+            "code": "  ngOnInit() {\n    this.message = 'Initialized';\n    this.timerId = setInterval(() => {\n      this.message = `Tick: ${new Date().toLocaleTimeString()}`;\n    }, 1000);\n  }"
+          },
+          {
+            "guide": "Clean up the timer in ngOnDestroy",
+            "code": "  ngOnDestroy() {\n    clearInterval(this.timerId);\n  }\n}"
+          },
+          {
+            "guide": "Render the current message using interpolation",
+            "code": "<p>{{ message }}</p>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 8
+  },
+  {
+    "id": "angular-manage-list",
+    "category": "angular",
+    "title": "Manage List",
+    "description": "Build a list manager that adds and removes items using Angular binding and ngFor.",
+    "checklist": [
+      "Import Component from @angular/core",
+      "Create items array and newItem property",
+      "Add addItem() and removeItem() methods",
+      "Render the list with *ngFor",
+      "Bind input value and button click handlers",
+      "Export the ManageListComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component } from '@angular/core'",
+        "@Component({"
+      ],
+      [
+        "items: string[] = []",
+        "newItem = ''",
+        "addItem()"
+      ],
+      [
+        "removeItem(index: number)",
+        "this.items.splice(index, 1)"
+      ],
+      [
+        "*ngFor=\"let item of items; let i = index\"",
+        "{{ item }}"
+      ],
+      [
+        "(click)=\"addItem()\"",
+        "(click)=\"removeItem(i)\""
+      ],
+      [
+        "export class ManageListComponent"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-manage-list',\n  template: `\n    <div>\n      <label>New item:\n        <input type=\"text\" [(ngModel)]=\"newItem\" />\n      </label>\n      <button (click)=\"addItem()\">Add</button>\n      <ul>\n        <li *ngFor=\"let item of items; let i = index\">\n          {{ item }} <button (click)=\"removeItem(i)\">Remove</button>\n        </li>\n      </ul>\n    </div>\n  `\n})\nexport class ManageListComponent {\n  items: string[] = [];\n  newItem = '';\n\n  addItem() {\n    if (this.newItem.trim()) {\n      this.items.push(this.newItem.trim());\n      this.newItem = '';\n    }\n  }\n\n  removeItem(index: number) {\n    this.items.splice(index, 1);\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component and define the component metadata",
+            "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-manage-list',\n  template: `\n    <div>\n      <label>New item:\n        <input type=\"text\" [(ngModel)]=\"newItem\" />\n      </label>\n      <button (click)=\"addItem()\">Add</button>\n      <ul>\n        <li *ngFor=\"let item of items; let i = index\">\n          {{ item }} <button (click)=\"removeItem(i)\">Remove</button>\n        </li>\n      </ul>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Create state properties for the item list and the new item text",
+            "code": "export class ManageListComponent {\n  items: string[] = [];\n  newItem = '';"
+          },
+          {
+            "guide": "Add an addItem method that appends valid text and clears the input",
+            "code": "  addItem() {\n    if (this.newItem.trim()) {\n      this.items.push(this.newItem.trim());\n      this.newItem = '';\n    }\n  }"
+          },
+          {
+            "guide": "Add a removeItem method that deletes the item by index",
+            "code": "  removeItem(index: number) {\n    this.items.splice(index, 1);\n  }\n}"
+          },
+          {
+            "guide": "Render list items with *ngFor and bind remove button clicks",
+            "code": "<li *ngFor=\"let item of items; let i = index\">\n  {{ item }} <button (click)=\"removeItem(i)\">Remove</button>\n</li>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 9
+  },
+  {
+    "id": "angular-ngrx-services",
+    "category": "angular",
+    "title": "NgRx, Services & Dependency Injection",
+    "description": "Use Angular services and NgRx patterns to manage state and inject dependencies cleanly.",
+    "checklist": [
+      "Create an Angular service and provide it in root",
+      "Inject HttpClient into the service",
+      "Define actions and select state from the store",
+      "Dispatch a store action from a component",
+      "Explain the benefit of DI for testable state management"
+    ],
+    "verificationKeywords": [
+      [
+        "@Injectable({ providedIn: 'root' })",
+        "constructor(private http: HttpClient)"
+      ],
+      [
+        "createAction",
+        "createReducer",
+        "on("
+      ],
+      [
+        "store.dispatch",
+        "store.select"
+      ]
+    ],
+    "starterCode": "import { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Injectable({ providedIn: 'root' })\nexport class DataService {\n  constructor(private http: HttpClient) {}\n\n  loadPolicies() {\n    return this.http.get('/api/policies');\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Create a service and inject HttpClient",
+            "code": "import { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Injectable({ providedIn: 'root' })\nexport class DataService {\n  constructor(private http: HttpClient) {}"
+          },
+          {
+            "guide": "Add a method that calls a backend endpoint",
+            "code": "  loadPolicies() {\n    return this.http.get('/api/policies');\n  }\n}"
+          },
+          {
+            "guide": "Use a store and dispatch actions from a component",
+            "code": "// store.dispatch(loadPolicies());\n// store.select(selectPolicyData);"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 10
+  },
+  {
+    "id": "angular-routing-params",
+    "category": "angular",
+    "title": "Route Params",
+    "description": "Read route parameters from ActivatedRoute and display dynamic data in a component.",
+    "checklist": [
+      "Import Component and ActivatedRoute from @angular/core and @angular/router",
+      "Inject ActivatedRoute into the component constructor",
+      "Read the id param from snapshot.paramMap",
+      "Store the param value in a component property",
+      "Display the route id with interpolation",
+      "Export the RouteParamsComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component } from '@angular/core'",
+        "import { ActivatedRoute } from '@angular/router'"
+      ],
+      [
+        "constructor(private route: ActivatedRoute)",
+        "this.id = this.route.snapshot.paramMap.get('id')"
+      ],
+      [
+        "id: string | null = null",
+        "{{ id }}"
+      ],
+      [
+        "export class RouteParamsComponent"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\nimport { ActivatedRoute } from '@angular/router';\n\n@Component({\n  selector: 'app-route-params',\n  template: `\n    <div>\n      <h2>Route Parameter</h2>\n      <p>ID: {{ id }}</p>\n    </div>\n  `\n})\nexport class RouteParamsComponent {\n  id: string | null = null;\n\n  constructor(private route: ActivatedRoute) {\n    this.id = this.route.snapshot.paramMap.get('id');\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import ActivatedRoute and use it in the component constructor",
+            "code": "import { Component } from '@angular/core';\nimport { ActivatedRoute } from '@angular/router';\n\n@Component({\n  selector: 'app-route-params',\n  template: `\n    <div>\n      <h2>Route Parameter</h2>\n      <p>ID: {{ id }}</p>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Create a property to store the route param value",
+            "code": "export class RouteParamsComponent {\n  id: string | null = null;"
+          },
+          {
+            "guide": "Read the id parameter from route snapshot.paramMap",
+            "code": "  constructor(private route: ActivatedRoute) {\n    this.id = this.route.snapshot.paramMap.get('id');\n  }\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 11
+  },
+  {
+    "id": "angular-service-dependency",
+    "category": "angular",
+    "title": "Service Dependency Injection",
+    "description": "Create a data service and inject it into a component to load and display items.",
+    "checklist": [
+      "Import Component, Injectable from @angular/core",
+      "Create a DataService with getItems() returning an array",
+      "Use @Injectable({ providedIn: 'root' }) on the service",
+      "Inject DataService into the component constructor",
+      "Call getItems() and render results with *ngFor",
+      "Export the ServiceDependencyComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component, Injectable } from '@angular/core'",
+        "@Injectable({ providedIn: 'root' })"
+      ],
+      [
+        "getItems()",
+        "return ['Item 1', 'Item 2', 'Item 3']"
+      ],
+      [
+        "constructor(private dataService: DataService)",
+        "this.items = this.dataService.getItems()"
+      ],
+      [
+        "*ngFor=\"let item of items\"",
+        "{{ item }}"
+      ],
+      [
+        "export class ServiceDependencyComponent"
+      ]
+    ],
+    "starterCode": "import { Component, Injectable } from '@angular/core';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class DataService {\n  getItems(): string[] {\n    return ['Item 1', 'Item 2', 'Item 3'];\n  }\n}\n\n@Component({\n  selector: 'app-service-dependency',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})\nexport class ServiceDependencyComponent {\n  items: string[] = [];\n\n  constructor(private dataService: DataService) {\n    this.items = this.dataService.getItems();\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component and Injectable, then define a root-provided service",
+            "code": "import { Component, Injectable } from '@angular/core';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class DataService {\n  getItems(): string[] {\n    return ['Item 1', 'Item 2', 'Item 3'];\n  }\n}"
+          },
+          {
+            "guide": "Inject DataService into the component and load items",
+            "code": "@Component({\n  selector: 'app-service-dependency',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})\nexport class ServiceDependencyComponent {\n  items: string[] = [];\n\n  constructor(private dataService: DataService) {\n    this.items = this.dataService.getItems();\n  }\n}"
+          },
+          {
+            "guide": "Render fetched data using *ngFor",
+            "code": "<li *ngFor=\"let item of items\">{{ item }}</li>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 12
+  },
+  {
+    "id": "angular-tab-navigation",
+    "category": "angular",
+    "title": "Tab Navigation",
+    "description": "Build a simple tabbed interface that switches content using Angular event binding and conditional rendering.",
+    "checklist": [
+      "Import Component from @angular/core",
+      "Create selectedTab property",
+      "Implement selectTab() method",
+      "Render tab labels and change selected tab on click",
+      "Use *ngIf to display the active tab content",
+      "Export the TabNavigationComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component } from '@angular/core'",
+        "@Component({"
+      ],
+      [
+        "selectedTab = 'home'",
+        "selectTab(tab: string)"
+      ],
+      [
+        "(click)=\"selectTab('home')\"",
+        "(click)=\"selectTab('profile')\"",
+        "(click)=\"selectTab('settings')\""
+      ],
+      [
+        "*ngIf=\"selectedTab === 'home'\"",
+        "*ngIf=\"selectedTab === 'profile'\""
+      ],
+      [
+        "export class TabNavigationComponent"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tab-navigation',\n  template: `\n    <div>\n      <button (click)=\"selectTab('home')\">Home</button>\n      <button (click)=\"selectTab('profile')\">Profile</button>\n      <button (click)=\"selectTab('settings')\">Settings</button>\n      <div *ngIf=\"selectedTab === 'home'\">Home content</div>\n      <div *ngIf=\"selectedTab === 'profile'\">Profile content</div>\n      <div *ngIf=\"selectedTab === 'settings'\">Settings content</div>\n    </div>\n  `\n})\nexport class TabNavigationComponent {\n  selectedTab = 'home';\n\n  selectTab(tab: string) {\n    this.selectedTab = tab;\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component and define the component metadata",
+            "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tab-navigation',\n  template: `\n    <div>\n      <button (click)=\"selectTab('home')\">Home</button>\n      <button (click)=\"selectTab('profile')\">Profile</button>\n      <button (click)=\"selectTab('settings')\">Settings</button>\n      <div *ngIf=\"selectedTab === 'home'\">Home content</div>\n      <div *ngIf=\"selectedTab === 'profile'\">Profile content</div>\n      <div *ngIf=\"selectedTab === 'settings'\">Settings content</div>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Create a selectedTab property to track the active tab",
+            "code": "export class TabNavigationComponent {\n  selectedTab = 'home';"
+          },
+          {
+            "guide": "Add a method to update the selectedTab value",
+            "code": "  selectTab(tab: string) {\n    this.selectedTab = tab;\n  }\n}"
+          },
+          {
+            "guide": "Use event binding on buttons to switch tabs",
+            "code": "<button (click)=\"selectTab('home')\">Home</button>\n<button (click)=\"selectTab('profile')\">Profile</button>\n<button (click)=\"selectTab('settings')\">Settings</button>"
+          },
+          {
+            "guide": "Render active tab content with *ngIf",
+            "code": "<div *ngIf=\"selectedTab === 'home'\">Home content</div>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 13
+  },
+  {
+    "id": "angular-toggle-visibility",
+    "category": "angular",
+    "title": "Toggle Visibility",
+    "description": "Create a component that shows or hides content using Angular property binding and structural directives.",
+    "checklist": [
+      "Import Component from @angular/core",
+      "Create a visible boolean property",
+      "Add a toggle() method",
+      "Use *ngIf to conditionally render the message",
+      "Switch the button label between Hide and Show",
+      "Export the ToggleVisibilityComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import { Component } from '@angular/core'",
+        "@Component({"
+      ],
+      [
+        "visible = true",
+        "toggle()"
+      ],
+      [
+        "*ngIf=\"visible\"",
+        "{{ visible ? 'Hide' : 'Show' }}"
+      ],
+      [
+        "button (click)=\"toggle()\"",
+        "<p *ngIf=\"visible\">"
+      ],
+      [
+        "export class ToggleVisibilityComponent"
+      ]
+    ],
+    "starterCode": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-toggle-visibility',\n  template: `\n    <div>\n      <button (click)=\"toggle()\">{{ visible ? 'Hide' : 'Show' }}</button>\n      <p *ngIf=\"visible\">The message is visible.</p>\n    </div>\n  `\n})\nexport class ToggleVisibilityComponent {\n  visible = true;\n\n  toggle() {\n    this.visible = !this.visible;\n  }\n}\n",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Import Component and define the Angular component metadata",
+            "code": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-toggle-visibility',\n  template: `\n    <div>\n      <button (click)=\"toggle()\">{{ visible ? 'Hide' : 'Show' }}</button>\n      <p *ngIf=\"visible\">The message is visible.</p>\n    </div>\n  `\n})"
+          },
+          {
+            "guide": "Create a boolean state property for visibility",
+            "code": "export class ToggleVisibilityComponent {\n  visible = true;"
+          },
+          {
+            "guide": "Add a toggle method that flips the visible property",
+            "code": "  toggle() {\n    this.visible = !this.visible;\n  }\n}"
+          },
+          {
+            "guide": "Use *ngIf to render the message only when visible",
+            "code": "<p *ngIf=\"visible\">The message is visible.</p>"
+          },
+          {
+            "guide": "Use Angular interpolation to switch the button label",
+            "code": "<button (click)=\"toggle()\">{{ visible ? 'Hide' : 'Show' }}</button>"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 14
+  },
+  {
+    "id": "angular-concepts-authguard",
+    "category": "angular-concepts",
+    "title": "AuthGuard & Route Protection",
+    "description": "Review Angular AuthGuard implementation, lifecycle hooks, NgRx patterns, and how Angular communicates with .NET Core APIs.",
+    "checklist": [
+      "Explain AuthGuard and route access control",
+      "Describe all lifecycle hooks in Angular",
+      "Understand NgRx for state management",
+      "Explain Angular-to-.NET communication patterns",
+      "Understand two-way data binding and routing"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is AuthGuard?</td><td>A service that controls route access based on authentication</td><td>Implements CanActivate interface; returns boolean or Observable&lt;boolean&gt;</td><td>Redirect unauthenticated users to login page</td><td>Secure routes from unauthorized access</td></tr>\n        <tr><td>How do you implement AuthGuard?</td><td>Create service implementing CanActivate interface</td><td>Check authentication status in canActivate() method</td><td>AuthGuard checks JWT token validity before navigation</td><td>Control route access declaratively</td></tr>\n        <tr><td>What is ngOnChanges?</td><td>Lifecycle hook called when input properties change</td><td>Receives SimpleChanges object with previous/current values</td><td>Detect when @Input() value updates and respond</td><td>React to external property changes</td></tr>\n        <tr><td>What is ngOnInit?</td><td>Lifecycle hook called once after component initialization</td><td>Best place for initialization logic and data fetching</td><td>Load user profile data from API on component start</td><td>Initialize component safely after inputs are bound</td></tr>\n        <tr><td>What is ngDoCheck?</td><td>Lifecycle hook called during every change detection run</td><td>Implement custom change detection logic here</td><td>Detect value changes that Angular's default detection misses</td><td>Implement custom change detection strategies</td></tr>\n        <tr><td>What is ngAfterContentInit?</td><td>Lifecycle hook called after ng-content is projected</td><td>Initialize logic that depends on projected content</td><td>Access @ContentChild() after content is projected</td><td>Interact with content from parent component</td></tr>\n        <tr><td>What is ngAfterContentChecked?</td><td>Lifecycle hook called after every check of ng-content</td><td>Runs after ngAfterContentInit and after ngDoCheck</td><td>Perform additional checks after content initialization</td><td>Respond to content projection changes</td></tr>\n        <tr><td>What is ngAfterViewInit?</td><td>Lifecycle hook called after component view is initialized</td><td>Good place to access DOM elements and child components</td><td>Initialize jQuery plugins or access native DOM</td><td>Work with view elements safely</td></tr>\n        <tr><td>What is ngAfterViewChecked?</td><td>Lifecycle hook called after every check of component view</td><td>Runs after ngAfterViewInit and after change detection</td><td>Perform additional checks after view rendering</td><td>Update UI elements after view changes</td></tr>\n        <tr><td>What is ngOnDestroy?</td><td>Lifecycle hook called before component is destroyed</td><td>Essential for cleanup and resource release</td><td>Unsubscribe from observables, clear timers, detach event listeners</td><td>Prevent memory leaks and cleanup resources</td></tr>\n        <tr><td>What is NgRx?</td><td>Redux-inspired state management library for Angular</td><td>Manages application state predictably with immutable data</td><td>Use Store to hold user data, dispatch actions on login</td><td>Centralized state, easier debugging and testing</td></tr>\n        <tr><td>What are NgRx Actions?</td><td>Plain objects representing events or user interactions</td><td>Actions trigger reducers to update state</td><td>LoginAction, LogoutAction, FetchUserAction</td><td>Clear intent of what happened in the application</td></tr>\n        <tr><td>What are NgRx Reducers?</td><td>Pure functions that specify state changes in response to actions</td><td>Take current state and action, return new state</td><td>Reducer handles LoginAction by adding user to state</td><td>Predictable state transitions, easy to test</td></tr>\n        <tr><td>What are NgRx Effects?</td><td>Manage side effects like HTTP requests in NgRx</td><td>Listen for actions, perform async operations, dispatch new actions</td><td>Effect listens for FetchUserAction, calls API, dispatches LoadUserSuccess</td><td>Separate side effects from state management</td></tr>\n        <tr><td>What are NgRx Selectors?</td><td>Functions to extract specific pieces of state</td><td>Memoized selectors prevent unnecessary component updates</td><td>selectUserName selector extracts user.name from store</td><td>Efficient state access and component optimization</td></tr>\n        <tr><td>How do Angular and .NET communicate?</td><td>Angular uses HttpClient to send requests to .NET APIs</td><td>Communication over HTTP/HTTPS with JSON payloads</td><td>Angular calls GET /api/users/123 to .NET backend</td><td>Seamless frontend-backend integration</td></tr>\n        <tr><td>What is HttpClient?</td><td>Angular service for making HTTP requests</td><td>Provides methods for GET, POST, PUT, DELETE requests</td><td>this.http.get&lt;User&gt;('/api/users')</td><td>Simplified HTTP communication with observables</td></tr>\n        <tr><td>How do you handle errors in HTTP calls?</td><td>Use error callbacks in subscribe() or catchError operator</td><td>.NET backend provides HTTP status codes; Angular handles errors</td><td>catchError() maps 404 to user-friendly message</td><td>Graceful error handling and user feedback</td></tr>\n        <tr><td>What is two-way data binding?</td><td>Automatic synchronization between model and view using ngModel</td><td>Changes in view update model; model changes update view</td><td>[(ngModel)]=\"user.name\" creates two-way binding</td><td>Reactive UI without manual DOM updates</td></tr>\n        <tr><td>What is Angular Routing?</td><td>Client-side routing allowing navigation without page reloads</td><td>RouterModule handles URL changes and component switching</td><td>Route to /dashboard or /settings without server request</td><td>Single Page Application (SPA) experience</td></tr>\n        <tr><td>What is Dependency Injection (DI)?</td><td>Components request dependencies rather than creating them</td><td>Injector provides instances through constructor, property, or method</td><td>UserService injected into component constructor</td><td>Loose coupling, easier testing with mock services</td></tr>\n        <tr><td>What are Angular Directives?</td><td>Markers on DOM elements that attach Angular behavior</td><td>Include structural (*ngIf, *ngFor) and attribute directives</td><td>*ngIf=\"isLoggedIn\" hides/shows element based on condition</td><td>Declarative template logic and DOM manipulation</td></tr>\n        <tr><td>What is CORS?</td><td>Cross-Origin Resource Sharing - policy for browser requests</td><td>Configured on .NET backend to specify allowed origins</td><td>.NET allows requests from http://localhost:4200</td><td>Secure cross-origin API calls</td></tr>\n        <tr><td>How do you secure Angular-to-.NET communication?</td><td>Use HTTPS, token-based auth (JWT), and permission validation</td><td>Backend validates tokens on every request</td><td>Store JWT in localStorage, send in Authorization header</td><td>Protect sensitive data and user actions</td></tr>\n        <tr><td>How do you organize an Angular + .NET app?</td><td>Separate frontend (Angular) and backend (.NET) codebases</td><td>Organize by features/modules, separate concerns</td><td>/angular-app for frontend, /dotnet-api for backend</td><td>Clear structure, easier maintenance and testing</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 1
+  },
+  {
+    "id": "angular-flashcards-auth-routing",
+    "category": "angular-flashcards",
+    "title": "AuthGuard, Routing, and Authorization",
+    "description": "Review Angular route protection, route configuration, and when to use guards for authorization.",
+    "checklist": [
+      "Explain how AuthGuard uses CanActivate for protected routes",
+      "Show where to register guards in route definitions",
+      "Describe route parameter syntax and child routes",
+      "Discuss role-based or permission-based route decisions",
+      "Explain why auth logic belongs in a guard instead of a component"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is AuthGuard?</td><td>Route guard implementing CanActivate</td><td>Checks auth state before route activation</td><td>{ path: 'secure', canActivate: [AuthGuard] }</td><td>Protects routes centrally</td></tr>\n        <tr><td>Where do you configure routes?</td><td>In RouterModule.forRoot() or forChild()</td><td>Defines path, component, children, and guards</td><td>const routes = [{ path: 'admin', component: AdminComponent }];</td><td>Central route configuration</td></tr>\n        <tr><td>How do you handle route params?</td><td>Use :id in the path and ActivatedRoute</td><td>Supports dynamic segments and nested routes</td><td>{ path: 'users/:id', component: UserDetailComponent }</td><td>Allows reusable route templates</td></tr>\n        <tr><td>How does authorization differ from authentication?</td><td>Auth = identity, authorization = allowed actions</td><td>Users can be authenticated but still restricted</td><td>AuthGuard checks roles or permissions</td><td>Safer application access control</td></tr>\n        <tr><td>Why keep auth logic in a guard?</td><td>Separates security from UI components</td><td>Components stay focused on rendering</td><td>Guard returns true/false or redirects</td><td>Cleaner, maintainable routing security</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 2
+  },
+  {
+    "id": "angular-flashcards-controller-rootScope-transclusion",
+    "category": "angular-flashcards",
+    "title": "Controller, $rootScope & Transclusion",
+    "description": "Review AngularJS controllers, root scope sharing, and transclusion concepts for component-style templates.",
+    "checklist": [
+      "Describe how controllers attach data to $scope",
+      "Explain the purpose of $rootScope",
+      "Summarize transclusion and how ng-transclude works",
+      "Compare controller scope and root scope visibility",
+      "Discuss why transclusion supports reusable templates"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is an Angular controller?</td><td>Function that manages scope data</td><td>Attaches properties and behavior to $scope</td><td>function PolicyCtrl($scope) { $scope.policy = {}; }</td><td>Organizes view model logic</td></tr>\n        <tr><td>What is $rootScope?</td><td>Global scope shared across the app</td><td>Stores values accessible from any child scope</td><td>$rootScope.currentUser = user;</td><td>Useful for app-wide state</td></tr>\n        <tr><td>What is transclusion?</td><td>Embedding original content into a directive</td><td>Directive template can include passed markup</td><td><div ng-transclude></div></td><td>Builds reusable wrappers</td></tr>\n        <tr><td>How does controller scope differ from $rootScope?</td><td>Controller scope is local, rootScope is global</td><td>Child scopes inherit from $rootScope and can override values</td><td>$scope.title = 'Policy';</td><td>Limits scope pollution</td></tr>\n        <tr><td>Why use transclusion?</td><td>Allows content projection into directives</td><td>Components keep layout and content separate</td><td><my-card>Text</my-card></td><td>More flexible UI composition</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 3
+  },
+  {
+    "id": "angular-flashcards-digest-cycle",
+    "category": "angular-flashcards",
+    "title": "Digest Cycle",
+    "description": "Explain Angular change detection and the digest cycle in a framework-agnostic special case.",
+    "checklist": [
+      "Summarize the digest cycle and how Angular tracks model changes",
+      "Explain when change detection runs",
+      "Describe how $scope and $apply relate to digest",
+      "Compare manual versus automatic change detection",
+      "Mention performance implications for watch counts"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is the digest cycle?</td><td>AngularJS change detection loop</td><td>It checks watched expressions and updates bindings</td><td>$scope.$digest()</td><td>Keeps UI in sync</td></tr>\n        <tr><td>When does change detection run?</td><td>After event handlers and async callbacks</td><td>AngularJS runs digest after model changes in the zone</td><td>$scope.$apply()</td><td>Ensures model and view stay consistent</td></tr>\n        <tr><td>What is $scope?</td><td>Scope object for binding context</td><td>Holds model data and watches for changes</td><td>$scope.title = 'Policy';</td><td>Organizes template data</td></tr>\n        <tr><td>What is $apply?</td><td>Wraps code to trigger digest</td><td>Ensures external changes are detected</td><td>$scope.$apply(() => { ... });</td><td>Makes non-Angular changes visible</td></tr>\n        <tr><td>Why does digest count matter?</td><td>More watches can slow down the app</td><td>Keep watch expressions simple and few</td><td>$scope.$watch('policy.name', ...)</td><td>Better performance</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 4
+  },
+  {
+    "id": "angular-flashcards-secure-communication",
+    "category": "angular-flashcards",
+    "title": "Secure Communication",
+    "description": "Review HTTPS, CORS configuration, and API security for Angular + .NET apps.",
+    "checklist": [
+      "Explain why HTTPS is required for secure data exchange",
+      "Describe how CORS is configured in .NET Core",
+      "Show how Angular calls an API over a secure connection",
+      "Mention the role of authentication tokens or cookies",
+      "Summarize why backend and frontend must agree on security settings"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>Why use HTTPS?</td><td>Encrypts data over the wire</td><td>Prevents eavesdropping and tampering</td><td>https://api.example.com</td><td>Protects sensitive information</td></tr>\n        <tr><td>What is CORS?</td><td>Browser policy for cross-origin requests</td><td>Server must explicitly allow trusted origins</td><td>app.UseCors(\"AllowSpecificOrigins\")</td><td>Prevents unauthorized API access</td></tr>\n        <tr><td>How does Angular call a secure API?</td><td>Use HttpClient with https endpoint</td><td>Backend should serve TLS and return CORS headers</td><td>this.http.get('https://api.example.com') </td><td>Safe front-end/back-end communication</td></tr>\n        <tr><td>What are auth tokens?</td><td>Credentials sent with requests</td><td>JWT or cookies prove user identity to the API</td><td>Authorization: Bearer token</td><td>Secures each request</td></tr>\n        <tr><td>Why align backend and frontend security?</td><td>Both sides must trust and authenticate requests</td><td>API restrictions and origin rules must match client behavior</td><td>Allow origins + secure headers</td><td>Reliable end-to-end security</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 6
+  },
+  {
+    "id": "angular-flashcards-unit-testing",
+    "category": "angular-flashcards",
+    "title": "Unit Testing",
+    "description": "Review Angular unit testing with TestBed, mock services, and component assertions.",
+    "checklist": [
+      "Explain TestBed configuration for a component test",
+      "Describe how to mock a service dependency",
+      "Write an expectation for component rendering",
+      "Use async utilities for observable or promise-based code",
+      "Explain the benefit of isolated unit tests"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is TestBed?</td><td>Angular testing module builder</td><td>Sets up component fixtures and providers</td><td>TestBed.configureTestingModule({ declarations: [MyComponent] })</td><td>Creates isolated test environments</td></tr>\n        <tr><td>How do you mock a service?</td><td>Create a fake provider</td><td>Replace real dependency with test double</td><td>{ provide: DataService, useValue: mockService }</td><td>Tests stay stable and focused</td></tr>\n        <tr><td>How do you assert rendered output?</td><td>Query fixture.nativeElement</td><td>Inspect DOM after change detection</td><td>expect(element.textContent).toContain('Policy')</td><td>Verifies UI behavior</td></tr>\n        <tr><td>Why use async utilities?</td><td>Handle observables and promises in tests</td><td>Makes async code deterministic</td><td>waitForAsync(() => { ... })</td><td>Prevents flaky tests</td></tr>\n        <tr><td>Why isolate unit tests?</td><td>Focus on one component or service</td><td>Avoid dependency on external systems</td><td>mock providers and simple fixtures</td><td>Faster, more reliable feedback</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 7
+  },
+  {
+    "id": "csharp-api-json-deserialization",
+    "category": "csharp",
+    "title": "Api Call and JSON Deserialization",
+    "description": "Write an async method that calls an API and deserializes the JSON response into a generic object.",
+    "checklist": [
+      "Create an async method that accepts a URL",
+      "Use HttpClient to perform a GET request",
+      "Read the response content as a string",
+      "Deserialize JSON into type T",
+      "Throw an exception when the request fails"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define an async generic method with apiUrl parameter",
+      "Step 2: Use HttpClient.GetAsync to call the API",
+      "Step 3: Read the response content using ReadAsStringAsync",
+      "Step 4: Deserialize the JSON into type T",
+      "Step 5: Throw an exception when the response is not successful"
+    ],
+    "verificationKeywords": [
+      [
+        "async Task<T>"
+      ],
+      [
+        "GetAsync("
+      ],
+      [
+        "ReadAsStringAsync"
+      ],
+      [
+        "JsonConvert.DeserializeObject<T>"
+      ],
+      [
+        "throw new Exception"
+      ]
+    ],
+    "starterCode": "// 1: Create an async generic method accepting apiUrl\n// 2: Use HttpClient to call the endpoint\n// 3: Read the response content\n// 4: Deserialize JSON into type T\n// 5: Throw when the call fails",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the async generic method",
+            "code": "public async Task<T> GetData<T>(string apiUrl)\n{"
+          },
+          {
+            "guide": "// guide hints: Send the HTTP GET request",
+            "code": "    HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);"
+          },
+          {
+            "guide": "// guide hints: Read the response body as a string",
+            "code": "    string json = await response.Content.ReadAsStringAsync();"
+          },
+          {
+            "guide": "// guide hints: Deserialize the JSON into T",
+            "code": "    T data = JsonConvert.DeserializeObject<T>(json);"
+          },
+          {
+            "guide": "// guide hints: Throw if the response is not successful",
+            "code": "    if (!response.IsSuccessStatusCode)\n    {\n        throw new Exception(\"Failed\");\n    }"
+          },
+          {
+            "guide": "// guide hints: Return the deserialized object",
+            "code": "    return data;\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 1
+  },
+  {
+    "id": "csharp-bouncing-ball",
+    "category": "csharp",
+    "title": "Bounce Count and Distance",
+    "description": "Given an initial height, calculate the total distance traveled by a bouncing ball and the number of bounces until it stops.",
+    "checklist": [
+      "Initialize bounce counter to 0",
+      "Initialize distance to 0",
+      "Create while loop for ball bouncing",
+      "Add up distance from down and up movement",
+      "Calculate bounce height (usually 2/3 or similar)",
+      "Stop when height becomes negligible"
+    ],
+    "verificationKeywords": [
+      [
+        "bounces = 0",
+        "int bounces"
+      ],
+      [
+        "distance = 0",
+        "double distance"
+      ],
+      [
+        "while (",
+        "while (current"
+      ],
+      [
+        "distance +=",
+        "2 * current"
+      ],
+      [
+        "current = current * factor",
+        "factor"
+      ],
+      [
+        "threshold",
+        "while (current > threshold)"
+      ]
+    ],
+    "verificationMode": "regex",
+    "detailedInstructions": [
+      "Step 1: Create variables to track bounce count and total distance",
+      "Step 2: Start with the initial height as distance traveled (falling down)",
+      "Step 3: Use a loop that continues while the height is still significant",
+      "Step 4: In each iteration: increment bounce count, add up distance, calculate new height",
+      "Step 5: Add up and down distances for each bounce",
+      "Step 6: When height becomes too small, exit loop and return results"
+    ],
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Import: using System; and Collections",
+            "code": "using System;\nusing System.Collections.Generic;"
+          },
+          {
+            "guide": "// guide hints: Create a method that accepts initial height and bounce factor",
+            "code": "public static (int bounces, double distance) CalculateBounce(double height, double factor = 0.66, double threshold = 0.01)\n{"
+          },
+          {
+            "guide": "// guide hints: Initialize counters for bounces and distance",
+            "code": "    int bounces = 0;\n    double distance = 0;\n    double current = height;"
+          },
+          {
+            "guide": "// guide hints: Add initial fall distance and loop while current > threshold",
+            "code": "    if (current <= 0) return (0, 0);\n    distance += current;\n    while (current > threshold)\n    {"
+          },
+          {
+            "guide": "// guide hints: Compute next bounce height, add up down+up distances, increment bounces",
+            "code": "        current = current * factor;\n        distance += 2 * current;\n        bounces++;\n    }"
+          },
+          {
+            "guide": "// guide hints: Return bounces and total distance",
+            "code": "    return (bounces, distance);\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 2
+  },
+  {
+    "id": "csharp-bubble-sort",
+    "category": "csharp",
+    "title": "Bubble Sort Implementation",
+    "description": "Write a C# method that sorts an integer array in ascending order using bubble sort.",
+    "checklist": [
+      "Create outer loop (i) to iterate through array",
+      "Create inner loop (j) to compare adjacent elements",
+      "Add comparison logic (if items[j] > items[j+1])",
+      "Implement swap logic using temp variable",
+      "Return sorted array"
+    ],
+    "detailedInstructions": [
+      "Step 1: Start with an outer for loop that goes from 0 to array length - 1",
+      "Step 2: Inside, create an inner for loop that compares adjacent pairs",
+      "Step 3: Check if the current element is greater than the next element",
+      "Step 4: If yes, swap them using a temporary variable to hold one value",
+      "Step 5: After all passes, the array is sorted in ascending order",
+      "Step 6: Return the sorted array"
+    ],
+    "verificationKeywords": [
+      [
+        "for",
+        "i",
+        "items.Length"
+      ],
+      [
+        "for",
+        "j",
+        "items.Length"
+      ],
+      [
+        "if",
+        "items[j]",
+        "items[j + 1]"
+      ],
+      [
+        "temp",
+        "items[j]"
+      ],
+      [
+        "return",
+        "items"
+      ]
+    ],
+    "starterCode": "// 1: Create outer loop (i) to iterate through the array\n// 2: Create inner loop (j) to compare adjacent elements\n// 3: If items[j] > items[j+1], swap using a temp variable\n// 4: Continue passes until sorted\n// 5: Return the sorted array",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the bubble sort method signature",
+            "code": "public static int[] BubbleSort(int[] items)\n{"
+          },
+          {
+            "guide": "// guide hints: Outer loop for passes",
+            "code": "    int n = items.Length;\n    for (int i = 0; i < n - 1; i++)\n    {"
+          },
+          {
+            "guide": "// guide hints: Inner loop to compare adjacent elements",
+            "code": "        for (int j = 0; j < n - i - 1; j++)\n        {"
+          },
+          {
+            "guide": "// guide hints: Swap when items[j] > items[j+1]",
+            "code": "            if (items[j] > items[j + 1])\n            {\n                int temp = items[j];\n                items[j] = items[j + 1];\n                items[j + 1] = temp;\n            }"
+          },
+          {
+            "guide": "// guide hints: Close loops and return sorted array",
+            "code": "        }\n    }\n    return items;\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 3
+  },
+  {
+    "id": "csharp-character-count",
+    "category": "csharp",
+    "title": "Character Count in a String",
+    "description": "Count the occurrence of each character in a string, ignoring spaces.",
+    "checklist": [
+      "Accept a string parameter",
+      "Iterate through each character",
+      "Ignore spaces while counting",
+      "Use a Dictionary<char, int> to store counts",
+      "Return the dictionary of character counts"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a method that accepts a string input",
+      "Step 2: Create a Dictionary<char, int> for counts",
+      "Step 3: Loop through each character in the string",
+      "Step 4: Skip space characters",
+      "Step 5: Increment counts and return the dictionary"
+    ],
+    "verificationKeywords": [
+      [
+        "Dictionary<char, int>"
+      ],
+      [
+        "foreach (char c in input)"
+      ],
+      [
+        "if (c != ' ')"
+      ],
+      [
+        "charCount[c++]"
+      ],
+      [
+        "return charCount"
+      ]
+    ],
+    "starterCode": "// 1: Accept a string input\n// 2: Use a Dictionary<char, int> to count characters\n// 3: Ignore spaces while counting\n// 4: Return the character counts",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the character count method",
+            "code": "public static Dictionary<char, int> CountCharacters(string input)\n{"
+          },
+          {
+            "guide": "// guide hints: Create the dictionary to store counts",
+            "code": "    Dictionary<char, int> charCount = new Dictionary<char, int>();"
+          },
+          {
+            "guide": "// guide hints: Iterate through each character and skip spaces",
+            "code": "    foreach (char c in input)\n    {\n        if (c != ' ')\n        {\n            if (charCount.ContainsKey(c))\n            {\n                charCount[c]++;\n            }\n            else\n            {\n                charCount[c] = 1;\n            }\n        }\n    }"
+          },
+          {
+            "guide": "// guide hints: Return the character count dictionary",
+            "code": "    return charCount;\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 4
+  },
+  {
+    "id": "csharp-dependency-injection",
+    "category": "csharp",
+    "title": "Dependency Injection Example",
+    "description": "Implement a simple service and client class to demonstrate constructor dependency injection.",
+    "checklist": [
+      "Create a Service class with an operation method",
+      "Create a Client class that accepts Service in the constructor",
+      "Store the injected service in a private readonly field",
+      "Call the service operation from the client",
+      "Return or use the service result"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a Service class with a PerformOperation method",
+      "Step 2: Define a Client class with a constructor that accepts Service",
+      "Step 3: Assign the injected service to a readonly field",
+      "Step 4: Add a method that calls _service.PerformOperation()",
+      "Step 5: Use the client to invoke the service"
+    ],
+    "verificationKeywords": [
+      [
+        "class Service"
+      ],
+      [
+        "class Client"
+      ],
+      [
+        "private readonly Service"
+      ],
+      [
+        "public Client(Service service)"
+      ],
+      [
+        "_service.PerformOperation"
+      ]
+    ],
+    "starterCode": "// 1: Create a Service class with PerformOperation\n// 2: Create a Client class that receives Service through constructor injection\n// 3: Store the service in a readonly field\n// 4: Call the service method from the client",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the service class",
+            "code": "public class Service\n{\n    public void PerformOperation()\n    {\n        // Operation implementation\n    }\n}"
+          },
+          {
+            "guide": "// guide hints: Define the client class with injected service",
+            "code": "public class Client\n{\n    private readonly Service _service;\n\n    public Client(Service service)\n    {\n        _service = service;\n    }"
+          },
+          {
+            "guide": "// guide hints: Use the injected service in a method",
+            "code": "    public void UseService()\n    {\n        _service.PerformOperation();\n    }\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 5
+  },
+  {
+    "id": "csharp-exception-handling",
+    "category": "csharp",
+    "title": "C# Exception Handling",
+    "description": "Implement a method that divides two integers and demonstrates correct exception handling with specific catch blocks.",
+    "checklist": [
+      "Create a method that accepts dividend and divisor",
+      "Use try/catch around the division operation",
+      "Catch DivideByZeroException specifically",
+      "Add a general Exception catch block for other failures",
+      "Return an error message or result based on success"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a method that accepts two integer inputs",
+      "Step 2: Place the division operation inside a try block",
+      "Step 3: Add a catch block for DivideByZeroException",
+      "Step 4: Add a catch block for Exception for any other errors",
+      "Step 5: Return a formatted result string or an error description"
+    ],
+    "verificationKeywords": [
+      [
+        "try"
+      ],
+      [
+        "catch (DivideByZeroException"
+      ],
+      [
+        "catch (Exception"
+      ],
+      [
+        "/",
+        "divisor"
+      ],
+      [
+        "return"
+      ]
+    ],
+    "starterCode": "// 1: Create a method that accepts dividend and divisor\n// 2: Wrap the division in try/catch blocks\n// 3: Catch DivideByZeroException first\n// 4: Catch Exception afterward\n// 5: Return a success or error message",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the method signature",
+            "code": "public static string DivideWithHandling(int dividend, int divisor)\n{"
+          },
+          {
+            "guide": "// guide hints: Start a try block for dividing the values",
+            "code": "    try\n    {\n        int result = dividend / divisor;"
+          },
+          {
+            "guide": "// guide hints: Return the successful result string",
+            "code": "        return $\"Result: {result}\";\n    }"
+          },
+          {
+            "guide": "// guide hints: Catch DivideByZeroException explicitly",
+            "code": "    catch (DivideByZeroException ex)\n    {\n        return \"Error: Cannot divide by zero\";\n    }"
+          },
+          {
+            "guide": "// guide hints: Catch any other exceptions afterward",
+            "code": "    catch (Exception ex)\n    {\n        return $\"Error: {ex.Message}\";\n    }"
+          },
+          {
+            "guide": "// guide hints: Close the method",
+            "code": "}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 6
+  },
+  {
+    "id": "csharp-first-duplicate",
+    "category": "csharp",
+    "title": "Find First Duplicate",
+    "description": "Create a method that returns the first duplicate value found in an integer array.",
+    "checklist": [
+      "Accept an integer array parameter",
+      "Use a HashSet to track seen values",
+      "Iterate through the array elements",
+      "Return the first repeated value",
+      "Return -1 if no duplicate is found"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a method that accepts int[] numbers",
+      "Step 2: Create a HashSet<int> to store seen values",
+      "Step 3: Loop over each number in the array",
+      "Step 4: If the number is already in the set, return it",
+      "Step 5: If the loop finishes, return -1"
+    ],
+    "verificationKeywords": [
+      [
+        "HashSet<int>"
+      ],
+      [
+        "foreach",
+        "int num"
+      ],
+      [
+        "uniqueNumbers.Add"
+      ],
+      [
+        "return -1"
+      ],
+      [
+        "return num"
+      ]
+    ],
+    "starterCode": "// 1: Accept an integer array\n// 2: Use a HashSet<int> for seen values\n// 3: Return the first value that already exists in the set\n// 4: Return -1 when no duplicate exists",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the duplicate-finding method",
+            "code": "public static int FindFirstDuplicate(int[] numbers)\n{"
+          },
+          {
+            "guide": "// guide hints: Create a HashSet to track seen values",
+            "code": "    HashSet<int> uniqueNumbers = new HashSet<int>();"
+          },
+          {
+            "guide": "// guide hints: Iterate through each number",
+            "code": "    foreach (var num in numbers)\n    {"
+          },
+          {
+            "guide": "// guide hints: Return the number if it already exists",
+            "code": "        if (!uniqueNumbers.Add(num))\n        {\n            return num;\n        }"
+          },
+          {
+            "guide": "// guide hints: Return -1 after the loop if nothing duplicated",
+            "code": "    }\n    return -1;\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 7
+  },
+  {
+    "id": "csharp-linq-filter-array",
+    "category": "csharp",
+    "title": "LINQ Array Filtering",
+    "description": "Use LINQ to filter an integer array and return values between two bounds.",
+    "checklist": [
+      "Accept an integer array parameter",
+      "Use LINQ Where to filter values",
+      "Define the lower and upper bounds",
+      "Return the filtered enumerable or array",
+      "Use a lambda expression in the query"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a method that accepts an int[] array",
+      "Step 2: Use numbers.Where(...) with a lambda predicate",
+      "Step 3: Filter values greater than the lower bound",
+      "Step 4: Filter values less than the upper bound",
+      "Step 5: Return the filtered collection"
+    ],
+    "verificationKeywords": [
+      [
+        "Where("
+      ],
+      [
+        "=>",
+        "n >"
+      ],
+      [
+        "n <"
+      ],
+      [
+        "return",
+        "filteredNumbers"
+      ],
+      [
+        "using System.Linq"
+      ]
+    ],
+    "starterCode": "// 1: Accept an integer array input\n// 2: Use LINQ Where with a lambda predicate\n// 3: Filter numbers within the bounds\n// 4: Return the filtered result",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the LINQ filter method",
+            "code": "public static IEnumerable<int> FilterNumbers(int[] numbers, int minValue, int maxValue)\n{"
+          },
+          {
+            "guide": "// guide hints: Use Where to filter values",
+            "code": "    var filteredNumbers = numbers.Where(n => n > minValue && n < maxValue);"
+          },
+          {
+            "guide": "// guide hints: Return the filtered collection",
+            "code": "    return filteredNumbers;\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 8
+  },
+  {
+    "id": "csharp-multithreading",
+    "category": "csharp",
+    "title": "Multithreading Example",
+    "description": "Write a method that starts a background thread, runs a simple action, and waits for it to complete.",
+    "checklist": [
+      "Import System.Threading or use Thread directly",
+      "Create a new Thread with a lambda or ThreadStart",
+      "Start the thread",
+      "Wait for the thread to finish using Join",
+      "Execute a simple action inside the thread"
+    ],
+    "detailedInstructions": [
+      "Step 1: Create a Thread instance with a small task lambda",
+      "Step 2: Call Start() to begin execution",
+      "Step 3: Use Join() to wait for completion",
+      "Step 4: Optionally perform an action inside the thread",
+      "Step 5: Return or log results after the thread finishes"
+    ],
+    "verificationKeywords": [
+      [
+        "new Thread"
+      ],
+      [
+        "Start()"
+      ],
+      [
+        "Join()"
+      ],
+      [
+        "Thread(() =>"
+      ],
+      [
+        "System.Threading"
+      ]
+    ],
+    "starterCode": "// 1: Create a thread with a lambda or ThreadStart delegate\n// 2: Start the thread\n// 3: Join the thread to wait for completion\n// 4: Return after the work is done",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the multithreading method",
+            "code": "public static void MultithreadingExample()\n{"
+          },
+          {
+            "guide": "// guide hints: Create a new thread with a lambda",
+            "code": "    Thread thread = new Thread(() =>\n    {\n        // Work to do in the background\n    });"
+          },
+          {
+            "guide": "// guide hints: Start the thread and wait for it to finish",
+            "code": "    thread.Start();\n    thread.Join();"
+          },
+          {
+            "guide": "// guide hints: Close the method",
+            "code": "}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 9
+  },
+  {
+    "id": "csharp-palindrome-check",
+    "category": "csharp",
+    "title": "Palindrome Check",
+    "description": "Build a method that returns true when the input string reads the same forward and backward.",
+    "checklist": [
+      "Accept a string parameter",
+      "Normalize or trim the input if needed",
+      "Compare the input to its reversed version",
+      "Return true for palindromes",
+      "Return false otherwise"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a method to check palindromes",
+      "Step 2: Create a reversed version of the input string",
+      "Step 3: Compare the original and reversed strings",
+      "Step 4: Return true if they match",
+      "Step 5: Return false if they differ"
+    ],
+    "verificationKeywords": [
+      [
+        "string input"
+      ],
+      [
+        "SequenceEqual"
+      ],
+      [
+        "input.Reverse"
+      ],
+      [
+        "return"
+      ],
+      [
+        "bool"
+      ]
+    ],
+    "starterCode": "// 1: Accept a string input\n// 2: Reverse the string or compare to its reverse\n// 3: Return true when the string is a palindrome\n// 4: Return false otherwise",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the palindrome check method",
+            "code": "public static bool IsPalindrome(string input)\n{"
+          },
+          {
+            "guide": "// guide hints: Compare input with reversed sequence",
+            "code": "    return input.SequenceEqual(input.Reverse());\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 10
+  },
+  {
+    "id": "csharp-reverse-string",
+    "category": "csharp",
+    "title": "Reverse a String",
+    "description": "Write a method that returns a reversed copy of the input string.",
+    "checklist": [
+      "Accept a string parameter",
+      "Convert the string to a char array",
+      "Reverse the char array",
+      "Create a new string from the reversed array",
+      "Return the reversed string"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a method that accepts a string",
+      "Step 2: Convert the string into a char array",
+      "Step 3: Reverse the char array using Array.Reverse",
+      "Step 4: Construct a new string from the reversed array",
+      "Step 5: Return the reversed string"
+    ],
+    "verificationKeywords": [
+      [
+        "ToCharArray"
+      ],
+      [
+        "Array.Reverse"
+      ],
+      [
+        "new string"
+      ],
+      [
+        "return"
+      ],
+      [
+        "string input"
+      ]
+    ],
+    "starterCode": "// 1: Accept a string input parameter\n// 2: Convert input to a char array\n// 3: Reverse the char array\n// 4: Return a new string based on the reversed array",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the reverse string method",
+            "code": "public static string ReverseString(string input)\n{"
+          },
+          {
+            "guide": "// guide hints: Convert the input to a char array",
+            "code": "    char[] charArray = input.ToCharArray();"
+          },
+          {
+            "guide": "// guide hints: Reverse the char array",
+            "code": "    Array.Reverse(charArray);"
+          },
+          {
+            "guide": "// guide hints: Create a new string and return it",
+            "code": "    return new string(charArray);\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 11
+  },
+  {
+    "id": "csharp-singleton-pattern",
+    "category": "csharp",
+    "title": "Singleton Design Pattern",
+    "description": "Create a thread-safe singleton class with lazy initialization.",
+    "checklist": [
+      "Create a sealed Singleton class",
+      "Add a private static instance field",
+      "Add a private static readonly lock object",
+      "Use a private constructor",
+      "Implement a public Instance property with locking"
+    ],
+    "detailedInstructions": [
+      "Step 1: Define a sealed Singleton class",
+      "Step 2: Add a private static field for the instance",
+      "Step 3: Add a private static readonly object for locking",
+      "Step 4: Use a private constructor to prevent external instantiation",
+      "Step 5: Implement a public Instance getter that lazily creates the instance inside a lock"
+    ],
+    "verificationKeywords": [
+      [
+        "sealed class Singleton"
+      ],
+      [
+        "private static Singleton instance"
+      ],
+      [
+        "private static readonly object lockObject"
+      ],
+      [
+        "private Singleton()"
+      ],
+      [
+        "public static Singleton Instance"
+      ]
+    ],
+    "starterCode": "// 1: Create a sealed Singleton class\n// 2: Use a private static instance field and lock object\n// 3: Make the constructor private\n// 4: Return a singleton instance in the Instance property",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Define the sealed singleton class",
+            "code": "public sealed class Singleton\n{"
+          },
+          {
+            "guide": "// guide hints: Add a private static instance and lock object",
+            "code": "    private static Singleton instance;\n    private static readonly object lockObject = new object();"
+          },
+          {
+            "guide": "// guide hints: Make the constructor private",
+            "code": "    private Singleton()\n    {\n    }"
+          },
+          {
+            "guide": "// guide hints: Implement the lazy Instance property",
+            "code": "    public static Singleton Instance\n    {\n        get\n        {\n            lock (lockObject)\n            {\n                return instance ?? (instance = new Singleton());\n            }\n        }\n    }\n}"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 12
+  },
+  {
+    "id": "react-counter-advanced",
+    "category": "react",
+    "title": "Counter Variations",
+    "description": "Extend a counter with step control using Math.max/min, reset, multiple counters, and double/triple increment buttons.",
+    "checklist": [
+      "Import React and useState from React",
+      "Create a Counter component with count and step state",
+      "Use Math.max and Math.min to enforce counter limits",
+      "Add reset, double, and triple actions",
+      "Render multiple counter instances in App",
+      "Export default App"
+    ],
+    "verificationKeywords": [
+      [
+        "import React",
+        "{ useState }",
+        "from 'react'"
+      ],
+      [
+        "CounterComponent",
+        "const [count,",
+        "const [step,"
+      ],
+      [
+        "Math.max",
+        "Math.min"
+      ],
+      [
+        "onClick={() => setCount(0)",
+        "count + step * 2",
+        "count + step * 3"
+      ],
+      [
+        "<CounterComponent />",
+        "const App = () =>"
+      ],
+      [
+        "const App = () =>",
+        "export default App"
+      ]
+    ],
+    "starterCode": "import React, { useState } from 'react';\n\nconst CounterComponent = () => {\n  const [count, setCount] = useState(0);\n  const [step, setStep] = useState(1);\n\n  const increase = () => {\n    setCount(Math.min(count + step, 100));\n  };\n\n  const decrease = () => {\n    setCount(Math.max(count - step, 0));\n  };\n\n  return (\n    <div>\n      <h2>Count: {count}</h2>\n      <label>Step:<input type=\"number\" value={step} onChange={(e) => setStep(Number(e.target.value))} /></label>\n      <button onClick={increase}>Increase</button>\n      <button onClick={decrease}>Decrease</button>\n      <button onClick={() => setCount(0)}>Reset</button>\n      <button onClick={() => setCount(Math.min(count + step * 2, 100))}>Double</button>\n      <button onClick={() => setCount(Math.min(count + step * 3, 100))}>Triple</button>\n    </div>\n  );\n};\n\nconst App = () => {\n  return (\n    <div>\n      <CounterComponent />\n      <CounterComponent />\n    </div>\n  );\n};\n\nexport default App;",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// Import React and useState from React",
+            "code": "import React, { useState } from 'react';"
+          },
+          {
+            "guide": "// Create a reusable Counter component and declare required state variables",
+            "code": "const CounterComponent = () => {\n  const [count, setCount] = useState(0);\n  const [step, setStep] = useState(1);"
+          },
+          {
+            "guide": "// Use Math.max() and Math.min() to enforce counter limits",
+            "code": "const increase = () => {\n  setCount(Math.min(count + step, 100));\n};\n\nconst decrease = () => {\n  setCount(Math.max(count - step, 0));\n};"
+          },
+          {
+            "guide": "// Create UI for the counter, step control, and action buttons",
+            "code": "return (\n  <div>\n    <h2>Count: {count}</h2>\n    <label>Step:<input type=\"number\" value={step} onChange={(e) => setStep(Number(e.target.value))} /></label>\n    <button onClick={increase}>Increase</button>\n    <button onClick={decrease}>Decrease</button>\n    <button onClick={() => setCount(0)}>Reset</button>\n    <button onClick={() => setCount(Math.min(count + step * 2, 100))}>Double</button>\n    <button onClick={() => setCount(Math.min(count + step * 3, 100))}>Triple</button>\n  </div>\n);"
+          },
+          {
+            "guide": "// Render multiple counter instances",
+            "code": "const App = () => {\n  return (\n    <div>\n      <CounterComponent />\n      <CounterComponent />\n    </div>\n  );\n};"
+          },
+          {
+            "guide": "// Export the main App component",
+            "code": "export default App;"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 2
+  },
+  {
+    "id": "react-counter-redux",
+    "category": "react",
+    "title": "Counter with Redux",
+    "description": "Wire a counter to Redux using combineReducers, a counterReducer, useSelector, and useDispatch.",
+    "checklist": [
+      "Import React and react-redux hooks",
+      "Create counterReducer with INCREMENT and DECREMENT",
+      "Combine reducers with combineReducers",
+      "Read count via useSelector",
+      "Dispatch INCREMENT and DECREMENT with useDispatch",
+      "Render count and increment/decrement buttons",
+      "Export default CounterComponent"
+    ],
+    "verificationKeywords": [
+      [
+        "import React",
+        "from 'react'"
+      ],
+      [
+        "import { combineReducers } from 'redux'"
+      ],
+      [
+        "case 'INCREMENT':",
+        "case 'DECREMENT':"
+      ],
+      [
+        "combineReducers",
+        "counter: counterReducer"
+      ],
+      [
+        "useSelector(state => state.counter.count)"
+      ],
+      [
+        "dispatch({ type: 'INCREMENT' })",
+        "dispatch({ type: 'DECREMENT' })"
+      ],
+      [
+        "<h2>Count: {count}</h2>",
+        "<button onClick={increment}>Increment</button>",
+        "<button onClick={decrement}>Decrement</button>"
+      ],
+      [
+        "export default CounterComponent;"
+      ]
+    ],
+    "starterCode": "// 1: Import: import React from 'react';\n// 2: Import: import { combineReducers } from 'redux';\n// 3: Import: import { useSelector, useDispatch } from 'react-redux';\n\n// counterReducer.js\nconst initialState = { count: 0 };\nconst counterReducer = (state = initialState, action) => {\n  switch (action.type) {\n    case 'INCREMENT':\n      return { count: state.count + 1 };\n    case 'DECREMENT':\n      return { count: state.count - 1 };\n    default:\n      return state;\n  }\n};\n\nconst rootReducer = combineReducers({ counter: counterReducer });\n\nfunction CounterComponent() {\n  const count = useSelector((state) => state.counter.count);\n  const dispatch = useDispatch();\n\n  const increment = () => dispatch({ type: 'INCREMENT' });\n  const decrement = () => dispatch({ type: 'DECREMENT' });\n\n  return (\n    <div>\n      <h2>Count: {count}</h2>\n      <button onClick={increment}>Increment</button>\n      <button onClick={decrement}>Decrement</button>\n    </div>\n  );\n};\n\nexport default CounterComponent;",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Import: import React from 'react';",
+            "code": "import React from 'react';"
+          },
+          {
+            "guide": "// guide hints: Import: useSelector and useDispatch from react-redux, and combineReducers from redux",
+            "code": "import { combineReducers } from 'redux';\nimport { useSelector, useDispatch } from 'react-redux';"
+          },
+          {
+            "guide": "// guide hints: initialState { count: 0 }, reducer with INCREMENT / DECREMENT",
+            "code": "const initialState = { count: 0 };\nconst counterReducer = (state = initialState, action) => {\n  switch (action.type) {\n    case 'INCREMENT':\n      return { count: state.count + 1 };\n    case 'DECREMENT':\n      return { count: state.count - 1 };\n    default:\n      return state;\n  }\n};"
+          },
+          {
+            "guide": "// guide hints: combineReducers({ counter: counterReducer })",
+            "code": "const rootReducer = combineReducers({ counter: counterReducer });"
+          },
+          {
+            "guide": "// guide hints: useSelector(state => state.counter.count)",
+            "code": "const count = useSelector((state) => state.counter.count);"
+          },
+          {
+            "guide": "// guide hints: useDispatch() for INCREMENT / DECREMENT",
+            "code": "const dispatch = useDispatch();\nconst increment = () => dispatch({ type: 'INCREMENT' });\nconst decrement = () => dispatch({ type: 'DECREMENT' });"
+          },
+          {
+            "guide": "// guide hints: Render count with Increment / Decrement buttons",
+            "code": "return (\n  <div>\n    <h2>Count: {count}</h2>\n    <button onClick={increment}>Increment</button>\n    <button onClick={decrement}>Decrement</button>\n  </div>\n);"
+          },
+          {
+            "guide": "// guide hints: Export: export default CounterComponent;",
+            "code": "export default CounterComponent;"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 3
+  },
+  {
+    "id": "react-fetch-data",
+    "category": "react",
+    "title": "Fetch Data on Button Click",
+    "description": "Fetch API data on button click using useReducer with FETCH_SUCCESS and FETCH_ERROR actions.",
+    "checklist": [
+      "Import useReducer from React",
+      "Define FETCH_SUCCESS and FETCH_ERROR actions",
+      "Initial state with data: null and error: null",
+      "Async fetchData function calls API",
+      "Dispatch FETCH_SUCCESS with response on success",
+      "Dispatch FETCH_ERROR with message on failure",
+      "Render data or error in the UI",
+      "Export default FetchData"
+    ],
+    "verificationKeywords": [
+      [
+        "import React",
+        "{ useReducer }",
+        "from 'react'"
+      ],
+      [
+        "const FETCH_SUCCESS = 'FETCH_SUCCESS'",
+        "const FETCH_ERROR = 'FETCH_ERROR'"
+      ],
+      [
+        "const initialState = { data: null, error: null }"
+      ],
+      [
+        "fetch(",
+        "dispatch({ type: FETCH_SUCCESS"
+      ],
+      [
+        "dispatch({ type: FETCH_ERROR"
+      ],
+      [
+        "<button onClick={fetchData}>Fetch Data</button>",
+        "JSON.stringify(state.data",
+        "state.error"
+      ],
+      [
+        "export default FetchData;"
+      ]
+    ],
+    "starterCode": "// 1: Import: import React, { useReducer } from 'react';\n\nconst FETCH_SUCCESS = 'FETCH_SUCCESS';\nconst FETCH_ERROR = 'FETCH_ERROR';\nconst initialState = { data: null, error: null };\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    default:\n      return state;\n  }\n}\n\nfunction FetchData() {\n  // 2: async fetchData with try/catch\n  // 3: fetch API, dispatch FETCH_SUCCESS or FETCH_ERROR\n  // 4: Button triggers fetchData\n  // 5: Render state.data and state.error\n\n  return (\n    <div>\n    </div>\n  );\n};\n\n// 6: Export: export default FetchData;",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Import: import React, { useReducer } from react",
+            "code": "import React, { useReducer } from 'react';"
+          },
+          {
+            "guide": "// guide hints: Define FETCH_SUCCESS and FETCH_ERROR actions and initial state",
+            "code": "const FETCH_SUCCESS = 'FETCH_SUCCESS';\nconst FETCH_ERROR = 'FETCH_ERROR';\nconst initialState = { data: null, error: null };"
+          },
+          {
+            "guide": "// guide hints: Reducer handles FETCH_SUCCESS and FETCH_ERROR",
+            "code": "function reducer(state, action) {\n  switch (action.type) {\n    case FETCH_SUCCESS:\n      return { ...state, data: action.payload, error: null };\n    case FETCH_ERROR:\n      return { ...state, error: action.payload };\n    default:\n      return state;\n  }\n}"
+          },
+          {
+            "guide": "// guide hints: async fetchData with try/catch",
+            "code": "const [state, dispatch] = useReducer(reducer, initialState);\nconst fetchData = async () => {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');\n    const data = await response.json();\n    dispatch({ type: FETCH_SUCCESS, payload: data });\n  } catch (error) {\n    dispatch({ type: FETCH_ERROR, payload: error.message });\n  }\n};"
+          },
+          {
+            "guide": "// guide hints: Button triggers fetchData",
+            "code": "<button onClick={fetchData}>Fetch Data</button>"
+          },
+          {
+            "guide": "// guide hints: Render state.data and state.error",
+            "code": "{state.error && <p>{state.error}</p>}\n{state.data && <pre>{JSON.stringify(state.data, null, 2)}</pre>}"
+          },
+          {
+            "guide": "// guide hints: Export: export default FetchData;",
+            "code": "export default FetchData;"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 4
+  },
+  {
+    "id": "react-form-input",
+    "category": "react",
+    "title": "Form Input Handling",
+    "description": "Build a controlled form input with useReducer. Display the typed value live as the user types.",
+    "checklist": [
+      "Import useReducer from React",
+      "Define SET_INPUT action type",
+      "Reducer updates input from action.payload",
+      "Controlled input with value={state.input}",
+      "onChange dispatches SET_INPUT with e.target.value",
+      "Display entered text below the input",
+      "Export default FormInput"
+    ],
+    "verificationKeywords": [
+      [
+        "import React",
+        "{ useReducer }",
+        "from 'react'"
+      ],
+      [
+        "const SET_INPUT = 'SET_INPUT'"
+      ],
+      [
+        "case SET_INPUT:",
+        "return { input: action.payload }"
+      ],
+      [
+        "value={state.input}",
+        "onChange={(e) => dispatch({ type: SET_INPUT, payload: e.target.value })}"
+      ],
+      [
+        "Entered Text",
+        "state.input"
+      ],
+      [
+        "export default FormInput;"
+      ]
+    ],
+    "starterCode": "// 1: Import: import React, { useReducer } from 'react';\n\nconst SET_INPUT = 'SET_INPUT';\nconst initialState = { input: '' };\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    default:\n      return state;\n  }\n}\n\nfunction FormInput() {\n  // 2: useReducer with reducer and initialState\n  // 3: Controlled input value={state.input}\n  // 4: onChange dispatches SET_INPUT with e.target.value\n  // 5: Show <p>Entered Text: {state.input}</p>\n\n  return (\n    <div>\n    </div>\n  );\n}\n\n// 6: Export: export default FormInput;",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Import: import React, { useReducer } from react",
+            "code": "import React, { useReducer } from 'react';"
+          },
+          {
+            "guide": "// guide hints: Define SET_INPUT action type and initialState",
+            "code": "const SET_INPUT = 'SET_INPUT';\nconst initialState = { input: '' };"
+          },
+          {
+            "guide": "// guide hints: Reducer updates input from action.payload",
+            "code": "function reducer(state, action) {\n  switch (action.type) {\n    case SET_INPUT:\n      return { input: action.payload };\n    default:\n      return state;\n  }\n}"
+          },
+          {
+            "guide": "// guide hints: useReducer with reducer and initialState",
+            "code": "const [state, dispatch] = useReducer(reducer, initialState);"
+          },
+          {
+            "guide": "// guide hints: Controlled input with value=state.input",
+            "code": "<input value={state.input} onChange={(e) => dispatch({ type: SET_INPUT, payload: e.target.value })} />"
+          },
+          {
+            "guide": "// guide hints: Show Entered Text below the input",
+            "code": "<p>Entered Text: {state.input}</p>"
+          },
+          {
+            "guide": "// guide hints: Export: export default FormInput;",
+            "code": "export default FormInput;"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 5
+  },
+  {
+    "id": "react-manage-list",
+    "category": "react",
+    "title": "Manage List of Items",
+    "description": "Add and remove list items using useReducer for the list and useState for the input field.",
+    "checklist": [
+      "Import useReducer and useState from React",
+      "Define ADD_ITEM and REMOVE_ITEM actions",
+      "Reducer appends item on ADD_ITEM",
+      "Reducer filters out item by index on REMOVE_ITEM",
+      "useState holds current input text",
+      "Add button dispatches ADD_ITEM and clears input",
+      "Render list with Remove button per item",
+      "Export default ManageList"
+    ],
+    "verificationKeywords": [
+      [
+        "import React",
+        "{ useReducer, useState }",
+        "from 'react'"
+      ],
+      [
+        "const ADD_ITEM = 'ADD_ITEM'",
+        "const REMOVE_ITEM = 'REMOVE_ITEM'"
+      ],
+      [
+        "const initialState = { items: [] }"
+      ],
+      [
+        "case ADD_ITEM:",
+        "return { items: [...state.items, action.payload] }"
+      ],
+      [
+        "case REMOVE_ITEM:",
+        "filter((item, index) => index !== action.payload)"
+      ],
+      [
+        "value={input}",
+        "onChange={(e) => setInput(e.target.value)}",
+        "dispatch({ type: ADD_ITEM, payload: input })"
+      ],
+      [
+        "<button onClick={addItem}>Add Item</button>",
+        "<button onClick={() => dispatch({ type: REMOVE_ITEM, payload: index })}>Remove</button>"
+      ],
+      [
+        "export default ManageList;"
+      ]
+    ],
+    "starterCode": "// 1: Import: import React, { useReducer, useState } from 'react';\n\nconst ADD_ITEM = 'ADD_ITEM';\nconst REMOVE_ITEM = 'REMOVE_ITEM';\nconst initialState = { items: [] };\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    default:\n      return state;\n  }\n}\n\nfunction ManageList() {\n  // 2: useReducer for items, useState for input\n  // 3: addItem dispatches ADD_ITEM, clears input\n  // 4: Remove dispatches REMOVE_ITEM with index\n  // 5: Map items to <li> with Remove button\n\n  return (\n    <div>\n    </div>\n  );\n}\n\n// 6: Export: export default ManageList;",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Import: import React, { useReducer, useState } from react",
+            "code": "import React, { useReducer, useState } from 'react';"
+          },
+          {
+            "guide": "// guide hints: Define ADD_ITEM and REMOVE_ITEM actions and initialState",
+            "code": "const ADD_ITEM = 'ADD_ITEM';\nconst REMOVE_ITEM = 'REMOVE_ITEM';\nconst initialState = { items: [] };"
+          },
+          {
+            "guide": "// guide hints: Reducer appends item on ADD_ITEM and removes by index on REMOVE_ITEM",
+            "code": "function reducer(state, action) {\n  switch (action.type) {\n    case ADD_ITEM:\n      return { items: [...state.items, action.payload] };\n    case REMOVE_ITEM:\n      return { items: state.items.filter((item, index) => index !== action.payload) };\n    default:\n      return state;\n  }\n}"
+          },
+          {
+            "guide": "// guide hints: useReducer for items and useState for input",
+            "code": "const [state, dispatch] = useReducer(reducer, initialState);\nconst [input, setInput] = useState('');"
+          },
+          {
+            "guide": "// guide hints: addItem dispatches ADD_ITEM and clears input",
+            "code": "const addItem = () => {\n  dispatch({ type: ADD_ITEM, payload: input });\n  setInput('');\n};"
+          },
+          {
+            "guide": "// guide hints: Map items to list with Remove button",
+            "code": "<ul>{state.items.map((item, index) => (\n  <li key={index}>\n    {item} <button onClick={() => dispatch({ type: REMOVE_ITEM, payload: index })}>Remove</button>\n  </li>\n))}</ul>"
+          },
+          {
+            "guide": "// guide hints: Export: export default ManageList;",
+            "code": "export default ManageList;"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 6
+  },
+  {
+    "id": "react-tab-navigation",
+    "category": "react",
+    "title": "Tab Navigation",
+    "description": "Build tab navigation with useReducer. Switch between Tab1, Tab2, and Tab3 content panels.",
+    "checklist": [
+      "Import useReducer from React",
+      "Define SELECT_TAB action type",
+      "Initial state selectedTab: 'Tab1'",
+      "Reducer updates selectedTab from payload",
+      "Render Tab 1, Tab 2, Tab 3 buttons",
+      "Each button dispatches SELECT_TAB with tab name",
+      "Show content matching state.selectedTab",
+      "Export default TabNavigation"
+    ],
+    "verificationKeywords": [
+      [
+        "import React",
+        "{ useReducer }",
+        "from 'react'"
+      ],
+      [
+        "const SELECT_TAB = 'SELECT_TAB'"
+      ],
+      [
+        "const initialState = { selectedTab: 'Tab1' }"
+      ],
+      [
+        "case SELECT_TAB:",
+        "return { selectedTab: action.payload }"
+      ],
+      [
+        "dispatch({ type: SELECT_TAB, payload: 'Tab1' })",
+        "dispatch({ type: SELECT_TAB, payload: 'Tab2' })",
+        "dispatch({ type: SELECT_TAB, payload: 'Tab3' })"
+      ],
+      [
+        "state.selectedTab === 'Tab1'",
+        "state.selectedTab === 'Tab2'",
+        "state.selectedTab === 'Tab3'"
+      ],
+      [
+        "export default TabNavigation;"
+      ]
+    ],
+    "starterCode": "// 1: Import: import React, { useReducer } from 'react';\n\nconst SELECT_TAB = 'SELECT_TAB';\nconst initialState = { selectedTab: 'Tab1' };\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    default:\n      return state;\n  }\n}\n\nfunction TabNavigation() {\n  // 2: useReducer with reducer and initialState\n  // 3: Tab buttons dispatch SELECT_TAB with payload\n  // 4: Conditionally render content for selected tab\n\n  return (\n    <div>\n    </div>\n  );\n}\n\n// 5: Export: export default TabNavigation;",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Import: import React, { useReducer } from react",
+            "code": "import React, { useReducer } from 'react';"
+          },
+          {
+            "guide": "// guide hints: Define SELECT_TAB action type and initial state",
+            "code": "const SELECT_TAB = 'SELECT_TAB';\nconst initialState = { selectedTab: 'Tab1' };"
+          },
+          {
+            "guide": "// guide hints: Reducer updates selectedTab from action.payload",
+            "code": "function reducer(state, action) {\n  switch (action.type) {\n    case SELECT_TAB:\n      return { selectedTab: action.payload };\n    default:\n      return state;\n  }\n}"
+          },
+          {
+            "guide": "// guide hints: useReducer with reducer and initialState",
+            "code": "const [state, dispatch] = useReducer(reducer, initialState);"
+          },
+          {
+            "guide": "// guide hints: Tab buttons dispatch SELECT_TAB with tab name",
+            "code": "<button onClick={() => dispatch({ type: SELECT_TAB, payload: 'Tab1' })}>Tab1</button>\n<button onClick={() => dispatch({ type: SELECT_TAB, payload: 'Tab2' })}>Tab2</button>\n<button onClick={() => dispatch({ type: SELECT_TAB, payload: 'Tab3' })}>Tab3</button>"
+          },
+          {
+            "guide": "// guide hints: Conditionally render content for selected tab",
+            "code": "{state.selectedTab === 'Tab1' && <div>Tab1 Content</div>}\n{state.selectedTab === 'Tab2' && <div>Tab2 Content</div>}\n{state.selectedTab === 'Tab3' && <div>Tab3 Content</div>}"
+          },
+          {
+            "guide": "// guide hints: Export: export default TabNavigation;",
+            "code": "export default TabNavigation;"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 7
+  },
+  {
+    "id": "react-toggle-visibility",
+    "category": "react",
+    "title": "Toggle Visibility",
+    "description": "Toggle message visibility using useReducer with a TOGGLE_VISIBILITY action and conditional rendering.",
+    "checklist": [
+      "Import useReducer from React",
+      "Define TOGGLE_VISIBILITY action type",
+      "Set initialState with visible: true",
+      "Reducer flips visible on TOGGLE_VISIBILITY",
+      "Conditionally render message when visible",
+      "Button label switches between Hide and Show",
+      "Export default ToggleVisibility"
+    ],
+    "verificationKeywords": [
+      [
+        "import React",
+        "{ useReducer }",
+        "from 'react'"
+      ],
+      [
+        "const TOGGLE_VISIBILITY = 'TOGGLE_VISIBILITY'"
+      ],
+      [
+        "const initialState = { visible: true }"
+      ],
+      [
+        "case TOGGLE_VISIBILITY:",
+        "return { visible: !state.visible }"
+      ],
+      [
+        "state.visible && <p",
+        "{state.visible ? 'Hide' : 'Show'}"
+      ],
+      [
+        "<button onClick={() => dispatch({ type: TOGGLE_VISIBILITY })}"
+      ],
+      [
+        "export default ToggleVisibility;"
+      ]
+    ],
+    "starterCode": "// 1: Import: import React, { useReducer } from 'react';\n\nconst TOGGLE_VISIBILITY = 'TOGGLE_VISIBILITY';\nconst initialState = { visible: true };\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    default:\n      return state;\n  }\n}\n\nfunction ToggleVisibility() {\n  // 2: useReducer with reducer and initialState\n  // 3: Conditionally render message when state.visible\n  // 4: Button dispatches TOGGLE_VISIBILITY, label Hide / Show\n\n  return (\n    <div>\n    </div>\n  );\n}\n\n// 5: Export: export default ToggleVisibility;",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "// guide hints: Import: import React, { useReducer } from react",
+            "code": "import React, { useReducer } from 'react';"
+          },
+          {
+            "guide": "// guide hints: Define TOGGLE_VISIBILITY action type and initialState",
+            "code": "const TOGGLE_VISIBILITY = 'TOGGLE_VISIBILITY';\nconst initialState = { visible: true };"
+          },
+          {
+            "guide": "// guide hints: Reducer flips visible on TOGGLE_VISIBILITY",
+            "code": "function reducer(state, action) {\n  switch (action.type) {\n    case TOGGLE_VISIBILITY:\n      return { visible: !state.visible };\n    default:\n      return state;\n  }\n}"
+          },
+          {
+            "guide": "// guide hints: useReducer with reducer and initialState",
+            "code": "const [state, dispatch] = useReducer(reducer, initialState);"
+          },
+          {
+            "guide": "// guide hints: Conditionally render message when state.visible",
+            "code": "{state.visible && <p>The message is visible.</p>}"
+          },
+          {
+            "guide": "// guide hints: Button dispatches TOGGLE_VISIBILITY, label Hide / Show",
+            "code": "<button onClick={() => dispatch({ type: TOGGLE_VISIBILITY })}>{state.visible ? 'Hide' : 'Show'}</button>"
+          },
+          {
+            "guide": "// guide hints: Export: export default ToggleVisibility;",
+            "code": "export default ToggleVisibility;"
+          }
+        ]
+      }
+    },
+    "type": "code",
+    "index": 8
+  },
+  {
+    "id": "react-concepts-core",
+    "category": "react-concepts",
+    "title": "React.js Core Concepts",
+    "description": "Interview-ready flashcards covering React fundamentals: declarative UI, components, virtual DOM, JSX, hooks, state management, lifecycle, and best practices.",
+    "checklist": [
+      "Understand React's declarative approach and component architecture",
+      "Explain Virtual DOM and reconciliation process",
+      "Describe state, props, and their differences",
+      "Understand lifecycle methods and React Hooks",
+      "Explain context API and state management patterns",
+      "Understand JSX, Babel, and modern React workflows"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is React?</td><td>A JavaScript library for building user interfaces with components</td><td>React focuses on creating reusable, self-contained pieces of UI</td><td>Build dashboard with Navbar, Sidebar, MainContent components</td><td>Reusable, maintainable code</td></tr>\n        <tr><td>What is declarative UI?</td><td>You describe the desired UI state; React handles DOM updates</td><td>Easier to understand and debug than imperative code</td><td>Write JSX describing the UI, React updates DOM automatically</td><td>Cleaner, more readable code</td></tr>\n        <tr><td>What is component-based architecture?</td><td>React apps are built using reusable, self-contained components</td><td>Each component manages its own state and logic</td><td>UserCard, ProductList, SearchBar are individual components</td><td>Modularity and code reuse</td></tr>\n        <tr><td>What is the Virtual DOM?</td><td>An in-memory representation of the actual DOM</td><td>React calculates minimal updates needed and applies them efficiently</td><td>React compares virtual DOM tree, identifies differences, updates real DOM</td><td>Optimized rendering performance</td></tr>\n        <tr><td>How does Virtual DOM reconciliation work?</td><td>React compares old and new virtual DOM trees (diffing) and updates only necessary parts</td><td>Minimizes direct manipulations to real DOM for efficiency</td><td>List items change: React updates only modified items, not the entire list</td><td>Better performance and user experience</td></tr>\n        <tr><td>What is JSX?</td><td>JavaScript XML - a syntax extension allowing HTML-like syntax in JavaScript</td><td>JSX simplifies creation of React elements and improves readability</td><td>&lt;div className=\"card\"&gt;&lt;h1&gt;{title}&lt;/h1&gt;&lt;/div&gt;</td><td>More readable and maintainable code</td></tr>\n        <tr><td>How is JSX transformed?</td><td>Babel transpiles JSX into JavaScript function calls (React.createElement)</td><td>Browser doesn't understand JSX, so Babel converts it to compatible code</td><td>&lt;Button onClick={handleClick}/&gt; becomes React.createElement(Button, {onClick: handleClick})</td><td>Write cleaner code, run anywhere</td></tr>\n        <tr><td>What is unidirectional data flow?</td><td>Data flows in one direction: parent to child through props</td><td>Maintains predictable state and makes changes easier to track</td><td>Parent: &lt;Child data={value}/&gt;; Child receives and uses data</td><td>Predictable, easier to debug</td></tr>\n        <tr><td>What is the difference between state and props?</td><td>State: internal, mutable data; Props: external, immutable data from parent</td><td>State causes re-render when changed; props are read-only in child</td><td>State: this.state = {count: 0}; Props: &lt;Counter initialValue={5}/&gt;</td><td>Clear data management boundaries</td></tr>\n        <tr><td>Can you modify props in a child component?</td><td>No, props are immutable and read-only in child components</td><td>To update, call a callback function passed by parent</td><td>Parent: &lt;Child onUpdate={setName}/&gt;; Child: onClick={() => onUpdate(newValue)}</td><td>Prevents unintended data mutations</td></tr>\n        <tr><td>What are lifecycle methods?</td><td>Methods called at different stages of component existence: mounting, updating, unmounting</td><td>Allow you to run code at specific times in component lifecycle</td><td>componentDidMount: fetch data; componentWillUnmount: cleanup subscriptions</td><td>Control component behavior at key moments</td></tr>\n        <tr><td>What is componentDidMount()?</td><td>Lifecycle method called after component is rendered on screen</td><td>Good place for network requests, timers, and subscriptions</td><td>Fetch user data from API when component loads</td><td>Execute setup logic after component ready</td></tr>\n        <tr><td>What is componentDidUpdate()?</td><td>Lifecycle method invoked after component updates</td><td>Receives previous props and state; useful for side effects</td><td>Update page title when props change, log state updates</td><td>Respond to prop/state changes after rendering</td></tr>\n        <tr><td>What is componentWillUnmount()?</td><td>Lifecycle method called before component is removed from DOM</td><td>Essential for cleanup: cancel requests, unsubscribe, clear timers</td><td>Unsubscribe from socket, cancel API requests, clear intervals</td><td>Prevent memory leaks</td></tr>\n        <tr><td>What are React Hooks?</td><td>Functions allowing functional components to have state and lifecycle methods</td><td>Introduced in React 16.8; alternative to class components</td><td>useState for state, useEffect for side effects, useContext for context</td><td>Simpler, cleaner code; easier to reuse logic</td></tr>\n        <tr><td>What is useState()?</td><td>Hook for adding state to functional components</td><td>Returns [value, setter] pair; setter updates state and triggers re-render</td><td>const [count, setCount] = useState(0); then setCount(count + 1)</td><td>Simple state management in functional components</td></tr>\n        <tr><td>What is useEffect()?</td><td>Hook for performing side effects in functional components</td><td>Runs after render; replaces componentDidMount, componentDidUpdate, componentWillUnmount</td><td>useEffect(() => { fetchData(); }, []); fetch runs once on mount</td><td>Clean up effects; avoid memory leaks</td></tr>\n        <tr><td>What is the dependency array in useEffect?</td><td>Array of dependencies; effect runs when dependencies change</td><td>Empty array: runs once on mount; no array: runs after every render; with deps: runs when deps change</td><td>useEffect(() => { fetch(userId); }, [userId]); runs when userId changes</td><td>Control when effects run; optimize performance</td></tr>\n        <tr><td>What is useContext()?</td><td>Hook to consume context values without prop drilling</td><td>Allows components to access shared state directly from Context</td><td>const theme = useContext(ThemeContext); use theme.color directly</td><td>Avoid prop drilling through multiple levels</td></tr>\n        <tr><td>What is useMemo()?</td><td>Hook to memoize computation results; prevents unnecessary recalculations</td><td>Returns memoized value; recalculates only when dependencies change</td><td>const expensiveValue = useMemo(() => complexCalculation(data), [data])</td><td>Optimize performance for expensive operations</td></tr>\n        <tr><td>What is useCallback()?</td><td>Hook to memoize function; prevents unnecessary function re-creation</td><td>Returns memoized callback; useful for passing to optimized child components</td><td>const handleClick = useCallback(() => { doSomething(); }, [dependency])</td><td>Prevent child re-renders caused by function prop changes</td></tr>\n        <tr><td>What is useRef()?</td><td>Hook creating mutable reference that persists across renders</td><td>Common use: access DOM elements directly, store mutable values</td><td>const inputRef = useRef(null); then inputRef.current.focus()</td><td>Direct DOM access; persist values without causing re-renders</td></tr>\n        <tr><td>What is the Context API?</td><td>Built-in React feature allowing components to share state without prop drilling</td><td>Create context, wrap tree with provider, consume with useContext or Consumer</td><td>Create ThemeContext, pass theme through Provider to all descendants</td><td>Manage global state simply without external libraries</td></tr>\n        <tr><td>What is prop drilling?</td><td>Passing props through multiple intermediate components to reach target component</td><td>Becomes unwieldy with deeply nested components</td><td>App → Page → Section → Card → Button receives prop from App</td><td>Context API and state management libraries solve this</td></tr>\n        <tr><td>How do you handle forms in React?</td><td>Use state to manage input values; handle onChange and onSubmit events</td><td>Controlled components use state as source of truth</td><td>const [email, setEmail] = useState(''); &lt;input value={email} onChange={(e) => setEmail(e.target.value)} /&gt;</td><td>Controlled inputs; easy validation and submission</td></tr>\n        <tr><td>What is a controlled component?</td><td>Component whose value is controlled by React state</td><td>Form input value comes from state; onChange updates state</td><td>Input value displays state; typing updates state; state updates input</td><td>Full control over input behavior</td></tr>\n        <tr><td>What is an uncontrolled component?</td><td>Component managing its own state internally; accessed via ref</td><td>DOM is source of truth; less common in React</td><td>const nameRef = useRef(); then access nameRef.current.value in handler</td><td>Simpler for simple inputs; less React integration</td></tr>\n        <tr><td>How does React handle events?</td><td>Use camelCase event handlers (onClick, onChange, onSubmit)</td><td>React uses event delegation; handlers are synthetic events</td><td>&lt;button onClick={handleClick}&gt;Click&lt;/button&gt;</td><td>Consistent cross-browser event handling</td></tr>\n        <tr><td>What are keys and why are they important in lists?</td><td>Unique identifiers for list items helping React recognize which items changed</td><td>Keys improve performance and maintain component state in dynamic lists</td><td>&lt;li key={item.id}&gt;{item.name}&lt;/li&gt; instead of key={index}</td><td>Correct rendering and state management in lists</td></tr>\n        <tr><td>Why shouldn't you use array index as key?</td><td>If list reorders, index no longer matches the same item, breaking component state</td><td>Component state gets tied to wrong item; causes bugs and performance issues</td><td>Reorder list: index 0 now refers to different item; state gets mixed up</td><td>Use unique IDs as keys</td></tr>\n        <tr><td>What is React.memo?</td><td>Higher-order component preventing re-render if props haven't changed</td><td>Optimizes performance by skipping render for unchanged props</td><td>export default React.memo(MyComponent); skips render if props same</td><td>Reduce unnecessary re-renders</td></tr>\n        <tr><td>What is a higher-order component (HOC)?</td><td>Function taking component and returning enhanced component</td><td>Pattern for code reuse, logic abstraction, cross-cutting concerns</td><td>withTheme(Component) wraps component providing theme props</td><td>Reuse logic across multiple components</td></tr>\n        <tr><td>What is render props pattern?</td><td>Pattern where component accepts function as prop to render content</td><td>Alternative to HOC for sharing component logic</td><td>&lt;DataProvider render={data => &lt;Component data={data} /&gt;} /&gt;</td><td>Flexible component composition</td></tr>\n        <tr><td>How do you communicate React frontend with .NET Core backend?</td><td>Use HTTP requests (fetch or Axios) to call REST APIs on backend</td><td>React components make requests; backend returns JSON data</td><td>fetch('/api/users').then(res => res.json()).then(data => setUsers(data))</td><td>Seamless frontend-backend integration</td></tr>\n        <tr><td>What is Axios?</td><td>Popular HTTP client library for making API requests</td><td>Cleaner syntax than fetch; better error handling; automatic transformations</td><td>axios.get('/api/data').then(res => setData(res.data))</td><td>Simpler HTTP handling</td></tr>\n        <tr><td>How do you handle errors in API calls?</td><td>Use try-catch with async/await or .catch() with promises</td><td>Gracefully handle network errors, timeouts, server errors</td><td>catch(error => setError(error.message)); display error to user</td><td>Better user experience</td></tr>\n        <tr><td>What is Redux?</td><td>Predictable state container for JavaScript apps; manages centralized app state</td><td>Stores entire state in single store; dispatch actions to trigger state changes</td><td>Store contains user, posts, ui state; dispatch({type: 'SET_USER', payload})</td><td>Predictable state management for complex apps</td></tr>\n        <tr><td>What are Redux actions?</td><td>Plain objects describing state changes; must have type property</td><td>Other properties carry data (payload) needed for state update</td><td>{type: 'ADD_TODO', payload: {id: 1, text: 'Learn Redux'}}</td><td>Clear intent of state changes</td></tr>\n        <tr><td>What are Redux reducers?</td><td>Pure functions taking current state and action, returning new state</td><td>Must be pure; no side effects; always return new state</td><td>(state = [], action) => action.type === 'ADD_TODO' ? [...state, action.payload] : state</td><td>Predictable state transitions</td></tr>\n        <tr><td>What is useSelector in Redux?</td><td>Hook to select state from Redux store in functional components</td><td>Efficiently subscribes to store; re-renders only when selected state changes</td><td>const todos = useSelector(state => state.todos)</td><td>Access Redux state cleanly in components</td></tr>\n        <tr><td>What is useDispatch in Redux?</td><td>Hook to dispatch actions from functional components</td><td>Returns dispatch function to trigger state changes</td><td>const dispatch = useDispatch(); dispatch(addTodo(newTodo))</td><td>Trigger state changes from components</td></tr>\n        <tr><td>What is React Router?</td><td>Library for client-side routing in React SPAs</td><td>Enables navigation between pages without full page reloads</td><td>&lt;BrowserRouter&gt; &lt;Route path=\"/home\" component={Home} /&gt; &lt;/BrowserRouter&gt;</td><td>Seamless single-page app navigation</td></tr>\n        <tr><td>What is the difference between SSR and CSR?</td><td>SSR: renders components on server, sends HTML to client; CSR: renders on client with JavaScript</td><td>SSR better for SEO and initial load; CSR better for user interactions</td><td>SSR: Next.js renders page on server; CSR: React renders page in browser</td><td>Choose based on app needs</td></tr>\n        <tr><td>What is code splitting?</td><td>Breaking app into smaller chunks loaded on demand instead of one big bundle</td><td>Improves initial load performance; chunks loaded when needed</td><td>React.lazy() + Suspense for component splitting; Webpack dynamic imports</td><td>Faster initial page load</td></tr>\n        <tr><td>What is lazy loading?</td><td>Deferring loading of components until they're needed</td><td>Improves performance; reduces initial bundle size</td><td>const Home = React.lazy(() => import('./Home')); wrapped in Suspense</td><td>Better performance</td></tr>\n        <tr><td>What is Webpack?</td><td>Module bundler combining JavaScript, CSS, images into optimized bundles</td><td>Handles code splitting, minification, asset management</td><td>Webpack bundles all modules into dist/bundle.js</td><td>Optimized production builds</td></tr>\n        <tr><td>What is Babel?</td><td>JavaScript compiler transpiling modern ES6+ and JSX into browser-compatible code</td><td>Enables use of latest features while supporting older browsers</td><td>Babel transforms &lt;Component /&gt; JSX into React.createElement(Component)</td><td>Write modern code; run everywhere</td></tr>\n        <tr><td>What is TypeScript in React?</td><td>Adds static typing to JavaScript; catches errors during development</td><td>Better tooling support, autocomplete, early error detection</td><td>interface User { name: string; age: number; }; const user: User = {}</td><td>Fewer bugs; better developer experience</td></tr>\n        <tr><td>What are custom hooks?</td><td>Functions creating reusable stateful logic extracted from components</td><td>Custom hooks are JavaScript functions starting with 'use'</td><td>function useFetch(url) { const [data, setData] = useState(null); useEffect(() => {...}); return data; }</td><td>Reuse complex logic across components</td></tr>\n        <tr><td>What is the useReducer hook?</td><td>Hook for complex state logic; manages state with reducer function</td><td>Better than useState for related state pieces; similar to Redux reducers</td><td>const [state, dispatch] = useReducer(reducer, initialState); dispatch({type: 'ACTION'})</td><td>Manage complex state cleanly</td></tr>\n        <tr><td>What is CORS?</td><td>Cross-Origin Resource Sharing - policy controlling cross-domain requests</td><td>.NET Core backend must allow requests from React frontend domain</td><td>.NET configure CORS: app.UseCors(builder => builder.AllowAnyOrigin())</td><td>Secure yet flexible API access</td></tr>\n        <tr><td>How do you secure React-to-.NET communication?</td><td>Use HTTPS, JWT tokens for authentication, validate permissions on backend</td><td>Store JWT in localStorage/cookies; send in Authorization header</td><td>POST /auth/login returns JWT; subsequent requests include token header</td><td>Protect sensitive data and user actions</td></tr>\n        <tr><td>What is authentication in React?</td><td>Process of verifying user identity using credentials (username/password, OAuth, JWT)</td><td>Backend validates credentials; returns token React stores and uses</td><td>Login: send credentials to backend; backend returns JWT token</td><td>Secure user access</td></tr>\n        <tr><td>What is authorization in React?</td><td>Process of determining what authenticated user can access/do</td><td>Backend checks user roles/permissions; React conditionally renders based on roles</td><td>Admin sees delete button; user doesn't; check backend permissions</td><td>Control user permissions</td></tr>\n        <tr><td>What is responsive design in React?</td><td>Design approach making apps work on all device sizes</td><td>Use CSS media queries, flexible layouts, and viewport meta tag</td><td>CSS: @media (max-width: 768px) { .sidebar { display: none; } }</td><td>Works on desktop, tablet, mobile</td></tr>\n        <tr><td>What is Bootstrap?</td><td>CSS framework providing pre-styled components and responsive grid</td><td>Includes components like navbars, modals, buttons; responsive utilities</td><td>&lt;div className=\"container\"&gt; &lt;div className=\"row\"&gt; &lt;div className=\"col-md-6\"&gt;</td><td>Faster UI development</td></tr>\n        <tr><td>What is Material UI?</td><td>React UI framework following Google Material Design principles</td><td>Provides React components with Material Design look and feel</td><td>import { Button, Card } from '@mui/material'; &lt;Button variant=\"contained\"&gt;</td><td>Professional, consistent UI</td></tr>\n        <tr><td>What is performance optimization in React?</td><td>Techniques reducing rendering, improving load time, and user experience</td><td>Code splitting, memoization, lazy loading, efficient state management</td><td>React.memo prevents unnecessary renders; useMemo caches computations</td><td>Faster app, better UX</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 1
+  },
+  {
+    "id": "solid-architecture-and-system",
+    "category": "solid",
+    "title": "Explain ARCHITECTURE & SYSTEM",
+    "description": "Review architecture and system concepts for interview fluency.",
+    "checklist": [
+      "Explain hybrid architecture",
+      "Describe monolith vs microservices",
+      "Summarize scalability and polymorphism in architecture"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>Hybrid Architecture</td><td>UI + API separation</td><td>Frontend and backend separated</td><td>MVC + REST API</td><td>Clean structure</td></tr>\n        <tr><td>Monolith vs Microservices</td><td>One app vs many services</td><td>Services run independently</td><td>Policy, Claims, Billing separate</td><td>Scalability</td></tr>\n        <tr><td>Scalability</td><td>Handle more load</td><td>Add resources when needed</td><td>Claim system during peak traffic</td><td>Performance</td></tr>\n        <tr><td>Compile vs Runtime Polymorphism</td><td>Overloading vs Overriding</td><td>Compile-time vs runtime decision</td><td>Overload / override methods</td><td>Flexibility</td></tr>\n        <tr><td>Singleton vs Factory</td><td>One instance vs object creation</td><td>Singleton reused, Factory creates objects</td><td>Logger vs PolicyFactory</td><td>Control objects</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 1
+  },
+  {
+    "id": "solid-core-concepts",
+    "category": "solid",
+    "title": "What is SOLID?",
+    "description": "Review the SOLID principles, abstract/interface differences, and polymorphism for interview readiness.",
+    "checklist": [
+      "Explain the SOLID principles in plain language",
+      "Describe Abstract class vs Interface",
+      "Summarize how polymorphism improves design"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is SOLID</td><td>Design principles for clean code</td><td>Reduces complexity and future risks</td><td>Add new policy without breaking existing code</td><td>Maintainable system</td></tr>\n        <tr><td>SRP - Single Responsibility</td><td>One class = one job</td><td>Avoid mixed responsibilities</td><td>PremiumCalculator only calculates premium</td><td>Easy testing</td></tr>\n        <tr><td>OCP - Open/Closed</td><td>Extend, don’t modify</td><td>Add features without changing old code</td><td>Add TravelPolicy without changing core logic</td><td>Safer changes</td></tr>\n        <tr><td>LSP - Liskov Substitution</td><td>Child behaves like parent</td><td>No broken behaviour when substituting</td><td>MotorPolicy works as Policy</td><td>Reliable code</td></tr>\n        <tr><td>ISP - Interface Segregation Principle</td><td>Small focused interfaces</td><td>Don’t force unused methods</td><td>IClaimable, IRenewable separated</td><td>Cleaner design</td></tr>\n        <tr><td>DIP - Dependency Inversion</td><td>Depend on abstraction</td><td>Not concrete classes</td><td>ClaimService uses IPaymentService</td><td>Flexible + testable</td></tr>\n        <tr><td>Explain Abstract vs Interface</td><td>Abstract = partial logic, Interface = contract</td><td>Abstract has code, interface only rules</td><td>Policy vs IClaimable</td><td>Flexible design</td></tr>\n        <tr><td>Explain Polymorphism</td><td>Same method, different behaviour</td><td>Behaviour depends on object</td><td>CalculateClaim varies by policy</td><td>Reusable logic</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 2
+  },
+  {
+    "id": "solid-design-patterns",
+    "category": "solid",
+    "title": "Explain Design Patterns",
+    "description": "Review common design patterns for interview-ready explanations.",
+    "checklist": [
+      "Explain Singleton and Factory patterns",
+      "Describe Observer and reuse patterns",
+      "Summarize when to use these design patterns"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>Singleton</td><td>One instance only</td><td>Global shared object</td><td>Logger</td><td>Saves resources</td></tr>\n        <tr><td>Factory</td><td>Create objects centrally</td><td>No direct new</td><td>PolicyFactory</td><td>Clean code</td></tr>\n        <tr><td>Observer</td><td>Notify changes</td><td>One-to-many update</td><td>Email alerts</td><td>Auto updates</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 3
+  },
+  {
+    "id": "solid-oop-fundamentals",
+    "category": "solid",
+    "title": "OOP Fundamentals",
+    "description": "Review key object-oriented programming concepts with short definitions, explanations, examples, and benefits.",
+    "checklist": [
+      "Explain the core OOP concepts clearly",
+      "Describe how objects, classes, and encapsulation relate",
+      "Summarize polymorphism, abstraction, and constructors"
+    ],
+    "answerHtml": "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is Inheritance?</td><td>Parent-child relationship of classes</td><td>A subclass inherits properties and methods from its superclass for hierarchy and reuse</td><td>class Dog extends Animal {}</td><td>Reduces duplication and supports extension</td></tr>\n        <tr><td>What is Polymorphism?</td><td>One interface, many forms</td><td>Same call can do different things depending on the object type</td><td>add(int, int) / add(float) or Dog overrides sound()</td><td>Makes code more flexible and reusable</td></tr>\n        <tr><td>What is an Object?</td><td>Instance of a class</td><td>Objects are concrete runtime values created from class blueprints</td><td>Dog myDog = new Dog();</td><td>Enables real-world modeling in code</td></tr>\n        <tr><td>What is a Class?</td><td>Blueprint for objects</td><td>Classes define the properties and behavior that objects can have</td><td>class Animal { int age; }</td><td>Structures code and organizes behavior</td></tr>\n        <tr><td>What is Encapsulation?</td><td>Protecting data by restricting access</td><td>Hide state behind methods and control how it changes</td><td>private int age; public int getAge()</td><td>Improves security and prevents misuse</td></tr>\n        <tr><td>What is Abstraction?</td><td>Hide implementation, show only essentials</td><td>Simplifies complex systems by exposing only required behavior</td><td>abstract class Shape { abstract void draw(); }</td><td>Simplifies interfaces and reduces complexity</td></tr>\n        <tr><td>What is a Constructor?</td><td>Initializes an object automatically</td><td>Called when an object is created to set up its initial state</td><td>public Dog() { this.age = 1; }</td><td>Ensures objects start with valid data</td></tr>\n        <tr><td>What is Method Overload?</td><td>Same method name, different parameters</td><td>Multiple methods share a name but accept different arguments</td><td>void run(int x) & void run(double y)</td><td>Increases usability without new names</td></tr>\n        <tr><td>What is the Static keyword?</td><td>Class-level member, not tied to any object</td><td>Static members belong to the class itself and can be used without instances</td><td>static int counter;</td><td>Saves memory and enables shared access</td></tr>\n        <tr><td>What is an Interface?</td><td>Defines methods a class must implement</td><td>Interfaces declare required behavior without implementation</td><td>interface Animal { void eat(); }</td><td>Promotes consistent, testable design</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+    "type": "text",
+    "index": 4
+  },
+  {
+    "id": "sql-duplicate-records",
+    "category": "sql",
+    "title": "Find Duplicate Records",
+    "description": "Write a SQL query to identify duplicate rows in a table based on one or more columns.",
+    "checklist": [
+      "Select the columns to check for duplicates",
+      "Use GROUP BY on those columns",
+      "Add HAVING COUNT(*) > 1 to filter duplicates",
+      "Return the duplicate values"
+    ],
+    "detailedInstructions": [
+      "Step 1: SELECT the columns you want to find duplicates for",
+      "Step 2: GROUP BY those same columns to group identical values together",
+      "Step 3: Use HAVING COUNT(*) > 1 to show only groups with more than 1 record",
+      "Step 4: This shows you which values appear multiple times",
+      "Step 5: You can also SELECT COUNT(*) to see how many times each appears"
+    ],
+    "verificationKeywords": [
+      [
+        "SELECT"
+      ],
+      [
+        "GROUP BY"
+      ],
+      [
+        "HAVING",
+        "COUNT(*)"
+      ],
+      [
+        ">",
+        "1"
+      ]
+    ],
+    "starterCode": "-- 1: SELECT the columns to check for duplicates\n-- 2: GROUP BY those columns\n-- 3: HAVING COUNT(*) > 1\n-- 4: Return the duplicate values",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "SELECT the columns to check for duplicates",
+            "code": "SELECT column1, column2"
+          },
+          {
+            "guide": "GROUP BY those columns",
+            "code": "GROUP BY column1, column2"
+          },
+          {
+            "guide": "HAVING COUNT(*) > 1",
+            "code": "HAVING COUNT(*) > 1"
+          },
+          {
+            "guide": "Return the duplicate values",
+            "code": "SELECT column1, column2, COUNT(*)\nFROM YourTable\nGROUP BY column1, column2\nHAVING COUNT(*) > 1;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 1
+  },
+  {
+    "id": "sql-first-name-from-fullname",
+    "category": "sql",
+    "title": "Extract First Name",
+    "description": "Write a SQL query to fetch only the first name from the FullName column.",
+    "checklist": [
+      "Use FullName column from EmployeeDetails",
+      "Extract the substring before the first space",
+      "Use CHARINDEX or equivalent string function",
+      "Return a column named FirstName"
+    ],
+    "detailedInstructions": [
+      "Step 1: Select the first name from FullName",
+      "Step 2: Use CHARINDEX to find the first space",
+      "Step 3: Use LEFT to return the substring",
+      "Step 4: Return the result as FirstName"
+    ],
+    "verificationKeywords": [
+      [
+        "LEFT(FullName"
+      ],
+      [
+        "CHARINDEX(' ', FullName"
+      ],
+      [
+        "FROM EmployeeDetails"
+      ],
+      [
+        "AS FirstName"
+      ]
+    ],
+    "starterCode": "-- 1: Select the first name from FullName\n-- 2: Use LEFT and CHARINDEX\n-- 3: Return FirstName",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Select the first name from FullName",
+            "code": "SELECT LEFT(FullName, CHARINDEX(' ', FullName + ' ') - 1) AS FirstName"
+          },
+          {
+            "guide": "Read from EmployeeDetails table",
+            "code": "FROM EmployeeDetails;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 2
+  },
+  {
+    "id": "sql-inner-join-employee-salary",
+    "category": "sql",
+    "title": "Employees with Salary Records",
+    "description": "Write a SQL query that returns employee records only when they have a salary record.",
+    "checklist": [
+      "Use EmployeeDetails and EmployeeSalary tables",
+      "Join the tables using INNER JOIN",
+      "Match on EmpId",
+      "Return only employees with salary records"
+    ],
+    "detailedInstructions": [
+      "Step 1: Select employee fields from EmployeeDetails",
+      "Step 2: Use INNER JOIN to connect EmployeeSalary",
+      "Step 3: Match rows on EmpId",
+      "Step 4: Return only matched employee records"
+    ],
+    "verificationKeywords": [
+      [
+        "INNER JOIN"
+      ],
+      [
+        "ON ED.EmpId = ES.EmpId"
+      ],
+      [
+        "FROM EmployeeDetails ED"
+      ],
+      [
+        "EmployeeSalary ES"
+      ]
+    ],
+    "starterCode": "-- 1: Select employee fields from EmployeeDetails\n-- 2: Inner join EmployeeSalary on EmpId\n-- 3: Return matched employee records",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Select employee columns from EmployeeDetails",
+            "code": "SELECT ED.*"
+          },
+          {
+            "guide": "Use INNER JOIN with EmployeeSalary",
+            "code": "FROM EmployeeDetails ED\nINNER JOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 3
+  },
+  {
+    "id": "sql-left-join-employee-salary",
+    "category": "sql",
+    "title": "Employee Details with Optional Salary",
+    "description": "Write a query to return employee names and salary, including employees without salary records.",
+    "checklist": [
+      "Select FullName and Salary columns",
+      "Use LEFT JOIN between EmployeeDetails and EmployeeSalary",
+      "Join on EmpId",
+      "Return all employee records even when salary is missing"
+    ],
+    "detailedInstructions": [
+      "Step 1: Select the employee name and salary columns",
+      "Step 2: Use LEFT JOIN to keep all employees",
+      "Step 3: Join on EmpId",
+      "Step 4: Return the combined result"
+    ],
+    "verificationKeywords": [
+      [
+        "LEFT JOIN"
+      ],
+      [
+        "EmployeeDetails ED"
+      ],
+      [
+        "EmployeeSalary ES"
+      ],
+      [
+        "ED.EmpId = ES.EmpId"
+      ],
+      [
+        "SELECT ED.FullName",
+        "ES.Salary"
+      ]
+    ],
+    "starterCode": "-- 1: Select employee name and salary\n-- 2: Use LEFT JOIN on EmpId\n-- 3: Return all employee records",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Select employee name and salary",
+            "code": "SELECT ED.FullName, ES.Salary"
+          },
+          {
+            "guide": "Use LEFT JOIN so employees without salary are included",
+            "code": "FROM EmployeeDetails ED\nLEFT JOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 4
+  },
+  {
+    "id": "sql-managers",
+    "category": "sql",
+    "title": "Employees Who Are Managers",
+    "description": "Write a query to fetch all employees who are also managers in the EmployeeDetails table.",
+    "checklist": [
+      "Use EmployeeDetails table",
+      "Check ManagerId values present in the table",
+      "Return records for employees who appear as managers",
+      "Avoid duplicate results if necessary"
+    ],
+    "detailedInstructions": [
+      "Step 1: Identify manager IDs from EmployeeDetails",
+      "Step 2: Fetch employees whose EmpId matches a manager ID",
+      "Step 3: Return the matching employee records"
+    ],
+    "verificationKeywords": [
+      [
+        "EmpId IN (SELECT ManagerId"
+      ],
+      [
+        "FROM EmployeeDetails"
+      ],
+      [
+        "ManagerId IS NOT NULL"
+      ],
+      [
+        "SELECT *"
+      ]
+    ],
+    "starterCode": "-- 1: Select all columns from EmployeeDetails\n-- 2: Filter employees whose EmpId appears as a ManagerId\n-- 3: Return manager employee rows",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Select all employee columns",
+            "code": "SELECT *"
+          },
+          {
+            "guide": "Use a subquery to find manager IDs",
+            "code": "FROM EmployeeDetails\nWHERE EmpId IN (SELECT ManagerId FROM EmployeeDetails WHERE ManagerId IS NOT NULL);"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 5
+  },
+  {
+    "id": "sql-min-max-salary",
+    "category": "sql",
+    "title": "Min and Max Salary in One Query",
+    "description": "Write a SQL query to display the employee with minimum and maximum salary in a single query.",
+    "checklist": [
+      "Use subqueries or UNION to obtain min and max salary",
+      "Select employee name, position, and salary",
+      "Return both rows in one result set",
+      "Avoid separate queries for min and max"
+    ],
+    "detailedInstructions": [
+      "Step 1: Find the minimum salary and corresponding employee",
+      "Step 2: Find the maximum salary and corresponding employee",
+      "Step 3: Combine results with UNION or a single query",
+      "Step 4: Return name, position, and salary"
+    ],
+    "verificationKeywords": [
+      [
+        "UNION"
+      ],
+      [
+        "MIN(Salary)"
+      ],
+      [
+        "MAX(Salary)"
+      ],
+      [
+        "SELECT Name, Position, Salary"
+      ],
+      [
+        "FROM employee"
+      ]
+    ],
+    "starterCode": "-- 1: Use min and max salary in a single query\n-- 2: Select employee name, position, salary\n-- 3: Combine the two results",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Select employee information for minimum salary",
+            "code": "SELECT Name, Position, Salary\nFROM employee\nWHERE Salary = (SELECT MIN(Salary) FROM employee)"
+          },
+          {
+            "guide": "Select employee information for maximum salary",
+            "code": "UNION\nSELECT Name, Position, Salary\nFROM employee\nWHERE Salary = (SELECT MAX(Salary) FROM employee);"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 6
+  },
+  {
+    "id": "sql-project-count",
+    "category": "sql",
+    "title": "Count Employees in Project P1",
+    "description": "Write a SQL query that returns the number of employees working in project 'P1'.",
+    "checklist": [
+      "Use SELECT COUNT(*) to count rows",
+      "Reference the EmployeeDetails table",
+      "Filter WHERE ProjectName = 'P1'",
+      "Provide a result alias like AS EmployeeCount"
+    ],
+    "detailedInstructions": [
+      "Step 1: Start with SELECT COUNT(*) to get the count of records",
+      "Step 2: Add AS EmployeeCount to label the result column",
+      "Step 3: Specify FROM EmployeeDetails table",
+      "Step 4: Add WHERE clause to filter for ProjectName = 'P1'",
+      "Step 5: Execute to get the count"
+    ],
+    "verificationKeywords": [
+      [
+        "COUNT(*)"
+      ],
+      [
+        "EmployeeDetails"
+      ],
+      [
+        "ProjectName",
+        "P1"
+      ],
+      [
+        "EmployeeCount"
+      ]
+    ],
+    "starterCode": "-- 1: Use SELECT COUNT(*) to count rows\n-- 2: FROM EmployeeDetails\n-- 3: WHERE ProjectName = 'P1'\n-- 4: Add AS EmployeeCount to label result",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Use SELECT COUNT(*) to count rows",
+            "code": "SELECT COUNT(*)"
+          },
+          {
+            "guide": "FROM EmployeeDetails",
+            "code": "FROM EmployeeDetails"
+          },
+          {
+            "guide": "WHERE ProjectName = 'P1'",
+            "code": "WHERE ProjectName = 'P1'"
+          },
+          {
+            "guide": "Add AS EmployeeCount to label result",
+            "code": "SELECT COUNT(*) AS EmployeeCount\nFROM EmployeeDetails\nWHERE ProjectName = 'P1';"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 7
+  },
+  {
+    "id": "sql-project-employee-count-desc",
+    "category": "sql",
+    "title": "Project-wise Employee Count",
+    "description": "Write a SQL query to fetch project-wise employee counts sorted by count descending.",
+    "checklist": [
+      "Group employee salary rows by project",
+      "Count employees per project",
+      "Sort results by employee count descending",
+      "Return project and count columns"
+    ],
+    "detailedInstructions": [
+      "Step 1: Select project and count of EmpId",
+      "Step 2: Group by project name",
+      "Step 3: Order results by count descending",
+      "Step 4: Return project counts"
+    ],
+    "verificationKeywords": [
+      [
+        "GROUP BY Project"
+      ],
+      [
+        "COUNT(EmpId)"
+      ],
+      [
+        "ORDER BY EmployeeCount DESC"
+      ],
+      [
+        "SELECT Project"
+      ]
+    ],
+    "starterCode": "-- 1: Count rows per project in EmployeeSalary\n-- 2: Group by project\n-- 3: Order results by descending count",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Select project and count of EmpId",
+            "code": "SELECT Project, COUNT(EmpId) AS EmployeeCount"
+          },
+          {
+            "guide": "Read from EmployeeSalary table",
+            "code": "FROM EmployeeSalary"
+          },
+          {
+            "guide": "Group by project name",
+            "code": "GROUP BY Project"
+          },
+          {
+            "guide": "Order counts in descending order",
+            "code": "ORDER BY EmployeeCount DESC;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 8
+  },
+  {
+    "id": "sql-remove-duplicates",
+    "category": "sql",
+    "title": "Remove Duplicate Records",
+    "description": "Write a SQL query to remove duplicate rows from a table without using a temporary table.",
+    "checklist": [
+      "Identify duplicate rows using a ranking or counting method",
+      "Keep one row per duplicate group",
+      "Remove rows with a higher duplicate rank",
+      "Avoid use of a temporary table"
+    ],
+    "detailedInstructions": [
+      "Step 1: Use a CTE or subquery to rank duplicate rows",
+      "Step 2: Assign row numbers within each duplicate group",
+      "Step 3: Delete rows where the rank is greater than 1",
+      "Step 4: Keep one unique row per duplicate set"
+    ],
+    "verificationKeywords": [
+      [
+        "WITH",
+        "AS"
+      ],
+      [
+        "ROW_NUMBER() OVER"
+      ],
+      [
+        "DELETE"
+      ],
+      [
+        "WHERE rowNo > 1"
+      ],
+      [
+        "PARTITION BY"
+      ]
+    ],
+    "starterCode": "-- 1: Use a CTE with ROW_NUMBER() to identify duplicates\n-- 2: Delete rows with row number > 1\n-- 3: Keep one unique row per group",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Define a CTE to rank duplicate rows",
+            "code": "WITH RankedData AS (\n    SELECT EmpId, FullName, ManagerId, DateOfJoining,\n           ROW_NUMBER() OVER (PARTITION BY FullName, ManagerId, DateOfJoining ORDER BY EmpId) AS RowNo\n    FROM EmployeeDetails\n)"
+          },
+          {
+            "guide": "Delete rows where row number is greater than 1",
+            "code": "DELETE FROM RankedData WHERE RowNo > 1;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 9
+  },
+  {
+    "id": "sql-salary-range",
+    "category": "sql",
+    "title": "Salary Range Query",
+    "description": "Write a SQL query to fetch employee names whose salary is between 5000 and 10000 inclusive.",
+    "checklist": [
+      "Use EmployeeDetails and EmployeeSalary tables together",
+      "Join the tables using EmpId",
+      "Filter salaries >= 5000 and <= 10000",
+      "Select the employee names",
+      "Return only matching employee records"
+    ],
+    "detailedInstructions": [
+      "Step 1: Join EmployeeDetails and EmployeeSalary on EmpId",
+      "Step 2: Add a salary filter using BETWEEN or comparisons",
+      "Step 3: Select the employee name column",
+      "Step 4: Return the matching employee names"
+    ],
+    "verificationKeywords": [
+      [
+        "WHERE Salary >= 5000",
+        "Salary <= 10000"
+      ],
+      [
+        "JOIN",
+        "EmployeeSalary"
+      ],
+      [
+        "EmployeeDetails",
+        "EmpId"
+      ],
+      [
+        "FullName"
+      ],
+      [
+        "SELECT"
+      ]
+    ],
+    "starterCode": "-- 1: Join EmployeeDetails with EmployeeSalary\n-- 2: Filter salary between 5000 and 10000\n-- 3: Select employee names",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Select employee full names from EmployeeDetails",
+            "code": "SELECT ED.FullName"
+          },
+          {
+            "guide": "Join EmployeeSalary with EmployeeDetails by EmpId",
+            "code": "FROM EmployeeDetails ED\nJOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId"
+          },
+          {
+            "guide": "Filter salary between 5000 and 10000",
+            "code": "WHERE ES.Salary >= 5000 AND ES.Salary <= 10000"
+          },
+          {
+            "guide": "Return employee names for matching records",
+            "code": "SELECT ED.FullName\nFROM EmployeeDetails ED\nJOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId\nWHERE ES.Salary >= 5000 AND ES.Salary <= 10000;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 10
+  },
+  {
+    "id": "sql-second-largest-salary",
+    "category": "sql",
+    "title": "Second Largest Salary",
+    "description": "Write a SQL query to fetch the second highest salary using ranking or OFFSET.",
+    "checklist": [
+      "Query the employee salary values",
+      "Use RANK() or OFFSET to find the second highest salary",
+      "Return the second largest salary row",
+      "Avoid using procedural code"
+    ],
+    "detailedInstructions": [
+      "Step 1: Rank salaries in descending order",
+      "Step 2: Filter for rank = 2 or offset 1 row",
+      "Step 3: Return the second largest salary",
+      "Step 4: Use a single SQL query"
+    ],
+    "verificationKeywords": [
+      [
+        "RANK() OVER"
+      ],
+      [
+        "ORDER BY Salary DESC"
+      ],
+      [
+        "WHERE SalaryRank = 2"
+      ],
+      [
+        "OFFSET 1 ROW"
+      ],
+      [
+        "SELECT DISTINCT Salary"
+      ]
+    ],
+    "starterCode": "-- 1: Use ranking or OFFSET to locate the second largest salary\n-- 2: Return the salary value or row\n-- 3: Keep the query in a single statement",
+    "page": {
+      "editor": {
+        "hints": [
+          {
+            "guide": "Rank salaries in descending order",
+            "code": "WITH RankedSalaries AS (\n    SELECT EmployeeID, Salary, RANK() OVER (ORDER BY Salary DESC) AS SalaryRank\n    FROM Employees\n)"
+          },
+          {
+            "guide": "Select the row with rank 2",
+            "code": "SELECT EmployeeID, Salary\nFROM RankedSalaries\nWHERE SalaryRank = 2;"
+          }
+        ]
+      }
+    },
+    "type": "sql",
+    "index": 11
+  }
+]

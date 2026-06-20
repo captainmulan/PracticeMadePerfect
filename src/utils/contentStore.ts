@@ -48,6 +48,11 @@ export function resetAdminData() {
   window.localStorage.removeItem(ADMIN_STORAGE_KEY);
 }
 
+export function hasAdminData(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(ADMIN_STORAGE_KEY) !== null;
+}
+
 export function getHomePageData(): typeof homePageData {
   return loadAdminData().homePageData;
 }

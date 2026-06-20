@@ -88,8 +88,15 @@ function compileJsx(source) {
   return tryParseJavaScript(normalized);
 }
 
-const taskPath = path.join(__dirname, '..', 'src', 'data', 'taskDefs', 'react-counter-advanced.json');
-const task = getTaskJson(taskPath);
+const bundlePath = path.join(__dirname, '..', 'src', 'data', 'tasks_bundle.json');
+let task;
+if (fs.existsSync(bundlePath)) {
+  const bundle = JSON.parse(fs.readFileSync(bundlePath, 'utf8'));
+  task = bundle.find((t) => t.id === 'react-counter-advanced') || bundle[0];
+} else {
+  const taskPath = path.join(__dirname, '..', 'src', 'data', 'taskDefs', 'react-counter-advanced.json');
+  task = getTaskJson(taskPath);
+}
 const code = task.starterCode || '';
 console.log('Running compile check for task:', task.id);
 const res = compileJsx(code);

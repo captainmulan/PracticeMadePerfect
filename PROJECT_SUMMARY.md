@@ -32,7 +32,7 @@ A **lightweight, mobile-friendly interview practice site** for busy professional
 | Build | Vite 5 | Dev server on port `4173` |
 | Routing | react-router-dom 7 | `/` home, `/practice/:categoryKey` workspace |
 | Backend | None | Fully client-side SPA |
-| Data storage | TypeScript modules | Not `.txt` / `.html` files yet |
+| Data storage | Browser SQLite (`tasks.db`) + static category metadata in `tasks.ts` | Tasks loaded via sql.js; categories still defined in code |
 
 ### 2.2 Folder structure
 
@@ -52,8 +52,11 @@ PracticeMadePerfect/
     ├── config/
     │   └── compileLanguages.ts  # Language profiles (future admin override)
     ├── utils/
-    │   ├── taskHints.ts         # Comment hints + keyword verification
-    │   └── compileVerifier.ts   # Syntax / compile checks per language
+    │   ├── sqliteBrowserDb.ts       # Browser SQLite open/save/migrate
+    │   ├── sqliteBrowserTaskSource.ts
+    │   ├── taskSort.ts              # Category_Index + Task_Index sorting
+    │   ├── taskHints.ts
+    │   └── compileVerifier.ts
     └── pageData/
         ├── homePage.ts       # Home page copy / metadata
         └── practicePage.ts   # Practice page copy + re-exports tasks
@@ -76,14 +79,20 @@ PracticeMadePerfect/
 PracticeTask {
   id, category, title, description,
   checklist: string[],
-  detailedInstructions?: string[],
-  verificationKeywords?: string[][],  // keyword-based auto-check
-  starterCode?: string,
+  categoryIndex?: number,   // sort categories (maps to SQLite Category_Index)
+  taskIndex?: number,         // sort tasks within category (maps to SQLite Task_Index)
+  verificationKeywords?: string[][],
   type: "code" | "sql" | "text"
 }
 
 Category { key, label, description?, color?, icon? }
 ```
+
+**SQLite `tasks` table columns:** `id`, `filename`, `category`, `title`, `raw`, `Category_Index`, `Task_Index`, `type`
+
+- **Category_Index** — display order of categories (from `categoryIndexByKey` in `tasks.ts`)
+- **Task_Index** — display order of tasks inside a category (was legacy `idx` / JSON `index`)
+- Sort: `ORDER BY Category_Index, Task_Index` (see `sqliteBrowserTaskSource.ts`, `taskSort.ts`)
 
 **Categories configured:** `react`, `angular`, `csharp`, `sql` (IT only — no Car / Education yet).
 
