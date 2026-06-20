@@ -47,7 +47,7 @@ export default function CourseWizard() {
   const progressPct = Math.round(((stepIndex + 1) / steps.length) * 100);
 
   return (
-    <div className="page-content course-wizard-page">
+    <div className="page-content course-wizard-page practice-page practice-wizard practice-code-page">
       <section className="course-wizard-header panel">
         <div className="course-wizard-header-top">
           <div>
@@ -88,7 +88,7 @@ export default function CourseWizard() {
         {currentStep.description ? <p className="course-wizard-description">{currentStep.description}</p> : null}
       </section>
 
-      <section className="course-wizard-body panel">
+      <section className="course-wizard-body">
         {currentStep.stepType === "html" && <CourseHtmlStep step={currentStep} />}
         {currentStep.stepType === "code-exam" && <CourseCodeStep step={currentStep} placeholder={placeholder} />}
         {currentStep.stepType === "quiz" && <CourseQuizStep step={currentStep} />}

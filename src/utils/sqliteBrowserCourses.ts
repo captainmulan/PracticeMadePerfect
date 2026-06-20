@@ -389,9 +389,29 @@ export function assembleCourses(
 
 export async function ensureCoursesSeeded(db: Database) {
   ensureCourseSchema(db);
-  if (countCourses(db) > 0) return;
-  DEFAULT_COURSES.forEach((course) => saveCourseBundleToDb(db, course));
-  persistBrowserDbToLocalStorage(db);
+  // If there are no courses at all, seed everything.
+  const existing = queryCourseRows(db);
+  if (existing.length === 0) {
+    DEFAULT_COURSES.forEach((course) => saveCourseBundleToDb(db, course));
+    persistBrowserDbToLocalStorage(db);
+    return;
+  }
+
+  // Merge: upsert DEFAULT_COURSES when missing or when the bundled raw JSON differs
+  const existingMap = new Map<string, string>();
+  existing.forEach((row) => existingMap.set(row.id, row.raw));
+
+  let changed = false;
+  DEFAULT_COURSES.forEach((course) => {
+    const raw = JSON.stringify(course, null, 2);
+    const prev = existingMap.get(course.id);
+    if (!prev || prev !== raw) {
+      saveCourseBundleToDb(db, course);
+      changed = true;
+    }
+  });
+
+  if (changed) persistBrowserDbToLocalStorage(db);
 }
 
 export async function loadCoursesFromBrowserDb(): Promise<Course[]> {

@@ -3434,10 +3434,151 @@ textarea {
 
 .course-wizard-page {
   gap: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 52px);
 }
 
 .app-main:has(.course-wizard-page) {
   padding: 8px 8px 12px;
+}
+
+.course-wizard-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.course-step-html-body,
+.course-step-code,
+.course-step-quiz {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-step-html-body .practice-layout.full-code,
+.course-step-code .practice-layout.full-code,
+.course-step-quiz .practice-layout.full-code {
+  flex: 1;
+  min-height: 0;
+}
+
+.course-step-html-body .practice-right,
+.course-step-code .practice-right {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.course-step-quiz .practice-right {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 0;
+  overflow: visible;
+}
+
+.course-step-html-body .practice-editor-area,
+.course-step-code .practice-editor-area,
+.course-step-quiz .practice-editor-area {
+  min-height: 0;
+  display: flex;
+  flex: 1;
+}
+
+.course-step-html-body .practice-editor-shell,
+.course-step-code .practice-editor-shell,
+.course-step-quiz .practice-editor-shell {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.course-step-html-body .practice-codearea,
+.course-step-html-body .practice-textarea,
+.course-step-code .practice-codearea,
+.course-step-code .practice-textarea,
+.course-step-quiz .practice-codearea,
+.course-step-quiz .practice-textarea {
+  min-height: 0;
+  height: 100%;
+}
+
+.course-step-html-body .practice-answer-html {
+  min-height: 0;
+  height: 100%;
+  padding: 24px;
+}
+
+.course-step-html-body .practice-answer-html h2 {
+  margin-top: 0;
+  color: #f8fafc;
+}
+
+.course-step-html-body .practice-answer-html ul,
+.course-step-html-body .practice-answer-html ol {
+  margin: 16px 0;
+  padding-left: 20px;
+  color: #cbd5e1;
+}
+
+.course-step-html-body .practice-answer-html li {
+  margin: 8px 0;
+}
+
+/* Presentation-style slide card for course lessons */
+.course-lesson {
+  background: #0f172a;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.course-lesson .slide-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+  box-shadow: 0 8px 24px rgba(2,6,23,0.12);
+}
+
+.course-lesson .slide-text h2 {
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  font-size: 1.4rem;
+}
+
+.course-lesson .slide-text p,
+.course-lesson .slide-text li {
+  color: #334155;
+  line-height: 1.6;
+}
+
+.course-lesson .slide-diagram svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.course-lesson .slide-diagram .box {
+  fill: #eef2ff;
+  stroke: #c7d2fe;
+  stroke-width: 1;
+}
+
+.course-lesson .slide-diagram .arrow {
+  stroke: #94a3b8;
+  stroke-width: 2;
+  fill: none;
 }
 
 .course-wizard-header {
@@ -3497,7 +3638,7 @@ textarea {
   line-height: 1.45;
 }
 
-.course-wizard-body {
+..course-wizard-body {
   padding: 0;
   border-radius: 18px;
   overflow: hidden;
@@ -3581,19 +3722,60 @@ textarea {
   padding: 14px;
   display: grid;
   gap: 14px;
+  min-height: 0;
+}
+
+.course-step-quiz-body {
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  padding-top: 80px;
+}
+
+.course-quiz-intro {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
 }
 
 .course-quiz-question {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 12px;
+  padding: 16px;
   margin: 0;
+  background: #ffffff;
+  color: #0f172a;
 }
 
+
+.course-step-quiz .practice-right-header {
+  position: relative;
+  z-index: 0;
+}
+
+.course-step-quiz-body {
+  position: relative;
+  z-index: 1;
+}
+
+.course-quiz-question {
+  margin-top: 12px;
+}
+
+/* Ensure legend text sits above the dark header if they overlap */
+.course-quiz-question legend {
+  position: relative;
+  z-index: 2;
+  background: #ffffff;
+  padding: 0 8px;
+  display: inline-block;
+  margin-top: -12px;
+}
 .course-quiz-question legend {
   font-weight: 700;
   font-size: 0.92rem;
   padding: 0 4px;
+  color: #0f172a;
 }
 
 .course-quiz-options {
@@ -3610,6 +3792,16 @@ textarea {
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   cursor: pointer;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.course-quiz-option span {
+  color: inherit;
+}
+
+.course-quiz-option input[type="radio"] {
+  accent-color: #2563eb;
 }
 
 .course-quiz-option.selected {

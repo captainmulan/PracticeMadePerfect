@@ -1,0 +1,101 @@
+/* Scoped course styles to avoid overriding global index.css */
+
+.course-step-quiz {
+  padding: 8px 8px;
+  gap: 10px;
+}
+
+.course-step-quiz .practice-right {
+  overflow: visible;
+  padding: 0;
+}
+
+.course-step-quiz .practice-right-header {
+  position: relative;
+  z-index: 1;
+}
+
+.course-step-quiz .course-step-quiz-body {
+  gap: 10px;
+  min-height: 0;
+  padding-top: 48px;
+}
+
+.course-step-quiz .course-quiz-intro {
+  color: #ffffff;
+}
+
+.course-step-quiz .course-quiz-question {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 14px;
+  margin: 22px 0 0 0;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e6eef8;
+}
+
+.course-step-quiz .course-quiz-question legend {
+  display: block;
+  width: 100%;
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: #0f172a;
+  padding: 0;
+  margin: 0 0 10px 0;
+  white-space: normal;
+  word-break: break-word;
+  background: transparent;
+}
+
+.course-step-quiz .course-quiz-options {
+  margin-top: 8px;
+}
+
+.course-step-quiz .course-quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #0f172a;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.course-step-quiz .course-quiz-option span {
+  color: inherit;
+  white-space: normal;
+}
+
+.course-step-quiz .course-quiz-option input[type="radio"] {
+  accent-color: #2563eb;
+  transform: scale(1.05);
+  flex-shrink: 0;
+}
+
+.course-step-html-body .practice-answer-html .course-lesson .slide-text h2 {
+  color: #0f172a;
+}
+
+.course-step-html-body .practice-answer-html .course-lesson .slide-text p,
+.course-step-html-body .practice-answer-html .course-lesson .slide-text li,
+.course-step-html-body .practice-answer-html .course-lesson .slide-text code {
+  color: #0f172a;
+}
+
+/* Slide content styles (non-invasive) */
+.course-lesson .slide-card {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.course-lesson .slide-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}

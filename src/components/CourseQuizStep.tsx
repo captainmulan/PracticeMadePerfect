@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../styles/course.css";
 import type { CourseStep, QuizQuestion } from "../data/courses";
 
 interface CourseQuizStepProps {
@@ -23,29 +24,39 @@ export default function CourseQuizStep({ step }: CourseQuizStepProps) {
 
   return (
     <div className="course-step-quiz">
-      {questions.map((question) => (
-        <QuizQuestionBlock
-          key={question.id}
-          question={question}
-          selected={answers[question.id]}
-          submitted={submitted}
-          onSelect={(optionId) => selectAnswer(question.id, optionId)}
-        />
-      ))}
-      {!submitted ? (
-        <button
-          type="button"
-          className="footer-button course-quiz-submit"
-          onClick={handleSubmit}
-          disabled={questions.some((q) => !answers[q.id])}
-        >
-          Submit quiz
-        </button>
-      ) : (
-        <div className="course-quiz-summary">
-          Score: {score}/{questions.length}
-        </div>
-      )}
+      <section className="practice-layout full-code code-peek-hidden">
+        <section className="practice-right panel">
+          <div className="practice-right-header">
+            <div className="panel-heading">Quiz</div>
+          </div>
+          <div className="course-step-quiz-body">
+            {step.description ? <p className="course-quiz-intro">{step.description}</p> : null}
+            {questions.map((question) => (
+              <QuizQuestionBlock
+                key={question.id}
+                question={question}
+                selected={answers[question.id]}
+                submitted={submitted}
+                onSelect={(optionId) => selectAnswer(question.id, optionId)}
+              />
+            ))}
+            {!submitted ? (
+              <button
+                type="button"
+                className="footer-button course-quiz-submit"
+                onClick={handleSubmit}
+                disabled={questions.some((q) => !answers[q.id])}
+              >
+                Submit quiz
+              </button>
+            ) : (
+              <div className="course-quiz-summary">
+                Score: {score}/{questions.length}
+              </div>
+            )}
+          </div>
+        </section>
+      </section>
     </div>
   );
 }
