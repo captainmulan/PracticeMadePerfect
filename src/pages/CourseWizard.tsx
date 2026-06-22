@@ -93,10 +93,6 @@ export default function CourseWizard() {
         {currentStep.stepType === "code-exam" && <CourseCodeStep step={currentStep} placeholder={placeholder} />}
         {currentStep.stepType === "quiz" && <CourseQuizStep step={currentStep} />}
       </section>
-
-      <div className="course-wizard-footer">
-        <Link to="/" className="hero-secondary">Back to courses</Link>
-      </div>
     </div>
   );
 }

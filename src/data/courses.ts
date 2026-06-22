@@ -30,6 +30,14 @@ export interface CourseStep {
   codeType?: "code" | "sql" | "text";
   quizQuestions?: QuizQuestion[];
   detailedInstructions?: string[];
+  page?: {
+    editor?: {
+      hints?: Array<{
+        guide?: string;
+        code?: string;
+      }>;
+    };
+  };
 }
 
 export interface CourseChapter {
@@ -151,24 +159,15 @@ export const DEFAULT_COURSES: Course[] = [
         </ul>
       </div>
       <div class="slide-diagram" aria-hidden>
-        <svg viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg" role="img">
-          <rect x="20" y="20" width="110" height="40" rx="6" class="box" />
-          <text x="75" y="45" font-size="12" text-anchor="middle" fill="#0f172a">State</text>
-          <rect x="150" y="20" width="110" height="40" rx="6" class="box" />
-          <text x="205" y="45" font-size="12" text-anchor="middle" fill="#0f172a">UI</text>
-          <rect x="85" y="90" width="110" height="40" rx="6" class="box" />
-          <text x="140" y="115" font-size="12" text-anchor="middle" fill="#0f172a">Actions</text>
-          <path class="arrow" d="M75 60 L75 90" marker-end="url(#arrowhead)" />
-          <path class="arrow" d="M205 60 L205 90" marker-end="url(#arrowhead)" />
-          <defs>
-            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6" fill="#94a3b8" />
-            </marker>
-          </defs>
-        </svg>
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Flux_diagram.svg"
+          alt="Flux architecture diagram"
+          style="width:100%; max-width:100%; height:auto; border-radius: 16px; border: 1px solid #e6eef8;"
+        />
       </div>
     </div>
   </div>`,
+
             detailedInstructions: [
               "Instructor notes: Explain component boundaries and when to lift state up vs. using context. Use the diagram to show how state, UI and actions interact.",
               "Demo: Show a tiny function component that renders a list and updates it with setState — explain re-rendering behavior.",
@@ -760,8 +759,474 @@ export const DEFAULT_COURSES: Course[] = [
             stepIndex: 0,
             stepType: "code-exam",
             title: "Manage List of Items",
-            description: "Add and remove list items.",
+            description: "Add and remove list items using useReducer for the list and useState for the input field.",
             codeType: "code",
+            checklist: [
+              "Import useReducer and useState from React",
+              "Define ADD_ITEM and REMOVE_ITEM actions",
+              "Reducer appends item on ADD_ITEM",
+              "Reducer filters out item by index on REMOVE_ITEM",
+              "useState holds current input text",
+              "Add button dispatches ADD_ITEM and clears input",
+              "Render list with Remove button per item",
+              "Export default ManageList",
+            ],
+            page: {
+              editor: {
+                hints: [
+                  {
+                    guide: "// guide hints: Import: import React, { useReducer, useState } from react",
+                    code: "import React, { useReducer, useState } from 'react';",
+                  },
+                  {
+                    guide: "// guide hints: Define ADD_ITEM and REMOVE_ITEM actions and initialState",
+                    code: "const ADD_ITEM = 'ADD_ITEM';\nconst REMOVE_ITEM = 'REMOVE_ITEM';\nconst initialState = { items: [] };",
+                  },
+                  {
+                    guide: "// guide hints: Reducer appends item on ADD_ITEM and removes by index on REMOVE_ITEM",
+                    code: "function reducer(state, action) {\n  switch (action.type) {\n    case ADD_ITEM:\n      return { items: [...state.items, action.payload] };\n    case REMOVE_ITEM:\n      return { items: state.items.filter((item, index) => index !== action.payload) };\n    default:\n      return state;\n  }\n}",
+                  },
+                  {
+                    guide: "// guide hints: useReducer for items and useState for input",
+                    code: "const [state, dispatch] = useReducer(reducer, initialState);\nconst [input, setInput] = useState('');",
+                  },
+                  {
+                    guide: "// guide hints: addItem dispatches ADD_ITEM and clears input",
+                    code: "const addItem = () => {\n  dispatch({ type: ADD_ITEM, payload: input });\n  setInput('');\n};",
+                  },
+                  {
+                    guide: "// guide hints: Map items to list with Remove button",
+                    code: "<ul>{state.items.map((item, index) => (\n  <li key={index}>\n    {item} <button onClick={() => dispatch({ type: REMOVE_ITEM, payload: index })}>Remove</button>\n  </li>\n))}</ul>",
+                  },
+                  {
+                    guide: "// guide hints: Export: export default ManageList;",
+                    code: "export default ManageList;",
+                  },
+                ],
+              },
+            },
+          },
+          {
+            id: "react-form-input",
+            courseId: "react-interview-practice",
+            chapterId: "react-interview-ch1",
+            chapterTitle: "React Tasks",
+            chapterIndex: 0,
+            stepIndex: 1,
+            stepType: "code-exam",
+            title: "Form Input Handling",
+            description: "Build a controlled form input with useReducer. Display the typed value live as the user types.",
+            codeType: "code",
+            checklist: [
+              "Import useReducer from React",
+              "Define SET_INPUT action type",
+              "Reducer updates input from action.payload",
+              "Controlled input with value={state.input}",
+              "onChange dispatches SET_INPUT with e.target.value",
+              "Display entered text below the input",
+              "Export default FormInput",
+            ],
+            page: {
+              editor: {
+                hints: [
+                  {
+                    guide: "// guide hints: Import: import React, { useReducer } from react",
+                    code: "import React, { useReducer } from 'react';",
+                  },
+                  {
+                    guide: "// guide hints: Define SET_INPUT action type and initialState",
+                    code: "const SET_INPUT = 'SET_INPUT';\nconst initialState = { input: '' };",
+                  },
+                  {
+                    guide: "// guide hints: Reducer updates input from action.payload",
+                    code: "function reducer(state, action) {\n  switch (action.type) {\n    case SET_INPUT:\n      return { input: action.payload };\n    default:\n      return state;\n  }\n}",
+                  },
+                  {
+                    guide: "// guide hints: useReducer with reducer and initialState",
+                    code: "const [state, dispatch] = useReducer(reducer, initialState);",
+                  },
+                  {
+                    guide: "// guide hints: Controlled input with value=state.input",
+                    code: "<input value={state.input} onChange={(e) => dispatch({ type: SET_INPUT, payload: e.target.value })} />",
+                  },
+                  {
+                    guide: "// guide hints: Show Entered Text below the input",
+                    code: "<p>Entered Text: {state.input}</p>",
+                  },
+                  {
+                    guide: "// guide hints: Export: export default FormInput;",
+                    code: "export default FormInput;",
+                  },
+                ],
+              },
+            },
+          },
+          {
+            id: "react-toggle-visibility",
+            courseId: "react-interview-practice",
+            chapterId: "react-interview-ch1",
+            chapterTitle: "React Tasks",
+            chapterIndex: 0,
+            stepIndex: 2,
+            stepType: "code-exam",
+            title: "Toggle Visibility",
+            description: "Toggle message visibility using useReducer with a TOGGLE_VISIBILITY action and conditional rendering.",
+            codeType: "code",
+            checklist: [
+              "Import useReducer from React",
+              "Define TOGGLE_VISIBILITY action type",
+              "Set initialState with visible: true",
+              "Reducer flips visible on TOGGLE_VISIBILITY",
+              "Conditionally render message when visible",
+              "Button label switches between Hide and Show",
+              "Export default ToggleVisibility",
+            ],
+            page: {
+              editor: {
+                hints: [
+                  {
+                    guide: "// guide hints: Import: import React, { useReducer } from react",
+                    code: "import React, { useReducer } from 'react';",
+                  },
+                  {
+                    guide: "// guide hints: Define TOGGLE_VISIBILITY action type and initialState",
+                    code: "const TOGGLE_VISIBILITY = 'TOGGLE_VISIBILITY';\nconst initialState = { visible: true };",
+                  },
+                  {
+                    guide: "// guide hints: Reducer flips visible on TOGGLE_VISIBILITY",
+                    code: "function reducer(state, action) {\n  switch (action.type) {\n    case TOGGLE_VISIBILITY:\n      return { visible: !state.visible };\n    default:\n      return state;\n  }\n}",
+                  },
+                  {
+                    guide: "// guide hints: useReducer with reducer and initialState",
+                    code: "const [state, dispatch] = useReducer(reducer, initialState);",
+                  },
+                  {
+                    guide: "// guide hints: Conditionally render message when state.visible",
+                    code: "{state.visible && <p>The message is visible.</p>}",
+                  },
+                  {
+                    guide: "// guide hints: Button dispatches TOGGLE_VISIBILITY, label Hide / Show",
+                    code: "<button onClick={() => dispatch({ type: TOGGLE_VISIBILITY })}>{state.visible ? 'Hide' : 'Show'}</button>",
+                  },
+                  {
+                    guide: "// guide hints: Export: export default ToggleVisibility;",
+                    code: "export default ToggleVisibility;",
+                  },
+                ],
+              },
+            },
+          },
+          {
+            id: "react-tab-navigation",
+            courseId: "react-interview-practice",
+            chapterId: "react-interview-ch1",
+            chapterTitle: "React Tasks",
+            chapterIndex: 0,
+            stepIndex: 3,
+            stepType: "code-exam",
+            title: "Tab Navigation",
+            description: "Build tab navigation with useReducer. Switch between Tab1, Tab2, and Tab3 content panels.",
+            codeType: "code",
+            checklist: [
+              "Import useReducer from React",
+              "Define SELECT_TAB action type",
+              "Initial state selectedTab: 'Tab1'",
+              "Reducer updates selectedTab from payload",
+              "Render Tab 1, Tab 2, Tab 3 buttons",
+              "Each button dispatches SELECT_TAB with tab name",
+              "Show content matching state.selectedTab",
+              "Export default TabNavigation",
+            ],
+            page: {
+              editor: {
+                hints: [
+                  {
+                    guide: "// guide hints: Import: import React, { useReducer } from react",
+                    code: "import React, { useReducer } from 'react';",
+                  },
+                  {
+                    guide: "// guide hints: Define SELECT_TAB action type and initial state",
+                    code: "const SELECT_TAB = 'SELECT_TAB';\nconst initialState = { selectedTab: 'Tab1' };",
+                  },
+                  {
+                    guide: "// guide hints: Reducer updates selectedTab from action.payload",
+                    code: "function reducer(state, action) {\n  switch (action.type) {\n    case SELECT_TAB:\n      return { selectedTab: action.payload };\n    default:\n      return state;\n  }\n}",
+                  },
+                  {
+                    guide: "// guide hints: useReducer with reducer and initialState",
+                    code: "const [state, dispatch] = useReducer(reducer, initialState);",
+                  },
+                  {
+                    guide: "// guide hints: Tab buttons dispatch SELECT_TAB with tab name",
+                    code: "<button onClick={() => dispatch({ type: SELECT_TAB, payload: 'Tab1' })}>Tab1</button>\n<button onClick={() => dispatch({ type: SELECT_TAB, payload: 'Tab2' })}>Tab2</button>\n<button onClick={() => dispatch({ type: SELECT_TAB, payload: 'Tab3' })}>Tab3</button>",
+                  },
+                  {
+                    guide: "// guide hints: Conditionally render content for selected tab",
+                    code: "{state.selectedTab === 'Tab1' && <div>Tab1 Content</div>}\n{state.selectedTab === 'Tab2' && <div>Tab2 Content</div>}\n{state.selectedTab === 'Tab3' && <div>Tab3 Content</div>}",
+                  },
+                  {
+                    guide: "// guide hints: Export: export default TabNavigation;",
+                    code: "export default TabNavigation;",
+                  },
+                ],
+              },
+            },
+          },
+          {
+            id: "react-fetch-data",
+            courseId: "react-interview-practice",
+            chapterId: "react-interview-ch1",
+            chapterTitle: "React Tasks",
+            chapterIndex: 0,
+            stepIndex: 4,
+            stepType: "code-exam",
+            title: "Fetch Data on Button Click",
+            description: "Fetch API data on button click using useReducer with FETCH_SUCCESS and FETCH_ERROR actions.",
+            codeType: "code",
+            checklist: [
+              "Import useReducer from React",
+              "Define FETCH_SUCCESS and FETCH_ERROR actions",
+              "Initial state with data: null and error: null",
+              "Async fetchData function calls API",
+              "Dispatch FETCH_SUCCESS with response on success",
+              "Dispatch FETCH_ERROR with message on failure",
+              "Render data or error in the UI",
+              "Export default FetchData",
+            ],
+            page: {
+              editor: {
+                hints: [
+                  {
+                    guide: "// guide hints: Import: import React, { useReducer } from react",
+                    code: "import React, { useReducer } from 'react';",
+                  },
+                  {
+                    guide: "// guide hints: Define FETCH_SUCCESS and FETCH_ERROR actions and initial state",
+                    code: "const FETCH_SUCCESS = 'FETCH_SUCCESS';\nconst FETCH_ERROR = 'FETCH_ERROR';\nconst initialState = { data: null, error: null };",
+                  },
+                  {
+                    guide: "// guide hints: Reducer handles FETCH_SUCCESS and FETCH_ERROR",
+                    code: "function reducer(state, action) {\n  switch (action.type) {\n    case FETCH_SUCCESS:\n      return { ...state, data: action.payload, error: null };\n    case FETCH_ERROR:\n      return { ...state, error: action.payload };\n    default:\n      return state;\n  }\n}",
+                  },
+                  {
+                    guide: "// guide hints: async fetchData with try/catch",
+                    code: "const [state, dispatch] = useReducer(reducer, initialState);\nconst fetchData = async () => {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');\n    const data = await response.json();\n    dispatch({ type: FETCH_SUCCESS, payload: data });\n  } catch (error) {\n    dispatch({ type: FETCH_ERROR, payload: error.message });\n  }\n};",
+                  },
+                  {
+                    guide: "// guide hints: Button triggers fetchData",
+                    code: "<button onClick={fetchData}>Fetch Data</button>",
+                  },
+                  {
+                    guide: "// guide hints: Render state.data and state.error",
+                    code: "{state.error && <p>{state.error}</p>}\n{state.data && <pre>{JSON.stringify(state.data, null, 2)}</pre>}",
+                  },
+                  {
+                    guide: "// guide hints: Export: export default FetchData;",
+                    code: "export default FetchData;",
+                  },
+                ],
+              },
+            },
+          },
+          {
+            id: "react-counter-advanced",
+            courseId: "react-interview-practice",
+            chapterId: "react-interview-ch1",
+            chapterTitle: "React Tasks",
+            chapterIndex: 0,
+            stepIndex: 5,
+            stepType: "code-exam",
+            title: "Counter Variations",
+            description: "Extend a counter with step control using Math.max/min, reset, multiple counters, and double/triple increment buttons.",
+            codeType: "code",
+            checklist: [
+              "Import React and useState from React",
+              "Create a Counter component with count and step state",
+              "Use Math.max and Math.min to enforce counter limits",
+              "Add reset, double, and triple actions",
+              "Render multiple counter instances in App",
+              "Export default App",
+            ],
+            page: {
+              editor: {
+                hints: [
+                  {
+                    guide: "// Import React and useState from React",
+                    code: "import React, { useState } from 'react';",
+                  },
+                  {
+                    guide: "// Create a reusable Counter component and declare required state variables",
+                    code: "const CounterComponent = () => {\n  const [count, setCount] = useState(0);\n  const [step, setStep] = useState(1);",
+                  },
+                  {
+                    guide: "// Use Math.max() and Math.min() to enforce counter limits",
+                    code: "const increase = () => {\n  setCount(Math.min(count + step, 100));\n};\n\nconst decrease = () => {\n  setCount(Math.max(count - step, 0));\n};",
+                  },
+                  {
+                    guide: "// Create UI for the counter, step control, and action buttons",
+                    code: "return (\n  <div>\n    <h2>Count: {count}</h2>\n    <label>Step:<input type=\"number\" value={step} onChange={(e) => setStep(Number(e.target.value))} /></label>\n    <button onClick={increase}>Increase</button>\n    <button onClick={decrease}>Decrease</button>\n    <button onClick={() => setCount(0)}>Reset</button>\n    <button onClick={() => setCount(Math.min(count + step * 2, 100))}>Double</button>\n    <button onClick={() => setCount(Math.min(count + step * 3, 100))}>Triple</button>\n  </div>\n);",
+                  },
+                  {
+                    guide: "// Render multiple counter instances",
+                    code: "const App = () => {\n  return (\n    <div>\n      <CounterComponent />\n      <CounterComponent />\n    </div>\n  );\n};",
+                  },
+                  {
+                    guide: "// Export the main App component",
+                    code: "export default App;",
+                  },
+                ],
+              },
+            },
+          },
+          {
+            id: "react-counter-redux",
+            courseId: "react-interview-practice",
+            chapterId: "react-interview-ch1",
+            chapterTitle: "React Tasks",
+            chapterIndex: 0,
+            stepIndex: 6,
+            stepType: "code-exam",
+            title: "Counter with Redux",
+            description: "Wire a counter to Redux using combineReducers, a counterReducer, useSelector, and useDispatch.",
+            codeType: "code",
+            checklist: [
+              "Import React and react-redux hooks",
+              "Create counterReducer with INCREMENT and DECREMENT",
+              "Combine reducers with combineReducers",
+              "Read count via useSelector",
+              "Dispatch INCREMENT and DECREMENT with useDispatch",
+              "Render count and increment/decrement buttons",
+              "Export default CounterComponent",
+            ],
+            page: {
+              editor: {
+                hints: [
+                  {
+                    guide: "// guide hints: Import: import React from 'react';",
+                    code: "import React from 'react';",
+                  },
+                  {
+                    guide: "// guide hints: Import: useSelector and useDispatch from react-redux, and combineReducers from redux",
+                    code: "import { combineReducers } from 'redux';\nimport { useSelector, useDispatch } from 'react-redux';",
+                  },
+                  {
+                    guide: "// guide hints: initialState { count: 0 }, reducer with INCREMENT / DECREMENT",
+                    code: "const initialState = { count: 0 };\nconst counterReducer = (state = initialState, action) => {\n  switch (action.type) {\n    case 'INCREMENT':\n      return { count: state.count + 1 };\n    case 'DECREMENT':\n      return { count: state.count - 1 };\n    default:\n      return state;\n  }\n};",
+                  },
+                  {
+                    guide: "// guide hints: combineReducers({ counter: counterReducer })",
+                    code: "const rootReducer = combineReducers({ counter: counterReducer });",
+                  },
+                  {
+                    guide: "// guide hints: useSelector(state => state.counter.count)",
+                    code: "const count = useSelector((state) => state.counter.count);",
+                  },
+                  {
+                    guide: "// guide hints: useDispatch() for INCREMENT / DECREMENT",
+                    code: "const dispatch = useDispatch();\nconst increment = () => dispatch({ type: 'INCREMENT' });\nconst decrement = () => dispatch({ type: 'DECREMENT' });",
+                  },
+                  {
+                    guide: "// guide hints: Render count with Increment / Decrement buttons",
+                    code: "return (\n  <div>\n    <h2>Count: {count}</h2>\n    <button onClick={increment}>Increment</button>\n    <button onClick={decrement}>Decrement</button>\n  </div>\n);",
+                  },
+                  {
+                    guide: "// guide hints: Export: export default CounterComponent;",
+                    code: "export default CounterComponent;",
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "solid-interview-practice",
+    title: "SOLID Interview Practice",
+    description: "SOLID principles and design patterns practice for interviews.",
+    color: "#4a90e2",
+    icon: "📐",
+    courseIndex: 2,
+    chapters: [
+      {
+        id: "solid-interview-ch1",
+        courseId: "solid-interview-practice",
+        chapterIndex: 0,
+        title: "SOLID Principles",
+        description: "Core SOLID and OOP concepts",
+        steps: [
+          {
+            id: "solid-core-concepts",
+            courseId: "solid-interview-practice",
+            chapterId: "solid-interview-ch1",
+            chapterTitle: "SOLID Principles",
+            chapterIndex: 0,
+            stepIndex: 0,
+            stepType: "html",
+            title: "What is SOLID?",
+            description: "Review the SOLID principles, abstract/interface differences, and polymorphism for interview readiness.",
+            codeType: "text",
+            checklist: [
+              "Explain the SOLID principles in plain language",
+              "Describe Abstract class vs Interface",
+              "Summarize how polymorphism improves design",
+            ],
+            contentHtml: "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is SOLID</td><td>Design principles for clean code</td><td>Reduces complexity and future risks</td><td>Add new policy without breaking existing code</td><td>Maintainable system</td></tr>\n        <tr><td>SRP - Single Responsibility</td><td>One class = one job</td><td>Avoid mixed responsibilities</td><td>PremiumCalculator only calculates premium</td><td>Easy testing</td></tr>\n        <tr><td>OCP - Open/Closed</td><td>Extend, don't modify</td><td>Add features without changing old code</td><td>Add TravelPolicy without changing core logic</td><td>Safer changes</td></tr>\n        <tr><td>LSP - Liskov Substitution</td><td>Child behaves like parent</td><td>No broken behaviour when substituting</td><td>MotorPolicy works as Policy</td><td>Reliable code</td></tr>\n        <tr><td>ISP - Interface Segregation Principle</td><td>Small focused interfaces</td><td>Don't force unused methods</td><td>IClaimable, IRenewable separated</td><td>Cleaner design</td></tr>\n        <tr><td>DIP - Dependency Inversion</td><td>Depend on abstraction</td><td>Not concrete classes</td><td>ClaimService uses IPaymentService</td><td>Flexible + testable</td></tr>\n        <tr><td>Explain Abstract vs Interface</td><td>Abstract = partial logic, Interface = contract</td><td>Abstract has code, interface only rules</td><td>Policy vs IClaimable</td><td>Flexible design</td></tr>\n        <tr><td>Explain Polymorphism</td><td>Same method, different behaviour</td><td>Behaviour depends on object</td><td>CalculateClaim varies by policy</td><td>Reusable logic</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+          },
+          {
+            id: "solid-oop-fundamentals",
+            courseId: "solid-interview-practice",
+            chapterId: "solid-interview-ch1",
+            chapterTitle: "SOLID Principles",
+            chapterIndex: 0,
+            stepIndex: 1,
+            stepType: "html",
+            title: "OOP Fundamentals",
+            description: "Review key object-oriented programming concepts with short definitions, explanations, examples, and benefits.",
+            codeType: "text",
+            checklist: [
+              "Explain the core OOP concepts clearly",
+              "Describe how objects, classes, and encapsulation relate",
+              "Summarize polymorphism, abstraction, and constructors",
+            ],
+            contentHtml: "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is Inheritance?</td><td>Parent-child relationship of classes</td><td>A subclass inherits properties and methods from its superclass for hierarchy and reuse</td><td>class Dog extends Animal {}</td><td>Reduces duplication and supports extension</td></tr>\n        <tr><td>What is Polymorphism?</td><td>One interface, many forms</td><td>Same call can do different things depending on the object type</td><td>add(int, int) / add(float) or Dog overrides sound()</td><td>Makes code more flexible and reusable</td></tr>\n        <tr><td>What is an Object?</td><td>Instance of a class</td><td>Objects are concrete runtime values created from class blueprints</td><td>Dog myDog = new Dog();</td><td>Enables real-world modeling in code</td></tr>\n        <tr><td>What is a Class?</td><td>Blueprint for objects</td><td>Classes define the properties and behavior that objects can have</td><td>class Animal { int age; }</td><td>Structures code and organizes behavior</td></tr>\n        <tr><td>What is Encapsulation?</td><td>Protecting data by restricting access</td><td>Hide state behind methods and control how it changes</td><td>private int age; public int getAge()</td><td>Improves security and prevents misuse</td></tr>\n        <tr><td>What is Abstraction?</td><td>Hide implementation, show only essentials</td><td>Simplifies complex systems by exposing only required behavior</td><td>abstract class Shape { abstract void draw(); }</td><td>Simplifies interfaces and reduces complexity</td></tr>\n        <tr><td>What is a Constructor?</td><td>Initializes an object automatically</td><td>Called when an object is created to set up its initial state</td><td>public Dog() { this.age = 1; }</td><td>Ensures objects start with valid data</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+          },
+          {
+            id: "solid-design-patterns",
+            courseId: "solid-interview-practice",
+            chapterId: "solid-interview-ch1",
+            chapterTitle: "SOLID Principles",
+            chapterIndex: 0,
+            stepIndex: 2,
+            stepType: "html",
+            title: "Explain Design Patterns",
+            description: "Review common design patterns for interview-ready explanations.",
+            codeType: "text",
+            checklist: [
+              "Explain Singleton and Factory patterns",
+              "Describe Observer and reuse patterns",
+              "Summarize when to use these design patterns",
+            ],
+            contentHtml: "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>Singleton</td><td>One instance only</td><td>Global shared object</td><td>Logger</td><td>Saves resources</td></tr>\n        <tr><td>Factory</td><td>Create objects centrally</td><td>No direct new</td><td>PolicyFactory</td><td>Clean code</td></tr>\n        <tr><td>Observer</td><td>Notify changes</td><td>One-to-many update</td><td>Email alerts</td><td>Auto updates</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+          },
+          {
+            id: "solid-architecture-and-system",
+            courseId: "solid-interview-practice",
+            chapterId: "solid-interview-ch1",
+            chapterTitle: "SOLID Principles",
+            chapterIndex: 0,
+            stepIndex: 3,
+            stepType: "html",
+            title: "Explain ARCHITECTURE & SYSTEM",
+            description: "Review architecture and system concepts for interview fluency.",
+            codeType: "text",
+            checklist: [
+              "Explain hybrid architecture",
+              "Describe monolith vs microservices",
+              "Summarize scalability and polymorphism in architecture",
+            ],
+            contentHtml: "<div class=\"solid-flashcards\">\n  </div>\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>Hybrid Architecture</td><td>UI + API separation</td><td>Frontend and backend separated</td><td>MVC + REST API</td><td>Clean structure</td></tr>\n        <tr><td>Monolith vs Microservices</td><td>One app vs many services</td><td>Services run independently</td><td>Policy, Claims, Billing separate</td><td>Scalability</td></tr>\n        <tr><td>Scalability</td><td>Handle more load</td><td>Add resources when needed</td><td>Claim system during peak traffic</td><td>Performance</td></tr>\n        <tr><td>Compile vs Runtime Polymorphism</td><td>Overloading vs Overriding</td><td>Compile-time vs runtime decision</td><td>Overload / override methods</td><td>Flexibility</td></tr>\n        <tr><td>Singleton vs Factory</td><td>One instance vs object creation</td><td>Singleton reused, Factory creates objects</td><td>Logger vs PolicyFactory</td><td>Control objects</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
           },
         ],
       },

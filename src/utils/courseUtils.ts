@@ -12,6 +12,7 @@ export function courseStepToPracticeTask(step: CourseStep, category = "react"): 
     starterCode: step.starterCode,
     verificationKeywords: step.verificationKeywords,
     detailedInstructions: step.detailedInstructions,
+    page: step.page,
   };
 }
 
