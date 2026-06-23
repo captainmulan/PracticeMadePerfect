@@ -1232,4 +1232,895 @@ export const DEFAULT_COURSES: Course[] = [
       },
     ],
   },
+  {
+    id: "angular-interview-practice",
+    title: "Angular Interview Practice",
+    description: "Angular concept interview questions and answers.",
+    color: "#dd0031",
+    icon: "🅰️",
+    courseIndex: 3,
+    chapters: [
+      {
+        id: "angular-interview-ch1",
+        courseId: "angular-interview-practice",
+        chapterIndex: 0,
+        title: "Angular Concepts",
+        description: "Core Angular concept explanations and examples",
+        steps: [
+          {
+            id: "angular-concepts-authguard",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch1",
+            chapterTitle: "Angular Concepts",
+            chapterIndex: 0,
+            stepIndex: 0,
+            stepType: "html",
+            title: "AuthGuard & Route Protection",
+            description: "Review Angular AuthGuard implementation, lifecycle hooks, NgRx patterns, and how Angular communicates with .NET Core APIs.",
+            codeType: "text",
+            checklist: [
+              "Explain AuthGuard and route access control",
+              "Describe all lifecycle hooks in Angular",
+              "Understand NgRx for state management",
+              "Explain Angular-to-.NET communication patterns",
+              "Understand two-way data binding and routing",
+            ],
+            contentHtml: "<div class=\"solid-flashcards\">\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>What is AuthGuard?</td><td>A service that controls route access based on authentication</td><td>Implements CanActivate interface; returns boolean or Observable&lt;boolean&gt;</td><td>Redirect unauthenticated users to login page</td><td>Secure routes from unauthorized access</td></tr>\n        <tr><td>How do you implement AuthGuard?</td><td>Create service implementing CanActivate interface</td><td>Check authentication status in canActivate() method</td><td>AuthGuard checks JWT token validity before navigation</td><td>Control route access declaratively</td></tr>\n        <tr><td>What is ngOnChanges?</td><td>Lifecycle hook called when input properties change</td><td>Receives SimpleChanges object with previous/current values</td><td>Detect when @Input() value updates and respond</td><td>React to external property changes</td></tr>\n        <tr><td>What is ngOnInit?</td><td>Lifecycle hook called once after component initialization</td><td>Best place for initialization logic and data fetching</td><td>Load user profile data from API on component start</td><td>Initialize component safely after inputs are bound</td></tr>\n        <tr><td>What is ngDoCheck?</td><td>Lifecycle hook called during every change detection run</td><td>Implement custom change detection logic here</td><td>Detect value changes that Angular's default detection misses</td><td>Implement custom change detection strategies</td></tr>\n        <tr><td>What is ngAfterContentInit?</td><td>Lifecycle hook called after ng-content is projected</td><td>Initialize logic that depends on projected content</td><td>Access @ContentChild() after content is projected</td><td>Interact with content from parent component</td></tr>\n        <tr><td>What is ngAfterContentChecked?</td><td>Lifecycle hook called after every check of ng-content</td><td>Runs after ngAfterContentInit and after ngDoCheck</td><td>Perform additional checks after content initialization</td><td>Respond to content projection changes</td></tr>\n        <tr><td>What is ngAfterViewInit?</td><td>Lifecycle hook called after component view is initialized</td><td>Good place to access DOM elements and child components</td><td>Initialize jQuery plugins or access native DOM</td><td>Work with view elements safely</td></tr>\n        <tr><td>What is ngAfterViewChecked?</td><td>Lifecycle hook called after every check of component view</td><td>Runs after ngAfterViewInit and after change detection</td><td>Perform additional checks after view rendering</td><td>Update UI elements after view changes</td></tr>\n        <tr><td>What is ngOnDestroy?</td><td>Lifecycle hook called before component is destroyed</td><td>Essential for cleanup and resource release</td><td>Unsubscribe from observables, clear timers, detach event listeners</td><td>Prevent memory leaks and cleanup resources</td></tr>\n        <tr><td>What is NgRx?</td><td>Redux-inspired state management library for Angular</td><td>Manages application state predictably with immutable data</td><td>Use Store to hold user data, dispatch actions on login</td><td>Centralized state, easier debugging and testing</td></tr>\n        <tr><td>What are NgRx Actions?</td><td>Plain objects representing events or user interactions</td><td>Actions trigger reducers to update state</td><td>LoginAction, LogoutAction, FetchUserAction</td><td>Clear intent of what happened in the application</td></tr>\n        <tr><td>What are NgRx Reducers?</td><td>Pure functions that specify state changes in response to actions</td><td>Take current state and action, return new state</td><td>Reducer handles LoginAction by adding user to state</td><td>Predictable state transitions, easy to test</td></tr>\n        <tr><td>What are NgRx Effects?</td><td>Manage side effects like HTTP requests in NgRx</td><td>Listen for actions, perform async operations, dispatch new actions</td><td>Effect listens for FetchUserAction, calls API, dispatches LoadUserSuccess</td><td>Separate side effects from state management</td></tr>\n        <tr><td>What are NgRx Selectors?</td><td>Functions to extract specific pieces of state</td><td>Memoized selectors prevent unnecessary component updates</td><td>selectUserName selector extracts user.name from store</td><td>Efficient state access and component optimization</td></tr>\n        <tr><td>How do Angular and .NET communicate?</td><td>Angular uses HttpClient to send requests to .NET APIs</td><td>Communication over HTTP/HTTPS with JSON payloads</td><td>Angular calls GET /api/users/123 to .NET backend</td><td>Seamless frontend-backend integration</td></tr>\n        <tr><td>What is HttpClient?</td><td>Angular service for making HTTP requests</td><td>Provides methods for GET, POST, PUT, DELETE requests</td><td>this.http.get<User>(\'/api/users\')</td><td>Simplified HTTP communication with observables</td></tr>\n        <tr><td>How do you handle errors in HTTP calls?</td><td>Use error callbacks in subscribe() or catchError operator</td><td>.NET backend provides HTTP status codes; Angular handles errors</td><td>catchError() maps 404 to user-friendly message</td><td>Graceful error handling and user feedback</td></tr>\n        <tr><td>What is two-way data binding?</td><td>Automatic synchronization between model and view using ngModel</td><td>Changes in view update model; model changes update view</td><td>[(ngModel)]=\"user.name\" creates two-way binding</td><td>Reactive UI without manual DOM updates</td></tr>\n        <tr><td>What is Angular Routing?</td><td>Client-side routing allowing navigation without page reloads</td><td>RouterModule handles URL changes and component switching</td><td>Route to /dashboard or /settings without server request</td><td>Single Page Application (SPA) experience</td></tr>\n        <tr><td>What is Dependency Injection (DI)?</td><td>Components request dependencies rather than creating them</td><td>Injector provides instances through constructor, property, or method</td><td>UserService injected into component constructor</td><td>Loose coupling, easier testing with mock services</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+          },
+          {
+            id: "angular-dotnet-integration",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch1",
+            chapterTitle: "Angular Concepts",
+            chapterIndex: 0,
+            stepIndex: 1,
+            stepType: "html",
+            title: "Angular & .NET Core Integration",
+            description: "Connect Angular to a .NET Core API, handle CORS and secure API calls, and describe app structure.",
+            codeType: "text",
+            checklist: [
+              "Use HttpClient to call a .NET Core endpoint",
+              "Handle API errors cleanly in the component",
+              "Configure CORS and secure communication",
+              "Describe the Angular and .NET app folder structure",
+              "Explain how environment settings support backend URLs",
+            ],
+            contentHtml: "<div class=\"solid-flashcards\">\n  <section class=\"solid-section\"><table>\n      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>\n      <tbody>\n        <tr><td>How do Angular and .NET communicate?</td><td>Angular uses HttpClient to send requests to .NET APIs</td><td>Communication over HTTP/HTTPS with JSON payloads</td><td>Angular calls GET /api/users/123 to .NET backend</td><td>Seamless frontend-backend integration</td></tr>\n        <tr><td>What is HttpClient?</td><td>Angular service for making HTTP requests</td><td>Provides methods for GET, POST, PUT, DELETE requests</td><td>this.http.get<User>(\'/api/users\')</td><td>Simplified HTTP communication with observables</td></tr>\n        <tr><td>How do you handle errors in HTTP calls?</td><td>Use error callbacks in subscribe() or catchError operator</td><td>.NET backend provides HTTP status codes; Angular handles errors</td><td>catchError() maps 404 to user-friendly message</td><td>Graceful error handling and user feedback</td></tr>\n        <tr><td>What is CORS?</td><td>Cross-Origin Resource Sharing - policy for browser requests</td><td>Configured on .NET backend to specify allowed origins</td><td>.NET allows requests from http://localhost:4200</td><td>Secure cross-origin API calls</td></tr>\n        <tr><td>How do you secure Angular-to-.NET communication?</td><td>Use HTTPS, token-based auth (JWT), and permission validation</td><td>Backend validates tokens on every request</td><td>Store JWT in localStorage, send in Authorization header</td><td>Protect sensitive data and user actions</td></tr>\n        <tr><td>How do you organize an Angular + .NET app?</td><td>Separate frontend (Angular) and backend (.NET) codebases</td><td>Organize by features/modules, separate concerns</td><td>/angular-app for frontend, /dotnet-api for backend</td><td>Clear structure, easier maintenance and testing</td></tr>\n      </tbody>\n    </table>\n  </section>\n</div>",
+          },
+        ],
+      },
+      {
+        id: "angular-interview-ch2",
+        courseId: "angular-interview-practice",
+        chapterIndex: 1,
+        title: "Angular & .NET Core Integration",
+        description: "Connect Angular to a .NET Core API with HttpClient.",
+        steps: [
+          {
+            id: "angular-dotnet-integration",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch2",
+            chapterTitle: "Angular & .NET Core Integration",
+            chapterIndex: 1,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Angular & .NET Core Integration",
+            description: "Connect Angular to a .NET Core API, handle CORS and secure API calls.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Component({\n  selector: 'app-dotnet-integration',\n  template: `\n    <button (click)=\"loadData()\">Load policies</button>\n    <div *ngIf=\"policies\">{{ policies | json }}</div>\n  `\n})\nexport class DotnetIntegrationComponent {\n  policies: any;\n\n  constructor(private http: HttpClient) {}\n\n  loadData() {\n    this.http.get('/api/policies').subscribe({\n      next: (result) => (this.policies = result),\n      error: (error) => console.error('API error', error),\n    });\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch3",
+        courseId: "angular-interview-practice",
+        chapterIndex: 2,
+        title: "AuthGuard & Routing",
+        description: "Create a route guard to protect authenticated routes.",
+        steps: [
+          {
+            id: "angular-auth-routing",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch2",
+            chapterTitle: "AuthGuard & Routing",
+            chapterIndex: 1,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "AuthGuard & Routing",
+            description: "Create a route guard to protect authenticated routes and understand Angular routing flow.",
+            codeType: "code",
+            starterCode: "import { Injectable } from '@angular/core';\nimport { CanActivate, Router } from '@angular/router';\n\n@Injectable({\n  providedIn: 'root',\n})\nexport class AuthGuard implements CanActivate {\n  constructor(private router: Router) {}\n\n  canActivate(): boolean {\n    const authenticated = false;\n    if (!authenticated) {\n      this.router.navigate(['/login']);\n    }\n    return authenticated;\n  }\n}\n",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "Create an injectable route guard that implements CanActivate", code: "import { Injectable } from '@angular/core';\nimport { CanActivate, Router } from '@angular/router';\n\n@Injectable({ providedIn: 'root' })\nexport class AuthGuard implements CanActivate {\n  constructor(private router: Router) {}" },
+                  { guide: "Redirect unauthenticated users and return a boolean from canActivate", code: "  canActivate(): boolean {\n    const authenticated = false;\n    if (!authenticated) {\n      this.router.navigate(['/login']);\n    }\n    return authenticated;\n  }\n}" },
+                  { guide: "Use the guard in your route definition", code: "const routes = [\n  { path: 'secure', component: SecureComponent, canActivate: [AuthGuard] },\n  { path: 'login', component: LoginComponent }\n];" }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch3",
+        courseId: "angular-interview-practice",
+        chapterIndex: 2,
+        title: "Counter Component",
+        description: "Build a counter component with increment, decrement, reset controls.",
+        steps: [
+          {
+            id: "angular-counter",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch3",
+            chapterTitle: "Counter Component",
+            chapterIndex: 3,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Counter Component",
+            description: "Build a counter component with increment, decrement, reset controls and step/min/max bounds.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-counter',\n  template: `\n    <div>\n      <h2>Count: {{ count }}</h2>\n      <p>Step: {{ step }} | Min: {{ min }} | Max: {{ max }}</p>\n\n      <button (click)=\"decrement()\">-</button>\n      <button (click)=\"increment()\">+</button>\n      <button (click)=\"reset()\">Reset</button>\n    </div>\n  `\n})\nexport class CounterComponent {\n  count = 0;\n  step = 1;\n  min = 0;\n  max = 10;\n\n  increment() {\n    const next = this.count + this.step;\n    this.count = next <= this.max ? next : this.max;\n  }\n\n  decrement() {\n    const next = this.count - this.step;\n    this.count = next >= this.min ? next : this.min;\n  }\n\n  reset() {\n    this.count = 0;\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch4",
+        courseId: "angular-interview-practice",
+        chapterIndex: 3,
+        title: "Custom Pipe",
+        description: "Create a reusable pipe that transforms text in a template.",
+        steps: [
+          {
+            id: "angular-custom-pipe",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch4",
+            chapterTitle: "Custom Pipe",
+            chapterIndex: 4,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Custom Pipe",
+            description: "Create a reusable pipe that transforms text, then apply it in a template.",
+            codeType: "code",
+            starterCode: "import { Component, Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({\n  name: 'reverseText'\n})\nexport class ReverseTextPipe implements PipeTransform {\n  transform(value: string): string {\n    return value.split('').reverse().join('');\n  }\n}\n\n@Component({\n  selector: 'app-custom-pipe',\n  template: `\n    <div>\n      <p>Original: {{ text }}</p>\n      <p>Transformed: {{ text | reverseText }}</p>\n    </div>\n  `\n})\nexport class CustomPipeComponent {\n  text = 'Angular';\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch5",
+        courseId: "angular-interview-practice",
+        chapterIndex: 4,
+        title: "Fetch Data in ngOnInit",
+        description: "Create a component that loads data from an API endpoint.",
+        steps: [
+          {
+            id: "angular-fetch-data",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch5",
+            chapterTitle: "Fetch Data in ngOnInit",
+            chapterIndex: 5,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Fetch Data in ngOnInit",
+            description: "Create a component that loads data from an API endpoint in ngOnInit.",
+            codeType: "code",
+            starterCode: "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-fetch-data',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})\nexport class FetchDataComponent implements OnInit {\n  items: string[] = [];\n\n  async ngOnInit() {\n    const response = await fetch('https://api.example.com/items');\n    const data = await response.json();\n    this.items = data.items || [];\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch6",
+        courseId: "angular-interview-practice",
+        chapterIndex: 5,
+        title: "Form Input Binding",
+        description: "Build an input form that updates component state in real time.",
+        steps: [
+          {
+            id: "angular-form-input",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch6",
+            chapterTitle: "Form Input Binding",
+            chapterIndex: 6,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Form Input Binding",
+            description: "Build an input form that updates component state and displays a greeting message.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-form-input',\n  template: `\n    <div>\n      <label>Enter your name:\n        <input type=\"text\" [value]=\"name\" (input)=\"updateName($event)\" />\n      </label>\n      <p>Hello, {{ name || 'Guest' }}!</p>\n    </div>\n  `\n})\nexport class FormInputComponent {\n  name = '';\n\n  updateName(event: Event) {\n    const input = event.target as HTMLInputElement;\n    this.name = input.value;\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch7",
+        courseId: "angular-interview-practice",
+        chapterIndex: 6,
+        title: "Forms, Directives & ngLocale",
+        description: "Build a form with two-way binding and custom directive.",
+        steps: [
+          {
+            id: "angular-forms-directives",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch7",
+            chapterTitle: "Forms, Directives & ngLocale",
+            chapterIndex: 7,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Forms, Directives & ngLocale",
+            description: "Build a form with two-way binding, custom directive, and locale-aware formatting.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-form-directives',\n  template: `\n    <form>\n      <label>Policy name\n        <input [(ngModel)]=\"policyName\" name=\"policyName\" />\n      </label>\n      <p appHighlight>Current policy: {{ policyName }}</p>\n    </form>\n  `\n})\nexport class FormDirectivesComponent {\n  policyName = '';\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch8",
+        courseId: "angular-interview-practice",
+        chapterIndex: 7,
+        title: "Lifecycle Hooks",
+        description: "Implement ngOnInit and ngOnDestroy for initialization and cleanup.",
+        steps: [
+          {
+            id: "angular-lifecycle-hooks",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch8",
+            chapterTitle: "Lifecycle Hooks",
+            chapterIndex: 8,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Lifecycle Hooks",
+            description: "Implement ngOnInit and ngOnDestroy to initialize data and clean up a timer.",
+            codeType: "code",
+            starterCode: "import { Component, OnInit, OnDestroy } from '@angular/core';\n\n@Component({\n  selector: 'app-lifecycle-hooks',\n  template: `\n    <div>\n      <h2>Lifecycle Example</h2>\n      <p>{{ message }}</p>\n    </div>\n  `\n})\nexport class LifecycleHooksComponent implements OnInit, OnDestroy {\n  message = '';\n  timerId: any;\n\n  ngOnInit() {\n    this.message = 'Initialized';\n    this.timerId = setInterval(() => {\n      this.message = `Tick: ${new Date().toLocaleTimeString()}`;\n    }, 1000);\n  }\n\n  ngOnDestroy() {\n    clearInterval(this.timerId);\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch9",
+        courseId: "angular-interview-practice",
+        chapterIndex: 8,
+        title: "Manage List",
+        description: "Build a list manager that adds and removes items.",
+        steps: [
+          {
+            id: "angular-manage-list",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch9",
+            chapterTitle: "Manage List",
+            chapterIndex: 9,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Manage List",
+            description: "Build a list manager that adds and removes items using Angular binding and ngFor.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-manage-list',\n  template: `\n    <div>\n      <label>New item:\n        <input type=\"text\" [(ngModel)]=\"newItem\" />\n      </label>\n      <button (click)=\"addItem()\">Add</button>\n      <ul>\n        <li *ngFor=\"let item of items; let i = index\">\n          {{ item }} <button (click)=\"removeItem(i)\">Remove</button>\n        </li>\n      </ul>\n    </div>\n  `\n})\nexport class ManageListComponent {\n  items: string[] = [];\n  newItem = '';\n\n  addItem() {\n    if (this.newItem.trim()) {\n      this.items.push(this.newItem.trim());\n      this.newItem = '';\n    }\n  }\n\n  removeItem(index: number) {\n    this.items.splice(index, 1);\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch10",
+        courseId: "angular-interview-practice",
+        chapterIndex: 9,
+        title: "NgRx, Services & Dependency Injection",
+        description: "Use Angular services and NgRx patterns for state management.",
+        steps: [
+          {
+            id: "angular-ngrx-services",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch10",
+            chapterTitle: "NgRx, Services & Dependency Injection",
+            chapterIndex: 10,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "NgRx, Services & Dependency Injection",
+            description: "Use Angular services and NgRx patterns to manage state and inject dependencies.",
+            codeType: "code",
+            starterCode: "import { Injectable } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\n\n@Injectable({ providedIn: 'root' })\nexport class DataService {\n  constructor(private http: HttpClient) {}\n\n  loadPolicies() {\n    return this.http.get('/api/policies');\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch11",
+        courseId: "angular-interview-practice",
+        chapterIndex: 10,
+        title: "Route Params",
+        description: "Read route parameters from ActivatedRoute and display dynamic data.",
+        steps: [
+          {
+            id: "angular-routing-params",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch11",
+            chapterTitle: "Route Params",
+            chapterIndex: 11,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Route Params",
+            description: "Read route parameters from ActivatedRoute and display dynamic data.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\nimport { ActivatedRoute } from '@angular/router';\n\n@Component({\n  selector: 'app-route-params',\n  template: `\n    <div>\n      <h2>Route Parameter</h2>\n      <p>ID: {{ id }}</p>\n    </div>\n  `\n})\nexport class RouteParamsComponent {\n  id: string | null = null;\n\n  constructor(private route: ActivatedRoute) {\n    this.id = this.route.snapshot.paramMap.get('id');\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch12",
+        courseId: "angular-interview-practice",
+        chapterIndex: 11,
+        title: "Service Dependency Injection",
+        description: "Create a data service and inject it into a component.",
+        steps: [
+          {
+            id: "angular-service-dependency",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch12",
+            chapterTitle: "Service Dependency Injection",
+            chapterIndex: 12,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Service Dependency Injection",
+            description: "Create a data service and inject it into a component to load and display items.",
+            codeType: "code",
+            starterCode: "import { Component, Injectable } from '@angular/core';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class DataService {\n  getItems(): string[] {\n    return ['Item 1', 'Item 2', 'Item 3'];\n  }\n}\n\n@Component({\n  selector: 'app-service-dependency',\n  template: `\n    <div>\n      <h2>Items</h2>\n      <ul>\n        <li *ngFor=\"let item of items\">{{ item }}</li>\n      </ul>\n    </div>\n  `\n})\nexport class ServiceDependencyComponent {\n  items: string[] = [];\n\n  constructor(private dataService: DataService) {\n    this.items = this.dataService.getItems();\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch13",
+        courseId: "angular-interview-practice",
+        chapterIndex: 12,
+        title: "Tab Navigation",
+        description: "Build a tabbed interface that switches content.",
+        steps: [
+          {
+            id: "angular-tab-navigation",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch13",
+            chapterTitle: "Tab Navigation",
+            chapterIndex: 13,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Tab Navigation",
+            description: "Build a simple tabbed interface that switches content using event binding.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tab-navigation',\n  template: `\n    <div>\n      <button (click)=\"selectTab('home')\">Home</button>\n      <button (click)=\"selectTab('profile')\">Profile</button>\n      <button (click)=\"selectTab('settings')\">Settings</button>\n      <div *ngIf=\"selectedTab === 'home'\">Home content</div>\n      <div *ngIf=\"selectedTab === 'profile'\">Profile content</div>\n      <div *ngIf=\"selectedTab === 'settings'\">Settings content</div>\n    </div>\n  `\n})\nexport class TabNavigationComponent {\n  selectedTab = 'home';\n\n  selectTab(tab: string) {\n    this.selectedTab = tab;\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      },
+      {
+        id: "angular-interview-ch14",
+        courseId: "angular-interview-practice",
+        chapterIndex: 13,
+        title: "Toggle Visibility",
+        description: "Show or hide content using Angular directives.",
+        steps: [
+          {
+            id: "angular-toggle-visibility",
+            courseId: "angular-interview-practice",
+            chapterId: "angular-interview-ch14",
+            chapterTitle: "Toggle Visibility",
+            chapterIndex: 14,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Toggle Visibility",
+            description: "Create a component that shows or hides content using Angular structural directives.",
+            codeType: "code",
+            starterCode: "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-toggle-visibility',\n  template: `\n    <div>\n      <button (click)=\"toggle()\">{{ visible ? 'Hide' : 'Show' }}</button>\n      <p *ngIf=\"visible\">The message is visible.</p>\n    </div>\n  `\n})\nexport class ToggleVisibilityComponent {\n  visible = true;\n\n  toggle() {\n    this.visible = !this.visible;\n  }\n}\n",
+            page: { editor: { hints: [] } }
+          }
+        ]
+      }
+    ],
+  },
+  {
+    id: "csharp-interview-practice",
+    title: "C# Interview Practice",
+    description: "C# concept and coding interview practice (code exams).",
+    color: "#68217A",
+    icon: "🔷",
+    courseIndex: 4,
+    chapters: [
+      {
+        id: "csharp-interview-ch1",
+        courseId: "csharp-interview-practice",
+        chapterIndex: 0,
+        title: "C# Concepts & Code Exams",
+        description: "Common C# interview tasks implemented as code exams.",
+        steps: [
+          {
+            id: "csharp-api-json-deserialization",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "API Call and JSON Deserialization",
+            description: "Write an async method that calls an API and deserializes the JSON response into a generic object.",
+            codeType: "code",
+            checklist: [
+              "Create an async method that accepts a URL",
+              "Use HttpClient to perform a GET request",
+              "Read the response content as a string",
+              "Deserialize JSON into type T",
+              "Throw an exception when the request fails",
+            ],
+            starterCode: "// 1: Create an async generic method accepting apiUrl\n// 2: Use HttpClient to call the endpoint\n// 3: Read the response content\n// 4: Deserialize JSON into type T\n// 5: Throw when the call fails",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the async generic method", code: "public async Task<T> GetData<T>(string apiUrl)\n{" },
+                  { guide: "// guide hints: Send the HTTP GET request", code: "    HttpResponseMessage response = await _httpClient.GetAsync(apiUrl);" },
+                  { guide: "// guide hints: Read the response body as a string", code: "    string json = await response.Content.ReadAsStringAsync();" },
+                  { guide: "// guide hints: Deserialize the JSON into T", code: "    T data = JsonConvert.DeserializeObject<T>(json);" },
+                  { guide: "// guide hints: Throw if the response is not successful", code: "    if (!response.IsSuccessStatusCode)\n    {\n        throw new Exception(\"Failed\");\n    }" },
+                  { guide: "// guide hints: Return the deserialized object", code: "    return data;\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-bouncing-ball",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 1,
+            stepType: "code-exam",
+            title: "Bounce Count and Distance",
+            description: "Calculate the total distance traveled by a bouncing ball and the number of bounces until it stops.",
+            codeType: "code",
+            starterCode: "",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Import: using System; and Collections", code: "using System;\nusing System.Collections.Generic;" },
+                  { guide: "// guide hints: Create a method that accepts initial height and bounce factor", code: "public static (int bounces, double distance) CalculateBounce(double height, double factor = 0.66, double threshold = 0.01)\n{" },
+                  { guide: "// guide hints: Initialize counters for bounces and distance", code: "    int bounces = 0;\n    double distance = 0;\n    double current = height;" },
+                  { guide: "// guide hints: Add initial fall distance and loop while current > threshold", code: "    if (current <= 0) return (0, 0);\n    distance += current;\n    while (current > threshold)\n    {" },
+                  { guide: "// guide hints: Compute next bounce height, add up down+up distances, increment bounces", code: "        current = current * factor;\n        distance += 2 * current;\n        bounces++;\n    }" },
+                  { guide: "// guide hints: Return bounces and total distance", code: "    return (bounces, distance);\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-bubble-sort",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 2,
+            stepType: "code-exam",
+            title: "Bubble Sort Implementation",
+            description: "Sort an integer array in ascending order using bubble sort.",
+            codeType: "code",
+            starterCode: "// 1: Create outer loop (i) to iterate through the array\n// 2: Create inner loop (j) to compare adjacent elements\n// 3: If items[j] > items[j+1], swap using a temp variable\n// 4: Continue passes until sorted\n// 5: Return the sorted array",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the bubble sort method signature", code: "public static int[] BubbleSort(int[] items)\n{" },
+                  { guide: "// guide hints: Outer loop for passes", code: "    int n = items.Length;\n    for (int i = 0; i < n - 1; i++)\n    {" },
+                  { guide: "// guide hints: Inner loop to compare adjacent elements", code: "        for (int j = 0; j < n - i - 1; j++)\n        {" },
+                  { guide: "// guide hints: Swap when items[j] > items[j+1]", code: "            if (items[j] > items[j + 1])\n            {\n                int temp = items[j];\n                items[j] = items[j + 1];\n                items[j + 1] = temp;\n            }" },
+                  { guide: "// guide hints: Close loops and return sorted array", code: "        }\n    }\n    return items;\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-character-count",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 3,
+            stepType: "code-exam",
+            title: "Character Count in a String",
+            description: "Count the occurrence of each character in a string, ignoring spaces.",
+            codeType: "code",
+            starterCode: "// 1: Accept a string input\n// 2: Use a Dictionary<char, int> to count characters\n// 3: Ignore spaces while counting\n// 4: Return the character counts",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the character count method", code: "public static Dictionary<char, int> CountCharacters(string input)\n{" },
+                  { guide: "// guide hints: Create the dictionary to store counts", code: "    Dictionary<char, int> charCount = new Dictionary<char, int>();" },
+                  { guide: "// guide hints: Iterate through each character and skip spaces", code: "    foreach (char c in input)\n    {\n        if (c != ' ')\n        {\n            if (charCount.ContainsKey(c))\n            {\n                charCount[c]++;\n            }\n            else\n            {\n                charCount[c] = 1;\n            }\n        }\n    }" },
+                  { guide: "// guide hints: Return the character count dictionary", code: "    return charCount;\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-dependency-injection",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 4,
+            stepType: "code-exam",
+            title: "Dependency Injection Example",
+            description: "Implement a simple service and client class to demonstrate constructor dependency injection.",
+            codeType: "code",
+            starterCode: "// 1: Create a Service class with PerformOperation\n// 2: Create a Client class that receives Service through constructor injection\n// 3: Store the service in a readonly field\n// 4: Call the service method from the client",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the service class", code: "public class Service\n{\n    public void PerformOperation()\n    {\n        // Operation implementation\n    }\n}" },
+                  { guide: "// guide hints: Define the client class with injected service", code: "public class Client\n{\n    private readonly Service _service;\n\n    public Client(Service service)\n    {\n        _service = service;\n    }" },
+                  { guide: "// guide hints: Use the injected service in a method", code: "    public void UseService()\n    {\n        _service.PerformOperation();\n    }\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-exception-handling",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 5,
+            stepType: "code-exam",
+            title: "C# Exception Handling",
+            description: "Implement a method that divides two integers and demonstrates correct exception handling with specific catch blocks.",
+            codeType: "code",
+            starterCode: "// 1: Create a method that accepts dividend and divisor\n// 2: Wrap the division in try/catch blocks\n// 3: Catch DivideByZeroException first\n// 4: Catch Exception afterward\n// 5: Return a success or error message",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the method signature", code: "public static string DivideWithHandling(int dividend, int divisor)\n{" },
+                  { guide: "// guide hints: Start a try block for dividing the values", code: "    try\n    {\n        int result = dividend / divisor;" },
+                  { guide: "// guide hints: Return the successful result string", code: "        return $\"Result: {result}\";\n    }" },
+                  { guide: "// guide hints: Catch DivideByZeroException explicitly", code: "    catch (DivideByZeroException ex)\n    {\n        return \"Error: Cannot divide by zero\";\n    }" },
+                  { guide: "// guide hints: Catch any other exceptions afterward", code: "    catch (Exception ex)\n    {\n        return $\"Error: {ex.Message}\";\n    }" },
+                  { guide: "// guide hints: Close the method", code: "}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-first-duplicate",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 6,
+            stepType: "code-exam",
+            title: "Find First Duplicate",
+            description: "Create a method that returns the first duplicate value found in an integer array.",
+            codeType: "code",
+            starterCode: "// 1: Accept an integer array\n// 2: Use a HashSet<int> for seen values\n// 3: Return the first value that already exists in the set\n// 4: Return -1 when no duplicate exists",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the duplicate-finding method", code: "public static int FindFirstDuplicate(int[] numbers)\n{" },
+                  { guide: "// guide hints: Create a HashSet to track seen values", code: "    HashSet<int> uniqueNumbers = new HashSet<int>();" },
+                  { guide: "// guide hints: Iterate through each number", code: "    foreach (var num in numbers)\n    {" },
+                  { guide: "// guide hints: Return the number if it already exists", code: "        if (!uniqueNumbers.Add(num))\n        {\n            return num;\n        }" },
+                  { guide: "// guide hints: Return -1 after the loop if nothing duplicated", code: "    }\n    return -1;\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-linq-filter-array",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 7,
+            stepType: "code-exam",
+            title: "LINQ Array Filtering",
+            description: "Use LINQ to filter an integer array and return values between two bounds.",
+            codeType: "code",
+            starterCode: "// 1: Accept an integer array input\n// 2: Use LINQ Where with a lambda predicate\n// 3: Filter numbers within the bounds\n// 4: Return the filtered result",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the LINQ filter method", code: "public static IEnumerable<int> FilterNumbers(int[] numbers, int minValue, int maxValue)\n{" },
+                  { guide: "// guide hints: Use Where to filter values", code: "    var filteredNumbers = numbers.Where(n => n > minValue && n < maxValue);" },
+                  { guide: "// guide hints: Return the filtered collection", code: "    return filteredNumbers;\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-multithreading",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 8,
+            stepType: "code-exam",
+            title: "Multithreading Example",
+            description: "Start a background thread, run a simple action, and wait for it to complete.",
+            codeType: "code",
+            starterCode: "// 1: Create a thread with a lambda or ThreadStart delegate\n// 2: Start the thread\n// 3: Join the thread to wait for completion\n// 4: Return after the work is done",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the multithreading method", code: "public static void MultithreadingExample()\n{" },
+                  { guide: "// guide hints: Create a new thread with a lambda", code: "    Thread thread = new Thread(() =>\n    {\n        // Work to do in the background\n    });" },
+                  { guide: "// guide hints: Start the thread and wait for it to finish", code: "    thread.Start();\n    thread.Join();" },
+                  { guide: "// guide hints: Close the method", code: "}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-palindrome-check",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 9,
+            stepType: "code-exam",
+            title: "Palindrome Check",
+            description: "Return true when the input string reads the same forward and backward.",
+            codeType: "code",
+            starterCode: "// 1: Accept a string input\n// 2: Reverse the string or compare to its reverse\n// 3: Return true when the string is a palindrome\n// 4: Return false otherwise",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the palindrome check method", code: "public static bool IsPalindrome(string input)\n{" },
+                  { guide: "// guide hints: Compare input with reversed sequence", code: "    return input.SequenceEqual(input.Reverse());\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-reverse-string",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 10,
+            stepType: "code-exam",
+            title: "Reverse a String",
+            description: "Return a reversed copy of the input string.",
+            codeType: "code",
+            starterCode: "// 1: Accept a string input parameter\n// 2: Convert input to a char array\n// 3: Reverse the char array\n// 4: Return a new string based on the reversed array",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the reverse string method", code: "public static string ReverseString(string input)\n{" },
+                  { guide: "// guide hints: Convert the input to a char array", code: "    char[] charArray = input.ToCharArray();" },
+                  { guide: "// guide hints: Reverse the char array", code: "    Array.Reverse(charArray);" },
+                  { guide: "// guide hints: Create a new string and return it", code: "    return new string(charArray);\n}" },
+                ],
+              },
+            },
+          },
+          {
+            id: "csharp-singleton-pattern",
+            courseId: "csharp-interview-practice",
+            chapterId: "csharp-interview-ch1",
+            chapterTitle: "C# Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 11,
+            stepType: "code-exam",
+            title: "Singleton Design Pattern",
+            description: "Create a thread-safe singleton class with lazy initialization.",
+            codeType: "code",
+            starterCode: "// 1: Create a sealed Singleton class\n// 2: Use a private static instance field and lock object\n// 3: Make the constructor private\n// 4: Return a singleton instance in the Instance property",
+            page: {
+              editor: {
+                hints: [
+                  { guide: "// guide hints: Define the sealed singleton class", code: "public sealed class Singleton\n{" },
+                  { guide: "// guide hints: Add a private static instance and lock object", code: "    private static Singleton instance;\n    private static readonly object lockObject = new object();" },
+                  { guide: "// guide hints: Make the constructor private", code: "    private Singleton()\n    {\n    }" },
+                  { guide: "// guide hints: Implement the lazy Instance property", code: "    public static Singleton Instance\n    {\n        get\n        {\n            lock (lockObject)\n            {\n                return instance ?? (instance = new Singleton());\n            }\n        }\n    }\n}" },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "sql-interview-practice",
+    title: "SQL Interview Practice",
+    description: "SQL concept and coding interview practice (code exams).",
+    color: "#d2691e",
+    icon: "🧾",
+    courseIndex: 5,
+    chapters: [
+      {
+        id: "sql-interview-ch1",
+        courseId: "sql-interview-practice",
+        chapterIndex: 0,
+        title: "SQL Concepts & Code Exams",
+        description: "Common SQL interview tasks implemented as code exams.",
+        steps: [
+          {
+            id: "sql-duplicate-records",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 0,
+            stepType: "code-exam",
+            title: "Find Duplicate Records",
+            description: "Write a SQL query to identify duplicate rows in a table based on one or more columns.",
+            codeType: "sql",
+            starterCode: "-- 1: SELECT the columns to check for duplicates\n-- 2: GROUP BY those columns\n-- 3: HAVING COUNT(*) > 1\n-- 4: Return the duplicate values",
+            page: {
+              editor: {
+                hints: [
+                  { "guide": "-- hint1: SELECT the columns to check for duplicates", "code": "SELECT column1, column2" },
+                  { "guide": "-- hint2: GROUP BY those columns", "code": "GROUP BY column1, column2" },
+                  { "guide": "-- hint3: HAVING COUNT(*) > 1", "code": "HAVING COUNT(*) > 1" },
+                  { "guide": "-- hint4: Return the duplicate values", "code": "SELECT column1, column2, COUNT(*)\nFROM YourTable\nGROUP BY column1, column2\nHAVING COUNT(*) > 1;" }
+                ]
+              }
+            }
+          },
+          {
+            id: "react-crud-sql-sample",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 1,
+            stepType: "code-exam",
+            title: "Products table SQL (CRUD)",
+            description: "Practice basic CRUD SQL on a products table.",
+            codeType: "sql",
+            starterCode: "-- Create table\nCREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, sku TEXT UNIQUE, price REAL, qty INTEGER);\n\n-- Insert samples\nINSERT INTO products (name, sku, price, qty) VALUES ('Acme Widget','AW-100',12.99,100);\nINSERT INTO products (name, sku, price, qty) VALUES ('Blue Gadget','BG-200',9.5,50);\nINSERT INTO products (name, sku, price, qty) VALUES ('Clear Cable','CC-300',4.25,250);\n\n-- Read\nSELECT * FROM products ORDER BY name;\n\n-- Update (example)\nUPDATE products SET qty = qty - 1 WHERE sku = 'AW-100';\n\n-- Delete (example)\nDELETE FROM products WHERE sku = 'CC-300';",
+            page: { editor: { hints: [] } }
+          },
+          {
+            id: "sql-first-name-from-fullname",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 2,
+            stepType: "code-exam",
+            title: "Extract First Name",
+            description: "Write a SQL query to fetch only the first name from the FullName column.",
+            codeType: "sql",
+            starterCode: "-- 1: Select the first name from FullName\n-- 2: Use LEFT and CHARINDEX\n-- 3: Return FirstName",
+            page: { editor: { hints: [ { "guide": "-- hint1: Select the first name from FullName", "code": "SELECT LEFT(FullName, CHARINDEX(' ', FullName + ' ') - 1) AS FirstName" }, { "guide": "-- hint2: Read from EmployeeDetails table", "code": "FROM EmployeeDetails;" } ] } }
+          },
+          {
+            id: "sql-inner-join-employee-salary",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 3,
+            stepType: "code-exam",
+            title: "Employees with Salary Records",
+            description: "Return employee records only when they have a salary record.",
+            codeType: "sql",
+            starterCode: "-- 1: Select employee fields from EmployeeDetails\n-- 2: Inner join EmployeeSalary on EmpId\n-- 3: Return matched employee records",
+            page: { editor: { hints: [ { "guide": "-- hint1: Select employee columns from EmployeeDetails", "code": "SELECT ED.*" }, { "guide": "-- hint2: Use INNER JOIN with EmployeeSalary", "code": "FROM EmployeeDetails ED\nINNER JOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId;" } ] } }
+          },
+          {
+            id: "sql-left-join-employee-salary",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 4,
+            stepType: "code-exam",
+            title: "Employee Details with Optional Salary",
+            description: "Return employee names and salary including employees without salary records.",
+            codeType: "sql",
+            starterCode: "-- 1: Select employee name and salary\n-- 2: Use LEFT JOIN on EmpId\n-- 3: Return all employee records",
+            page: { editor: { hints: [ { "guide": "-- hint1: Select employee name and salary", "code": "SELECT ED.FullName, ES.Salary" }, { "guide": "-- hint2: Use LEFT JOIN so employees without salary are included", "code": "FROM EmployeeDetails ED\nLEFT JOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId;" } ] } }
+          },
+          {
+            id: "sql-managers",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 5,
+            stepType: "code-exam",
+            title: "Employees Who Are Managers",
+            description: "Fetch all employees who are also managers.",
+            codeType: "sql",
+            starterCode: "-- 1: Select all columns from EmployeeDetails\n-- 2: Filter employees whose EmpId appears as a ManagerId\n-- 3: Return manager employee rows",
+            page: { editor: { hints: [ { "guide": "-- hint1: Select all employee columns", "code": "SELECT *" }, { "guide": "-- hint2: Use a subquery to find manager IDs", "code": "FROM EmployeeDetails\nWHERE EmpId IN (SELECT ManagerId FROM EmployeeDetails WHERE ManagerId IS NOT NULL);" } ] } }
+          },
+          {
+            id: "sql-min-max-salary",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 6,
+            stepType: "code-exam",
+            title: "Min and Max Salary in One Query",
+            description: "Display the employee with minimum and maximum salary in a single query.",
+            codeType: "sql",
+            starterCode: "-- 1: Use min and max salary in a single query\n-- 2: Select employee name, position, salary\n-- 3: Combine the two results",
+            page: { editor: { hints: [ { "guide": "-- hint1: Select employee information for minimum salary", "code": "SELECT Name, Position, Salary\nFROM employee\nWHERE Salary = (SELECT MIN(Salary) FROM employee)" }, { "guide": "-- hint2: Select employee information for maximum salary", "code": "UNION\nSELECT Name, Position, Salary\nFROM employee\nWHERE Salary = (SELECT MAX(Salary) FROM employee);" } ] } }
+          },
+          {
+            id: "sql-project-count",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 7,
+            stepType: "code-exam",
+            title: "Count Employees in Project P1",
+            description: "Return the number of employees working in project 'P1'.",
+            codeType: "sql",
+            starterCode: "-- 1: Use SELECT COUNT(*) to count rows\n-- 2: FROM EmployeeDetails\n-- 3: WHERE ProjectName = 'P1'\n-- 4: Add AS EmployeeCount to label result",
+            page: { editor: { hints: [ { "guide": "-- hint1: Use SELECT COUNT(*) to count rows", "code": "SELECT COUNT(*)" }, { "guide": "-- hint2: FROM EmployeeDetails", "code": "FROM EmployeeDetails" }, { "guide": "-- hint3: WHERE ProjectName = 'P1'", "code": "WHERE ProjectName = 'P1'" }, { "guide": "-- hint4: Add AS EmployeeCount to label result", "code": "SELECT COUNT(*) AS EmployeeCount\nFROM EmployeeDetails\nWHERE ProjectName = 'P1';" } ] } }
+          },
+          {
+            id: "sql-project-employee-count-desc",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 8,
+            stepType: "code-exam",
+            title: "Project-wise Employee Count",
+            description: "Fetch project-wise employee counts sorted by count descending.",
+            codeType: "sql",
+            starterCode: "-- 1: Count rows per project in EmployeeSalary\n-- 2: Group by project\n-- 3: Order results by descending count",
+            page: { editor: { hints: [ { "guide": "-- hint1: Select project and count of EmpId", "code": "SELECT Project, COUNT(EmpId) AS EmployeeCount" }, { "guide": "-- hint2: Read from EmployeeSalary table", "code": "FROM EmployeeSalary" }, { "guide": "-- hint3: Group by project name", "code": "GROUP BY Project" }, { "guide": "-- hint4: Order counts in descending order", "code": "ORDER BY EmployeeCount DESC;" } ] } }
+          },
+          {
+            id: "sql-remove-duplicates",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 9,
+            stepType: "code-exam",
+            title: "Remove Duplicate Records",
+            description: "Remove duplicate rows from a table without using a temporary table.",
+            codeType: "sql",
+            starterCode: "-- 1: Use a CTE with ROW_NUMBER() to identify duplicates\n-- 2: Delete rows with row number > 1\n-- 3: Keep one unique row per group",
+            page: { editor: { hints: [ { "guide": "-- hint1: Define a CTE to rank duplicate rows", "code": "WITH RankedData AS (\n    SELECT EmpId, FullName, ManagerId, DateOfJoining,\n           ROW_NUMBER() OVER (PARTITION BY FullName, ManagerId, DateOfJoining ORDER BY EmpId) AS RowNo\n    FROM EmployeeDetails\n)" }, { "guide": "-- hint2: Delete rows where row number is greater than 1", "code": "DELETE FROM RankedData WHERE RowNo > 1;" } ] } }
+          },
+          {
+            id: "sql-salary-range",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 10,
+            stepType: "code-exam",
+            title: "Salary Range Query",
+            description: "Fetch employee names whose salary is between 5000 and 10000 inclusive.",
+            codeType: "sql",
+            starterCode: "-- 1: Join EmployeeDetails with EmployeeSalary\n-- 2: Filter salary between 5000 and 10000\n-- 3: Select employee names",
+            page: { editor: { hints: [ { "guide": "-- hint1: Select employee full names from EmployeeDetails", "code": "SELECT ED.FullName" }, { "guide": "-- hint2: Join EmployeeSalary with EmployeeDetails by EmpId", "code": "FROM EmployeeDetails ED\nJOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId" }, { "guide": "-- hint3: Filter salary between 5000 and 10000", "code": "WHERE ES.Salary >= 5000 AND ES.Salary <= 10000" }, { "guide": "-- hint4: Return employee names for matching records", "code": "SELECT ED.FullName\nFROM EmployeeDetails ED\nJOIN EmployeeSalary ES ON ED.EmpId = ES.EmpId\nWHERE ES.Salary >= 5000 AND ES.Salary <= 10000;" } ] } }
+          },
+          {
+            id: "sql-second-largest-salary",
+            courseId: "sql-interview-practice",
+            chapterId: "sql-interview-ch1",
+            chapterTitle: "SQL Concepts & Code Exams",
+            chapterIndex: 0,
+            stepIndex: 11,
+            stepType: "code-exam",
+            title: "Second Largest Salary",
+            description: "Fetch the second highest salary using ranking or OFFSET.",
+            codeType: "sql",
+            starterCode: "-- 1: Use ranking or OFFSET to locate the second largest salary\n-- 2: Return the salary value or row\n-- 3: Keep the query in a single statement",
+            page: { editor: { hints: [ { "guide": "-- hint1: Rank salaries in descending order", "code": "WITH RankedSalaries AS (\n    SELECT EmployeeID, Salary, RANK() OVER (ORDER BY Salary DESC) AS SalaryRank\n    FROM Employees\n)" }, { "guide": "-- hint2: Select the row with rank 2", "code": "SELECT EmployeeID, Salary\nFROM RankedSalaries\nWHERE SalaryRank = 2;" } ] } }
+          }
+        ]
+      }
+    ]
+  },
 ];
