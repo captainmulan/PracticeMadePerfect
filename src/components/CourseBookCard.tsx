@@ -18,6 +18,8 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
 
   const content = (
     <>
+      {item.link && <span className="book-title">{item.title}</span>}
+      {item.link && <span className="book-cover-title">{item.title}</span>}
       <div className="book-cover" style={{ backgroundColor: item.color }}>
         <div className="book-icon" style={{ fontSize: `${iconFont}px` }}>{item.icon}</div>
         <div className="book-spine" />
