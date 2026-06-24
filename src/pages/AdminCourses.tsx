@@ -58,6 +58,7 @@ export default function AdminCourses() {
       description: "",
       color: "#2563eb",
       icon: "📘",
+      iconSize: 80,
       courseIndex: courses.length,
       chapters: [],
     };
@@ -256,6 +257,17 @@ export default function AdminCourses() {
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Icon</span>
                 <input value={activeCourse.icon} onChange={(e) => updateActiveCourse((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Icon size</span>
+                <input
+                  type="number"
+                  min={24}
+                  max={120}
+                  value={activeCourse.iconSize ?? 80}
+                  onChange={(e) => updateActiveCourse((c) => ({ ...c, iconSize: Number(e.target.value) }))}
+                  className="admin-grid-input"
+                />
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Color</span>

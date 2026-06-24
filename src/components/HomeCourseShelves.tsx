@@ -6,28 +6,29 @@ interface HomeCourseShelvesProps {
 }
 
 export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
+  const CHUNK = 7;
   const groups: CourseShelfItem[][] = [];
-  const totalRows = Math.max(1, Math.ceil(row.items.length / 5));
+  const totalRows = Math.max(1, Math.ceil(row.items.length / CHUNK));
 
   for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
-    groups.push(row.items.slice(rowIndex * 5, rowIndex * 5 + 5));
+    groups.push(row.items.slice(rowIndex * CHUNK, rowIndex * CHUNK + CHUNK));
   }
 
   return (
-    <div className="home-course-shelves">
-      <div className="course-shelf-row">
-        <div className="course-shelf-row-title">{row.title} Bookshelf</div>
-        {groups.map((group, rowIndex) => (
-          <div className="course-book-row" key={`book-row-${rowIndex}`}>
+    <div className="bookshelf-container">
+      {groups.map((group, rowIndex) => (
+        <div key={`book-row-wrap-${rowIndex}`} className="shelf">
+          <div className="books" key={`book-row-${rowIndex}`}>
             {group.map((item) => (
               <CourseBookCard key={item.id} item={item} />
             ))}
-            {Array.from({ length: 5 - group.length }).map((_, emptyIndex) => (
-              <div key={`empty-${rowIndex}-${emptyIndex}`} className="course-book-card course-book-card-empty" aria-hidden="true" />
+            {Array.from({ length: CHUNK - group.length }).map((_, emptyIndex) => (
+              <div key={`empty-${rowIndex}-${emptyIndex}`} className="book empty-space" aria-hidden="true" />
             ))}
           </div>
-        ))}
-      </div>
+          <div className="shelf-board" aria-hidden="true" />
+        </div>
+      ))}
     </div>
   );
 }

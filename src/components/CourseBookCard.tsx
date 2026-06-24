@@ -7,30 +7,34 @@ interface CourseBookCardProps {
 }
 
 export default function CourseBookCard({ item }: CourseBookCardProps) {
-  const bookStyles: CSSProperties = { width: "160px", minWidth: "160px", maxWidth: "160px" };
+  const iconSize = item.iconSize ?? 80; // default admin-configurable
+  const iconFont = Math.round(iconSize * 0.9);
+  const bookStyles: CSSProperties = {
+    width: "100px",
+    minWidth: "100px",
+    maxWidth: "100px",
+    ["--book-color" as any]: item.color,
+  };
 
   const content = (
-    <div className="course-book-cover">
-      <div className="course-book-cover-art" style={{ backgroundColor: item.color }}>
-        <div className="course-book-cover-icon">{item.icon}</div>
-        <div className="course-book-cover-details">
-          <div className="course-book-title">{item.title}</div>
-          <div className="course-book-meta">{item.meta}</div>
-        </div>
+    <>
+      <div className="book-cover" style={{ backgroundColor: item.color }}>
+        <div className="book-icon" style={{ fontSize: `${iconFont}px` }}>{item.icon}</div>
+        <div className="book-spine" />
       </div>
-    </div>
+    </>
   );
 
   if (item.link) {
     return (
-      <Link to={item.link} className="course-book-card" style={bookStyles}>
+      <Link to={item.link} className="book" style={bookStyles}>
         {content}
       </Link>
     );
   }
 
   return (
-    <div className="course-book-card course-book-card-placeholder" style={bookStyles} aria-hidden="true">
+    <div className="book" style={bookStyles} aria-hidden="true">
       {content}
     </div>
   );

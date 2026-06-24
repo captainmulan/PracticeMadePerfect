@@ -6,9 +6,11 @@ export interface CourseShelfItem {
   description: string;
   color: string;
   icon: string;
+  iconSize?: number;
   meta: string;
   link?: string;
   placeholder?: boolean;
+  category?: string;
 }
 
 export interface CourseShelfRow {
@@ -177,25 +179,46 @@ const courseRowDefinitions: Array<{
     title: "IT",
     matcher: (course) => /react|solid|angular|c#|sql/i.test(course.title),
   },
+  {
+    title: "Language",
+    matcher: () => false,
+  },
+  {
+    title: "Kid",
+    matcher: () => false,
+  },
+  {
+    title: "Migration",
+    matcher: () => false,
+  },
 ];
 
-function createShelfItemFromCourse(course: Course): CourseShelfItem {
+function createShelfItemFromCourse(course: Course, category: string): CourseShelfItem {
   return {
     id: course.id,
     title: course.title,
     description: course.description,
     color: course.color,
     icon: course.icon,
+    iconSize: (course as any).iconSize ?? undefined,
     meta: `${course.chapters.length} chapters`,
     link: `/courses/${course.id}`,
+    category,
   };
 }
 
 export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
+  const CHUNK = 7;
+
   const courseRows = courseRowDefinitions.map((definition) => {
-    const items = courses.filter(definition.matcher).map(createShelfItemFromCourse);
+    const items = courses.filter(definition.matcher).map((course) => createShelfItemFromCourse(course, definition.title));
     const placeholder = placeholderRows.find((row) => row.title === definition.title);
-    const completedItems = items.length >= 5 ? items : [...items, ...(placeholder?.items.slice(0, 5 - items.length) ?? [])];
+    const base = items.length > 0
+      ? items
+      : placeholder?.items.map((it, i) => ({ ...it, id: `${it.id}-placeholder-${i}`, placeholder: true, category: definition.title })) ?? [];
+
+    const completedItems = [...base];
+    while (completedItems.length < CHUNK) completedItems.push({ id: `empty-${completedItems.length}`, title: "", description: "", color: "#f1f5f9", icon: "", meta: "", placeholder: true, category: definition.title });
 
     return {
       title: definition.title,
@@ -203,8 +226,5 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     };
   });
 
-  return [
-    ...courseRows,
-    ...placeholderRows,
-  ];
+  return courseRows;
 }

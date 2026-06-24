@@ -45,21 +45,20 @@ export default function Home() {
       </section>
 
       <section className="home-categories panel home-shelf-panel">
-        <div className="category-group category-group-courses">
-          <div className="category-group-header">Learning</div>
-          <p className="category-group-subtitle">Switch tabs to browse category shelves with fixed book covers.</p>
-          <div className="home-tabs">
+        <div className="container">
+          <nav className="tabs">
             {rows.map((row) => (
               <button
                 key={row.title}
                 type="button"
-                className={`home-tab-button ${selectedRow?.title === row.title ? "active" : ""}`}
+                className={`tab ${selectedRow?.title === row.title ? "active" : ""}`}
                 onClick={() => setSelectedTab(row.title)}
               >
                 {row.title}
               </button>
             ))}
-          </div>
+          </nav>
+
           {!coursesLoaded ? (
             <div className="home-course-loading">Loading courses...</div>
           ) : courses.length === 0 ? (

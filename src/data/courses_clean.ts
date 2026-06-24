@@ -47,6 +47,7 @@ export interface Course {
   description: string;
   color: string;
   icon: string;
+  iconSize?: number;
   courseIndex: number;
   chapters: CourseChapter[];
 }
