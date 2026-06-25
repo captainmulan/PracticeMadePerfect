@@ -46,6 +46,7 @@
 .course-step-quiz .course-quiz-question + .course-quiz-question {
   margin-top: 12px;
 }
+}
 
 .course-step-quiz .course-quiz-question legend {
   display: block;

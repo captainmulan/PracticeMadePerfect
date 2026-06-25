@@ -3197,7 +3197,7 @@ textarea {
       box-shadow: none;
     }
 
-    .course-book-cover-art::after {
+    /* .course-book-cover-art::after {
       content: "";
       position: absolute;
       left: 0;
@@ -3205,7 +3205,7 @@ textarea {
       bottom: 0;
       height: 10px;
       background: rgba(255,255,255,0.28);
-    }
+    } */
 
     .course-book-cover-icon {
       width: 80px;

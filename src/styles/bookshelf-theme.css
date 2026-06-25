@@ -1,0 +1,368 @@
+/*
+ * Bookshelf / classic iTunes palette — scoped to Home + Practice only.
+ * Warm blush shell, sage accents, cream cards, warm charcoal editors.
+ */
+:root {
+  --shelf-blush-start: #f2dce0;
+  --shelf-blush-end: #e8d0d5;
+  --shelf-sage: #8b8b7a;
+  --shelf-sage-dark: #6f6f62;
+  --shelf-sage-light: #a8a896;
+  --shelf-ink: #333333;
+  --shelf-ink-muted: #666666;
+  --shelf-ink-subtle: #555555;
+  --shelf-border: #ddd6cf;
+  --shelf-border-strong: #c9bfb5;
+  --shelf-cream: #faf7f4;
+  --shelf-card: #ffffff;
+  --shelf-board: #e8e4df;
+  --shelf-editor-bg: #3a3834;
+  --shelf-editor-surface: #2f2d2a;
+  --shelf-editor-text: #f4efe6;
+  --shelf-editor-muted: #b8aea3;
+  --shelf-shadow: rgba(74, 60, 55, 0.12);
+  --shelf-shadow-strong: rgba(74, 60, 55, 0.2);
+  --tab-active: var(--shelf-sage);
+}
+
+/* ── Shell background when Home or Practice is active ── */
+.app-shell:has(.page-home),
+.app-shell:has(.practice-page) {
+  background: linear-gradient(180deg, var(--shelf-blush-start) 0%, var(--shelf-blush-end) 100%);
+  color: var(--shelf-ink);
+}
+
+.app-shell:has(.page-home) .app-header,
+.app-shell:has(.practice-page) .app-header {
+  background: rgba(250, 247, 244, 0.92);
+  border-bottom-color: var(--shelf-border);
+}
+
+.app-shell:has(.page-home) .app-logo,
+.app-shell:has(.practice-page) .app-logo {
+  background: var(--shelf-sage);
+  color: #ffffff;
+}
+
+.app-shell:has(.page-home) .page-tag,
+.app-shell:has(.practice-page) .page-tag {
+  color: var(--shelf-ink-muted);
+}
+
+.app-shell:has(.page-home) .nav-link,
+.app-shell:has(.practice-page) .nav-link {
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--shelf-ink-subtle);
+}
+
+.app-shell:has(.page-home) .nav-link.active,
+.app-shell:has(.page-home) .nav-link:hover,
+.app-shell:has(.practice-page) .nav-link.active,
+.app-shell:has(.practice-page) .nav-link:hover {
+  background: var(--shelf-sage);
+  color: #ffffff;
+}
+
+.app-main:has(.page-home),
+.app-main:has(.practice-page) {
+  padding: 10px 10px 16px;
+}
+
+/* ── Home hero ── */
+.page-home .home-hero {
+  background: var(--shelf-card);
+  color: var(--shelf-ink);
+  border: 1px solid var(--shelf-border);
+  box-shadow: 0 10px 28px var(--shelf-shadow);
+}
+
+.page-home .home-eyebrow {
+  color: var(--shelf-sage-dark);
+  letter-spacing: 0.14em;
+}
+
+.page-home .home-hero-title {
+  color: var(--shelf-ink);
+}
+
+.page-home .home-hero-description,
+.page-home .home-hero-features {
+  color: var(--shelf-ink-muted);
+}
+
+.page-home .home-hero-toggle {
+  color: var(--shelf-sage-dark);
+  background: rgba(139, 139, 122, 0.1);
+  border-radius: 6px;
+}
+
+.page-home .hero-cta {
+  background: var(--shelf-sage);
+  color: #ffffff;
+}
+
+.page-home .hero-cta:hover {
+  background: var(--shelf-sage-dark);
+}
+
+.page-home .hero-secondary {
+  background: rgba(139, 139, 122, 0.08);
+  color: var(--shelf-ink);
+  border-color: var(--shelf-border-strong);
+}
+
+.page-home .hero-secondary:hover {
+  background: rgba(139, 139, 122, 0.16);
+}
+
+/* ── Home shelf panel ── */
+.page-home .home-categories.panel {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.page-home .home-categories .container {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(250, 247, 244, 0.85) 100%);
+  border: 1px solid var(--shelf-border);
+  box-shadow:
+    0 16px 40px var(--shelf-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.page-home .tabs {
+  border-bottom-color: var(--shelf-border);
+}
+
+.page-home .tab {
+  color: var(--shelf-ink-muted);
+}
+
+.page-home .tab:hover {
+  color: var(--shelf-ink);
+}
+
+.page-home .tab.active {
+  background: var(--shelf-sage);
+  color: #ffffff;
+}
+
+.page-home .home-course-loading {
+  color: var(--shelf-ink-muted);
+}
+
+/* ── Practice shared: hero banner ── */
+.practice-page .hero-banner {
+  background: var(--shelf-card);
+  border-color: var(--shelf-border);
+  box-shadow: 0 8px 24px var(--shelf-shadow);
+}
+
+.practice-page .hero-title,
+.practice-page .practice-title {
+  color: var(--shelf-ink);
+}
+
+.practice-page .hero-page-index,
+.practice-page .hero-category-tag,
+.practice-page .hero-task-id,
+.practice-page .hero-subtitle {
+  color: var(--shelf-ink-muted);
+}
+
+.practice-page .hero-type-tag {
+  background: rgba(139, 139, 122, 0.12);
+  color: var(--shelf-sage-dark);
+}
+
+.practice-page .hero-banner-body {
+  border-top-color: var(--shelf-border);
+}
+
+.practice-page .practice-description,
+.practice-page .hero-description {
+  color: var(--shelf-ink-muted);
+}
+
+.practice-page .hero-chevron {
+  background: rgba(139, 139, 122, 0.12);
+  color: var(--shelf-sage-dark);
+}
+
+.practice-page .hero-banner-header:hover .hero-chevron {
+  background: var(--shelf-sage);
+  color: #ffffff;
+}
+
+.practice-page .panel-toggle {
+  border-color: var(--shelf-sage);
+  color: var(--shelf-sage-dark);
+}
+
+.practice-page .panel-toggle:hover {
+  background: rgba(139, 139, 122, 0.1);
+}
+
+.practice-page .practice-wizard .practice-nav-button {
+  color: var(--shelf-sage-dark);
+}
+
+.practice-page .practice-wizard .practice-nav-button:hover:not(:disabled) {
+  background: rgba(139, 139, 122, 0.12);
+}
+
+/* ── Practice panels & buttons ── */
+.practice-page .panel {
+  background: var(--shelf-card);
+  border-color: var(--shelf-border);
+  box-shadow: 0 8px 24px var(--shelf-shadow);
+}
+
+.practice-page .panel-heading {
+  color: var(--shelf-ink-muted);
+}
+
+.practice-page .panel-body {
+  color: var(--shelf-ink-muted);
+}
+
+.practice-page .primary-button,
+.practice-page .footer-button {
+  background: var(--shelf-sage);
+  color: #ffffff;
+}
+
+.practice-page .primary-button:hover,
+.practice-page .footer-button:hover {
+  background: var(--shelf-sage-dark);
+}
+
+.practice-page .footer-button.secondary {
+  background: transparent;
+  color: var(--shelf-ink);
+  border-color: var(--shelf-border-strong);
+}
+
+/* ── Code practice: editor chrome ── */
+.practice-code-page .practice-right {
+  background: var(--shelf-editor-bg);
+  color: var(--shelf-editor-text);
+  border: 1px solid rgba(201, 191, 181, 0.35);
+  box-shadow: 0 12px 32px var(--shelf-shadow-strong);
+}
+
+.practice-code-page .practice-right .panel-heading {
+  color: var(--shelf-editor-muted);
+}
+
+.practice-code-page .practice-editor-shell {
+  background: var(--shelf-editor-surface);
+  border: 1px solid rgba(201, 191, 181, 0.2);
+  border-radius: 10px;
+}
+
+.practice-code-page .practice-codearea,
+.practice-code-page .practice-textarea {
+  background: var(--shelf-editor-surface);
+  color: var(--shelf-editor-text);
+}
+
+.practice-code-page .practice-tool-button {
+  background: rgba(244, 239, 230, 0.1);
+  color: var(--shelf-editor-text);
+  border: 1px solid rgba(201, 191, 181, 0.25);
+  border-radius: 6px;
+}
+
+.practice-code-page .practice-tool-button:hover {
+  background: rgba(244, 239, 230, 0.18);
+}
+
+.practice-code-page .practice-peek-desktop {
+  background: var(--shelf-cream);
+  color: var(--shelf-ink);
+  border-left-color: var(--shelf-border);
+}
+
+.practice-code-page .practice-peek-desktop pre {
+  background: var(--shelf-card);
+  color: var(--shelf-ink);
+  border-color: var(--shelf-border);
+}
+
+.practice-code-page .practice-peek-close {
+  color: var(--shelf-ink-muted);
+}
+
+.practice-code-page .practice-error-message {
+  background: #4a3535;
+  color: #fce8e8;
+  border-color: #7a5555;
+}
+
+/* ── Text practice: answer panel ── */
+.practice-text-page .practice-right {
+  background: var(--shelf-editor-bg);
+  color: var(--shelf-editor-text);
+  border: 1px solid rgba(201, 191, 181, 0.35);
+  box-shadow: 0 12px 32px var(--shelf-shadow-strong);
+}
+
+.practice-text-page .practice-right .panel-heading {
+  color: var(--shelf-editor-muted);
+}
+
+.practice-text-page .practice-answer-html {
+  background: var(--shelf-editor-surface);
+  color: var(--shelf-editor-text);
+  border-radius: 10px;
+  border: 1px solid rgba(201, 191, 181, 0.2);
+}
+
+.practice-text-page .practice-answer-html h2 {
+  color: var(--shelf-editor-text);
+}
+
+.practice-text-page .practice-answer-html th {
+  background: rgba(244, 239, 230, 0.08);
+  color: var(--shelf-editor-muted);
+  border-color: rgba(201, 191, 181, 0.25);
+}
+
+.practice-text-page .practice-answer-html td {
+  border-color: rgba(201, 191, 181, 0.2);
+}
+
+.practice-text-page .practice-answer-html tr td:first-child {
+  color: var(--shelf-editor-text);
+}
+
+.practice-text-page .practice-answer-html tr td:nth-child(n + 3) {
+  color: var(--shelf-editor-muted);
+}
+
+.practice-text-page .practice-error-message {
+  background: #4a3535;
+  color: #fce8e8;
+  border-color: #7a5555;
+}
+
+/* ── Modals on practice pages ── */
+.practice-page .modal-backdrop {
+  background: rgba(58, 56, 52, 0.55);
+}
+
+.practice-page .modal {
+  background: var(--shelf-cream);
+  border: 1px solid var(--shelf-border);
+}
+
+.practice-page .modal-body pre {
+  background: var(--shelf-editor-surface);
+  color: var(--shelf-editor-text);
+}
+
+.practice-page .modal-body li {
+  border-bottom-color: var(--shelf-border);
+}
