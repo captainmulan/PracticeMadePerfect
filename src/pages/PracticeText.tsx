@@ -9,7 +9,7 @@ export default function PracticeText() {
   const { categoryKey } = useParams<{ categoryKey: string }>();
   const data = usePracticeData();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [heroExpanded, setHeroExpanded] = useState(true);
+  const [heroExpanded, setHeroExpanded] = useState(false);
 
   const filteredTasks = useMemo(
     () => sortTasksInCategory(data.tasks.filter((task: PracticeTask) => task.category === categoryKey)),

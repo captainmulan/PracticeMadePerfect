@@ -3,6 +3,13 @@
  * Warm blush shell, sage accents, cream cards, warm charcoal editors.
  */
 :root {
+  --app-content-max: 900px;
+  --app-content-gutter: 16px;
+  --app-radius: 14px;
+  --app-radius-sm: 10px;
+  --app-section-gap: 12px;
+  --practice-editor-height: clamp(320px, 48vh, 480px);
+
   --shelf-blush-start: #f2dce0;
   --shelf-blush-end: #e8d0d5;
   --shelf-sage: #8b8b7a;
@@ -23,6 +30,35 @@
   --shelf-shadow: rgba(74, 60, 55, 0.12);
   --shelf-shadow-strong: rgba(74, 60, 55, 0.2);
   --tab-active: var(--shelf-sage);
+}
+
+/* ── Unified content column (header + main stay aligned) ── */
+.app-shell:has(.page-home) .app-header-inner,
+.app-shell:has(.practice-page) .app-header-inner,
+.app-main:has(.page-home),
+.app-main:has(.practice-page) {
+  width: 100%;
+  max-width: var(--app-content-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--app-content-gutter);
+  padding-right: var(--app-content-gutter);
+  box-sizing: border-box;
+}
+
+.app-shell:has(.page-home) .app-header,
+.app-shell:has(.practice-page) .app-header {
+  display: block;
+  padding: 8px 0;
+}
+
+.app-shell:has(.page-home) .app-header-inner,
+.app-shell:has(.practice-page) .app-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 /* ── Shell background when Home or Practice is active ── */
@@ -64,8 +100,17 @@
 }
 
 .app-main:has(.page-home),
-.app-main:has(.practice-page) {
-  padding: 10px 10px 16px;
+.app-main:has(.practice-page),
+.app-main:has(.practice-code-page) {
+  display: block;
+  min-height: auto;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
+.page-home,
+.practice-page {
+  gap: var(--app-section-gap);
 }
 
 /* ── Home hero ── */
@@ -73,7 +118,13 @@
   background: var(--shelf-card);
   color: var(--shelf-ink);
   border: 1px solid var(--shelf-border);
-  box-shadow: 0 10px 28px var(--shelf-shadow);
+  border-radius: var(--app-radius);
+  box-shadow: 0 8px 22px var(--shelf-shadow);
+  margin-bottom: 0;
+}
+
+.page-home .home-hero.collapsed {
+  padding: 10px 14px;
 }
 
 .page-home .home-eyebrow {
@@ -121,22 +172,31 @@
   border: none;
   box-shadow: none;
   padding: 0;
+  border-radius: 0;
 }
 
 .page-home .home-categories .container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 16px 18px 24px;
+  border-radius: var(--app-radius);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(250, 247, 244, 0.85) 100%);
   border: 1px solid var(--shelf-border);
   box-shadow:
-    0 16px 40px var(--shelf-shadow),
+    0 12px 32px var(--shelf-shadow),
     inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 .page-home .tabs {
+  margin-bottom: 20px;
   border-bottom-color: var(--shelf-border);
 }
 
 .page-home .tab {
   color: var(--shelf-ink-muted);
+  padding: 10px 18px;
+  font-size: 15px;
 }
 
 .page-home .tab:hover {
@@ -152,16 +212,88 @@
   color: var(--shelf-ink-muted);
 }
 
-/* ── Practice shared: hero banner ── */
+/* ── Practice: same column, compact stable sizing ── */
+.practice-page .hero-banner,
+.practice-page .panel,
+.practice-code-page .practice-right,
+.practice-text-page .practice-right {
+  border-radius: var(--app-radius);
+}
+
 .practice-page .hero-banner {
   background: var(--shelf-card);
   border-color: var(--shelf-border);
-  box-shadow: 0 8px 24px var(--shelf-shadow);
+  box-shadow: 0 6px 18px var(--shelf-shadow);
+}
+
+.practice-page .hero-banner-header {
+  padding: 8px 12px 6px;
+}
+
+.practice-page .hero-banner-body {
+  padding: 0 12px 10px;
+}
+
+.practice-code-page.practice-page,
+.practice-text-page.practice-page {
+  flex: none;
+  min-height: auto;
+}
+
+.practice-page .practice-layout,
+.practice-code-page .practice-layout.full-code {
+  flex: none;
+  min-height: auto;
+  position: relative;
+}
+
+.practice-code-page .practice-right,
+.practice-text-page .practice-right {
+  padding: 10px 12px 12px;
+  min-height: var(--practice-editor-height) !important;
+  max-height: var(--practice-editor-height);
+}
+
+.practice-code-page .practice-editor-area,
+.practice-code-page .practice-editor-shell,
+.practice-text-page .practice-answer-html {
+  min-height: 0;
+  flex: 1;
+}
+
+.practice-code-page .practice-editor-shell {
+  height: 100%;
+  max-height: calc(var(--practice-editor-height) - 52px);
+}
+
+.practice-text-page .practice-answer-html {
+  height: calc(var(--practice-editor-height) - 44px);
+  max-height: calc(var(--practice-editor-height) - 44px);
+  min-height: 0;
+  overflow: auto;
+}
+
+.practice-code-page .practice-codearea,
+.practice-code-page .practice-textarea {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  padding: 10px 12px;
+}
+
+.practice-code-page .practice-answer-toolbar {
+  margin-bottom: 8px;
+}
+
+.practice-code-page .practice-tool-button {
+  min-height: 30px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
 }
 
 .practice-page .hero-title,
 .practice-page .practice-title {
   color: var(--shelf-ink);
+  font-size: 0.92rem;
 }
 
 .practice-page .hero-page-index,
@@ -183,11 +315,15 @@
 .practice-page .practice-description,
 .practice-page .hero-description {
   color: var(--shelf-ink-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 .practice-page .hero-chevron {
   background: rgba(139, 139, 122, 0.12);
   color: var(--shelf-sage-dark);
+  width: 28px;
+  height: 28px;
 }
 
 .practice-page .hero-banner-header:hover .hero-chevron {
@@ -198,6 +334,7 @@
 .practice-page .panel-toggle {
   border-color: var(--shelf-sage);
   color: var(--shelf-sage-dark);
+  padding: 6px 10px;
 }
 
 .practice-page .panel-toggle:hover {
@@ -206,6 +343,8 @@
 
 .practice-page .practice-wizard .practice-nav-button {
   color: var(--shelf-sage-dark);
+  min-width: 28px;
+  min-height: 28px;
 }
 
 .practice-page .practice-wizard .practice-nav-button:hover:not(:disabled) {
@@ -216,11 +355,13 @@
 .practice-page .panel {
   background: var(--shelf-card);
   border-color: var(--shelf-border);
-  box-shadow: 0 8px 24px var(--shelf-shadow);
+  box-shadow: 0 6px 18px var(--shelf-shadow);
+  padding: 14px 16px;
 }
 
 .practice-page .panel-heading {
   color: var(--shelf-ink-muted);
+  font-size: 0.78rem;
 }
 
 .practice-page .panel-body {
@@ -249,7 +390,7 @@
   background: var(--shelf-editor-bg);
   color: var(--shelf-editor-text);
   border: 1px solid rgba(201, 191, 181, 0.35);
-  box-shadow: 0 12px 32px var(--shelf-shadow-strong);
+  box-shadow: 0 8px 24px var(--shelf-shadow-strong);
 }
 
 .practice-code-page .practice-right .panel-heading {
@@ -259,7 +400,7 @@
 .practice-code-page .practice-editor-shell {
   background: var(--shelf-editor-surface);
   border: 1px solid rgba(201, 191, 181, 0.2);
-  border-radius: 10px;
+  border-radius: var(--app-radius-sm);
 }
 
 .practice-code-page .practice-codearea,
@@ -283,12 +424,14 @@
   background: var(--shelf-cream);
   color: var(--shelf-ink);
   border-left-color: var(--shelf-border);
+  max-height: calc(var(--practice-editor-height) - 52px);
 }
 
 .practice-code-page .practice-peek-desktop pre {
   background: var(--shelf-card);
   color: var(--shelf-ink);
   border-color: var(--shelf-border);
+  font-size: 0.74rem;
 }
 
 .practice-code-page .practice-peek-close {
@@ -306,7 +449,7 @@
   background: var(--shelf-editor-bg);
   color: var(--shelf-editor-text);
   border: 1px solid rgba(201, 191, 181, 0.35);
-  box-shadow: 0 12px 32px var(--shelf-shadow-strong);
+  box-shadow: 0 8px 24px var(--shelf-shadow-strong);
 }
 
 .practice-text-page .practice-right .panel-heading {
@@ -316,12 +459,16 @@
 .practice-text-page .practice-answer-html {
   background: var(--shelf-editor-surface);
   color: var(--shelf-editor-text);
-  border-radius: 10px;
+  border-radius: var(--app-radius-sm);
   border: 1px solid rgba(201, 191, 181, 0.2);
+  padding: 12px 14px;
+  font-size: 0.875rem;
+  line-height: 1.55;
 }
 
 .practice-text-page .practice-answer-html h2 {
   color: var(--shelf-editor-text);
+  font-size: 1.05rem;
 }
 
 .practice-text-page .practice-answer-html th {
@@ -356,6 +503,7 @@
 .practice-page .modal {
   background: var(--shelf-cream);
   border: 1px solid var(--shelf-border);
+  max-width: min(92vw, var(--app-content-max));
 }
 
 .practice-page .modal-body pre {
@@ -365,4 +513,20 @@
 
 .practice-page .modal-body li {
   border-bottom-color: var(--shelf-border);
+}
+
+@media (max-width: 720px) {
+  :root {
+    --app-content-gutter: 12px;
+    --practice-editor-height: clamp(280px, 42vh, 420px);
+  }
+
+  .page-home .home-categories .container {
+    padding: 14px 14px 20px;
+  }
+
+  .practice-code-page .practice-right,
+  .practice-text-page .practice-right {
+    padding: 8px 10px 10px;
+  }
 }

@@ -9,18 +9,20 @@ function App() {
     <div className="app-shell">
       <BrowserRouter>
         <header className="app-header">
-          <div className="app-brand">
-            <div className="app-logo">PMP</div>
-            <div>
-              <p className="page-tag">PracticeMadePerfect (ကျောက်သင်ပုန်း)</p>
+          <div className="app-header-inner">
+            <div className="app-brand">
+              <div className="app-logo">PMP</div>
+              <div>
+                <p className="page-tag">ခေတ်ရှေ့ပြေး စာကြည့်တိုက်</p>
+              </div>
             </div>
-          </div>
 
-          <nav className="nav-links">
-            <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}>
-              Home
-            </NavLink>
-          </nav>
+            <nav className="nav-links">
+              <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}>
+                Home
+              </NavLink>
+            </nav>
+          </div>
         </header>
 
         <main className="app-main">
