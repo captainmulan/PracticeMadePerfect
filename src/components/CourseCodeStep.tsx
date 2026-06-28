@@ -8,17 +8,25 @@ import PracticeWorkspace from "./PracticeWorkspace";
 interface CourseCodeStepProps {
   step: CourseStep;
   placeholder: string;
-  eyebrow: string;
-  meta: string;
-  progressPct: number;
+  bookName: string;
+  chapterName: string;
+  chapterNumber: number;
+  pageType: string;
+  pageIndex: number;
+  totalPages: number;
+  pageBrief: string;
 }
 
 export default function CourseCodeStep({
   step,
   placeholder,
-  eyebrow,
-  meta,
-  progressPct,
+  bookName,
+  chapterName,
+  chapterNumber,
+  pageType,
+  pageIndex,
+  totalPages,
+  pageBrief,
 }: CourseCodeStepProps) {
   const practiceTask = useMemo(() => courseStepToPracticeTask(step), [step]);
   const hintsText = buildEditorContent(practiceTask, false);
@@ -64,12 +72,14 @@ export default function CourseCodeStep({
   return (
     <>
       <PracticeWorkspace
-        eyebrow={eyebrow}
+        bookName={bookName}
+        chapterName={chapterName}
+        chapterNumber={chapterNumber}
+        pageType={pageType}
+        pageIndex={pageIndex}
+        totalPages={totalPages}
+        pageBrief={pageBrief}
         title={step.title}
-        meta={meta}
-        progressPct={progressPct}
-        description={step.description}
-        toolbarLabel="Code exam"
         value={draft}
         placeholder={placeholder}
         showPeek={showPeek}

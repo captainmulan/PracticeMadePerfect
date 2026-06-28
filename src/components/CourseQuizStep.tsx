@@ -5,12 +5,25 @@ import PracticeWorkspace from "./PracticeWorkspace";
 
 interface CourseQuizStepProps {
   step: CourseStep;
-  eyebrow: string;
-  meta: string;
-  progressPct: number;
+  bookName: string;
+  chapterName: string;
+  chapterNumber: number;
+  pageType: string;
+  pageIndex: number;
+  totalPages: number;
+  pageBrief: string;
 }
 
-export default function CourseQuizStep({ step, eyebrow, meta, progressPct }: CourseQuizStepProps) {
+export default function CourseQuizStep({
+  step,
+  bookName,
+  chapterName,
+  chapterNumber,
+  pageType,
+  pageIndex,
+  totalPages,
+  pageBrief,
+}: CourseQuizStepProps) {
   const questions = step.quizQuestions ?? [];
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -28,12 +41,14 @@ export default function CourseQuizStep({ step, eyebrow, meta, progressPct }: Cou
 
   return (
     <PracticeWorkspace
-      eyebrow={eyebrow}
+      bookName={bookName}
+      chapterName={chapterName}
+      chapterNumber={chapterNumber}
+      pageType={pageType}
+      pageIndex={pageIndex}
+      totalPages={totalPages}
+      pageBrief={pageBrief}
       title={step.title}
-      meta={meta}
-      progressPct={progressPct}
-      description={step.description}
-      toolbarLabel="Quiz"
     >
       <div className="course-step-quiz-body practice-workspace-content">
         {questions.map((question) => (

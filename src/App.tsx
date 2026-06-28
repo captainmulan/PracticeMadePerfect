@@ -12,9 +12,9 @@ function AppHeader() {
     <header className={`app-header${stageNav ? " has-stage-nav" : ""}`}>
       <div className={`app-header-inner${stageNav ? " has-stage-nav" : ""}`}>
         <div className="app-brand">
-          <div className="app-logo">PMP</div>
+          <div className="app-logo">M</div>
           <div>
-            <p className="page-tag">ခေတ်ရှေ့ပြေး စာကြည့်တိုက်</p>
+            <p className="page-tag">မှော်ဝင် စာကြည့်တိုက်</p>
           </div>
         </div>
 

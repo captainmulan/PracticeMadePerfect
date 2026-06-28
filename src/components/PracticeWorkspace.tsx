@@ -1,11 +1,15 @@
 import type { ChangeEvent, ReactNode } from "react";
 
 interface PracticeWorkspaceProps {
-  eyebrow?: string;
+  bookName?: string;
+  chapterName?: string;
+  chapterNumber?: number;
+  pageType?: string;
+  pageIndex?: number;
+  totalPages?: number;
+  pageBrief?: string;
   title: string;
   description?: string;
-  meta?: string;
-  progressPct?: number;
   toolbarLabel?: string;
   value?: string;
   placeholder?: string;
@@ -22,11 +26,15 @@ interface PracticeWorkspaceProps {
 }
 
 export default function PracticeWorkspace({
-  eyebrow,
+  bookName,
+  chapterName,
+  chapterNumber,
+  pageType,
+  pageIndex,
+  totalPages,
+  pageBrief,
   title,
   description,
-  meta,
-  progressPct,
   toolbarLabel,
   value = "",
   placeholder = "",
@@ -46,47 +54,23 @@ export default function PracticeWorkspace({
 
   return (
     <section className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}`}>
-      <div className="practice-workspace-top">
-        <div className="practice-workspace-intro">
-          {eyebrow ? <div className="practice-workspace-eyebrow">{eyebrow}</div> : null}
-          <h1 className="practice-workspace-title">{title}</h1>
-          {meta ? <div className="practice-workspace-meta">{meta}</div> : null}
-          {progressPct !== undefined ? (
-            <div className="practice-workspace-progress" aria-hidden="true">
-              <div className="practice-workspace-progress-bar" style={{ width: `${progressPct}%` }} />
-            </div>
-          ) : null}
-          {description ? <p className="practice-workspace-desc">{description}</p> : null}
+      {/* Top Bar: Chapter Info + Book Name */}
+      <div className="practice-workspace-top-bar">
+        <div className="chapter-info">
+          <span className="chapter-label">CHAPTER</span>
+          <span className="chapter-number">{chapterNumber}</span>
+          <span className="chapter-title">{chapterName}</span>
         </div>
-
-        {showToolbar ? (
-          <div className="practice-workspace-toolbar">
-            {toolbarLabel ? <span className="panel-heading">{toolbarLabel}</span> : null}
-            <div className="practice-header-actions">
-              {onTogglePeek ? (
-                <button
-                  type="button"
-                  className="action-button practice-header-button practice-tool-button"
-                  onClick={onTogglePeek}
-                >
-                  {showPeek ? "Hide Peek" : "Peek"}
-                </button>
-              ) : null}
-              {onVerify ? (
-                <button
-                  type="button"
-                  className="action-button practice-header-button practice-tool-button"
-                  onClick={onVerify}
-                  disabled={verifyDisabled}
-                >
-                  Verify
-                </button>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
+        <div className="book-title">{bookName}</div>
       </div>
 
+      {/* Step Title + Brief */}
+      <div className="practice-workspace-step-header">
+        <h1 className="practice-workspace-title">{title}</h1>
+        {pageBrief && <p className="practice-workspace-desc">{pageBrief}</p>}
+      </div>
+
+      {/* Workspace Body */}
       <div className="practice-workspace-body">
         <div className="practice-workspace-editor-shell">
           {loadError ? (

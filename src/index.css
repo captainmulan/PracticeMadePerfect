@@ -511,6 +511,41 @@ textarea {
   gap: 24px;
 }
 
+/* Course Wizard Page Overrides - No Dark Background */
+.course-wizard-page .practice-right,
+.course-wizard-page .practice-code-page .practice-right {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-radius: 24px !important;
+  overflow: visible !important;
+  min-height: auto !important;
+}
+
+.course-wizard-page .practice-answer-html {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+.course-wizard-page .practice-answer-html h2 {
+  color: #0f172a !important;
+}
+
+.course-wizard-page .practice-codearea,
+.course-wizard-page .practice-textarea {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+}
+
+/* Ensure workspace content is scrollable */
+.course-wizard-page .practice-workspace-body {
+  overflow-y: auto !important;
+  max-height: calc(100vh - 300px) !important;
+}
+
 .practice-page {
   gap: 16px;
 }

@@ -33,10 +33,10 @@ export default function Home() {
               <div className="home-hero-features" dangerouslySetInnerHTML={{ __html: data.featureHtml }} />
               <div className="home-hero-actions">
                 <Link to="/courses/react-crud" className="hero-cta">
-                  Start a course
+                  Start reading
                 </Link>
                 <Link to="/practice/react" className="hero-secondary">
-                  Practice categories
+                  Browse books
                 </Link>
               </div>
             </>

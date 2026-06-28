@@ -63,34 +63,51 @@ export default function CourseWizard() {
 
   const currentStep = steps[stepIndex];
   const progressPct = Math.round(((stepIndex + 1) / steps.length) * 100);
-  const eyebrow = `${course.icon} ${course.title}`;
-  const meta = `${currentStep.chapterTitle} · ${courseStepLabel(currentStep)}`;
+  const bookName = `${course.icon} ${course.title}`;
+  const chapterName = currentStep.chapterTitle;
+  const chapterNumber = currentStep.chapterIndex + 1;
+  const pageType = courseStepLabel(currentStep);
+  const pageIndex = stepIndex + 1;
+  const totalPages = steps.length;
+  const pageBrief = currentStep.description;
 
   return (
     <div className="page-content course-wizard-page practice-page practice-wizard practice-code-page">
       {currentStep.stepType === "html" && (
         <CourseHtmlStep
           step={currentStep}
-          eyebrow={eyebrow}
-          meta={meta}
-          progressPct={progressPct}
+          bookName={bookName}
+          chapterName={chapterName}
+          chapterNumber={chapterNumber}
+          pageType={pageType}
+          pageIndex={pageIndex}
+          totalPages={totalPages}
+          pageBrief={pageBrief}
         />
       )}
       {currentStep.stepType === "code-exam" && (
         <CourseCodeStep
           step={currentStep}
           placeholder={placeholder}
-          eyebrow={eyebrow}
-          meta={meta}
-          progressPct={progressPct}
+          bookName={bookName}
+          chapterName={chapterName}
+          chapterNumber={chapterNumber}
+          pageType={pageType}
+          pageIndex={pageIndex}
+          totalPages={totalPages}
+          pageBrief={pageBrief}
         />
       )}
       {currentStep.stepType === "quiz" && (
         <CourseQuizStep
           step={currentStep}
-          eyebrow={eyebrow}
-          meta={meta}
-          progressPct={progressPct}
+          bookName={bookName}
+          chapterName={chapterName}
+          chapterNumber={chapterNumber}
+          pageType={pageType}
+          pageIndex={pageIndex}
+          totalPages={totalPages}
+          pageBrief={pageBrief}
         />
       )}
     </div>

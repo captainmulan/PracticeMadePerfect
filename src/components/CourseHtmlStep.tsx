@@ -4,23 +4,38 @@ import "../styles/course.css";
 
 interface CourseHtmlStepProps {
   step: CourseStep;
-  eyebrow: string;
-  meta: string;
-  progressPct: number;
+  bookName: string;
+  chapterName: string;
+  chapterNumber: number;
+  pageType: string;
+  pageIndex: number;
+  totalPages: number;
+  pageBrief: string;
 }
 
-export default function CourseHtmlStep({ step, eyebrow, meta, progressPct }: CourseHtmlStepProps) {
+export default function CourseHtmlStep({
+  step,
+  bookName,
+  chapterName,
+  chapterNumber,
+  pageType,
+  pageIndex,
+  totalPages,
+  pageBrief,
+}: CourseHtmlStepProps) {
   return (
     <PracticeWorkspace
-      eyebrow={eyebrow}
+      bookName={bookName}
+      chapterName={chapterName}
+      chapterNumber={chapterNumber}
+      pageType={pageType}
+      pageIndex={pageIndex}
+      totalPages={totalPages}
+      pageBrief={pageBrief}
       title={step.title}
-      meta={meta}
-      progressPct={progressPct}
-      description={step.description}
-      toolbarLabel="Lesson"
     >
       <div
-        className="practice-answer-html practice-workspace-content"
+        className="practice-answer-html practice-workspace-content course-step-html-body"
         dangerouslySetInnerHTML={{
           __html: step.contentHtml ?? "<p><em>No lesson content yet.</em></p>",
         }}
