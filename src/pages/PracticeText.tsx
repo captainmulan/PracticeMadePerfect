@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import PracticeQuestionHero from "../components/PracticeQuestionHero";
+import PracticeWorkspace from "../components/PracticeWorkspace";
 import type { PracticeTask } from "../data/tasks";
+import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 import { usePracticeData } from "../utils/usePracticeData";
 import { sortTasksInCategory } from "../utils/taskSort";
 
@@ -9,7 +10,6 @@ export default function PracticeText() {
   const { categoryKey } = useParams<{ categoryKey: string }>();
   const data = usePracticeData();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [heroExpanded, setHeroExpanded] = useState(false);
 
   const filteredTasks = useMemo(
     () => sortTasksInCategory(data.tasks.filter((task: PracticeTask) => task.category === categoryKey)),
@@ -24,13 +24,22 @@ export default function PracticeText() {
   const selectedTask = filteredTasks[currentIndex];
   const loadError = selectedTask?.loadError;
 
-  function handleNext() {
-    setCurrentIndex((value) => Math.min(value + 1, filteredTasks.length - 1));
-  }
-
-  function handlePrevious() {
+  const handlePrevious = useCallback(() => {
     setCurrentIndex((value) => Math.max(value - 1, 0));
-  }
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setCurrentIndex((value) => Math.min(value + 1, filteredTasks.length - 1));
+  }, [filteredTasks.length]);
+
+  useStageNavRegistration(
+    currentIndex + 1,
+    filteredTasks.length,
+    currentIndex > 0,
+    currentIndex < filteredTasks.length - 1,
+    handlePrevious,
+    handleNext,
+  );
 
   if (!selectedCategory) {
     return (
@@ -60,39 +69,33 @@ export default function PracticeText() {
     );
   }
 
-  return (
-    <div className="practice-page practice-wizard practice-text-page">      <PracticeQuestionHero
-        selectedTask={selectedTask}
-        selectedCategory={selectedCategory}
-        currentIndex={currentIndex}
-        totalTasks={filteredTasks.length}
-        heroExpanded={heroExpanded}
-        onToggleHero={() => setHeroExpanded((value) => !value)}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-      />
+  const progressPct = Math.round(((currentIndex + 1) / filteredTasks.length) * 100);
 
-      <section className="practice-layout full-code">
-        <section className="practice-right panel">
-          <div className="practice-right-header">
-            <div className="panel-heading">Answer</div>
+  return (
+    <div className="practice-page practice-wizard practice-text-page">
+      <PracticeWorkspace
+        eyebrow={selectedCategory.label}
+        title={selectedTask.title}
+        meta={`${selectedTask.type} · ${selectedTask.id}`}
+        progressPct={progressPct}
+        description={selectedTask.description}
+        toolbarLabel="Answer"
+      >
+        {loadError ? (
+          <div className="practice-error-message">
+            <pre>{loadError}</pre>
           </div>
-          {loadError ? (
-            <div className="practice-error-message">
-              <pre>{loadError}</pre>
-            </div>
-          ) : (
-            <div
-              className="practice-answer-html"
-              dangerouslySetInnerHTML={{
-                __html:
-                  selectedTask.answerHtml ??
-                  "<p><em>No HTML answer configured for this flashcard.</em></p>",
-              }}
-            />
-          )}
-        </section>
-      </section>
+        ) : (
+          <div
+            className="practice-answer-html practice-workspace-content"
+            dangerouslySetInnerHTML={{
+              __html:
+                selectedTask.answerHtml ??
+                "<p><em>No HTML answer configured for this flashcard.</em></p>",
+            }}
+          />
+        )}
+      </PracticeWorkspace>
     </div>
   );
 }

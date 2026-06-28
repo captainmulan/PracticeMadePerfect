@@ -1,26 +1,30 @@
 import type { CourseStep } from "../data/courses";
+import PracticeWorkspace from "./PracticeWorkspace";
 import "../styles/course.css";
 
 interface CourseHtmlStepProps {
   step: CourseStep;
+  eyebrow: string;
+  meta: string;
+  progressPct: number;
 }
 
-export default function CourseHtmlStep({ step }: CourseHtmlStepProps) {
+export default function CourseHtmlStep({ step, eyebrow, meta, progressPct }: CourseHtmlStepProps) {
   return (
-    <div className="course-step-html course-step-html-body">
-      <section className="practice-layout full-code code-peek-hidden">
-        <section className="practice-right panel">
-          <div className="practice-right-header">
-            <div className="panel-heading">Lesson</div>
-          </div>
-          <div
-            className="practice-answer-html"
-            dangerouslySetInnerHTML={{
-              __html: step.contentHtml ?? "<p><em>No lesson content yet.</em></p>",
-            }}
-          />
-        </section>
-      </section>
-    </div>
+    <PracticeWorkspace
+      eyebrow={eyebrow}
+      title={step.title}
+      meta={meta}
+      progressPct={progressPct}
+      description={step.description}
+      toolbarLabel="Lesson"
+    >
+      <div
+        className="practice-answer-html practice-workspace-content"
+        dangerouslySetInnerHTML={{
+          __html: step.contentHtml ?? "<p><em>No lesson content yet.</em></p>",
+        }}
+      />
+    </PracticeWorkspace>
   );
 }

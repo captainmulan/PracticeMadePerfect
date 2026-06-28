@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import PracticeQuestionHero from "../components/PracticeQuestionHero";
+import PracticeWorkspace from "../components/PracticeWorkspace";
 import type { PracticeTask } from "../data/tasks";
+import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 import { usePracticeData } from "../utils/usePracticeData";
 import { sortTasksInCategory } from "../utils/taskSort";
 import { runCompileCheck } from "../utils/compileVerifier";
@@ -19,7 +20,6 @@ export default function Practice() {
   const [compileErrors, setCompileErrors] = useState<string[]>([]);
   const [compileLanguage, setCompileLanguage] = useState("");
   const [showExampleCode, setShowExampleCode] = useState(false);
-  const [heroExpanded, setHeroExpanded] = useState(false);
   const [isMobileView, setIsMobileView] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches,
   );
@@ -37,7 +37,7 @@ export default function Practice() {
     [categoryKey, data.tasks],
   );
 
-  const selectedCategory = data.categories.find((category: { key: string }) => category.key === categoryKey);
+  const selectedCategory = data.categories.find((category) => category.key === categoryKey);
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -52,11 +52,26 @@ export default function Practice() {
   const peekCode = selectedTask ? getFullExampleCode(selectedTask) : "";
 
   const initialEditorContent =
-    currentDraft !== undefined && currentDraftTouched
-      ? currentDraft
-      : hintsText;
+    currentDraft !== undefined && currentDraftTouched ? currentDraft : hintsText;
 
   const taskContent = initialEditorContent;
+
+  const handlePrevious = useCallback(() => {
+    setCurrentIndex((value) => Math.max(value - 1, 0));
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setCurrentIndex((value) => Math.min(value + 1, filteredTasks.length - 1));
+  }, [filteredTasks.length]);
+
+  useStageNavRegistration(
+    currentIndex + 1,
+    filteredTasks.length,
+    currentIndex > 0,
+    currentIndex < filteredTasks.length - 1,
+    handlePrevious,
+    handleNext,
+  );
 
   function verifyCode() {
     if (!selectedTask) return;
@@ -81,14 +96,6 @@ export default function Practice() {
     if (!selectedTask) return;
     setDrafts((prev) => ({ ...prev, [selectedTask.id]: value }));
     setDraftTouched((prev) => ({ ...prev, [selectedTask.id]: true }));
-  }
-
-  function handleNext() {
-    setCurrentIndex((value) => Math.min(value + 1, filteredTasks.length - 1));
-  }
-
-  function handlePrevious() {
-    setCurrentIndex((value) => Math.max(value - 1, 0));
   }
 
   if (!selectedCategory) {
@@ -119,111 +126,32 @@ export default function Practice() {
     );
   }
 
+  const progressPct = Math.round(((currentIndex + 1) / filteredTasks.length) * 100);
+
   return (
     <div className="practice-page practice-wizard practice-code-page">
-      <PracticeQuestionHero
-        selectedTask={selectedTask}
-        selectedCategory={selectedCategory}
-        currentIndex={currentIndex}
-        totalTasks={filteredTasks.length}
-        heroExpanded={heroExpanded}
-        onToggleHero={() => setHeroExpanded((value) => !value)}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
+      <PracticeWorkspace
+        eyebrow={selectedCategory.label}
+        title={selectedTask.title}
+        meta={`${selectedTask.type} · ${selectedTask.id}`}
+        progressPct={progressPct}
+        description={selectedTask.description}
+        toolbarLabel="Answer"
+        value={taskContent}
+        placeholder={data.placeholder}
+        isText={selectedTask.type === "text"}
+        loadError={loadError}
+        showPeek={showExampleCode}
+        isMobileView={isMobileView}
+        onTogglePeek={() => setShowExampleCode((value) => !value)}
+        onVerify={verifyCode}
+        onChange={handleDraftChange}
+        peekCode={peekCode}
       />
-
-      <section className={`practice-layout full-code ${showExampleCode ? "code-peek-open" : "code-peek-hidden"}`}>
-        <section className="practice-right panel">
-          <div className="practice-answer-toolbar">
-            <div className="panel-heading">Answer</div>
-            <div className="practice-header-actions">
-              <button
-                type="button"
-                className="action-button practice-header-button practice-tool-button"
-                onClick={() => setShowExampleCode((value) => !value)}
-              >
-                {showExampleCode ? "Hide Peek" : "Peek"}
-              </button>
-              <button
-                type="button"
-                className="action-button practice-header-button practice-tool-button"
-                onClick={() => verifyCode()}
-              >
-                Verify
-              </button>
-            </div>
-          </div>
-
-          <div className="practice-editor-area">
-            <div className="practice-editor-shell">
-              {loadError ? (
-                <div className="practice-error-message">
-                  <pre>{loadError}</pre>
-                </div>
-              ) : (
-                <label className="practice-text-label">
-                  {selectedTask.type === "text" ? (
-                    <textarea
-                      className="practice-textarea"
-                      value={taskContent}
-                      onChange={(event) => handleDraftChange(event.target.value)}
-                      placeholder={data.placeholder}
-                      spellCheck={false}
-                      autoComplete="off"
-                    />
-                  ) : (
-                    <textarea
-                      className="practice-codearea"
-                      value={taskContent}
-                      onChange={(event) => handleDraftChange(event.target.value)}
-                      placeholder={data.placeholder}
-                      spellCheck={false}
-                      autoComplete="off"
-                    />
-                  )}
-                </label>
-              )}
-            </div>
-          </div>
-
-          {showExampleCode && !isMobileView && (
-            <section className="practice-peek-desktop" aria-label="Example code peek">
-              <div className="practice-preview-header">
-                <span>Peek Code</span>
-                <button
-                  type="button"
-                  className="practice-peek-close"
-                  onClick={() => setShowExampleCode(false)}
-                  aria-label="Close peek"
-                >
-                  ✕
-                </button>
-              </div>
-              <pre>{peekCode}</pre>
-            </section>
-          )}
-        </section>
-      </section>
-
-      {showExampleCode && isMobileView && (
-        <div className="modal-backdrop practice-peek-mobile-modal" onClick={() => setShowExampleCode(false)}>
-          <div className="modal practice-peek-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Peek Code</h3>
-              <button type="button" className="modal-close" onClick={() => setShowExampleCode(false)} aria-label="Close peek">
-                ✕
-              </button>
-            </div>
-            <div className="modal-body">
-              <pre>{peekCode}</pre>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showChecklistModal && (
         <div className="modal-backdrop" onClick={() => setShowChecklistModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal-header">
               <h3>Verification Results</h3>
               <button type="button" className="modal-close" onClick={() => setShowChecklistModal(false)}>✕</button>
@@ -242,9 +170,9 @@ export default function Practice() {
                 </div>
               )}
               <ul>
-                {(verificationResults[selectedTask.id] ?? checklist.map(() => false)).map((v, i) => (
-                  <li key={i} className={v ? "verified" : "not-verified"}>
-                    {v ? "✓" : "✗"} {checklist[i] ?? "Step"}
+                {(verificationResults[selectedTask.id] ?? checklist.map(() => false)).map((passed, index) => (
+                  <li key={index} className={passed ? "verified" : "not-verified"}>
+                    {passed ? "✓" : "✗"} {checklist[index] ?? "Step"}
                   </li>
                 ))}
               </ul>

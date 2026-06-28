@@ -3,14 +3,23 @@ import type { CourseStep } from "../data/courses";
 import { courseStepToPracticeTask } from "../utils/courseUtils";
 import { runCompileCheck } from "../utils/compileVerifier";
 import { buildEditorContent, getFullExampleCode, verifyTaskFull } from "../utils/taskHints";
-import PracticeCodeEditor from "./PracticeCodeEditor";
+import PracticeWorkspace from "./PracticeWorkspace";
 
 interface CourseCodeStepProps {
   step: CourseStep;
   placeholder: string;
+  eyebrow: string;
+  meta: string;
+  progressPct: number;
 }
 
-export default function CourseCodeStep({ step, placeholder }: CourseCodeStepProps) {
+export default function CourseCodeStep({
+  step,
+  placeholder,
+  eyebrow,
+  meta,
+  progressPct,
+}: CourseCodeStepProps) {
   const practiceTask = useMemo(() => courseStepToPracticeTask(step), [step]);
   const hintsText = buildEditorContent(practiceTask, false);
   const [draft, setDraft] = useState(hintsText);
@@ -21,6 +30,9 @@ export default function CourseCodeStep({ step, placeholder }: CourseCodeStepProp
   const [checklistResults, setChecklistResults] = useState<boolean[]>(
     () => (step.checklist ?? []).map(() => false),
   );
+  const [isMobileView, setIsMobileView] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches,
+  );
 
   useEffect(() => {
     setDraft(hintsText);
@@ -29,9 +41,6 @@ export default function CourseCodeStep({ step, placeholder }: CourseCodeStepProp
     setCompileLanguage("");
     setShowResults(false);
   }, [step.id, hintsText, step.checklist]);
-  const [isMobileView, setIsMobileView] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches,
-  );
 
   function verifyCode() {
     const compile = runCompileCheck(practiceTask, draft);
@@ -53,14 +62,19 @@ export default function CourseCodeStep({ step, placeholder }: CourseCodeStepProp
   const peekCode = getFullExampleCode(practiceTask);
 
   return (
-    <div className="course-step-code">
-      <PracticeCodeEditor
-        label="Code exam"
+    <>
+      <PracticeWorkspace
+        eyebrow={eyebrow}
+        title={step.title}
+        meta={meta}
+        progressPct={progressPct}
+        description={step.description}
+        toolbarLabel="Code exam"
         value={draft}
         placeholder={placeholder}
         showPeek={showPeek}
         isMobileView={isMobileView}
-        onTogglePeek={() => setShowPeek((v) => !v)}
+        onTogglePeek={() => setShowPeek((value) => !value)}
         onVerify={verifyCode}
         onChange={setDraft}
         peekCode={peekCode}
@@ -68,7 +82,7 @@ export default function CourseCodeStep({ step, placeholder }: CourseCodeStepProp
 
       {showResults && (
         <div className="modal-backdrop" onClick={() => setShowResults(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal-header">
               <h3>Verification Results</h3>
               <button type="button" className="modal-close" onClick={() => setShowResults(false)}>✕</button>
@@ -98,6 +112,6 @@ export default function CourseCodeStep({ step, placeholder }: CourseCodeStepProp
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

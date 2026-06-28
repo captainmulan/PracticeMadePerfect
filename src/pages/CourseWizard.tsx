@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import CourseCodeStep from "../components/CourseCodeStep";
 import CourseHtmlStep from "../components/CourseHtmlStep";
@@ -7,6 +7,7 @@ import { courseStepLabel, flattenCourseSteps } from "../data/courses";
 import { loadCourseProgress, saveCourseProgress } from "../utils/courseUtils";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
 import { getPracticePageData } from "../utils/contentStore";
+import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -27,6 +28,23 @@ export default function CourseWizard() {
     saveCourseProgress(courseId, stepIndex);
   }, [courseId, stepIndex]);
 
+  const handlePrevious = useCallback(() => {
+    setStepIndex((value) => Math.max(0, value - 1));
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setStepIndex((value) => Math.min(steps.length - 1, value + 1));
+  }, [steps.length]);
+
+  useStageNavRegistration(
+    stepIndex + 1,
+    steps.length,
+    stepIndex > 0,
+    stepIndex < steps.length - 1,
+    handlePrevious,
+    handleNext,
+  );
+
   if (!loaded) {
     return <div className="page-content panel"><div className="panel-body">Loading course...</div></div>;
   }
@@ -45,54 +63,36 @@ export default function CourseWizard() {
 
   const currentStep = steps[stepIndex];
   const progressPct = Math.round(((stepIndex + 1) / steps.length) * 100);
+  const eyebrow = `${course.icon} ${course.title}`;
+  const meta = `${currentStep.chapterTitle} · ${courseStepLabel(currentStep)}`;
 
   return (
     <div className="page-content course-wizard-page practice-page practice-wizard practice-code-page">
-      <section className="course-wizard-header panel">
-        <div className="course-wizard-header-top">
-          <div>
-            <div className="course-wizard-eyebrow">{course.icon} {course.title}</div>
-            <h1 className="course-wizard-step-title">{currentStep.title}</h1>
-            <div className="course-wizard-meta">
-              <span>{currentStep.chapterTitle}</span>
-              <span>·</span>
-              <span>{courseStepLabel(currentStep)}</span>
-              <span>·</span>
-              <span>{stepIndex + 1} / {steps.length}</span>
-            </div>
-          </div>
-          <div className="course-wizard-nav">
-            <button
-              type="button"
-              className="action-button practice-nav-button"
-              disabled={stepIndex === 0}
-              onClick={() => setStepIndex((v) => Math.max(0, v - 1))}
-              aria-label="Previous step"
-            >
-              &lt;
-            </button>
-            <button
-              type="button"
-              className="action-button practice-nav-button"
-              disabled={stepIndex >= steps.length - 1}
-              onClick={() => setStepIndex((v) => Math.min(steps.length - 1, v + 1))}
-              aria-label="Next step"
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
-        <div className="course-wizard-progress" aria-hidden="true">
-          <div className="course-wizard-progress-bar" style={{ width: `${progressPct}%` }} />
-        </div>
-        {currentStep.description ? <p className="course-wizard-description">{currentStep.description}</p> : null}
-      </section>
-
-      <section className="course-wizard-body">
-        {currentStep.stepType === "html" && <CourseHtmlStep step={currentStep} />}
-        {currentStep.stepType === "code-exam" && <CourseCodeStep step={currentStep} placeholder={placeholder} />}
-        {currentStep.stepType === "quiz" && <CourseQuizStep step={currentStep} />}
-      </section>
+      {currentStep.stepType === "html" && (
+        <CourseHtmlStep
+          step={currentStep}
+          eyebrow={eyebrow}
+          meta={meta}
+          progressPct={progressPct}
+        />
+      )}
+      {currentStep.stepType === "code-exam" && (
+        <CourseCodeStep
+          step={currentStep}
+          placeholder={placeholder}
+          eyebrow={eyebrow}
+          meta={meta}
+          progressPct={progressPct}
+        />
+      )}
+      {currentStep.stepType === "quiz" && (
+        <CourseQuizStep
+          step={currentStep}
+          eyebrow={eyebrow}
+          meta={meta}
+          progressPct={progressPct}
+        />
+      )}
     </div>
   );
 }

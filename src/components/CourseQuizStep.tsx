@@ -1,12 +1,16 @@
 import { useState } from "react";
 import "../styles/course.css";
 import type { CourseStep, QuizQuestion } from "../data/courses";
+import PracticeWorkspace from "./PracticeWorkspace";
 
 interface CourseQuizStepProps {
   step: CourseStep;
+  eyebrow: string;
+  meta: string;
+  progressPct: number;
 }
 
-export default function CourseQuizStep({ step }: CourseQuizStepProps) {
+export default function CourseQuizStep({ step, eyebrow, meta, progressPct }: CourseQuizStepProps) {
   const questions = step.quizQuestions ?? [];
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -20,44 +24,43 @@ export default function CourseQuizStep({ step }: CourseQuizStepProps) {
     setSubmitted(true);
   }
 
-  const score = questions.filter((q) => answers[q.id] === q.correctOptionId).length;
+  const score = questions.filter((question) => answers[question.id] === question.correctOptionId).length;
 
   return (
-    <div className="course-step-quiz">
-      <section className="practice-layout full-code code-peek-hidden">
-        <section className="practice-right panel">
-          <div className="practice-right-header">
-            <div className="panel-heading">Quiz</div>
+    <PracticeWorkspace
+      eyebrow={eyebrow}
+      title={step.title}
+      meta={meta}
+      progressPct={progressPct}
+      description={step.description}
+      toolbarLabel="Quiz"
+    >
+      <div className="course-step-quiz-body practice-workspace-content">
+        {questions.map((question) => (
+          <QuizQuestionBlock
+            key={question.id}
+            question={question}
+            selected={answers[question.id]}
+            submitted={submitted}
+            onSelect={(optionId) => selectAnswer(question.id, optionId)}
+          />
+        ))}
+        {!submitted ? (
+          <button
+            type="button"
+            className="footer-button course-quiz-submit"
+            onClick={handleSubmit}
+            disabled={questions.some((question) => !answers[question.id])}
+          >
+            Submit quiz
+          </button>
+        ) : (
+          <div className="course-quiz-summary">
+            Score: {score}/{questions.length}
           </div>
-          <div className="course-step-quiz-body">
-            {step.description ? <p className="course-quiz-intro">{step.description}</p> : null}
-            {questions.map((question) => (
-              <QuizQuestionBlock
-                key={question.id}
-                question={question}
-                selected={answers[question.id]}
-                submitted={submitted}
-                onSelect={(optionId) => selectAnswer(question.id, optionId)}
-              />
-            ))}
-            {!submitted ? (
-              <button
-                type="button"
-                className="footer-button course-quiz-submit"
-                onClick={handleSubmit}
-                disabled={questions.some((q) => !answers[q.id])}
-              >
-                Submit quiz
-              </button>
-            ) : (
-              <div className="course-quiz-summary">
-                Score: {score}/{questions.length}
-              </div>
-            )}
-          </div>
-        </section>
-      </section>
-    </div>
+        )}
+      </div>
+    </PracticeWorkspace>
   );
 }
 
