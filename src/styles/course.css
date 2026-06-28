@@ -15,16 +15,8 @@
 .chapter-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
-}
-
-.chapter-label {
-  font-size: 0.875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748b;
 }
 
 .chapter-number {
@@ -32,16 +24,17 @@
   font-weight: 800;
   color: #0f172a;
   background: #ffffff;
-  padding: 4px 12px;
+  padding: 8px 16px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   line-height: 1.2;
 }
 
-.chapter-title {
-  font-size: 1.125rem;
+.step-title {
+  font-size: 1.25rem;
   font-weight: 700;
   color: #0f172a;
+  margin: 0;
   line-height: 1.2;
 }
 
@@ -55,15 +48,8 @@
 
 /* Step Header */
 .practice-workspace-step-header {
-  padding: 20px 24px;
+  padding: 16px 24px;
   border-bottom: 1px solid #f1f5f9;
-}
-
-.practice-workspace-title {
-  margin: 0 0 8px 0 !important;
-  font-size: 1.5rem !important;
-  font-weight: 800 !important;
-  color: #0f172a !important;
 }
 
 .practice-workspace-desc {

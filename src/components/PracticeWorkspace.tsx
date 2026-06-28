@@ -4,6 +4,7 @@ interface PracticeWorkspaceProps {
   bookName?: string;
   chapterName?: string;
   chapterNumber?: number;
+  stepNumber?: number;
   pageType?: string;
   pageIndex?: number;
   totalPages?: number;
@@ -29,6 +30,7 @@ export default function PracticeWorkspace({
   bookName,
   chapterName,
   chapterNumber,
+  stepNumber,
   pageType,
   pageIndex,
   totalPages,
@@ -57,18 +59,18 @@ export default function PracticeWorkspace({
       {/* Top Bar: Chapter Info + Book Name */}
       <div className="practice-workspace-top-bar">
         <div className="chapter-info">
-          <span className="chapter-label">CHAPTER</span>
-          <span className="chapter-number">{chapterNumber}</span>
-          <span className="chapter-title">{chapterName}</span>
+          <span className="chapter-number">{chapterNumber}.{stepNumber}</span>
+          <h2 className="step-title">{title}</h2>
         </div>
         <div className="book-title">{bookName}</div>
       </div>
 
-      {/* Step Title + Brief */}
-      <div className="practice-workspace-step-header">
-        <h1 className="practice-workspace-title">{title}</h1>
-        {pageBrief && <p className="practice-workspace-desc">{pageBrief}</p>}
-      </div>
+      {/* Step Brief */}
+      {pageBrief && (
+        <div className="practice-workspace-step-header">
+          <p className="practice-workspace-desc">{pageBrief}</p>
+        </div>
+      )}
 
       {/* Workspace Body */}
       <div className="practice-workspace-body">

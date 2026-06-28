@@ -66,6 +66,7 @@ export default function CourseWizard() {
   const bookName = `${course.icon} ${course.title}`;
   const chapterName = currentStep.chapterTitle;
   const chapterNumber = currentStep.chapterIndex + 1;
+  const stepNumber = currentStep.stepIndex + 1;
   const pageType = courseStepLabel(currentStep);
   const pageIndex = stepIndex + 1;
   const totalPages = steps.length;
@@ -79,6 +80,7 @@ export default function CourseWizard() {
           bookName={bookName}
           chapterName={chapterName}
           chapterNumber={chapterNumber}
+          stepNumber={stepNumber}
           pageType={pageType}
           pageIndex={pageIndex}
           totalPages={totalPages}
@@ -92,6 +94,7 @@ export default function CourseWizard() {
           bookName={bookName}
           chapterName={chapterName}
           chapterNumber={chapterNumber}
+          stepNumber={stepNumber}
           pageType={pageType}
           pageIndex={pageIndex}
           totalPages={totalPages}
@@ -104,6 +107,7 @@ export default function CourseWizard() {
           bookName={bookName}
           chapterName={chapterName}
           chapterNumber={chapterNumber}
+          stepNumber={stepNumber}
           pageType={pageType}
           pageIndex={pageIndex}
           totalPages={totalPages}
