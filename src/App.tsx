@@ -14,7 +14,7 @@ function AppHeader() {
         <div className="app-brand">
           <div className="app-logo">M</div>
           <div>
-            <p className="page-tag">မှော်ဝင် စာကြည့်တိုက်</p>
+            <p className="page-tag">Magic Library (မှော်ဝင် စာကြည့်တိုက်)</p>
           </div>
         </div>
 

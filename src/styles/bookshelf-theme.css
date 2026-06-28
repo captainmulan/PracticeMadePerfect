@@ -365,6 +365,7 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-areas: "editor";
   min-height: var(--practice-editor-height);
   max-height: var(--practice-editor-height);
   background: var(--shelf-editor-bg);
@@ -372,9 +373,11 @@
 
 .practice-workspace.peek-open .practice-workspace-body {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "editor peek";
 }
 
 .practice-workspace-editor-shell {
+  grid-area: editor;
   min-height: 0;
   height: 100%;
   display: flex;
@@ -444,6 +447,7 @@
   right: auto;
   left: auto;
   bottom: auto;
+  grid-area: peek;
   width: auto;
   max-width: none;
   min-height: 0;

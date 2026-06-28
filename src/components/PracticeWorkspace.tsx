@@ -56,13 +56,41 @@ export default function PracticeWorkspace({
 
   return (
     <section className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}`}>
-      {/* Top Bar: Chapter Info + Book Name */}
+      {/* Top Bar: Chapter Info + Book Name + Toolbar */}
       <div className="practice-workspace-top-bar">
         <div className="chapter-info">
+          <span className="chapter-label">CHAPTER</span>
           <span className="chapter-number">{chapterNumber}.{stepNumber}</span>
           <h2 className="step-title">{title}</h2>
         </div>
-        <div className="book-title">{bookName}</div>
+        <div className="top-bar-right">
+          <div className="book-title">{bookName}</div>
+          {showToolbar && (
+            <div className="practice-workspace-toolbar">
+              <div className="practice-header-actions">
+                {onTogglePeek && (
+                  <button
+                    type="button"
+                    className="action-button practice-header-button practice-tool-button"
+                    onClick={onTogglePeek}
+                  >
+                    {showPeek ? "Hide Peek" : "Peek"}
+                  </button>
+                )}
+                {onVerify && (
+                  <button
+                    type="button"
+                    className="action-button practice-header-button practice-tool-button"
+                    onClick={onVerify}
+                    disabled={verifyDisabled}
+                  >
+                    Verify
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Step Brief */}
