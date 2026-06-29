@@ -569,8 +569,9 @@
     grid-column: 1 / -1;
   }
 
-  .app-header-inner.has-stage-nav .nav-links {
-    justify-self: end;
+  .app-header-inner.has-stage-nav .nav-links,
+  .nav-links {
+    display: none;
   }
 
   .practice-workspace.peek-open .practice-workspace-body {
@@ -587,4 +588,91 @@
     font-size: 0.78rem;
     padding: 10px 12px;
   }
+}
+
+/* Empty book styles */
+.book.empty-space {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+  height: 150px;
+  visibility: visible;
+  background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%);
+  border-radius: 2px 6px 6px 2px;
+  box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-book-text {
+  font-size: 10px;
+  color: #000;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Update home hero background to match theme */
+.page-home .home-hero {
+  background: linear-gradient(180deg, #ffffff 0%, var(--shelf-cream) 100%);
+}
+
+/* Update tab styles to be more lively */
+.page-home .tab {
+  color: var(--shelf-sage-dark);
+  padding: 10px 18px;
+  font-size: 15px;
+  border-radius: 999px;
+  background: rgba(139, 139, 122, 0.1);
+  transition: all 0.2s ease;
+}
+
+.page-home .tab:hover {
+  color: var(--shelf-sage-dark);
+  background: rgba(139, 139, 122, 0.2);
+}
+
+.page-home .tab.active {
+  background: linear-gradient(135deg, var(--shelf-sage) 0%, #6b6b5a 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(139, 139, 122, 0.3);
+}
+
+/* Update button styles to be more lively */
+.page-home .hero-cta {
+  background: linear-gradient(135deg, var(--shelf-sage) 0%, #6b6b5a 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(139, 139, 122, 0.3);
+  transition: all 0.2s ease;
+}
+
+.page-home .hero-cta:hover {
+  background: linear-gradient(135deg, #6b6b5a 0%, #5a5a4a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 139, 122, 0.4);
+}
+
+.page-home .hero-secondary {
+  background: linear-gradient(135deg, rgba(139, 139, 122, 0.1) 0%, rgba(139, 139, 122, 0.2) 100%);
+  color: var(--shelf-sage-dark);
+  border: 1px solid var(--shelf-sage);
+  transition: all 0.2s ease;
+}
+
+.page-home .hero-secondary:hover {
+  background: linear-gradient(135deg, rgba(139, 139, 122, 0.2) 0%, rgba(139, 139, 122, 0.3) 100%);
+  transform: translateY(-2px);
+}
+
+.practice-workspace .practice-tool-button {
+  background: linear-gradient(135deg, #ffffff 0%, var(--shelf-cream) 100%);
+  color: var(--shelf-sage-dark);
+  border: 1px solid var(--shelf-sage);
+  transition: all 0.2s ease;
+}
+
+.practice-workspace .practice-tool-button:hover {
+  background: linear-gradient(135deg, var(--shelf-cream) 0%, rgba(139, 139, 122, 0.2) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(139, 139, 122, 0.2);
 }

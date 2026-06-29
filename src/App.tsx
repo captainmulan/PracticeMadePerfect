@@ -1,4 +1,4 @@
-import { BrowserRouter, NavLink, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, NavLink, Navigate, Route, Routes, Link } from "react-router-dom";
 import { StageNavProvider, useStageNav } from "./context/StageNavContext";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
@@ -11,12 +11,12 @@ function AppHeader() {
   return (
     <header className={`app-header${stageNav ? " has-stage-nav" : ""}`}>
       <div className={`app-header-inner${stageNav ? " has-stage-nav" : ""}`}>
-        <div className="app-brand">
+        <Link to="/" className="app-brand">
           <div className="app-logo">M</div>
           <div>
             <p className="page-tag"></p>
           </div>
-        </div>
+        </Link>
 
         {stageNav ? (
           <div className="app-stage-nav" aria-label="Step navigation">

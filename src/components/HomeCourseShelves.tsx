@@ -23,7 +23,9 @@ export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
               <CourseBookCard key={item.id} item={item} />
             ))}
             {Array.from({ length: CHUNK - group.length }).map((_, emptyIndex) => (
-              <div key={`empty-${rowIndex}-${emptyIndex}`} className="book empty-space" aria-hidden="true" />
+              <div key={`empty-${rowIndex}-${emptyIndex}`} className="book empty-space">
+                <span className="empty-book-text">Coming soon</span>
+              </div>
             ))}
           </div>
           <div className="shelf-board" aria-hidden="true" />
