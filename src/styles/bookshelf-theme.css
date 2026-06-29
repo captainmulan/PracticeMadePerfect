@@ -372,8 +372,8 @@
 }
 
 .practice-workspace.peek-open .practice-workspace-body {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "editor peek";
+  grid-template-columns: 1fr;
+  grid-template-areas: "editor";
 }
 
 .practice-workspace-editor-shell {
@@ -442,25 +442,22 @@
 }
 
 .practice-workspace .practice-peek-desktop {
-  position: relative;
-  top: auto;
-  right: auto;
-  left: auto;
-  bottom: auto;
-  grid-area: peek;
-  width: auto;
-  max-width: none;
-  min-height: 0;
-  max-height: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+  max-width: 600px;
   margin: 0;
-  padding: 10px 12px;
-  background: var(--shelf-cream);
-  color: var(--shelf-ink);
-  border-left: 1px solid var(--shelf-editor-border);
+  padding: 16px;
+  background: #1e293b;
+  color: #f8fafc;
+  border-left: 1px solid #374151;
   border-radius: 0;
-  box-shadow: none;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
+  z-index: 10;
 }
 
 .practice-workspace .practice-peek-desktop pre {
@@ -468,17 +465,17 @@
   min-height: 0;
   margin: 0;
   overflow: auto;
-  background: var(--shelf-card);
-  color: var(--shelf-ink);
-  padding: 10px;
-  border-radius: var(--app-radius-sm);
-  border: 1px solid var(--shelf-border);
-  font-size: 0.74rem;
-  line-height: 1.45;
+  background: #111827;
+  color: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  font-size: 0.78rem;
+  line-height: 1.5;
 }
 
 .practice-workspace .practice-peek-close {
-  color: var(--shelf-ink-muted);
+  color: #94a3b8;
 }
 
 .practice-workspace .practice-error-message {
