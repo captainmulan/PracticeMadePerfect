@@ -84,7 +84,7 @@ export default function Admin() {
   const [dbError, setDbError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
-  const [adminTab, setAdminTab] = useState<"tasks" | "courses">("tasks");
+  const [adminTab, setAdminTab] = useState<"home" | "books">("home");
 
   useEffect(() => {
     const defaultData = loadAdminData();
@@ -285,46 +285,30 @@ export default function Admin() {
   return (
     <div className="page-content page-admin">
       <div className="admin-tabs">
-        <button type="button" className={`admin-tab ${adminTab === "tasks" ? "active" : ""}`} onClick={() => setAdminTab("tasks")}>
-          Practice Tasks
+        <button type="button" className={`admin-tab ${adminTab === "home" ? "active" : ""}`} onClick={() => setAdminTab("home")}>
+          Home Page Data
         </button>
-        <button type="button" className={`admin-tab ${adminTab === "courses" ? "active" : ""}`} onClick={() => setAdminTab("courses")}>
-          Course Builder
+        <button type="button" className={`admin-tab ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
+          Book Builder
         </button>
       </div>
 
-      <section className="panel admin-editor admin-section">
-        <div className="admin-section-body">
-          <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
-            <div>
-              <button
-                type="button"
-                className={`admin-tab ${expandedSections.homePageData ? "active" : ""}`}
-                onClick={() => toggleSection("homePageData")}
-              >
-                Home Page Data
-              </button>
-              <button
-                type="button"
-                className={`admin-tab ${expandedSections.practicePageData ? "active" : ""}`}
-                onClick={() => toggleSection("practicePageData")}
-              >
-                Practice Page Data
-              </button>
+      {adminTab === "home" ? (
+        <section className="panel admin-editor admin-section">
+          <div className="admin-section-body">
+            <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
+              <div className="admin-search-actions-end">
+                <button type="button" className="footer-button secondary" onClick={handleReset}>
+                  Reset
+                </button>
+                <button type="button" className="footer-button" onClick={handleSave}>
+                  Save
+                </button>
+              </div>
             </div>
-            <div className="admin-search-actions-end">
-              <button type="button" className="footer-button secondary" onClick={handleReset}>
-                Reset
-              </button>
-              <button type="button" className="footer-button" onClick={handleSave}>
-                Save
-              </button>
-            </div>
-          </div>
 
-          {message && <div className="admin-course-message">{message}</div>}
+            {message && <div className="admin-course-message">{message}</div>}
 
-          {expandedSections.homePageData && (
             <div style={{ marginBottom: "16px" }}>
               <label className="admin-task-editor-field admin-task-editor-full">
                 <span className="admin-task-editor-label">Home Page Data (JSON)</span>
@@ -336,278 +320,11 @@ export default function Admin() {
                 />
               </label>
             </div>
-          )}
-
-          {expandedSections.practicePageData && (
-            <div style={{ marginBottom: "16px" }}>
-              <label className="admin-task-editor-field admin-task-editor-full">
-                <span className="admin-task-editor-label">Practice Page Data (JSON, without tasks)</span>
-                <textarea
-                  rows={10}
-                  value={practiceMetaJson}
-                  onChange={(e) => setPracticeMetaJson(e.target.value)}
-                  className="admin-grid-input"
-                />
-              </label>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {adminTab === "courses" ? (
+          </div>
+        </section>
+      ) : (
         <section className="panel admin-editor admin-section">
           <AdminCourses />
-        </section>
-      ) : !dbLoaded ? (
-        <section className="panel admin-editor admin-section"><div className="admin-section-body">Loading browser SQLite...</div></section>
-      ) : (
-        <section className="panel admin-editor admin-section admin-single-editor">
-          <div className="admin-search-toolbar admin-search-toolbar-top panel-bordered">
-            <div className="admin-search-row">
-              <input
-                id="adminTaskSearchId"
-                type="search"
-                value={searchId}
-                onChange={(event) => { setSearchId(event.target.value); setCurrentPage(1); }}
-                placeholder="Search by id"
-                aria-label="Search by id"
-                className="admin-search-input"
-              />
-              <input
-                id="adminTaskSearchTitle"
-                type="search"
-                value={searchTitle}
-                onChange={(event) => { setSearchTitle(event.target.value); setCurrentPage(1); }}
-                placeholder="Search by title"
-                aria-label="Search by title"
-                className="admin-search-input"
-              />
-              <input
-                id="adminTaskSearchCategory"
-                type="search"
-                value={searchCategory}
-                onChange={(event) => { setSearchCategory(event.target.value); setCurrentPage(1); }}
-                placeholder="Search by category"
-                aria-label="Search by category"
-                className="admin-search-input"
-              />
-            </div>
-            <div className="admin-search-controls">
-              <button type="button" className="footer-button secondary" disabled={currentPageIndex === 1} onClick={() => setCurrentPage(currentPageIndex - 1)}>
-                Prev
-              </button>
-              <button type="button" className="footer-button secondary" disabled={currentPageIndex >= totalPages} onClick={() => setCurrentPage(currentPageIndex + 1)}>
-                Next
-              </button>
-            </div>
-          </div>
-          <div className="admin-toolbar-actions">
-            <button type="button" className="footer-button" onClick={addTask}>New Task</button>
-          </div>
-
-          <div className="admin-search-results-panel panel-bordered">
-            <div className="admin-search-results-header">
-              <strong>Results</strong>
-              <span className="admin-search-count">
-                Showing {Math.min(filteredTasks.length, pageStart + 1)}–{Math.min(filteredTasks.length, pageStart + pageSize)} of {filteredTasks.length}
-              </span>
-            </div>
-            <div className="admin-search-results-list">
-              {pageTasks.length === 0 ? (
-                <div className="admin-empty-state">No matching tasks. Click New Task to create one.</div>
-              ) : null}
-              {pageTasks.map((t) => {
-                const cIndex = resolveCategoryIndex(t);
-                const tIndex = resolveTaskIndex(t);
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    className={`admin-search-result-item ${selectedTaskId === t.id ? "selected" : ""}`}
-                    onClick={() => {
-                      clearDraft();
-                      setSelectedTaskId(t.id);
-                    }}
-                  >
-                    <div className="admin-search-result-title">{t.title || t.id}</div>
-                    <div className="admin-search-result-details">
-                      <div>C_Index: {cIndex ?? "—"}</div>
-                      <div>T_Index: {tIndex ?? "—"}</div>
-                      <div>Id: {t.id}</div>
-                      <div>Type: {t.type}</div>
-                      <div>Category: {t.category}</div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="admin-single-editor-body panel-bordered">
-            {selectedTaskId ? (
-              (() => {
-                const isDraft = selectedTaskId === NEW_TASK_DRAFT_ID;
-                const task = isDraft ? draftTask : tasks.find((x) => x.id === selectedTaskId);
-                if (!task) return <div>Selected task not found.</div>;
-
-                const updateField = <K extends keyof PracticeTask>(field: K, value: PracticeTask[K]) => {
-                  if (isDraft) {
-                    updateDraftField(field, value);
-                  } else {
-                    updateTaskField(task.id, field, value);
-                  }
-                };
-
-                const categoryIndexValue = resolveCategoryIndex(task);
-                const taskIndexValue = resolveTaskIndex(task);
-
-                return (
-                  <div className="admin-task-editor">
-                    {isDraft ? <div className="admin-draft-banner">New task — fill in details and click Save.</div> : null}
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">ID</span>
-                      <input
-                        type="text"
-                        value={task.id}
-                        onChange={(e) => updateField("id", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Category Index</span>
-                      <input
-                        type="number"
-                        value={typeof categoryIndexValue === "number" ? String(categoryIndexValue) : ""}
-                        onChange={(e) => {
-                          const v = e.target.value.trim();
-                          updateField(
-                            "categoryIndex",
-                            v === "" ? (undefined as PracticeTask["categoryIndex"]) : Number(v),
-                          );
-                        }}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Task Index</span>
-                      <input
-                        type="number"
-                        value={typeof taskIndexValue === "number" ? String(taskIndexValue) : ""}
-                        onChange={(e) => {
-                          const v = e.target.value.trim();
-                          const next = v === "" ? undefined : Number(v);
-                          updateField("taskIndex", next);
-                          updateField("index", next);
-                        }}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Category</span>
-                      <input
-                        type="text"
-                        value={task.category}
-                        onChange={(e) => updateField("category", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Title</span>
-                      <input
-                        type="text"
-                        value={task.title}
-                        onChange={(e) => updateField("title", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Type</span>
-                      <select
-                        value={task.type}
-                        onChange={(e) => updateField("type", e.target.value as PracticeTask["type"])}
-                        className="admin-grid-select"
-                      >
-                        <option value="code">code</option>
-                        <option value="sql">sql</option>
-                        <option value="text">text</option>
-                      </select>
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Description</span>
-                      <textarea rows={3} value={task.description ?? ""} onChange={(e) => updateField("description", e.target.value)} className="admin-grid-input" />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Checklist (one per line)</span>
-                      <textarea
-                        rows={4}
-                        value={(task.checklist ?? []).join("\n")}
-                        onChange={(e) =>
-                          updateField(
-                            "checklist",
-                            e.target.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean) as PracticeTask["checklist"],
-                          )
-                        }
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Starter Code</span>
-                      <textarea rows={4} value={task.starterCode ?? ""} onChange={(e) => updateField("starterCode", e.target.value)} className="admin-grid-input" />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Detailed Instructions (one per line)</span>
-                      <textarea rows={4} value={(task.detailedInstructions ?? []).join("\n")} onChange={(e) => updateField("detailedInstructions", e.target.value.split(/\r?\n/).map(line => line.trim()).filter(Boolean) as PracticeTask["detailedInstructions"])} className="admin-grid-input" />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Answer HTML</span>
-                      <textarea rows={4} value={task.answerHtml ?? ""} onChange={(e) => updateField("answerHtml", e.target.value)} className="admin-grid-input" />
-                    </label>
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Verification Keywords (JSON format - array of arrays)</span>
-                      <textarea rows={4} value={JSON.stringify(task.verificationKeywords ?? [], null, 2)} onChange={(e) => {
-                        try {
-                          const parsed = JSON.parse(e.target.value);
-                          updateField("verificationKeywords", parsed as PracticeTask["verificationKeywords"]);
-                        } catch {
-                          // Ignore parse errors while typing
-                        }
-                      }} className="admin-grid-input" />
-                    </label>
-                    <div className="admin-single-action-row admin-editor-actions">
-                      <button type="button" className="footer-button" onClick={() => saveSingleRecord(task)}>Save</button>
-                      {!isDraft ? (
-                        <button
-                          type="button"
-                          className="footer-button"
-                          onClick={async () => {
-                            deleteTask(task.id);
-                            setSelectedTaskId(null);
-                            try {
-                              const db = await openBrowserDb();
-                              deleteTaskFromBrowserDb(db, task.id);
-                              persistBrowserDbToLocalStorage(db);
-                              const homePageData = JSON.parse(homeJson) as ContentStoreData["homePageData"];
-                              const practicePageMeta = JSON.parse(practiceMetaJson) as Omit<ContentStoreData["practicePageData"], "tasks">;
-                              const nextTasks = tasks.filter((existing) => existing.id !== task.id);
-                              saveAdminData({ homePageData, practicePageData: { ...practicePageMeta, tasks: nextTasks } });
-                              setMessage("Deleted task.");
-                            } catch (err) {
-                              setMessage(String(err));
-                            }
-                          }}
-                        >
-                          Delete
-                        </button>
-                      ) : null}
-                      <button type="button" className="footer-button secondary" onClick={() => { clearDraft(); setMessage(""); }}>Clear</button>
-                    </div>
-                  </div>
-                );
-              })()
-            ) : (
-              <div className="admin-empty-state">No task selected. Use the search box or click New Task to create one.</div>
-            )}
-          </div>
         </section>
       )}
     </div>

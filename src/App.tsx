@@ -1,4 +1,4 @@
-import { BrowserRouter, NavLink, Navigate, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter, NavLink, Navigate, Route, Routes, Link, useLocation } from "react-router-dom";
 import { StageNavProvider, useStageNav } from "./context/StageNavContext";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
@@ -7,6 +7,8 @@ import Admin from "./pages/Admin";
 
 function AppHeader() {
   const { stageNav } = useStageNav();
+  const location = useLocation();
+  const isAdminPage = location.pathname === "/admin";
 
   return (
     <header className={`app-header${stageNav ? " has-stage-nav" : ""}`}>
@@ -44,36 +46,43 @@ function AppHeader() {
           </div>
         ) : null}
 
-        <nav className="nav-links">
-          <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}>
-            Home
-          </NavLink>
-        </nav>
+        {!isAdminPage && (
+          <nav className="nav-links">
+            <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}>
+              Home
+            </NavLink>
+          </nav>
+        )}
       </div>
     </header>
   );
 }
 
-function App() {
+function AppContent() {
   return (
     <div className="app-shell">
-      <StageNavProvider>
-        <BrowserRouter>
-          <AppHeader />
-
-          <main className="app-main">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/practice" element={<Navigate to="/" replace />} />
-              <Route path="/practice/:categoryKey" element={<Practice />} />
-              <Route path="/courses/:courseId" element={<CourseWizard />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </main>
-        </BrowserRouter>
-      </StageNavProvider>
+      <AppHeader />
+      <main className="app-main">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/practice" element={<Navigate to="/" replace />} />
+          <Route path="/practice/:categoryKey" element={<Practice />} />
+          <Route path="/courses/:courseId" element={<CourseWizard />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <StageNavProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </StageNavProvider>
   );
 }
 
