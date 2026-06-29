@@ -58,6 +58,10 @@ export interface Course {
   iconSize?: number;
   courseIndex: number;
   chapters: CourseChapter[];
+  titleFontSize?: number;
+  titleFontWeight?: string;
+  titleColor?: string;
+  iconPosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
 }
 
 export function flattenCourseSteps(course: Course): CourseStep[] {

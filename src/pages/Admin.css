@@ -382,7 +382,7 @@
 
 .admin-course-step-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
   margin: 12px 0;
   align-items: center;

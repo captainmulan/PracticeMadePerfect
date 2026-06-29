@@ -281,13 +281,75 @@ export default function AdminCourses() {
                 <input value={activeBook.color} onChange={(e) => updateActiveBook((c) => ({ ...c, color: e.target.value }))} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Order (c_index)</span>
+                <span className="admin-task-editor-label">Book Index</span>
                 <input
                   type="number"
                   value={activeBook.courseIndex}
                   onChange={(e) => updateActiveBook((c) => ({ ...c, courseIndex: Number(e.target.value) }))}
                   className="admin-grid-input"
                 />
+              </label>
+            </div>
+            <div className="admin-course-meta-row">
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Title font size</span>
+                <input
+                  type="number"
+                  min={12}
+                  max={48}
+                  value={activeBook.titleFontSize ?? 24}
+                  onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontSize: Number(e.target.value) }))}
+                  className="admin-grid-input"
+                />
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Title font weight</span>
+                <select
+                  value={activeBook.titleFontWeight ?? "bold"}
+                  onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
+                  className="admin-grid-select"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="bold">Bold</option>
+                  <option value="lighter">Lighter</option>
+                  <option value="bolder">Bolder</option>
+                  <option value="100">100</option>
+                  <option value="200">200</option>
+                  <option value="300">300</option>
+                  <option value="400">400</option>
+                  <option value="500">500</option>
+                  <option value="600">600</option>
+                  <option value="700">700</option>
+                  <option value="800">800</option>
+                  <option value="900">900</option>
+                </select>
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Title color</span>
+                <input
+                  type="color"
+                  value={activeBook.titleColor ?? "#0f172a"}
+                  onChange={(e) => updateActiveBook((c) => ({ ...c, titleColor: e.target.value }))}
+                  className="admin-grid-input"
+                />
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Icon position</span>
+                <select
+                  value={activeBook.iconPosition ?? "center-center"}
+                  onChange={(e) => updateActiveBook((c) => ({ ...c, iconPosition: e.target.value as any }))}
+                  className="admin-grid-select"
+                >
+                  <option value="top-left">Top Left</option>
+                  <option value="top-center">Top Center</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="center-left">Center Left</option>
+                  <option value="center-center">Center Center</option>
+                  <option value="center-right">Center Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-center">Bottom Center</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
               </label>
             </div>
             <div className="admin-course-step-actions">
@@ -326,10 +388,10 @@ export default function AdminCourses() {
           <section className="admin-course-step-editor panel-bordered">
             {selectedStep ? (
               <>
-                <h3>Step editor</h3>
+                <h3>Chapter</h3>
                 <div className="admin-step-meta-row">
                   <label className="admin-task-editor-field">
-                    <span className="admin-task-editor-label">Chapter Index (c_index)</span>
+                    <span className="admin-task-editor-label">Chapter Index</span>
                     <input
                       type="number"
                       value={selectedStep.chapterIndex}
@@ -338,7 +400,7 @@ export default function AdminCourses() {
                     />
                   </label>
                   <label className="admin-task-editor-field">
-                    <span className="admin-task-editor-label">Step Index (t_index)</span>
+                    <span className="admin-task-editor-label">Step Index</span>
                     <input
                       type="number"
                       value={selectedStep.stepIndex}
