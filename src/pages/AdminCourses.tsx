@@ -30,9 +30,9 @@ function rebuildChaptersFromSteps(courseId: string, steps: CourseStep[]): Course
 }
 
 export default function AdminCourses() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-  const [draftCourse, setDraftCourse] = useState<Course | null>(null);
+  const [books, setBooks] = useState<Course[]>([]);
+  const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
+  const [draftBook, setDraftBook] = useState<Course | null>(null);
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -40,75 +40,75 @@ export default function AdminCourses() {
   useEffect(() => {
     loadCoursesFromBrowserDb()
       .then((data) => {
-        setCourses(data);
-        if (data.length > 0) setSelectedCourseId(data[0].id);
+        setBooks(data);
+        if (data.length > 0) setSelectedBookId(data[0].id);
         setLoaded(true);
       })
       .catch((err) => setMessage(String(err)));
   }, []);
 
-  const activeCourse = draftCourse ?? courses.find((c) => c.id === selectedCourseId) ?? null;
-  const flatSteps = useMemo(() => (activeCourse ? flattenCourseSteps(activeCourse) : []), [activeCourse]);
+  const activeBook = draftBook ?? books.find((c) => c.id === selectedBookId) ?? null;
+  const flatSteps = useMemo(() => (activeBook ? flattenCourseSteps(activeBook) : []), [activeBook]);
   const selectedStep = flatSteps.find((step) => step.id === selectedStepId) ?? null;
 
-  function startNewCourse() {
-    const course: Course = {
+  function startNewBook() {
+    const book: Course = {
       id: "",
-      title: "New course",
+      title: "New book",
       description: "",
       color: "#2563eb",
       icon: "📘",
       iconSize: 80,
-      courseIndex: courses.length,
+      courseIndex: books.length,
       chapters: [],
     };
-    setDraftCourse(course);
-    setSelectedCourseId(null);
+    setDraftBook(book);
+    setSelectedBookId(null);
     setSelectedStepId(null);
     setMessage("");
   }
 
-  function updateActiveCourse(updater: (course: Course) => Course) {
-    if (!activeCourse) return;
-    const next = updater(activeCourse);
-    if (draftCourse) {
-      setDraftCourse(next);
+  function updateActiveBook(updater: (book: Course) => Course) {
+    if (!activeBook) return;
+    const next = updater(activeBook);
+    if (draftBook) {
+      setDraftBook(next);
     } else {
-      setCourses((prev) => prev.map((c) => (c.id === next.id ? next : c)));
+      setBooks((prev) => prev.map((c) => (c.id === next.id ? next : c)));
     }
   }
 
   function updateStep(stepId: string, patch: Partial<CourseStep>) {
-    if (!activeCourse) return;
-    const steps = flattenCourseSteps(activeCourse).map((step) =>
+    if (!activeBook) return;
+    const steps = flattenCourseSteps(activeBook).map((step) =>
       step.id === stepId ? ({ ...step, ...patch } as CourseStep) : step,
     );
-    updateActiveCourse((course) => ({
-      ...course,
-      chapters: rebuildChaptersFromSteps(course.id, steps),
+    updateActiveBook((book) => ({
+      ...book,
+      chapters: rebuildChaptersFromSteps(book.id, steps),
     }));
   }
 
   function addChapter() {
-    if (!activeCourse) return;
-    const chapterIndex = activeCourse.chapters.length;
-    const chapterId = `${activeCourse.id || "course"}-ch-${Date.now()}`;
+    if (!activeBook) return;
+    const chapterIndex = activeBook.chapters.length;
+    const chapterId = `${activeBook.id || "book"}-ch-${Date.now()}`;
     const chapter: CourseChapter = {
       id: chapterId,
-      courseId: activeCourse.id,
+      courseId: activeBook.id,
       chapterIndex,
       title: `Chapter ${chapterIndex + 1}`,
       steps: [],
     };
-    updateActiveCourse((course) => ({
-      ...course,
-      chapters: [...course.chapters, chapter],
+    updateActiveBook((book) => ({
+      ...book,
+      chapters: [...book.chapters, chapter],
     }));
   }
 
   function addStep(stepType: CourseStepType) {
-    if (!activeCourse) return;
-    const chapter = activeCourse.chapters[activeCourse.chapters.length - 1];
+    if (!activeBook) return;
+    const chapter = activeBook.chapters[activeBook.chapters.length - 1];
     if (!chapter) {
       setMessage("Add a chapter first.");
       return;
@@ -116,7 +116,7 @@ export default function AdminCourses() {
     const stepIndex = chapter.steps.length;
     const step: CourseStep = {
       id: `${chapter.id}-step-${Date.now()}`,
-      courseId: activeCourse.id,
+      courseId: activeBook.id,
       chapterId: chapter.id,
       chapterTitle: chapter.title,
       chapterIndex: chapter.chapterIndex,
@@ -137,26 +137,26 @@ export default function AdminCourses() {
           }]
         : undefined,
     };
-    updateActiveCourse((course) => ({
-      ...course,
-      chapters: course.chapters.map((ch) =>
+    updateActiveBook((book) => ({
+      ...book,
+      chapters: book.chapters.map((ch) =>
         ch.id === chapter.id ? { ...ch, steps: [...ch.steps, step] } : ch,
       ),
     }));
     setSelectedStepId(step.id);
   }
 
-  async function handleSaveCourse() {
-    if (!activeCourse) return;
-    const trimmedId = activeCourse.id.trim() || slugify(activeCourse.title);
+  async function handleSaveBook() {
+    if (!activeBook) return;
+    const trimmedId = activeBook.id.trim() || slugify(activeBook.title);
     if (!trimmedId) {
-      setMessage("Course id or title is required.");
+      setMessage("Book id or title is required.");
       return;
     }
     const normalized: Course = {
-      ...activeCourse,
+      ...activeBook,
       id: trimmedId,
-      chapters: activeCourse.chapters.map((chapter) => ({
+      chapters: activeBook.chapters.map((chapter) => ({
         ...chapter,
         courseId: trimmedId,
         steps: chapter.steps.map((step) => ({
@@ -171,76 +171,78 @@ export default function AdminCourses() {
     try {
       await persistCourse(normalized);
       const refreshed = await loadCoursesFromBrowserDb();
-      setCourses(refreshed);
-      setDraftCourse(null);
-      setSelectedCourseId(trimmedId);
-      setMessage("Course saved.");
+      setBooks(refreshed);
+      setDraftBook(null);
+      setSelectedBookId(trimmedId);
+      setMessage("Book saved.");
     } catch (err) {
       setMessage(String(err));
     }
   }
 
-  async function handleDeleteCourse() {
-    if (!activeCourse?.id || draftCourse) return;
+  async function handleDeleteBook() {
+    if (!activeBook?.id || draftBook) return;
     try {
-      await removeCourse(activeCourse.id);
+      await removeCourse(activeBook.id);
       const refreshed = await loadCoursesFromBrowserDb();
-      setCourses(refreshed);
-      setSelectedCourseId(refreshed[0]?.id ?? null);
+      setBooks(refreshed);
+      setSelectedBookId(refreshed[0]?.id ?? null);
       setSelectedStepId(null);
-      setMessage("Course deleted.");
+      setMessage("Book deleted.");
     } catch (err) {
       setMessage(String(err));
     }
   }
 
   if (!loaded) {
-    return <div className="admin-section-body">Loading courses...</div>;
+    return <div className="admin-section-body">Loading books...</div>;
   }
 
   return (
     <div className="admin-courses">
       <div className="admin-courses-toolbar">
         <select
-          value={draftCourse ? "__draft__" : selectedCourseId ?? ""}
+          value={draftBook ? "__draft__" : selectedBookId ?? ""}
           onChange={(e) => {
             if (e.target.value === "__draft__") return;
-            setDraftCourse(null);
-            setSelectedCourseId(e.target.value);
+            setDraftBook(null);
+            setSelectedBookId(e.target.value);
             setSelectedStepId(null);
           }}
         >
-          {draftCourse ? <option value="__draft__">New course (draft)</option> : null}
-          {courses.map((course) => (
-            <option key={course.id} value={course.id}>{course.title}</option>
+          {draftBook ? <option value="__draft__">New book (draft)</option> : null}
+          {books.map((book) => (
+            <option key={book.id} value={book.id}>{book.title}</option>
           ))}
         </select>
-        <button type="button" className="footer-button secondary" onClick={startNewCourse}>New Course</button>
-        <button type="button" className="footer-button" onClick={handleSaveCourse}>Save Course</button>
-        {!draftCourse && activeCourse ? (
-          <button type="button" className="footer-button secondary" onClick={handleDeleteCourse}>Delete</button>
-        ) : null}
+        <div className="admin-book-actions">
+          <button type="button" className="footer-button secondary small" onClick={startNewBook}>New Book</button>
+          <button type="button" className="footer-button small" onClick={handleSaveBook}>Save Book</button>
+          {!draftBook && activeBook ? (
+            <button type="button" className="footer-button secondary small" onClick={handleDeleteBook}>Delete</button>
+          ) : null}
+        </div>
       </div>
 
       {message ? <div className="admin-course-message">{message}</div> : null}
 
-      {activeCourse ? (
+      {activeBook ? (
         <div className="admin-courses-grid">
           <section className="admin-course-meta panel-bordered">
-            <h3>Course</h3>
+            <h3>Book</h3>
             <label className="admin-task-editor-field admin-task-editor-full">
               <span className="admin-task-editor-label">ID</span>
               <input
-                value={activeCourse.id}
-                onChange={(e) => updateActiveCourse((c) => ({ ...c, id: e.target.value }))}
+                value={activeBook.id}
+                onChange={(e) => updateActiveBook((c) => ({ ...c, id: e.target.value }))}
                 className="admin-grid-input"
               />
             </label>
             <label className="admin-task-editor-field admin-task-editor-full">
               <span className="admin-task-editor-label">Title</span>
               <input
-                value={activeCourse.title}
-                onChange={(e) => updateActiveCourse((c) => ({ ...c, title: e.target.value }))}
+                value={activeBook.title}
+                onChange={(e) => updateActiveBook((c) => ({ ...c, title: e.target.value }))}
                 className="admin-grid-input"
               />
             </label>
@@ -248,15 +250,15 @@ export default function AdminCourses() {
               <span className="admin-task-editor-label">Description</span>
               <textarea
                 rows={3}
-                value={activeCourse.description}
-                onChange={(e) => updateActiveCourse((c) => ({ ...c, description: e.target.value }))}
+                value={activeBook.description}
+                onChange={(e) => updateActiveBook((c) => ({ ...c, description: e.target.value }))}
                 className="admin-grid-input"
               />
             </label>
             <div className="admin-course-meta-row">
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Icon</span>
-                <input value={activeCourse.icon} onChange={(e) => updateActiveCourse((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
+                <input value={activeBook.icon} onChange={(e) => updateActiveBook((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Icon size</span>
@@ -264,21 +266,21 @@ export default function AdminCourses() {
                   type="number"
                   min={24}
                   max={120}
-                  value={activeCourse.iconSize ?? 80}
-                  onChange={(e) => updateActiveCourse((c) => ({ ...c, iconSize: Number(e.target.value) }))}
+                  value={activeBook.iconSize ?? 80}
+                  onChange={(e) => updateActiveBook((c) => ({ ...c, iconSize: Number(e.target.value) }))}
                   className="admin-grid-input"
                 />
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Color</span>
-                <input value={activeCourse.color} onChange={(e) => updateActiveCourse((c) => ({ ...c, color: e.target.value }))} className="admin-grid-input" />
+                <input value={activeBook.color} onChange={(e) => updateActiveBook((c) => ({ ...c, color: e.target.value }))} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Order</span>
+                <span className="admin-task-editor-label">Order (c_index)</span>
                 <input
                   type="number"
-                  value={activeCourse.courseIndex}
-                  onChange={(e) => updateActiveCourse((c) => ({ ...c, courseIndex: Number(e.target.value) }))}
+                  value={activeBook.courseIndex}
+                  onChange={(e) => updateActiveBook((c) => ({ ...c, courseIndex: Number(e.target.value) }))}
                   className="admin-grid-input"
                 />
               </label>
@@ -309,6 +311,26 @@ export default function AdminCourses() {
             {selectedStep ? (
               <>
                 <h3>Step editor</h3>
+                <div className="admin-step-meta-row">
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Chapter Index (c_index)</span>
+                    <input
+                      type="number"
+                      value={selectedStep.chapterIndex}
+                      onChange={(e) => updateStep(selectedStep.id, { chapterIndex: Number(e.target.value) })}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Step Index (t_index)</span>
+                    <input
+                      type="number"
+                      value={selectedStep.stepIndex}
+                      onChange={(e) => updateStep(selectedStep.id, { stepIndex: Number(e.target.value) })}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
                 <label className="admin-task-editor-field admin-task-editor-full">
                   <span className="admin-task-editor-label">Title</span>
                   <input value={selectedStep.title} onChange={(e) => updateStep(selectedStep.id, { title: e.target.value })} className="admin-grid-input" />
@@ -387,7 +409,7 @@ export default function AdminCourses() {
           </section>
         </div>
       ) : (
-        <div className="admin-empty-state">No courses yet. Click New Course to start building.</div>
+        <div className="admin-empty-state">No books yet. Create one in Admin.</div>
       )}
     </div>
   );

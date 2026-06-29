@@ -350,6 +350,13 @@ export function assembleCourses(
   stepRows: CourseStepRow[],
 ): Course[] {
   return courseRows.map((courseRow) => {
+    let courseMeta: Partial<Course> = {};
+    try {
+      courseMeta = JSON.parse(courseRow.raw) as Partial<Course>;
+    } catch {
+      courseMeta = {};
+    }
+    
     const chaptersForCourse = chapterRows
       .filter((chapter) => chapter.courseId === courseRow.id)
       .map((chapterRow) => {
@@ -365,6 +372,7 @@ export function assembleCourses(
           .map(parseStep);
 
         return {
+          ...chapterMeta,
           id: chapterRow.id,
           courseId: courseRow.id,
           chapterIndex: chapterRow.chapterIndex,
@@ -376,6 +384,7 @@ export function assembleCourses(
       .sort((a, b) => a.chapterIndex - b.chapterIndex);
 
     return {
+      ...courseMeta,
       id: courseRow.id,
       title: courseRow.title,
       description: courseRow.description,
@@ -396,22 +405,6 @@ export async function ensureCoursesSeeded(db: Database) {
     persistBrowserDbToLocalStorage(db);
     return;
   }
-
-  // Merge: upsert DEFAULT_COURSES when missing or when the bundled raw JSON differs
-  const existingMap = new Map<string, string>();
-  existing.forEach((row) => existingMap.set(row.id, row.raw));
-
-  let changed = false;
-  DEFAULT_COURSES.forEach((course) => {
-    const raw = JSON.stringify(course, null, 2);
-    const prev = existingMap.get(course.id);
-    if (!prev || prev !== raw) {
-      saveCourseBundleToDb(db, course);
-      changed = true;
-    }
-  });
-
-  if (changed) persistBrowserDbToLocalStorage(db);
 }
 
 export async function loadCoursesFromBrowserDb(): Promise<Course[]> {

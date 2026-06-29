@@ -282,6 +282,8 @@ export function persistBrowserDbToLocalStorage(db: Database) {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
   }
+  // Clear the cached DB so next openBrowserDb gets fresh data
+  cachedDb = null;
 }
 
 export function resetBrowserDbCache() {
