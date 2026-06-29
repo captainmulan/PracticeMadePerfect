@@ -66,9 +66,9 @@ export interface Course {
 
 export function flattenCourseSteps(course: Course): CourseStep[] {
   return course.chapters
+    .flatMap((chapter) => chapter.steps)
     .slice()
-    .sort((a, b) => a.chapterIndex - b.chapterIndex)
-    .flatMap((chapter) => chapter.steps.slice().sort((a, b) => a.stepIndex - b.stepIndex));
+    .sort((a, b) => a.stepIndex - b.stepIndex);
 }
 
 export function courseStepLabel(step: CourseStep): string {

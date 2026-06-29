@@ -21,12 +21,10 @@ function rebuildChaptersFromSteps(courseId: string, steps: CourseStep[]): Course
     }
     chapterMap.get(step.chapterId)!.steps.push(step);
   });
-  return [...chapterMap.values()]
-    .sort((a, b) => a.chapterIndex - b.chapterIndex)
-    .map((chapter) => ({
-      ...chapter,
-      steps: chapter.steps.slice().sort((a, b) => a.stepIndex - b.stepIndex),
-    }));
+  return [...chapterMap.values()].map((chapter) => ({
+    ...chapter,
+    steps: chapter.steps.slice().sort((a, b) => a.stepIndex - b.stepIndex),
+  }));
 }
 
 export default function AdminCourses() {
@@ -377,7 +375,7 @@ export default function AdminCourses() {
                   className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
                   onClick={() => setSelectedStepId(step.id)}
                 >
-                  <span>{step.chapterIndex + 1}.{step.stepIndex + 1}</span>
+                  <span>{step.stepIndex}</span>
                   <span>{step.title}</span>
                   <span>{step.stepType}</span>
                 </button>
@@ -392,15 +390,6 @@ export default function AdminCourses() {
                 <div className="admin-step-meta-row">
                   <label className="admin-task-editor-field">
                     <span className="admin-task-editor-label">Chapter Index</span>
-                    <input
-                      type="number"
-                      value={selectedStep.chapterIndex}
-                      onChange={(e) => updateStep(selectedStep.id, { chapterIndex: Number(e.target.value) })}
-                      className="admin-grid-input"
-                    />
-                  </label>
-                  <label className="admin-task-editor-field">
-                    <span className="admin-task-editor-label">Step Index</span>
                     <input
                       type="number"
                       value={selectedStep.stepIndex}
