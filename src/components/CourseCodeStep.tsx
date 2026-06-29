@@ -11,7 +11,6 @@ interface CourseCodeStepProps {
   bookName: string;
   chapterName: string;
   chapterNumber: number;
-  stepNumber: number;
   pageType: string;
   pageIndex: number;
   totalPages: number;
@@ -24,7 +23,6 @@ export default function CourseCodeStep({
   bookName,
   chapterName,
   chapterNumber,
-  stepNumber,
   pageType,
   pageIndex,
   totalPages,
@@ -77,7 +75,6 @@ export default function CourseCodeStep({
         bookName={bookName}
         chapterName={chapterName}
         chapterNumber={chapterNumber}
-        stepNumber={stepNumber}
         pageType={pageType}
         pageIndex={pageIndex}
         totalPages={totalPages}
