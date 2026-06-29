@@ -612,7 +612,28 @@
   font-weight: 500;
 }
 
-/* Update home hero background to match theme */
+/* Remove horizontal center break line under icon on book cover */
+.book-cover {
+  background: var(--book-color) !important;
+  background-image: none !important;
+}
+
+.book-cover::before,
+.book-cover::after {
+  display: none !important;
+  content: none !important;
+}
+
+.book-icon {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Keep book spine vertical line on left */
+.book-spine {
+  display: block !important;
+}
 .page-home .home-hero {
   background: linear-gradient(180deg, #ffffff 0%, var(--shelf-cream) 100%);
 }

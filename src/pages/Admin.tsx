@@ -293,6 +293,67 @@ export default function Admin() {
         </button>
       </div>
 
+      <section className="panel admin-editor admin-section">
+        <div className="admin-section-body">
+          <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
+            <div>
+              <button
+                type="button"
+                className={`admin-tab ${expandedSections.homePageData ? "active" : ""}`}
+                onClick={() => toggleSection("homePageData")}
+              >
+                Home Page Data
+              </button>
+              <button
+                type="button"
+                className={`admin-tab ${expandedSections.practicePageData ? "active" : ""}`}
+                onClick={() => toggleSection("practicePageData")}
+              >
+                Practice Page Data
+              </button>
+            </div>
+            <div className="admin-search-actions-end">
+              <button type="button" className="footer-button secondary" onClick={handleReset}>
+                Reset
+              </button>
+              <button type="button" className="footer-button" onClick={handleSave}>
+                Save
+              </button>
+            </div>
+          </div>
+
+          {message && <div className="admin-course-message">{message}</div>}
+
+          {expandedSections.homePageData && (
+            <div style={{ marginBottom: "16px" }}>
+              <label className="admin-task-editor-field admin-task-editor-full">
+                <span className="admin-task-editor-label">Home Page Data (JSON)</span>
+                <textarea
+                  rows={10}
+                  value={homeJson}
+                  onChange={(e) => setHomeJson(e.target.value)}
+                  className="admin-grid-input"
+                />
+              </label>
+            </div>
+          )}
+
+          {expandedSections.practicePageData && (
+            <div style={{ marginBottom: "16px" }}>
+              <label className="admin-task-editor-field admin-task-editor-full">
+                <span className="admin-task-editor-label">Practice Page Data (JSON, without tasks)</span>
+                <textarea
+                  rows={10}
+                  value={practiceMetaJson}
+                  onChange={(e) => setPracticeMetaJson(e.target.value)}
+                  className="admin-grid-input"
+                />
+              </label>
+            </div>
+          )}
+        </div>
+      </section>
+
       {adminTab === "courses" ? (
         <section className="panel admin-editor admin-section">
           <AdminCourses />
