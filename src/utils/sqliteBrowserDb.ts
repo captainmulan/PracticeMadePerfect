@@ -64,23 +64,12 @@ async function fetchDatabaseFile(): Promise<Uint8Array> {
   try {
     const cachedBytes = new Uint8Array(JSON.parse(cached) as number[]);
     const SQL = await loadSqlJs();
-
-    const bundledDb = new SQL.Database(bundledBytes);
-    const bundledCount = countTasksInDb(bundledDb);
-    bundledDb.close();
-
     const cachedDb = new SQL.Database(cachedBytes);
     migrateLegacySchema(cachedDb);
-    const cachedCount = countTasksInDb(cachedDb);
     cachedDb.close();
-
-    if (isLikelyTruncatedCache(cachedCount, bundledCount)) {
-      window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
-      return bundledBytes;
-    }
-
     return cachedBytes;
   } catch {
+    // If cached is invalid, fall back to bundled, but never overwrite valid user cache
     window.localStorage.removeItem(LOCAL_STORAGE_DB_KEY);
     window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
     return bundledBytes;

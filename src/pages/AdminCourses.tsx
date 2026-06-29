@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
 import { loadCoursesFromBrowserDb, persistCourse, removeCourse } from "../utils/sqliteBrowserCourses";
@@ -36,6 +36,7 @@ export default function AdminCourses() {
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
     loadCoursesFromBrowserDb()
@@ -144,6 +145,10 @@ export default function AdminCourses() {
       ),
     }));
     setSelectedStepId(step.id);
+    // Reset select
+    if (stepTypeSelectRef.current) {
+      stepTypeSelectRef.current.value = "";
+    }
   }
 
   async function handleSaveBook() {
@@ -286,10 +291,21 @@ export default function AdminCourses() {
               </label>
             </div>
             <div className="admin-course-step-actions">
-              <button type="button" className="footer-button secondary" onClick={addChapter}>Add Chapter</button>
-              <button type="button" className="footer-button secondary" onClick={() => addStep("html")}>+ Lesson</button>
-              <button type="button" className="footer-button secondary" onClick={() => addStep("code-exam")}>+ Code exam</button>
-              <button type="button" className="footer-button secondary" onClick={() => addStep("quiz")}>+ Quiz</button>
+              <button type="button" className="footer-button secondary small" onClick={addChapter}>Add Chapter</button>
+              <div className="add-step-group">
+                <label className="admin-task-editor-label" style={{ marginRight: "8px" }}>Type:</label>
+                <select 
+                  ref={stepTypeSelectRef}
+                  className="admin-grid-select small" 
+                  onChange={(e) => addStep(e.target.value as CourseStepType)}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Add Step...</option>
+                  <option value="html">Plain HTML</option>
+                  <option value="code-exam">Code Editor</option>
+                  <option value="quiz">Quiz</option>
+                </select>
+              </div>
             </div>
             <div className="admin-course-step-list">
               {flatSteps.map((step) => (

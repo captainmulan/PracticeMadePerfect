@@ -380,6 +380,27 @@
   margin-bottom: 12px;
 }
 
+.admin-course-step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+  align-items: center;
+}
+
+.add-step-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-grid-select.small,
+.footer-button.small {
+  padding: 6px 10px !important;
+  font-size: 0.85rem !important;
+  min-width: auto !important;
+}
+
 @media (max-width: 900px) {
   .admin-courses-grid {
     grid-template-columns: 1fr;

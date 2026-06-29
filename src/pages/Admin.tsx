@@ -95,14 +95,7 @@ export default function Admin() {
 
     async function loadAdminTasks() {
       try {
-        let sqlTasks = await loadTasksFromBrowserSqlite();
-
-        // Recover if browser cache was truncated (e.g. old single-row save bug).
-        if (sqlTasks.length <= 1) {
-          await restoreBundledBrowserDb();
-          sqlTasks = await loadTasksFromBrowserSqlite();
-        }
-
+        const sqlTasks = await loadTasksFromBrowserSqlite();
         if (sqlTasks.length > 0) {
           setTasks(sqlTasks);
         } else if (adminTasks.length > 0) {
@@ -180,12 +173,22 @@ export default function Admin() {
 
   async function handleReset() {
     resetAdminData();
-    resetBrowserDbCache();
     const defaults = loadDefaultAdminData();
     const { tasks: defaultsTasks, ...practiceMeta } = defaults.practicePageData;
     setHomeJson(JSON.stringify(defaults.homePageData, null, 2));
     setPracticeMetaJson(JSON.stringify(practiceMeta, null, 2));
-    setTasks(defaultsTasks);
+    // Only reset tasks from content store; browser DB is separate and preserved
+    // Re-load tasks from browser DB instead of using defaultsTasks
+    try {
+      const sqlTasks = await loadTasksFromBrowserSqlite();
+      if (sqlTasks.length > 0) {
+        setTasks(sqlTasks);
+      } else {
+        setTasks(defaultsTasks);
+      }
+    } catch {
+      setTasks(defaultsTasks);
+    }
     setCurrentPage(1);
     setSearchId("");
     setSearchTitle("");
@@ -298,9 +301,6 @@ export default function Admin() {
           <div className="admin-section-body">
             <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
               <div className="admin-search-actions-end">
-                <button type="button" className="footer-button secondary" onClick={handleReset}>
-                  Reset
-                </button>
                 <button type="button" className="footer-button" onClick={handleSave}>
                   Save
                 </button>

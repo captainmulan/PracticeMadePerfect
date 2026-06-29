@@ -398,7 +398,7 @@ export function assembleCourses(
 
 export async function ensureCoursesSeeded(db: Database) {
   ensureCourseSchema(db);
-  // If there are no courses at all, seed everything.
+  // If there are no courses at all, seed everything ONCE, otherwise leave user's data alone
   const existing = queryCourseRows(db);
   if (existing.length === 0) {
     DEFAULT_COURSES.forEach((course) => saveCourseBundleToDb(db, course));
