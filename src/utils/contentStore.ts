@@ -26,8 +26,16 @@ export function loadAdminData(): ContentStoreData {
 
   try {
     const parsed = JSON.parse(raw) as Partial<ContentStoreData>;
+    const mergedHomePageData = {
+      ...homePageData,
+      ...parsed.homePageData,
+      style: {
+        ...homePageData.style,
+        ...parsed.homePageData?.style,
+      },
+    };
     return {
-      homePageData: parsed.homePageData ?? homePageData,
+      homePageData: mergedHomePageData,
       practicePageData: parsed.practicePageData ?? practicePageData,
     };
   } catch {

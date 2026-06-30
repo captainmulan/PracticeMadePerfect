@@ -72,6 +72,7 @@ function buildTaskRow(task: PracticeTask): TaskRow {
 
 export default function Admin() {
   const [homeJson, setHomeJson] = useState("");
+  const [homeData, setHomeData] = useState<any>(null);
   const [practiceMetaJson, setPracticeMetaJson] = useState("");
   const [tasks, setTasks] = useState<PracticeTask[]>([]);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -84,11 +85,12 @@ export default function Admin() {
   const [dbError, setDbError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
-  const [adminTab, setAdminTab] = useState<"home" | "books">("home");
+  const [adminTab, setAdminTab] = useState<"home" | "style" | "books">("home");
 
   useEffect(() => {
     const defaultData = loadAdminData();
     setHomeJson(JSON.stringify(defaultData.homePageData, null, 2));
+    setHomeData(defaultData.homePageData);
     const { tasks: adminTasks, ...practiceMeta } = defaultData.practicePageData;
     setPracticeMetaJson(JSON.stringify(practiceMeta, null, 2));
     setExpandedSections({ homePageData: false, practicePageData: false });
@@ -231,6 +233,49 @@ export default function Admin() {
     }
   }, [searchId, searchTitle, searchCategory, filteredTasks, selectedTaskId, draftTask]);
 
+  function updateStyleConfig(category: string, key: string, value: string) {
+    if (!homeData) return;
+    const newHomeData = { ...homeData };
+    if (!newHomeData.style) {
+      newHomeData.style = {
+        main: {
+          backgroundColor: "#f8fafc",
+          color: "#0f172a",
+          fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        },
+        topMenu: {
+          backgroundColor: "rgba(255, 255, 255, 0.96)",
+          color: "#0f172a",
+          borderBottomColor: "#e2e8f0",
+          logoBackgroundColor: "#0f172a",
+          logoColor: "#ffffff",
+        },
+        buttons: {
+          primaryBackgroundColor: "#0f172a",
+          primaryColor: "#ffffff",
+          secondaryBackgroundColor: "#e2e8f0",
+          secondaryColor: "#334155",
+        },
+        bookshelf: {
+          backgroundColor: "#ffffff",
+          borderColor: "#e2e8f0",
+        },
+        tabs: {
+          backgroundColor: "#e2e8f0",
+          color: "#334155",
+          activeBackgroundColor: "#0f172a",
+          activeColor: "#ffffff",
+        },
+      };
+    }
+    if (!newHomeData.style[category]) {
+      newHomeData.style[category] = {};
+    }
+    newHomeData.style[category][key] = value;
+    setHomeData(newHomeData);
+    setHomeJson(JSON.stringify(newHomeData, null, 2));
+  }
+
   async function saveSingleRecord(task: PracticeTask) {
     try {
       const trimmedId = task.id.trim();
@@ -291,6 +336,9 @@ export default function Admin() {
         <button type="button" className={`admin-tab ${adminTab === "home" ? "active" : ""}`} onClick={() => setAdminTab("home")}>
           Home Page Data
         </button>
+        <button type="button" className={`admin-tab ${adminTab === "style" ? "active" : ""}`} onClick={() => setAdminTab("style")}>
+          Home Page Style
+        </button>
         <button type="button" className={`admin-tab ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
           Book Builder
         </button>
@@ -319,6 +367,223 @@ export default function Admin() {
                   className="admin-grid-input"
                 />
               </label>
+            </div>
+          </div>
+        </section>
+      ) : adminTab === "style" ? (
+        <section className="panel admin-editor admin-section">
+          <div className="admin-section-body">
+            <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
+              <div className="admin-search-actions-end">
+                <button type="button" className="footer-button" onClick={handleSave}>
+                  Save
+                </button>
+              </div>
+            </div>
+
+            {message && <div className="admin-course-message">{message}</div>}
+
+            {/* Main Page */}
+            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
+              <h4 style={{ marginTop: 0 }}>Main Page</h4>
+              <div className="admin-search-row">
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Background Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.main?.backgroundColor}
+                    onChange={(e) => updateStyleConfig("main", "backgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Text Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.main?.color}
+                    onChange={(e) => updateStyleConfig("main", "color", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Font Family</span>
+                  <input
+                    type="text"
+                    value={homeData?.style?.main?.fontFamily}
+                    onChange={(e) => updateStyleConfig("main", "fontFamily", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Top Menu */}
+            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
+              <h4 style={{ marginTop: 0 }}>Top Main Menu</h4>
+              <div className="admin-search-row">
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Background Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.topMenu?.backgroundColor}
+                    onChange={(e) => updateStyleConfig("topMenu", "backgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Text Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.topMenu?.color}
+                    onChange={(e) => updateStyleConfig("topMenu", "color", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Border Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.topMenu?.borderBottomColor}
+                    onChange={(e) => updateStyleConfig("topMenu", "borderBottomColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+              <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Logo Background</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.topMenu?.logoBackgroundColor}
+                    onChange={(e) => updateStyleConfig("topMenu", "logoBackgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Logo Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.topMenu?.logoColor}
+                    onChange={(e) => updateStyleConfig("topMenu", "logoColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
+              <h4 style={{ marginTop: 0 }}>Buttons</h4>
+              <div className="admin-search-row">
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Primary Background</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.buttons?.primaryBackgroundColor}
+                    onChange={(e) => updateStyleConfig("buttons", "primaryBackgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Primary Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.buttons?.primaryColor}
+                    onChange={(e) => updateStyleConfig("buttons", "primaryColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Secondary Background</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.buttons?.secondaryBackgroundColor}
+                    onChange={(e) => updateStyleConfig("buttons", "secondaryBackgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+              <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Secondary Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.buttons?.secondaryColor}
+                    onChange={(e) => updateStyleConfig("buttons", "secondaryColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Bookshelf */}
+            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
+              <h4 style={{ marginTop: 0 }}>Bookshelf</h4>
+              <div className="admin-search-row">
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Background Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.bookshelf?.backgroundColor}
+                    onChange={(e) => updateStyleConfig("bookshelf", "backgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Border Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.bookshelf?.borderColor}
+                    onChange={(e) => updateStyleConfig("bookshelf", "borderColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div className="panel panel-bordered" style={{ padding: "16px" }}>
+              <h4 style={{ marginTop: 0 }}>Tabs / Submenu</h4>
+              <div className="admin-search-row">
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Background</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.tabs?.backgroundColor}
+                    onChange={(e) => updateStyleConfig("tabs", "backgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Text Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.tabs?.color}
+                    onChange={(e) => updateStyleConfig("tabs", "color", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Active Background</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.tabs?.activeBackgroundColor}
+                    onChange={(e) => updateStyleConfig("tabs", "activeBackgroundColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+              <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                <label className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Active Color</span>
+                  <input
+                    type="color"
+                    value={homeData?.style?.tabs?.activeColor}
+                    onChange={(e) => updateStyleConfig("tabs", "activeColor", e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
             </div>
           </div>
         </section>

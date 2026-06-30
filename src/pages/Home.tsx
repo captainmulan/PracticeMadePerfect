@@ -9,6 +9,7 @@ export default function Home() {
   const [heroCollapsed, setHeroCollapsed] = useState(true);
   const [selectedTab, setSelectedTab] = useState("IT");
   const data = getHomePageData();
+  const style = data.style;
   const { courses, loaded: coursesLoaded } = useCourseCatalog();
   const rows = useMemo(() => getHomeCourseShelfRows(courses), [courses]);
   const selectedRow: CourseShelfRow | undefined = rows.find((row) => row.title === selectedTab) || rows[0];
@@ -32,10 +33,24 @@ export default function Home() {
               <p className="home-hero-description">{data.summary}</p>
               <div className="home-hero-features" dangerouslySetInnerHTML={{ __html: data.featureHtml }} />
               <div className="home-hero-actions">
-                <Link to="/courses/react-crud" className="hero-cta">
+                <Link 
+                  to="/courses/react-crud" 
+                  className="hero-cta"
+                  style={{
+                    backgroundColor: style?.buttons?.primaryBackgroundColor ?? "#0f172a",
+                    color: style?.buttons?.primaryColor ?? "#ffffff"
+                  }}
+                >
                   Start reading
                 </Link>
-                <Link to="/practice/react" className="hero-secondary">
+                <Link 
+                  to="/practice/react" 
+                  className="hero-secondary"
+                  style={{
+                    backgroundColor: style?.buttons?.secondaryBackgroundColor ?? "#e2e8f0",
+                    color: style?.buttons?.secondaryColor ?? "#334155"
+                  }}
+                >
                   Browse books
                 </Link>
               </div>
@@ -44,7 +59,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="home-categories panel home-shelf-panel">
+      <section 
+        className="home-categories panel home-shelf-panel"
+        style={{
+          backgroundColor: style?.bookshelf?.backgroundColor ?? "#ffffff",
+          borderColor: style?.bookshelf?.borderColor ?? "#e2e8f0"
+        }}
+      >
         <div className="container">
           <nav className="tabs">
             {rows.map((row) => (
@@ -53,6 +74,14 @@ export default function Home() {
                 type="button"
                 className={`tab ${selectedRow?.title === row.title ? "active" : ""}`}
                 onClick={() => setSelectedTab(row.title)}
+                style={{
+                  backgroundColor: selectedRow?.title === row.title 
+                    ? (style?.tabs?.activeBackgroundColor ?? "#0f172a") 
+                    : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
+                  color: selectedRow?.title === row.title 
+                    ? (style?.tabs?.activeColor ?? "#ffffff") 
+                    : (style?.tabs?.color ?? "#334155")
+                }}
               >
                 {row.title}
               </button>
