@@ -312,6 +312,10 @@
   gap: 14px;
 }
 
+.admin-courses-grid-book-only {
+  grid-template-columns: 1fr;
+}
+
 .admin-course-meta,
 .admin-course-step-editor {
   padding: 14px;
