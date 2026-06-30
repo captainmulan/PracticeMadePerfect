@@ -71,7 +71,7 @@ export default function PracticeWorkspace({
         className="practice-workspace-top-bar"
         style={{
           background: style?.wizardTopInfo?.useBackgroundColorGradient 
-            ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)` 
+            ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientMiddle} 50%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)` 
             : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
           borderBottomColor: style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0",
         }}
@@ -81,16 +81,44 @@ export default function PracticeWorkspace({
             className="chapter-label"
             style={{
               color: style?.wizardTopInfo?.chapterLabelColor ?? "#64748b",
-              fontSize: style?.wizardTopInfo?.chapterLabelFontSize ?? "0.65rem",
+              fontSize: `${(style?.wizardTopInfo?.chapterLabelFontSize ?? 10) / 16}rem`,
+              fontWeight: style?.wizardTopInfo?.chapterLabelFontWeight ?? "700",
             }}
           >
-            CHAPTER
+            {style?.wizardTopInfo?.chapterLabelText ?? "CHAPTER"}
           </span>
-          <span className="chapter-number">{chapterNumber}</span>
-          <h2 className="step-title">{title}</h2>
+          <span 
+            className="chapter-number"
+            style={{
+              fontSize: `${(style?.wizardTopInfo?.chapterNumberFontSize ?? 24) / 16}rem`,
+              fontWeight: style?.wizardTopInfo?.chapterNumberFontWeight ?? "700",
+              color: style?.wizardTopInfo?.chapterNumberColor ?? "#0f172a",
+              background: style?.wizardTopInfo?.chapterNumberUseBackgroundColorGradient 
+                ? `linear-gradient(180deg, ${style.wizardTopInfo.chapterNumberBackgroundColorGradientStart} 0%, ${style.wizardTopInfo.chapterNumberBackgroundColorGradientMiddle} 50%, ${style.wizardTopInfo.chapterNumberBackgroundColorGradientEnd} 100%)` 
+                : (style?.wizardTopInfo?.chapterNumberBackgroundColor ?? "transparent"),
+              padding: style?.wizardTopInfo?.chapterNumberUseBackgroundColorGradient ? "0.25rem 0.75rem" : "0",
+              borderRadius: style?.wizardTopInfo?.chapterNumberUseBackgroundColorGradient ? "0.5rem" : "0",
+            }}
+          >
+            {chapterNumber}
+          </span>
+          <h2 
+            className="step-title"
+            style={{
+              fontSize: `${(style?.wizardTopInfo?.chapterTitleFontSize ?? 20) / 16}rem`,
+              fontWeight: style?.wizardTopInfo?.chapterTitleFontWeight ?? "700",
+              color: style?.wizardTopInfo?.chapterTitleColor ?? "#0f172a",
+            }}
+          >
+            {title}
+          </h2>
         </div>
         <div className="top-bar-right">
-          <div className="book-title">{bookName}</div>
+          <div className="book-title" style={{
+            fontSize: `${(style?.wizardTopInfo?.bookNameFontSize ?? 16) / 16}rem`,
+            fontWeight: style?.wizardTopInfo?.bookNameFontWeight ?? "700",
+            color: style?.wizardTopInfo?.bookNameColor ?? "#0f172a",
+          }}>{bookName}</div>
           {showToolbar && (
             <div className="practice-workspace-toolbar">
               <div className="practice-header-actions">
@@ -104,7 +132,7 @@ export default function PracticeWorkspace({
                         ? `linear-gradient(180deg, ${style.wizardButtons.backgroundColorGradientStart} 0%, ${style.wizardButtons.backgroundColorGradientEnd} 100%)` 
                         : (style?.wizardButtons?.backgroundColor ?? "#e2e8f0"),
                       color: style?.wizardButtons?.color ?? "#0f172a",
-                      fontSize: style?.wizardButtons?.fontSize ?? "0.78rem",
+                      fontSize: `${(style?.wizardButtons?.fontSize ?? 12) / 16}rem`,
                       fontWeight: style?.wizardButtons?.fontWeight ?? "700",
                     }}
                     onMouseEnter={(e) => {
@@ -132,7 +160,7 @@ export default function PracticeWorkspace({
                         ? `linear-gradient(180deg, ${style.wizardButtons.backgroundColorGradientStart} 0%, ${style.wizardButtons.backgroundColorGradientEnd} 100%)` 
                         : (style?.wizardButtons?.backgroundColor ?? "#e2e8f0"),
                       color: style?.wizardButtons?.color ?? "#0f172a",
-                      fontSize: style?.wizardButtons?.fontSize ?? "0.78rem",
+                      fontSize: `${(style?.wizardButtons?.fontSize ?? 12) / 16}rem`,
                       fontWeight: style?.wizardButtons?.fontWeight ?? "700",
                     }}
                     onMouseEnter={(e) => {
@@ -157,11 +185,17 @@ export default function PracticeWorkspace({
 
       {/* Step Brief */}
       {pageBrief && (
-        <div className="practice-workspace-step-header">
+        <div className="practice-workspace-step-header" style={{
+          paddingTop: `${(style?.wizardWorkspace?.descriptionPaddingTop ?? 16) / 16}rem`,
+          paddingBottom: `${(style?.wizardWorkspace?.descriptionPaddingBottom ?? 16) / 16}rem`,
+        }}>
           <p 
             className="practice-workspace-desc"
             style={{
               color: style?.wizardWorkspace?.descriptionColor ?? "#64748b",
+              fontSize: `${(style?.wizardWorkspace?.descriptionFontSize ?? 16) / 16}rem`,
+              fontWeight: style?.wizardWorkspace?.descriptionFontWeight ?? "normal",
+              lineHeight: style?.wizardWorkspace?.descriptionLineHeight ?? 1.6,
             }}
           >
             {pageBrief}
@@ -174,7 +208,7 @@ export default function PracticeWorkspace({
         className="practice-workspace-body"
         style={{
           background: style?.wizardWorkspace?.useBackgroundColorGradient 
-            ? `linear-gradient(180deg, ${style.wizardWorkspace.backgroundColorGradientStart} 0%, ${style.wizardWorkspace.backgroundColorGradientEnd} 100%)` 
+            ? `linear-gradient(180deg, ${style.wizardWorkspace.backgroundColorGradientStart} 0%, ${style.wizardWorkspace.backgroundColorGradientMiddle} 50%, ${style.wizardWorkspace.backgroundColorGradientEnd} 100%)` 
             : (style?.wizardWorkspace?.backgroundColor ?? "#ffffff"),
         }}
       >
