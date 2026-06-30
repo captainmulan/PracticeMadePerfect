@@ -1,6 +1,7 @@
 import type { Database } from "sql.js";
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
 import { DEFAULT_COURSES } from "../data/courses";
+import { FICTION_BOOK_ID, FICTION_BOOK } from "../data/fictionBook";
 import { openBrowserDb, persistBrowserDbToLocalStorage } from "./sqliteBrowserDb";
 
 export interface CourseRow {
@@ -404,6 +405,12 @@ export async function ensureCoursesSeeded(db: Database) {
     DEFAULT_COURSES.forEach((course) => saveCourseBundleToDb(db, course));
     persistBrowserDbToLocalStorage(db);
     return;
+  }
+  // Also check if our fiction book is present - if not, add it
+  const hasFiction = existing.some((c) => c.id === FICTION_BOOK_ID);
+  if (!hasFiction) {
+    saveCourseBundleToDb(db, FICTION_BOOK);
+    persistBrowserDbToLocalStorage(db);
   }
 }
 

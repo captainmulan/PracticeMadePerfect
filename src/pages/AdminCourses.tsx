@@ -57,7 +57,13 @@ export default function AdminCourses() {
       title: "New book",
       description: "",
       color: "#2563eb",
+      coverColorStart: "#2563eb",
+      coverColorMiddle: "#2563eb",
+      coverColorEnd: "#2563eb",
       icon: "📘",
+      iconColorStart: "#fff",
+      iconColorMiddle: "#fff",
+      iconColorEnd: "#fff",
       iconSize: 80,
       courseIndex: books.length,
       chapters: [],
@@ -325,6 +331,39 @@ export default function AdminCourses() {
                   </div>
                 </div>
 
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Cover Colors</h4>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover Color Start</span>
+                      <input
+                        type="color"
+                        value={activeBook.coverColorStart ?? "#2563eb"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorStart: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover Color Middle</span>
+                      <input
+                        type="color"
+                        value={activeBook.coverColorMiddle ?? "#2563eb"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorMiddle: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover Color End</span>
+                      <input
+                        type="color"
+                        value={activeBook.coverColorEnd ?? "#2563eb"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorEnd: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                </div>
+
                 <div className="panel panel-bordered" style={{ padding: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Icon</h4>
                   <div className="admin-search-row">
@@ -343,10 +382,37 @@ export default function AdminCourses() {
                         className="admin-grid-input"
                       />
                     </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Icon Color</span>
-                      <input value={activeBook.color} onChange={(e) => updateActiveBook((c) => ({ ...c, color: e.target.value }))} className="admin-grid-input" />
+                      <span className="admin-task-editor-label">Icon Color Start</span>
+                      <input
+                        type="color"
+                        value={activeBook.iconColorStart ?? "#fff"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorStart: e.target.value }))}
+                        className="admin-grid-input"
+                      />
                     </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Icon Color Middle</span>
+                      <input
+                        type="color"
+                        value={activeBook.iconColorMiddle ?? "#fff"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorMiddle: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Icon Color End</span>
+                      <input
+                        type="color"
+                        value={activeBook.iconColorEnd ?? "#fff"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorEnd: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Icon position</span>
                       <select

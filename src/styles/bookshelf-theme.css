@@ -610,8 +610,6 @@
 
 /* Remove horizontal center break line under icon on book cover */
 .book-cover {
-  background: var(--book-color) !important;
-  background-image: none !important;
 }
 
 .book-cover::before,
@@ -622,7 +620,6 @@
 
 .book-icon {
   border: none !important;
-  background: transparent !important;
   box-shadow: none !important;
 }
 

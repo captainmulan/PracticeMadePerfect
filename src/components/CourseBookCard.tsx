@@ -44,7 +44,7 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
     width: "100px",
     minWidth: "100px",
     maxWidth: "100px",
-    ["--book-color" as any]: item.color,
+    ["--book-color" as any]: item.coverColorStart,
   };
 
   const titleStyles: CSSProperties = {
@@ -58,9 +58,19 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   const content = (
     <>
       {item.link && <span className="book-title" style={titleStyles}>{item.title}</span>}
-      {item.link && <span className="book-cover-title" style={titleStyles}>{item.title}</span>}
-      <div className="book-cover" style={{ backgroundColor: item.color, position: "relative" }}>
-        <div className="book-icon" style={{ position: "absolute", fontSize: `${iconFont}px`, ...iconContainerStyles }}>
+      <span className="book-cover-title" style={titleStyles}>{item.title}</span>
+      <div className="book-cover" style={{ 
+        background: `linear-gradient(180deg, ${item.coverColorStart} 0%, ${item.coverColorMiddle} 50%, ${item.coverColorEnd} 100%)`, 
+        position: "relative" 
+      }}>
+        <div className="book-icon" style={{ 
+          position: "absolute", 
+          fontSize: `${iconFont}px`, 
+          background: `linear-gradient(180deg, ${item.iconColorStart} 0%, ${item.iconColorMiddle} 50%, ${item.iconColorEnd} 100%)`,
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          ...iconContainerStyles 
+        }}>
           {item.icon}
         </div>
         <div className="book-spine" />
@@ -77,7 +87,7 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   }
 
   return (
-    <div className="book" style={bookStyles} aria-hidden="true">
+    <div className="book" style={bookStyles} aria-hidden={!item.title}>
       {content}
     </div>
   );

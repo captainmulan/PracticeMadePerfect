@@ -1,3 +1,5 @@
+import { FICTION_BOOK } from "./fictionBook";
+
 export type CourseStepType = "html" | "code-exam" | "quiz";
 
 export interface QuizOption {
@@ -53,8 +55,14 @@ export interface Course {
   id: string;
   title: string;
   description: string;
-  color: string;
+  color: string; // deprecated, but kept for backward compatibility
+  coverColorStart: string;
+  coverColorMiddle: string;
+  coverColorEnd: string;
   icon: string;
+  iconColorStart: string;
+  iconColorMiddle: string;
+  iconColorEnd: string;
   iconSize?: number;
   courseIndex: number;
   chapters: CourseChapter[];
@@ -85,7 +93,13 @@ export const DEFAULT_COURSES: Course[] = [
     title: "React CRUD Premium",
     description: "A premium teacher-led React CRUD course with real business scenarios, quizzes, and hands-on code exams.",
     color: "#61dafb",
+    coverColorStart: "#61dafb",
+    coverColorMiddle: "#61dafb",
+    coverColorEnd: "#61dafb",
     icon: "⚛️",
+    iconColorStart: "#fff",
+    iconColorMiddle: "#fff",
+    iconColorEnd: "#fff",
     courseIndex: 0,
     chapters: [
       {
@@ -2182,4 +2196,5 @@ export const DEFAULT_COURSES: Course[] = [
       }
     ]
   },
+  FICTION_BOOK,
 ];
