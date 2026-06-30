@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
 import { loadCoursesFromBrowserDb, persistCourse, removeCourse } from "../utils/sqliteBrowserCourses";
+import { loadAdminData, saveAdminData } from "../utils/contentStore";
 
 function slugify(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -34,7 +35,8 @@ export default function AdminCourses() {
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
-  const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "chapter">("book");
+  const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "chapter" | "empty-book">("book");
+  const [adminData, setAdminData] = useState<any>(null);
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
@@ -45,11 +47,31 @@ export default function AdminCourses() {
         setLoaded(true);
       })
       .catch((err) => setMessage(String(err)));
+      
+    const defaultData = loadAdminData();
+    setAdminData(defaultData);
   }, []);
 
   const activeBook = draftBook ?? books.find((c) => c.id === selectedBookId) ?? null;
   const flatSteps = useMemo(() => (activeBook ? flattenCourseSteps(activeBook) : []), [activeBook]);
   const selectedStep = flatSteps.find((step) => step.id === selectedStepId) ?? null;
+  
+  function updateStyleConfig(key: string, value: string | boolean | number) {
+    if (!adminData) return;
+    const newAdminData = { ...adminData };
+    if (!newAdminData.homePageData) {
+      newAdminData.homePageData = {};
+    }
+    if (!newAdminData.homePageData.style) {
+      newAdminData.homePageData.style = {};
+    }
+    if (!newAdminData.homePageData.style.emptyBook) {
+      newAdminData.homePageData.style.emptyBook = {};
+    }
+    newAdminData.homePageData.style.emptyBook[key] = value;
+    setAdminData(newAdminData);
+    saveAdminData(newAdminData);
+  }
 
   function startNewBook() {
     const book: Course = {
@@ -66,6 +88,7 @@ export default function AdminCourses() {
       iconColorEnd: "#fff",
       iconSize: 80,
       courseIndex: books.length,
+      category: "IT",
       chapters: [],
     };
     setDraftBook(book);
@@ -237,11 +260,12 @@ export default function AdminCourses() {
       {message && <div className="admin-course-message">{message}</div>}
 
       {activeBook ? (
-        <div className={`admin-courses-grid ${bookBuilderTab === "book" ? "admin-courses-grid-book-only" : ""}`}>
+        <div className={`admin-courses-grid ${bookBuilderTab === "book" || bookBuilderTab === "empty-book" ? "admin-courses-grid-book-only" : ""}`}>
           <section className="admin-course-meta panel-bordered">
             <div className="admin-tabs" style={{ marginBottom: "16px" }}>
               <button type="button" className={`admin-tab ${bookBuilderTab === "book" ? "active" : ""}`} onClick={() => setBookBuilderTab("book")}>Book</button>
               <button type="button" className={`admin-tab ${bookBuilderTab === "chapter" ? "active" : ""}`} onClick={() => setBookBuilderTab("chapter")}>Chapter</button>
+              <button type="button" className={`admin-tab ${bookBuilderTab === "empty-book" ? "active" : ""}`} onClick={() => setBookBuilderTab("empty-book")}>Empty Book</button>
             </div>
             {bookBuilderTab === "book" ? (
               <>
@@ -254,6 +278,20 @@ export default function AdminCourses() {
                       onChange={(e) => updateActiveBook((c) => ({ ...c, id: e.target.value }))}
                       className="admin-grid-input"
                     />
+                  </label>
+                  <label className="admin-task-editor-field admin-task-editor-full">
+                    <span className="admin-task-editor-label">Category</span>
+                    <select
+                      value={activeBook.category}
+                      onChange={(e) => updateActiveBook((c) => ({ ...c, category: e.target.value }))}
+                      className="admin-grid-select"
+                    >
+                      <option value="IT">IT</option>
+                      <option value="Language">Language</option>
+                      <option value="Kid">Kid</option>
+                      <option value="Migration">Migration</option>
+                      <option value="Fiction">Fiction</option>
+                    </select>
                   </label>
                   <label className="admin-task-editor-field admin-task-editor-full">
                     <span className="admin-task-editor-label">Book Index</span>
@@ -430,6 +468,116 @@ export default function AdminCourses() {
                         <option value="bottom-center">Bottom Center</option>
                         <option value="bottom-right">Bottom Right</option>
                       </select>
+                    </label>
+                  </div>
+                </div>
+              </>
+            ) : bookBuilderTab === "empty-book" ? (
+              <>
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Empty Book</h4>
+                  <label className="admin-task-editor-field admin-task-editor-full">
+                    <span className="admin-task-editor-label">Title</span>
+                    <input
+                      value={adminData?.homePageData?.style?.emptyBook?.title ?? "Coming soon"}
+                      onChange={(e) => updateStyleConfig("title", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Font Size</span>
+                      <input
+                        type="number"
+                        min={12}
+                        max={48}
+                        value={adminData?.homePageData?.style?.emptyBook?.titleFontSize ?? 24}
+                        onChange={(e) => updateStyleConfig("titleFontSize", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Font Weight</span>
+                      <select
+                        value={adminData?.homePageData?.style?.emptyBook?.titleFontWeight ?? "bold"}
+                        onChange={(e) => updateStyleConfig("titleFontWeight", e.target.value)}
+                        className="admin-grid-select"
+                      >
+                        <option value="normal">Normal</option>
+                        <option value="bold">Bold</option>
+                        <option value="lighter">Lighter</option>
+                        <option value="bolder">Bolder</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                        <option value="500">500</option>
+                        <option value="600">600</option>
+                        <option value="700">700</option>
+                        <option value="800">800</option>
+                        <option value="900">900</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Color</span>
+                      <input
+                        type="color"
+                        value={adminData?.homePageData?.style?.emptyBook?.titleColor ?? "#0f172a"}
+                        onChange={(e) => updateStyleConfig("titleColor", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Position</span>
+                      <select
+                        value={adminData?.homePageData?.style?.emptyBook?.titlePosition ?? "center-center"}
+                        onChange={(e) => updateStyleConfig("titlePosition", e.target.value)}
+                        className="admin-grid-select"
+                      >
+                        <option value="top-left">Top Left</option>
+                        <option value="top-center">Top Center</option>
+                        <option value="top-right">Top Right</option>
+                        <option value="center-left">Center Left</option>
+                        <option value="center-center">Center Center</option>
+                        <option value="center-right">Center Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="bottom-center">Bottom Center</option>
+                        <option value="bottom-right">Bottom Right</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+                <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Cover Colors</h4>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover Color Start</span>
+                      <input
+                        type="color"
+                        value={adminData?.homePageData?.style?.emptyBook?.coverColorStart ?? "#f1f5f9"}
+                        onChange={(e) => updateStyleConfig("coverColorStart", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover Color Middle</span>
+                      <input
+                        type="color"
+                        value={adminData?.homePageData?.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9"}
+                        onChange={(e) => updateStyleConfig("coverColorMiddle", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover Color End</span>
+                      <input
+                        type="color"
+                        value={adminData?.homePageData?.style?.emptyBook?.coverColorEnd ?? "#f1f5f9"}
+                        onChange={(e) => updateStyleConfig("coverColorEnd", e.target.value)}
+                        className="admin-grid-input"
+                      />
                     </label>
                   </div>
                 </div>

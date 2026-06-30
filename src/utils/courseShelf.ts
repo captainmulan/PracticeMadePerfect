@@ -357,23 +357,23 @@ const courseRowDefinitions: Array<{
 }> = [
   {
     title: "IT",
-    matcher: (course) => !/fiction|သံပါးစပ်|စစ်ပွဲ/gi.test(course.title),
+    matcher: (course) => course.category === "IT",
   },
   {
     title: "Language",
-    matcher: () => false,
+    matcher: (course) => course.category === "Language",
   },
   {
     title: "Kid",
-    matcher: () => false,
+    matcher: (course) => course.category === "Kid",
   },
   {
     title: "Migration",
-    matcher: () => false,
+    matcher: (course) => course.category === "Migration",
   },
   {
     title: "Fiction",
-    matcher: (course) => /fiction|သံပါးစပ်|စစ်ပွဲ/gi.test(course.title),
+    matcher: (course) => course.category === "Fiction",
   },
 ];
 

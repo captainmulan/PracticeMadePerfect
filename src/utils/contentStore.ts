@@ -64,6 +64,10 @@ export function loadAdminData(): ContentStoreData {
           ...homePageData.style.wizardButtons,
           ...parsed.homePageData?.style?.wizardButtons,
         },
+        emptyBook: {
+          ...homePageData.style.emptyBook,
+          ...parsed.homePageData?.style?.emptyBook,
+        },
       },
     };
     return {

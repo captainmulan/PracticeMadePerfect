@@ -20,6 +20,7 @@ export const FICTION_BOOK: Course = {
   titleColor: "#0f172a",
   iconPosition: "center-center",
   courseIndex: 1,
+  category: "Fiction",
   chapters: [
     {
       id: `${FICTION_BOOK_ID}-ch-0`,

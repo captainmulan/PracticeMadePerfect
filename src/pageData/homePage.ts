@@ -96,5 +96,15 @@ export const homePageData = {
       fontSize: "0.78rem",
       fontWeight: "700",
     },
+    emptyBook: {
+      title: "Coming soon",
+      titleFontSize: 24,
+      titleFontWeight: "bold",
+      titleColor: "#0f172a",
+      titlePosition: "center-center",
+      coverColorStart: "#f1f5f9",
+      coverColorMiddle: "#f1f5f9",
+      coverColorEnd: "#f1f5f9",
+    },
   },
 };

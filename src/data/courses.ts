@@ -65,6 +65,7 @@ export interface Course {
   iconColorEnd: string;
   iconSize?: number;
   courseIndex: number;
+  category: string;
   chapters: CourseChapter[];
   titleFontSize?: number;
   titleFontWeight?: string;
@@ -101,6 +102,7 @@ export const DEFAULT_COURSES: Course[] = [
     iconColorMiddle: "#fff",
     iconColorEnd: "#fff",
     courseIndex: 0,
+    category: "IT",
     chapters: [
       {
         id: "react-crud-premium-ch1",
