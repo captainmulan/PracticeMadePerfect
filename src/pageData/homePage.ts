@@ -36,5 +36,26 @@ export const homePageData = {
       activeBackgroundColor: "#0f172a",
       activeColor: "#ffffff",
     },
+    wizardTopInfo: {
+      backgroundColor: "#ffffff",
+      color: "#0f172a",
+      borderBottomColor: "#e2e8f0",
+      chapterLabelColor: "#64748b",
+      chapterLabelFontSize: "0.65rem",
+    },
+    wizardWorkspace: {
+      backgroundColor: "#ffffff",
+      panelBackgroundColor: "#ffffff",
+      panelBorderColor: "#e2e8f0",
+      textColor: "#0f172a",
+      descriptionColor: "#64748b",
+    },
+    wizardButtons: {
+      backgroundColor: "#e2e8f0",
+      color: "#0f172a",
+      hoverBackgroundColor: "#cbd5e1",
+      fontSize: "0.78rem",
+      fontWeight: "700",
+    },
   },
 };

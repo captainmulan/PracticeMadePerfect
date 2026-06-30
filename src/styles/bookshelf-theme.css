@@ -124,38 +124,35 @@
 }
 
 /* ── Shell background when Home or Practice is active ── */
+/* Note: Admin-configured styles in App.tsx will override these defaults */
 .app-shell:has(.page-home),
 .app-shell:has(.practice-page),
 .app-shell:has(.course-wizard-page) {
-  background: linear-gradient(180deg, var(--shelf-blush-start) 0%, var(--shelf-blush-end) 100%);
   color: var(--shelf-ink);
 }
 
 .app-shell:has(.page-home) .app-header,
 .app-shell:has(.practice-page) .app-header,
 .app-shell:has(.course-wizard-page) .app-header {
-  background: rgba(250, 247, 244, 0.92);
-  border-bottom-color: var(--shelf-border);
+  /* Admin-configured styles in App.tsx will override these defaults */
 }
 
 .app-shell:has(.page-home) .app-logo,
 .app-shell:has(.practice-page) .app-logo,
 .app-shell:has(.course-wizard-page) .app-logo {
-  background: var(--shelf-sage);
-  color: #ffffff;
+  /* Admin-configured styles in App.tsx will override these defaults */
 }
 
 .app-shell:has(.page-home) .page-tag,
 .app-shell:has(.practice-page) .page-tag,
 .app-shell:has(.course-wizard-page) .page-tag {
-  color: var(--shelf-ink-muted);
+  /* Admin-configured styles in App.tsx will override these defaults */
 }
 
 .app-shell:has(.page-home) .nav-link,
 .app-shell:has(.practice-page) .nav-link,
 .app-shell:has(.course-wizard-page) .nav-link {
-  background: rgba(255, 255, 255, 0.65);
-  color: var(--shelf-ink-subtle);
+  /* Admin-configured styles in App.tsx will override these defaults */
 }
 
 .app-shell:has(.page-home) .nav-link.active,
@@ -164,8 +161,7 @@
 .app-shell:has(.practice-page) .nav-link:hover,
 .app-shell:has(.course-wizard-page) .nav-link.active,
 .app-shell:has(.course-wizard-page) .nav-link:hover {
-  background: var(--shelf-sage);
-  color: #ffffff;
+  /* Admin-configured styles in App.tsx will override these defaults */
 }
 
 .app-main:has(.page-home),

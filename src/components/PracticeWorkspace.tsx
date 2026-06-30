@@ -1,4 +1,5 @@
 import type { ChangeEvent, ReactNode } from "react";
+import { getHomePageData } from "../utils/contentStore";
 
 interface PracticeWorkspaceProps {
   bookName?: string;
@@ -49,15 +50,38 @@ export default function PracticeWorkspace({
   peekCode = "",
   children,
 }: PracticeWorkspaceProps) {
+  const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
   const showToolbar = Boolean(toolbarLabel || onTogglePeek || onVerify);
+  const style = homeData.style;
 
   return (
-    <section className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}`}>
+    <section 
+      className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}`}
+      style={{
+        backgroundColor: style?.wizardWorkspace?.panelBackgroundColor ?? "#ffffff",
+        borderColor: style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0",
+        color: style?.wizardWorkspace?.textColor ?? "#0f172a",
+      }}
+    >
       {/* Top Bar: Chapter Info + Book Name + Toolbar */}
-      <div className="practice-workspace-top-bar">
+      <div 
+        className="practice-workspace-top-bar"
+        style={{
+          backgroundColor: style?.wizardTopInfo?.backgroundColor ?? "#ffffff",
+          borderBottomColor: style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0",
+        }}
+      >
         <div className="chapter-info">
-          <span className="chapter-label">CHAPTER</span>
+          <span 
+            className="chapter-label"
+            style={{
+              color: style?.wizardTopInfo?.chapterLabelColor ?? "#64748b",
+              fontSize: style?.wizardTopInfo?.chapterLabelFontSize ?? "0.65rem",
+            }}
+          >
+            CHAPTER
+          </span>
           <span className="chapter-number">{chapterNumber}</span>
           <h2 className="step-title">{title}</h2>
         </div>
@@ -71,6 +95,18 @@ export default function PracticeWorkspace({
                     type="button"
                     className="action-button practice-header-button practice-tool-button"
                     onClick={onTogglePeek}
+                    style={{
+                      backgroundColor: style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
+                      color: style?.wizardButtons?.color ?? "#0f172a",
+                      fontSize: style?.wizardButtons?.fontSize ?? "0.78rem",
+                      fontWeight: style?.wizardButtons?.fontWeight ?? "700",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.backgroundColor ?? "#e2e8f0";
+                    }}
                   >
                     {showPeek ? "Hide Peek" : "Peek"}
                   </button>
@@ -81,6 +117,18 @@ export default function PracticeWorkspace({
                     className="action-button practice-header-button practice-tool-button"
                     onClick={onVerify}
                     disabled={verifyDisabled}
+                    style={{
+                      backgroundColor: style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
+                      color: style?.wizardButtons?.color ?? "#0f172a",
+                      fontSize: style?.wizardButtons?.fontSize ?? "0.78rem",
+                      fontWeight: style?.wizardButtons?.fontWeight ?? "700",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.backgroundColor ?? "#e2e8f0";
+                    }}
                   >
                     Verify
                   </button>
@@ -94,12 +142,24 @@ export default function PracticeWorkspace({
       {/* Step Brief */}
       {pageBrief && (
         <div className="practice-workspace-step-header">
-          <p className="practice-workspace-desc">{pageBrief}</p>
+          <p 
+            className="practice-workspace-desc"
+            style={{
+              color: style?.wizardWorkspace?.descriptionColor ?? "#64748b",
+            }}
+          >
+            {pageBrief}
+          </p>
         </div>
       )}
 
       {/* Workspace Body */}
-      <div className="practice-workspace-body">
+      <div 
+        className="practice-workspace-body"
+        style={{
+          backgroundColor: style?.wizardWorkspace?.backgroundColor ?? "#ffffff",
+        }}
+      >
         <div className="practice-workspace-editor-shell">
           {loadError ? (
             <div className="practice-error-message">

@@ -32,6 +32,38 @@ export function loadAdminData(): ContentStoreData {
       style: {
         ...homePageData.style,
         ...parsed.homePageData?.style,
+        main: {
+          ...homePageData.style.main,
+          ...parsed.homePageData?.style?.main,
+        },
+        topMenu: {
+          ...homePageData.style.topMenu,
+          ...parsed.homePageData?.style?.topMenu,
+        },
+        buttons: {
+          ...homePageData.style.buttons,
+          ...parsed.homePageData?.style?.buttons,
+        },
+        bookshelf: {
+          ...homePageData.style.bookshelf,
+          ...parsed.homePageData?.style?.bookshelf,
+        },
+        tabs: {
+          ...homePageData.style.tabs,
+          ...parsed.homePageData?.style?.tabs,
+        },
+        wizardTopInfo: {
+          ...homePageData.style.wizardTopInfo,
+          ...parsed.homePageData?.style?.wizardTopInfo,
+        },
+        wizardWorkspace: {
+          ...homePageData.style.wizardWorkspace,
+          ...parsed.homePageData?.style?.wizardWorkspace,
+        },
+        wizardButtons: {
+          ...homePageData.style.wizardButtons,
+          ...parsed.homePageData?.style?.wizardButtons,
+        },
       },
     };
     return {
