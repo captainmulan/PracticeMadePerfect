@@ -233,13 +233,16 @@ export default function Admin() {
     }
   }, [searchId, searchTitle, searchCategory, filteredTasks, selectedTaskId, draftTask]);
 
-  function updateStyleConfig(category: string, key: string, value: string) {
+  function updateStyleConfig(category: string, key: string, value: string | boolean) {
     if (!homeData) return;
     const newHomeData = { ...homeData };
     if (!newHomeData.style) {
       newHomeData.style = {
         main: {
           backgroundColor: "#f8fafc",
+          backgroundGradientStart: "#f8fafc",
+          backgroundGradientEnd: "#eef2f7",
+          useGradient: true,
           color: "#0f172a",
           fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
         },
@@ -394,16 +397,52 @@ export default function Admin() {
             {/* Main Page */}
             <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
               <h4 style={{ marginTop: 0 }}>Main Page</h4>
-              <div className="admin-search-row">
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Background Color</span>
+              <div className="admin-search-row" style={{ marginBottom: "12px" }}>
+                <label className="admin-task-editor-field" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <input
-                    type="color"
-                    value={homeData?.style?.main?.backgroundColor ?? "#f8fafc"}
-                    onChange={(e) => updateStyleConfig("main", "backgroundColor", e.target.value)}
-                    className="admin-grid-input"
+                    type="checkbox"
+                    checked={homeData?.style?.main?.useGradient ?? false}
+                    onChange={(e) => updateStyleConfig("main", "useGradient", e.target.checked)}
                   />
+                  <span className="admin-task-editor-label" style={{ marginBottom: 0 }}>Use Gradient Background</span>
                 </label>
+              </div>
+              {homeData?.style?.main?.useGradient && (
+                <div className="admin-search-row" style={{ marginBottom: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Gradient Start Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.main?.backgroundGradientStart ?? "#f8fafc"}
+                      onChange={(e) => updateStyleConfig("main", "backgroundGradientStart", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Gradient End Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.main?.backgroundGradientEnd ?? "#eef2f7"}
+                      onChange={(e) => updateStyleConfig("main", "backgroundGradientEnd", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
+              )}
+              {!homeData?.style?.main?.useGradient && (
+                <div className="admin-search-row" style={{ marginBottom: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Background Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.main?.backgroundColor ?? "#f8fafc"}
+                      onChange={(e) => updateStyleConfig("main", "backgroundColor", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
+              )}
+              <div className="admin-search-row">
                 <label className="admin-task-editor-field">
                   <span className="admin-task-editor-label">Text Color</span>
                   <input

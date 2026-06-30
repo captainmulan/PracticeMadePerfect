@@ -10,6 +10,9 @@ export const homePageData = {
   style: {
     main: {
       backgroundColor: "#f8fafc",
+      backgroundGradientStart: "#f8fafc",
+      backgroundGradientEnd: "#eef2f7",
+      useGradient: true,
       color: "#0f172a",
       fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
     },

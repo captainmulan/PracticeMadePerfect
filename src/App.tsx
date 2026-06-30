@@ -87,9 +87,11 @@ function AppContent() {
     <div 
       className="app-shell"
       style={{
-        backgroundColor: style?.main?.backgroundColor ?? "#f8fafc",
+        background: style?.main?.useGradient 
+          ? `linear-gradient(180deg, ${style.main.backgroundGradientStart} 0%, ${style.main.backgroundGradientEnd} 100%)` 
+          : (style?.main?.backgroundColor ?? "#f8fafc"),
         color: style?.main?.color ?? "#0f172a",
-        fontFamily: style?.main?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+        fontFamily: style?.main?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       }}
     >
       <AppHeader />
