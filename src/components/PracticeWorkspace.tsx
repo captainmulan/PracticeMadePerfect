@@ -59,7 +59,9 @@ export default function PracticeWorkspace({
     <section 
       className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}`}
       style={{
-        backgroundColor: style?.wizardWorkspace?.panelBackgroundColor ?? "#ffffff",
+        background: style?.wizardWorkspace?.usePanelBackgroundColorGradient 
+          ? `linear-gradient(180deg, ${style.wizardWorkspace.panelBackgroundColorGradientStart} 0%, ${style.wizardWorkspace.panelBackgroundColorGradientEnd} 100%)` 
+          : (style?.wizardWorkspace?.panelBackgroundColor ?? "#ffffff"),
         borderColor: style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0",
         color: style?.wizardWorkspace?.textColor ?? "#0f172a",
       }}
@@ -68,7 +70,9 @@ export default function PracticeWorkspace({
       <div 
         className="practice-workspace-top-bar"
         style={{
-          backgroundColor: style?.wizardTopInfo?.backgroundColor ?? "#ffffff",
+          background: style?.wizardTopInfo?.useBackgroundColorGradient 
+            ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)` 
+            : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
           borderBottomColor: style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0",
         }}
       >
@@ -96,16 +100,22 @@ export default function PracticeWorkspace({
                     className="action-button practice-header-button practice-tool-button"
                     onClick={onTogglePeek}
                     style={{
-                      backgroundColor: style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
+                      background: style?.wizardButtons?.useBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.wizardButtons.backgroundColorGradientStart} 0%, ${style.wizardButtons.backgroundColorGradientEnd} 100%)` 
+                        : (style?.wizardButtons?.backgroundColor ?? "#e2e8f0"),
                       color: style?.wizardButtons?.color ?? "#0f172a",
                       fontSize: style?.wizardButtons?.fontSize ?? "0.78rem",
                       fontWeight: style?.wizardButtons?.fontWeight ?? "700",
                     }}
                     onMouseEnter={(e) => {
-                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1";
+                      (e.target as HTMLElement).style.background = style?.wizardButtons?.useHoverBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.wizardButtons.hoverBackgroundColorGradientStart} 0%, ${style.wizardButtons.hoverBackgroundColorGradientEnd} 100%)` 
+                        : (style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1");
                     }}
                     onMouseLeave={(e) => {
-                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.backgroundColor ?? "#e2e8f0";
+                      (e.target as HTMLElement).style.background = style?.wizardButtons?.useBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.wizardButtons.backgroundColorGradientStart} 0%, ${style.wizardButtons.backgroundColorGradientEnd} 100%)` 
+                        : (style?.wizardButtons?.backgroundColor ?? "#e2e8f0");
                     }}
                   >
                     {showPeek ? "Hide Peek" : "Peek"}
@@ -118,16 +128,22 @@ export default function PracticeWorkspace({
                     onClick={onVerify}
                     disabled={verifyDisabled}
                     style={{
-                      backgroundColor: style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
+                      background: style?.wizardButtons?.useBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.wizardButtons.backgroundColorGradientStart} 0%, ${style.wizardButtons.backgroundColorGradientEnd} 100%)` 
+                        : (style?.wizardButtons?.backgroundColor ?? "#e2e8f0"),
                       color: style?.wizardButtons?.color ?? "#0f172a",
                       fontSize: style?.wizardButtons?.fontSize ?? "0.78rem",
                       fontWeight: style?.wizardButtons?.fontWeight ?? "700",
                     }}
                     onMouseEnter={(e) => {
-                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1";
+                      (e.target as HTMLElement).style.background = style?.wizardButtons?.useHoverBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.wizardButtons.hoverBackgroundColorGradientStart} 0%, ${style.wizardButtons.hoverBackgroundColorGradientEnd} 100%)` 
+                        : (style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1");
                     }}
                     onMouseLeave={(e) => {
-                      (e.target as HTMLElement).style.backgroundColor = style?.wizardButtons?.backgroundColor ?? "#e2e8f0";
+                      (e.target as HTMLElement).style.background = style?.wizardButtons?.useBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.wizardButtons.backgroundColorGradientStart} 0%, ${style.wizardButtons.backgroundColorGradientEnd} 100%)` 
+                        : (style?.wizardButtons?.backgroundColor ?? "#e2e8f0");
                     }}
                   >
                     Verify
@@ -157,7 +173,9 @@ export default function PracticeWorkspace({
       <div 
         className="practice-workspace-body"
         style={{
-          backgroundColor: style?.wizardWorkspace?.backgroundColor ?? "#ffffff",
+          background: style?.wizardWorkspace?.useBackgroundColorGradient 
+            ? `linear-gradient(180deg, ${style.wizardWorkspace.backgroundColorGradientStart} 0%, ${style.wizardWorkspace.backgroundColorGradientEnd} 100%)` 
+            : (style?.wizardWorkspace?.backgroundColor ?? "#ffffff"),
         }}
       >
         <div className="practice-workspace-editor-shell">

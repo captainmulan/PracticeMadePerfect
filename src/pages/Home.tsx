@@ -37,7 +37,9 @@ export default function Home() {
                   to="/courses/react-crud" 
                   className="hero-cta"
                   style={{
-                    backgroundColor: style?.buttons?.primaryBackgroundColor ?? "#0f172a",
+                    background: style?.buttons?.usePrimaryBackgroundColorGradient 
+                      ? `linear-gradient(180deg, ${style.buttons.primaryBackgroundColorGradientStart} 0%, ${style.buttons.primaryBackgroundColorGradientEnd} 100%)` 
+                      : (style?.buttons?.primaryBackgroundColor ?? "#0f172a"),
                     color: style?.buttons?.primaryColor ?? "#ffffff"
                   }}
                 >
@@ -47,7 +49,9 @@ export default function Home() {
                   to="/practice/react" 
                   className="hero-secondary"
                   style={{
-                    backgroundColor: style?.buttons?.secondaryBackgroundColor ?? "#e2e8f0",
+                    background: style?.buttons?.useSecondaryBackgroundColorGradient 
+                      ? `linear-gradient(180deg, ${style.buttons.secondaryBackgroundColorGradientStart} 0%, ${style.buttons.secondaryBackgroundColorGradientEnd} 100%)` 
+                      : (style?.buttons?.secondaryBackgroundColor ?? "#e2e8f0"),
                     color: style?.buttons?.secondaryColor ?? "#334155"
                   }}
                 >
@@ -62,7 +66,9 @@ export default function Home() {
       <section 
         className="home-categories panel home-shelf-panel"
         style={{
-          backgroundColor: style?.bookshelf?.backgroundColor ?? "#ffffff",
+          background: style?.bookshelf?.useBackgroundColorGradient 
+            ? `linear-gradient(180deg, ${style.bookshelf.backgroundColorGradientStart} 0%, ${style.bookshelf.backgroundColorGradientEnd} 100%)` 
+            : (style?.bookshelf?.backgroundColor ?? "#ffffff"),
           borderColor: style?.bookshelf?.borderColor ?? "#e2e8f0"
         }}
       >
@@ -75,9 +81,13 @@ export default function Home() {
                 className={`tab ${selectedRow?.title === row.title ? "active" : ""}`}
                 onClick={() => setSelectedTab(row.title)}
                 style={{
-                  backgroundColor: selectedRow?.title === row.title 
-                    ? (style?.tabs?.activeBackgroundColor ?? "#0f172a") 
-                    : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
+                  background: selectedRow?.title === row.title 
+                    ? (style?.tabs?.useActiveBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.tabs.activeBackgroundColorGradientStart} 0%, ${style.tabs.activeBackgroundColorGradientEnd} 100%)` 
+                        : (style?.tabs?.activeBackgroundColor ?? "#0f172a")) 
+                    : (style?.tabs?.useBackgroundColorGradient 
+                        ? `linear-gradient(180deg, ${style.tabs.backgroundColorGradientStart} 0%, ${style.tabs.backgroundColorGradientEnd} 100%)` 
+                        : (style?.tabs?.backgroundColor ?? "#e2e8f0")),
                   color: selectedRow?.title === row.title 
                     ? (style?.tabs?.activeColor ?? "#ffffff") 
                     : (style?.tabs?.color ?? "#334155")

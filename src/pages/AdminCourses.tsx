@@ -34,6 +34,7 @@ export default function AdminCourses() {
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "chapter">("book");
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
@@ -227,201 +228,221 @@ export default function AdminCourses() {
         </div>
       </div>
 
-      {message ? <div className="admin-course-message">{message}</div> : null}
+      {message && <div className="admin-course-message">{message}</div>}
 
       {activeBook ? (
         <div className="admin-courses-grid">
           <section className="admin-course-meta panel-bordered">
-            <h3>Book</h3>
-            <label className="admin-task-editor-field admin-task-editor-full">
-              <span className="admin-task-editor-label">ID</span>
-              <input
-                value={activeBook.id}
-                onChange={(e) => updateActiveBook((c) => ({ ...c, id: e.target.value }))}
-                className="admin-grid-input"
-              />
-            </label>
-            <label className="admin-task-editor-field admin-task-editor-full">
-              <span className="admin-task-editor-label">Title</span>
-              <input
-                value={activeBook.title}
-                onChange={(e) => updateActiveBook((c) => ({ ...c, title: e.target.value }))}
-                className="admin-grid-input"
-              />
-            </label>
-            <label className="admin-task-editor-field admin-task-editor-full">
-              <span className="admin-task-editor-label">Description</span>
-              <textarea
-                rows={3}
-                value={activeBook.description}
-                onChange={(e) => updateActiveBook((c) => ({ ...c, description: e.target.value }))}
-                className="admin-grid-input"
-              />
-            </label>
-            <div className="admin-course-meta-row">
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Icon</span>
-                <input value={activeBook.icon} onChange={(e) => updateActiveBook((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
-              </label>
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Icon size</span>
-                <input
-                  type="number"
-                  min={24}
-                  max={120}
-                  value={activeBook.iconSize ?? 80}
-                  onChange={(e) => updateActiveBook((c) => ({ ...c, iconSize: Number(e.target.value) }))}
-                  className="admin-grid-input"
-                />
-              </label>
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Color</span>
-                <input value={activeBook.color} onChange={(e) => updateActiveBook((c) => ({ ...c, color: e.target.value }))} className="admin-grid-input" />
-              </label>
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Book Index</span>
-                <input
-                  type="number"
-                  value={activeBook.courseIndex}
-                  onChange={(e) => updateActiveBook((c) => ({ ...c, courseIndex: Number(e.target.value) }))}
-                  className="admin-grid-input"
-                />
-              </label>
+            <div className="admin-tabs" style={{ marginBottom: "16px" }}>
+              <button type="button" className={`admin-tab ${bookBuilderTab === "book" ? "active" : ""}`} onClick={() => setBookBuilderTab("book")}>Book</button>
+              <button type="button" className={`admin-tab ${bookBuilderTab === "chapter" ? "active" : ""}`} onClick={() => setBookBuilderTab("chapter")}>Chapter</button>
             </div>
-            <div className="admin-course-meta-row">
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Title font size</span>
-                <input
-                  type="number"
-                  min={12}
-                  max={48}
-                  value={activeBook.titleFontSize ?? 24}
-                  onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontSize: Number(e.target.value) }))}
-                  className="admin-grid-input"
-                />
-              </label>
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Title font weight</span>
-                <select
-                  value={activeBook.titleFontWeight ?? "bold"}
-                  onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
-                  className="admin-grid-select"
-                >
-                  <option value="normal">Normal</option>
-                  <option value="bold">Bold</option>
-                  <option value="lighter">Lighter</option>
-                  <option value="bolder">Bolder</option>
-                  <option value="100">100</option>
-                  <option value="200">200</option>
-                  <option value="300">300</option>
-                  <option value="400">400</option>
-                  <option value="500">500</option>
-                  <option value="600">600</option>
-                  <option value="700">700</option>
-                  <option value="800">800</option>
-                  <option value="900">900</option>
-                </select>
-              </label>
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Title color</span>
-                <input
-                  type="color"
-                  value={activeBook.titleColor ?? "#0f172a"}
-                  onChange={(e) => updateActiveBook((c) => ({ ...c, titleColor: e.target.value }))}
-                  className="admin-grid-input"
-                />
-              </label>
-              <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Icon position</span>
-                <select
-                  value={activeBook.iconPosition ?? "center-center"}
-                  onChange={(e) => updateActiveBook((c) => ({ ...c, iconPosition: e.target.value as any }))}
-                  className="admin-grid-select"
-                >
-                  <option value="top-left">Top Left</option>
-                  <option value="top-center">Top Center</option>
-                  <option value="top-right">Top Right</option>
-                  <option value="center-left">Center Left</option>
-                  <option value="center-center">Center Center</option>
-                  <option value="center-right">Center Right</option>
-                  <option value="bottom-left">Bottom Left</option>
-                  <option value="bottom-center">Bottom Center</option>
-                  <option value="bottom-right">Bottom Right</option>
-                </select>
-              </label>
-            </div>
-            <div className="admin-course-step-actions">
-              <button type="button" className="footer-button secondary small" onClick={addChapter}>Add Chapter</button>
-              <div className="add-step-group">
-                <label className="admin-task-editor-label" style={{ marginRight: "8px" }}>Type:</label>
-                <select 
-                  ref={stepTypeSelectRef}
-                  className="admin-grid-select small" 
-                  onChange={(e) => addStep(e.target.value as CourseStepType)}
-                  defaultValue=""
-                >
-                  <option value="" disabled>Add Step...</option>
-                  <option value="html">Plain HTML</option>
-                  <option value="code-exam">Code Editor</option>
-                  <option value="quiz">Quiz</option>
-                </select>
-              </div>
-            </div>
-            <div className="admin-course-step-list">
-              {flatSteps.map((step) => (
-                <button
-                  key={step.id}
-                  type="button"
-                  className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
-                  onClick={() => setSelectedStepId(step.id)}
-                >
-                  <span>{step.stepIndex}</span>
-                  <span>{step.title}</span>
-                  <span>{step.stepType}</span>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section className="admin-course-step-editor panel-bordered">
-            {selectedStep ? (
+            {bookBuilderTab === "book" ? (
               <>
-                <h3>Chapter</h3>
-                <div className="admin-step-meta-row">
-                  <label className="admin-task-editor-field">
-                    <span className="admin-task-editor-label">Chapter Index</span>
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Icon & Title</h4>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Icon</span>
+                      <input value={activeBook.icon} onChange={(e) => updateActiveBook((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Icon size</span>
+                      <input
+                        type="number"
+                        min={24}
+                        max={120}
+                        value={activeBook.iconSize ?? 80}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconSize: Number(e.target.value) }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Color</span>
+                      <input value={activeBook.color} onChange={(e) => updateActiveBook((c) => ({ ...c, color: e.target.value }))} className="admin-grid-input" />
+                    </label>
+                  </div>
+                  <label className="admin-task-editor-field admin-task-editor-full" style={{ marginTop: "12px" }}>
+                    <span className="admin-task-editor-label">Title</span>
                     <input
-                      type="number"
-                      value={selectedStep.stepIndex}
-                      onChange={(e) => updateStep(selectedStep.id, { stepIndex: Number(e.target.value) })}
+                      value={activeBook.title}
+                      onChange={(e) => updateActiveBook((c) => ({ ...c, title: e.target.value }))}
                       className="admin-grid-input"
                     />
                   </label>
                 </div>
                 <label className="admin-task-editor-field admin-task-editor-full">
-                  <span className="admin-task-editor-label">Title</span>
-                  <input value={selectedStep.title} onChange={(e) => updateStep(selectedStep.id, { title: e.target.value })} className="admin-grid-input" />
+                  <span className="admin-task-editor-label">ID</span>
+                  <input
+                    value={activeBook.id}
+                    onChange={(e) => updateActiveBook((c) => ({ ...c, id: e.target.value }))}
+                    className="admin-grid-input"
+                  />
                 </label>
                 <label className="admin-task-editor-field admin-task-editor-full">
-                  <span className="admin-task-editor-label">Type</span>
-                  <select
-                    value={selectedStep.stepType}
-                    onChange={(e) => updateStep(selectedStep.id, { stepType: e.target.value as CourseStepType })}
-                    className="admin-grid-select"
-                  >
-                    <option value="html">html</option>
-                    <option value="code-exam">code-exam</option>
-                    <option value="quiz">quiz</option>
-                  </select>
+                  <span className="admin-task-editor-label">Book Index</span>
+                  <input
+                    type="number"
+                    value={activeBook.courseIndex}
+                    onChange={(e) => updateActiveBook((c) => ({ ...c, courseIndex: Number(e.target.value) }))}
+                    className="admin-grid-input"
+                  />
                 </label>
                 <label className="admin-task-editor-field admin-task-editor-full">
                   <span className="admin-task-editor-label">Description</span>
-                  <textarea rows={2} value={selectedStep.description} onChange={(e) => updateStep(selectedStep.id, { description: e.target.value })} className="admin-grid-input" />
+                  <textarea
+                    rows={3}
+                    value={activeBook.description}
+                    onChange={(e) => updateActiveBook((c) => ({ ...c, description: e.target.value }))}
+                    className="admin-grid-input"
+                  />
                 </label>
+                <div className="admin-course-meta-row">
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Title font size</span>
+                    <input
+                      type="number"
+                      min={12}
+                      max={48}
+                      value={activeBook.titleFontSize ?? 24}
+                      onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontSize: Number(e.target.value) }))}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Title font weight</span>
+                    <select
+                      value={activeBook.titleFontWeight ?? "bold"}
+                      onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
+                      className="admin-grid-select"
+                    >
+                      <option value="normal">Normal</option>
+                      <option value="bold">Bold</option>
+                      <option value="lighter">Lighter</option>
+                      <option value="bolder">Bolder</option>
+                      <option value="100">100</option>
+                      <option value="200">200</option>
+                      <option value="300">300</option>
+                      <option value="400">400</option>
+                      <option value="500">500</option>
+                      <option value="600">600</option>
+                      <option value="700">700</option>
+                      <option value="800">800</option>
+                      <option value="900">900</option>
+                    </select>
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Title color</span>
+                    <input
+                      type="color"
+                      value={activeBook.titleColor ?? "#0f172a"}
+                      onChange={(e) => updateActiveBook((c) => ({ ...c, titleColor: e.target.value }))}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Icon position</span>
+                    <select
+                      value={activeBook.iconPosition ?? "center-center"}
+                      onChange={(e) => updateActiveBook((c) => ({ ...c, iconPosition: e.target.value as any }))}
+                      className="admin-grid-select"
+                    >
+                      <option value="top-left">Top Left</option>
+                      <option value="top-center">Top Center</option>
+                      <option value="top-right">Top Right</option>
+                      <option value="center-left">Center Left</option>
+                      <option value="center-center">Center Center</option>
+                      <option value="center-right">Center Right</option>
+                      <option value="bottom-left">Bottom Left</option>
+                      <option value="bottom-center">Bottom Center</option>
+                      <option value="bottom-right">Bottom Right</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="admin-course-step-actions">
+                  <button type="button" className="footer-button secondary small" onClick={addChapter}>Add Chapter</button>
+                  <div className="add-step-group">
+                    <label className="admin-task-editor-label" style={{ marginRight: "8px" }}>Type:</label>
+                    <select 
+                      ref={stepTypeSelectRef}
+                      className="admin-grid-select small" 
+                      onChange={(e) => addStep(e.target.value as CourseStepType)}
+                      defaultValue=""
+                    >
+                      <option value="" disabled>Add Step...</option>
+                      <option value="html">Plain HTML</option>
+                      <option value="code-exam">Code Editor</option>
+                      <option value="quiz">Quiz</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="admin-course-step-list">
+                  {flatSteps.map((step) => (
+                    <button
+                      key={step.id}
+                      type="button"
+                      className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
+                      onClick={() => setSelectedStepId(step.id)}
+                    >
+                      <span>{step.stepIndex}</span>
+                      <span>{step.title}</span>
+                      <span>{step.stepType}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                {selectedStep ? (
+                  <>
+                    <h3>Chapter</h3>
+                    <div className="admin-step-meta-row">
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Chapter Index</span>
+                        <input
+                          type="number"
+                          value={selectedStep.stepIndex}
+                          onChange={(e) => updateStep(selectedStep.id, { stepIndex: Number(e.target.value) })}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                    </div>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Title</span>
+                      <input value={selectedStep.title} onChange={(e) => updateStep(selectedStep.id, { title: e.target.value })} className="admin-grid-input" />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Type</span>
+                      <select
+                        value={selectedStep.stepType}
+                        onChange={(e) => updateStep(selectedStep.id, { stepType: e.target.value as CourseStepType })}
+                        className="admin-grid-select"
+                      >
+                        <option value="html">html</option>
+                        <option value="code-exam">code-exam</option>
+                        <option value="quiz">quiz</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Description</span>
+                      <textarea rows={2} value={selectedStep.description} onChange={(e) => updateStep(selectedStep.id, { description: e.target.value })} className="admin-grid-input" />
+                    </label>
+                  </>
+                ) : (
+                  <div className="admin-empty-state">Select a step to edit, or add chapters and steps.</div>
+                )}
+              </>
+            )}
+          </section>
+
+          <section className="admin-course-step-editor panel-bordered">
+            {selectedStep ? (
+              <>
+                <h3>Step Content</h3>
                 {selectedStep.stepType === "html" ? (
                   <label className="admin-task-editor-field admin-task-editor-full">
                     <span className="admin-task-editor-label">Content HTML</span>
-                    <textarea rows={8} value={selectedStep.contentHtml ?? ""} onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })} className="admin-grid-input" />
+                    <textarea rows={12} value={selectedStep.contentHtml ?? ""} onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })} className="admin-grid-input" />
                   </label>
                 ) : null}
                 {selectedStep.stepType === "code-exam" ? (
@@ -429,7 +450,7 @@ export default function AdminCourses() {
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Checklist (one per line)</span>
                       <textarea
-                        rows={4}
+                        rows={6}
                         value={(selectedStep.checklist ?? []).join("\n")}
                         onChange={(e) => updateStep(selectedStep.id, { checklist: e.target.value.split(/\r?\n/).filter(Boolean) })}
                         className="admin-grid-input"
@@ -438,7 +459,7 @@ export default function AdminCourses() {
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Verification keywords (JSON)</span>
                       <textarea
-                        rows={4}
+                        rows={6}
                         value={JSON.stringify(selectedStep.verificationKeywords ?? [], null, 2)}
                         onChange={(e) => {
                           try {
@@ -456,7 +477,7 @@ export default function AdminCourses() {
                   <label className="admin-task-editor-field admin-task-editor-full">
                     <span className="admin-task-editor-label">Quiz JSON</span>
                     <textarea
-                      rows={10}
+                      rows={15}
                       value={JSON.stringify(selectedStep.quizQuestions ?? [], null, 2)}
                       onChange={(e) => {
                         try {
@@ -471,7 +492,7 @@ export default function AdminCourses() {
                 ) : null}
               </>
             ) : (
-              <div className="admin-empty-state">Select a step to edit, or add chapters and steps.</div>
+              <div className="admin-empty-state">Select a step to view and edit its content.</div>
             )}
           </section>
         </div>

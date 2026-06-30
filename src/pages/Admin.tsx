@@ -70,6 +70,72 @@ function buildTaskRow(task: PracticeTask): TaskRow {
   };
 }
 
+function GradientColorPicker({
+  label,
+  useGradient,
+  setUseGradient,
+  solidColor,
+  setSolidColor,
+  gradientStart,
+  setGradientStart,
+  gradientEnd,
+  setGradientEnd,
+}: {
+  label: string;
+  useGradient: boolean;
+  setUseGradient: (v: boolean) => void;
+  solidColor: string;
+  setSolidColor: (v: string) => void;
+  gradientStart: string;
+  setGradientStart: (v: string) => void;
+  gradientEnd: string;
+  setGradientEnd: (v: string) => void;
+}) {
+  return (
+    <div style={{ marginBottom: "16px" }}>
+      <label style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+        <input
+          type="checkbox"
+          checked={useGradient}
+          onChange={(e) => setUseGradient(e.target.checked)}
+        />
+        <span className="admin-task-editor-label" style={{ marginBottom: 0 }}>{label}</span>
+      </label>
+      {useGradient ? (
+        <div className="admin-search-row">
+          <label className="admin-task-editor-field">
+            <span className="admin-task-editor-label">Start</span>
+            <input
+              type="color"
+              value={gradientStart}
+              onChange={(e) => setGradientStart(e.target.value)}
+              className="admin-grid-input"
+            />
+          </label>
+          <label className="admin-task-editor-field">
+            <span className="admin-task-editor-label">End</span>
+            <input
+              type="color"
+              value={gradientEnd}
+              onChange={(e) => setGradientEnd(e.target.value)}
+              className="admin-grid-input"
+            />
+          </label>
+        </div>
+      ) : (
+        <label className="admin-task-editor-field">
+          <input
+            type="color"
+            value={solidColor}
+            onChange={(e) => setSolidColor(e.target.value)}
+            className="admin-grid-input"
+          />
+        </label>
+      )}
+    </div>
+  );
+}
+
 export default function Admin() {
   const [homeJson, setHomeJson] = useState("");
   const [homeData, setHomeData] = useState<any>(null);
@@ -86,6 +152,8 @@ export default function Admin() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
   const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books">("home");
+  const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
+  const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
 
   useEffect(() => {
     const defaultData = loadAdminData();
@@ -153,6 +221,109 @@ export default function Admin() {
     }
   }
 
+  function updateStyleConfig(category: string, key: string, value: string | boolean) {
+    if (!homeData) return;
+    const newHomeData = { ...homeData };
+    if (!newHomeData.style) {
+      newHomeData.style = {
+        main: {
+          backgroundColor: "#f8fafc",
+          backgroundGradientStart: "#f8fafc",
+          backgroundGradientEnd: "#eef2f7",
+          useGradient: true,
+          color: "#0f172a",
+          fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+        },
+        topMenu: {
+          backgroundColor: "rgba(255, 255, 255, 0.96)",
+          backgroundColorGradientStart: "rgba(255, 255, 255, 0.96)",
+          backgroundColorGradientEnd: "rgba(245, 245, 245, 0.96)",
+          useBackgroundColorGradient: false,
+          color: "#0f172a",
+          borderBottomColor: "#e2e8f0",
+          logoBackgroundColor: "#0f172a",
+          logoBackgroundColorGradientStart: "#0f172a",
+          logoBackgroundColorGradientEnd: "#1e293b",
+          useLogoBackgroundColorGradient: false,
+          logoColor: "#ffffff",
+        },
+        buttons: {
+          primaryBackgroundColor: "#0f172a",
+          primaryBackgroundColorGradientStart: "#0f172a",
+          primaryBackgroundColorGradientEnd: "#1e293b",
+          usePrimaryBackgroundColorGradient: false,
+          primaryColor: "#ffffff",
+          secondaryBackgroundColor: "#e2e8f0",
+          secondaryBackgroundColorGradientStart: "#e2e8f0",
+          secondaryBackgroundColorGradientEnd: "#cbd5e1",
+          useSecondaryBackgroundColorGradient: false,
+          secondaryColor: "#334155",
+        },
+        bookshelf: {
+          backgroundColor: "#ffffff",
+          backgroundColorGradientStart: "#ffffff",
+          backgroundColorGradientEnd: "#f8fafc",
+          useBackgroundColorGradient: false,
+          borderColor: "#e2e8f0",
+        },
+        tabs: {
+          backgroundColor: "#e2e8f0",
+          backgroundColorGradientStart: "#e2e8f0",
+          backgroundColorGradientEnd: "#cbd5e1",
+          useBackgroundColorGradient: false,
+          color: "#334155",
+          activeBackgroundColor: "#0f172a",
+          activeBackgroundColorGradientStart: "#0f172a",
+          activeBackgroundColorGradientEnd: "#1e293b",
+          useActiveBackgroundColorGradient: false,
+          activeColor: "#ffffff",
+        },
+        wizardTopInfo: {
+          backgroundColor: "#ffffff",
+          backgroundColorGradientStart: "#ffffff",
+          backgroundColorGradientEnd: "#f8fafc",
+          useBackgroundColorGradient: false,
+          color: "#0f172a",
+          borderBottomColor: "#e2e8f0",
+          chapterLabelColor: "#64748b",
+          chapterLabelFontSize: "0.65rem",
+        },
+        wizardWorkspace: {
+          backgroundColor: "#ffffff",
+          backgroundColorGradientStart: "#ffffff",
+          backgroundColorGradientEnd: "#f8fafc",
+          useBackgroundColorGradient: false,
+          panelBackgroundColor: "#ffffff",
+          panelBackgroundColorGradientStart: "#ffffff",
+          panelBackgroundColorGradientEnd: "#f8fafc",
+          usePanelBackgroundColorGradient: false,
+          panelBorderColor: "#e2e8f0",
+          textColor: "#0f172a",
+          descriptionColor: "#64748b",
+        },
+        wizardButtons: {
+          backgroundColor: "#e2e8f0",
+          backgroundColorGradientStart: "#e2e8f0",
+          backgroundColorGradientEnd: "#cbd5e1",
+          useBackgroundColorGradient: false,
+          color: "#0f172a",
+          hoverBackgroundColor: "#cbd5e1",
+          hoverBackgroundColorGradientStart: "#cbd5e1",
+          hoverBackgroundColorGradientEnd: "#94a3b8",
+          useHoverBackgroundColorGradient: false,
+          fontSize: "0.78rem",
+          fontWeight: "700",
+        },
+      };
+    }
+    if (!newHomeData.style[category]) {
+      newHomeData.style[category] = {};
+    }
+    newHomeData.style[category][key] = value;
+    setHomeData(newHomeData);
+    setHomeJson(JSON.stringify(newHomeData, null, 2));
+  }
+
   async function handleSave() {
     try {
       const homePageData = JSON.parse(homeJson) as ContentStoreData["homePageData"];
@@ -178,6 +349,7 @@ export default function Admin() {
     const defaults = loadDefaultAdminData();
     const { tasks: defaultsTasks, ...practiceMeta } = defaults.practicePageData;
     setHomeJson(JSON.stringify(defaults.homePageData, null, 2));
+    setHomeData(defaults.homePageData);
     setPracticeMetaJson(JSON.stringify(practiceMeta, null, 2));
     // Only reset tasks from content store; browser DB is separate and preserved
     // Re-load tasks from browser DB instead of using defaultsTasks
@@ -197,107 +369,6 @@ export default function Admin() {
     setSearchCategory("");
     setMessage("Reset to default content.");
     setDbError(null);
-  }
-
-  const pageSize = 5;
-
-  const filteredTasks = useMemo(
-    () =>
-      tasks
-        .filter((task) => {
-          if (searchId && !task.id.toLowerCase().includes(searchId.toLowerCase())) return false;
-          if (searchTitle && !task.title.toLowerCase().includes(searchTitle.toLowerCase())) return false;
-          if (searchCategory && !task.category.toLowerCase().includes(searchCategory.toLowerCase())) return false;
-          return true;
-        })
-        .sort(compareTasksByIndex),
-    [tasks, searchId, searchTitle, searchCategory],
-  );
-
-  const totalPages = Math.max(1, Math.ceil(filteredTasks.length / pageSize));
-  const currentPageIndex = Math.min(Math.max(1, currentPage), totalPages);
-  const pageStart = (currentPageIndex - 1) * pageSize;
-  const pageTasks = filteredTasks.slice(pageStart, pageStart + pageSize);
-
-  // Auto-select first matching task when search changes (skip while editing a draft)
-  useEffect(() => {
-    if (draftTask) return;
-
-    const first = filteredTasks[0];
-    if (!first) {
-      setSelectedTaskId(null);
-      return;
-    }
-    if (!selectedTaskId || selectedTaskId === NEW_TASK_DRAFT_ID || !filteredTasks.some((task) => task.id === selectedTaskId)) {
-      setSelectedTaskId(first.id);
-    }
-  }, [searchId, searchTitle, searchCategory, filteredTasks, selectedTaskId, draftTask]);
-
-  function updateStyleConfig(category: string, key: string, value: string | boolean) {
-    if (!homeData) return;
-    const newHomeData = { ...homeData };
-    if (!newHomeData.style) {
-      newHomeData.style = {
-        main: {
-          backgroundColor: "#f8fafc",
-          backgroundGradientStart: "#f8fafc",
-          backgroundGradientEnd: "#eef2f7",
-          useGradient: true,
-          color: "#0f172a",
-          fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-        },
-        topMenu: {
-          backgroundColor: "rgba(255, 255, 255, 0.96)",
-          color: "#0f172a",
-          borderBottomColor: "#e2e8f0",
-          logoBackgroundColor: "#0f172a",
-          logoColor: "#ffffff",
-        },
-        buttons: {
-          primaryBackgroundColor: "#0f172a",
-          primaryColor: "#ffffff",
-          secondaryBackgroundColor: "#e2e8f0",
-          secondaryColor: "#334155",
-        },
-        bookshelf: {
-          backgroundColor: "#ffffff",
-          borderColor: "#e2e8f0",
-        },
-        tabs: {
-          backgroundColor: "#e2e8f0",
-          color: "#334155",
-          activeBackgroundColor: "#0f172a",
-          activeColor: "#ffffff",
-        },
-        wizardTopInfo: {
-          backgroundColor: "#ffffff",
-          color: "#0f172a",
-          borderBottomColor: "#e2e8f0",
-          chapterLabelColor: "#64748b",
-          chapterLabelFontSize: "0.65rem",
-        },
-        wizardWorkspace: {
-          backgroundColor: "#ffffff",
-          panelBackgroundColor: "#ffffff",
-          panelBorderColor: "#e2e8f0",
-          textColor: "#0f172a",
-          descriptionColor: "#64748b",
-        },
-        wizardButtons: {
-          backgroundColor: "#e2e8f0",
-          color: "#0f172a",
-          hoverBackgroundColor: "#cbd5e1",
-          fontSize: "0.78rem",
-          fontWeight: "700",
-        },
-      };
-    }
-    if (!newHomeData.style[category]) {
-      newHomeData.style[category] = {};
-    }
-    newHomeData.style[category][key] = value;
-    setHomeData(newHomeData);
-    setHomeJson(JSON.stringify(newHomeData, null, 2));
   }
 
   async function saveSingleRecord(task: PracticeTask) {
@@ -368,6 +439,8 @@ export default function Admin() {
         </button>
       </div>
 
+      {message && <div className="admin-course-message">{message}</div>}
+
       {adminTab === "home" ? (
         <section className="panel admin-editor admin-section">
           <div className="admin-section-body">
@@ -378,161 +451,149 @@ export default function Admin() {
                 </button>
               </div>
             </div>
-
-            {message && <div className="admin-course-message">{message}</div>}
-
-            {/* Home Page Data JSON */}
-            <div style={{ marginBottom: "24px" }}>
-              <label className="admin-task-editor-field admin-task-editor-full">
-                <span className="admin-task-editor-label">Home Page Data (JSON)</span>
-                <textarea
-                  rows={10}
-                  value={homeJson}
-                  onChange={(e) => setHomeJson(e.target.value)}
-                  className="admin-grid-input"
+            <div className="admin-tabs" style={{ marginBottom: "16px" }}>
+              <button type="button" className={`admin-tab ${homeStyleTab === "json" ? "active" : ""}`} onClick={() => setHomeStyleTab("json")}>
+                Data (JSON)
+              </button>
+              <button type="button" className={`admin-tab ${homeStyleTab === "main" ? "active" : ""}`} onClick={() => setHomeStyleTab("main")}>
+                Main Page
+              </button>
+              <button type="button" className={`admin-tab ${homeStyleTab === "topmenu" ? "active" : ""}`} onClick={() => setHomeStyleTab("topmenu")}>
+                Top Main Menu
+              </button>
+              <button type="button" className={`admin-tab ${homeStyleTab === "buttons" ? "active" : ""}`} onClick={() => setHomeStyleTab("buttons")}>
+                Buttons
+              </button>
+              <button type="button" className={`admin-tab ${homeStyleTab === "bookshelf" ? "active" : ""}`} onClick={() => setHomeStyleTab("bookshelf")}>
+                Bookshelf
+              </button>
+              <button type="button" className={`admin-tab ${homeStyleTab === "tabs" ? "active" : ""}`} onClick={() => setHomeStyleTab("tabs")}>
+                Tabs / Submenu
+              </button>
+            </div>
+            {homeStyleTab === "json" && (
+              <div style={{ marginBottom: "24px" }}>
+                <label className="admin-task-editor-field admin-task-editor-full">
+                  <span className="admin-task-editor-label">Home Page Data (JSON)</span>
+                  <textarea
+                    rows={10}
+                    value={homeJson}
+                    onChange={(e) => setHomeJson(e.target.value)}
+                    className="admin-grid-input"
+                  />
+                </label>
+              </div>
+            )}
+            {homeStyleTab === "main" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Main Page</h4>
+                <GradientColorPicker
+                  label="Background"
+                  useGradient={homeData?.style?.main?.useGradient ?? true}
+                  setUseGradient={(v) => updateStyleConfig("main", "useGradient", v)}
+                  solidColor={homeData?.style?.main?.backgroundColor ?? "#f8fafc"}
+                  setSolidColor={(v) => updateStyleConfig("main", "backgroundColor", v)}
+                  gradientStart={homeData?.style?.main?.backgroundGradientStart ?? "#f8fafc"}
+                  setGradientStart={(v) => updateStyleConfig("main", "backgroundGradientStart", v)}
+                  gradientEnd={homeData?.style?.main?.backgroundGradientEnd ?? "#eef2f7"}
+                  setGradientEnd={(v) => updateStyleConfig("main", "backgroundGradientEnd", v)}
                 />
-              </label>
-            </div>
-
-            {/* Main Page */}
-            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Main Page</h4>
-              <div className="admin-search-row" style={{ marginBottom: "12px" }}>
-                <label className="admin-task-editor-field" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <input
-                    type="checkbox"
-                    checked={homeData?.style?.main?.useGradient ?? false}
-                    onChange={(e) => updateStyleConfig("main", "useGradient", e.target.checked)}
-                  />
-                  <span className="admin-task-editor-label" style={{ marginBottom: 0 }}>Use Gradient Background</span>
-                </label>
-              </div>
-              {homeData?.style?.main?.useGradient && (
-                <div className="admin-search-row" style={{ marginBottom: "12px" }}>
+                <div className="admin-search-row">
                   <label className="admin-task-editor-field">
-                    <span className="admin-task-editor-label">Gradient Start Color</span>
+                    <span className="admin-task-editor-label">Text Color</span>
                     <input
                       type="color"
-                      value={homeData?.style?.main?.backgroundGradientStart ?? "#f8fafc"}
-                      onChange={(e) => updateStyleConfig("main", "backgroundGradientStart", e.target.value)}
+                      value={homeData?.style?.main?.color ?? "#0f172a"}
+                      onChange={(e) => updateStyleConfig("main", "color", e.target.value)}
                       className="admin-grid-input"
                     />
                   </label>
                   <label className="admin-task-editor-field">
-                    <span className="admin-task-editor-label">Gradient End Color</span>
+                    <span className="admin-task-editor-label">Font Family</span>
                     <input
-                      type="color"
-                      value={homeData?.style?.main?.backgroundGradientEnd ?? "#eef2f7"}
-                      onChange={(e) => updateStyleConfig("main", "backgroundGradientEnd", e.target.value)}
+                      type="text"
+                      value={homeData?.style?.main?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"}
+                      onChange={(e) => updateStyleConfig("main", "fontFamily", e.target.value)}
                       className="admin-grid-input"
                     />
                   </label>
                 </div>
-              )}
-              {!homeData?.style?.main?.useGradient && (
-                <div className="admin-search-row" style={{ marginBottom: "12px" }}>
+              </div>
+            )}
+            {homeStyleTab === "topmenu" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Top Main Menu</h4>
+                <GradientColorPicker
+                  label="Background"
+                  useGradient={homeData?.style?.topMenu?.useBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("topMenu", "useBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.topMenu?.backgroundColor ?? "rgba(255, 255, 255, 0.96)"}
+                  setSolidColor={(v) => updateStyleConfig("topMenu", "backgroundColor", v)}
+                  gradientStart={homeData?.style?.topMenu?.backgroundColorGradientStart ?? "rgba(255, 255, 255, 0.96)"}
+                  setGradientStart={(v) => updateStyleConfig("topMenu", "backgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.topMenu?.backgroundColorGradientEnd ?? "rgba(245, 245, 245, 0.96)"}
+                  setGradientEnd={(v) => updateStyleConfig("topMenu", "backgroundColorGradientEnd", v)}
+                />
+                <div className="admin-search-row">
                   <label className="admin-task-editor-field">
-                    <span className="admin-task-editor-label">Background Color</span>
+                    <span className="admin-task-editor-label">Text Color</span>
                     <input
                       type="color"
-                      value={homeData?.style?.main?.backgroundColor ?? "#f8fafc"}
-                      onChange={(e) => updateStyleConfig("main", "backgroundColor", e.target.value)}
+                      value={homeData?.style?.topMenu?.color ?? "#0f172a"}
+                      onChange={(e) => updateStyleConfig("topMenu", "color", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Border Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.topMenu?.borderBottomColor ?? "#e2e8f0"}
+                      onChange={(e) => updateStyleConfig("topMenu", "borderBottomColor", e.target.value)}
                       className="admin-grid-input"
                     />
                   </label>
                 </div>
-              )}
-              <div className="admin-search-row">
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Text Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.main?.color ?? "#0f172a"}
-                    onChange={(e) => updateStyleConfig("main", "color", e.target.value)}
-                    className="admin-grid-input"
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                  <GradientColorPicker
+                    label="Logo Background"
+                    useGradient={homeData?.style?.topMenu?.useLogoBackgroundColorGradient ?? false}
+                    setUseGradient={(v) => updateStyleConfig("topMenu", "useLogoBackgroundColorGradient", v)}
+                    solidColor={homeData?.style?.topMenu?.logoBackgroundColor ?? "#0f172a"}
+                    setSolidColor={(v) => updateStyleConfig("topMenu", "logoBackgroundColor", v)}
+                    gradientStart={homeData?.style?.topMenu?.logoBackgroundColorGradientStart ?? "#0f172a"}
+                    setGradientStart={(v) => updateStyleConfig("topMenu", "logoBackgroundColorGradientStart", v)}
+                    gradientEnd={homeData?.style?.topMenu?.logoBackgroundColorGradientEnd ?? "#1e293b"}
+                    setGradientEnd={(v) => updateStyleConfig("topMenu", "logoBackgroundColorGradientEnd", v)}
                   />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Font Family</span>
-                  <input
-                    type="text"
-                    value={homeData?.style?.main?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"}
-                    onChange={(e) => updateStyleConfig("main", "fontFamily", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Logo Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.topMenu?.logoColor ?? "#ffffff"}
+                      onChange={(e) => updateStyleConfig("topMenu", "logoColor", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
               </div>
-            </div>
-
-            {/* Top Menu */}
-            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Top Main Menu</h4>
-              <div className="admin-search-row">
+            )}
+            {homeStyleTab === "buttons" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Buttons</h4>
+                <GradientColorPicker
+                  label="Primary Button Background"
+                  useGradient={homeData?.style?.buttons?.usePrimaryBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("buttons", "usePrimaryBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.buttons?.primaryBackgroundColor ?? "#0f172a"}
+                  setSolidColor={(v) => updateStyleConfig("buttons", "primaryBackgroundColor", v)}
+                  gradientStart={homeData?.style?.buttons?.primaryBackgroundColorGradientStart ?? "#0f172a"}
+                  setGradientStart={(v) => updateStyleConfig("buttons", "primaryBackgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.buttons?.primaryBackgroundColorGradientEnd ?? "#1e293b"}
+                  setGradientEnd={(v) => updateStyleConfig("buttons", "primaryBackgroundColorGradientEnd", v)}
+                />
                 <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Background Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.topMenu?.backgroundColor ?? "rgba(255, 255, 255, 0.96)"}
-                    onChange={(e) => updateStyleConfig("topMenu", "backgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Text Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.topMenu?.color ?? "#0f172a"}
-                    onChange={(e) => updateStyleConfig("topMenu", "color", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Border Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.topMenu?.borderBottomColor ?? "#e2e8f0"}
-                    onChange={(e) => updateStyleConfig("topMenu", "borderBottomColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-              </div>
-              <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Logo Background</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.topMenu?.logoBackgroundColor ?? "#0f172a"}
-                    onChange={(e) => updateStyleConfig("topMenu", "logoBackgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Logo Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.topMenu?.logoColor ?? "#ffffff"}
-                    onChange={(e) => updateStyleConfig("topMenu", "logoColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Buttons</h4>
-              <div className="admin-search-row">
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Primary Background</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.buttons?.primaryBackgroundColor ?? "#0f172a"}
-                    onChange={(e) => updateStyleConfig("buttons", "primaryBackgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Primary Color</span>
+                  <span className="admin-task-editor-label">Primary Button Color</span>
                   <input
                     type="color"
                     value={homeData?.style?.buttons?.primaryColor ?? "#ffffff"}
@@ -540,19 +601,19 @@ export default function Admin() {
                     className="admin-grid-input"
                   />
                 </label>
+                <GradientColorPicker
+                  label="Secondary Button Background"
+                  useGradient={homeData?.style?.buttons?.useSecondaryBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("buttons", "useSecondaryBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.buttons?.secondaryBackgroundColor ?? "#e2e8f0"}
+                  setSolidColor={(v) => updateStyleConfig("buttons", "secondaryBackgroundColor", v)}
+                  gradientStart={homeData?.style?.buttons?.secondaryBackgroundColorGradientStart ?? "#e2e8f0"}
+                  setGradientStart={(v) => updateStyleConfig("buttons", "secondaryBackgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.buttons?.secondaryBackgroundColorGradientEnd ?? "#cbd5e1"}
+                  setGradientEnd={(v) => updateStyleConfig("buttons", "secondaryBackgroundColorGradientEnd", v)}
+                />
                 <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Secondary Background</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.buttons?.secondaryBackgroundColor ?? "#e2e8f0"}
-                    onChange={(e) => updateStyleConfig("buttons", "secondaryBackgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-              </div>
-              <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Secondary Color</span>
+                  <span className="admin-task-editor-label">Secondary Button Color</span>
                   <input
                     type="color"
                     value={homeData?.style?.buttons?.secondaryColor ?? "#334155"}
@@ -561,21 +622,21 @@ export default function Admin() {
                   />
                 </label>
               </div>
-            </div>
-
-            {/* Bookshelf */}
-            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Bookshelf</h4>
-              <div className="admin-search-row">
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Background Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.bookshelf?.backgroundColor ?? "#ffffff"}
-                    onChange={(e) => updateStyleConfig("bookshelf", "backgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
+            )}
+            {homeStyleTab === "bookshelf" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Bookshelf</h4>
+                <GradientColorPicker
+                  label="Background"
+                  useGradient={homeData?.style?.bookshelf?.useBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("bookshelf", "useBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.bookshelf?.backgroundColor ?? "#ffffff"}
+                  setSolidColor={(v) => updateStyleConfig("bookshelf", "backgroundColor", v)}
+                  gradientStart={homeData?.style?.bookshelf?.backgroundColorGradientStart ?? "#ffffff"}
+                  setGradientStart={(v) => updateStyleConfig("bookshelf", "backgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.bookshelf?.backgroundColorGradientEnd ?? "#f8fafc"}
+                  setGradientEnd={(v) => updateStyleConfig("bookshelf", "backgroundColorGradientEnd", v)}
+                />
                 <label className="admin-task-editor-field">
                   <span className="admin-task-editor-label">Border Color</span>
                   <input
@@ -586,23 +647,23 @@ export default function Admin() {
                   />
                 </label>
               </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="panel panel-bordered" style={{ padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Tabs / Submenu</h4>
-              <div className="admin-search-row">
+            )}
+            {homeStyleTab === "tabs" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Tabs / Submenu</h4>
+                <GradientColorPicker
+                  label="Inactive Tab Background"
+                  useGradient={homeData?.style?.tabs?.useBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("tabs", "useBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.tabs?.backgroundColor ?? "#e2e8f0"}
+                  setSolidColor={(v) => updateStyleConfig("tabs", "backgroundColor", v)}
+                  gradientStart={homeData?.style?.tabs?.backgroundColorGradientStart ?? "#e2e8f0"}
+                  setGradientStart={(v) => updateStyleConfig("tabs", "backgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.tabs?.backgroundColorGradientEnd ?? "#cbd5e1"}
+                  setGradientEnd={(v) => updateStyleConfig("tabs", "backgroundColorGradientEnd", v)}
+                />
                 <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Background</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.tabs?.backgroundColor ?? "#e2e8f0"}
-                    onChange={(e) => updateStyleConfig("tabs", "backgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Text Color</span>
+                  <span className="admin-task-editor-label">Inactive Tab Color</span>
                   <input
                     type="color"
                     value={homeData?.style?.tabs?.color ?? "#334155"}
@@ -610,19 +671,19 @@ export default function Admin() {
                     className="admin-grid-input"
                   />
                 </label>
+                <GradientColorPicker
+                  label="Active Tab Background"
+                  useGradient={homeData?.style?.tabs?.useActiveBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("tabs", "useActiveBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.tabs?.activeBackgroundColor ?? "#0f172a"}
+                  setSolidColor={(v) => updateStyleConfig("tabs", "activeBackgroundColor", v)}
+                  gradientStart={homeData?.style?.tabs?.activeBackgroundColorGradientStart ?? "#0f172a"}
+                  setGradientStart={(v) => updateStyleConfig("tabs", "activeBackgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.tabs?.activeBackgroundColorGradientEnd ?? "#1e293b"}
+                  setGradientEnd={(v) => updateStyleConfig("tabs", "activeBackgroundColorGradientEnd", v)}
+                />
                 <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Active Background</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.tabs?.activeBackgroundColor ?? "#0f172a"}
-                    onChange={(e) => updateStyleConfig("tabs", "activeBackgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-              </div>
-              <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Active Color</span>
+                  <span className="admin-task-editor-label">Active Tab Color</span>
                   <input
                     type="color"
                     value={homeData?.style?.tabs?.activeColor ?? "#ffffff"}
@@ -631,7 +692,7 @@ export default function Admin() {
                   />
                 </label>
               </div>
-            </div>
+            )}
           </div>
         </section>
       ) : adminTab === "wizard-style" ? (
@@ -644,106 +705,119 @@ export default function Admin() {
                 </button>
               </div>
             </div>
-
-            {message && <div className="admin-course-message">{message}</div>}
-
-            {/* Wizard Top Info */}
-            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Wizard Top Info Section</h4>
-              <div className="admin-search-row">
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Background Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardTopInfo?.backgroundColor ?? "#ffffff"}
-                    onChange={(e) => updateStyleConfig("wizardTopInfo", "backgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Text Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardTopInfo?.color ?? "#0f172a"}
-                    onChange={(e) => updateStyleConfig("wizardTopInfo", "color", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Border Bottom Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}
-                    onChange={(e) => updateStyleConfig("wizardTopInfo", "borderBottomColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-              </div>
-              <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Chapter Label Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardTopInfo?.chapterLabelColor ?? "#64748b"}
-                    onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterLabelColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Chapter Label Font Size</span>
-                  <input
-                    type="text"
-                    value={homeData?.style?.wizardTopInfo?.chapterLabelFontSize ?? "0.65rem"}
-                    onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterLabelFontSize", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-              </div>
+            <div className="admin-tabs" style={{ marginBottom: "16px" }}>
+              <button type="button" className={`admin-tab ${wizardStyleTab === "topinfo" ? "active" : ""}`} onClick={() => setWizardStyleTab("topinfo")}>
+                Wizard Top Info
+              </button>
+              <button type="button" className={`admin-tab ${wizardStyleTab === "workspace" ? "active" : ""}`} onClick={() => setWizardStyleTab("workspace")}>
+                Wizard Workspace
+              </button>
+              <button type="button" className={`admin-tab ${wizardStyleTab === "buttons" ? "active" : ""}`} onClick={() => setWizardStyleTab("buttons")}>
+                Wizard Buttons
+              </button>
             </div>
-
-            {/* Wizard Workspace */}
-            <div className="panel panel-bordered" style={{ marginBottom: "16px", padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Wizard Workspace</h4>
-              <div className="admin-search-row">
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Background Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardWorkspace?.backgroundColor ?? "#ffffff"}
-                    onChange={(e) => updateStyleConfig("wizardWorkspace", "backgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Panel Background Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardWorkspace?.panelBackgroundColor ?? "#ffffff"}
-                    onChange={(e) => updateStyleConfig("wizardWorkspace", "panelBackgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Panel Border Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0"}
-                    onChange={(e) => updateStyleConfig("wizardWorkspace", "panelBorderColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
+            {wizardStyleTab === "topinfo" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Wizard Top Info Section</h4>
+                <GradientColorPicker
+                  label="Background"
+                  useGradient={homeData?.style?.wizardTopInfo?.useBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("wizardTopInfo", "useBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.wizardTopInfo?.backgroundColor ?? "#ffffff"}
+                  setSolidColor={(v) => updateStyleConfig("wizardTopInfo", "backgroundColor", v)}
+                  gradientStart={homeData?.style?.wizardTopInfo?.backgroundColorGradientStart ?? "#ffffff"}
+                  setGradientStart={(v) => updateStyleConfig("wizardTopInfo", "backgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.wizardTopInfo?.backgroundColorGradientEnd ?? "#f8fafc"}
+                  setGradientEnd={(v) => updateStyleConfig("wizardTopInfo", "backgroundColorGradientEnd", v)}
+                />
+                <div className="admin-search-row">
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Text Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.wizardTopInfo?.color ?? "#0f172a"}
+                      onChange={(e) => updateStyleConfig("wizardTopInfo", "color", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Border Bottom Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}
+                      onChange={(e) => updateStyleConfig("wizardTopInfo", "borderBottomColor", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Chapter Label Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.wizardTopInfo?.chapterLabelColor ?? "#64748b"}
+                      onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterLabelColor", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Chapter Label Font Size</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.wizardTopInfo?.chapterLabelFontSize ?? "0.65rem"}
+                      onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterLabelFontSize", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
               </div>
-              <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Text Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardWorkspace?.textColor ?? "#0f172a"}
-                    onChange={(e) => updateStyleConfig("wizardWorkspace", "textColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
+            )}
+            {wizardStyleTab === "workspace" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Wizard Workspace</h4>
+                <GradientColorPicker
+                  label="Workspace Background"
+                  useGradient={homeData?.style?.wizardWorkspace?.useBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("wizardWorkspace", "useBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.wizardWorkspace?.backgroundColor ?? "#ffffff"}
+                  setSolidColor={(v) => updateStyleConfig("wizardWorkspace", "backgroundColor", v)}
+                  gradientStart={homeData?.style?.wizardWorkspace?.backgroundColorGradientStart ?? "#ffffff"}
+                  setGradientStart={(v) => updateStyleConfig("wizardWorkspace", "backgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.wizardWorkspace?.backgroundColorGradientEnd ?? "#f8fafc"}
+                  setGradientEnd={(v) => updateStyleConfig("wizardWorkspace", "backgroundColorGradientEnd", v)}
+                />
+                <GradientColorPicker
+                  label="Panel Background"
+                  useGradient={homeData?.style?.wizardWorkspace?.usePanelBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("wizardWorkspace", "usePanelBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.wizardWorkspace?.panelBackgroundColor ?? "#ffffff"}
+                  setSolidColor={(v) => updateStyleConfig("wizardWorkspace", "panelBackgroundColor", v)}
+                  gradientStart={homeData?.style?.wizardWorkspace?.panelBackgroundColorGradientStart ?? "#ffffff"}
+                  setGradientStart={(v) => updateStyleConfig("wizardWorkspace", "panelBackgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.wizardWorkspace?.panelBackgroundColorGradientEnd ?? "#f8fafc"}
+                  setGradientEnd={(v) => updateStyleConfig("wizardWorkspace", "panelBackgroundColorGradientEnd", v)}
+                />
+                <div className="admin-search-row">
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Panel Border Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0"}
+                      onChange={(e) => updateStyleConfig("wizardWorkspace", "panelBorderColor", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Text Color</span>
+                    <input
+                      type="color"
+                      value={homeData?.style?.wizardWorkspace?.textColor ?? "#0f172a"}
+                      onChange={(e) => updateStyleConfig("wizardWorkspace", "textColor", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
+                <label className="admin-task-editor-field" style={{ marginTop: "12px" }}>
                   <span className="admin-task-editor-label">Description Color</span>
                   <input
                     type="color"
@@ -753,23 +827,23 @@ export default function Admin() {
                   />
                 </label>
               </div>
-            </div>
-
-            {/* Wizard Buttons */}
-            <div className="panel panel-bordered" style={{ padding: "16px" }}>
-              <h4 style={{ marginTop: 0 }}>Wizard Buttons</h4>
-              <div className="admin-search-row">
+            )}
+            {wizardStyleTab === "buttons" && (
+              <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                <h4 style={{ marginTop: 0 }}>Wizard Buttons</h4>
+                <GradientColorPicker
+                  label="Button Background"
+                  useGradient={homeData?.style?.wizardButtons?.useBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("wizardButtons", "useBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.wizardButtons?.backgroundColor ?? "#e2e8f0"}
+                  setSolidColor={(v) => updateStyleConfig("wizardButtons", "backgroundColor", v)}
+                  gradientStart={homeData?.style?.wizardButtons?.backgroundColorGradientStart ?? "#e2e8f0"}
+                  setGradientStart={(v) => updateStyleConfig("wizardButtons", "backgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.wizardButtons?.backgroundColorGradientEnd ?? "#cbd5e1"}
+                  setGradientEnd={(v) => updateStyleConfig("wizardButtons", "backgroundColorGradientEnd", v)}
+                />
                 <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Background Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardButtons?.backgroundColor ?? "#e2e8f0"}
-                    onChange={(e) => updateStyleConfig("wizardButtons", "backgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Text Color</span>
+                  <span className="admin-task-editor-label">Button Color</span>
                   <input
                     type="color"
                     value={homeData?.style?.wizardButtons?.color ?? "#0f172a"}
@@ -777,37 +851,39 @@ export default function Admin() {
                     className="admin-grid-input"
                   />
                 </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Hover Background Color</span>
-                  <input
-                    type="color"
-                    value={homeData?.style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1"}
-                    onChange={(e) => updateStyleConfig("wizardButtons", "hoverBackgroundColor", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
+                <GradientColorPicker
+                  label="Hover Background"
+                  useGradient={homeData?.style?.wizardButtons?.useHoverBackgroundColorGradient ?? false}
+                  setUseGradient={(v) => updateStyleConfig("wizardButtons", "useHoverBackgroundColorGradient", v)}
+                  solidColor={homeData?.style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1"}
+                  setSolidColor={(v) => updateStyleConfig("wizardButtons", "hoverBackgroundColor", v)}
+                  gradientStart={homeData?.style?.wizardButtons?.hoverBackgroundColorGradientStart ?? "#cbd5e1"}
+                  setGradientStart={(v) => updateStyleConfig("wizardButtons", "hoverBackgroundColorGradientStart", v)}
+                  gradientEnd={homeData?.style?.wizardButtons?.hoverBackgroundColorGradientEnd ?? "#94a3b8"}
+                  setGradientEnd={(v) => updateStyleConfig("wizardButtons", "hoverBackgroundColorGradientEnd", v)}
+                />
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Font Size</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.wizardButtons?.fontSize ?? "0.78rem"}
+                      onChange={(e) => updateStyleConfig("wizardButtons", "fontSize", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Font Weight</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.wizardButtons?.fontWeight ?? "700"}
+                      onChange={(e) => updateStyleConfig("wizardButtons", "fontWeight", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
               </div>
-              <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Font Size</span>
-                  <input
-                    type="text"
-                    value={homeData?.style?.wizardButtons?.fontSize ?? "0.78rem"}
-                    onChange={(e) => updateStyleConfig("wizardButtons", "fontSize", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-                <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Font Weight</span>
-                  <input
-                    type="text"
-                    value={homeData?.style?.wizardButtons?.fontWeight ?? "700"}
-                    onChange={(e) => updateStyleConfig("wizardButtons", "fontWeight", e.target.value)}
-                    className="admin-grid-input"
-                  />
-                </label>
-              </div>
-            </div>
+            )}
           </div>
         </section>
       ) : (
