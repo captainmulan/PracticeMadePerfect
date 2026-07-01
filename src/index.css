@@ -3047,21 +3047,11 @@ textarea {
 /* Title printed on the cover itself */
 .book-cover-title {
   position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 14px;
   z-index: 2;
   color: #fff;
-  font-size: 11px;
-  font-weight: 600;
   line-height: 1.25;
-  text-align: center;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 8px rgba(0, 0, 0, 0.5);
   pointer-events: none;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
 }
 
 /* Book Title Label (tooltip) */
@@ -3137,6 +3127,11 @@ textarea {
     width: 70px;
     height: 105px;
   }
+  
+  .book {
+    --book-icon-font: calc(var(--book-icon-font, 72px) * 0.7);
+    --book-title-font: calc(var(--book-title-font, 24px) * 0.7);
+  }
 
   .tab {
     padding: 10px 16px;
@@ -3151,9 +3146,6 @@ textarea {
 
   .book-cover-title {
     font-size: 9px;
-    bottom: 10px;
-    left: 4px;
-    right: 4px;
   }
 }
 

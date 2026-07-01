@@ -50,16 +50,26 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   };
 
   const bookStyles: CSSProperties = {
-    width: "100px",
-    minWidth: "100px",
-    maxWidth: "100px",
     ["--book-color" as any]: coverColorStart,
+    ["--book-icon-font" as any]: `${iconFont}px`,
+    ["--book-title-font" as any]: `${titleFontSize}px`,
   };
 
-  const titleStyles: CSSProperties = {
-    fontSize: `${titleFontSize / 4}px`, // scale down for book card size
+  const bookTitleStyles: CSSProperties = {
+    fontSize: `calc(var(--book-title-font) / 4)`, // scale down for book card size
     fontWeight: titleFontWeight,
     color: titleColor,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  };
+
+  const coverTitleStyles: CSSProperties = {
+    fontSize: `calc(var(--book-title-font) / 4)`, // scale down for book card size
+    fontWeight: titleFontWeight,
+    color: titleColor,
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
   };
 
   const iconContainerStyles = getPositionStyles(iconPosition);
@@ -67,7 +77,7 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
 
   const content = (
     <>
-      {item.link && <span className="book-title" style={titleStyles}>{displayTitle}</span>}
+      {item.link && <span className="book-title" style={bookTitleStyles}>{displayTitle}</span>}
       <div className="book-cover" style={{ 
         background: `linear-gradient(180deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
         position: "relative" 
@@ -79,17 +89,24 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
             width: "100%",
             padding: "0 4px",
             boxSizing: "border-box",
-            ...titleStyles,
-            ...titleContainerStyles 
+            ...coverTitleStyles,
+            ...titleContainerStyles
           }}>
             {displayTitle}
           </span>
         ) : (
           <>
-            <span className="book-cover-title" style={titleStyles}>{displayTitle}</span>
+            <span className="book-cover-title" style={{
+              position: "absolute",
+              bottom: "8px",
+              left: "8px",
+              right: "8px",
+              textAlign: "left",
+              ...coverTitleStyles
+            }}>{displayTitle}</span>
             <div className="book-icon" style={{ 
               position: "absolute", 
-              fontSize: `${iconFont}px`, 
+              fontSize: `calc(var(--book-icon-font) * 0.7)`, 
               background: `linear-gradient(180deg, ${item.iconColorStart} 0%, ${item.iconColorMiddle} 50%, ${item.iconColorEnd} 100%)`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",

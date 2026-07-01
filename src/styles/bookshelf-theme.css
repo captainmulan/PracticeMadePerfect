@@ -609,6 +609,7 @@
 
 /* Remove horizontal center break line under icon on book cover */
 .book-cover {
+  overflow: hidden;
 }
 
 .book-cover::before,
