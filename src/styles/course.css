@@ -22,7 +22,6 @@
 .chapter-label {
   font-size: 0.875rem;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #64748b;
 }
@@ -84,10 +83,10 @@
 }
 
 .practice-workspace-desc {
-  margin: 0 !important;
-  font-size: 1rem !important;
-  color: #64748b !important;
-  line-height: 1.6 !important;
+  margin: 0;
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.6;
 }
 
 .course-step-quiz {
@@ -122,26 +121,7 @@
   max-height: 100%;
 }
 
-.course-step-html-body {
-  padding: 16px;
-  overflow: visible;
-}
 
-.course-lesson {
-  max-width: 100%;
-  overflow: visible;
-}
-
-.course-lesson .slide-card {
-  max-width: 100%;
-  margin: 0 auto;
-  overflow: visible;
-}
-
-.course-lesson .slide-text {
-  padding: 16px;
-  overflow: visible;
-}
 
 .course-step-quiz .course-quiz-intro {
   color: #0f172a;
@@ -207,27 +187,7 @@
   flex-shrink: 0;
 }
 
-.course-step-html-body .practice-answer-html .course-lesson .slide-text h2 {
-  color: #0f172a;
-}
 
-.course-step-html-body .practice-answer-html .course-lesson .slide-text p,
-.course-step-html-body .practice-answer-html .course-lesson .slide-text li,
-.course-step-html-body .practice-answer-html .course-lesson .slide-text code {
-  color: #0f172a;
-}
-
-/* Slide content styles (non-invasive) */
-.course-lesson .slide-card {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.course-lesson .slide-diagram svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
 
 /* Practice Workspace Body */
 .practice-workspace-body {
@@ -263,9 +223,7 @@
   flex-direction: row;
 }
 
-.practice-answer-html {
-  overflow: visible;
-}
+
 
 /* Make sure the entire panel doesn't overflow */
 .practice-workspace {
@@ -277,18 +235,7 @@
 
 
 
-/* Fix content cut-off */
-.practice-answer-html {
-  overflow: visible !important;
-  min-height: auto !important;
-  background: #ffffff !important;
-  color: #0f172a !important;
-  border-radius: 16px !important;
-}
 
-.practice-answer-html h2 {
-  color: #0f172a !important;
-}
 
 /* Make sure workspace body has enough height */
 .practice-workspace {

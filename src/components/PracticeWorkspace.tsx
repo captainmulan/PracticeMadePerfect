@@ -63,7 +63,6 @@ export default function PracticeWorkspace({
           ? `linear-gradient(180deg, ${style.wizardWorkspace.panelBackgroundColorGradientStart} 0%, ${style.wizardWorkspace.panelBackgroundColorGradientEnd} 100%)` 
           : (style?.wizardWorkspace?.panelBackgroundColor ?? "#ffffff"),
         borderColor: style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0",
-        color: style?.wizardWorkspace?.textColor ?? "#0f172a",
       }}
     >
       {/* Top Bar: Chapter Info + Book Name + Toolbar */}
@@ -186,16 +185,17 @@ export default function PracticeWorkspace({
       {/* Step Brief */}
       {pageBrief && (
         <div className="practice-workspace-step-header" style={{
-          paddingTop: `${(style?.wizardWorkspace?.descriptionPaddingTop ?? 16) / 16}rem`,
-          paddingBottom: `${(style?.wizardWorkspace?.descriptionPaddingBottom ?? 16) / 16}rem`,
+          paddingTop: `${(style?.wizardTopInfo?.descriptionPaddingTop ?? 16) / 16}rem`,
+          paddingBottom: `${(style?.wizardTopInfo?.descriptionPaddingBottom ?? 16) / 16}rem`,
+          backgroundColor: style?.wizardTopInfo?.descriptionBackgroundColor ?? "#ffffff",
         }}>
           <p 
             className="practice-workspace-desc"
             style={{
-              color: style?.wizardWorkspace?.descriptionColor ?? "#64748b",
-              fontSize: `${(style?.wizardWorkspace?.descriptionFontSize ?? 16) / 16}rem`,
-              fontWeight: style?.wizardWorkspace?.descriptionFontWeight ?? "normal",
-              lineHeight: style?.wizardWorkspace?.descriptionLineHeight ?? 1.6,
+              color: style?.wizardTopInfo?.descriptionColor ?? "#64748b",
+              fontSize: `${(style?.wizardTopInfo?.descriptionFontSize ?? 16) / 16}rem`,
+              fontWeight: style?.wizardTopInfo?.descriptionFontWeight ?? "normal",
+              lineHeight: style?.wizardTopInfo?.descriptionLineHeight ?? 1.6,
             }}
           >
             {pageBrief}

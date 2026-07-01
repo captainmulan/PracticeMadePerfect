@@ -35,7 +35,6 @@ export default function CourseHtmlStep({
       title={step.title}
     >
       <div
-        className="practice-answer-html practice-workspace-content course-step-html-body"
         dangerouslySetInnerHTML={{
           __html: step.contentHtml ?? "<p><em>No lesson content yet.</em></p>",
         }}

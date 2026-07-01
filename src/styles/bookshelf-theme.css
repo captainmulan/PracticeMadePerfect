@@ -379,7 +379,6 @@
   display: flex;
   overflow: hidden;
   background: var(--shelf-editor-surface);
-  border-top: 1px solid var(--shelf-editor-border);
 }
 
 .practice-workspace .practice-text-label {
