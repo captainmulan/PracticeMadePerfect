@@ -16,7 +16,8 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   const titleFontSize = isEmpty ? (homePageData.style?.emptyBook?.titleFontSize ?? 24) : (item.titleFontSize ?? 24);
   const titleFontWeight = isEmpty ? (homePageData.style?.emptyBook?.titleFontWeight ?? "bold") : (item.titleFontWeight ?? "bold");
   const titleColor = isEmpty ? (homePageData.style?.emptyBook?.titleColor ?? "#0f172a") : (item.titleColor ?? "#0f172a");
-  const titlePosition = isEmpty ? (homePageData.style?.emptyBook?.titlePosition ?? "center-center") : "center-center";
+  const titlePosition = isEmpty ? (homePageData.style?.emptyBook?.titlePosition ?? "center-center") : (item.titlePosition ?? "bottom-left");
+  const titleTextAlign = (isEmpty ? (homePageData.style?.emptyBook?.titleTextAlign ?? "center") : (item.titleTextAlign ?? "left")) as any;
   const coverColorStart = isEmpty ? (homePageData.style?.emptyBook?.coverColorStart ?? "#f1f5f9") : item.coverColorStart;
   const coverColorMiddle = isEmpty ? (homePageData.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9") : item.coverColorMiddle;
   const coverColorEnd = isEmpty ? (homePageData.style?.emptyBook?.coverColorEnd ?? "#f1f5f9") : item.coverColorEnd;
@@ -27,11 +28,11 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   const getPositionStyles = (pos: string) => {
     switch (pos) {
       case "top-left":
-        return { top: "8px", left: "8px" };
+        return { top: "2px", left: "4px" };
       case "top-center":
-        return { top: "8px", left: "50%", transform: "translateX(-50%)" };
+        return { top: "2px", left: "50%", transform: "translateX(-50%)" };
       case "top-right":
-        return { top: "8px", right: "8px" };
+        return { top: "2px", right: "4px" };
       case "center-left":
         return { top: "50%", left: "8px", transform: "translateY(-50%)" };
       case "center-center":
@@ -39,11 +40,11 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
       case "center-right":
         return { top: "50%", right: "8px", transform: "translateY(-50%)" };
       case "bottom-left":
-        return { bottom: "8px", left: "8px" };
+        return { bottom: "4px", left: "4px" };
       case "bottom-center":
-        return { bottom: "8px", left: "50%", transform: "translateX(-50%)" };
+        return { bottom: "4px", left: "50%", transform: "translateX(-50%)" };
       case "bottom-right":
-        return { bottom: "8px", right: "8px" };
+        return { bottom: "4px", right: "4px" };
       default:
         return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     }
@@ -80,15 +81,16 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
       {item.link && <span className="book-title" style={bookTitleStyles}>{displayTitle}</span>}
       <div className="book-cover" style={{ 
         background: `linear-gradient(180deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
-        position: "relative" 
+        position: "relative"
       }}>
         {isEmpty ? (
           <span className="book-cover-title" style={{ 
             position: "absolute",
-            textAlign: "center",
             width: "100%",
             padding: "0 4px",
             boxSizing: "border-box",
+            textAlign: titleTextAlign,
+            zIndex: 1,
             ...coverTitleStyles,
             ...titleContainerStyles
           }}>
@@ -96,24 +98,27 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
           </span>
         ) : (
           <>
-            <span className="book-cover-title" style={{
-              position: "absolute",
-              bottom: "8px",
-              left: "8px",
-              right: "8px",
-              textAlign: "left",
-              ...coverTitleStyles
-            }}>{displayTitle}</span>
             <div className="book-icon" style={{ 
               position: "absolute", 
               fontSize: `calc(var(--book-icon-font) * 0.7)`, 
               background: `linear-gradient(180deg, ${item.iconColorStart} 0%, ${item.iconColorMiddle} 50%, ${item.iconColorEnd} 100%)`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              zIndex: 2,
               ...iconContainerStyles 
             }}>
               {item.icon}
             </div>
+            <span className="book-cover-title" style={{
+              position: "absolute",
+              width: "100%",
+              padding: "0 4px",
+              boxSizing: "border-box",
+              textAlign: titleTextAlign,
+              zIndex: 1,
+              ...coverTitleStyles,
+              ...titleContainerStyles
+            }}>{displayTitle}</span>
           </>
         )}
         <div className="book-spine" />

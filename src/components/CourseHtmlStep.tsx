@@ -35,6 +35,10 @@ export default function CourseHtmlStep({
       title={step.title}
     >
       <div
+        style={{
+          padding: "2rem",
+          fontFamily: "Arial, sans-serif",
+        }}
         dangerouslySetInnerHTML={{
           __html: step.contentHtml ?? "<p><em>No lesson content yet.</em></p>",
         }}

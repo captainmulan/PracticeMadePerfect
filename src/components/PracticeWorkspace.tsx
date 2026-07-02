@@ -9,6 +9,9 @@ interface PracticeWorkspaceProps {
   pageIndex?: number;
   totalPages?: number;
   pageBrief?: string;
+  eyebrow?: string;
+  meta?: string;
+  progressPct?: number;
   title: string;
   description?: string;
   toolbarLabel?: string;
@@ -34,6 +37,9 @@ export default function PracticeWorkspace({
   pageIndex,
   totalPages,
   pageBrief,
+  eyebrow,
+  meta,
+  progressPct,
   title,
   description,
   toolbarLabel,

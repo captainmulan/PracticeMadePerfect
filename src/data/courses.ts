@@ -64,13 +64,15 @@ export interface Course {
   iconColorMiddle: string;
   iconColorEnd: string;
   iconSize?: number;
-  courseIndex: number;
-  category: string;
-  chapters: CourseChapter[];
   titleFontSize?: number;
   titleFontWeight?: string;
   titleColor?: string;
+  titlePosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
+  titleTextAlign?: "left" | "center" | "right";
   iconPosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
+  courseIndex: number;
+  category: string;
+  chapters: CourseChapter[];
 }
 
 export function flattenCourseSteps(course: Course): CourseStep[] {
@@ -815,8 +817,15 @@ export const DEFAULT_COURSES: Course[] = [
     title: "React Interview Practice",
     description: "React practice tasks commonly asked in interviews.",
     color: "#61dafb",
+    coverColorStart: "#61dafb",
+    coverColorMiddle: "#61dafb",
+    coverColorEnd: "#61dafb",
     icon: "⚛️",
+    iconColorStart: "#ffffff",
+    iconColorMiddle: "#ffffff",
+    iconColorEnd: "#ffffff",
     courseIndex: 1,
+    category: "IT",
     chapters: [
       {
         id: "react-interview-ch1",
@@ -1221,8 +1230,15 @@ export const DEFAULT_COURSES: Course[] = [
     title: "SOLID Interview Practice",
     description: "SOLID principles and design patterns practice for interviews.",
     color: "#4a90e2",
+    coverColorStart: "#4a90e2",
+    coverColorMiddle: "#4a90e2",
+    coverColorEnd: "#4a90e2",
     icon: "📐",
+    iconColorStart: "#ffffff",
+    iconColorMiddle: "#ffffff",
+    iconColorEnd: "#ffffff",
     courseIndex: 2,
+    category: "IT",
     chapters: [
       {
         id: "solid-interview-ch1",
@@ -1312,8 +1328,15 @@ export const DEFAULT_COURSES: Course[] = [
     title: "Angular Interview Practice",
     description: "Angular concept interview questions and answers.",
     color: "#dd0031",
+    coverColorStart: "#dd0031",
+    coverColorMiddle: "#dd0031",
+    coverColorEnd: "#dd0031",
     icon: "🅰️",
+    iconColorStart: "#ffffff",
+    iconColorMiddle: "#ffffff",
+    iconColorEnd: "#ffffff",
     courseIndex: 3,
+    category: "IT",
     chapters: [
       {
         id: "angular-interview-ch1",
@@ -1701,8 +1724,15 @@ export const DEFAULT_COURSES: Course[] = [
     title: "C# Interview Practice",
     description: "C# concept and coding interview practice (code exams).",
     color: "#68217A",
+    coverColorStart: "#68217A",
+    coverColorMiddle: "#68217A",
+    coverColorEnd: "#68217A",
     icon: "🔷",
+    iconColorStart: "#ffffff",
+    iconColorMiddle: "#ffffff",
+    iconColorEnd: "#ffffff",
     courseIndex: 4,
+    category: "IT",
     chapters: [
       {
         id: "csharp-interview-ch1",
@@ -2007,8 +2037,15 @@ export const DEFAULT_COURSES: Course[] = [
     title: "SQL Interview Practice",
     description: "SQL concept and coding interview practice (code exams).",
     color: "#d2691e",
+    coverColorStart: "#d2691e",
+    coverColorMiddle: "#d2691e",
+    coverColorEnd: "#d2691e",
     icon: "🧾",
+    iconColorStart: "#ffffff",
+    iconColorMiddle: "#ffffff",
+    iconColorEnd: "#ffffff",
     courseIndex: 5,
+    category: "IT",
     chapters: [
       {
         id: "sql-interview-ch1",

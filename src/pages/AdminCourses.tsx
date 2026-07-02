@@ -87,6 +87,12 @@ export default function AdminCourses() {
       iconColorMiddle: "#fff",
       iconColorEnd: "#fff",
       iconSize: 80,
+      titleFontSize: 24,
+      titleFontWeight: "bold",
+      titleColor: "#ffffff",
+      titlePosition: "bottom-left",
+      titleTextAlign: "left",
+      iconPosition: "center-center",
       courseIndex: books.length,
       category: "IT",
       chapters: [],
@@ -227,6 +233,13 @@ export default function AdminCourses() {
     }
   }
 
+  function handleResetDatabase() {
+    if (window.confirm("Are you sure you want to reset the database? This will delete all custom books and restore defaults.")) {
+      localStorage.removeItem('magic-library-db');
+      window.location.reload();
+    }
+  }
+
   if (!loaded) {
     return <div className="admin-section-body">Loading books...</div>;
   }
@@ -249,6 +262,7 @@ export default function AdminCourses() {
           ))}
         </select>
         <div className="admin-book-actions">
+          <button type="button" className="footer-button secondary small" onClick={handleResetDatabase}>Reset Database</button>
           <button type="button" className="footer-button secondary small" onClick={startNewBook}>New Book</button>
           <button type="button" className="footer-button small" onClick={handleSaveBook}>Save Book</button>
           {!draftBook && activeBook ? (
@@ -402,6 +416,84 @@ export default function AdminCourses() {
                   </div>
                 </div>
 
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Title</h4>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Font Size</span>
+                      <input
+                        type="number"
+                        min={12}
+                        max={48}
+                        value={activeBook.titleFontSize ?? 24}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontSize: Number(e.target.value) }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Font Weight</span>
+                      <select
+                        value={activeBook.titleFontWeight ?? "bold"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="normal">Normal</option>
+                        <option value="bold">Bold</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                        <option value="500">500</option>
+                        <option value="600">600</option>
+                        <option value="700">700</option>
+                        <option value="800">800</option>
+                        <option value="900">900</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Color</span>
+                      <input
+                        type="color"
+                        value={activeBook.titleColor ?? "#0f172a"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleColor: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title Position</span>
+                      <select
+                        value={activeBook.titlePosition ?? "bottom-left"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, titlePosition: e.target.value as any }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="top-left">Top Left</option>
+                        <option value="top-center">Top Center</option>
+                        <option value="top-right">Top Right</option>
+                        <option value="center-left">Center Left</option>
+                        <option value="center-center">Center Center</option>
+                        <option value="center-right">Center Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="bottom-center">Bottom Center</option>
+                        <option value="bottom-right">Bottom Right</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Text Alignment</span>
+                      <select
+                        value={activeBook.titleTextAlign ?? "left"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleTextAlign: e.target.value as any }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="left">Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+
                 <div className="panel panel-bordered" style={{ padding: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Icon</h4>
                   <div className="admin-search-row">
@@ -545,6 +637,18 @@ export default function AdminCourses() {
                         <option value="bottom-left">Bottom Left</option>
                         <option value="bottom-center">Bottom Center</option>
                         <option value="bottom-right">Bottom Right</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Text Alignment</span>
+                      <select
+                        value={adminData?.homePageData?.style?.emptyBook?.titleTextAlign ?? "center"}
+                        onChange={(e) => updateStyleConfig("titleTextAlign", e.target.value)}
+                        className="admin-grid-select"
+                      >
+                        <option value="left">Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
                       </select>
                     </label>
                   </div>

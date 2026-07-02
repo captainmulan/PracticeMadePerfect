@@ -16,6 +16,8 @@ export interface CourseShelfItem {
   titleFontSize?: number;
   titleFontWeight?: string;
   titleColor?: string;
+  titlePosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
+  titleTextAlign?: "left" | "center" | "right";
   iconPosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
   meta: string;
   link?: string;
@@ -394,6 +396,8 @@ function createShelfItemFromCourse(course: Course, category: string): CourseShel
     titleFontSize: course.titleFontSize ?? undefined,
     titleFontWeight: course.titleFontWeight ?? undefined,
     titleColor: course.titleColor ?? undefined,
+    titlePosition: course.titlePosition ?? undefined,
+    titleTextAlign: course.titleTextAlign ?? undefined,
     iconPosition: course.iconPosition ?? undefined,
     meta: `${course.chapters.length} chapters`,
     link: `/courses/${course.id}`,

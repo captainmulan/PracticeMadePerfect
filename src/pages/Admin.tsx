@@ -300,7 +300,7 @@ export default function Admin() {
     }
   }
 
-  function updateStyleConfig(category: string, key: string, value: string | boolean) {
+  function updateStyleConfig(category: string, key: string, value: string | boolean | number) {
     if (!homeData) return;
     const newHomeData = { ...homeData };
     if (!newHomeData.style) {

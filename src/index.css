@@ -521,6 +521,15 @@ textarea {
   min-height: auto !important;
 }
 
+.course-wizard-page .practice-workspace {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.course-wizard-page .practice-workspace-body {
+  background: #ffffff !important;
+}
+
 .course-wizard-page .practice-answer-html {
   background: #ffffff !important;
   color: #0f172a !important;

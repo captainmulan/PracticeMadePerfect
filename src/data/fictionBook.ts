@@ -18,7 +18,9 @@ export const FICTION_BOOK: Course = {
   titleFontSize: 28,
   titleFontWeight: "bold",
   titleColor: "#0f172a",
-  iconPosition: "center-center",
+  iconPosition: "top-center",
+  titlePosition: "bottom-left",
+  titleTextAlign: "left",
   courseIndex: 1,
   category: "Fiction",
   chapters: [
