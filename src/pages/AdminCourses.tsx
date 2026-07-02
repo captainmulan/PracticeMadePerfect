@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
-import { loadCoursesFromBrowserDb, persistCourse, removeCourse } from "../utils/sqliteBrowserCourses";
+import { loadCoursesFromBrowserDb, persistCourse, removeCourse, reloadCourses } from "../utils/sqliteBrowserCourses";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 
 function slugify(value: string) {
@@ -209,7 +209,7 @@ export default function AdminCourses() {
     };
     try {
       await persistCourse(normalized);
-      const refreshed = await loadCoursesFromBrowserDb();
+      const refreshed = await reloadCourses();
       setBooks(refreshed);
       setDraftBook(null);
       setSelectedBookId(trimmedId);
@@ -230,13 +230,6 @@ export default function AdminCourses() {
       setMessage("Book deleted.");
     } catch (err) {
       setMessage(String(err));
-    }
-  }
-
-  function handleResetDatabase() {
-    if (window.confirm("Are you sure you want to reset the database? This will delete all custom books and restore defaults.")) {
-      localStorage.removeItem('magic-library-db');
-      window.location.reload();
     }
   }
 
@@ -262,7 +255,6 @@ export default function AdminCourses() {
           ))}
         </select>
         <div className="admin-book-actions">
-          <button type="button" className="footer-button secondary small" onClick={handleResetDatabase}>Reset Database</button>
           <button type="button" className="footer-button secondary small" onClick={startNewBook}>New Book</button>
           <button type="button" className="footer-button small" onClick={handleSaveBook}>Save Book</button>
           {!draftBook && activeBook ? (

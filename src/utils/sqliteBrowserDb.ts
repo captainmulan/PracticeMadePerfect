@@ -53,27 +53,27 @@ function isLikelyTruncatedCache(cachedCount: number, bundledCount: number): bool
 }
 
 async function fetchDatabaseFile(): Promise<Uint8Array> {
-  const bundledBytes = await fetchBundledDatabaseBytes();
+  if (typeof window === "undefined") {
+    return fetchBundledDatabaseBytes();
+  }
+
   const cached = window.localStorage.getItem(LOCAL_STORAGE_DB_KEY);
-
-  if (!cached) {
-    window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
-    return bundledBytes;
+  if (cached) {
+    try {
+      const cachedBytes = new Uint8Array(JSON.parse(cached) as number[]);
+      const SQL = await loadSqlJs();
+      const cachedDb = new SQL.Database(cachedBytes);
+      migrateLegacySchema(cachedDb);
+      cachedDb.close();
+      return cachedBytes;
+    } catch {
+      window.localStorage.removeItem(LOCAL_STORAGE_DB_KEY);
+    }
   }
 
-  try {
-    const cachedBytes = new Uint8Array(JSON.parse(cached) as number[]);
-    const SQL = await loadSqlJs();
-    const cachedDb = new SQL.Database(cachedBytes);
-    migrateLegacySchema(cachedDb);
-    cachedDb.close();
-    return cachedBytes;
-  } catch {
-    // If cached is invalid, fall back to bundled, but never overwrite valid user cache
-    window.localStorage.removeItem(LOCAL_STORAGE_DB_KEY);
-    window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
-    return bundledBytes;
-  }
+  const bundledBytes = await fetchBundledDatabaseBytes();
+  window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
+  return bundledBytes;
 }
 
 function readRowNumber(row: Record<string, unknown>, ...keys: string[]): number | null {
@@ -271,7 +271,6 @@ export function persistBrowserDbToLocalStorage(db: Database) {
   if (typeof window !== "undefined") {
     window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
   }
-  // Clear the cached DB so next openBrowserDb gets fresh data
   cachedDb = null;
 }
 

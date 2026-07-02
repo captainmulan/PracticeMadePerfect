@@ -2,7 +2,7 @@ import type { Database } from "sql.js";
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
 import { DEFAULT_COURSES } from "../data/courses";
 import { FICTION_BOOK_ID, FICTION_BOOK } from "../data/fictionBook";
-import { openBrowserDb, persistBrowserDbToLocalStorage } from "./sqliteBrowserDb";
+import { openBrowserDb, persistBrowserDbToLocalStorage, resetBrowserDbCache } from "./sqliteBrowserDb";
 
 export interface CourseRow {
   id: string;
@@ -463,6 +463,10 @@ export async function persistCourse(course: Course) {
   const db = await openBrowserDb();
   saveCourseBundleToDb(db, course);
   persistBrowserDbToLocalStorage(db);
+}
+
+export async function reloadCourses(): Promise<Course[]> {
+  return loadCoursesFromBrowserDb();
 }
 
 export async function removeCourse(courseId: string) {

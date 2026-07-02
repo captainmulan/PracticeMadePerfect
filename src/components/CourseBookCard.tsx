@@ -101,10 +101,10 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
             <div className="book-icon" style={{ 
               position: "absolute", 
               fontSize: `calc(var(--book-icon-font) * 0.7)`, 
-              background: `linear-gradient(180deg, ${item.iconColorStart} 0%, ${item.iconColorMiddle} 50%, ${item.iconColorEnd} 100%)`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              zIndex: 2,
+              lineHeight: 1,
+              display: "inline-block",
+              color: item.iconColorStart ?? "#ffffff",
+              zIndex: 5,
               ...iconContainerStyles 
             }}>
               {item.icon}

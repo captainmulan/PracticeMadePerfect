@@ -10,18 +10,12 @@ export interface ContentStoreData {
 
 export function loadAdminData(): ContentStoreData {
   if (typeof window === "undefined") {
-    return {
-      homePageData,
-      practicePageData,
-    };
+    return loadDefaultAdminData();
   }
 
   const raw = window.localStorage.getItem(ADMIN_STORAGE_KEY);
   if (!raw) {
-    return {
-      homePageData,
-      practicePageData,
-    };
+    return loadDefaultAdminData();
   }
 
   try {
@@ -70,15 +64,13 @@ export function loadAdminData(): ContentStoreData {
         },
       },
     };
+
     return {
       homePageData: mergedHomePageData,
       practicePageData: parsed.practicePageData ?? practicePageData,
     };
   } catch {
-    return {
-      homePageData,
-      practicePageData,
-    };
+    return loadDefaultAdminData();
   }
 }
 
