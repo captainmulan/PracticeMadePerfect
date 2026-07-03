@@ -16,7 +16,14 @@ export default function Home() {
 
   return (
     <div className="page-content page-home">
-      <section className={`home-hero panel ${heroCollapsed ? "collapsed" : ""}`}>
+      <section
+        className={`home-hero panel ${heroCollapsed ? "collapsed" : ""}`}
+        style={{
+          background: style?.hero?.useBackgroundColorGradient
+            ? `linear-gradient(180deg, ${style.hero.backgroundColorGradientStart} 0%, ${style.hero.backgroundColorGradientMiddle ?? style.hero.backgroundColorGradientStart} 50%, ${style.hero.backgroundColorGradientEnd} 100%)`
+            : (style?.hero?.backgroundColor ?? "#ffffff"),
+        }}
+      >
         <button
           type="button"
           className="home-hero-toggle"
@@ -25,13 +32,19 @@ export default function Home() {
         >
           {heroCollapsed ? "+" : "−"}
         </button>
-        <div className="home-hero-copy">
-          <div className="home-eyebrow">{data.title}</div>
-          <h1 className="home-hero-title">{data.headline}</h1>
+        <div
+          className="home-hero-copy"
+          style={{
+            color: style?.hero?.color ?? style?.main?.color ?? "#0f172a",
+            fontFamily: style?.hero?.fontFamily ?? style?.main?.fontFamily,
+          }}
+        >
+          <div className="home-eyebrow" style={{ color: style?.hero?.eyebrowColor ?? "#6b7280" }}>{data.title}</div>
+          <h1 className="home-hero-title" style={{ color: style?.hero?.titleColor ?? "#0f172a" }}>{data.headline}</h1>
           {!heroCollapsed && (
             <>
-              <p className="home-hero-description">{data.summary}</p>
-              <div className="home-hero-features" dangerouslySetInnerHTML={{ __html: data.featureHtml }} />
+              <p className="home-hero-description" style={{ color: style?.hero?.descriptionColor ?? "#475569" }}>{data.summary}</p>
+              <div className="home-hero-features" style={{ color: style?.hero?.descriptionColor ?? "#475569" }} dangerouslySetInnerHTML={{ __html: data.featureHtml }} />
               <div className="home-hero-actions">
                 <Link 
                   to="/courses/react-crud" 

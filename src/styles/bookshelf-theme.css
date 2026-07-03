@@ -9,6 +9,8 @@
   --app-radius-sm: 10px;
   --app-section-gap: 12px;
   --practice-editor-height: clamp(360px, calc(100dvh - 168px), 620px);
+  /* App header height (adjust if your header size changes) */
+  --app-header-height: 70px;
 
   --shelf-blush-start: #f2dce0;
   --shelf-blush-end: #e8d0d5;
@@ -357,28 +359,66 @@
   flex-wrap: nowrap;
 }
 
-.practice-workspace-body {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-areas: "editor";
-  min-height: var(--practice-editor-height);
-  max-height: var(--practice-editor-height);
-  background: var(--shelf-editor-bg);
+/* Step header (chapter brief) - admin can override background via content HTML styles */
+.practice-workspace-step-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--shelf-border);
 }
 
-.practice-workspace.peek-open .practice-workspace-body {
-  grid-template-columns: 1fr;
-  grid-template-areas: "editor";
+.practice-workspace-desc {
+  margin: 0;
+  color: var(--shelf-ink-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Practice workspace uses CSS variables for sizing - height defined by app css */
+.practice-workspace {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Default workspace fills viewport below app header; override --app-header-height as needed */
+  height: calc(100dvh - var(--app-header-height));
+  max-height: calc(100dvh - var(--app-header-height));
+}
+
+.practice-workspace-body {
+  display: flex;
+  gap: 16px;
+  padding: 24px;
+  flex: 1 1 auto;
+  overflow: auto; /* make inner content scrollable when it grows */
+  position: relative; /* positioning context for absolute peek overlay */
+  align-items: stretch;
 }
 
 .practice-workspace-editor-shell {
-  grid-area: editor;
-  min-height: 0;
-  height: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
-  overflow: hidden;
-  background: var(--shelf-editor-surface);
+  flex-direction: column;
+  overflow: auto; /* scroll editor content if it grows */
+  position: relative !important; /* positioning context for absolute peek overlay */
+}
+
+.practice-peek-desktop {
+  width: 50%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.practice-peek-desktop pre {
+  flex: 1 1 auto;
+  margin: 0;
+  overflow: auto;
+}
+
+/* Override page-level constraints to allow workspace to size via flex layout */
+.course-wizard-page .practice-workspace-body {
+  max-height: none !important;
+  overflow: hidden !important;
 }
 
 .practice-workspace .practice-text-label {
@@ -437,8 +477,9 @@
 }
 
 .practice-workspace .practice-peek-desktop {
+  /* overlay on top of the editor: absolute within practice-workspace-body so top aligns after brief desc */
   position: absolute;
-  top: 0;
+  top: 0; /* aligns to the top of the body's padding box (below brief/header) */
   right: 0;
   bottom: 0;
   width: 50%;
@@ -569,10 +610,7 @@
     display: none;
   }
 
-  .practice-workspace.peek-open .practice-workspace-body {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr;
-  }
+
 
   .practice-workspace-top {
     padding: 12px 12px 10px;

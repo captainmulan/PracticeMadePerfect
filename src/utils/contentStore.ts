@@ -46,6 +46,10 @@ export function loadAdminData(): ContentStoreData {
           ...homePageData.style.tabs,
           ...parsed.homePageData?.style?.tabs,
         },
+        hero: {
+          ...homePageData.style.hero,
+          ...parsed.homePageData?.style?.hero,
+        },
         wizardTopInfo: {
           ...homePageData.style.wizardTopInfo,
           ...parsed.homePageData?.style?.wizardTopInfo,
@@ -64,7 +68,27 @@ export function loadAdminData(): ContentStoreData {
         },
       },
     };
-
+    // Normalize any "*Middle" gradient fields that are empty strings or undefined
+    // to their corresponding "*Start" value so CSS gradients remain valid.
+    try {
+      const styleObj: any = mergedHomePageData.style;
+      Object.keys(styleObj).forEach((sectionKey) => {
+        const section = styleObj[sectionKey];
+        if (section && typeof section === "object") {
+          Object.keys(section).forEach((prop) => {
+            if (prop.endsWith("Middle")) {
+              const val = section[prop];
+              const startProp = prop.replace(/Middle$/, "Start");
+              if (!val && section[startProp]) {
+                section[prop] = section[startProp];
+              }
+            }
+          });
+        }
+      });
+    } catch {
+      // ignore normalization errors and fall back to merged values
+    }
     return {
       homePageData: mergedHomePageData,
       practicePageData: parsed.practicePageData ?? practicePageData,

@@ -1,65 +1,58 @@
 # PracticeMadePerfect (PMP)
 
-A lightweight React practice app focused on mobile-friendly interview preparation.
+Lightweight React app for building and practicing coding tasks.
 
-## Run locally
+## Quick start
 
 1. Install dependencies
 
 ```bash
-cd practice-made-perfect
 npm install
 ```
 
-2. Start the development server
+2. Start the dev server
 
 ```bash
 npm run dev
 ```
 
-3. Open the app in your browser
+3. Open the app at: `http://localhost:4173`
 
-`http://localhost:4173`
+## Contents
 
-## What’s included
+- Responsive practice UI with code and text exercises
+- Category shelves and course/book cards
+- Instruction checklist and notes editor
+- Starter code editor with peer 'peek code' overlay
+- Admin theme controls now use start/middle/end gradient stops for all background styles
 
-- responsive practice UI for React, Angular, C#, and SQL
-- category selector and top task list
-- instruction checklist panel
-- notes editor
-- starter code editor for code and SQL tasks
+## Peek Code Overlay — Summary
 
-## Future extension
+The peek code overlay is implemented as an absolute overlay that sits on top of the right side of the code editor so the editor width does not change when the peek is visible. Key points:
 
-- admin content editor
-- save tasks as JSON files
-- user progress tracking
-- live code execution / evaluation
+- Positioning: the overlay is absolutely positioned inside the practice workspace body/editor shell and aligned to the workspace padding box so its top edge begins directly below the chapter brief/header.
+- Size: it covers the right 50% of the editor (capped at a configurable max width, currently 600px). The overlay and the editor both scroll internally.
+- Appearance: dark theme (background `#1e293b`), inner code surface `#111827`, border-left `#374151`, soft shadow to separate overlay visually.
+- Behavior: the overlay does not push or shrink the editor content — it visually overlays it. A small padding/gutter can be added to the editor when the peek is open to avoid obscuring critical UI.
 
----
+## Files to inspect when adjusting overlay behavior
 
-## Peek Code Overlay Implementation Notes
+1. `src/index.css` — app-level rules that may include `.practice-code-page .practice-peek-desktop` variants.
+2. `src/styles/bookshelf-theme.css` — theme/styles for `.practice-workspace`, `.practice-workspace-body`, and `.practice-peek-desktop` (primary implementation location).
+3. `src/styles/course.css` — legacy/course-level workspace styles that can affect layout or overflow.
 
-### Key Requirements
-- The peek code overlay must be positioned **absolutely** over the right 50% of the code editor
-- Must sit directly on top of the editor (not next to it)
-- Must have a distinct dark theme to avoid confusion with the light editor area
+## Troubleshooting / Common fixes
 
-### CSS Files to Check for Fixes (in order of priority)
-1. `src/index.css`: Contains `.practice-code-page .practice-peek-desktop` rules
-2. `src/styles/bookshelf-theme.css`: Contains `.practice-workspace .practice-peek-desktop` rules
-3. `src/styles/course.css`: Contains general practice workspace styles
+- Overlay not aligned: ensure the workspace body or editor shell is the positioning context (`position: relative`) and that the overlay is `position: absolute; top: 0; right: 0; bottom: 0;` within that context.
+- Overlay overlaps header: align the overlay to the workspace body padding box or set `top` to the header height. Use `--app-header-height` CSS variable or compute it at runtime.
+- Editor width changes: confirm overlay is absolute within the editor shell (not a flex child) so it does not participate in normal layout flow.
+- Theme mismatch: confirm `background` and `color` values in both index.css and theme files match the desired dark palette.
 
-### Common Issues & Fixes
-- **Anchor side problem**: Ensure both index.css and bookshelf-theme.css set `position: absolute` on `.practice-peek-desktop`
-- **Overlay not covering editor**: Check that the parent container (`.practice-workspace-body`, `.practice-right`, or `.practice-editor-area`) is `position: relative`
-- **Dark theme not applied**: Verify `background` and `color` properties match the dark theme in both index.css and bookshelf-theme.css
+## Customization notes
 
-### Current Implementation
-- Peek covers right 50% (max 600px)
-- Position: `absolute`
-- Background: `#1e293b` (dark slate blue)
-- Code area background: `#111827` (near black)
-- Border-left: `1px solid #374151`
-- Box-shadow: `-8px 0 32px rgba(0, 0, 0, 0.15)`
-- z-index: `10`
+- Admin theme controls now use gradient start/middle/end stops for all backgrounds, so the app uses a single source of truth for shared theme values.
+- `--app-header-height` (in `:root` of `src/styles/bookshelf-theme.css`) adjusts the workspace height calculation.
+- `--practice-editor-height` provides a default clamp-based fallback for editor height.
+- To keep the overlay behavior consistent across pages, prefer setting positioning and overlay rules in `src/styles/bookshelf-theme.css` and let `index.css` provide page-specific variants only when necessary.
+
+If you'd like, I can add a small runtime helper that measures the real header height and sets `--app-header-height` automatically so the overlay and workspace always align precisely with the real DOM header.

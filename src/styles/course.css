@@ -71,16 +71,9 @@
   gap: 12px;
 }
 
-/* Fix Peek Code to Anchor Right */
-.practice-workspace.peek-open .practice-workspace-body {
-  flex-direction: row;
-}
+/* Removed hardcoded practice-workspace styles - admin will define in content HTML */
 
-/* Step Header */
-.practice-workspace-step-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid #f1f5f9;
-}
+/* Kept for reference - custom description styling only */
 
 .practice-workspace-desc {
   margin: 0;
@@ -189,60 +182,6 @@
 
 
 
-/* Practice Workspace Body */
-.practice-workspace-body {
-  display: flex;
-  gap: 16px;
-  padding: 24px;
-  min-height: 400px;
-  max-height: calc(100vh - 250px);
-  overflow-y: auto;
-  overflow-x: visible;
-  position: relative;
-}
-
-.practice-workspace-editor-shell {
-  flex: 1;
-  min-width: 0;
-  overflow: visible;
-}
-
-.practice-peek-desktop {
-  position: sticky;
-  right: 0;
-  top: 0;
-  height: fit-content;
-  max-height: 100%;
-  flex-shrink: 0;
-  width: 50%;
-  max-width: 600px;
-}
-
-/* Fix Peek Code to Anchor Right */
-.practice-workspace.peek-open .practice-workspace-body {
-  flex-direction: row;
-}
+/* Removed hardcoded practice-workspace styles - admin will define in content HTML */
 
 
-
-/* Make sure the entire panel doesn't overflow */
-.practice-workspace {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: visible;
-}
-
-
-
-
-
-/* Make sure workspace body has enough height */
-.practice-workspace {
-  min-height: 0;
-  overflow: visible !important;
-}
-
-.practice-workspace-body {
-  min-height: 400px;
-}
