@@ -149,6 +149,7 @@ export const homePageData = {
       titleColor: "#0f172a",
       titlePosition: "center-center",
       titleTextAlign: "center",
+      titleAlignment: "center",
       coverColorStart: "#f1f5f9",
       coverColorMiddle: "#f1f5f9",
       coverColorEnd: "#f1f5f9",

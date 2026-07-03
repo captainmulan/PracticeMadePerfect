@@ -20,6 +20,16 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #f8fafc;
+  padding: 0;
+}
+
+.app-header {
+  padding-top: calc(6px + env(safe-area-inset-top, 0px));
+  padding-bottom: 6px;
+}
+
+.app-main {
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
 }
 
 button,
@@ -447,7 +457,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  padding: 6px 12px;
+  padding: calc(6px + env(safe-area-inset-top)) 12px 6px;
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid #e2e8f0;
   backdrop-filter: blur(12px);
@@ -3979,7 +3989,7 @@ textarea {
 }
 
 /* Presentation-style slide card for course lessons */
-.course-lesson {
+/* .course-lesson {
   background: #0f172a;
   padding: 20px;
   border-radius: 12px;
@@ -4024,7 +4034,7 @@ textarea {
   stroke: #94a3b8;
   stroke-width: 2;
   fill: none;
-}
+} */
 
 .course-wizard-header {
   padding: 12px 14px;
@@ -4083,7 +4093,7 @@ textarea {
   line-height: 1.45;
 }
 
-..course-wizard-body {
+.course-wizard-body {
   padding: 0;
   border-radius: 18px;
   overflow: hidden;

@@ -69,6 +69,7 @@ export interface Course {
   titleColor?: string;
   titlePosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
   titleTextAlign?: "left" | "center" | "right";
+  titleAlignment?: "left" | "center" | "right";
   iconPosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
   courseIndex: number;
   category: string;

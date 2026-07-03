@@ -979,7 +979,7 @@ export default function Admin() {
                   </div>
                 )}
                 <label className="admin-task-editor-field">
-                  <span className="admin-task-editor-label">Active Tab Color</span>
+                  <span className="admin-task-editor-label">Active Tab Text Color</span>
                   <input
                     type="color"
                     value={homeData?.style?.tabs?.activeColor ?? "#ffffff"}

@@ -55,7 +55,7 @@
 .app-shell:has(.practice-page) .app-header,
 .app-shell:has(.course-wizard-page) .app-header {
   display: block;
-  padding: 8px 0;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 0 8px;
 }
 
 .app-shell:has(.page-home) .app-header-inner,
@@ -659,6 +659,14 @@
 .book-icon {
   border: none !important;
   box-shadow: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  width: 80px !important;
+  height: 80px !important;
+  min-width: 80px !important;
+  min-height: 80px !important;
 }
 
 /* Keep book spine vertical line on left */

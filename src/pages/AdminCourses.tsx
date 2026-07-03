@@ -373,6 +373,38 @@ export default function AdminCourses() {
                       />
                     </label>
                   </div>
+                  <div className="admin-course-meta-row" style={{ marginTop: "12px" }}>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title position</span>
+                      <select
+                        value={activeBook.titlePosition ?? "center-center"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, titlePosition: e.target.value as any }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="top-left">Top Left</option>
+                        <option value="top-center">Top Center</option>
+                        <option value="top-right">Top Right</option>
+                        <option value="center-left">Center Left</option>
+                        <option value="center-center">Center Center</option>
+                        <option value="center-right">Center Right</option>
+                        <option value="bottom-left">Bottom Left</option>
+                        <option value="bottom-center">Bottom Center</option>
+                        <option value="bottom-right">Bottom Right</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Title alignment</span>
+                      <select
+                        value={activeBook.titleAlignment ?? "center"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleAlignment: e.target.value as any }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="left">Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                      </select>
+                    </label>
+                  </div>
                 </div>
 
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
@@ -632,10 +664,10 @@ export default function AdminCourses() {
                       </select>
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Text Alignment</span>
+                      <span className="admin-task-editor-label">Title Alignment</span>
                       <select
-                        value={adminData?.homePageData?.style?.emptyBook?.titleTextAlign ?? "center"}
-                        onChange={(e) => updateStyleConfig("titleTextAlign", e.target.value)}
+                        value={adminData?.homePageData?.style?.emptyBook?.titleAlignment ?? adminData?.homePageData?.style?.emptyBook?.titleTextAlign ?? "center"}
+                        onChange={(e) => updateStyleConfig("titleAlignment", e.target.value)}
                         className="admin-grid-select"
                       >
                         <option value="left">Left</option>
