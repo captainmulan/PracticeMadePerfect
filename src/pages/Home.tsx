@@ -53,7 +53,9 @@ export default function Home() {
                     background: style?.buttons?.usePrimaryBackgroundColorGradient 
                       ? `linear-gradient(180deg, ${style.buttons.primaryBackgroundColorGradientStart} 0%, ${style.buttons.primaryBackgroundColorGradientEnd} 100%)` 
                       : (style?.buttons?.primaryBackgroundColor ?? "#0f172a"),
-                    color: style?.buttons?.primaryColor ?? "#ffffff"
+                    color: style?.buttons?.primaryColor ?? "#ffffff",
+                    fontFamily: style?.buttons?.primaryFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+                    fontWeight: style?.buttons?.primaryFontWeight ?? "700",
                   }}
                 >
                   Start reading
@@ -65,7 +67,9 @@ export default function Home() {
                     background: style?.buttons?.useSecondaryBackgroundColorGradient 
                       ? `linear-gradient(180deg, ${style.buttons.secondaryBackgroundColorGradientStart} 0%, ${style.buttons.secondaryBackgroundColorGradientEnd} 100%)` 
                       : (style?.buttons?.secondaryBackgroundColor ?? "#e2e8f0"),
-                    color: style?.buttons?.secondaryColor ?? "#334155"
+                    color: style?.buttons?.secondaryColor ?? "#334155",
+                    fontFamily: style?.buttons?.secondaryFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+                    fontWeight: style?.buttons?.secondaryFontWeight ?? "600",
                   }}
                 >
                   Browse books
@@ -103,7 +107,9 @@ export default function Home() {
                         : (style?.tabs?.backgroundColor ?? "#e2e8f0")),
                   color: selectedRow?.title === row.title 
                     ? (style?.tabs?.activeColor ?? "#ffffff") 
-                    : (style?.tabs?.color ?? "#334155")
+                    : (style?.tabs?.color ?? "#334155"),
+                  fontFamily: style?.tabs?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+                  fontWeight: style?.tabs?.fontWeight ?? "600",
                 }}
               >
                 {row.title}

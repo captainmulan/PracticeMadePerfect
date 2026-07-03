@@ -752,12 +752,43 @@ export default function Admin() {
                       </label>
                     )}
                   </div>
+                </div>
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
                   <label className="admin-task-editor-field">
                     <span className="admin-task-editor-label">Logo Color</span>
                     <input
                       type="color"
                       value={homeData?.style?.topMenu?.logoColor ?? "#ffffff"}
                       onChange={(e) => updateStyleConfig("topMenu", "logoColor", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Logo Font Family</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.topMenu?.logoFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"}
+                      onChange={(e) => updateStyleConfig("topMenu", "logoFontFamily", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Logo Font Weight</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.topMenu?.logoFontWeight ?? "700"}
+                      onChange={(e) => updateStyleConfig("topMenu", "logoFontWeight", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Logo Font Size</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.topMenu?.logoFontSize ?? "18px"}
+                      onChange={(e) => updateStyleConfig("topMenu", "logoFontSize", e.target.value)}
                       className="admin-grid-input"
                     />
                   </label>
@@ -809,6 +840,26 @@ export default function Admin() {
                     className="admin-grid-input"
                   />
                 </label>
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Primary Button Font Family</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.buttons?.primaryFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"}
+                      onChange={(e) => updateStyleConfig("buttons", "primaryFontFamily", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Primary Button Font Weight</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.buttons?.primaryFontWeight ?? "700"}
+                      onChange={(e) => updateStyleConfig("buttons", "primaryFontWeight", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
                 <div style={{ marginBottom: "16px", marginTop: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
                     <input
@@ -851,6 +902,26 @@ export default function Admin() {
                     className="admin-grid-input"
                   />
                 </label>
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Secondary Button Font Family</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.buttons?.secondaryFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"}
+                      onChange={(e) => updateStyleConfig("buttons", "secondaryFontFamily", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Secondary Button Font Weight</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.buttons?.secondaryFontWeight ?? "600"}
+                      onChange={(e) => updateStyleConfig("buttons", "secondaryFontWeight", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
               </div>
             )}
             {homeStyleTab === "bookshelf" && (
@@ -945,6 +1016,26 @@ export default function Admin() {
                     className="admin-grid-input"
                   />
                 </label>
+                <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Tab Font Family</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.tabs?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"}
+                      onChange={(e) => updateStyleConfig("tabs", "fontFamily", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Tab Font Weight</span>
+                    <input
+                      type="text"
+                      value={homeData?.style?.tabs?.fontWeight ?? "600"}
+                      onChange={(e) => updateStyleConfig("tabs", "fontWeight", e.target.value)}
+                      className="admin-grid-input"
+                    />
+                  </label>
+                </div>
                 <div style={{ marginBottom: "16px", marginTop: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
                     <input

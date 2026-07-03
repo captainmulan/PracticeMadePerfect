@@ -32,7 +32,10 @@ function AppHeader() {
               background: style?.topMenu?.useLogoBackgroundColorGradient 
                 ? `linear-gradient(180deg, ${style.topMenu.logoBackgroundColorGradientStart} 0%, ${style.topMenu.logoBackgroundColorGradientMiddle ?? style.topMenu.logoBackgroundColorGradientStart} 50%, ${style.topMenu.logoBackgroundColorGradientEnd} 100%)` 
                 : (style?.topMenu?.logoBackgroundColor ?? "#0f172a"),
-              color: style?.topMenu?.logoColor ?? "#ffffff"
+              color: style?.topMenu?.logoColor ?? "#ffffff",
+              fontFamily: style?.topMenu?.logoFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+              fontWeight: style?.topMenu?.logoFontWeight ?? "700",
+              fontSize: style?.topMenu?.logoFontSize ?? "18px",
             }}
           >M</div>
           <div>
@@ -66,24 +69,7 @@ function AppHeader() {
           </div>
         ) : null}
 
-        {!isAdminPage && (
-          <nav className="nav-links">
-            <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? " active" : ""}`}
-              style={({ isActive }) => ({
-                background: isActive 
-                  ? (style?.tabs?.useActiveBackgroundColorGradient 
-                      ? `linear-gradient(180deg, ${style.tabs.activeBackgroundColorGradientStart} 0%, ${style.tabs.activeBackgroundColorGradientMiddle ?? style.tabs.activeBackgroundColorGradientStart} 50%, ${style.tabs.activeBackgroundColorGradientEnd} 100%)` 
-                      : (style?.tabs?.activeBackgroundColor ?? "#0f172a")) 
-                  : (style?.tabs?.useBackgroundColorGradient 
-                      ? `linear-gradient(180deg, ${style.tabs.backgroundColorGradientStart} 0%, ${style.tabs.backgroundColorGradientMiddle ?? style.tabs.backgroundColorGradientStart} 50%, ${style.tabs.backgroundColorGradientEnd} 100%)` 
-                      : (style?.tabs?.backgroundColor ?? "#e2e8f0")),
-                color: isActive ? (style?.tabs?.activeColor ?? "#ffffff") : (style?.tabs?.color ?? "#334155"),
-              })}
-            >
-              Home
-            </NavLink>
-          </nav>
-        )}
+
       </div>
     </header>
   );

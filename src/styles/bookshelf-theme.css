@@ -190,6 +190,7 @@
   border-radius: var(--app-radius);
   box-shadow: 0 8px 22px var(--shelf-shadow);
   margin-bottom: 0;
+  overflow: hidden;
 }
 
 .page-home .home-hero.collapsed {
@@ -241,7 +242,8 @@
   border: none;
   box-shadow: none;
   padding: 0;
-  border-radius: 0;
+  border-radius: var(--app-radius);
+  overflow: hidden;
 }
 
 .page-home .home-categories .container {
@@ -249,7 +251,7 @@
   max-width: none;
   margin: 0;
   padding: 16px 18px 24px;
-  border-radius: var(--app-radius);
+  border-radius: 0;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(250, 247, 244, 0.85) 100%);
   border: 1px solid var(--shelf-border);
   box-shadow:
