@@ -667,6 +667,28 @@ export default function AdminCourses() {
                         <option value="right">Right</option>
                       </select>
                     </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover width</span>
+                      <input
+                        type="number"
+                        min={40}
+                        max={240}
+                        value={adminData?.homePageData?.style?.emptyBook?.coverWidth ?? 100}
+                        onChange={(e) => updateStyleConfig("coverWidth", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cover height</span>
+                      <input
+                        type="number"
+                        min={60}
+                        max={320}
+                        value={adminData?.homePageData?.style?.emptyBook?.coverHeight ?? 150}
+                        onChange={(e) => updateStyleConfig("coverHeight", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
                   </div>
                 </div>
                 <div className="panel panel-bordered" style={{ padding: "16px" }}>

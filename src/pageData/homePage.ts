@@ -165,6 +165,8 @@ export const homePageData = {
       coverColorStart: "#f1f5f9",
       coverColorMiddle: "#f1f5f9",
       coverColorEnd: "#f1f5f9",
+      coverWidth: 100,
+      coverHeight: 150,
     },
   },
 };

@@ -23,8 +23,12 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   const coverColorStart = isEmpty ? (homePageData.style?.emptyBook?.coverColorStart ?? "#f1f5f9") : item.coverColorStart;
   const coverColorMiddle = isEmpty ? (homePageData.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9") : item.coverColorMiddle;
   const coverColorEnd = isEmpty ? (homePageData.style?.emptyBook?.coverColorEnd ?? "#f1f5f9") : item.coverColorEnd;
-  const coverWidth = item.coverWidth;
-  const coverHeight = item.coverHeight;
+  const coverWidth = isEmpty
+    ? ((homePageData.style?.emptyBook as any)?.coverWidth ?? item.coverWidth)
+    : item.coverWidth;
+  const coverHeight = isEmpty
+    ? ((homePageData.style?.emptyBook as any)?.coverHeight ?? item.coverHeight)
+    : item.coverHeight;
   const displayTitle = isEmpty ? (homePageData.style?.emptyBook?.title ?? "Coming soon") : item.title;
   const iconPosition = item.iconPosition ?? "center-center";
 

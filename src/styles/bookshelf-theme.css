@@ -630,12 +630,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
-  height: 150px;
   visibility: visible;
-  background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%);
+}
+
+.book.empty-space .book-cover {
   border-radius: 2px 6px 6px 2px;
   box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.1);
 }
