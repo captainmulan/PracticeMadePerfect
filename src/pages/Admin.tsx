@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ContentStoreData,
   loadAdminData,
@@ -198,6 +198,7 @@ export default function Admin() {
   const [homeData, setHomeData] = useState<any>(null);
   const [practiceMetaJson, setPracticeMetaJson] = useState("");
   const [tasks, setTasks] = useState<PracticeTask[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [searchId, setSearchId] = useState("");
   const [searchTitle, setSearchTitle] = useState("");
@@ -410,6 +411,60 @@ export default function Admin() {
     }
   }
 
+  function resetFileInput() {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  async function handleImportAdminJson(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as Partial<ContentStoreData> & { style?: any };
+      let imported = false;
+      const importedHomePageData = "homePageData" in parsed
+        ? parsed.homePageData
+        : parsed && typeof parsed === "object" && "style" in parsed
+          ? (parsed as ContentStoreData["homePageData"])
+          : undefined;
+
+      if (importedHomePageData) {
+        setHomeData(importedHomePageData);
+        setHomeJson(JSON.stringify(importedHomePageData, null, 2));
+        imported = true;
+      }
+
+      let importedPracticePageData: ContentStoreData["practicePageData"] | undefined;
+      if (parsed.practicePageData) {
+        importedPracticePageData = parsed.practicePageData as ContentStoreData["practicePageData"];
+        const { tasks: importedTasks, ...meta } = importedPracticePageData;
+        if (Array.isArray(importedTasks)) {
+          setTasks(importedTasks);
+        }
+        setPracticeMetaJson(JSON.stringify(meta, null, 2));
+        imported = true;
+      }
+
+      if (!imported) {
+        setMessage("Uploaded JSON did not contain expected admin data.");
+      } else {
+        const payload: ContentStoreData = {
+          homePageData: importedHomePageData ?? loadDefaultAdminData().homePageData,
+          practicePageData: importedPracticePageData ?? loadDefaultAdminData().practicePageData,
+        };
+        saveAdminData(payload);
+        setMessage("Imported admin.json and saved it locally. The theme will now apply in the app.");
+      }
+    } catch (error) {
+      setMessage(`Import failed: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      resetFileInput();
+    }
+  }
+
   async function handleSave() {
     try {
       const homePageData = JSON.parse(homeJson) as ContentStoreData["homePageData"];
@@ -580,6 +635,9 @@ export default function Admin() {
           <div className="admin-section-body">
             <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
               <div className="admin-search-actions-end">
+                <button type="button" className="footer-button" onClick={() => fileInputRef.current?.click()} style={{ marginRight: 8 }}>
+                  Import admin.json
+                </button>
                 <button type="button" className="footer-button" onClick={handleExport} style={{ marginRight: 8 }}>
                   Export Admin
                 </button>
@@ -591,6 +649,13 @@ export default function Admin() {
                 </button>
               </div>
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/json"
+              onChange={handleImportAdminJson}
+              style={{ display: "none" }}
+            />
             <div className="admin-tabs" style={{ marginBottom: "16px" }}>
               <button type="button" className={`admin-tab ${homeStyleTab === "json" ? "active" : ""}`} onClick={() => setHomeStyleTab("json")}>
                 Data (JSON)

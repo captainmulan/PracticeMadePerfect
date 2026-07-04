@@ -12,6 +12,10 @@ interface CourseQuizStepProps {
   pageIndex: number;
   totalPages: number;
   pageBrief: string;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  canPrevious?: boolean;
+  canNext?: boolean;
 }
 
 export default function CourseQuizStep({
@@ -23,6 +27,10 @@ export default function CourseQuizStep({
   pageIndex,
   totalPages,
   pageBrief,
+  onPrevious,
+  onNext,
+  canPrevious = false,
+  canNext = false,
 }: CourseQuizStepProps) {
   const questions = step.quizQuestions ?? [];
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -49,6 +57,10 @@ export default function CourseQuizStep({
       totalPages={totalPages}
       pageBrief={pageBrief}
       title={step.title}
+      onPrevious={onPrevious}
+      onNext={onNext}
+      canPrevious={canPrevious}
+      canNext={canNext}
     >
       <div className="course-step-quiz-body practice-workspace-content">
         {questions.map((question) => (

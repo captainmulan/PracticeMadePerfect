@@ -83,6 +83,10 @@ export default function CourseWizard() {
           pageIndex={pageIndex}
           totalPages={totalPages}
           pageBrief={pageBrief}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canPrevious={stepIndex > 0}
+          canNext={stepIndex < steps.length - 1}
         />
       )}
       {currentStep.stepType === "code-exam" && (
@@ -96,6 +100,10 @@ export default function CourseWizard() {
           pageIndex={pageIndex}
           totalPages={totalPages}
           pageBrief={pageBrief}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canPrevious={stepIndex > 0}
+          canNext={stepIndex < steps.length - 1}
         />
       )}
       {currentStep.stepType === "quiz" && (
@@ -108,6 +116,10 @@ export default function CourseWizard() {
           pageIndex={pageIndex}
           totalPages={totalPages}
           pageBrief={pageBrief}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canPrevious={stepIndex > 0}
+          canNext={stepIndex < steps.length - 1}
         />
       )}
     </div>

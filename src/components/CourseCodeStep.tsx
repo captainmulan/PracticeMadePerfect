@@ -15,6 +15,10 @@ interface CourseCodeStepProps {
   pageIndex: number;
   totalPages: number;
   pageBrief: string;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  canPrevious?: boolean;
+  canNext?: boolean;
 }
 
 export default function CourseCodeStep({
@@ -27,6 +31,10 @@ export default function CourseCodeStep({
   pageIndex,
   totalPages,
   pageBrief,
+  onPrevious,
+  onNext,
+  canPrevious = false,
+  canNext = false,
 }: CourseCodeStepProps) {
   const practiceTask = useMemo(() => courseStepToPracticeTask(step), [step]);
   const hintsText = buildEditorContent(practiceTask, false);
@@ -88,6 +96,10 @@ export default function CourseCodeStep({
         onVerify={verifyCode}
         onChange={setDraft}
         peekCode={peekCode}
+        onPrevious={onPrevious}
+        onNext={onNext}
+        canPrevious={canPrevious}
+        canNext={canNext}
       />
 
       {showResults && (

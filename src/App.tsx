@@ -13,6 +13,11 @@ function AppHeader() {
   const homeData = getHomePageData();
   const style = homeData.style;
 
+  const isCoursePage = location.pathname.startsWith("/courses/");
+  if (isCoursePage) {
+    return null;
+  }
+
   return (
     <header 
       className={`app-header${stageNav ? " has-stage-nav" : ""}`}
@@ -25,23 +30,25 @@ function AppHeader() {
       }}
     >
       <div className={`app-header-inner${stageNav ? " has-stage-nav" : ""}`}>
-        <Link to="/" className="app-brand">
-          <div 
-            className="app-logo"
-            style={{
-              background: style?.topMenu?.useLogoBackgroundColorGradient 
-                ? `linear-gradient(180deg, ${style.topMenu.logoBackgroundColorGradientStart} 0%, ${style.topMenu.logoBackgroundColorGradientMiddle ?? style.topMenu.logoBackgroundColorGradientStart} 50%, ${style.topMenu.logoBackgroundColorGradientEnd} 100%)` 
-                : (style?.topMenu?.logoBackgroundColor ?? "#0f172a"),
-              color: style?.topMenu?.logoColor ?? "#ffffff",
-              fontFamily: style?.topMenu?.logoFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-              fontWeight: style?.topMenu?.logoFontWeight ?? "700",
-              fontSize: style?.topMenu?.logoFontSize ?? "18px",
-            }}
-          >M</div>
-          <div>
-            <p className="page-tag"></p>
-          </div>
-        </Link>
+        {!stageNav ? (
+          <Link to="/" className="app-brand">
+            <div 
+              className="app-logo"
+              style={{
+                background: style?.topMenu?.useLogoBackgroundColorGradient 
+                  ? `linear-gradient(180deg, ${style.topMenu.logoBackgroundColorGradientStart} 0%, ${style.topMenu.logoBackgroundColorGradientMiddle ?? style.topMenu.logoBackgroundColorGradientStart} 50%, ${style.topMenu.logoBackgroundColorGradientEnd} 100%)` 
+                  : (style?.topMenu?.logoBackgroundColor ?? "#0f172a"),
+                color: style?.topMenu?.logoColor ?? "#ffffff",
+                fontFamily: style?.topMenu?.logoFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+                fontWeight: style?.topMenu?.logoFontWeight ?? "700",
+                fontSize: style?.topMenu?.logoFontSize ?? "18px",
+              }}
+            >M</div>
+            <div>
+              <p className="page-tag"></p>
+            </div>
+          </Link>
+        ) : null}
 
         {stageNav ? (
           <div className="app-stage-nav" aria-label="Step navigation">

@@ -11,6 +11,10 @@ interface CourseHtmlStepProps {
   pageIndex: number;
   totalPages: number;
   pageBrief: string;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  canPrevious?: boolean;
+  canNext?: boolean;
 }
 
 export default function CourseHtmlStep({
@@ -22,6 +26,10 @@ export default function CourseHtmlStep({
   pageIndex,
   totalPages,
   pageBrief,
+  onPrevious,
+  onNext,
+  canPrevious = false,
+  canNext = false,
 }: CourseHtmlStepProps) {
   return (
     <PracticeWorkspace
@@ -33,6 +41,10 @@ export default function CourseHtmlStep({
       totalPages={totalPages}
       pageBrief={pageBrief}
       title={step.title}
+      onPrevious={onPrevious}
+      onNext={onNext}
+      canPrevious={canPrevious}
+      canNext={canNext}
     >
       <div
         style={{

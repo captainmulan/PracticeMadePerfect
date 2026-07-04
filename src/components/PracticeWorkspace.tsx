@@ -24,6 +24,10 @@ interface PracticeWorkspaceProps {
   onTogglePeek?: () => void;
   onVerify?: () => void;
   verifyDisabled?: boolean;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  canPrevious?: boolean;
+  canNext?: boolean;
   onChange?: (value: string) => void;
   peekCode?: string;
   children?: ReactNode;
@@ -52,6 +56,10 @@ export default function PracticeWorkspace({
   onTogglePeek,
   onVerify,
   verifyDisabled = false,
+  onPrevious,
+  onNext,
+  canPrevious = false,
+  canNext = false,
   onChange,
   peekCode = "",
   children,
@@ -86,12 +94,6 @@ export default function PracticeWorkspace({
       <div 
         className="practice-workspace-top-bar"
         style={{
-          background: buildGradient(
-            style?.wizardTopInfo?.backgroundColorGradientStart,
-            style?.wizardTopInfo?.backgroundColorGradientMiddle,
-            style?.wizardTopInfo?.backgroundColorGradientEnd,
-            style?.wizardTopInfo?.backgroundColor ?? "#ffffff",
-          ),
           borderBottomColor: style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0",
         }}
       >
@@ -104,43 +106,42 @@ export default function PracticeWorkspace({
               fontWeight: style?.wizardTopInfo?.chapterLabelFontWeight ?? "700",
             }}
           >
-            {style?.wizardTopInfo?.chapterLabelText ?? "CHAPTER"}
+            {`${style?.wizardTopInfo?.chapterLabelText ?? "Chapter"} ${chapterNumber ?? ""}`}
           </span>
-          <span 
-            className="chapter-number"
-            style={{
-              fontSize: `${(style?.wizardTopInfo?.chapterNumberFontSize ?? 24) / 16}rem`,
-              fontWeight: style?.wizardTopInfo?.chapterNumberFontWeight ?? "700",
-              color: style?.wizardTopInfo?.chapterNumberColor ?? "#0f172a",
-              background: buildGradient(
-                style?.wizardTopInfo?.chapterNumberBackgroundColorGradientStart,
-                style?.wizardTopInfo?.chapterNumberBackgroundColorGradientMiddle,
-                style?.wizardTopInfo?.chapterNumberBackgroundColorGradientEnd,
-                style?.wizardTopInfo?.chapterNumberBackgroundColor ?? "transparent",
-              ),
-              padding: "0.25rem 0.75rem",
-              borderRadius: "0.5rem",
-            }}
-          >
-            {chapterNumber}
-          </span>
-          <h2 
-            className="step-title"
-            style={{
-              fontSize: `${(style?.wizardTopInfo?.chapterTitleFontSize ?? 20) / 16}rem`,
-              fontWeight: style?.wizardTopInfo?.chapterTitleFontWeight ?? "700",
-              color: style?.wizardTopInfo?.chapterTitleColor ?? "#0f172a",
-            }}
-          >
-            {title}
-          </h2>
         </div>
+        <h2 
+          className="step-title"
+          style={{
+            fontSize: `${(style?.wizardTopInfo?.chapterTitleFontSize ?? 20) / 16}rem`,
+            fontWeight: style?.wizardTopInfo?.chapterTitleFontWeight ?? "700",
+            color: style?.wizardTopInfo?.chapterTitleColor ?? "#0f172a",
+          }}
+        >
+          {title}
+        </h2>
         <div className="top-bar-right">
-          <div className="book-title" style={{
-            fontSize: `${(style?.wizardTopInfo?.bookNameFontSize ?? 16) / 16}rem`,
-            fontWeight: style?.wizardTopInfo?.bookNameFontWeight ?? "700",
-            color: style?.wizardTopInfo?.bookNameColor ?? "#0f172a",
-          }}>{bookName}</div>
+          {(onPrevious || onNext) && (
+            <div className="chapter-nav-buttons">
+              <button
+                type="button"
+                className="chapter-nav-button"
+                disabled={!canPrevious}
+                onClick={onPrevious}
+                aria-label="Previous chapter"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                className="chapter-nav-button"
+                disabled={!canNext}
+                onClick={onNext}
+                aria-label="Next chapter"
+              >
+                →
+              </button>
+            </div>
+          )}
           {showToolbar && (
             <div className="practice-workspace-toolbar">
               <div className="practice-header-actions">
