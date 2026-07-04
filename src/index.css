@@ -522,6 +522,19 @@ textarea {
   overflow-x: hidden;
 }
 
+.app-main:has(.practice-page),
+.app-main:has(.course-wizard-page) {
+  padding: 0;
+}
+
+.page-content.practice-page,
+.page-content.course-wizard-page {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  gap: 0;
+}
+
 .page-content,
 .practice-page {
   display: grid;

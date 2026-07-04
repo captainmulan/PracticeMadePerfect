@@ -37,17 +37,25 @@
 
 /* ── Unified content column (header + main stay aligned) ── */
 .app-shell:has(.page-home) .app-header-inner,
-.app-shell:has(.practice-page) .app-header-inner,
-.app-shell:has(.course-wizard-page) .app-header-inner,
-.app-main:has(.page-home),
-.app-main:has(.practice-page),
-.app-main:has(.course-wizard-page) {
+.app-main:has(.page-home) {
   width: 100%;
   max-width: var(--app-content-max);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--app-content-gutter);
   padding-right: var(--app-content-gutter);
+  box-sizing: border-box;
+}
+
+.app-shell:has(.practice-page) .app-header-inner,
+.app-main:has(.practice-page),
+.app-shell:has(.course-wizard-page) .app-header-inner,
+.app-main:has(.course-wizard-page) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
   box-sizing: border-box;
 }
 
@@ -295,10 +303,40 @@
 .practice-workspace.panel {
   padding: 0;
   overflow: hidden;
-  background: var(--shelf-card);
-  border: 1px solid var(--shelf-border);
-  border-radius: var(--app-radius);
-  box-shadow: 0 8px 22px var(--shelf-shadow);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.page-content.practice-page,
+.page-content.course-wizard-page {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background: transparent;
+}
+
+.practice-page .practice-workspace,
+.course-wizard-page .practice-workspace {
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  max-height: none;
+}
+
+.practice-page .practice-workspace-body,
+.course-wizard-page .practice-workspace-body {
+  gap: 0;
+  padding: 0;
+}
+
+.practice-page .practice-workspace-top-bar,
+.course-wizard-page .practice-workspace-top-bar {
+  margin: 0;
+  width: 100%;
+  border-radius: 0;
 }
 
 .practice-workspace-top {
