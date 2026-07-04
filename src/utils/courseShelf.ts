@@ -400,7 +400,6 @@ function createShelfItemFromCourse(course: Course, category: string): CourseShel
     titlePosition: course.titlePosition ?? undefined,
     titleTextAlign: course.titleTextAlign ?? undefined,
     iconPosition: course.iconPosition ?? undefined,
-    titlePosition: course.titlePosition ?? undefined,
     meta: `${course.chapters.length} chapters`,
     link: `/courses/${course.id}`,
     category,

@@ -1,6 +1,10 @@
-# PracticeMadePerfect (PMP)
+# Magic Library (မှော်ဝင် စာကြည့်တိုက်)
 
-Lightweight React app for building and practicing coding tasks.
+Explore interactive e-books with hands-on activities. Every chapter is a magical journey of learning.
+
+- **Read Like a Book:** Each chapter feels like flipping through pages in a magical book
+- **Interactive Activities:** Quizzes, code exams, and engaging lessons keep you immersed
+- **Flexible Content:** Update content without touching code — just edit the data files
 
 ## Quick start
 
@@ -18,15 +22,64 @@ npm run dev
 
 3. Open the app at: `http://localhost:4173`
 
-## Contents
+## Features
 
-- Responsive practice UI with code and text exercises
-- Category shelves and course/book cards
-- Instruction checklist and notes editor
-- Starter code editor with peer 'peek code' overlay
-- Admin theme controls now use start/middle/end gradient stops for all background styles
+- **Interactive E-Books:** Browse and read courses organized as book shelves
+- **Multiple Content Types:**
+  - **HTML Lessons:** Rich formatted content for chapters (CMS-enabled)
+  - **Quizzes:** Multi-choice questions to test understanding
+  - **Code Exams:** Write and verify code solutions with syntax checking
+- **Admin Controls:**
+  - Home page theme customization (gradients, colors, fonts)
+  - Book builder: Create and edit courses/chapters
+  - Database recovery: One-click restore to bundled defaults (requires password)
+- **Persistent Storage:** Browser SQLite for courses, chapters, and user progress
+- **Responsive Design:** Mobile-first UI with collapsible navigation and full-screen editor
+- **Bundled Defaults:** Ships with sample courses and chapters
 
-## Peek Code Overlay — Summary
+## CMS: HTML Chapter Rendering
+
+Chapters are rendered as HTML without requiring code rebuilds. The content is stored in the `contentHtml` field of each `CourseStep`.
+
+**How to edit chapter content:**
+1. Go to `/admin` → **Book Builder** tab
+2. Select a book and chapter
+3. Edit the chapter HTML in the admin panel
+4. Changes are saved to browser SQLite instantly
+5. Visit `/course/:courseId` to see the updated chapter
+
+**Example chapter structure:**
+```ts
+{
+  id: "intro-step-1",
+  stepType: "html",
+  title: "Introduction",
+  contentHtml: "<h2>Welcome!</h2><p>Start your journey...</p>",
+  description: "Learn the basics"
+}
+```
+
+This enables non-developers to update course content by editing data files without touching React code.
+
+## Admin Features
+
+### Home Page Customization
+- Gradient colors for hero section, buttons, and bookshelves
+- Typography: font sizes, weights, colors
+- All changes saved to browser localStorage
+
+### Book Builder
+- Create new courses with custom colors and icons
+- Add chapters with HTML content, quizzes, or code exams
+- Edit chapter titles, descriptions, and content
+- Delete courses (with confirmation to prevent accidents)
+
+### Database Recovery
+- **Restore Bundled Database:** One-click recovery to default courses (requires `admin123` password)
+- Automatically re-seeds missing built-in books
+- Useful after accidental deletions or to start fresh
+
+
 
 The peek code overlay is implemented as an absolute overlay that sits on top of the right side of the code editor so the editor width does not change when the peek is visible. Key points:
 

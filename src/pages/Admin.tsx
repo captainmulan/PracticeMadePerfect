@@ -70,6 +70,21 @@ function buildTaskRow(task: PracticeTask): TaskRow {
   };
 }
 
+interface GradientColorPickerProps {
+  label: string;
+  // kept for backwards-compatibility but ignored: useGradient, setUseGradient, solidColor, setSolidColor
+  useGradient?: boolean;
+  setUseGradient?: (value: boolean) => void;
+  solidColor?: string;
+  setSolidColor?: (value: string) => void;
+  gradientStart: string;
+  gradientMiddle?: string;
+  setGradientMiddle?: (value: string) => void;
+  setGradientStart: (value: string) => void;
+  gradientEnd: string;
+  setGradientEnd: (value: string) => void;
+}
+
 function GradientColorPicker({
   label,
   // kept for backwards-compatibility but ignored: useGradient, setUseGradient, solidColor, setSolidColor
@@ -83,7 +98,7 @@ function GradientColorPicker({
   setGradientStart,
   gradientEnd,
   setGradientEnd,
-}: any) {
+}: GradientColorPickerProps) {
   return (
     <div style={{ marginBottom: "16px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
@@ -125,7 +140,21 @@ function GradientColorPicker({
   );
 }
 
-function GradientColorPicker3({ label, gradientStart, setGradientStart, gradientMiddle, setGradientMiddle, gradientEnd, setGradientEnd }: any) {
+interface GradientColorPicker3Props {
+  label: string;
+  useGradient?: boolean;
+  setUseGradient?: (value: boolean) => void;
+  solidColor?: string;
+  setSolidColor?: (value: string) => void;
+  gradientStart: string;
+  setGradientStart: (value: string) => void;
+  gradientMiddle?: string;
+  setGradientMiddle: (value: string) => void;
+  gradientEnd: string;
+  setGradientEnd: (value: string) => void;
+}
+
+function GradientColorPicker3({ label, gradientStart, setGradientStart, gradientMiddle, setGradientMiddle, gradientEnd, setGradientEnd }: GradientColorPicker3Props) {
   return (
     <div style={{ marginBottom: "16px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
@@ -182,6 +211,7 @@ export default function Admin() {
   const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books">("home");
   const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
+  const [isRestoringDb, setIsRestoringDb] = useState(false);
 
   useEffect(() => {
     const defaultData = loadAdminData();
@@ -352,6 +382,34 @@ export default function Admin() {
     setHomeJson(JSON.stringify(newHomeData, null, 2));
   }
 
+  async function handleRestoreBundledDb() {
+    if (isRestoringDb) return;
+
+    const enteredPassword = window.prompt("Enter admin password to restore the bundled database:", "");
+    if (enteredPassword === null) {
+      setMessage("Database restoration cancelled.");
+      return;
+    }
+
+    if (enteredPassword !== "admin123") {
+      setMessage("Incorrect password. Database restoration cancelled.");
+      return;
+    }
+
+    setIsRestoringDb(true);
+    setMessage("Restoring bundled database...");
+    try {
+      await restoreBundledBrowserDb();
+      setMessage("Bundled database restored. Reloading admin data...");
+      window.location.reload();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setMessage(`Restore failed: ${errorMessage}`);
+    } finally {
+      setIsRestoringDb(false);
+    }
+  }
+
   async function handleSave() {
     try {
       const homePageData = JSON.parse(homeJson) as ContentStoreData["homePageData"];
@@ -455,6 +513,14 @@ export default function Admin() {
 
   return (
     <div className="page-content page-admin">
+      <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
+        <div className="admin-search-actions-end">
+          <button type="button" className="footer-button" onClick={handleRestoreBundledDb} disabled={isRestoringDb}>
+            {isRestoringDb ? "Restoring..." : "Restore bundled database"}
+          </button>
+        </div>
+      </div>
+
       <div className="admin-tabs">
         <button type="button" className={`admin-tab ${adminTab === "home" ? "active" : ""}`} onClick={() => setAdminTab("home")}>
           Home Page

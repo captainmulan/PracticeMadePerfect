@@ -17,9 +17,9 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   const titleFontWeight = isEmpty ? (homePageData.style?.emptyBook?.titleFontWeight ?? "bold") : (item.titleFontWeight ?? "bold");
   const titleColor = isEmpty ? (homePageData.style?.emptyBook?.titleColor ?? "#0f172a") : (item.titleColor ?? "#0f172a");
   const titlePosition = isEmpty ? (homePageData.style?.emptyBook?.titlePosition ?? "center-center") : (item.titlePosition ?? "center-center");
-  const titleAlignment = isEmpty
+  const titleAlignment = (isEmpty
     ? (homePageData.style?.emptyBook?.titleAlignment ?? homePageData.style?.emptyBook?.titleTextAlign ?? "center")
-    : (item.titleAlignment ?? item.titleTextAlign ?? "center");
+    : (item.titleAlignment ?? item.titleTextAlign ?? "center")) as CSSProperties["textAlign"];
   const coverColorStart = isEmpty ? (homePageData.style?.emptyBook?.coverColorStart ?? "#f1f5f9") : item.coverColorStart;
   const coverColorMiddle = isEmpty ? (homePageData.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9") : item.coverColorMiddle;
   const coverColorEnd = isEmpty ? (homePageData.style?.emptyBook?.coverColorEnd ?? "#f1f5f9") : item.coverColorEnd;
@@ -30,19 +30,11 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   const getPositionStyles = (pos: string) => {
     switch (pos) {
       case "top-left":
-<<<<<<< HEAD
         return { top: "2px", left: "4px" };
       case "top-center":
         return { top: "2px", left: "50%", transform: "translateX(-50%)" };
       case "top-right":
         return { top: "2px", right: "4px" };
-=======
-        return { top: "0", left: "0" };
-      case "top-center":
-        return { top: "0", left: "50%", transform: "translateX(-50%)" };
-      case "top-right":
-        return { top: "0", right: "0" };
->>>>>>> 158ed5d (Main theme change to gold)
       case "center-left":
         return { top: "50%", left: "0", transform: "translateY(-50%)" };
       case "center-center":
@@ -50,19 +42,11 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
       case "center-right":
         return { top: "50%", right: "0", transform: "translateY(-50%)" };
       case "bottom-left":
-<<<<<<< HEAD
         return { bottom: "4px", left: "4px" };
       case "bottom-center":
         return { bottom: "4px", left: "50%", transform: "translateX(-50%)" };
       case "bottom-right":
         return { bottom: "4px", right: "4px" };
-=======
-        return { bottom: "0", left: "0" };
-      case "bottom-center":
-        return { bottom: "0", left: "50%", transform: "translateX(-50%)" };
-      case "bottom-right":
-        return { bottom: "0", right: "0" };
->>>>>>> 158ed5d (Main theme change to gold)
       default:
         return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     }
@@ -134,8 +118,7 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
               alignItems: "center",
               textAlign: "center",
               lineHeight: 1,
-              fontSize: `calc(var(--book-icon-font) * 0.7)`, 
-              display: "inline-block",
+              fontSize: `calc(var(--book-icon-font) * 0.7)`,
               color: item.iconColorStart ?? "#ffffff",
               zIndex: 5,
               ...iconContainerStyles 

@@ -33,10 +33,12 @@ export default function AdminCourses() {
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [draftBook, setDraftBook] = useState<Course | null>(null);
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "chapter" | "empty-book">("book");
   const [adminData, setAdminData] = useState<any>(null);
+  const [isDeletingBook, setIsDeletingBook] = useState(false);
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
@@ -54,7 +56,15 @@ export default function AdminCourses() {
 
   const activeBook = draftBook ?? books.find((c) => c.id === selectedBookId) ?? null;
   const flatSteps = useMemo(() => (activeBook ? flattenCourseSteps(activeBook) : []), [activeBook]);
-  const selectedStep = flatSteps.find((step) => step.id === selectedStepId) ?? null;
+  const selectedChapter = useMemo(() => {
+    if (!activeBook) return null;
+    return activeBook.chapters.find((chapter) => chapter.id === selectedChapterId) ?? activeBook.chapters[0] ?? null;
+  }, [activeBook, selectedChapterId]);
+  const chapterSteps = useMemo(() => {
+    if (!activeBook || !selectedChapter) return [];
+    return flatSteps.filter((step) => step.chapterId === selectedChapter.id);
+  }, [activeBook, flatSteps, selectedChapter]);
+  const selectedStep = chapterSteps.find((step) => step.id === selectedStepId) ?? null;
   
   function updateStyleConfig(key: string, value: string | boolean | number) {
     if (!adminData) return;
@@ -100,6 +110,7 @@ export default function AdminCourses() {
     setDraftBook(book);
     setSelectedBookId(null);
     setSelectedStepId(null);
+    setSelectedChapterId(null);
     setMessage("");
   }
 
@@ -124,6 +135,14 @@ export default function AdminCourses() {
     }));
   }
 
+  function updateChapter(chapterId: string, patch: Partial<CourseChapter>) {
+    if (!activeBook) return;
+    updateActiveBook((book) => ({
+      ...book,
+      chapters: book.chapters.map((chapter) => (chapter.id === chapterId ? { ...chapter, ...patch } : chapter)),
+    }));
+  }
+
   function addChapter() {
     if (!activeBook) return;
     const chapterIndex = activeBook.chapters.length;
@@ -139,11 +158,14 @@ export default function AdminCourses() {
       ...book,
       chapters: [...book.chapters, chapter],
     }));
+    setSelectedChapterId(chapterId);
+    setSelectedStepId(null);
+    setMessage("Chapter added.");
   }
 
   function addStep(stepType: CourseStepType) {
     if (!activeBook) return;
-    const chapter = activeBook.chapters[activeBook.chapters.length - 1];
+    const chapter = selectedChapter ?? activeBook.chapters[activeBook.chapters.length - 1];
     if (!chapter) {
       setMessage("Add a chapter first.");
       return;
@@ -220,16 +242,30 @@ export default function AdminCourses() {
   }
 
   async function handleDeleteBook() {
-    if (!activeBook?.id || draftBook) return;
+    const targetBookId = activeBook?.id?.trim();
+    if (!targetBookId || draftBook || isDeletingBook) return;
+
+    const confirmed = window.confirm(`Delete "${activeBook?.title ?? targetBookId}" and all of its chapters? This cannot be undone.`);
+    if (!confirmed) {
+      setMessage("Deletion cancelled.");
+      return;
+    }
+
+    setIsDeletingBook(true);
+    setMessage("Deleting book...");
+
     try {
-      await removeCourse(activeBook.id);
+      await removeCourse(targetBookId);
       const refreshed = await loadCoursesFromBrowserDb();
       setBooks(refreshed);
-      setSelectedBookId(refreshed[0]?.id ?? null);
+      const nextSelection = refreshed.find((book) => book.id !== targetBookId)?.id ?? null;
+      setSelectedBookId(nextSelection);
       setSelectedStepId(null);
       setMessage("Book deleted.");
     } catch (err) {
       setMessage(String(err));
+    } finally {
+      setIsDeletingBook(false);
     }
   }
 
@@ -258,7 +294,9 @@ export default function AdminCourses() {
           <button type="button" className="footer-button secondary small" onClick={startNewBook}>New Book</button>
           <button type="button" className="footer-button small" onClick={handleSaveBook}>Save Book</button>
           {!draftBook && activeBook ? (
-            <button type="button" className="footer-button secondary small" onClick={handleDeleteBook}>Delete</button>
+            <button type="button" className="footer-button secondary small" onClick={handleDeleteBook} disabled={isDeletingBook}>
+              {isDeletingBook ? "Deleting..." : "Delete"}
+            </button>
           ) : null}
         </div>
       </div>
@@ -729,8 +767,49 @@ export default function AdminCourses() {
                     </select>
                   </div>
                 </div>
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Chapters</h4>
+                  <div className="admin-course-step-list">
+                    {activeBook?.chapters?.map((chapter) => (
+                      <button
+                        key={chapter.id}
+                        type="button"
+                        className={`admin-course-step-item ${selectedChapter?.id === chapter.id ? "selected" : ""}`}
+                        onClick={() => {
+                          setSelectedChapterId(chapter.id);
+                          setSelectedStepId(null);
+                        }}
+                      >
+                        <span>{chapter.chapterIndex + 1}</span>
+                        <span>{chapter.title}</span>
+                        <span>{chapter.steps.length} steps</span>
+                      </button>
+                    ))}
+                  </div>
+                  {selectedChapter && (
+                    <div className="admin-step-meta-row" style={{ marginTop: "12px" }}>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Chapter Index</span>
+                        <input
+                          type="number"
+                          value={selectedChapter.chapterIndex}
+                          onChange={(e) => updateChapter(selectedChapter.id, { chapterIndex: Number(e.target.value) })}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                      <label className="admin-task-editor-field admin-task-editor-full">
+                        <span className="admin-task-editor-label">Chapter Title</span>
+                        <input
+                          value={selectedChapter.title}
+                          onChange={(e) => updateChapter(selectedChapter.id, { title: e.target.value })}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                    </div>
+                  )}
+                </div>
                 <div className="admin-course-step-list">
-                  {flatSteps.map((step) => (
+                  {chapterSteps.map((step) => (
                     <button
                       key={step.id}
                       type="button"

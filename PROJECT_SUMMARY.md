@@ -1,17 +1,26 @@
-# PracticeMadePerfect — Project Summary
+# Magic Library (မှော်ဝင် စာကြည့်တိုက်) — Project Summary
 
 > **Status:** Development in progress  
-> **Last reviewed:** June 2026  
-> **Purpose of this doc:** Compare the **current codebase** against the **original planning prompt**, document structure, and note intentional gaps / next steps.
+> **Last reviewed:** July 2026  
+> **Purpose of this doc:** Document the **current codebase**, feature set, CMS capabilities, and development roadmap.
 
 ---
 
-## 1. Vision (Original Prompt)
+## 1. Vision (Current)
 
-A **lightweight, mobile-friendly interview practice site** for busy professionals (MRT commute, late-night sessions). Core ideas:
+**Magic Library** is an interactive e-book platform with hands-on learning activities. Each chapter is a magical journey of learning through quizzes, code exams, and engaging lessons.
 
-| Theme | Original intent |
-|-------|-----------------|
+### Core features:
+- **Read Like a Book:** Each chapter feels like flipping through pages in a magical book
+- **Interactive Activities:** Quizzes, code exams, and engaging lessons keep learners immersed
+- **Flexible Content:** Update content without touching code — just edit the data files (CMS-enabled)
+
+### Original Vision (Interview Practice Foundation):
+
+The codebase was initially built as a **lightweight, mobile-friendly interview practice site** for busy professionals. Core ideas:
+
+| Theme | Foundation |
+|-------|------------|
 | **Audience** | IT-first, expandable to Car, Education, etc. |
 | **Tech focus** | Angular (primary), plus React, C#, SQL |
 | **Practice UI** | Top task list · left hideable instruction checklist (linked to right panel) · right free-text / code workspace |
@@ -28,50 +37,73 @@ A **lightweight, mobile-friendly interview practice site** for busy professional
 
 | Layer | Choice | Notes |
 |-------|--------|-------|
-| Framework | **React 19** + TypeScript | Not Angular (see §5) |
+| Framework | **React 19** + TypeScript | Component-driven, type-safe |
 | Build | Vite 5 | Dev server on port `4173` |
-| Routing | react-router-dom 7 | `/` home, `/practice/:categoryKey` workspace |
+| Routing | react-router-dom 7 | `/` home, `/courses` book shelf, `/course/:courseId` course reader |
 | Backend | None | Fully client-side SPA |
-| Data storage | Browser SQLite (`tasks.db`) + static category metadata in `tasks.ts` | Tasks loaded via sql.js; categories still defined in code |
+| Data storage | **Browser SQLite** (sql.js) | Courses, chapters, steps stored in `course_*` tables; admin UI for editing; bundled defaults included |
+| CMS | **HTML rendering** in `CourseHtmlStep` | Chapter content via `dangerouslySetInnerHTML`; flexible markup without code rebuild |
+| Admin UI | `/admin` page | Edit home page styles, book builder, database recovery |
 
 ### 2.2 Folder structure
 
 ```
-PracticeMadePerfect/
+Magic Library/
 ├── index.html
 ├── package.json
 ├── vite.config.ts
 ├── tsconfig.json
 ├── README.md
+├── data/
+│   └── tasks.db.bak          # Bundled SQLite database (courses, chapters, steps)
+├── public/data/
+│   └── tasks.db.bak          # Public assets for deployment
 └── src/
     ├── main.tsx              # App bootstrap
     ├── App.tsx               # Shell: header, nav, routes
-    ├── index.css             # Global + practice layout styles
+    ├── index.css             # Global layout + practice workspace styles
     ├── data/
-    │   └── tasks.ts          # Categories + practice task definitions
-    ├── config/
-    │   └── compileLanguages.ts  # Language profiles (future admin override)
+    │   ├── courses.ts        # Default course definitions (bundled seed data)
+    │   ├── tasks.ts          # Interview practice task definitions
+    │   ├── fictionBook.ts    # Example e-book content
+    │   └── courses_clean.ts  # Cleaned course exports
+    ├── components/
+    │   ├── CourseBookCard.tsx           # Book shelf card rendering
+    │   ├── CourseHtmlStep.tsx           # **CMS: HTML chapter renderer**
+    │   ├── CourseCodeStep.tsx           # Code exam step
+    │   ├── CourseQuizStep.tsx           # Quiz step
+    │   ├── HomeCourseShelves.tsx        # Home page book shelves
+    │   ├── PracticeWorkspace.tsx        # Shared workspace layout
+    │   └── PracticeCodeEditor.tsx       # Code editor for exams
     ├── utils/
-    │   ├── sqliteBrowserDb.ts       # Browser SQLite open/save/migrate
-    │   ├── sqliteBrowserTaskSource.ts
-    │   ├── taskSort.ts              # Category_Index + Task_Index sorting
-    │   ├── taskHints.ts
-    │   └── compileVerifier.ts
-    └── pageData/
-        ├── homePage.ts       # Home page copy / metadata
-        └── practicePage.ts   # Practice page copy + re-exports tasks
+    │   ├── sqliteBrowserDb.ts           # Browser SQLite DB cache, restore logic
+    │   ├── sqliteBrowserCourses.ts      # Course CRUD operations
+    │   ├── sqliteBrowserTaskSource.ts   # Task queries
+    │   ├── contentStore.ts              # Admin data persistence
+    │   ├── courseShelf.ts               # Book grouping logic
+    │   └── compileVerifier.ts           # Code verification (legacy interview tasks)
+    ├── pageData/
+    │   ├── homePage.ts       # Home page styling + metadata
+    │   └── practicePage.ts   # Practice workspace metadata
     └── pages/
-        ├── Home.tsx          # Category picker (Netflix-style cards)
-        └── Practice.tsx      # Task wizard / editor workspace
+        ├── Home.tsx          # Home page: hero + book shelves
+        ├── PracticeCode.tsx  # Code exam workspace (legacy)
+        ├── PracticeText.tsx  # Text task workspace (legacy)
+        ├── CourseWizard.tsx  # **Book reader: renders chapters**
+        ├── Admin.tsx         # Admin: home page & database controls
+        ├── AdminCourses.tsx  # Admin: book builder (create/edit chapters)
+        └── AdminTaskEditor.tsx # Admin: legacy task editor
 ```
 
 ### 2.3 Routes
 
 | Path | Component | Purpose |
 |------|-----------|---------|
-| `/` | `Home` | Hero + category grid (React, Angular, C#, SQL) |
-| `/practice/:categoryKey` | `Practice` | Single-category task flow |
-| `/practice` | redirect → `/` | Guard for bare practice URL |
+| `/` | `Home` | Hero banner + book shelves (interactive e-books) |
+| `/course/:courseId` | `CourseWizard` | **Book reader:** renders chapters with HTML content, quizzes, code exams |
+| `/practice/:categoryKey` | `PracticeCode` / `PracticeText` | Legacy interview practice workspace |
+| `/admin` | `Admin` | Admin controls: home page styling, database recovery |
+| `/admin` (books tab) | `AdminCourses` | Book builder: create/edit chapters with HTML content |
 
 ### 2.4 Data model (`src/data/tasks.ts`)
 
@@ -134,50 +166,78 @@ Many sample tasks from the original prompt (Redux counter, tab nav, fair roundin
 
 Tasks without `verificationKeywords` pass compile-only (e.g. text answer) but checklist stays ✗ until keywords added.
 
-### 2.6 Content separation (partial CMS foundation)
+### 2.6 CMS Feature: HTML Chapter Rendering
 
-Original plan: each page = editable `.txt` / `.html` file.
+**Location:** `src/components/CourseHtmlStep.tsx`
 
-Current approach: **TypeScript data modules** (`pageData/`, `data/tasks.ts`). Content is separated from page components, but:
-- Requires a dev rebuild to change content
-- Not editable by a non-developer admin
-- `homePageData.featureHtml` exists but is **not rendered** on Home yet
-### 2.6 Recent updates
+**How it works:**
+- Each `CourseStep` with `stepType === "html"` stores lesson content in the `contentHtml` field (string of HTML markup)
+- React renders this using `dangerouslySetInnerHTML` so chapters can include formatted text, images, lists, etc.
+- No code rebuild required to update chapter content — just edit the `contentHtml` field in the course data
+- Admin UI (`AdminCourses.tsx`) allows editing chapter content directly
 
-Since the last review, the project now includes:
-- A browser-based admin editor at `/admin` for editing `homePageData` and `practicePageData` via localStorage
-- `Home` and `Practice` pages wired to load editable content from `utils/contentStore.ts`
-- React task starter comments updated to include explicit import/export hint lines
-- More precise React verification keyword checks for `useState`, `useReducer`, Redux, toggle, form input, and fetch tasks
-- Mobile hero collapse height improved on the home page for the initial collapsed state
+**Data flow:**
+1. Default courses loaded from `src/data/courses.ts` (bundled seed data)
+2. Courses persisted to browser SQLite (`course_*` tables)
+3. Admin can edit chapter HTML via book builder
+4. Changes saved to browser DB and localStorage
+5. On page load, `CourseWizard` fetches course from SQLite and renders chapters via `CourseHtmlStep`
+
+**Example chapter with HTML:**
+```ts
+{
+  id: "chapter-1-step-1",
+  stepType: "html",
+  title: "Introduction",
+  contentHtml: `<div class="lesson">
+    <h2>Welcome to Magic Library</h2>
+    <p>This chapter explores interactive learning...</p>
+    <ul><li>Learn by reading</li><li>Practice with quizzes</li></ul>
+  </div>`,
+  description: "Learn the basics"
+}
+```
+
+### 2.7 Recent updates
+
+Since the last review, the project evolved from interview practice to interactive e-books:
+- Renamed/rebranded to **"Magic Library"** with book-centric UI
+- Introduced **Course/Chapter/Step** model (e-book structure) alongside legacy Practice tasks
+- **Book builder** at `/admin` for creating/editing courses with chapters
+- **CourseWizard** component for reading books (chapter navigation, quiz, code exam, HTML lessons)
+- **CMS HTML rendering** — chapters can include formatted content without code rebuild
+- **Browser SQLite** for persistent storage of courses and user progress
+- **Admin database recovery** — one-click restore to bundled defaults
+- **Hardened delete actions** — prevent accidental book/task removal
+- **Password-protected restore** — require `admin123` password for critical admin actions
 ---
 
-## 3. Gap Analysis — Prompt vs Current Build
+## 3. Current Implementation Status
 
-### 3.1 Aligned ✅
+### 3.1 E-Book Platform (Now Primary) ✅
 
-| Original idea | Current implementation |
-|---------------|------------------------|
-| IT categories: React, Angular, C#, SQL | Four categories on home screen |
-| Busy-user / mobile focus | Mobile CSS: full-height editor, collapsible hero, sticky-friendly layout |
-| Instruction checklist concept | `checklist`, `detailedInstructions`, `verificationKeywords` on each task |
-| Multiple task types | `code`, `sql`, `text` types with appropriate editor labels |
-| Separate content from shell | `pageData/` + `data/tasks.ts` pattern |
-| Simple, no backend yet | Pure SPA, no auth, no API |
-| Keyword-based progress hint | `verifyCode()` + modal results |
-| Name: PracticeMadePerfect (PMP) | Used in README, header, `homePageData` |
+| Feature | Status |
+|---------|--------|
+| **Course/Chapter/Step Model** | ✅ Fully implemented |
+| **HTML Chapter Rendering (CMS)** | ✅ Working via `CourseHtmlStep` |
+| **Book Reader UI (CourseWizard)** | ✅ Chapter navigation, quizzes, code exams |
+| **Admin Book Builder** | ✅ Create/edit courses and chapters |
+| **Browser SQLite Persistence** | ✅ Courses, chapters, steps stored and synced |
+| **Admin Database Recovery** | ✅ One-click restore to bundled defaults |
+| **Home Page with Book Shelves** | ✅ Display courses as organized shelves |
+| **Password-Protected Admin Actions** | ✅ Require `admin123` for critical operations |
 
-### 3.2 Partially done ⚠️
+### 3.2 Legacy Interview Practice (Secondary) ⚠️
 
-| Original idea | Current state | Gap |
-|---------------|---------------|-----|
-| **3-panel layout** (top Q · left checklist · right notepad) | Top panel + right editor only | **Left instruction checklist panel removed** from JSX; CSS for `.practice-left` remains but unused. Checklist only appears after "Verify" in modal |
-| **Real-time checklist** linked to right panel text | Keyword verify on button click | Not live/as-you-type; no separate notepad — editor doubles as workspace |
-| **Top task list** | Previous/Next footer navigation | No visible top task picker / sidebar list |
-| **CMS via text files** | TS modules | Structure ready; format is code not `.txt`/`.html` |
-| **Angular focus** | Angular category card exists | Zero Angular practice tasks |
-| **Sample task library** | 6 tasks | ~80% of listed samples missing |
-| **SOLID / maintainable** | Clean separation of data vs pages | No formal service layer, interfaces only in `tasks.ts` |
+The original interview practice system is still present but secondary to e-books:
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Practice workspace (code/text) | ✅ Working | `/practice/:categoryKey` routes |
+| Task verification (compile + keywords) | ✅ Working | For code and SQL tasks |
+| Task library (React, Angular, C#, SQL) | ⚠️ Partial | ~15 React tasks, few C#/SQL, no Angular |
+| Top task picker UI | ❌ Missing | Only Previous/Next navigation |
+| Left instruction checklist panel | ⚠️ Unused | CSS exists but not rendered |
 
 ### 3.3 Not started ❌
 

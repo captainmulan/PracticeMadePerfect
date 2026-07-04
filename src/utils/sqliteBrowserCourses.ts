@@ -246,11 +246,26 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
 
 export function deleteCourseFromDb(db: Database, courseId: string) {
   ensureCourseSchema(db);
+  const normalizedCourseId = courseId.trim();
+  if (!normalizedCourseId) {
+    throw new Error("Cannot delete a book without a valid id.");
+  }
+
+  const existsStmt = db.prepare("SELECT 1 FROM courses WHERE id = ?");
+  try {
+    existsStmt.bind([normalizedCourseId]);
+    if (!existsStmt.step()) {
+      throw new Error(`Book "${normalizedCourseId}" was not found.`);
+    }
+  } finally {
+    existsStmt.free();
+  }
+
   db.run("BEGIN TRANSACTION;");
   const statements = [
-    ["DELETE FROM course_steps WHERE course_id = ?", [courseId]],
-    ["DELETE FROM course_chapters WHERE course_id = ?", [courseId]],
-    ["DELETE FROM courses WHERE id = ?", [courseId]],
+    ["DELETE FROM course_steps WHERE course_id = ?", [normalizedCourseId]],
+    ["DELETE FROM course_chapters WHERE course_id = ?", [normalizedCourseId]],
+    ["DELETE FROM courses WHERE id = ?", [normalizedCourseId]],
   ] as const;
   statements.forEach(([sql, params]) => {
     const stmt = db.prepare(sql);
@@ -424,19 +439,20 @@ export function assembleCourses(
 
 export async function ensureCoursesSeeded(db: Database) {
   ensureCourseSchema(db);
-  // If there are no courses at all, seed everything ONCE, otherwise leave user's data alone
   const existing = queryCourseRows(db);
-  if (existing.length === 0) {
-    DEFAULT_COURSES.forEach((course) => saveCourseBundleToDb(db, course));
-    persistBrowserDbToLocalStorage(db);
+  const existingIds = new Set(existing.map((course) => course.id));
+
+  const missingCourses = DEFAULT_COURSES.filter((course) => !existingIds.has(course.id));
+  if (!existingIds.has(FICTION_BOOK_ID)) {
+    missingCourses.push(FICTION_BOOK);
+  }
+
+  if (missingCourses.length === 0) {
     return;
   }
-  // Also check if our fiction book is present - if not, add it
-  const hasFiction = existing.some((c) => c.id === FICTION_BOOK_ID);
-  if (!hasFiction) {
-    saveCourseBundleToDb(db, FICTION_BOOK);
-    persistBrowserDbToLocalStorage(db);
-  }
+
+  missingCourses.forEach((course) => saveCourseBundleToDb(db, course));
+  persistBrowserDbToLocalStorage(db);
 }
 
 export async function loadCoursesFromBrowserDb(): Promise<Course[]> {
