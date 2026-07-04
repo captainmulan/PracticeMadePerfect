@@ -4,6 +4,7 @@ import wasmURL from "sql.js/dist/sql-wasm.wasm?url";
 import { categoryIndexByKey } from "../data/tasks";
 
 const DB_FILE_URL = "/data/tasks.db";
+const DEPLOY_DB_FILE_URL = "/data/tasks.db";
 const LOCAL_STORAGE_DB_KEY = "pmp-sqlite-db";
 
 export interface TaskRow {
@@ -32,6 +33,15 @@ async function fetchBundledDatabaseBytes(): Promise<Uint8Array> {
   return new Uint8Array(buffer);
 }
 
+async function fetchDeployDatabaseBytes(): Promise<Uint8Array> {
+  const response = await fetch(DEPLOY_DB_FILE_URL);
+  if (!response.ok) {
+    throw new Error(`Unable to load deploy database file from ${DEPLOY_DB_FILE_URL}`);
+  }
+  const buffer = await response.arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
 function countTasksInDb(db: Database): number {
   const stmt = db.prepare("SELECT COUNT(*) AS c FROM tasks");
   try {
@@ -52,9 +62,17 @@ function isLikelyTruncatedCache(cachedCount: number, bundledCount: number): bool
   return cachedCount <= 1 || cachedCount < bundledCount * 0.25;
 }
 
+function shouldUsePersistedBrowserDb(): boolean {
+  return typeof window !== "undefined" && !import.meta.env.PROD;
+}
+
 async function fetchDatabaseFile(): Promise<Uint8Array> {
-  if (typeof window === "undefined") {
-    return fetchBundledDatabaseBytes();
+  if (!shouldUsePersistedBrowserDb()) {
+    try {
+      return await fetchDeployDatabaseBytes();
+    } catch {
+      return fetchBundledDatabaseBytes();
+    }
   }
 
   const cached = window.localStorage.getItem(LOCAL_STORAGE_DB_KEY);
@@ -268,14 +286,14 @@ export function saveTasksToBrowserDb(db: Database, tasks: TaskRow[]) {
 
 export function persistBrowserDbToLocalStorage(db: Database) {
   const bytes = db.export();
-  if (typeof window !== "undefined") {
+  if (shouldUsePersistedBrowserDb()) {
     window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
   }
   cachedDb = null;
 }
 
 export function resetBrowserDbCache() {
-  if (typeof window !== "undefined") {
+  if (shouldUsePersistedBrowserDb()) {
     window.localStorage.removeItem(LOCAL_STORAGE_DB_KEY);
   }
   if (cachedDb) {
@@ -287,7 +305,7 @@ export function resetBrowserDbCache() {
 export async function restoreBundledBrowserDb(): Promise<void> {
   resetBrowserDbCache();
   const bytes = await fetchBundledDatabaseBytes();
-  if (typeof window !== "undefined") {
+  if (shouldUsePersistedBrowserDb()) {
     window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
   }
 }

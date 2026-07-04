@@ -430,6 +430,46 @@ export default function Admin() {
     }
   }
 
+  function handleExport() {
+    try {
+      const homePageData = JSON.parse(homeJson) as ContentStoreData["homePageData"];
+      const practicePageMeta = JSON.parse(practiceMetaJson) as Omit<ContentStoreData["practicePageData"], "tasks">;
+      const payload = { homePageData, practicePageData: { ...practicePageMeta, tasks } };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "admin.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setMessage("Exported admin data to admin.json (download). Place this file into /deploy/admin.json before running deploy to apply to production.");
+    } catch (err) {
+      setMessage(String(err));
+    }
+  }
+
+  async function handleExportDb() {
+    try {
+      const db = await openBrowserDb();
+      const bytes = db.export();
+      const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+      const blob = new Blob([new Uint8Array(buffer)], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "tasks.db";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setMessage("Exported the current browser database to tasks.db. Copy it into /deploy/tasks.db before deploying.");
+    } catch (err) {
+      setMessage(String(err));
+    }
+  }
+
   async function handleReset() {
     resetAdminData();
     const defaults = loadDefaultAdminData();
@@ -540,6 +580,12 @@ export default function Admin() {
           <div className="admin-section-body">
             <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
               <div className="admin-search-actions-end">
+                <button type="button" className="footer-button" onClick={handleExport} style={{ marginRight: 8 }}>
+                  Export Admin
+                </button>
+                <button type="button" className="footer-button" onClick={handleExportDb} style={{ marginRight: 8 }}>
+                  Export DB
+                </button>
                 <button type="button" className="footer-button" onClick={handleSave}>
                   Save
                 </button>

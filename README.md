@@ -22,6 +22,34 @@ npm run dev
 
 3. Open the app at: `http://localhost:4173`
 
+## Deploy
+
+Use this command for future deployments so the repo's current SQLite database and bundled app data are copied into the Firebase hosting folder first:
+
+```bash
+npm run deploy:firebase
+```
+
+This command runs the build, syncs the current database into the public hosting assets, and then deploys to Firebase.
+
+### Deploying custom theme / admin settings
+
+Custom theme and admin settings are stored locally in the browser, so they do not automatically become part of the deployed site.
+
+To deploy your local theme and admin data:
+
+1. Open `http://localhost:4173/admin`
+2. Click the new `Export` button
+3. Save the downloaded `admin.json`
+4. Place that file at `deploy/admin.json`
+5. Run:
+
+```bash
+npm run deploy:firebase
+```
+
+If `deploy/admin.json` is present, the deployment will inject the theme/settings into the production site.
+
 ## Features
 
 - **Interactive E-Books:** Browse and read courses organized as book shelves
