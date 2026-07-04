@@ -34,18 +34,17 @@ export default function PracticeCodeEditor({
       <section className={`practice-layout full-code ${showPeek ? "code-peek-open" : "code-peek-hidden"}`}>
         <section className="practice-right panel">
           <div className="practice-answer-toolbar">
-            <div className="panel-heading">{label}</div>
             <div className="practice-header-actions">
               <button
                 type="button"
-                className="action-button practice-header-button practice-tool-button"
+                className="chapter-action-button"
                 onClick={onTogglePeek}
               >
                 {showPeek ? "Hide Peek" : "Peek"}
               </button>
               <button
                 type="button"
-                className="action-button practice-header-button practice-tool-button"
+                className="chapter-action-button"
                 onClick={onVerify}
                 disabled={verifyDisabled}
               >

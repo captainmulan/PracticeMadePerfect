@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Move the Bunny - Kids Programming (Responsive Demo)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 12px;
+      color: #0f172a;
+    }
+
+    .kid-ch1-app {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 14px;
+      box-sizing: border-box;
+      background: #f8fafc;
+      border-radius: 24px;
+      border: 1px solid #d1d5db;
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.14);
+      min-height: calc(100vh - 28px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kid-ch1-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      border-radius: 20px;
+      color: #f8fafc;
+      box-shadow: 0 14px 30px rgba(79, 70, 229, 0.2);
+    }
+
+    .kid-ch1-toolbar .chapter-pill {
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.24);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .kid-ch1-toolbar .chapter-title {
+      flex: 1;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .kid-ch1-toolbar .chapter-nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .kid-ch1-toolbar .chapter-nav button {
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.08);
+      color: #f8fafc;
+      border-radius: 12px;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      cursor: not-allowed;
+      opacity: 0.88;
+    }
+
+    .kid-ch1-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .kid-ch1-header .icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+
+    .kid-ch1-header .title {
+      flex: 1;
+    }
+
+    .kid-ch1-header .title h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .kid-ch1-header .title p {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .kid-ch1-header .progress {
+      background: #e0e7ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #4338ca;
+      white-space: nowrap;
+    }
+
+    /* Layout: left = program, right = stage */
+    .kid-ch1-layout {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.05fr) minmax(280px, 1fr);
+      gap: 14px;
+      align-items: stretch;
+      min-height: calc(100vh - 180px);
+      max-height: calc(100vh - 180px);
+      overflow: hidden;
+    }
+
+    .kid-left-column {
+      display: grid;
+      gap: 14px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .kid-panel {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .kid-program {
+      display: grid;
+      gap: 10px;
+    }
+
+    .kid-blocks {
+      grid-template-columns: repeat(2, minmax(100px, 1fr));
+      gap: 10px;
+    }
+
+    .kid-stage {
+      display: grid;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    /* Board: keep square on desktop but become scroll/fit on small screens */
+    .kid-board {
+      min-height: 180px;
+      max-height: 260px;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+    }
+
+    .kid-panel {
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .kid-panel h2 {
+      margin: 0 0 14px;
+      font-size: 0.88rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .kid-blocks,
+    .kid-program {
+      display: grid;
+      gap: 10px;
+    }
+
+    .kid-blocks {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .kid-block {
+      border-radius: 14px;
+      background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%);
+      border: 2px solid #c7d2fe;
+      padding: 12px 14px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      text-align: center;
+      color: #3730a3;
+    }
+
+    .kid-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .kid-actions button {
+      flex: 1;
+      min-width: 100px;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .run-btn {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    }
+
+    .reset-btn {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .kid-goal {
+      display: grid;
+      gap: 10px;
+      border-radius: 16px;
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .kid-stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #475569;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0 4px;
+    }
+
+    .kid-board {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      min-height: 260px;
+      aspect-ratio: 1 / 1;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .kid-board::before {
+      content: 'Tap blocks, then Run';
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: block;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.18);
+      color: #f8fafc;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      text-align: center;
+      z-index: 1;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .kid-cell {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      background: #16213d;
+      display: grid;
+      place-items: center;
+      color: #f8fafc;
+      font-size: 1.4rem;
+      border: 2px solid #334155;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .kid-message {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: #eff6ff;
+      border: 2px solid #bfdbfe;
+      color: #0f172a;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Mobile optimization */
+    @media (max-width: 600px) {
+      body { padding: 8px; }
+      .kid-ch1-app { padding: 12px; border-radius: 16px; min-height: auto; max-height: none; }
+
+      /* Toolbar stacks and reduces padding */
+      .kid-ch1-toolbar { flex-direction: column; align-items: stretch; gap: 8px; padding: 8px; border-radius: 12px; }
+      .kid-ch1-toolbar .chapter-title { font-size: 0.95rem; }
+      .kid-ch1-toolbar .chapter-nav button { width: 34px; height: 34px; }
+
+      /* Layout becomes single column */
+      .kid-ch1-layout { grid-template-columns: 1fr; gap: 12px; min-height: auto; max-height: none; }
+      .kid-stage { order: 2; }
+
+      /* Panels: reduce internal padding so content fits */
+      .kid-panel { padding: 12px; border-radius: 14px; }
+      .kid-panel h2 { font-size: 0.85rem; }
+
+      /* Program blocks stack and buttons become full width */
+      .kid-blocks { grid-template-columns: 1fr; }
+      .kid-program { grid-template-columns: 1fr; }
+      .kid-actions { flex-direction: column; }
+      .kid-actions button { width: 100%; }
+
+      /* Board: remove strict square aspect and allow vertical scroll if necessary */
+      .kid-board { aspect-ratio: auto; min-height: 180px; max-height: 360px; overflow: auto; padding: 10px; }
+      .kid-cell { aspect-ratio: auto; height: 64px; font-size: 1rem; }
+      .kid-board::before { display: none; }
+
+      /* Keep messages compact */
+      .kid-message { padding: 10px; font-size: 0.85rem; }
+    }
+
+    @media (max-width: 420px) {
+      .kid-board { max-height: 320px; }
+      .kid-cell { height: 56px; }
+      .kid-ch1-header .title h1 { font-size: 1rem; }
+      .kid-ch1-header .title p { font-size: 0.9rem; }
+      .kid-ch1-toolbar .chapter-pill { padding: 6px 10px; font-size: 0.78rem; }
+    }
+
+    /* Accessibility */
+    .kid-block:focus,
+    .kid-actions button:focus,
+    .kid-slot:focus {
+      outline: 3px solid #667eea;
+      outline-offset: 2px;
+    }
+
+    /* Animation for running */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .kid-cell.bunny-moving { animation: pulse 0.4s ease-in-out; }
+  </style>
+</head>
+<body>
+  <div class="kid-ch1-app">
+    <div class="kid-ch1-toolbar">
+      <div class="chapter-pill">Chapter 2</div>
+      <div class="chapter-title">Learn how to move the bunny 🐰 forward using blocks.</div>
+      <div class="chapter-nav">
+        <button aria-label="previous">←</button>
+        <button aria-label="next">→</button>
+      </div>
+    </div>
+
+    <div class="kid-ch1-header">
+      <div class="icon">🐰</div>
+      <div class="title">
+        <h1>Move the Bunny</h1>
+        <p>Arrange the blocks in order, then press Run to see the bunny reach the star. Goal - Use two Move Forward blocks - Reach the star ⭐</p>
+      </div>
+      <div class="progress">2 / 5</div>
+    </div>
+
+    <div class="kid-ch1-layout">
+      <div class="kid-panel">
+        <h2>Program</h2>
+        <div class="kid-program" id="programSlots">
+          <div class="kid-slot filled" data-index="0" draggable="true">Move Forward</div>
+          <div class="kid-slot filled" data-index="1" draggable="true">Turn Right</div>
+          <div class="kid-slot filled" data-index="2" draggable="true">Move Forward</div>
+        </div>
+
+        <div class="kid-actions">
+          <button class="run-btn" id="runButton">▶ Run</button>
+          <button class="reset-btn" id="resetButton">↺ Reset</button>
+        </div>
+
+        <div class="kid-message" id="feedback">Drag the blocks into the right order and press Run.</div>
+      </div>
+
+      <div class="kid-panel kid-stage">
+        <div class="kid-stage-header">
+          <span>🎮 Stage</span>
+          <span id="moveCounter">0 / 2 moves</span>
+        </div>
+        <div class="kid-board" id="boardGrid">
+          <!-- 5x5 grid -->
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+
+          <div class="kid-cell"></div>
+          <div class="kid-cell start" id="bunnyCell">🐰</div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell goal" id="goalCell">⭐</div>
+          <div class="kid-cell"></div>
+
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+          <div class="kid-cell"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const slots = Array.from(document.querySelectorAll('.kid-slot'));
+      const runButton = document.getElementById('runButton');
+      const resetButton = document.getElementById('resetButton');
+      const moveCounter = document.getElementById('moveCounter');
+      const feedback = document.getElementById('feedback');
+      const board = Array.from(document.querySelectorAll('.kid-cell'));
+      let program = ['move-forward', 'turn-right', 'move-forward'];
+      let bunnyIndex = 6;
+      let isRunning = false;
+      let draggedIndex = null;
+      const validMoves = 2;
+
+      const updateSlots = () => {
+        slots.forEach((slot, i) => {
+          const code = program[i];
+          slot.textContent =
+            code === 'move-forward' ? 'Move Forward' :
+            code === 'turn-left' ? 'Turn Left' :
+            code === 'turn-right' ? 'Turn Right' :
+            'Unknown';
+          slot.classList.remove('empty');
+          slot.classList.add('filled');
+        });
+        moveCounter.textContent = `${program.filter((v) => v === 'move-forward').length} / ${validMoves} moves`;
+      };
+
+      const renderBoard = (index) => {
+        board.forEach((cell) => {
+          cell.textContent = '';
+          cell.classList.remove('start');
+        });
+        const bunnyCell = board[index];
+        if (bunnyCell) {
+          bunnyCell.textContent = '🐰';
+          bunnyCell.classList.add('start');
+        }
+      };
+
+      const reorderProgram = (fromIndex, toIndex) => {
+        const [moved] = program.splice(fromIndex, 1);
+        program.splice(toIndex, 0, moved);
+        updateSlots();
+      };
+
+      const resetProgram = () => {
+        program = ['move-forward', 'turn-right', 'move-forward'];
+        bunnyIndex = 6;
+        updateSlots();
+        renderBoard(6);
+        feedback.textContent = 'Drag the blocks into the right order and press Run.';
+      };
+
+      slots.forEach((slot, idx) => {
+        slot.addEventListener('dragstart', (event) => {
+          if (isRunning) return;
+          draggedIndex = idx;
+          slot.classList.add('dragging');
+          event.dataTransfer.effectAllowed = 'move';
+        });
+
+        slot.addEventListener('dragend', () => {
+          slot.classList.remove('dragging');
+          draggedIndex = null;
+        });
+
+        slot.addEventListener('dragover', (event) => {
+          if (isRunning) return;
+          event.preventDefault();
+        });
+
+        slot.addEventListener('drop', (event) => {
+          if (isRunning) return;
+          event.preventDefault();
+          if (draggedIndex === null || draggedIndex === idx) return;
+          reorderProgram(draggedIndex, idx);
+          draggedIndex = null;
+        });
+      });
+
+      runButton.addEventListener('click', async () => {
+        if (isRunning) return;
+        const steps = program.filter(Boolean);
+        if (steps.length === 0) {
+          feedback.textContent = '⚠️ Add blocks to the program before you run.';
+          return;
+        }
+        isRunning = true;
+        runButton.disabled = true;
+        resetButton.disabled = true;
+        feedback.textContent = '▶ Running...';
+
+        let position = bunnyIndex;
+        for (const step of steps) {
+          if (step === 'move-forward') {
+            const next = position + 1;
+            if (next < board.length && next % 5 !== 0) {
+              position = next;
+            }
+          }
+          renderBoard(position);
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+
+        bunnyIndex = position;
+        isRunning = false;
+        runButton.disabled = false;
+        resetButton.disabled = false;
+
+        if (position === 8) {
+          feedback.innerHTML = '✨ <strong>Success!</strong> The bunny reached the star!';
+        } else {
+          feedback.textContent = '❌ Not quite yet. Try a different order.';
+        }
+      });
+
+      resetButton.addEventListener('click', () => {
+        if (isRunning) return;
+        resetProgram();
+      });
+
+      resetProgram();
+    })();
+  </script>
+</body>
+</html>

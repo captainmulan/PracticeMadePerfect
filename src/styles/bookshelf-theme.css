@@ -55,7 +55,7 @@
 .app-shell:has(.practice-page) .app-header,
 .app-shell:has(.course-wizard-page) .app-header {
   display: block;
-  padding: calc(8px + env(safe-area-inset-top, 0px)) 0 8px;
+  padding: calc(6px + env(safe-area-inset-top, 0px)) 0 4px;
 }
 
 .app-shell:has(.page-home) .app-header-inner,
@@ -69,43 +69,48 @@
 }
 
 .app-header-inner.has-stage-nav {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 38px;
 }
 
 .app-header-inner.has-stage-nav .app-brand {
-  justify-self: start;
+  flex: 0 0 auto;
 }
 
 .app-header-inner.has-stage-nav .nav-links {
-  justify-self: end;
+  flex: 0 0 auto;
 }
 
 .app-stage-nav {
-  justify-self: center;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 12px;
+  justify-content: center;
+  gap: 6px;
+  padding: 3px 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--shelf-border);
   box-shadow: 0 2px 8px var(--shelf-shadow);
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0 auto;
 }
 
 .app-stage-nav-button {
-  min-width: 30px;
-  min-height: 30px;
-  padding: 2px 8px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 1px 6px;
   border: none;
   border-radius: 6px;
   background: transparent;
   color: var(--shelf-sage-dark);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
+  line-height: 1;
 }
 
 .app-stage-nav-button:hover:not(:disabled) {
@@ -118,11 +123,14 @@
 }
 
 .app-stage-nav-label {
-  min-width: 52px;
+  min-width: 0;
   text-align: center;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--shelf-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Shell background when Home or Practice is active ── */
@@ -597,14 +605,13 @@
   }
 
   .app-header-inner.has-stage-nav {
-    grid-template-columns: 1fr;
-    justify-items: stretch;
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
 
   .app-header-inner.has-stage-nav .app-stage-nav {
-    justify-self: center;
-    order: 3;
-    grid-column: 1 / -1;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .app-header-inner.has-stage-nav .nav-links,

@@ -1,4 +1,6 @@
 import type { ChangeEvent, ReactNode } from "react";
+import { Link } from "react-router-dom";
+import PracticeCodeEditor from "./PracticeCodeEditor";
 import { getHomePageData } from "../utils/contentStore";
 
 interface PracticeWorkspaceProps {
@@ -66,7 +68,6 @@ export default function PracticeWorkspace({
 }: PracticeWorkspaceProps) {
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
-  const showToolbar = Boolean(toolbarLabel || onTogglePeek || onVerify);
   const style = homeData.style;
 
   const buildGradient = (start?: string, middle?: string, end?: string, fallback?: string) => {
@@ -94,10 +95,13 @@ export default function PracticeWorkspace({
       <div 
         className="practice-workspace-top-bar"
         style={{
-          borderBottomColor: style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0",
+          background: style?.wizardTopInfo?.useBackgroundColorGradient
+            ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientMiddle ?? style.wizardTopInfo.backgroundColorGradientStart} 50%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)`
+            : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
+          borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
         }}
       >
-        <div className="chapter-info">
+        <div className="chapter-info-left">
           <span 
             className="chapter-label"
             style={{
@@ -109,118 +113,34 @@ export default function PracticeWorkspace({
             {`${style?.wizardTopInfo?.chapterLabelText ?? "Chapter"} ${chapterNumber ?? ""}`}
           </span>
         </div>
-        <h2 
-          className="step-title"
-          style={{
-            fontSize: `${(style?.wizardTopInfo?.chapterTitleFontSize ?? 20) / 16}rem`,
-            fontWeight: style?.wizardTopInfo?.chapterTitleFontWeight ?? "700",
-            color: style?.wizardTopInfo?.chapterTitleColor ?? "#0f172a",
-          }}
-        >
-          {title}
-        </h2>
+
+        {(onPrevious || onNext) && (
+          <div className="chapter-nav-buttons">
+            <button
+              type="button"
+              className="chapter-nav-button"
+              disabled={!canPrevious}
+              onClick={onPrevious}
+              aria-label="Previous chapter"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className="chapter-nav-button"
+              disabled={!canNext}
+              onClick={onNext}
+              aria-label="Next chapter"
+            >
+              →
+            </button>
+          </div>
+        )}
+
         <div className="top-bar-right">
-          {(onPrevious || onNext) && (
-            <div className="chapter-nav-buttons">
-              <button
-                type="button"
-                className="chapter-nav-button"
-                disabled={!canPrevious}
-                onClick={onPrevious}
-                aria-label="Previous chapter"
-              >
-                ←
-              </button>
-              <button
-                type="button"
-                className="chapter-nav-button"
-                disabled={!canNext}
-                onClick={onNext}
-                aria-label="Next chapter"
-              >
-                →
-              </button>
-            </div>
-          )}
-          {showToolbar && (
-            <div className="practice-workspace-toolbar">
-              <div className="practice-header-actions">
-                {onTogglePeek && (
-                  <button
-                    type="button"
-                    className="action-button practice-header-button practice-tool-button"
-                    onClick={onTogglePeek}
-                    style={{
-                      background: buildGradient(
-                        style?.wizardButtons?.backgroundColorGradientStart,
-                        /* middle */ undefined,
-                        style?.wizardButtons?.backgroundColorGradientEnd,
-                        style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
-                      ),
-                      color: style?.wizardButtons?.color ?? "#0f172a",
-                      fontSize: `${(style?.wizardButtons?.fontSize ?? 12) / 16}rem`,
-                      fontWeight: style?.wizardButtons?.fontWeight ?? "700",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.target as HTMLElement).style.background = buildGradient(
-                        style?.wizardButtons?.hoverBackgroundColorGradientStart,
-                        /* middle */ undefined,
-                        style?.wizardButtons?.hoverBackgroundColorGradientEnd,
-                        style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1",
-                      );
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.target as HTMLElement).style.background = buildGradient(
-                        style?.wizardButtons?.backgroundColorGradientStart,
-                        /* middle */ undefined,
-                        style?.wizardButtons?.backgroundColorGradientEnd,
-                        style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
-                      );
-                    }}
-                  >
-                    {showPeek ? "Hide Peek" : "Peek"}
-                  </button>
-                )}
-                {onVerify && (
-                  <button
-                    type="button"
-                    className="action-button practice-header-button practice-tool-button"
-                    onClick={onVerify}
-                    disabled={verifyDisabled}
-                    style={{
-                      background: buildGradient(
-                        style?.wizardButtons?.backgroundColorGradientStart,
-                        /* middle */ undefined,
-                        style?.wizardButtons?.backgroundColorGradientEnd,
-                        style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
-                      ),
-                      color: style?.wizardButtons?.color ?? "#0f172a",
-                      fontSize: `${(style?.wizardButtons?.fontSize ?? 12) / 16}rem`,
-                      fontWeight: style?.wizardButtons?.fontWeight ?? "700",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.target as HTMLElement).style.background = buildGradient(
-                        style?.wizardButtons?.hoverBackgroundColorGradientStart,
-                        /* middle */ undefined,
-                        style?.wizardButtons?.hoverBackgroundColorGradientEnd,
-                        style?.wizardButtons?.hoverBackgroundColor ?? "#cbd5e1",
-                      );
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.target as HTMLElement).style.background = buildGradient(
-                        style?.wizardButtons?.backgroundColorGradientStart,
-                        /* middle */ undefined,
-                        style?.wizardButtons?.backgroundColorGradientEnd,
-                        style?.wizardButtons?.backgroundColor ?? "#e2e8f0",
-                      );
-                    }}
-                  >
-                    Verify
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+          <Link to="/" className="chapter-nav-home" aria-label="Home">
+            🏠
+          </Link>
         </div>
       </div>
 
@@ -259,27 +179,20 @@ export default function PracticeWorkspace({
           ) : children ? (
             children
           ) : hasEditor ? (
-            <label className="practice-text-label">
-              {isText ? (
-                <textarea
-                  className="practice-textarea"
-                  value={value}
-                  onChange={(event: ChangeEvent<HTMLTextAreaElement>) => onChange?.(event.target.value)}
-                  placeholder={placeholder}
-                  spellCheck={false}
-                  autoComplete="off"
-                />
-              ) : (
-                <textarea
-                  className="practice-codearea"
-                  value={value}
-                  onChange={(event: ChangeEvent<HTMLTextAreaElement>) => onChange?.(event.target.value)}
-                  placeholder={placeholder}
-                  spellCheck={false}
-                  autoComplete="off"
-                />
-              )}
-            </label>
+            <PracticeCodeEditor
+              label={toolbarLabel ?? "Answer"}
+              value={value}
+              placeholder={placeholder}
+              isText={isText}
+              loadError={loadError}
+              showPeek={showPeek}
+              isMobileView={isMobileView}
+              onTogglePeek={onTogglePeek ?? (() => {})}
+              onVerify={onVerify ?? (() => {})}
+              onChange={onChange ?? (() => {})}
+              peekCode={peekCode}
+              verifyDisabled={verifyDisabled}
+            />
           ) : null}
         </div>
 
