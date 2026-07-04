@@ -225,7 +225,7 @@ export default function PracticeWorkspace({
       </div>
 
       {/* Step Brief */}
-      {pageBrief && (
+      {pageBrief?.trim() && (
         <div className="practice-workspace-step-header" style={{
           paddingTop: `${(style?.wizardTopInfo?.descriptionPaddingTop ?? 16) / 16}rem`,
           paddingBottom: `${(style?.wizardTopInfo?.descriptionPaddingBottom ?? 16) / 16}rem`,
@@ -236,7 +236,7 @@ export default function PracticeWorkspace({
             style?.wizardTopInfo?.descriptionBackgroundColor ?? "transparent",
           ),
         }}>
-          <p 
+          <div 
             className="practice-workspace-desc"
             style={{
               color: style?.wizardTopInfo?.descriptionColor ?? "#64748b",
@@ -244,9 +244,8 @@ export default function PracticeWorkspace({
               fontWeight: style?.wizardTopInfo?.descriptionFontWeight ?? "normal",
               lineHeight: style?.wizardTopInfo?.descriptionLineHeight ?? 1.6,
             }}
-          >
-            {pageBrief}
-          </p>
+            dangerouslySetInnerHTML={{ __html: pageBrief }}
+          />
         </div>
       )}
 

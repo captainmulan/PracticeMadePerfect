@@ -1,86 +1,10 @@
-import { BrowserRouter, NavLink, Navigate, Route, Routes, Link, useLocation } from "react-router-dom";
-import { StageNavProvider, useStageNav } from "./context/StageNavContext";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { StageNavProvider } from "./context/StageNavContext";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
 import CourseWizard from "./pages/CourseWizard";
 import Admin from "./pages/Admin";
 import { getHomePageData } from "./utils/contentStore";
-
-function AppHeader() {
-  const { stageNav } = useStageNav();
-  const location = useLocation();
-  const isAdminPage = location.pathname === "/admin";
-  const homeData = getHomePageData();
-  const style = homeData.style;
-
-  const isCoursePage = location.pathname.startsWith("/courses/");
-  if (isCoursePage) {
-    return null;
-  }
-
-  return (
-    <header 
-      className={`app-header${stageNav ? " has-stage-nav" : ""}`}
-      style={{
-        background: style?.topMenu?.useBackgroundColorGradient 
-          ? `linear-gradient(180deg, ${style.topMenu.backgroundColorGradientStart} 0%, ${style.topMenu.backgroundColorGradientMiddle ?? style.topMenu.backgroundColorGradientStart} 50%, ${style.topMenu.backgroundColorGradientEnd} 100%)` 
-          : (style?.topMenu?.backgroundColor ?? "rgba(255, 255, 255, 0.96)"),
-        color: style?.topMenu?.color ?? "#0f172a",
-        borderBottomColor: style?.topMenu?.borderBottomColor ?? "#e2e8f0"
-      }}
-    >
-      <div className={`app-header-inner${stageNav ? " has-stage-nav" : ""}`}>
-        {!stageNav ? (
-          <Link to="/" className="app-brand">
-            <div 
-              className="app-logo"
-              style={{
-                background: style?.topMenu?.useLogoBackgroundColorGradient 
-                  ? `linear-gradient(180deg, ${style.topMenu.logoBackgroundColorGradientStart} 0%, ${style.topMenu.logoBackgroundColorGradientMiddle ?? style.topMenu.logoBackgroundColorGradientStart} 50%, ${style.topMenu.logoBackgroundColorGradientEnd} 100%)` 
-                  : (style?.topMenu?.logoBackgroundColor ?? "#0f172a"),
-                color: style?.topMenu?.logoColor ?? "#ffffff",
-                fontFamily: style?.topMenu?.logoFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-                fontWeight: style?.topMenu?.logoFontWeight ?? "700",
-                fontSize: style?.topMenu?.logoFontSize ?? "18px",
-              }}
-            >M</div>
-            <div>
-              <p className="page-tag"></p>
-            </div>
-          </Link>
-        ) : null}
-
-        {stageNav ? (
-          <div className="app-stage-nav" aria-label="Step navigation">
-            <button
-              type="button"
-              className="app-stage-nav-button"
-              onClick={stageNav.onPrevious}
-              disabled={!stageNav.canPrevious}
-              aria-label="Previous step"
-            >
-              &lt;
-            </button>
-            <span className="app-stage-nav-label">
-              {stageNav.current} / {stageNav.total}
-            </span>
-            <button
-              type="button"
-              className="app-stage-nav-button"
-              onClick={stageNav.onNext}
-              disabled={!stageNav.canNext}
-              aria-label="Next step"
-            >
-              &gt;
-            </button>
-          </div>
-        ) : null}
-
-
-      </div>
-    </header>
-  );
-}
 
 function AppContent() {
   const homeData = getHomePageData();
@@ -97,7 +21,6 @@ function AppContent() {
         fontFamily: style?.main?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
       }}
     >
-      <AppHeader />
       <main className="app-main">
         <Routes>
           <Route path="/" element={<Home />} />

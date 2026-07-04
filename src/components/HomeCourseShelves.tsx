@@ -6,7 +6,7 @@ interface HomeCourseShelvesProps {
 }
 
 export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
-  const CHUNK = 7;
+  const CHUNK = 3;
   const groups: CourseShelfItem[][] = [];
   const totalRows = Math.max(1, Math.ceil(row.items.length / CHUNK));
 

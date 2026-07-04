@@ -461,6 +461,13 @@ textarea {
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid #e2e8f0;
   backdrop-filter: blur(12px);
+  transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.app-header.hidden-on-scroll {
+  transform: translateY(-110%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .app-brand {
@@ -3020,23 +3027,37 @@ textarea {
 }
 
 .books {
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
   justify-content: center;
+  align-items: end;
   gap: 15px;
   padding: 0 40px;
-  min-height: 200px;
-  padding-bottom: 10px;
+  min-height: 180px;
+  padding-bottom: 0;
+}
+
+.bookshelf-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.shelf {
+  position: relative;
 }
 
 .book {
   position: relative;
   transition: transform 0.3s ease;
   cursor: pointer;
+  max-width: 220px;
+  width: 100%;
+  align-self: end;
 }
 
 .book:hover {
-  transform: translateY(-10px) rotate(-2deg);
+  transform: translateY(-6px) rotate(-1.5deg);
 }
 
 .book img,
@@ -3059,8 +3080,10 @@ textarea {
 }
 
 .book.empty-space {
-  width: 80px;
   visibility: hidden;
+  background: transparent;
+  pointer-events: none;
+  min-width: 0;
 }
 
 /* Title printed on the cover itself */
