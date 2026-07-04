@@ -588,23 +588,62 @@
 </head>
 <body>
   <div class="kid-ch1-app">
+    <div class="kid-ch1-toolbar">
+      <div class="chapter-pill">Chapter 2</div>
+      <div class="chapter-title">Move the Bunny</div>
+      <div class="chapter-nav">
+        <button aria-label="Previous chapter">←</button>
+        <button aria-label="Next chapter">→</button>
+      </div>
+    </div>
+
+    <div class="kid-ch1-header">
+      <div class="icon">🐰</div>
+      <div class="title">
+        <h1>Move the Bunny</h1>
+        <p>Learn how to move the bunny forward using blocks.</p>
+      </div>
+      <div class="progress">3 / 3</div>
+    </div>
+
     <div class="kid-ch1-layout">
-      <div class="kid-panel">
-        <h2>Program</h2>
-        <div class="kid-program" id="programSlots">
-          <div class="kid-slot filled" data-index="0" draggable="true">Move Forward</div>
-          <div class="kid-slot filled" data-index="1" draggable="true">Turn Right</div>
-          <div class="kid-slot filled" data-index="2" draggable="true">Move Forward</div>
+      <div class="kid-left-column">
+        <!-- Blocks Panel -->
+        <div class="kid-panel">
+          <h2>Available Blocks</h2>
+          <div class="kid-blocks">
+            <div class="kid-block" data-code="when-run">When Run Code</div>
+            <div class="kid-block" data-code="move-forward">Move Forward</div>
+            <div class="kid-block" data-code="turn-left">Turn Left</div>
+            <div class="kid-block" data-code="turn-right">Turn Right</div>
+          </div>
         </div>
 
-        <div class="kid-actions">
-          <button class="run-btn" id="runButton">▶ Run</button>
-          <button class="reset-btn" id="resetButton">↺ Reset</button>
-        </div>
+        <!-- Program Panel -->
+        <div class="kid-panel">
+          <h2>Your Program</h2>
+          <div class="kid-program" id="programSlots">
+            <div class="kid-slot filled" data-index="0">When Run Code</div>
+            <div class="kid-slot empty" data-index="1">Tap a block to add</div>
+            <div class="kid-slot empty" data-index="2">Tap a block to add</div>
+          </div>
 
-        <div class="kid-message" id="feedback">Drag the blocks into the right order and press Run.</div>
+          <div class="kid-actions">
+            <button class="run-btn" id="runButton">▶ Run</button>
+            <button class="reset-btn" id="resetButton">↺ Reset</button>
+          </div>
+
+          <div class="kid-goal">
+            <strong>Goal</strong>
+            <ul>
+              <li>Use two <strong>Move Forward</strong> blocks</li>
+              <li>Reach the star ⭐</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
+      <!-- Stage Panel -->
       <div class="kid-panel kid-stage">
         <div class="kid-stage-header">
           <span>🎮 Stage</span>
@@ -648,29 +687,35 @@
   <script>
     (() => {
       const slots = Array.from(document.querySelectorAll('.kid-slot'));
+      const blocks = Array.from(document.querySelectorAll('.kid-block'));
       const runButton = document.getElementById('runButton');
       const resetButton = document.getElementById('resetButton');
       const moveCounter = document.getElementById('moveCounter');
       const feedback = document.getElementById('feedback');
       const board = Array.from(document.querySelectorAll('.kid-cell'));
-      let program = ['move-forward', 'turn-right', 'move-forward'];
+      let program = ['when-run', null, null];
       let bunnyIndex = 6;
       let isRunning = false;
-      let draggedIndex = null;
       const validMoves = 2;
 
       const updateSlots = () => {
         slots.forEach((slot, i) => {
           const code = program[i];
-          slot.textContent =
-            code === 'move-forward' ? 'Move Forward' :
-            code === 'turn-left' ? 'Turn Left' :
-            code === 'turn-right' ? 'Turn Right' :
-            'Unknown';
-          slot.classList.remove('empty');
-          slot.classList.add('filled');
+          if (!code || code === 'when-run') {
+            slot.textContent = i === 0 ? 'When Run Code' : 'Click a block to add';
+            slot.classList.remove('empty', 'filled');
+            slot.classList.add(i === 0 ? 'filled' : 'empty');
+          } else {
+            slot.textContent =
+              code === 'move-forward' ? 'Move Forward' :
+              code === 'turn-left' ? 'Turn Left' :
+              code === 'turn-right' ? 'Turn Right' :
+              'Unknown';
+            slot.classList.remove('empty');
+            slot.classList.add('filled');
+          }
         });
-        moveCounter.textContent = `${program.filter((v) => v === 'move-forward').length} / ${validMoves} moves`;
+        moveCounter.textContent = `${program.filter((v, idx) => idx > 0 && v).length} / ${validMoves} moves`;
       };
 
       const renderBoard = (index) => {
@@ -683,50 +728,40 @@
         bunnyCell.classList.add('start');
       };
 
-      const reorderProgram = (fromIndex, toIndex) => {
-        const [moved] = program.splice(fromIndex, 1);
-        program.splice(toIndex, 0, moved);
-        updateSlots();
-      };
-
       const resetProgram = () => {
-        program = ['move-forward', 'turn-right', 'move-forward'];
+        program = ['when-run', null, null];
         bunnyIndex = 6;
         updateSlots();
         renderBoard(6);
-        feedback.textContent = 'Drag the blocks into the right order and press Run.';
+        feedback.textContent = 'Goal: Use two Move Forward blocks so the bunny reaches the star ⭐';
       };
 
+      blocks.forEach((block) => {
+        block.addEventListener('click', () => {
+          if (isRunning) return;
+          const code = block.dataset.code;
+          if (code === 'when-run') return;
+          const slotIndex = program.findIndex((v, idx) => idx > 0 && !v);
+          if (slotIndex === -1) return;
+          program[slotIndex] = code;
+          updateSlots();
+        });
+      });
+
       slots.forEach((slot, idx) => {
-        slot.addEventListener('dragstart', (event) => {
+        if (idx === 0) return;
+        slot.addEventListener('click', () => {
           if (isRunning) return;
-          draggedIndex = idx;
-          slot.classList.add('dragging');
-          event.dataTransfer.effectAllowed = 'move';
-        });
-
-        slot.addEventListener('dragend', () => {
-          slot.classList.remove('dragging');
-          draggedIndex = null;
-        });
-
-        slot.addEventListener('dragover', (event) => {
-          if (isRunning) return;
-          event.preventDefault();
-        });
-
-        slot.addEventListener('drop', (event) => {
-          if (isRunning) return;
-          event.preventDefault();
-          if (draggedIndex === null || draggedIndex === idx) return;
-          reorderProgram(draggedIndex, idx);
-          draggedIndex = null;
+          if (program[idx]) {
+            program[idx] = null;
+            updateSlots();
+          }
         });
       });
 
       runButton.addEventListener('click', async () => {
         if (isRunning) return;
-        const steps = program.filter(Boolean);
+        const steps = program.slice(1).filter(Boolean);
         if (steps.length === 0) {
           feedback.textContent = '⚠️ Add blocks to the program before you run.';
           return;
@@ -756,7 +791,7 @@
         if (position === 8) {
           feedback.innerHTML = '✨ <strong>Success!</strong> The bunny reached the star!';
         } else {
-          feedback.textContent = '❌ Not quite yet. Try a different order.';
+          feedback.textContent = '❌ Not quite yet. Try using two Move Forward blocks.';
         }
       });
 
