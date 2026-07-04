@@ -8,6 +8,8 @@ export interface CourseShelfItem {
   coverColorStart: string;
   coverColorMiddle: string;
   coverColorEnd: string;
+  coverWidth?: number;
+  coverHeight?: number;
   icon: string;
   iconColorStart: string;
   iconColorMiddle: string;
@@ -389,6 +391,8 @@ function createShelfItemFromCourse(course: Course, category: string): CourseShel
     coverColorStart: course.coverColorStart ?? course.color,
     coverColorMiddle: course.coverColorMiddle ?? course.color,
     coverColorEnd: course.coverColorEnd ?? course.color,
+    coverWidth: course.coverWidth ?? undefined,
+    coverHeight: course.coverHeight ?? undefined,
     icon: course.icon,
     iconColorStart: course.iconColorStart ?? "#fff",
     iconColorMiddle: course.iconColorMiddle ?? "#fff",

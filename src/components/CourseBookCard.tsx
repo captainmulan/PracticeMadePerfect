@@ -23,6 +23,8 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
   const coverColorStart = isEmpty ? (homePageData.style?.emptyBook?.coverColorStart ?? "#f1f5f9") : item.coverColorStart;
   const coverColorMiddle = isEmpty ? (homePageData.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9") : item.coverColorMiddle;
   const coverColorEnd = isEmpty ? (homePageData.style?.emptyBook?.coverColorEnd ?? "#f1f5f9") : item.coverColorEnd;
+  const coverWidth = item.coverWidth;
+  const coverHeight = item.coverHeight;
   const displayTitle = isEmpty ? (homePageData.style?.emptyBook?.title ?? "Coming soon") : item.title;
   const iconPosition = item.iconPosition ?? "center-center";
 
@@ -56,6 +58,7 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
     ["--book-color" as any]: coverColorStart,
     ["--book-icon-font" as any]: `${iconFont}px`,
     ["--book-title-font" as any]: `${titleFontSize}px`,
+    width: coverWidth ? `${coverWidth}px` : undefined,
   };
 
   const bookTitleStyles: CSSProperties = {
@@ -88,7 +91,9 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
       {item.link && <span className="book-title" style={bookTitleStyles}>{displayTitle}</span>}
       <div className="book-cover" style={{ 
         background: `linear-gradient(180deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
-        position: "relative"
+        position: "relative",
+        width: coverWidth ? `${coverWidth}px` : undefined,
+        height: coverHeight ? `${coverHeight}px` : undefined,
       }}>
         {isEmpty ? (
           <span className="book-cover-title" style={{ 

@@ -64,8 +64,14 @@ export default function AdminCourses() {
     if (!activeBook || !selectedChapter) return [];
     return flatSteps.filter((step) => step.chapterId === selectedChapter.id);
   }, [activeBook, flatSteps, selectedChapter]);
-  const selectedStep = chapterSteps.find((step) => step.id === selectedStepId) ?? null;
-  
+  const selectedStep = useMemo(() => {
+    if (!chapterSteps.length) return null;
+    if (selectedStepId) {
+      return chapterSteps.find((step) => step.id === selectedStepId) ?? chapterSteps[0];
+    }
+    return chapterSteps[0];
+  }, [chapterSteps, selectedStepId]);
+
   function updateStyleConfig(key: string, value: string | boolean | number) {
     if (!adminData) return;
     const newAdminData = { ...adminData };
@@ -92,6 +98,8 @@ export default function AdminCourses() {
       coverColorStart: "#2563eb",
       coverColorMiddle: "#2563eb",
       coverColorEnd: "#2563eb",
+      coverWidth: 100,
+      coverHeight: 150,
       icon: "📘",
       iconColorStart: "#fff",
       iconColorMiddle: "#fff",
@@ -360,7 +368,7 @@ export default function AdminCourses() {
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Title</h4>
                   <label className="admin-task-editor-field admin-task-editor-full">
-                    <span className="admin-task-editor-label">Title</span>
+                    <span className="admin-task-editor-label">Text</span>
                     <input
                       value={activeBook.title}
                       onChange={(e) => updateActiveBook((c) => ({ ...c, title: e.target.value }))}
@@ -369,7 +377,7 @@ export default function AdminCourses() {
                   </label>
                   <div className="admin-course-meta-row">
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title font size</span>
+                      <span className="admin-task-editor-label">Font size</span>
                       <input
                         type="number"
                         min={12}
@@ -380,7 +388,7 @@ export default function AdminCourses() {
                       />
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title font weight</span>
+                      <span className="admin-task-editor-label">Font weight</span>
                       <select
                         value={activeBook.titleFontWeight ?? "bold"}
                         onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
@@ -402,7 +410,7 @@ export default function AdminCourses() {
                       </select>
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title color</span>
+                      <span className="admin-task-editor-label">Color</span>
                       <input
                         type="color"
                         value={activeBook.titleColor ?? "#0f172a"}
@@ -413,7 +421,7 @@ export default function AdminCourses() {
                   </div>
                   <div className="admin-course-meta-row" style={{ marginTop: "12px" }}>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title position</span>
+                      <span className="admin-task-editor-label">Position</span>
                       <select
                         value={activeBook.titlePosition ?? "center-center"}
                         onChange={(e) => updateActiveBook((c) => ({ ...c, titlePosition: e.target.value as any }))}
@@ -431,7 +439,7 @@ export default function AdminCourses() {
                       </select>
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title alignment</span>
+                      <span className="admin-task-editor-label">Alignment</span>
                       <select
                         value={activeBook.titleAlignment ?? "center"}
                         onChange={(e) => updateActiveBook((c) => ({ ...c, titleAlignment: e.target.value as any }))}
@@ -476,82 +484,28 @@ export default function AdminCourses() {
                       />
                     </label>
                   </div>
-                </div>
-
-                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Title</h4>
-                  <div className="admin-search-row">
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Font Size</span>
-                      <input
-                        type="number"
-                        min={12}
-                        max={48}
-                        value={activeBook.titleFontSize ?? 24}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontSize: Number(e.target.value) }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Font Weight</span>
-                      <select
-                        value={activeBook.titleFontWeight ?? "bold"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
-                        className="admin-grid-select"
-                      >
-                        <option value="normal">Normal</option>
-                        <option value="bold">Bold</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="300">300</option>
-                        <option value="400">400</option>
-                        <option value="500">500</option>
-                        <option value="600">600</option>
-                        <option value="700">700</option>
-                        <option value="800">800</option>
-                        <option value="900">900</option>
-                      </select>
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Color</span>
-                      <input
-                        type="color"
-                        value={activeBook.titleColor ?? "#0f172a"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleColor: e.target.value }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
                   <div className="admin-search-row" style={{ marginTop: "12px" }}>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Position</span>
-                      <select
-                        value={activeBook.titlePosition ?? "bottom-left"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titlePosition: e.target.value as any }))}
-                        className="admin-grid-select"
-                      >
-                        <option value="top-left">Top Left</option>
-                        <option value="top-center">Top Center</option>
-                        <option value="top-right">Top Right</option>
-                        <option value="center-left">Center Left</option>
-                        <option value="center-center">Center Center</option>
-                        <option value="center-right">Center Right</option>
-                        <option value="bottom-left">Bottom Left</option>
-                        <option value="bottom-center">Bottom Center</option>
-                        <option value="bottom-right">Bottom Right</option>
-                      </select>
+                      <span className="admin-task-editor-label">Cover Width</span>
+                      <input
+                        type="number"
+                        min={60}
+                        max={320}
+                        value={activeBook.coverWidth ?? 100}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverWidth: Number(e.target.value) }))}
+                        className="admin-grid-input"
+                      />
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Text Alignment</span>
-                      <select
-                        value={activeBook.titleTextAlign ?? "left"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleTextAlign: e.target.value as any }))}
-                        className="admin-grid-select"
-                      >
-                        <option value="left">Left</option>
-                        <option value="center">Center</option>
-                        <option value="right">Right</option>
-                      </select>
+                      <span className="admin-task-editor-label">Cover Height</span>
+                      <input
+                        type="number"
+                        min={90}
+                        max={450}
+                        value={activeBook.coverHeight ?? 150}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverHeight: Number(e.target.value) }))}
+                        className="admin-grid-input"
+                      />
                     </label>
                   </div>
                 </div>
@@ -560,11 +514,11 @@ export default function AdminCourses() {
                   <h4 style={{ marginTop: 0 }}>Icon</h4>
                   <div className="admin-search-row">
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Icon</span>
+                      <span className="admin-task-editor-label">Symbol</span>
                       <input value={activeBook.icon} onChange={(e) => updateActiveBook((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Icon size</span>
+                      <span className="admin-task-editor-label">Size</span>
                       <input
                         type="number"
                         min={24}
@@ -577,7 +531,7 @@ export default function AdminCourses() {
                   </div>
                   <div className="admin-search-row" style={{ marginTop: "12px" }}>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Icon Color Start</span>
+                      <span className="admin-task-editor-label">Color Start</span>
                       <input
                         type="color"
                         value={activeBook.iconColorStart ?? "#fff"}
@@ -586,7 +540,7 @@ export default function AdminCourses() {
                       />
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Icon Color Middle</span>
+                      <span className="admin-task-editor-label">Color Middle</span>
                       <input
                         type="color"
                         value={activeBook.iconColorMiddle ?? "#fff"}
@@ -595,7 +549,7 @@ export default function AdminCourses() {
                       />
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Icon Color End</span>
+                      <span className="admin-task-editor-label">Color End</span>
                       <input
                         type="color"
                         value={activeBook.iconColorEnd ?? "#fff"}
@@ -606,7 +560,7 @@ export default function AdminCourses() {
                   </div>
                   <div className="admin-search-row" style={{ marginTop: "12px" }}>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Icon position</span>
+                      <span className="admin-task-editor-label">Position</span>
                       <select
                         value={activeBook.iconPosition ?? "center-center"}
                         onChange={(e) => updateActiveBook((c) => ({ ...c, iconPosition: e.target.value as any }))}
@@ -640,7 +594,7 @@ export default function AdminCourses() {
                   </label>
                   <div className="admin-search-row">
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Font Size</span>
+                      <span className="admin-task-editor-label">Font size</span>
                       <input
                         type="number"
                         min={12}
@@ -651,7 +605,7 @@ export default function AdminCourses() {
                       />
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Font Weight</span>
+                      <span className="admin-task-editor-label">Font weight</span>
                       <select
                         value={adminData?.homePageData?.style?.emptyBook?.titleFontWeight ?? "bold"}
                         onChange={(e) => updateStyleConfig("titleFontWeight", e.target.value)}
@@ -673,7 +627,7 @@ export default function AdminCourses() {
                       </select>
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Color</span>
+                      <span className="admin-task-editor-label">Color</span>
                       <input
                         type="color"
                         value={adminData?.homePageData?.style?.emptyBook?.titleColor ?? "#0f172a"}
@@ -684,7 +638,7 @@ export default function AdminCourses() {
                   </div>
                   <div className="admin-search-row" style={{ marginTop: "12px" }}>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Position</span>
+                      <span className="admin-task-editor-label">Position</span>
                       <select
                         value={adminData?.homePageData?.style?.emptyBook?.titlePosition ?? "center-center"}
                         onChange={(e) => updateStyleConfig("titlePosition", e.target.value)}
@@ -702,7 +656,7 @@ export default function AdminCourses() {
                       </select>
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Title Alignment</span>
+                      <span className="admin-task-editor-label">Alignment</span>
                       <select
                         value={adminData?.homePageData?.style?.emptyBook?.titleAlignment ?? adminData?.homePageData?.style?.emptyBook?.titleTextAlign ?? "center"}
                         onChange={(e) => updateStyleConfig("titleAlignment", e.target.value)}
@@ -777,12 +731,22 @@ export default function AdminCourses() {
                         className={`admin-course-step-item ${selectedChapter?.id === chapter.id ? "selected" : ""}`}
                         onClick={() => {
                           setSelectedChapterId(chapter.id);
-                          setSelectedStepId(null);
+                          setSelectedStepId(chapter.steps[0]?.id ?? null);
                         }}
                       >
                         <span>{chapter.chapterIndex + 1}</span>
                         <span>{chapter.title}</span>
-                        <span>{chapter.steps.length} steps</span>
+                        <span>
+                          {(() => {
+                            const types = Array.from(
+                              new Set(
+                                chapter.steps.map((step) => (step.stepType === "code-exam" ? "code" : step.stepType))
+                              )
+                            );
+                            if (types.length === 0) return "none";
+                            return types.join("/");
+                          })()}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -818,7 +782,7 @@ export default function AdminCourses() {
                     >
                       <span>{step.stepIndex}</span>
                       <span>{step.title}</span>
-                      <span>{step.stepType}</span>
+                      <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
                     </button>
                   ))}
                 </div>
@@ -830,10 +794,10 @@ export default function AdminCourses() {
             <section className="admin-course-step-editor panel-bordered">
               {selectedStep ? (
                 <>
-                  <h3>Chapter</h3>
+                  <h3>Step</h3>
                   <div className="admin-step-meta-row">
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Chapter Index</span>
+                      <span className="admin-task-editor-label">Step Index</span>
                       <input
                         type="number"
                         value={selectedStep.stepIndex}

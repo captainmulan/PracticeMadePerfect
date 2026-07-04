@@ -12,6 +12,8 @@ export interface CourseRow {
   icon: string;
   courseIndex: number;
   category: string;
+  coverWidth?: number | null;
+  coverHeight?: number | null;
   raw: string;
 }
 
@@ -45,6 +47,13 @@ function readRowNumber(row: Record<string, unknown>, ...keys: string[]): number 
   return 0;
 }
 
+function readRowOptionalNumber(row: Record<string, unknown>, key: string): number | undefined {
+  const value = row[key];
+  if (value === null || value === undefined || value === "") return undefined;
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
+
 export function ensureCourseSchema(db: Database) {
   db.run(
     `CREATE TABLE IF NOT EXISTS courses (
@@ -55,12 +64,24 @@ export function ensureCourseSchema(db: Database) {
       icon TEXT,
       course_index INTEGER,
       category TEXT,
+      cover_width INTEGER,
+      cover_height INTEGER,
       raw TEXT
     )`,
   );
-  // Add column if it doesn't exist (for existing databases)
+  // Add columns if they don't exist (for existing databases)
   try {
     db.run("ALTER TABLE courses ADD COLUMN category TEXT");
+  } catch {
+    // Ignore error if column already exists
+  }
+  try {
+    db.run("ALTER TABLE courses ADD COLUMN cover_width INTEGER");
+  } catch {
+    // Ignore error if column already exists
+  }
+  try {
+    db.run("ALTER TABLE courses ADD COLUMN cover_height INTEGER");
   } catch {
     // Ignore error if column already exists
   }
@@ -110,6 +131,9 @@ function courseToRows(course: Course): { course: CourseRow; chapters: ChapterRow
     icon: course.icon,
     courseIndex: course.courseIndex,
     category: course.category,
+    // Coerce undefined -> null so sql.js binding doesn't receive undefined
+    coverWidth: course.coverWidth ?? null,
+    coverHeight: course.coverHeight ?? null,
     raw: JSON.stringify(course, null, 2),
   };
 
@@ -187,7 +211,7 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
   const { course: courseRow, chapters, steps } = courseToRows(course);
 
   const courseStmt = db.prepare(
-    "REPLACE INTO courses (id, title, description, color, icon, course_index, category, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    "REPLACE INTO courses (id, title, description, color, icon, course_index, category, cover_width, cover_height, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   try {
     courseStmt.bind([
@@ -198,6 +222,8 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
       courseRow.icon,
       courseRow.courseIndex,
       courseRow.category,
+      courseRow.coverWidth,
+      courseRow.coverHeight,
       courseRow.raw,
     ]);
     courseStmt.step();
@@ -293,7 +319,7 @@ export function queryCourseRows(db: Database): CourseRow[] {
   ensureCourseSchema(db);
   const rows: CourseRow[] = [];
   const stmt = db.prepare(
-    "SELECT id, title, description, color, icon, course_index, category, raw FROM courses ORDER BY course_index, title",
+    "SELECT id, title, description, color, icon, course_index, category, cover_width, cover_height, raw FROM courses ORDER BY course_index, title",
   );
   try {
     while (stmt.step()) {
@@ -306,6 +332,8 @@ export function queryCourseRows(db: Database): CourseRow[] {
         icon: String(row.icon ?? "📘"),
         courseIndex: readRowNumber(row, "course_index", "courseIndex"),
         category: String(row.category ?? "IT"),
+        coverWidth: readRowOptionalNumber(row, "cover_width"),
+        coverHeight: readRowOptionalNumber(row, "cover_height"),
         raw: String(row.raw ?? ""),
       });
     }
@@ -419,6 +447,9 @@ export function assembleCourses(
       coverColorStart: courseMeta.coverColorStart ?? courseRow.color,
       coverColorMiddle: courseMeta.coverColorMiddle ?? courseRow.color,
       coverColorEnd: courseMeta.coverColorEnd ?? courseRow.color,
+      // Prefer explicit DB columns when present to avoid stale `raw` JSON overriding updated values
+      coverWidth: courseRow.coverWidth ?? courseMeta.coverWidth,
+      coverHeight: courseRow.coverHeight ?? courseMeta.coverHeight,
       icon: courseRow.icon,
       iconColorStart: courseMeta.iconColorStart ?? "#ffffff",
       iconColorMiddle: courseMeta.iconColorMiddle ?? "#ffffff",

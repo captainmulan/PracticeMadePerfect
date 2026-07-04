@@ -206,12 +206,19 @@
 .page-admin .admin-task-editor textarea.admin-grid-input {
   width: 100%;
   min-width: 0;
-  border: 1px solid #d1d5db;
-  border-radius: 14px;
-  padding: 14px 16px;
-  font-size: 0.95rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.92rem;
   background: #ffffff;
   color: #0f172a;
+}
+
+.page-admin .admin-task-editor input.admin-grid-input[type="color"] {
+  width: 88px;
+  max-width: 88px;
+  min-width: 88px;
+  padding: 8px;
 }
 
 .page-admin .admin-task-editor textarea.admin-grid-input {
@@ -403,6 +410,18 @@
   padding: 6px 10px !important;
   font-size: 0.85rem !important;
   min-width: auto !important;
+}
+
+.page-admin .admin-task-editor-field input.admin-grid-input[type="color"] {
+  width: 100px;
+  max-width: 100px;
+  min-width: 100px;
+  padding: 8px;
+}
+
+.page-admin .admin-task-editor-field select.admin-grid-select.small,
+.page-admin .admin-task-editor-field input.admin-grid-input.small {
+  width: auto;
 }
 
 @media (max-width: 900px) {

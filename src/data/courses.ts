@@ -59,6 +59,8 @@ export interface Course {
   coverColorStart: string;
   coverColorMiddle: string;
   coverColorEnd: string;
+  coverWidth?: number;
+  coverHeight?: number;
   icon: string;
   iconColorStart: string;
   iconColorMiddle: string;

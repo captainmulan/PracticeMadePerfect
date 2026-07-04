@@ -210,6 +210,27 @@ Since the last review, the project evolved from interview practice to interactiv
 - **Admin database recovery** — one-click restore to bundled defaults
 - **Hardened delete actions** — prevent accidental book/task removal
 - **Password-protected restore** — require `admin123` password for critical admin actions
+ 
+### Admin persistence: cover size bug and fix
+
+- **Symptom:** When changing a book's `coverHeight` (or other new admin-configured fields) in the admin UI and saving, the value could revert to an older value (for example, change to `200` then save and it returns to `150`). The bookshelf rendering also did not reflect the saved size.
+- **Root cause:** New configuration fields were added to both the `raw` JSON (stored in the `raw` column) and to explicit DB columns (e.g. `cover_width`). When assembling course objects the code preferred the `raw` JSON values which could be stale and overwrite freshly-saved DB column values.
+- **Fix applied:** Persistence code now writes `cover_width` / `cover_height` columns and `assembleCourses` prefers explicit DB columns when present (`courseRow.coverWidth ?? courseMeta.coverWidth`) so the DB column value wins over stale `raw` JSON.
+- **Effect:** After saving from the admin UI the new numeric dimensions persist, and the bookshelf/card rendering reads the stored column values.
+
+**Guidance for adding future admin configuration fields**
+
+1. Add the new optional property to the `Course` type in `src/data/courses.ts`.
+2. Extend `ensureCourseSchema` in `src/utils/sqliteBrowserCourses.ts` to add a dedicated column (e.g. `my_field`) and include it in the `CREATE TABLE` and `ALTER TABLE` fallbacks for existing DBs.
+3. Add the column to `CourseRow` and to `courseToRows` so the column is written when saving.
+4. Update `saveCourseBundleToDb` to persist the new column in the `REPLACE INTO courses (...)` statement.
+5. Update `queryCourseRows` to select the new column and parse numbers with `readRowOptionalNumber` if numeric.
+6. Update `assembleCourses` to prefer the explicit DB column (`courseRow.myField ?? courseMeta.myField`) so that fresh DB columns are not overridden by older `raw` JSON.
+7. Add admin UI controls in `src/pages/AdminCourses.tsx` and map values into `activeBook` updates and saving.
+8. Update UI renderers (`src/utils/courseShelf.ts`, `src/components/CourseBookCard.tsx`) to use the new values and have sensible fallbacks.
+9. Run `pnpm exec tsc --noEmit` to verify types and then test the admin save + reload flow in the browser.
+
+If you want, add a short unit test or a debug command to dump the `courses` row after save to confirm the DB column values (useful when adding new numeric configuration fields).
 ---
 
 ## 3. Current Implementation Status

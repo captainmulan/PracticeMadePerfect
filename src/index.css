@@ -2536,11 +2536,11 @@ textarea {
 }
 
 .panel-bordered {
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.5);
   border-radius: 18px;
   padding: 18px;
   background: #ffffff;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .admin-search-results-panel,
@@ -3158,10 +3158,13 @@ textarea {
     padding: 15px;
   }
 
+  /* Use a 3-column grid on small screens so three books fit per row */
   .books {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
     padding: 0 10px;
+    align-items: end;
   }
 
   .book img,
@@ -3173,6 +3176,8 @@ textarea {
   .book {
     --book-icon-font: calc(var(--book-icon-font, 72px) * 0.7);
     --book-title-font: calc(var(--book-title-font, 24px) * 0.7);
+    max-width: none;
+    width: auto;
   }
 
   .tab {

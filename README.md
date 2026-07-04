@@ -129,6 +129,17 @@ The peek code overlay is implemented as an absolute overlay that sits on top of 
 - Editor width changes: confirm overlay is absolute within the editor shell (not a flex child) so it does not participate in normal layout flow.
 - Theme mismatch: confirm `background` and `color` values in both index.css and theme files match the desired dark palette.
 
+### Admin persistence note
+
+- If you add new admin-configurable fields (for example `coverWidth` / `coverHeight`), add both a `Course` type property and an explicit SQLite column, then ensure the persistence layer writes/reads the column. The codebase prefers explicit DB columns over the `raw` JSON value to avoid stale JSON overriding newly-saved values. See `src/utils/sqliteBrowserCourses.ts` for `ensureCourseSchema`, `courseToRows`, `saveCourseBundleToDb`, and `assembleCourses`.
+
+When adding fields:
+
+1. Add the property to `src/data/courses.ts`.
+2. Add a DB column in `ensureCourseSchema` and to the `REPLACE INTO courses` SQL.
+3. Update `queryCourseRows` and `assembleCourses` to read the column and prefer it over `raw` JSON.
+4. Add admin UI inputs in `src/pages/AdminCourses.tsx` and test save + reload.
+
 ## Customization notes
 
 - Admin theme controls now use gradient start/middle/end stops for all backgrounds, so the app uses a single source of truth for shared theme values.
