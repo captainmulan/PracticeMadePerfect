@@ -457,16 +457,16 @@
   <div class="kid-ch1-app">
     <div class="kid-ch1-desc">
       Learn how to move the bunny 🐰 using blocks.<br>
-      Build a 7-step program, then press Run to guide the bunny to the star.<br>
+      Build a 6-step program, then press Run to guide the bunny to the star.<br>
       Turn blocks rotate the bunny; use them before a Move Forward block.<br>
-      <strong>Goal</strong> - Reach the star ⭐ in exactly 7 steps.
+      <strong>Goal</strong> - Reach the star ⭐ in exactly 6 steps.
     </div>
-
     <div class="kid-ch1-layout">
       <div class="kid-left-column">
         <div class="kid-panel">
           <h2>Blocks or Steps</h2>
           <div class="kid-block-pool" id="blockPool">
+            <div class="kid-block" data-code="move-forward" draggable="true">Move Forward</div>
             <div class="kid-block" data-code="move-forward" draggable="true">Move Forward</div>
             <div class="kid-block" data-code="move-forward" draggable="true">Move Forward</div>
             <div class="kid-block" data-code="move-forward" draggable="true">Move Forward</div>
@@ -489,7 +489,6 @@
             <div class="kid-slot empty" data-index="3"></div>
             <div class="kid-slot empty" data-index="4"></div>
             <div class="kid-slot empty" data-index="5"></div>
-            <div class="kid-slot empty" data-index="6"></div>
           </div>
 
           <div class="kid-actions">
@@ -504,7 +503,7 @@
       <div class="kid-panel kid-stage">
         <div class="kid-stage-header">
           <span>🎮 Stage</span>
-          <span id="moveCounter">0 / 7 steps</span>
+          <span id="moveCounter">0 / 6 steps</span>
         </div>
         <div class="kid-board" id="boardGrid">
           <!-- 6x6 grid -->
@@ -558,6 +557,7 @@
     (() => {
       const slots = Array.from(document.querySelectorAll('.kid-slot'));
       const blocks = Array.from(document.querySelectorAll('.kid-block'));
+      const blockPool = document.getElementById('blockPool');
       const runButton = document.getElementById('runButton');
       const resetButton = document.getElementById('resetButton');
       const moveCounter = document.getElementById('moveCounter');
@@ -567,8 +567,32 @@
       let bunnyIndex = 6;
       let bunnyDirection = 'right';
       let isRunning = false;
-      let draggedBlockElement = null;
-      const validMoves = 7;
+      let nextBlockId = 0;
+      const validMoves = 6;
+      const originalBlockPoolHtml = blockPool ? blockPool.innerHTML : '';
+      const attachDragHandlersToPool = () => {
+        if (!blockPool) return;
+        const poolBlocks = Array.from(blockPool.querySelectorAll('.kid-block'));
+        poolBlocks.forEach(attachDragHandlers);
+      };
+
+      const getBlockId = (block) => block.dataset.blockId || `block-${nextBlockId++}`;
+
+      const attachDragHandlers = (block) => {
+        block.dataset.blockId = getBlockId(block);
+        block.addEventListener('dragstart', (event) => {
+          if (isRunning) return;
+          const code = block.dataset.code;
+          const blockId = block.dataset.blockId;
+          event.dataTransfer.effectAllowed = 'copy';
+          event.dataTransfer.setData('text/plain', JSON.stringify({ code, blockId }));
+          block.classList.add('dragging');
+        });
+
+        block.addEventListener('dragend', () => {
+          block.classList.remove('dragging');
+        });
+      };
 
       const getPositionCoords = (position) => ({
         row: Math.floor(position / 6),
@@ -626,26 +650,15 @@
         program = [];
         bunnyIndex = 6;
         bunnyDirection = 'right';
+        blockPool.innerHTML = originalBlockPoolHtml;
+        attachDragHandlersToPool();
         updateSlots();
         renderBoard(6, bunnyDirection);
+        moveCounter.textContent = `0 / ${validMoves} steps`;
         feedback.textContent = 'Drag a block to a slot and press Run. Tap a filled slot to remove it.';
       };
 
-      blocks.forEach((block) => {
-        block.addEventListener('dragstart', (event) => {
-          if (isRunning) return;
-          const code = block.dataset.code;
-          draggedBlockElement = block;
-          event.dataTransfer.effectAllowed = 'copy';
-          event.dataTransfer.setData('text/plain', code);
-          block.classList.add('dragging');
-        });
-
-        block.addEventListener('dragend', () => {
-          block.classList.remove('dragging');
-          draggedBlockElement = null;
-        });
-      });
+      blocks.forEach((block) => attachDragHandlers(block));
 
       slots.forEach((slot, index) => {
         slot.addEventListener('dragover', (event) => {
@@ -664,14 +677,16 @@
           event.preventDefault();
           event.stopPropagation();
           slot.classList.remove('drag-over');
-          const code = event.dataTransfer.getData('text/plain');
-          if (!code) return;
-          program[index] = code;
+          const raw = event.dataTransfer.getData('text/plain');
+          if (!raw) return;
+          const payload = JSON.parse(raw);
+          if (!payload || !payload.code) return;
+          program[index] = payload.code;
           updateSlots();
-          if (draggedBlockElement && draggedBlockElement.parentElement) {
-            draggedBlockElement.parentElement.removeChild(draggedBlockElement);
+          const draggedBlock = document.querySelector(`[data-block-id="${payload.blockId}"]`);
+          if (draggedBlock && draggedBlock.parentElement) {
+            draggedBlock.parentElement.removeChild(draggedBlock);
           }
-          draggedBlockElement = null;
           feedback.textContent = 'Block added to the program. Nice!';
         });
 
@@ -682,13 +697,13 @@
             program[index] = null;
             updateSlots();
             feedback.textContent = 'Block removed from the program.';
-            if (removedCode) {
+            if (removedCode && blockPool) {
               const restoredBlock = document.createElement('div');
               restoredBlock.className = 'kid-block';
               restoredBlock.draggable = true;
               restoredBlock.dataset.code = removedCode;
               restoredBlock.textContent = removedCode === 'move-forward' ? 'Move Forward' : removedCode === 'turn-left' ? 'Turn Left' : 'Turn Right';
-              blocks[0].parentElement.appendChild(restoredBlock);
+              blockPool.appendChild(restoredBlock);
               attachDragHandlers(restoredBlock);
             }
           }
