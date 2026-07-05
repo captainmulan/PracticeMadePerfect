@@ -39,11 +39,10 @@
 .app-shell:has(.page-home) .app-header-inner,
 .app-main:has(.page-home) {
   width: 100%;
-  max-width: var(--app-content-max);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--app-content-gutter);
-  padding-right: var(--app-content-gutter);
+  max-width: none;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
   box-sizing: border-box;
 }
 
@@ -64,6 +63,11 @@
 .app-shell:has(.course-wizard-page) .app-header {
   display: block;
   padding: calc(6px + env(safe-area-inset-top, 0px)) 0 4px;
+}
+
+.app-shell:has(.practice-page) .app-header,
+.app-shell:has(.course-wizard-page) .app-header {
+  padding: 0;
 }
 
 .app-shell:has(.page-home) .app-header-inner,
@@ -200,11 +204,11 @@
 
 /* ── Home hero ── */
 .page-home .home-hero {
-  background: var(--shelf-card);
+  background: transparent;
   color: var(--shelf-ink);
-  border: 1px solid var(--shelf-border);
-  border-radius: var(--app-radius);
-  box-shadow: 0 8px 22px var(--shelf-shadow);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   margin-bottom: 0;
   overflow: hidden;
 }
@@ -258,7 +262,7 @@
   border: none;
   box-shadow: none;
   padding: 0;
-  border-radius: var(--app-radius);
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -266,18 +270,16 @@
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 16px 18px 24px;
+  padding: 0;
   border-radius: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(250, 247, 244, 0.85) 100%);
-  border: 1px solid var(--shelf-border);
-  box-shadow:
-    0 12px 32px var(--shelf-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .page-home .tabs {
-  margin-bottom: 20px;
-  border-bottom-color: var(--shelf-border);
+  margin-bottom: 12px;
+  border-bottom-color: transparent;
 }
 
 .page-home .tab {
@@ -322,14 +324,19 @@
 .course-wizard-page .practice-workspace {
   width: 100%;
   min-height: 100vh;
-  height: auto;
-  max-height: none;
+  height: 100vh;
+  max-height: 100vh;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .practice-page .practice-workspace-body,
 .course-wizard-page .practice-workspace-body {
   gap: 0;
   padding: 0;
+  flex: 1 1 auto;
 }
 
 .practice-page .practice-workspace-top-bar,
@@ -413,6 +420,12 @@
   border-bottom: 1px solid var(--shelf-border);
 }
 
+.practice-page .practice-workspace-step-header,
+.course-wizard-page .practice-workspace-step-header {
+  padding: 0;
+  border-bottom: none;
+}
+
 .practice-workspace-desc {
   margin: 0;
   color: var(--shelf-ink-muted);
@@ -438,6 +451,12 @@
   overflow: auto; /* make inner content scrollable when it grows */
   position: relative; /* positioning context for absolute peek overlay */
   align-items: stretch;
+}
+
+.practice-page .practice-workspace-body,
+.course-wizard-page .practice-workspace-body {
+  gap: 0;
+  padding: 0;
 }
 
 .practice-workspace-editor-shell {

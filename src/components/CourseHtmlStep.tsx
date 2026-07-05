@@ -47,10 +47,6 @@ export default function CourseHtmlStep({
       canNext={canNext}
     >
       <div
-        style={{
-          padding: "2rem",
-          fontFamily: "Arial, sans-serif",
-        }}
         dangerouslySetInnerHTML={{
           __html: step.contentHtml ?? "<p><em>No lesson content yet.</em></p>",
         }}

@@ -522,6 +522,7 @@ textarea {
   overflow-x: hidden;
 }
 
+.app-main:has(.page-home),
 .app-main:has(.practice-page),
 .app-main:has(.course-wizard-page) {
   padding: 0;
