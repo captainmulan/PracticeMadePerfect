@@ -31,6 +31,12 @@ export default function CourseHtmlStep({
   canPrevious = false,
   canNext = false,
 }: CourseHtmlStepProps) {
+  const contentHtml = step.contentHtml ?? "<p><em>No lesson content yet.</em></p>";
+  const isFullDocument = /<\s*html/i.test(contentHtml);
+  const srcDoc = isFullDocument
+    ? contentHtml
+    : `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${contentHtml}</body></html>`;
+
   return (
     <PracticeWorkspace
       bookName={bookName}
@@ -46,10 +52,12 @@ export default function CourseHtmlStep({
       canPrevious={canPrevious}
       canNext={canNext}
     >
-      <div
-        dangerouslySetInnerHTML={{
-          __html: step.contentHtml ?? "<p><em>No lesson content yet.</em></p>",
-        }}
+      <iframe
+        title={step.title}
+        className="practice-html-iframe"
+        sandbox="allow-scripts allow-same-origin"
+        srcDoc={srcDoc}
+        loading="lazy"
       />
     </PracticeWorkspace>
   );

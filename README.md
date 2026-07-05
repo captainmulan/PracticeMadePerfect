@@ -89,6 +89,21 @@ Chapters are rendered as HTML without requiring code rebuilds. The content is st
 
 This enables non-developers to update course content by editing data files without touching React code.
 
+## Standalone raw HTML lessons
+
+Some lessons are shipped as self-contained HTML files so they can be viewed directly in the browser or embedded inside the app workspace.
+
+Recommended workflow:
+1. Create or edit the lesson in the public copy, for example [public/move-bunny-demo-responsive.html](public/move-bunny-demo-responsive.html).
+2. Keep the lesson self-contained with its own HTML, CSS, and JavaScript so it can run independently.
+3. If the lesson should also appear in the book/offline version, mirror the same file into the matching book folder, such as [book_html/kid-programming-for-age-7-10/move-bunny-demo-responsive.html](book_html/kid-programming-for-age-7-10/move-bunny-demo-responsive.html).
+4. Verify the lesson both as a direct HTML page and inside the app course viewer, especially for interactive demos that rely on scripts.
+
+Project context:
+- Raw HTML lessons are rendered inside an iframe in the app so embedded scripts can run correctly.
+- This was needed because simple inline injection did not execute lesson JavaScript reliably in the workspace view.
+- When changing a lesson, keep the public version and the book copy aligned so the experience stays consistent.
+
 ## Admin Features
 
 ### Home Page Customization

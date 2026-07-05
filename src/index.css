@@ -586,6 +586,30 @@ textarea {
   max-height: calc(100vh - 300px) !important;
 }
 
+.practice-html-iframe {
+  width: 100%;
+  min-height: 760px;
+  height: 100%;
+  border: none;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 900px) {
+  .practice-html-iframe {
+    min-height: 620px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .practice-html-iframe {
+    min-height: 520px;
+    border-radius: 12px;
+  }
+}
+
 .practice-page {
   gap: 16px;
 }

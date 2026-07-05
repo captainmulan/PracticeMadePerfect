@@ -104,6 +104,8 @@
       font-size: 0.95rem;
       color: #475569;
       line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     .kid-ch1-header .progress {
@@ -138,18 +140,6 @@
       flex-direction: column;
       gap: 10px;
       overflow: hidden;
-    }
-
-    .kid-ch1-desc {
-      color: #475569;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 16px;
-      white-space: pre-wrap;
-    }
-
-    .kid-ch1-desc strong {
-      color: #0f172a;
     }
 
     .kid-left-column {
@@ -190,6 +180,11 @@
       text-align: center;
       color: #92400e;
       box-shadow: 0 8px 18px rgba(245, 158, 11, 0.16);
+    }
+
+    .kid-blocks {
+      grid-template-columns: repeat(2, minmax(100px, 1fr));
+      gap: 10px;
     }
 
     .kid-stage {
@@ -233,8 +228,8 @@
       font-weight: 700;
     }
 
-    .kid-program,
-    .kid-blocks {
+    .kid-blocks,
+    .kid-program {
       display: grid;
       gap: 10px;
     }
@@ -243,7 +238,8 @@
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }
 
-    .kid-slot {
+    .kid-slot,
+    .kid-block {
       border-radius: 14px;
       background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 100%);
       border: 2px solid #c7d2fe;
@@ -251,20 +247,27 @@
       font-weight: 700;
       font-size: 0.85rem;
       cursor: grab;
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       user-select: none;
       text-align: center;
       color: #3730a3;
+      min-height: 54px;
+      display: grid;
+      place-items: center;
+    }
+
+    .kid-slot.empty {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 600;
     }
 
     .kid-slot.dragging {
       opacity: 0.6;
-    }
-
-    .kid-slot.drag-over,
-    .kid-slot.selected {
-      transform: scale(1.02);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+      transform: scale(0.98);
+      cursor: grabbing;
     }
 
     .kid-actions {
@@ -275,25 +278,15 @@
 
     .kid-actions button {
       width: 100%;
+      min-width: 0;
       border: none;
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 10px 14px;
       font-weight: 700;
-      font-size: 0.84rem;
+      font-size: 0.88rem;
       cursor: pointer;
       transition: all 0.2s ease;
       user-select: none;
-    }
-
-    .kid-feedback {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #0f172a;
-      font-size: 0.84rem;
-      line-height: 1.4;
-      margin-top: 8px;
     }
 
     .run-btn {
@@ -404,8 +397,8 @@
       .kid-ch1-toolbar .chapter-title { font-size: 0.92rem; }
       .kid-ch1-toolbar .chapter-nav button { width: 32px; height: 32px; }
 
-      /* Layout: stack panels for mobile and avoid horizontal scroll */
-      .kid-ch1-layout { grid-template-columns: 1fr; gap: 10px; min-width: auto; }
+      /* Layout: stack panels vertically to fit narrow screens */
+      .kid-ch1-layout { grid-template-columns: 1fr; gap: 8px; min-width: auto; }
       .kid-stage { order: 0; }
 
       /* Panels: slightly reduced internal padding for mobile */
@@ -415,11 +408,11 @@
       /* Program blocks and actions */
       .kid-blocks { grid-template-columns: 1fr; }
       .kid-program { grid-template-columns: 1fr; }
-      /* Make action buttons compact on mobile */
+      /* Compact action buttons on mobile */
       .kid-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; }
       .kid-actions button { width: auto; min-width: 108px; padding: 6px 10px; font-size: 0.82rem; }
 
-      /* Board: preserve square cells and keep the stage layout stable */
+      /* Board: reduce height and allow responsive fit */
       .kid-board { aspect-ratio: auto; min-height: 260px; max-height: none; overflow-x: auto; padding: 8px; gap: 6px; width: 100%; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); }
       .kid-cell { aspect-ratio: 1; width: 100%; min-width: 0; min-height: 0; font-size: 1.6rem; }
       .kid-board::before { display: none; }
@@ -455,13 +448,6 @@
 </head>
 <body>
   <div class="kid-ch1-app">
-    <div class="kid-ch1-desc">
-      Learn how to move the bunny 🐰 using blocks.<br>
-      Build a 7-step program, then press Run to guide the bunny to the star.<br>
-      Turn blocks rotate the bunny; use them before a Move Forward block.<br>
-      <strong>Goal</strong> - Reach the star ⭐ in exactly 7 steps.
-    </div>
-
     <div class="kid-ch1-layout">
       <div class="kid-left-column">
         <div class="kid-panel">
@@ -567,7 +553,6 @@
       let bunnyIndex = 6;
       let bunnyDirection = 'right';
       let isRunning = false;
-      let draggedBlockElement = null;
       const validMoves = 7;
 
       const getPositionCoords = (position) => ({
@@ -628,6 +613,7 @@
         bunnyDirection = 'right';
         updateSlots();
         renderBoard(6, bunnyDirection);
+        runButton.textContent = '▶ Run';
         feedback.textContent = 'Drag a block to a slot and press Run. Tap a filled slot to remove it.';
       };
 
@@ -635,7 +621,6 @@
         block.addEventListener('dragstart', (event) => {
           if (isRunning) return;
           const code = block.dataset.code;
-          draggedBlockElement = block;
           event.dataTransfer.effectAllowed = 'copy';
           event.dataTransfer.setData('text/plain', code);
           block.classList.add('dragging');
@@ -643,7 +628,6 @@
 
         block.addEventListener('dragend', () => {
           block.classList.remove('dragging');
-          draggedBlockElement = null;
         });
       });
 
@@ -668,29 +652,15 @@
           if (!code) return;
           program[index] = code;
           updateSlots();
-          if (draggedBlockElement && draggedBlockElement.parentElement) {
-            draggedBlockElement.parentElement.removeChild(draggedBlockElement);
-          }
-          draggedBlockElement = null;
           feedback.textContent = 'Block added to the program. Nice!';
         });
 
         slot.addEventListener('click', () => {
           if (isRunning) return;
           if (slot.classList.contains('filled')) {
-            const removedCode = program[index];
             program[index] = null;
             updateSlots();
             feedback.textContent = 'Block removed from the program.';
-            if (removedCode) {
-              const restoredBlock = document.createElement('div');
-              restoredBlock.className = 'kid-block';
-              restoredBlock.draggable = true;
-              restoredBlock.dataset.code = removedCode;
-              restoredBlock.textContent = removedCode === 'move-forward' ? 'Move Forward' : removedCode === 'turn-left' ? 'Turn Left' : 'Turn Right';
-              blocks[0].parentElement.appendChild(restoredBlock);
-              attachDragHandlers(restoredBlock);
-            }
           }
         });
       });
@@ -701,15 +671,13 @@
         if (steps.length === 0) {
           feedback.textContent = '⚠️ Add blocks to the program before you run.';
           return;
-        }
-        if (steps.length !== validMoves) {
+        }        if (steps.length !== validMoves) {
           feedback.textContent = `⚠️ Your program must use exactly ${validMoves} steps.`;
           return;
-        }
-        isRunning = true;
+        }        isRunning = true;
         runButton.disabled = true;
         resetButton.disabled = true;
-        feedback.textContent = '▶ Running...';
+        runButton.textContent = '▶ Running...';
 
         let position = bunnyIndex;
         let direction = bunnyDirection;
@@ -718,10 +686,8 @@
             position = getNextPosition(position, direction);
           } else if (step === 'turn-right') {
             direction = direction === 'right' ? 'down' : direction === 'down' ? 'left' : direction === 'left' ? 'up' : 'right';
-            position = getNextPosition(position, direction);
           } else if (step === 'turn-left') {
             direction = direction === 'up' ? 'right' : direction === 'right' ? 'down' : direction === 'down' ? 'left' : 'up';
-            position = getNextPosition(position, direction);
           }
           bunnyDirection = direction;
           renderBoard(position, direction);
@@ -733,11 +699,12 @@
         isRunning = false;
         runButton.disabled = false;
         resetButton.disabled = false;
+        runButton.textContent = '▶ Run';
 
         if (position === 17) {
-          feedback.innerHTML = '✨ <strong>Success!</strong> The bunny reached the star!';
+          alert('✨ Success! The bunny reached the star!');
         } else {
-          feedback.textContent = '❌ Not quite yet. Try a different order.';
+          alert('❌ Not quite yet. Try a different order.');
         }
       });
 
