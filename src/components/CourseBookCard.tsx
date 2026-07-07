@@ -85,6 +85,8 @@ export default function CourseBookCard({ item }: CourseBookCardProps) {
     padding: '0 8px',
     boxSizing: 'border-box',
     textAlign: titleAlignment,
+    // remove heavy text shadow for empty/placeholder books so "Normal" weight renders correctly
+    textShadow: isEmpty ? 'none' : undefined,
   };
 
   const iconContainerStyles = getPositionStyles(iconPosition);

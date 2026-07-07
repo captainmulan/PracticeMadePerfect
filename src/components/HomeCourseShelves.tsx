@@ -28,43 +28,29 @@ export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
               const emptyBookWidth = homePageData.style?.emptyBook?.coverWidth ?? 100;
               const emptyBookHeight = homePageData.style?.emptyBook?.coverHeight ?? 150;
 
+              // Create a placeholder CourseShelfItem so it renders the same
+              // way as other books (CourseBookCard handles placeholder styling).
+              const placeholderItem = {
+                id: `empty-${rowIndex}-${emptyIndex}`,
+                title: homePageData.style?.emptyBook?.title ?? "Coming soon",
+                description: "",
+                color: "#f1f5f9",
+                coverColorStart: homePageData.style?.emptyBook?.coverColorStart ?? "#f1f5f9",
+                coverColorMiddle: homePageData.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9",
+                coverColorEnd: homePageData.style?.emptyBook?.coverColorEnd ?? "#f1f5f9",
+                coverWidth: emptyBookWidth,
+                coverHeight: emptyBookHeight,
+                icon: "",
+                iconColorStart: "#fff",
+                iconColorMiddle: "#fff",
+                iconColorEnd: "#fff",
+                meta: "",
+                placeholder: true,
+                category: row.title,
+              } as any;
+
               return (
-                <div
-                  key={`empty-${rowIndex}-${emptyIndex}`}
-                  className="book empty-space"
-                  style={{
-                    width: `${emptyBookWidth}px`,
-                    minWidth: `${emptyBookWidth}px`,
-                    maxWidth: `${emptyBookWidth}px`,
-                  }}
-                >
-                  <div
-                    className="book-cover"
-                    style={{
-                      width: `${emptyBookWidth}px`,
-                      height: `${emptyBookHeight}px`,
-                      background: "linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%)",
-                      position: "relative",
-                    }}
-                  >
-                    <span
-                      className="empty-book-text"
-                      style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        color: "#000",
-                        fontSize: "12px",
-                        textAlign: "center",
-                        width: "80%",
-                      }}
-                    >
-                      Coming soon
-                    </span>
-                    <div className="book-spine" />
-                  </div>
-                </div>
+                <CourseBookCard key={`empty-${rowIndex}-${emptyIndex}`} item={placeholderItem} />
               );
             })}
           </div>

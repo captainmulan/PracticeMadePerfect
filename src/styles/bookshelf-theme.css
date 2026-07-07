@@ -714,11 +714,9 @@
   overflow: hidden;
 }
 
-.book-cover::before,
-.book-cover::after {
-  display: none !important;
-  content: none !important;
-}
+/* Allow cover pseudo-elements for depth/3D effects (restore defaults)
+   Previously the pseudo-elements were forcibly hidden which removed
+   the 3D/gradient accents on some book covers in mobile views. */
 
 .book-icon {
   border: none !important;

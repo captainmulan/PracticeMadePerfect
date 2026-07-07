@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Myanmar Letter Tracing - Chapter 1</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #fff8e8;
+        --card: #ffffff;
+        --ink: #2f2a1b;
+        --accent: #2e8b57;
+        --accent-soft: #e6f7ed;
+        --guide: rgba(46, 139, 87, 0.16);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #fff2c7, var(--bg));
+        color: var(--ink);
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+      }
+
+      .page {
+        width: min(920px, 100%);
+        background: var(--card);
+        border-radius: 24px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+        padding: 24px;
+      }
+
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(24px, 3vw, 34px);
+      }
+
+      .subtitle {
+        margin: 0;
+        font-size: 16px;
+        color: #5b5343;
+        max-width: 560px;
+        line-height: 1.5;
+      }
+
+      .badge {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .board {
+        border: 3px solid #f3d38d;
+        border-radius: 18px;
+        padding: 16px;
+        background: #fffdf7;
+      }
+
+      .canvas-wrap {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px solid #e8e0c9;
+        background: #ffffff;
+        touch-action: none;
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+        cursor: crosshair;
+      }
+
+      .guide-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.95;
+      }
+
+      .guide-overlay svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* keep the guide path subtle and readable */
+      #guideOverlay path {
+        opacity: 0.95;
+      }
+      .guide-letter {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        font-size: clamp(120px, 24vw, 220px);
+        color: var(--guide);
+        font-family: "Noto Sans Myanmar", "Myanmar Text", "Padauk", serif;
+        user-select: none;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 16px;
+        background: var(--accent);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: #f1e4be;
+        color: #6a532b;
+      }
+
+      .tip {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #6b624f;
+      }
+
+      @media (max-width: 640px) {
+        .page { padding: 16px; }
+        .controls { flex-direction: column; align-items: stretch; }
+        button { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="hero">
+        <div>
+          <h1>Myanmar Letter Tracing</h1>
+          <p class="subtitle">Chapter 1 · Start with the first letter: က. Trace slowly and follow the shape like a little road for your pencil.</p>
+        </div>
+        <div class="badge">Letter 1: က</div>
+      </div>
+
+      <section class="board">
+        <div class="canvas-wrap">
+          <canvas id="drawCanvas" width="900" height="520"></canvas>
+          <div class="guide-overlay" id="guideOverlay">
+            <svg viewBox="0 0 900 520" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <marker id="guideArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="#ff7a00" />
+                </marker>
+              </defs>
+
+              <circle cx="210" cy="170" r="6" fill="#ff7a00" opacity="0.95"></circle>
+              <path
+                d="M210 170 C245 132, 292 120, 330 142 C365 162, 372 198, 344 220 C319 240, 277 242, 245 224 C220 210, 208 191, 210 170"
+                stroke="#ff7a00"
+                stroke-width="5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-dasharray="8 10"
+                marker-end="url(#guideArrow)"></path>
+            </svg>
+          </div>
+          <div class="guide-letter" id="guideLetter">က</div>
+        </div>
+        <div class="controls">
+          <button id="clearBtn">Clear page</button>
+          <button id="toggleGuideBtn" class="secondary">Hide guide</button>
+        </div>
+        <p class="tip">Tip: Start at the top, make one smooth stroke, and try again until it feels easy.</p>
+      </section>
+    </main>
+
+    <script>
+      const canvas = document.getElementById('drawCanvas');
+      const ctx = canvas.getContext('2d');
+      const guideLetter = document.getElementById('guideLetter');
+      const guideOverlay = document.getElementById('guideOverlay');
+      const clearBtn = document.getElementById('clearBtn');
+      const toggleGuideBtn = document.getElementById('toggleGuideBtn');
+
+      const DPR = window.devicePixelRatio || 1;
+      const resizeCanvas = () => {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * DPR;
+        canvas.height = rect.height * DPR;
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#1f6f4f';
+      };
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      let drawing = false;
+      let lastPoint = null;
+
+      const getPoint = (event) => {
+        const rect = canvas.getBoundingClientRect();
+        let clientX = event.clientX;
+        let clientY = event.clientY;
+        if (event.touches && event.touches[0]) {
+          clientX = event.touches[0].clientX;
+          clientY = event.touches[0].clientY;
+        }
+        return {
+          x: clientX - rect.left,
+          y: clientY - rect.top,
+        };
+      };
+
+      const startDraw = (event) => {
+        event.preventDefault();
+        drawing = true;
+        lastPoint = getPoint(event);
+        ctx.beginPath();
+        ctx.moveTo(lastPoint.x, lastPoint.y);
+      };
+
+      const draw = (event) => {
+        if (!drawing) return;
+        event.preventDefault();
+        const point = getPoint(event);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+        lastPoint = point;
+      };
+
+      const stopDraw = () => {
+        drawing = false;
+        lastPoint = null;
+      };
+
+      canvas.addEventListener('pointerdown', startDraw);
+      canvas.addEventListener('pointermove', draw);
+      window.addEventListener('pointerup', stopDraw);
+      window.addEventListener('pointercancel', stopDraw);
+      canvas.addEventListener('pointerleave', stopDraw);
+
+      clearBtn.addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      });
+
+      toggleGuideBtn.addEventListener('click', () => {
+        const isHidden = guideOverlay.style.display === 'none';
+        if (isHidden) {
+          guideOverlay.style.display = 'block';
+          guideLetter.style.opacity = '1';
+          toggleGuideBtn.textContent = 'Hide guide';
+        } else {
+          guideOverlay.style.display = 'none';
+          guideLetter.style.opacity = '0';
+          toggleGuideBtn.textContent = 'Show guide';
+        }
+      });
+    </script>
+  </body>
+</html>

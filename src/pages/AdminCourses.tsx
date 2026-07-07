@@ -37,6 +37,7 @@ export default function AdminCourses() {
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "chapter" | "empty-book">("book");
+  const [bookSubTab, setBookSubTab] = useState<"general" | "title" | "cover" | "logo">("general");
   const [adminData, setAdminData] = useState<any>(null);
   const [isDeletingBook, setIsDeletingBook] = useState(false);
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
@@ -259,6 +260,17 @@ export default function AdminCourses() {
       return;
     }
 
+    const enteredPassword = window.prompt("Enter admin password to confirm book deletion:", "");
+    if (!enteredPassword) {
+      setMessage("Deletion cancelled.");
+      return;
+    }
+
+    if (enteredPassword !== "admin123") {
+      setMessage("Incorrect password. Deletion cancelled.");
+      return;
+    }
+
     setIsDeletingBook(true);
     setMessage("Deleting book...");
 
@@ -321,83 +333,93 @@ export default function AdminCourses() {
             </div>
             {bookBuilderTab === "book" ? (
               <>
-                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>General</h4>
-                  <label className="admin-task-editor-field admin-task-editor-full">
-                    <span className="admin-task-editor-label">ID</span>
-                    <input
-                      value={activeBook.id}
-                      onChange={(e) => updateActiveBook((c) => ({ ...c, id: e.target.value }))}
-                      className="admin-grid-input"
-                    />
-                  </label>
-                  <label className="admin-task-editor-field admin-task-editor-full">
-                    <span className="admin-task-editor-label">Category</span>
-                    <select
-                      value={activeBook.category}
-                      onChange={(e) => updateActiveBook((c) => ({ ...c, category: e.target.value }))}
-                      className="admin-grid-select"
-                    >
-                      <option value="IT">IT</option>
-                      <option value="Language">Language</option>
-                      <option value="Kid">Kid</option>
-                      <option value="Migration">Migration</option>
-                      <option value="Fiction">Fiction</option>
-                    </select>
-                  </label>
-                  <label className="admin-task-editor-field admin-task-editor-full">
-                    <span className="admin-task-editor-label">Book Index</span>
-                    <input
-                      type="number"
-                      value={activeBook.courseIndex}
-                      onChange={(e) => updateActiveBook((c) => ({ ...c, courseIndex: Number(e.target.value) }))}
-                      className="admin-grid-input"
-                    />
-                  </label>
-                  <label className="admin-task-editor-field admin-task-editor-full">
-                    <span className="admin-task-editor-label">Description</span>
-                    <textarea
-                      rows={3}
-                      value={activeBook.description}
-                      onChange={(e) => updateActiveBook((c) => ({ ...c, description: e.target.value }))}
-                      className="admin-grid-input"
-                    />
-                  </label>
+                <div className="admin-tabs" style={{ marginBottom: "16px" }}>
+                  <button type="button" className={`admin-tab ${bookSubTab === "general" ? "active" : ""}`} onClick={() => setBookSubTab("general")}>General</button>
+                  <button type="button" className={`admin-tab ${bookSubTab === "title" ? "active" : ""}`} onClick={() => setBookSubTab("title")}>Title</button>
+                  <button type="button" className={`admin-tab ${bookSubTab === "cover" ? "active" : ""}`} onClick={() => setBookSubTab("cover")}>Cover</button>
+                  <button type="button" className={`admin-tab ${bookSubTab === "logo" ? "active" : ""}`} onClick={() => setBookSubTab("logo")}>Logo</button>
                 </div>
 
-                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Title</h4>
-                  <label className="admin-task-editor-field admin-task-editor-full">
-                    <span className="admin-task-editor-label">Text</span>
-                    <input
-                      value={activeBook.title}
-                      onChange={(e) => updateActiveBook((c) => ({ ...c, title: e.target.value }))}
-                      className="admin-grid-input"
-                    />
-                  </label>
-                  <div className="admin-course-meta-row">
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Font size</span>
+                {bookSubTab === "general" && (
+                  <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                    <h4 style={{ marginTop: 0 }}>General</h4>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">ID</span>
                       <input
-                        type="number"
-                        min={12}
-                        max={48}
-                        value={activeBook.titleFontSize ?? 24}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontSize: Number(e.target.value) }))}
+                        value={activeBook.id}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, id: e.target.value }))}
                         className="admin-grid-input"
                       />
                     </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Font weight</span>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Category</span>
                       <select
-                        value={activeBook.titleFontWeight ?? "bold"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
+                        value={activeBook.category}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, category: e.target.value }))}
                         className="admin-grid-select"
                       >
-                        <option value="normal">Normal</option>
-                        <option value="bold">Bold</option>
-                        <option value="lighter">Lighter</option>
-                        <option value="bolder">Bolder</option>
+                        <option value="IT">IT</option>
+                        <option value="Language">Language</option>
+                        <option value="Kid">Kid</option>
+                        <option value="Migration">Migration</option>
+                        <option value="Fiction">Fiction</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Book Index</span>
+                      <input
+                        type="number"
+                        value={activeBook.courseIndex}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, courseIndex: Number(e.target.value) }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Description</span>
+                      <textarea
+                        rows={3}
+                        value={activeBook.description}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, description: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                )}
+
+                {bookSubTab === "title" && (
+                  <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                    <h4 style={{ marginTop: 0 }}>Title</h4>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Text</span>
+                      <input
+                        value={activeBook.title}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, title: e.target.value }))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <div className="admin-course-meta-row">
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Font size</span>
+                        <input
+                          type="number"
+                          min={12}
+                          max={48}
+                          value={activeBook.titleFontSize ?? 24}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontSize: Number(e.target.value) }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Font weight</span>
+                        <select
+                          value={activeBook.titleFontWeight ?? "bold"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, titleFontWeight: e.target.value }))}
+                          className="admin-grid-select"
+                        >
+                          <option value="normal">Normal</option>
+                          <option value="bold">Bold</option>
+                          <option value="lighter">Lighter</option>
+                          <option value="bolder">Bolder</option>
                         <option value="100">100</option>
                         <option value="200">200</option>
                         <option value="300">300</option>
@@ -452,133 +474,138 @@ export default function AdminCourses() {
                     </label>
                   </div>
                 </div>
+                )}
 
-                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Cover Colors</h4>
-                  <div className="admin-search-row">
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Color Start</span>
-                      <input
-                        type="color"
-                        value={activeBook.coverColorStart ?? "#2563eb"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorStart: e.target.value }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Color Middle</span>
-                      <input
-                        type="color"
-                        value={activeBook.coverColorMiddle ?? "#2563eb"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorMiddle: e.target.value }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Color End</span>
-                      <input
-                        type="color"
-                        value={activeBook.coverColorEnd ?? "#2563eb"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorEnd: e.target.value }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
+                {bookSubTab === "cover" && (
+                  <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                    <h4 style={{ marginTop: 0 }}>Cover Colors</h4>
+                    <div className="admin-search-row">
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Cover Color Start</span>
+                        <input
+                          type="color"
+                          value={activeBook.coverColorStart ?? "#2563eb"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorStart: e.target.value }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Cover Color Middle</span>
+                        <input
+                          type="color"
+                          value={activeBook.coverColorMiddle ?? "#2563eb"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorMiddle: e.target.value }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Cover Color End</span>
+                        <input
+                          type="color"
+                          value={activeBook.coverColorEnd ?? "#2563eb"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, coverColorEnd: e.target.value }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                    </div>
+                    <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Cover Width</span>
+                        <input
+                          type="number"
+                          min={60}
+                          max={320}
+                          value={activeBook.coverWidth ?? 100}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, coverWidth: Number(e.target.value) }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Cover Height</span>
+                        <input
+                          type="number"
+                          min={90}
+                          max={450}
+                          value={activeBook.coverHeight ?? 150}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, coverHeight: Number(e.target.value) }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                    </div>
                   </div>
-                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Width</span>
-                      <input
-                        type="number"
-                        min={60}
-                        max={320}
-                        value={activeBook.coverWidth ?? 100}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverWidth: Number(e.target.value) }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Height</span>
-                      <input
-                        type="number"
-                        min={90}
-                        max={450}
-                        value={activeBook.coverHeight ?? 150}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, coverHeight: Number(e.target.value) }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
-                </div>
+                )}
 
-                <div className="panel panel-bordered" style={{ padding: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Icon</h4>
-                  <div className="admin-search-row">
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Symbol</span>
-                      <input value={activeBook.icon} onChange={(e) => updateActiveBook((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Size</span>
-                      <input
-                        type="number"
-                        min={24}
-                        max={120}
-                        value={activeBook.iconSize ?? 80}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconSize: Number(e.target.value) }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
+                {bookSubTab === "logo" && (
+                  <div className="panel panel-bordered" style={{ padding: "16px" }}>
+                    <h4 style={{ marginTop: 0 }}>Logo</h4>
+                    <div className="admin-search-row">
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Symbol</span>
+                        <input value={activeBook.icon} onChange={(e) => updateActiveBook((c) => ({ ...c, icon: e.target.value }))} className="admin-grid-input" />
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Size</span>
+                        <input
+                          type="number"
+                          min={24}
+                          max={120}
+                          value={activeBook.iconSize ?? 80}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, iconSize: Number(e.target.value) }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                    </div>
+                    <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Color Start</span>
+                        <input
+                          type="color"
+                          value={activeBook.iconColorStart ?? "#fff"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorStart: e.target.value }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Color Middle</span>
+                        <input
+                          type="color"
+                          value={activeBook.iconColorMiddle ?? "#fff"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorMiddle: e.target.value }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Color End</span>
+                        <input
+                          type="color"
+                          value={activeBook.iconColorEnd ?? "#fff"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorEnd: e.target.value }))}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                    </div>
+                    <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Position</span>
+                        <select
+                          value={activeBook.iconPosition ?? "center-center"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, iconPosition: e.target.value as any }))}
+                          className="admin-grid-select"
+                        >
+                          <option value="top-left">Top Left</option>
+                          <option value="top-center">Top Center</option>
+                          <option value="top-right">Top Right</option>
+                          <option value="center-left">Center Left</option>
+                          <option value="center-center">Center Center</option>
+                          <option value="center-right">Center Right</option>
+                          <option value="bottom-left">Bottom Left</option>
+                          <option value="bottom-center">Bottom Center</option>
+                          <option value="bottom-right">Bottom Right</option>
+                        </select>
+                      </label>
+                    </div>
                   </div>
-                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Color Start</span>
-                      <input
-                        type="color"
-                        value={activeBook.iconColorStart ?? "#fff"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorStart: e.target.value }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Color Middle</span>
-                      <input
-                        type="color"
-                        value={activeBook.iconColorMiddle ?? "#fff"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorMiddle: e.target.value }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Color End</span>
-                      <input
-                        type="color"
-                        value={activeBook.iconColorEnd ?? "#fff"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconColorEnd: e.target.value }))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
-                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Position</span>
-                      <select
-                        value={activeBook.iconPosition ?? "center-center"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, iconPosition: e.target.value as any }))}
-                        className="admin-grid-select"
-                      >
-                        <option value="top-left">Top Left</option>
-                        <option value="top-center">Top Center</option>
-                        <option value="top-right">Top Right</option>
-                        <option value="center-left">Center Left</option>
-                        <option value="center-center">Center Center</option>
-                        <option value="center-right">Center Right</option>
-                        <option value="bottom-left">Bottom Left</option>
-                        <option value="bottom-center">Bottom Center</option>
-                        <option value="bottom-right">Bottom Right</option>
-                      </select>
-                    </label>
-                  </div>
-                </div>
+                )}
               </>
             ) : bookBuilderTab === "empty-book" ? (
               <>
