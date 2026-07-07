@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chapter 4.1</title>
+<style>body{font-family:Inter,system-ui,Arial,sans-serif;margin:24px;background:#fff;color:#0f172a;max-width:800px;margin-left:auto;margin-right:auto}a{color:#0f172a}</style>
+</head>
+<body>
+  <h1>Chapter 4.1 — Looping Activity</h1>
+  <p>A small example: press the button to make a dancer move in a loop.</p>
+  <div>
+    <button id="start">Start Loop</button>
+    <button id="stop">Stop</button>
+    <div id="box" style="width:60px;height:60px;background:#fde68a;margin-top:12px;border-radius:8px;transition:transform .25s"></div>
+  </div>
+  <script>
+    let tid = null; let pos=0;
+    document.getElementById('start').addEventListener('click', ()=>{
+      if(tid) return; pos=0; tid = setInterval(()=>{ pos = (pos+1)%8; document.getElementById('box').style.transform = `translateX(${pos*8}px)`; }, 250);
+    });
+    document.getElementById('stop').addEventListener('click', ()=>{ clearInterval(tid); tid=null; });
+  </script>
+  <p style="margin-top:12px"><a href="chapter4.html">◀ Back to Chapter 4</a></p>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chapter 2.1 — Move the Bunny</title>
+  <style>
+    :root{--bg:#f8fafc;--panel:#fff;--accent:#0f172a}
+    body{font-family:Inter,system-ui,Arial,sans-serif;margin:12px;background:var(--bg);color:var(--accent)}
+    .container{max-width:720px;margin:0 auto}
+    h1{font-size:1.4rem}
+    .play-area{width:320px;height:320px;background:#e6eef8;border-radius:10px;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);gap:4px;padding:8px;box-sizing:border-box}
+    .cell{background:linear-gradient(180deg,#fff,#f1f5f9);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .bunny{font-size:1.6rem;}
+    .star{font-size:1.6rem}
+    .controls{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    button.btn{padding:8px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff}
+    .status{margin-top:12px;color:#064e3b}
+    .row{display:flex;gap:8px}
+    .touch-grid{display:grid;grid-template-columns:repeat(3,48px);gap:6px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chapter 2.1 — Move the Bunny</h1>
+    <p>Use arrow keys or the on-screen buttons to move the bunny to the star ⭐. Try it!</p>
+
+    <div id="play" class="play-area" aria-label="Play area"></div>
+
+    <div class="controls">
+      <div>
+        <button id="reset" class="btn">Reset</button>
+      </div>
+      <div style="margin-left:auto">
+        <a href="chapter2.html">◀ Back to Chapter 2</a>
+      </div>
+    </div>
+
+    <div class="status" id="status">Moves: <span id="moves">0</span></div>
+
+    <div style="margin-top:12px">
+      <div class="touch-grid" id="touchBtns">
+        <div></div><button class="btn" data-dir="up">↑</button><div></div>
+        <button class="btn" data-dir="left">←</button><button class="btn" data-dir="down">↓</button><button class="btn" data-dir="right">→</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple 8x8 grid
+    const cols = 8, rows = 8;
+    const play = document.getElementById('play');
+    let bunny = {x:1,y:6};
+    let star = {x:6,y:1};
+    let moves = 0;
+
+    function buildGrid(){
+      play.innerHTML = '';
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          const cell = document.createElement('div');
+          cell.className='cell';
+          cell.dataset.x=c;cell.dataset.y=r;
+          if(c===bunny.x && r===bunny.y){ cell.innerHTML='<span class="bunny">🐰</span>'; }
+          else if(c===star.x && r===star.y){ cell.innerHTML='<span class="star">⭐</span>'; }
+          play.appendChild(cell);
+        }
+      }
+    }
+
+    function setStatus(text){ document.getElementById('status').textContent = text; }
+    function update(){ buildGrid(); document.getElementById('moves').textContent = moves; checkWin(); }
+
+    function move(dx,dy){
+      const nx = bunny.x + dx, ny = bunny.y + dy;
+      if(nx<0||ny<0||nx>=cols||ny>=rows) return;
+      bunny.x = nx; bunny.y = ny; moves++; update();
+    }
+
+    function checkWin(){
+      if(bunny.x===star.x && bunny.y===star.y){
+        setStatus('You did it! 🎉 Moves: ' + moves);
+        showWinOverlay();
+      } else {
+        setStatus('Moves: ' + moves);
+      }
+    }
+
+    function showWinOverlay(){
+      const o = document.createElement('div');
+      o.style.position='fixed';o.style.left=0;o.style.top=0;o.style.right=0;o.style.bottom=0;
+      o.style.display='flex';o.style.alignItems='center';o.style.justifyContent='center';
+      o.style.background='rgba(2,6,23,0.6)';o.style.zIndex=9999;
+      o.innerHTML = '<div style="background:#fff;padding:20px;border-radius:8px;text-align:center;max-width:320px">'<
+      + 'h2>Well done!</h2><p>You moved the bunny to the star.</p><button id="overlayClose" class="btn">Play again</button></div>';
+      document.body.appendChild(o);
+      document.getElementById('overlayClose').addEventListener('click', ()=>{ document.body.removeChild(o); reset(); });
+    }
+
+    function reset(){ bunny={x:1,y:6}; star={x:6,y:1}; moves=0; update(); }
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='ArrowUp') move(0,-1);
+      if(e.key==='ArrowDown') move(0,1);
+      if(e.key==='ArrowLeft') move(-1,0);
+      if(e.key==='ArrowRight') move(1,0);
+    });
+
+    document.getElementById('reset').addEventListener('click', reset);
+
+    document.getElementById('touchBtns').addEventListener('click',(e)=>{
+      const d = e.target.getAttribute('data-dir'); if(!d) return;
+      if(d==='up') move(0,-1); if(d==='down') move(0,1); if(d==='left') move(-1,0); if(d==='right') move(1,0);
+    });
+
+    // initial
+    buildGrid();
+  </script>
+</body>
+</html>
