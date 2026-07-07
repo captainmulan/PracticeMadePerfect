@@ -97,8 +97,8 @@
         "borderBottomColor": "#e2e8f0",
         "chapterLabelText": "Chapter",
         "chapterLabelColor": "#f9fbfb",
-        "chapterLabelFontSize": 10,
-        "chapterLabelFontWeight": "700",
+        "chapterLabelFontSize": 15,
+        "chapterLabelFontWeight": "bolder",
         "chapterNumberFontSize": 24,
         "chapterNumberFontWeight": "700",
         "chapterNumberColor": "#0f172a",
@@ -122,7 +122,9 @@
         "descriptionFontWeight": "normal",
         "descriptionLineHeight": 1.6,
         "descriptionPaddingTop": 16,
-        "descriptionPaddingBottom": 16
+        "descriptionPaddingBottom": 16,
+        "descriptionPaddingLeft": 12,
+        "descriptionPaddingRight": 12
       },
       "wizardWorkspace": {
         "backgroundColor": "#ffffff",
