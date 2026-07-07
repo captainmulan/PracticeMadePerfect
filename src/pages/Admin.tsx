@@ -212,6 +212,7 @@ export default function Admin() {
   const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books">("home");
   const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
+  const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "label" | "number" | "bookname" | "title" | "description">("background");
   const [isRestoringDb, setIsRestoringDb] = useState(false);
 
   useEffect(() => {
@@ -1282,6 +1283,27 @@ export default function Admin() {
             </div>
             {wizardStyleTab === "topinfo" && (
               <>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "background" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("background")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Background & Border
+                  </button>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "label" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("label")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Chapter Label
+                  </button>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "number" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("number")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Chapter Number
+                  </button>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "bookname" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("bookname")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Book Name
+                  </button>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "title" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("title")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Chapter Title
+                  </button>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "description" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("description")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Description
+                  </button>
+                </div>
+                {wizardTopInfoSubTab === "background" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Top Info Background & Border</h4>
                   <GradientColorPicker3
@@ -1307,6 +1329,8 @@ export default function Admin() {
                     />
                   </label>
                 </div>
+                )}
+                {wizardTopInfoSubTab === "label" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Chapter Label</h4>
                   <label className="admin-task-editor-field">
@@ -1362,6 +1386,8 @@ export default function Admin() {
                     </label>
                   </div>
                 </div>
+                )}
+                {wizardTopInfoSubTab === "number" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Chapter Number</h4>
                   <div className="admin-search-row">
@@ -1422,6 +1448,8 @@ export default function Admin() {
                     setGradientEnd={(v) => updateStyleConfig("wizardTopInfo", "chapterNumberBackgroundColorGradientEnd", v)}
                   />
                 </div>
+                )}
+                {wizardTopInfoSubTab === "bookname" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Book Name</h4>
                   <div className="admin-search-row">
@@ -1469,6 +1497,8 @@ export default function Admin() {
                     </label>
                   </div>
                 </div>
+                )}
+                {wizardTopInfoSubTab === "title" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Chapter Title</h4>
                   <div className="admin-search-row">
@@ -1516,6 +1546,8 @@ export default function Admin() {
                     </label>
                   </div>
                 </div>
+                )}
+                {wizardTopInfoSubTab === "description" && (
                 <div className="panel panel-bordered" style={{ padding: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Chapter Description</h4>
                   <div className="admin-search-row">
@@ -1610,6 +1642,7 @@ export default function Admin() {
                     </label>
                   </div>
                 </div>
+                )}
               </>
             )}
             {wizardStyleTab === "workspace" && (

@@ -7,10 +7,10 @@
   align-items: center;
   gap: 12px;
   color: #f8fafc;
-  padding: 10px 16px;
-  border-radius: 16px;
+  padding: 0 16px;
+  border-radius: 0;
   width: 100%;
-  box-shadow: 0 14px 40px rgba(67, 56, 202, 0.16);
+  box-shadow: none;
   min-height: 56px;
 }
 

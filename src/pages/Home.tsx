@@ -4,6 +4,7 @@ import { getHomePageData } from "../utils/contentStore";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
 import { getHomeCourseShelfRows, type CourseShelfRow } from "../utils/courseShelf";
 import HomeCourseShelves from "../components/HomeCourseShelves";
+import ExchangeRatePanel from "../components/ExchangeRatePanel";
 
 export default function Home() {
   const [heroCollapsed, setHeroCollapsed] = useState(true);
@@ -126,6 +127,7 @@ export default function Home() {
           )}
         </div>
       </section>
+      <ExchangeRatePanel />
     </div>
   );
 }

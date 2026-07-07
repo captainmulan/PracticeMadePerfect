@@ -125,6 +125,8 @@ export const homePageData = {
       descriptionLineHeight: 1.6,
       descriptionPaddingTop: 16,
       descriptionPaddingBottom: 16,
+      descriptionPaddingLeft: 12,
+      descriptionPaddingRight: 12,
     },
     wizardWorkspace: {
       backgroundColor: "#ffffff",

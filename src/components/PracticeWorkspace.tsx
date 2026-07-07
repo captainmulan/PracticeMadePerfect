@@ -149,6 +149,8 @@ export default function PracticeWorkspace({
         <div className="practice-workspace-step-header" style={{
           paddingTop: `${(style?.wizardTopInfo?.descriptionPaddingTop ?? 16) / 16}rem`,
           paddingBottom: `${(style?.wizardTopInfo?.descriptionPaddingBottom ?? 16) / 16}rem`,
+          paddingLeft: `${(style?.wizardTopInfo?.descriptionPaddingLeft ?? 12) / 16}rem`,
+          paddingRight: `${(style?.wizardTopInfo?.descriptionPaddingRight ?? 12) / 16}rem`,
           background: buildGradient(
             style?.wizardTopInfo?.descriptionBackgroundColorGradientStart,
             style?.wizardTopInfo?.descriptionBackgroundColorGradientMiddle,
