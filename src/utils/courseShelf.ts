@@ -356,33 +356,41 @@ const placeholderRows: CourseShelfRow[] = [
   },
 ];
 
-const courseRowDefinitions: Array<{
-  title: string;
-  matcher: (course: Course) => boolean;
-}> = [
-  {
-    title: "IT",
-    matcher: (course) => course.category === "IT",
-  },
-  {
-    title: "Language",
-    matcher: (course) => course.category === "Language",
-  },
-  {
-    title: "Kid",
-    matcher: (course) => course.category === "Kid",
-  },
-  {
-    title: "Migration",
-    matcher: (course) => course.category === "Migration",
-  },
-  {
-    title: "Fiction",
-    matcher: (course) => course.category === "Fiction",
-  },
-];
 
-function createShelfItemFromCourse(course: Course, category: string): CourseShelfItem {
+function buildShelfRow(title: string, items: CourseShelfItem[]): CourseShelfRow {
+  const CHUNK = 7;
+  const placeholder = placeholderRows.find((row) => row.title === title);
+  const base = items.length > 0
+    ? items
+    : placeholder?.items.map((it, i) => ({ ...it, id: `${it.id}-placeholder-${i}`, placeholder: true, category: title })) ?? [];
+
+  const completedItems = [...base];
+  while (completedItems.length < CHUNK) {
+    completedItems.push({
+      id: `empty-${completedItems.length}`,
+      title: "Coming soon",
+      description: "",
+      color: "#f1f5f9",
+      coverColorStart: "#f1f5f9",
+      coverColorMiddle: "#f1f5f9",
+      coverColorEnd: "#f1f5f9",
+      icon: "",
+      iconColorStart: "#fff",
+      iconColorMiddle: "#fff",
+      iconColorEnd: "#fff",
+      meta: "",
+      placeholder: true,
+      category: title,
+    });
+  }
+
+  return {
+    title,
+    items: completedItems,
+  };
+}
+
+export function createShelfItemFromCourse(course: Course, category: string): CourseShelfItem {
   return {
     id: course.id,
     title: course.title,
@@ -411,38 +419,28 @@ function createShelfItemFromCourse(course: Course, category: string): CourseShel
 }
 
 export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
-  const CHUNK = 7;
+  const popularItems = courses
+    .filter((course) => typeof course.pIndex === "number" && (course.pIndex ?? 0) > 0)
+    .slice()
+    .sort((a, b) => (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER))
+    .map((course) => createShelfItemFromCourse(course, "Popular"));
 
-  const courseRows = courseRowDefinitions.map((definition) => {
-    const items = courses.filter(definition.matcher).map((course) => createShelfItemFromCourse(course, definition.title));
-    const placeholder = placeholderRows.find((row) => row.title === definition.title);
-    const base = items.length > 0
-      ? items
-      : placeholder?.items.map((it, i) => ({ ...it, id: `${it.id}-placeholder-${i}`, placeholder: true, category: definition.title })) ?? [];
+  const kidItems = courses
+    .filter((course) => course.category === "Kid")
+    .map((course) => createShelfItemFromCourse(course, "Kid"));
 
-    const completedItems = [...base];
-    while (completedItems.length < CHUNK) completedItems.push({ 
-      id: `empty-${completedItems.length}`, 
-      title: "Coming soon", 
-      description: "", 
-      color: "#f1f5f9", 
-      coverColorStart: "#f1f5f9", 
-      coverColorMiddle: "#f1f5f9", 
-      coverColorEnd: "#f1f5f9", 
-      icon: "", 
-      iconColorStart: "#fff", 
-      iconColorMiddle: "#fff", 
-      iconColorEnd: "#fff", 
-      meta: "", 
-      placeholder: true, 
-      category: definition.title 
-    });
+  return [
+    buildShelfRow("Popular", popularItems),
+    { title: "Search", items: [] },
+    buildShelfRow("Kid", kidItems),
+    { title: "Other", items: [] },
+  ];
+}
 
-    return {
-      title: definition.title,
-      items: completedItems,
-    };
-  });
+export function getCourseShelfRowForCategory(courses: Course[], category: string): CourseShelfRow {
+  const items = courses
+    .filter((course) => course.category === category)
+    .map((course) => createShelfItemFromCourse(course, category));
 
-  return courseRows;
+  return buildShelfRow(category, items);
 }

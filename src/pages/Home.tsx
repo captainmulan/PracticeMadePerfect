@@ -2,18 +2,37 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getHomePageData } from "../utils/contentStore";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { getHomeCourseShelfRows, type CourseShelfRow } from "../utils/courseShelf";
+import { createShelfItemFromCourse, getCourseShelfRowForCategory, getHomeCourseShelfRows, type CourseShelfRow } from "../utils/courseShelf";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
+import CourseBookCard from "../components/CourseBookCard";
 
 export default function Home() {
   const [heroCollapsed, setHeroCollapsed] = useState(true);
-  const [selectedTab, setSelectedTab] = useState("IT");
+  const [selectedTab, setSelectedTab] = useState<"Popular" | "Search" | "Kid" | "Other">("Popular");
+  const [selectedOtherSubTab, setSelectedOtherSubTab] = useState<"IT" | "Fiction" | "Migration" | "Language">("IT");
+  const [searchQuery, setSearchQuery] = useState("");
   const data = getHomePageData();
   const style = data.style;
   const { courses, loaded: coursesLoaded } = useCourseCatalog();
   const rows = useMemo(() => getHomeCourseShelfRows(courses), [courses]);
-  const selectedRow: CourseShelfRow | undefined = rows.find((row) => row.title === selectedTab) || rows[0];
+  const selectedRow: CourseShelfRow | undefined = useMemo(() => {
+    if (selectedTab === "Other") {
+      return getCourseShelfRowForCategory(courses, selectedOtherSubTab);
+    }
+    if (selectedTab === "Search") {
+      const query = searchQuery.trim().toLowerCase();
+      const searchItems = (query
+        ? courses.filter((course) => [course.title, course.description, course.category].some((value) => String(value).toLowerCase().includes(query)))
+        : courses
+      )
+        .slice()
+        .sort((a, b) => a.title.localeCompare(b.title))
+        .map((course) => createShelfItemFromCourse(course, "Search"));
+      return { title: "Search", items: searchItems };
+    }
+    return rows.find((row) => row.title === selectedTab) || rows[0];
+  }, [courses, rows, searchQuery, selectedOtherSubTab, selectedTab]);
 
   return (
     <div className="page-content page-home">
@@ -91,37 +110,72 @@ export default function Home() {
         }}
       >
         <div className="container">
-          <nav className="tabs">
+          <nav className="home-tabs">
             {rows.map((row) => (
               <button
                 key={row.title}
                 type="button"
-                className={`tab ${selectedRow?.title === row.title ? "active" : ""}`}
-                onClick={() => setSelectedTab(row.title)}
-                style={{
-                  background: selectedRow?.title === row.title 
-                    ? (style?.tabs?.useActiveBackgroundColorGradient 
-                        ? `linear-gradient(180deg, ${style.tabs.activeBackgroundColorGradientStart} 0%, ${style.tabs.activeBackgroundColorGradientEnd} 100%)` 
-                        : (style?.tabs?.activeBackgroundColor ?? "#0f172a")) 
-                    : (style?.tabs?.useBackgroundColorGradient 
-                        ? `linear-gradient(180deg, ${style.tabs.backgroundColorGradientStart} 0%, ${style.tabs.backgroundColorGradientEnd} 100%)` 
-                        : (style?.tabs?.backgroundColor ?? "#e2e8f0")),
-                  color: selectedRow?.title === row.title 
-                    ? (style?.tabs?.activeColor ?? "#ffffff") 
-                    : (style?.tabs?.color ?? "#334155"),
-                  fontFamily: style?.tabs?.fontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-                  fontWeight: style?.tabs?.fontWeight ?? "600",
-                }}
+                className={`home-tab-button ${selectedRow?.title === row.title ? "active" : ""}`}
+                onClick={() => setSelectedTab(row.title as "Popular" | "Search" | "Kid" | "Other")}
               >
                 {row.title}
               </button>
             ))}
           </nav>
 
+          {selectedTab === "Other" && (
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
+              {(["IT", "Fiction", "Migration", "Language"] as const).map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  className={`tab ${selectedOtherSubTab === category ? "active" : ""}`}
+                  onClick={() => setSelectedOtherSubTab(category)}
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: "999px",
+                    background: selectedOtherSubTab === category
+                      ? (style?.tabs?.activeBackgroundColor ?? "#0f172a")
+                      : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
+                    color: selectedOtherSubTab === category ? (style?.tabs?.activeColor ?? "#ffffff") : (style?.tabs?.color ?? "#334155"),
+                  }}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {selectedTab === "Search" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search by book name, type, or topic"
+                style={{
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "8px",
+                  padding: "10px 12px",
+                  fontSize: "14px",
+                  maxWidth: "420px",
+                }}
+              />
+              <div style={{ color: "#64748b", fontSize: "14px" }}>
+                {selectedRow && selectedRow.items.length > 0 ? `${selectedRow.items.length} results` : "No books found"}
+              </div>
+            </div>
+          )}
+
           {!coursesLoaded ? (
             <div className="home-course-loading">Loading courses...</div>
           ) : courses.length === 0 ? (
             <div className="home-course-loading">No courses yet. Create one in Admin.</div>
+          ) : selectedTab === "Search" ? (
+            selectedRow && selectedRow.items.length > 0 ? (
+              <HomeCourseShelves row={selectedRow} />
+            ) : (
+              <div className="home-course-loading">No books matched your search.</div>
+            )
           ) : (
             selectedRow && <HomeCourseShelves row={selectedRow} />
           )}

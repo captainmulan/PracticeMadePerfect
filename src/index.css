@@ -3362,33 +3362,40 @@ textarea {
 
     /* minimal spine/bevel for flat style */
 
-/* Tabs styled as a shelf sub-menu - flat bookshelf aesthetic */
+/* Tabs styled as a shelf sub-menu - orange bar menu aesthetic */
 .home-tabs {
   display: flex;
-  gap: 40px;
-  margin-bottom: 60px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 48px;
+  padding: 8px;
+  background: #fdf7f2;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+  flex-wrap: wrap;
 }
 
 .home-tabs .home-tab-button {
-  background: none;
-  border: none;
-  color: #555;
-  font-size: 18px;
+  background: #fb923c;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  padding: 10px 20px;
-  transition: background 0.15s ease, color 0.15s ease;
+  padding: 12px 22px;
+  border-radius: 10px;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(251, 146, 60, 0.18);
 }
 
 .home-tabs .home-tab-button.active {
-  background-color: var(--tab-active);
-  color: white;
-  border-radius: 4px;
+  background: #f97316;
+  box-shadow: 0 8px 16px rgba(249, 115, 22, 0.22);
 }
 
 .home-tabs .home-tab-button:hover:not(.active) {
-  color: #333;
+  transform: translateY(-1px);
+  background: #fb923c;
 }
 
 .course-book-card .course-book-cover {

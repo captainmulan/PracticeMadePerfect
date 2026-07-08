@@ -23,6 +23,7 @@ export const FICTION_BOOK: Course = {
   titleTextAlign: "center",
   courseIndex: 1,
   category: "Fiction",
+  pIndex: 2,
   chapters: [
     {
       id: `${FICTION_BOOK_ID}-ch-0`,

@@ -1,7 +1,9 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chapter 5.1</title>
-<style>
+from pathlib import Path
+import re
+
+root = Path(__file__).resolve().parent.parent / 'book_html' / 'LittleProgrammer'
+
+style_block = '''<style>
   :root {
     color-scheme: light;
     color: #102a43;
@@ -142,21 +144,64 @@
     color: #0f172a;
     box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
   }
-</style>
+</style>'''
+
+
+def update_file(path: Path):
+    text = path.read_text(encoding='utf-8')
+    text = re.sub(r'<style>.*?</style>', style_block, text, flags=re.S)
+    text = re.sub(r'<div class="back">.*?</div>\s*', '', text, flags=re.S)
+    text = re.sub(r'<p>\s*<a[^>]*>[^<]*</a>\s*</p>\s*', '', text, flags=re.S)
+    text = re.sub(r'(<p>\s*◀[^<]*</p>\s*)', '', text, flags=re.S)
+    path.write_text(text, encoding='utf-8')
+
+for path in sorted(root.glob('*.html')):
+    if path.name == 'chapter9.html':
+        continue
+    update_file(path)
+
+chapter9 = root / 'chapter9.html'
+chapter9.write_text('''<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chapter 9 — Congratulations!</title>
+  ''' + style_block + '''
 </head>
 <body>
-  <h1>Chapter 5.1 — Conditional Activity</h1>
-  <p>Try this simple check: press a button and the program will tell you if the number is even or odd.</p>
-  <div>
-    <input id="num" type="number" value="3" style="width:80px" />
-    <button id="check">Check Even/Odd</button>
-    <div id="res" style="margin-top:8px;color:#055160"></div>
+  <div class="container">
+    <div class="big-splash">🎉 Amazing work, coder!</div>
+    <h1>Chapter 9 — Congratulations!</h1>
+    <div class="card">
+      <p>You finished the Little Programmer book! You have learned how to write instructions, make smart choices, repeat actions, store values, and fix problems. That is what programmers do every day.</p>
+      <p class="highlight">You are a creative problem-solver and a playful coder.</p>
+    </div>
+    <div class="card">
+      <h2>What to do next</h2>
+      <ul>
+        <li>Build a rainbow game where the bunny collects stars.</li>
+        <li>Draw a colorful story with buttons and sounds.</li>
+        <li>Try a new chapter inside Magic Library or make your own program.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Celebration page</h2>
+      <p>Share your work, ask a friend to play, and keep exploring. Every new step you take makes you a better coder.</p>
+    </div>
   </div>
-  <script>
-    document.getElementById('check').addEventListener('click', ()=>{
-      const v = Number(document.getElementById('num').value);
-      document.getElementById('res').textContent = (v%2===0) ? v + ' is even' : v + ' is odd';
-    });
-  </script>
-  </body>
-</html>
+</body>
+</html>''', encoding='utf-8')
+
+# Update index with chapter 9 link if missing
+index_path = root / 'index.html'
+text = index_path.read_text(encoding='utf-8')
+if 'Chapter 9 — Congratulations' not in text:
+    insertion = '      <li><a href="chapter9.html">Chapter 9 — Congratulations</a>\n        <p style="margin:6px 0 12px 0;color:#475569">Overview: Celebrate your project and choose a fun next coding challenge.</p>\n      </li>\n'
+    if 'Chapter 8 — Projects & Sharing' in text:
+        text = text.replace('      <li><a href="chapter8.html">Chapter 8 — Projects & Sharing</a>\n        <p style="margin:6px 0 12px 0;color:#475569">Overview: Combine lessons into a small project and share it. Activity: Create a final mini-game or story.</p>\n        <ul>\n          <li><a href="chapter8.1.html">Chapter 8.1 — Final Project Ideas</a></li>\n        </ul>\n      </li>\n',
+                            '      <li><a href="chapter8.html">Chapter 8 — Projects & Sharing</a>\n        <p style="margin:6px 0 12px 0;color:#475569">Overview: Combine lessons into a small project and share it. Activity: Create a final mini-game or story.</p>\n        <ul>\n          <li><a href="chapter8.1.html">Chapter 8.1 — Final Project Ideas</a></li>\n        </ul>\n      </li>\n' + insertion)
+    else:
+        text = text + '\n' + insertion
+index_path.write_text(text, encoding='utf-8')
+print('Updated pages and added chapter9')

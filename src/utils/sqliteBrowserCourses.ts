@@ -12,6 +12,7 @@ export interface CourseRow {
   icon: string;
   courseIndex: number;
   category: string;
+  pIndex?: number | null;
   coverWidth?: number | null;
   coverHeight?: number | null;
   raw: string;
@@ -64,6 +65,7 @@ export function ensureCourseSchema(db: Database) {
       icon TEXT,
       course_index INTEGER,
       category TEXT,
+      p_index INTEGER,
       cover_width INTEGER,
       cover_height INTEGER,
       raw TEXT
@@ -84,8 +86,11 @@ export function ensureCourseSchema(db: Database) {
     db.run("ALTER TABLE courses ADD COLUMN cover_height INTEGER");
   } catch {
     // Ignore error if column already exists
-  }
-  db.run(
+  }  try {
+    db.run("ALTER TABLE courses ADD COLUMN p_index INTEGER");
+  } catch {
+    // Ignore error if column already exists
+  }  db.run(
     `CREATE TABLE IF NOT EXISTS course_chapters (
       id TEXT PRIMARY KEY,
       course_id TEXT,
@@ -131,6 +136,7 @@ function courseToRows(course: Course): { course: CourseRow; chapters: ChapterRow
     icon: course.icon,
     courseIndex: course.courseIndex,
     category: course.category,
+    pIndex: course.pIndex ?? null,
     // Coerce undefined -> null so sql.js binding doesn't receive undefined
     coverWidth: course.coverWidth ?? null,
     coverHeight: course.coverHeight ?? null,
@@ -211,7 +217,7 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
   const { course: courseRow, chapters, steps } = courseToRows(course);
 
   const courseStmt = db.prepare(
-    "REPLACE INTO courses (id, title, description, color, icon, course_index, category, cover_width, cover_height, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "REPLACE INTO courses (id, title, description, color, icon, course_index, category, p_index, cover_width, cover_height, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   try {
     courseStmt.bind([
@@ -222,6 +228,7 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
       courseRow.icon,
       courseRow.courseIndex,
       courseRow.category,
+      courseRow.pIndex ?? null,
       courseRow.coverWidth,
       courseRow.coverHeight,
       courseRow.raw,
@@ -319,7 +326,7 @@ export function queryCourseRows(db: Database): CourseRow[] {
   ensureCourseSchema(db);
   const rows: CourseRow[] = [];
   const stmt = db.prepare(
-    "SELECT id, title, description, color, icon, course_index, category, cover_width, cover_height, raw FROM courses ORDER BY course_index, title",
+    "SELECT id, title, description, color, icon, course_index, category, p_index, cover_width, cover_height, raw FROM courses ORDER BY course_index, title",
   );
   try {
     while (stmt.step()) {
@@ -332,6 +339,7 @@ export function queryCourseRows(db: Database): CourseRow[] {
         icon: String(row.icon ?? "📘"),
         courseIndex: readRowNumber(row, "course_index", "courseIndex"),
         category: String(row.category ?? "IT"),
+        pIndex: readRowOptionalNumber(row, "p_index"),
         coverWidth: readRowOptionalNumber(row, "cover_width"),
         coverHeight: readRowOptionalNumber(row, "cover_height"),
         raw: String(row.raw ?? ""),
@@ -463,6 +471,7 @@ export function assembleCourses(
       iconPosition: courseMeta.iconPosition,
       courseIndex: courseRow.courseIndex,
       category: courseMeta.category ?? courseRow.category,
+      pIndex: courseMeta.pIndex ?? courseRow.pIndex ?? undefined,
       chapters: chaptersForCourse,
     } satisfies Course;
   });

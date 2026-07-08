@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chapter 5.1</title>
-<style>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chapter 9 — Congratulations!</title>
+  <style>
   :root {
     color-scheme: light;
     color: #102a43;
@@ -145,18 +148,25 @@
 </style>
 </head>
 <body>
-  <h1>Chapter 5.1 — Conditional Activity</h1>
-  <p>Try this simple check: press a button and the program will tell you if the number is even or odd.</p>
-  <div>
-    <input id="num" type="number" value="3" style="width:80px" />
-    <button id="check">Check Even/Odd</button>
-    <div id="res" style="margin-top:8px;color:#055160"></div>
+  <div class="container">
+    <div class="big-splash">🎉 Amazing work, coder!</div>
+    <h1>Chapter 9 — Congratulations!</h1>
+    <div class="card">
+      <p>You finished the Little Programmer book! You have learned how to write instructions, make smart choices, repeat actions, store values, and fix problems. That is what programmers do every day.</p>
+      <p class="highlight">You are a creative problem-solver and a playful coder.</p>
+    </div>
+    <div class="card">
+      <h2>What to do next</h2>
+      <ul>
+        <li>Build a rainbow game where the bunny collects stars.</li>
+        <li>Draw a colorful story with buttons and sounds.</li>
+        <li>Try a new chapter inside Magic Library or make your own program.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Celebration page</h2>
+      <p>Share your work, ask a friend to play, and keep exploring. Every new step you take makes you a better coder.</p>
+    </div>
   </div>
-  <script>
-    document.getElementById('check').addEventListener('click', ()=>{
-      const v = Number(document.getElementById('num').value);
-      document.getElementById('res').textContent = (v%2===0) ? v + ' is even' : v + ' is odd';
-    });
-  </script>
-  </body>
+</body>
 </html>

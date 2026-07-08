@@ -375,6 +375,22 @@ export default function AdminCourses() {
                       />
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Popular Index</span>
+                      <input
+                        type="number"
+                        value={activeBook.pIndex ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          updateActiveBook((c) => ({
+                            ...c,
+                            pIndex: value !== "" ? Number(value) : undefined,
+                          }));
+                        }}
+                        className="admin-grid-input"
+                        placeholder="Leave empty to exclude from Popular"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Description</span>
                       <textarea
                         rows={3}

@@ -75,6 +75,7 @@ export interface Course {
   iconPosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
   courseIndex: number;
   category: string;
+  pIndex?: number;
   chapters: CourseChapter[];
 }
 
@@ -110,6 +111,7 @@ export const DEFAULT_COURSES: Course[] = [
     iconColorEnd: "#fff",
     courseIndex: 0,
     category: "IT",
+    pIndex: 1,
     chapters: [
       {
         id: "react-crud-premium-ch1",

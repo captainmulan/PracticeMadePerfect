@@ -1,7 +1,148 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chapter 7 — xxx</title>
-<style>body{font-family:Inter,system-ui,Arial,sans-serif;margin:24px;background:#fff;color:#0f172a;max-width:800px;margin-left:auto;margin-right:auto}a{color:#0f172a}</style>
+<style>
+  :root {
+    color-scheme: light;
+    color: #102a43;
+    background: #fff;
+  }
+  body {
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at top left, rgba(255, 200, 128, 0.95), transparent 26%),
+                radial-gradient(circle at top right, rgba(129, 199, 132, 0.95), transparent 24%),
+                radial-gradient(circle at bottom left, rgba(129, 195, 243, 0.95), transparent 24%),
+                linear-gradient(135deg, #ffe082 0%, #ffccbc 24%, #b39ddb 48%, #80deea 72%, #c5e1a5 100%);
+    color: #172d50;
+    line-height: 1.55;
+    padding: 24px;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+  }
+  h1 {
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    margin: 0 0 14px;
+    color: #0f172a;
+    text-shadow: 0 3px 10px rgba(15, 23, 42, 0.12);
+  }
+  h2 {
+    color: #1e3a8a;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    margin: 28px 0 12px;
+  }
+  p, li {
+    font-size: 1.05rem;
+    margin: 0 0 14px;
+  }
+  ul, ol {
+    margin: 0 0 18px 22px;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  .highlight {
+    display: inline-block;
+    background: rgba(251, 191, 36, 0.18);
+    color: #b45309;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px dashed rgba(15, 23, 42, 0.12);
+    border-radius: 24px;
+    padding: 20px;
+    margin: 18px 0;
+  }
+  .big-splash {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 22px;
+    background: rgba(249, 115, 22, 0.15);
+    border-radius: 999px;
+    margin-bottom: 18px;
+    color: #92400e;
+    font-weight: 800;
+    box-shadow: 0 10px 24px rgba(249, 115, 22, 0.12);
+  }
+  a {
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .play-area {
+    width: min(100%, 360px);
+    aspect-ratio: 1;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), #e3f2fd 65%);
+    border-radius: 32px;
+    border: 4px solid rgba(255, 255, 255, 0.84);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.1);
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 6px;
+    padding: 10px;
+    margin: 20px 0;
+  }
+  .cell {
+    background: linear-gradient(180deg, #ffffff, #f3f4f6);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+  .btn,
+  .touch-grid button {
+    background: linear-gradient(180deg, #fb7185, #f97316);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 14px 28px rgba(249, 115, 22, 0.2);
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 18px;
+  }
+  .status {
+    margin-top: 16px;
+    font-weight: 700;
+    color: #1d4ed8;
+  }
+  .touch-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(60px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .touch-grid button {
+    min-height: 60px;
+    border-radius: 18px;
+    background: white;
+    color: #0f172a;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+  }
+</style>
 </head>
 <body>
   <h1>Chapter 7 — Debugging & Problem Solving</h1>
@@ -11,7 +152,5 @@
     <li>Read a short program and predict what it does</li>
     <li>Find a mistake and fix it (see chapter 7.1)</li>
   </ul>
-  <p><a href="chapter7.1.html">Go to Debugging Puzzles ▶</a></p>
-  <p><a href="index.html">◀ Back to Index</a></p>
-</body>
+  </body>
 </html>
