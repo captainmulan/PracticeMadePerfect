@@ -127,6 +127,24 @@ export const homePageData = {
       descriptionPaddingBottom: 16,
       descriptionPaddingLeft: 12,
       descriptionPaddingRight: 12,
+      navButton: {
+        backgroundColor: "#e2e8f0",
+        border: "none",
+        color: "#0f172a",
+        disabledColor: "#94a3b8"
+      },
+      homeButton: {
+        backgroundColor: "#e2e8f0",
+        border: "none",
+        color: "#0f172a"
+      },
+      chapterLabel: {
+        backgroundColor: "rgba(15,23,42,0.05)",
+        border: "none",
+        color: "#64748b",
+        fontSize: 14,
+        fontWeight: "700"
+      }
     },
     wizardWorkspace: {
       backgroundColor: "#ffffff",

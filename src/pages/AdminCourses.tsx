@@ -106,6 +106,7 @@ export default function AdminCourses() {
       iconPosition: "center-center",
       courseIndex: books.length,
       category: "IT",
+      artifactType: "book",
       chapters: [],
     };
     setDraftBook(book);
@@ -316,6 +317,19 @@ export default function AdminCourses() {
                         onChange={(e) => updateActiveBook((c) => ({ ...c, id: e.target.value }))}
                         className="admin-grid-input"
                       />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Artifact Type</span>
+                      <select
+                        value={activeBook.artifactType}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, artifactType: e.target.value as any }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="book">Book</option>
+                        <option value="magazine">Magazine</option>
+                        <option value="newspaper">Newspaper</option>
+                        <option value="game">Game</option>
+                      </select>
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Category</span>

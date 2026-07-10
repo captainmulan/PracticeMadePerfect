@@ -51,6 +51,8 @@ export interface CourseChapter {
   steps: CourseStep[];
 }
 
+export type ArtifactType = "book" | "magazine" | "newspaper" | "game";
+
 export interface Course {
   id: string;
   title: string;
@@ -76,6 +78,7 @@ export interface Course {
   courseIndex: number;
   category: string;
   pIndex?: number;
+  artifactType: ArtifactType;
   chapters: CourseChapter[];
 }
 
@@ -112,6 +115,7 @@ export const DEFAULT_COURSES: Course[] = [
     courseIndex: 0,
     category: "IT",
     pIndex: 1,
+    artifactType: "book",
     chapters: [
       {
         id: "react-crud-premium-ch1",
@@ -835,6 +839,7 @@ export const DEFAULT_COURSES: Course[] = [
     iconColorEnd: "#ffffff",
     courseIndex: 1,
     category: "IT",
+    artifactType: "book",
     chapters: [
       {
         id: "react-interview-ch1",
@@ -1248,6 +1253,7 @@ export const DEFAULT_COURSES: Course[] = [
     iconColorEnd: "#ffffff",
     courseIndex: 2,
     category: "IT",
+    artifactType: "book",
     chapters: [
       {
         id: "solid-interview-ch1",
@@ -1346,6 +1352,7 @@ export const DEFAULT_COURSES: Course[] = [
     iconColorEnd: "#ffffff",
     courseIndex: 3,
     category: "IT",
+    artifactType: "book",
     chapters: [
       {
         id: "angular-interview-ch1",
@@ -1742,6 +1749,7 @@ export const DEFAULT_COURSES: Course[] = [
     iconColorEnd: "#ffffff",
     courseIndex: 4,
     category: "IT",
+    artifactType: "book",
     chapters: [
       {
         id: "csharp-interview-ch1",
@@ -2055,6 +2063,7 @@ export const DEFAULT_COURSES: Course[] = [
     iconColorEnd: "#ffffff",
     courseIndex: 5,
     category: "IT",
+    artifactType: "book",
     chapters: [
       {
         id: "sql-interview-ch1",

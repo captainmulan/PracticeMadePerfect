@@ -1,6 +1,8 @@
 import { getHomePageData } from "../utils/contentStore";
 import type { CourseShelfRow, CourseShelfItem } from "../utils/courseShelf";
 import CourseBookCard from "./CourseBookCard";
+import CourseMagazineCard from "./CourseMagazineCard";
+import CourseNewspaperCard from "./CourseNewspaperCard";
 
 interface HomeCourseShelvesProps {
   row: CourseShelfRow;
@@ -15,14 +17,22 @@ export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
     groups.push(row.items.slice(rowIndex * CHUNK, rowIndex * CHUNK + CHUNK));
   }
 
+  const renderCard = (item: CourseShelfItem) => {
+    if (item.artifactType === "magazine") {
+      return <CourseMagazineCard key={item.id} item={item} />;
+    }
+    if (item.artifactType === "newspaper") {
+      return <CourseNewspaperCard key={item.id} item={item} />;
+    }
+    return <CourseBookCard key={item.id} item={item} />;
+  };
+
   return (
     <div className="bookshelf-container">
       {groups.map((group, rowIndex) => (
         <div key={`book-row-wrap-${rowIndex}`} className="shelf">
           <div className="books" key={`book-row-${rowIndex}`}>
-            {group.map((item) => (
-              <CourseBookCard key={item.id} item={item} />
-            ))}
+            {group.map((item) => renderCard(item))}
             {Array.from({ length: CHUNK - group.length }).map((_, emptyIndex) => {
               const homePageData = getHomePageData();
               const emptyBookWidth = homePageData.style?.emptyBook?.coverWidth ?? 100;

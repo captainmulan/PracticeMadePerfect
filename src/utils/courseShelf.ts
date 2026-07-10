@@ -26,6 +26,7 @@ export interface CourseShelfItem {
   link?: string;
   placeholder?: boolean;
   category?: string;
+  artifactType?: "book" | "magazine" | "newspaper" | "game";
 }
 
 export interface CourseShelfRow {
@@ -403,7 +404,7 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
     coverHeight: course.coverHeight ?? undefined,
     icon: course.icon,
     iconColorStart: course.iconColorStart ?? "#fff",
-    iconColorMiddle: course.iconColorMiddle ?? "#fff",
+    iconColorMiddle: course.iconColorEnd ?? "#fff",
     iconColorEnd: course.iconColorEnd ?? "#fff",
     iconSize: course.iconSize ?? undefined,
     titleFontSize: course.titleFontSize ?? undefined,
@@ -415,6 +416,7 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
     meta: `${course.chapters.length} chapters`,
     link: `/courses/${course.id}`,
     category,
+    artifactType: course.artifactType,
   };
 }
 

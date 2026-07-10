@@ -15,6 +15,7 @@ export interface CourseRow {
   pIndex?: number | null;
   coverWidth?: number | null;
   coverHeight?: number | null;
+  artifactType?: string | null;
   raw: string;
 }
 
@@ -68,6 +69,7 @@ export function ensureCourseSchema(db: Database) {
       p_index INTEGER,
       cover_width INTEGER,
       cover_height INTEGER,
+      artifact_type TEXT,
       raw TEXT
     )`,
   );
@@ -88,6 +90,11 @@ export function ensureCourseSchema(db: Database) {
     // Ignore error if column already exists
   }  try {
     db.run("ALTER TABLE courses ADD COLUMN p_index INTEGER");
+  } catch {
+    // Ignore error if column already exists
+  }
+  try {
+    db.run("ALTER TABLE courses ADD COLUMN artifact_type TEXT");
   } catch {
     // Ignore error if column already exists
   }  db.run(
@@ -140,6 +147,7 @@ function courseToRows(course: Course): { course: CourseRow; chapters: ChapterRow
     // Coerce undefined -> null so sql.js binding doesn't receive undefined
     coverWidth: course.coverWidth ?? null,
     coverHeight: course.coverHeight ?? null,
+    artifactType: course.artifactType,
     raw: JSON.stringify(course, null, 2),
   };
 
@@ -217,7 +225,7 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
   const { course: courseRow, chapters, steps } = courseToRows(course);
 
   const courseStmt = db.prepare(
-    "REPLACE INTO courses (id, title, description, color, icon, course_index, category, p_index, cover_width, cover_height, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "REPLACE INTO courses (id, title, description, color, icon, course_index, category, p_index, cover_width, cover_height, artifact_type, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   try {
     courseStmt.bind([
@@ -231,6 +239,7 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
       courseRow.pIndex ?? null,
       courseRow.coverWidth,
       courseRow.coverHeight,
+      courseRow.artifactType,
       courseRow.raw,
     ]);
     courseStmt.step();
@@ -326,7 +335,7 @@ export function queryCourseRows(db: Database): CourseRow[] {
   ensureCourseSchema(db);
   const rows: CourseRow[] = [];
   const stmt = db.prepare(
-    "SELECT id, title, description, color, icon, course_index, category, p_index, cover_width, cover_height, raw FROM courses ORDER BY course_index, title",
+    "SELECT id, title, description, color, icon, course_index, category, p_index, cover_width, cover_height, artifact_type, raw FROM courses ORDER BY course_index, title",
   );
   try {
     while (stmt.step()) {
@@ -342,6 +351,7 @@ export function queryCourseRows(db: Database): CourseRow[] {
         pIndex: readRowOptionalNumber(row, "p_index"),
         coverWidth: readRowOptionalNumber(row, "cover_width"),
         coverHeight: readRowOptionalNumber(row, "cover_height"),
+        artifactType: row.artifact_type ? String(row.artifact_type) : null,
         raw: String(row.raw ?? ""),
       });
     }
@@ -472,6 +482,7 @@ export function assembleCourses(
       courseIndex: courseRow.courseIndex,
       category: courseMeta.category ?? courseRow.category,
       pIndex: courseMeta.pIndex ?? courseRow.pIndex ?? undefined,
+      artifactType: (courseRow.artifactType as any) ?? courseMeta.artifactType ?? "book",
       chapters: chaptersForCourse,
     } satisfies Course;
   });
