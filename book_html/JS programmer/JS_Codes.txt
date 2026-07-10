@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Guess</title></head>
+<body style="font-family:system-ui;padding:20px">
+  <h1>Guess the Number (1–100)</h1>
+  <p>Type a number and get hints until you find the secret.</p>
+  <input id="guess" type="number" min="1" max="100" />
+  <button id="check">Check</button>
+  <button id="new">New Game</button>
+  <p id="msg"></p>
+  <p>Attempts: <span id="tries">0</span></p>
+
+<script>
+let secret, tries;
+const guessEl = document.querySelector("#guess");
+const msgEl = document.querySelector("#msg");
+const triesEl = document.querySelector("#tries");
+
+function newGame(){
+  secret = Math.floor(Math.random()*100)+1;
+  tries = 0;
+  triesEl.textContent = tries;
+  msgEl.textContent = "Enter a guess!";
+  guessEl.value = "";
+  guessEl.focus();
+}
+newGame();
+
+document.querySelector("#check").addEventListener("click", () => {
+  const g = Number(guessEl.value);
+  if (!Number.isInteger(g) || g < 1 || g > 100) {
+    msgEl.textContent = "Please enter an integer 1–100.";
+    return;
+  }
+  tries++;
+  triesEl.textContent = tries;
+
+  if (g === secret) msgEl.textContent = `Correct! It was ${secret}.`;
+  else if (g < secret) msgEl.textContent = "Too low!";
+  else msgEl.textContent = "Too high!";
+});
+
+document.querySelector("#new").addEventListener("click", newGame);
+</script>
+</body>
+</html>
+
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Guess</title></head>
+<body style="font-family:system-ui;padding:20px">
+  <h1>Guess the Number (1–100)</h1>
+  <p>Type a number and get hints until you find the secret.</p>
+  <input id="guess" type="number" min="1" max="100" />
+  <button id="check">Check</button>
+  <button id="new">New Game</button>
+  <p id="msg"></p>
+  <p>Attempts: <span id="tries">0</span></p>
+
+<script>
+let secret, tries;
+const guessEl = document.querySelector("#guess");
+const msgEl = document.querySelector("#msg");
+const triesEl = document.querySelector("#tries");
+
+function newGame(){
+  secret = Math.floor(Math.random()*100)+1;
+  tries = 0;
+  triesEl.textContent = tries;
+  msgEl.textContent = "Enter a guess!";
+  guessEl.value = "";
+  guessEl.focus();
+}
+newGame();
+
+document.querySelector("#check").addEventListener("click", () => {
+  const g = Number(guessEl.value);
+  if (!Number.isInteger(g) || g < 1 || g > 100) {
+    msgEl.textContent = "Please enter an integer 1–100.";
+    return;
+  }
+  tries++;
+  triesEl.textContent = tries;
+
+  if (g === secret) msgEl.textContent = `Correct! It was ${secret}.`;
+  else if (g < secret) msgEl.textContent = "Too low!";
+  else msgEl.textContent = "Too high!";
+});
+
+document.querySelector("#new").addEventListener("click", newGame);
+</script>
+</body>
+</html>
+
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>RPS</title></head>
+<body style="font-family:system-ui;padding:20px">
+  <h1>Rock Paper Scissors</h1>
+  <p>Pick a move. CPU picks randomly. Track wins/losses/ties.</p>
+  <div>
+    <button data-m="rock">Rock</button>
+    <button data-m="paper">Paper</button>
+    <button data-m="scissors">Scissors</button>
+  </div>
+  <p id="out"></p>
+  <p>Wins: <span id="w">0</span> Losses: <span id="l">0</span> Ties: <span id="t">0</span></p>
+
+<script>
+const moves = ["rock","paper","scissors"];
+let w=0,l=0,t=0;
+const out = document.querySelector("#out");
+
+function winner(player, cpu){
+  if (player === cpu) return "tie";
+  if (
+    (player==="rock" && cpu==="scissors") ||
+    (player==="paper" && cpu==="rock") ||
+    (player==="scissors" && cpu==="paper")
+  ) return "win";
+  return "lose";
+}
+
+document.body.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-m]");
+  if (!btn) return;
+
+  const player = btn.dataset.m;
+  const cpu = moves[Math.floor(Math.random()*moves.length)];
+  const res = winner(player, cpu);
+
+  if (res==="win") w++;
+  else if (res==="lose") l++;
+  else t++;
+
+  document.querySelector("#w").textContent = w;
+  document.querySelector("#l").textContent = l;
+  document.querySelector("#t").textContent = t;
+
+  out.textContent = `You: ${player} | CPU: ${cpu} → ${res.toUpperCase()}`;
+});
+</script>
+</body>
+</html>
+
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Coin Streak</title></head>
+<body style="font-family:system-ui;padding:20px">
+  <h1>Coin Flip Streak</h1>
+  <p>Flip a coin and try to get 5 HEADS in a row.</p>
+  <button id="flip">Flip</button>
+  <button id="reset">Reset</button>
+  <p id="log"></p>
+  <p>Current streak (Heads): <span id="streak">0</span></p>
+
+<script>
+let streak = 0;
+const log = document.querySelector("#log");
+const streakEl = document.querySelector("#streak");
+
+document.querySelector("#flip").addEventListener("click", () => {
+  const heads = Math.random() < 0.5;
+  log.textContent = heads ? "HEADS!" : "TAILS!";
+  if (heads) streak++;
+  else streak = 0;
+  streakEl.textContent = streak;
+  if (streak >= 5) log.textContent = "HEADS! 🎉 You hit a 5 streak!";
+});
+
+document.querySelector("#reset").addEventListener("click", () => {
+  streak = 0;
+  streakEl.textContent = 0;
+  log.textContent = "";
+});
+</script>
+</body>
+</html>
+
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Reaction</title>
+<style>
+  #box{width:320px;height:180px;border-radius:16px;display:grid;place-items:center;
+       background:#ccc;user-select:none;cursor:pointer;font-family:system-ui;font-size:20px}
+</style></head>
+<body style="padding:20px">
+  <h1>Reaction Time</h1>
+  <p>Click to start. Wait for green. Click as fast as you can.</p>
+  <div id="box">Click to start</div>
+  <p id="msg"></p>
+
+<script>
+const box = document.querySelector("#box");
+const msg = document.querySelector("#msg");
+
+let state = "idle"; // idle -> waiting -> go
+let startMs = 0;
+let timeoutId = null;
+
+box.addEventListener("click", () => {
+  if (state === "idle") {
+    state = "waiting";
+    msg.textContent = "Wait for green...";
+    box.style.background = "#ccc";
+    box.textContent = "Waiting...";
+
+    const delay = 800 + Math.random()*2000;
+    timeoutId = setTimeout(() => {
+      state = "go";
+      box.style.background = "#8f8";
+      box.textContent = "CLICK!";
+      startMs = performance.now();
+    }, delay);
+  } else if (state === "waiting") {
+    clearTimeout(timeoutId);
+    state = "idle";
+    msg.textContent = "Too soon! Try again.";
+    box.textContent = "Click to start";
+    box.style.background = "#ccc";
+  } else if (state === "go") {
+    const rt = performance.now() - startMs;
+    state = "idle";
+    msg.textContent = `Reaction time: ${rt.toFixed(0)} ms`;
+    box.textContent = "Click to start";
+    box.style.background = "#ccc";
+  }
+});
+</script>
+</body>
+</html>

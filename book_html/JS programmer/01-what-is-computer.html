@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is a Computer? - JS Programmer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
+      background: linear-gradient(180deg, #e6f7ff 0%, #e6fffa 100%);
+      min-height: 100vh;
+      color: #1a1a2e;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #0070f3;
+      margin-bottom: 8px;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: #666;
+      background: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border: 3px solid #e5e7eb;
+    }
+
+    .card h2 {
+      font-size: 22px;
+      color: #0070f3;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card p {
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .fun-fact {
+      background: #fff7e6;
+      border-left: 6px solid #ff8c00;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 16px 0;
+    }
+
+    .fun-fact strong {
+      color: #cc6600;
+    }
+
+    .components {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .component-item {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 16px 12px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .component-item span {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .next-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #0070f3 0%, #00c6ff 100%);
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-top: 16px;
+      box-shadow: 0 6px 16px rgba(0,112,243,0.3);
+      transition: transform 0.2s;
+    }
+
+    .next-btn:active {
+      transform: scale(0.98);
+    }
+
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px 0;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+
+    .progress-dot.active {
+      background: #0070f3;
+      width: 32px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="progress">
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+
+    <div class="header">
+      <div class="logo">💻</div>
+      <h1>What is a Computer?</h1>
+      <div class="page-number">Chapter 1 of 11</div>
+    </div>
+
+    <div class="card">
+      <h2>🤔 Let's Learn!</h2>
+      <p>A computer is a machine that follows instructions! It takes information (input), thinks about it (process), and gives you something back (output).</p>
+      <p>You're using a computer right now to read this! 🎉</p>
+    </div>
+
+    <div class="card">
+      <h2>🔧 Parts of a Computer</h2>
+      <p>Computers have many parts that work together:</p>
+      <div class="components">
+        <div class="component-item">
+          <span>⌨️</span>
+          Keyboard
+        </div>
+        <div class="component-item">
+          <span>🖥️</span>
+          Monitor
+        </div>
+        <div class="component-item">
+          <span>🖱️</span>
+          Mouse
+        </div>
+        <div class="component-item">
+          <span>🎧</span>
+          Speaker
+        </div>
+      </div>
+    </div>
+
+    <div class="fun-fact">
+      <strong>🌟 Fun Fact!</strong><br>
+      The first computers were as big as a whole room! Now we have tiny computers in our watches!
+    </div>
+
+    <button class="next-btn" onclick="window.location.href='02-what-is-programming.html'">
+      Next Chapter →
+    </button>
+  </div>
+</body>
+</html>

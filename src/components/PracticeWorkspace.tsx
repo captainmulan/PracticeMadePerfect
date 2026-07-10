@@ -140,12 +140,12 @@ export default function PracticeWorkspace({
               textDecoration: "none", 
               width: "40px",
               height: "40px",
-              borderRadius: "50%",
+              borderRadius: "0",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: style?.wizardTopInfo?.homeButton?.backgroundColor ?? "#e2e8f0",
-              border: style?.wizardTopInfo?.homeButton?.border ?? "none",
+              background: "transparent",
+              border: "none",
               color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a",
               fontSize: "18px",
             }}
@@ -155,16 +155,18 @@ export default function PracticeWorkspace({
           <span 
             className="chapter-label"
             style={{
-              padding: "4px 12px",
-              borderRadius: "999px",
-              background: style?.wizardTopInfo?.chapterLabel?.backgroundColor ?? "rgba(15,23,42,0.05)",
-              border: style?.wizardTopInfo?.chapterLabel?.border ?? "none",
-              color: style?.wizardTopInfo?.chapterLabel?.color ?? style?.wizardTopInfo?.chapterLabelColor ?? "#64748b",
-              fontSize: `${(style?.wizardTopInfo?.chapterLabel?.fontSize ?? style?.wizardTopInfo?.chapterLabelFontSize ?? 14) / 16}rem`,
-              fontWeight: style?.wizardTopInfo?.chapterLabel?.fontWeight ?? style?.wizardTopInfo?.chapterLabelFontWeight ?? "700",
+              padding: "0",
+              borderRadius: "0",
+              background: "transparent",
+              border: "none",
+              color: style?.wizardTopInfo?.chapterLabel?.color ?? "#0f172a",
+              fontSize: `${(style?.wizardTopInfo?.chapterLabel?.fontSize ?? 14) / 16}rem`,
+              fontWeight: style?.wizardTopInfo?.chapterLabel?.fontWeight ?? 700,
+              opacity: 1,
+              textTransform: "none",
             }}
           >
-            {`${style?.wizardTopInfo?.chapterLabelText ?? "Chapter"} ${chapterNumber ?? ""}`}
+            {`Page ${pageIndex ?? ""}/${totalPages ?? ""}`}
           </span>
         </div>
 

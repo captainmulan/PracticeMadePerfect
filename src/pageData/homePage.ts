@@ -1,9 +1,9 @@
 export const homePageData = {
   title: "",
   headline: "📚 Welcome to the Magic Library (မှော်ဝင် စာကြည့်တိုက်)",
-  summary: "Explore interactive e-books with hands-on activities. Every chapter is a magical journey of learning.",
+  summary: "Explore interactive e-books with hands-on activities. Every page is a magical journey of learning.",
   featureHtml:
-    "<p><strong>Read Like a Book:</strong> Each chapter feels like flipping through pages in a magical book.</p>" +
+    "<p><strong>Read Like a Book:</strong> Each page feels like flipping through pages in a magical book.</p>" +
     "<p><strong>Interactive Activities:</strong> Quizzes, code exams, and engaging lessons keep you immersed.</p>" +
     "<p><strong>Flexible Content:</strong> Update content without touching code — just edit the data files.</p>",
   callToAction: "Start exploring your first magical book",
@@ -97,7 +97,7 @@ export const homePageData = {
       useBackgroundColorGradient: false,
       color: "#0f172a",
       borderBottomColor: "#e2e8f0",
-      chapterLabelText: "CHAPTER",
+      chapterLabelText: "Page",
       chapterLabelColor: "#64748b",
       chapterLabelFontSize: 10,
       chapterLabelFontWeight: "700",

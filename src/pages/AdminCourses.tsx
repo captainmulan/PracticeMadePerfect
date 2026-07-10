@@ -35,7 +35,7 @@ export default function AdminCourses() {
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
-  const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "chapter" | "empty-book">("book");
+  const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "page" | "empty-book">("book");
   const [bookSubTab, setBookSubTab] = useState<"general" | "title" | "cover" | "logo">("general");
   const [adminData, setAdminData] = useState<any>(null);
   const [isDeletingBook, setIsDeletingBook] = useState(false);
@@ -136,9 +136,9 @@ export default function AdminCourses() {
     }));
   }
 
-  function addChapter(stepType: CourseStepType = "html") {
+  function addPage(stepType: CourseStepType = "html") {
     if (!activeBook) return;
-    const newChapterIndex = activeBook.chapters.length;
+    const newChapterIndex = 0; // Default to 0
     const newStepIndex = allSteps.length;
     const chapterId = `${activeBook.id || "book"}-ch-${Date.now()}`;
     const stepId = `${chapterId}-step-0`;
@@ -147,13 +147,13 @@ export default function AdminCourses() {
       id: stepId,
       courseId: activeBook.id,
       chapterId: chapterId,
-      chapterTitle: `Chapter ${newChapterIndex + 1}`,
+      chapterTitle: `Page ${newStepIndex + 1}`,
       chapterIndex: newChapterIndex,
       stepIndex: newStepIndex,
       stepType: stepType,
-      title: "New Chapter",
+      title: "New Page",
       description: "",
-      contentHtml: stepType === "html" ? "<p>Chapter content</p>" : undefined,
+      contentHtml: stepType === "html" ? "<p>Page content</p>" : undefined,
       checklist: stepType === "code-exam" ? ["Meets requirement"] : undefined,
       verificationKeywords: stepType === "code-exam" ? [["export"]] : undefined,
       codeType: "code",
@@ -171,7 +171,7 @@ export default function AdminCourses() {
       id: chapterId,
       courseId: activeBook.id,
       chapterIndex: newChapterIndex,
-      title: `Chapter ${newChapterIndex + 1}`,
+      title: `Page ${newStepIndex + 1}`,
       steps: [step],
     };
 
@@ -180,7 +180,7 @@ export default function AdminCourses() {
       chapters: [...book.chapters, chapter],
     }));
     setSelectedStepId(stepId);
-    setMessage("Chapter added.");
+    setMessage("Page added.");
   }
 
   async function handleSaveBook() {
@@ -295,7 +295,7 @@ export default function AdminCourses() {
           <section className="admin-course-meta panel-bordered">
             <div className="admin-tabs" style={{ marginBottom: "16px" }}>
               <button type="button" className={`admin-tab ${bookBuilderTab === "book" ? "active" : ""}`} onClick={() => setBookBuilderTab("book")}>Book</button>
-              <button type="button" className={`admin-tab ${bookBuilderTab === "chapter" ? "active" : ""}`} onClick={() => setBookBuilderTab("chapter")}>Chapter</button>
+              <button type="button" className={`admin-tab ${bookBuilderTab === "page" ? "active" : ""}`} onClick={() => setBookBuilderTab("page")}>Page</button>
               <button type="button" className={`admin-tab ${bookBuilderTab === "empty-book" ? "active" : ""}`} onClick={() => setBookBuilderTab("empty-book")}>Empty Book</button>
             </div>
             {bookBuilderTab === "book" ? (
@@ -751,12 +751,12 @@ export default function AdminCourses() {
               <>
                 <div className="admin-course-step-actions" style={{ marginBottom: "16px" }}>
                   <div className="add-step-group">
-                    <label className="admin-task-editor-label" style={{ marginRight: "8px" }}>Add Chapter:</label>
+                    <label className="admin-task-editor-label" style={{ marginRight: "8px" }}>Add Page:</label>
                     <select
                       ref={stepTypeSelectRef}
                       className="admin-grid-select small"
                       onChange={(e) => {
-                        addChapter(e.target.value as CourseStepType);
+                        addPage(e.target.value as CourseStepType);
                         if (stepTypeSelectRef.current) {
                           stepTypeSelectRef.current.value = "";
                         }
@@ -771,16 +771,16 @@ export default function AdminCourses() {
                   </div>
                 </div>
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Chapters</h4>
+                  <h4 style={{ marginTop: 0 }}>Pages</h4>
                   <div className="admin-course-step-list">
-                    {allSteps.map((step, index) => (
+                    {allSteps.map((step) => (
                       <button
                         key={step.id}
                         type="button"
                         className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
                         onClick={() => setSelectedStepId(step.id)}
                       >
-                        <span>{index + 1}</span>
+                        <span>{step.stepIndex}</span>
                         <span>{step.title}</span>
                         <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
                       </button>
@@ -791,14 +791,23 @@ export default function AdminCourses() {
             )}
           </section>
 
-          {bookBuilderTab === "chapter" && (
+          {bookBuilderTab === "page" && (
             <section className="admin-course-step-editor panel-bordered">
               {selectedStep ? (
                 <>
-                  <h3>Chapter</h3>
+                  <h3>Page</h3>
                   <div className="admin-step-meta-row">
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Step Index</span>
+                      <span className="admin-task-editor-label">Chapter Index</span>
+                      <input
+                        type="number"
+                        value={selectedStep.chapterIndex}
+                        onChange={(e) => updateStep(selectedStep.id, { chapterIndex: Number(e.target.value) })}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Page Index</span>
                       <input
                         type="number"
                         value={selectedStep.stepIndex}
@@ -881,7 +890,7 @@ export default function AdminCourses() {
                   ) : null}
                 </>
               ) : (
-                <div className="admin-empty-state">Select a chapter to view and edit its content.</div>
+                <div className="admin-empty-state">Select a page to view and edit its content.</div>
               )}
             </section>
           )}

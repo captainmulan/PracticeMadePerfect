@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Daily News</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    
+    .developer-daily {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.06);
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #1a202c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .header .date {
+      margin-top: 8px;
+      color: #718096;
+      font-size: 14px;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: #4a5568;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    }
+    
+    .tab-btn:hover {
+      background: #edf2f7;
+    }
+    
+    .tab-btn.active {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(99,102,241,.3);
+    }
+    
+    .layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+    }
+    
+    .right {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 18px;
+    }
+    
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+      overflow: auto;
+      height: 440px;
+      border: 1px solid rgba(0,0,0,.05);
+    }
+    
+    .right .panel {
+      height: 211px;
+    }
+    
+    h2 {
+      margin: 0 0 16px;
+      font-size: 18px;
+      color: #2d3748;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .article {
+      padding: 14px 0;
+      border-bottom: 1px solid #f0f2f5;
+      transition: background 0.15s ease;
+      border-radius: 8px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+    
+    .article:hover {
+      background: #f9fafb;
+    }
+    
+    .article:last-child {
+      border: none;
+    }
+    
+    .article a {
+      text-decoration: none;
+      font-weight: 700;
+      color: #2b6cb0;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    
+    .article a:hover {
+      color: #1a365d;
+      text-decoration: underline;
+    }
+    
+    .meta {
+      font-size: 12px;
+      color: #718096;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ebf8ff;
+      color: #2b6cb0;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .loading {
+      color: #718096;
+      padding: 24px;
+      text-align: center;
+      font-style: italic;
+    }
+    
+    .refresh-btn {
+      margin-left: auto;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 8px;
+      background: #edf2f7;
+      color: #4a5568;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    
+    .refresh-btn:hover {
+      background: #e2e8f0;
+      transform: rotate(180deg);
+    }
+    
+    .list-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    
+    .list-item:last-child {
+      border: none;
+    }
+    
+    .list-item a {
+      text-decoration: none;
+      color: #2b6cb0;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .list-item a:hover {
+      color: #1a365d;
+      text-decoration: underline;
+    }
+    
+    .list-item .meta {
+      margin-top: 4px;
+    }
+    
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      
+      .panel {
+        height: 340px;
+      }
+      
+      .right .panel {
+        height: 280px;
+      }
+      
+      .developer-daily {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="developer-daily">
+  <div class="header">
+    <h1>📰 Developer Daily News</h1>
+    <div class="date" id="current-date"></div>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('top')">Top Stories</button>
+    <button class="tab-btn" onclick="switchTab('new')">New Stories</button>
+    <button class="tab-btn" onclick="switchTab('best')">Best Stories</button>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <div style="display: flex; align-items: center;">
+        <h2 id="hn-title">📰 Hacker News - Top Stories</h2>
+        <button class="refresh-btn" onclick="loadHN()">🔄</button>
+      </div>
+      <div id="hn" class="loading">Loading latest stories...</div>
+    </div>
+
+    <div class="right">
+      <div class="panel">
+        <h2>🔥 Useful Links</h2>
+        <div id="links">
+          <div class="list-item">
+            <a href="https://github.com/trending" target="_blank">GitHub Trending</a>
+            <div class="meta">Discover popular repositories</div>
+          </div>
+          <div class="list-item">
+            <a href="https://stackoverflow.com/questions" target="_blank">Stack Overflow</a>
+            <div class="meta">Q&A for developers</div>
+          </div>
+          <div class="list-item">
+            <a href="https://dev.to" target="_blank">DEV Community</a>
+            <div class="meta">Developer articles & tutorials</div>
+          </div>
+          <div class="list-item">
+            <a href="https://news.ycombinator.com" target="_blank">Hacker News</a>
+            <div class="meta">Tech news & discussions</div>
+          </div>
+          <div class="list-item">
+            <a href="https://producthunt.com" target="_blank">Product Hunt</a>
+            <div class="meta">Discover new products</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>💡 Quick Tips</h2>
+        <div id="tips">
+          <div class="list-item">
+            <strong>Keyboard shortcuts</strong> save you time every day
+          </div>
+          <div class="list-item">
+            <strong>Write tests</strong> to prevent regressions
+          </div>
+          <div class="list-item">
+            <strong>Commit often</strong> with meaningful messages
+          </div>
+          <div class="list-item">
+            <strong>Take breaks</strong> to stay productive
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentTab = 'top';
+  
+  // Set current date
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+  
+  function switchTab(tab) {
+    currentTab = tab;
+    
+    // Update active tab button
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update title
+    const titles = {
+      'top': '📰 Hacker News - Top Stories',
+      'new': '📰 Hacker News - New Stories',
+      'best': '📰 Hacker News - Best Stories'
+    };
+    document.getElementById('hn-title').textContent = titles[tab];
+    
+    // Load stories
+    loadHN();
+  }
+
+  async function loadHN() {
+    const hnEl = document.getElementById('hn');
+    hnEl.innerHTML = '<div class="loading">Loading stories...</div>';
+    
+    try {
+      const endpoints = {
+        'top': 'topstories',
+        'new': 'newstories',
+        'best': 'beststories'
+      };
+      
+      const ids = await fetch(
+        `https://hacker-news.firebaseio.com/v0/${endpoints[currentTab]}.json`
+      ).then(r => r.json());
+
+      const topIds = ids.slice(0, 15);
+      let html = "";
+
+      for (const id of topIds) {
+        try {
+          const item = await fetch(
+            `https://hacker-news.firebaseio.com/v0/item/${id}.json`
+          ).then(r => r.json());
+          
+          if (!item || !item.title) continue;
+
+          html += `
+            <div class="article">
+              <div class="badge">
+                ⭐ ${item.score || 0} points
+              </div>
+              <a href="${item.url || `https://news.ycombinator.com/item?id=${id}`}" target="_blank">
+                ${item.title}
+              </a>
+              <div class="meta">
+                <span>💬 ${item.descendants || 0} comments</span>
+                <span>👤 ${item.by || 'anonymous'}</span>
+              </div>
+            </div>
+          `;
+        } catch (e) {
+          console.error('Error loading story:', e);
+        }
+      }
+
+      if (html === '') {
+        html = '<div class="loading">No stories found</div>';
+      }
+      
+      hnEl.innerHTML = html;
+    } catch (error) {
+      hnEl.innerHTML = '<div class="loading">Failed to load stories. Please try again.</div>';
+      console.error(error);
+    }
+  }
+
+  loadHN();
+</script>
+
+</body>
+</html>

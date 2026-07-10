@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock Paper Scissors 6 - JS Programmer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
+      background: linear-gradient(180deg, #e1f5fe 0%, #b3e5fc 100%);
+      min-height: 100vh;
+      color: #1a1a2e;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #0277bd;
+      margin-bottom: 8px;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: #666;
+      background: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border: 3px solid #e5e7eb;
+    }
+
+    .card h2 {
+      font-size: 22px;
+      color: #0277bd;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card p {
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .choice-btn {
+      font-size: 60px;
+      padding: 20px;
+      border: none;
+      border-radius: 20px;
+      background: #fafafa;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.15s;
+    }
+
+    .choice-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .choice-btn:active {
+      transform: scale(0.95);
+    }
+
+    .result-area {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .result-text {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .scores {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .score-box {
+      padding: 16px;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    .score-box.win {
+      background: #e8f5e9;
+    }
+
+    .score-box.lose {
+      background: #ffebee;
+    }
+
+    .score-box.tie {
+      background: #fff3e0;
+    }
+
+    .score-label {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .score-value {
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .code-box {
+      background: #1a1a2e;
+      color: #a5d6ff;
+      padding: 16px;
+      border-radius: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #0277bd 0%, #4fc3f7 100%);
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(2,119,189,0.3);
+      transition: transform 0.2s;
+    }
+
+    .nav-btn:active {
+      transform: scale(0.98);
+    }
+
+    .nav-btn.back {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+    }
+
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+
+    .progress-dot.active {
+      background: #0277bd;
+      width: 32px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="progress">
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+
+    <div class="header">
+      <div class="logo">✊✋✌️</div>
+      <h1>Rock Paper Scissors</h1>
+      <div class="page-number">Chapter 7 of 11</div>
+    </div>
+
+    <div class="card">
+      <h2>🎮 Play the Game!</h2>
+      <p>Choose your weapon! Rock ✊, Paper ✋, or Scissors ✌️!</p>
+
+      <div class="choices">
+        <button class="choice-btn" data-choice="rock">✊</button>
+        <button class="choice-btn" data-choice="paper">✋</button>
+        <button class="choice-btn" data-choice="scissors">✌️</button>
+      </div>
+
+      <div class="result-area">
+        <div class="result-text" id="resultText"></div>
+        <div class="scores">
+          <div class="score-box win">
+            <div class="score-label">Wins</div>
+            <div class="score-value" id="wins">0</div>
+          </div>
+          <div class="score-box tie">
+            <div class="score-label">Ties</div>
+            <div class="score-value" id="ties">0</div>
+          </div>
+          <div class="score-box lose">
+            <div class="score-label">Losses</div>
+            <div class="score-value" id="losses">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💻 How It Works</h2>
+      <div class="code-box">
+        const choices = ['rock', 'paper', 'scissors'];<br>
+        const cpu = choices[Math.floor(Math.random() * 3)];<br><br>
+        if (player === cpu) {<br>
+        &nbsp;&nbsp;console.log("Tie!");<br>
+        } else if (player === 'rock' && cpu === 'scissors') {<br>
+        &nbsp;&nbsp;console.log("You win!");<br>
+        }
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="nav-btn back" onclick="window.location.href='06-quiz-2.html'">
+        ← Back
+      </button>
+      <button class="nav-btn" onclick="window.location.href='08-quiz-3.html'">
+        Quiz →
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const choices = ['rock', 'paper', 'scissors'];
+    const emojis = { rock: '✊', paper: '✋', scissors: '✌️' };
+    let wins = 0, ties = 0, losses = 0;
+
+    function decideWinner(player, cpu) {
+      if (player === cpu) return 'tie';
+      if (
+        (player === 'rock' && cpu === 'scissors') ||
+        (player === 'paper' && cpu === 'rock') ||
+        (player === 'scissors' && cpu === 'paper')
+      ) return 'win';
+      return 'lose';
+    }
+
+    document.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const player = btn.dataset.choice;
+        const cpu = choices[Math.floor(Math.random() * choices.length)];
+        const result = decideWinner(player, cpu);
+
+        if (result === 'win') {
+          wins++;
+          document.getElementById('resultText').textContent = "🎉 You win!";
+        } else if (result === 'lose') {
+          losses++;
+          document.getElementById('resultText').textContent = "😢 You lost!";
+        } else {
+          ties++;
+          document.getElementById('resultText').textContent = "🤝 Tie!";
+        }
+
+        document.getElementById('resultText').textContent += ` You: ${emojis[player]}, CPU: ${emojis[cpu]}`;
+        document.getElementById('wins').textContent = wins;
+        document.getElementById('ties').textContent = ties;
+        document.getElementById('losses').textContent = losses;
+      });
+    });
+  </script>
+</body>
+</html>

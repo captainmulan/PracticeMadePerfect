@@ -65,11 +65,15 @@ export default function CourseWizard() {
   const progressPct = Math.round(((stepIndex + 1) / steps.length) * 100);
   const bookName = `${course.icon} ${course.title}`;
   const chapterName = currentStep.chapterTitle;
-  const chapterNumber = currentStep.stepIndex;
+  const chapterNumber = currentStep.chapterIndex + 1; // Show 1-based
   const pageType = courseStepLabel(currentStep);
   const pageIndex = stepIndex + 1;
   const totalPages = steps.length;
-  const pageBrief = currentStep.description;
+  // If chapterIndex exists (could be 0), prepend "Chapter X" to description
+  const hasChapterIndex = typeof currentStep.chapterIndex !== undefined && currentStep.chapterIndex !== null && currentStep.chapterIndex > 0;
+  const pageBrief = hasChapterIndex
+    ? `<div><strong>Chapter ${currentStep.chapterIndex + 1}</strong></div>${currentStep.description ?? ""}`
+    : (currentStep.description ?? "");
 
   return (
     <div className="page-content course-wizard-page practice-page practice-wizard practice-code-page">

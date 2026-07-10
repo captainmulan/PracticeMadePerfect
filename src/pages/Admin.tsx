@@ -683,7 +683,7 @@ export default function Admin() {
           Home Page
         </button>
         <button type="button" className={`admin-tab ${adminTab === "wizard-style" ? "active" : ""}`} onClick={() => setAdminTab("wizard-style")}>
-          Chapter Page Style
+          Page Style
         </button>
         <button type="button" className={`admin-tab ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
           Book Builder

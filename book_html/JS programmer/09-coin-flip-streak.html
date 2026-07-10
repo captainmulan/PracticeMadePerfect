@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coin Flip Streak 8 - JS Programmer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
+      background: linear-gradient(180deg, #fff3e0 0%, #ffe0b2 100%);
+      min-height: 100vh;
+      color: #1a1a2e;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #ef6c00;
+      margin-bottom: 8px;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: #666;
+      background: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border: 3px solid #e5e7eb;
+    }
+
+    .card h2 {
+      font-size: 22px;
+      color: #ef6c00;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card p {
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .game-area {
+      text-align: center;
+    }
+
+    .coin-display {
+      font-size: 120px;
+      margin: 24px 0;
+      min-height: 140px;
+    }
+
+    .game-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .game-btn {
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.1s;
+    }
+
+    .game-btn:active {
+      transform: scale(0.96);
+    }
+
+    .game-btn.flip {
+      background: linear-gradient(135deg, #ef6c00 0%, #ffa726 100%);
+    }
+
+    .game-btn.reset {
+      background: linear-gradient(135deg, #546e7a 0%, #78909c 100%);
+    }
+
+    .streak-display {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 16px 0;
+    }
+
+    .message {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .code-box {
+      background: #1a1a2e;
+      color: #a5d6ff;
+      padding: 16px;
+      border-radius: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      margin: 16px 0;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #ef6c00 0%, #ffa726 100%);
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(239,108,0,0.3);
+      transition: transform 0.2s;
+    }
+
+    .nav-btn:active {
+      transform: scale(0.98);
+    }
+
+    .nav-btn.back {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+    }
+
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+
+    .progress-dot.active {
+      background: #ef6c00;
+      width: 32px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="progress">
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot active"></div>
+      <div class="progress-dot"></div>
+      <div class="progress-dot"></div>
+    </div>
+
+    <div class="header">
+      <div class="logo">🪙</div>
+      <h1>Coin Flip Streak</h1>
+      <div class="page-number">Chapter 9 of 11</div>
+    </div>
+
+    <div class="card">
+      <h2>🎮 Flip the Coin!</h2>
+      <p>Try to get as many heads in a row as you can! Can you get 5?</p>
+
+      <div class="game-area">
+        <div class="coin-display" id="coin">🪙</div>
+        <div class="game-btns">
+          <button class="game-btn flip" id="flipBtn">Flip!</button>
+          <button class="game-btn reset" id="resetBtn">Reset</button>
+        </div>
+        <div class="streak-display">Heads Streak: <span id="streak">0</span></div>
+        <div class="message" id="message"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💻 How It Works</h2>
+      <div class="code-box">
+        const heads = Math.random() &lt; 0.5;<br><br>
+        if (heads) {<br>
+        &nbsp;&nbsp;streak++;<br>
+        } else {<br>
+        &nbsp;&nbsp;streak = 0;<br>
+        }
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="nav-btn back" onclick="window.location.href='08-quiz-3.html'">
+        ← Back
+      </button>
+      <button class="nav-btn" onclick="window.location.href='10-reaction-time.html'">
+        Next Chapter →
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let streak = 0;
+    const coinEl = document.getElementById('coin');
+    const streakEl = document.getElementById('streak');
+    const messageEl = document.getElementById('message');
+    const flipBtn = document.getElementById('flipBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function resetGame() {
+      streak = 0;
+      streakEl.textContent = streak;
+      messageEl.textContent = "";
+      coinEl.textContent = "🪙";
+    }
+
+    flipBtn.addEventListener('click', () => {
+      const heads = Math.random() < 0.5;
+      if (heads) {
+        coinEl.textContent = "👑";
+        streak++;
+        messageEl.textContent = "Heads!";
+        if (streak >= 5) {
+          messageEl.textContent = "🎉 5 HEADS IN A ROW! AMAZING!";
+        }
+      } else {
+        coinEl.textContent = "🦅";
+        streak = 0;
+        messageEl.textContent = "Tails! Streak reset!";
+      }
+      streakEl.textContent = streak;
+    });
+
+    resetBtn.addEventListener('click', resetGame);
+  </script>
+</body>
+</html>

@@ -33,7 +33,7 @@ export interface CourseStepRow {
   chapterId: string;
   chapterTitle: string;
   chapterIndex: number;
-  stepIndex: number;
+  pageIndex: number;
   stepType: string;
   title: string;
   raw: string;
@@ -97,7 +97,8 @@ export function ensureCourseSchema(db: Database) {
     db.run("ALTER TABLE courses ADD COLUMN artifact_type TEXT");
   } catch {
     // Ignore error if column already exists
-  }  db.run(
+  }
+  db.run(
     `CREATE TABLE IF NOT EXISTS course_chapters (
       id TEXT PRIMARY KEY,
       course_id TEXT,
@@ -106,6 +107,8 @@ export function ensureCourseSchema(db: Database) {
       raw TEXT
     )`,
   );
+  
+  // Create new course_steps with page_index, or alter existing to add page_index
   db.run(
     `CREATE TABLE IF NOT EXISTS course_steps (
       id TEXT PRIMARY KEY,
@@ -113,12 +116,21 @@ export function ensureCourseSchema(db: Database) {
       chapter_id TEXT,
       chapter_title TEXT,
       chapter_index INTEGER,
-      step_index INTEGER,
+      page_index INTEGER,
       step_type TEXT,
       title TEXT,
       raw TEXT
     )`,
   );
+  
+  // Try to add page_index column to existing course_steps table if missing
+  try {
+    db.run("ALTER TABLE course_steps ADD COLUMN page_index INTEGER");
+    // Copy values from step_index to page_index if available
+    db.run("UPDATE course_steps SET page_index = step_index WHERE page_index IS NULL AND step_index IS NOT NULL");
+  } catch {
+    // Ignore error if column already exists
+  }
 }
 
 function countCourses(db: Database): number {
@@ -166,7 +178,7 @@ function courseToRows(course: Course): { course: CourseRow; chapters: ChapterRow
       chapterId: chapter.id,
       chapterTitle: chapter.title,
       chapterIndex: chapter.chapterIndex,
-      stepIndex: step.stepIndex,
+      pageIndex: step.stepIndex,
       stepType: step.stepType,
       title: step.title,
       raw: JSON.stringify(step, null, 2),
@@ -186,7 +198,7 @@ function parseStep(row: CourseStepRow): CourseStep {
       chapterId: row.chapterId,
       chapterTitle: row.chapterTitle,
       chapterIndex: row.chapterIndex,
-      stepIndex: row.stepIndex,
+      stepIndex: row.pageIndex,
       stepType: parsed.stepType ?? (row.stepType as CourseStep["stepType"]),
       title: parsed.title ?? row.title,
     };
@@ -197,7 +209,7 @@ function parseStep(row: CourseStepRow): CourseStep {
       chapterId: row.chapterId,
       chapterTitle: row.chapterTitle,
       chapterIndex: row.chapterIndex,
-      stepIndex: row.stepIndex,
+      stepIndex: row.pageIndex,
       stepType: row.stepType as CourseStep["stepType"],
       title: row.title,
       description: "",
@@ -260,22 +272,60 @@ export function saveCourseBundleToDb(db: Database, course: Course) {
     chapterStmt.free();
   }
 
-  const stepStmt = db.prepare(
-    "REPLACE INTO course_steps (id, course_id, chapter_id, chapter_title, chapter_index, step_index, step_type, title, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-  );
+  // Check if step_index still exists in the table, to support both
+  let hasStepIndex = false;
+  let hasPageIndex = false;
+  try {
+    const pragmaStmt = db.prepare("PRAGMA table_info(course_steps)");
+    try {
+      while (pragmaStmt.step()) {
+        const col = pragmaStmt.getAsObject() as Record<string, unknown>;
+        const colName = String(col.name);
+        if (colName === "step_index") hasStepIndex = true;
+        if (colName === "page_index") hasPageIndex = true;
+      }
+    } finally {
+      pragmaStmt.free();
+    }
+  } catch {
+    // Default - assume both are there
+    hasStepIndex = true;
+    hasPageIndex = true;
+  }
+
+  const insertCols: string[] = ["id", "course_id", "chapter_id", "chapter_title", "chapter_index", "step_type", "title", "raw"];
+  const insertVals: string[] = ["?", "?", "?", "?", "?", "?", "?", "?"];
+  const bindValues: (string | number | null)[] = [];
+
+  if (hasPageIndex) {
+    insertCols.push("page_index");
+    insertVals.push("?");
+  }
+  if (hasStepIndex) {
+    insertCols.push("step_index");
+    insertVals.push("?");
+  }
+
+  const stepStmt = db.prepare(`REPLACE INTO course_steps (${insertCols.join(", ")}) VALUES (${insertVals.join(", ")})`);
   try {
     steps.forEach((step) => {
-      stepStmt.bind([
+      const bindArr: (string | number | null)[] = [
         step.id,
         step.courseId,
         step.chapterId,
         step.chapterTitle,
         step.chapterIndex,
-        step.stepIndex,
         step.stepType,
         step.title,
         step.raw,
-      ]);
+      ];
+      if (hasPageIndex) {
+        bindArr.push(step.pageIndex);
+      }
+      if (hasStepIndex) {
+        bindArr.push(step.pageIndex); // also set step_index for backward compatibility
+      }
+      stepStmt.bind(bindArr);
       stepStmt.step();
       stepStmt.reset();
     });
@@ -389,11 +439,44 @@ export function queryChapterRows(db: Database, courseId?: string): ChapterRow[] 
 export function queryCourseStepRows(db: Database, courseId?: string): CourseStepRow[] {
   ensureCourseSchema(db);
   const rows: CourseStepRow[] = [];
+  
+  // First check what columns exist
+  let columns: string[] = [];
+  try {
+    const pragmaStmt = db.prepare("PRAGMA table_info(course_steps)");
+    try {
+      while (pragmaStmt.step()) {
+        const col = pragmaStmt.getAsObject() as Record<string, unknown>;
+        if (col.name) {
+          columns.push(String(col.name));
+        }
+      }
+    } finally {
+      pragmaStmt.free();
+    }
+  } catch {
+    // If we can't read table info, default to including both
+  }
+
+  // Build the SELECT statement based on available columns
+  const selectCols: string[] = ["id", "course_id", "chapter_id", "chapter_title", "chapter_index", "step_type", "title", "raw"];
+  if (columns.includes("page_index")) {
+    selectCols.push("page_index");
+  }
+  if (columns.includes("step_index")) {
+    selectCols.push("step_index");
+  }
+
+  const orderByCols: string[] = ["chapter_index"];
+  if (columns.includes("page_index")) {
+    orderByCols.push("page_index");
+  } else if (columns.includes("step_index")) {
+    orderByCols.push("step_index");
+  }
+
   const sql = courseId
-    ? `SELECT id, course_id, chapter_id, chapter_title, chapter_index, step_index, step_type, title, raw
-       FROM course_steps WHERE course_id = ? ORDER BY chapter_index, step_index`
-    : `SELECT id, course_id, chapter_id, chapter_title, chapter_index, step_index, step_type, title, raw
-       FROM course_steps ORDER BY course_id, chapter_index, step_index`;
+    ? `SELECT ${selectCols.join(", ")} FROM course_steps WHERE course_id = ? ORDER BY ${orderByCols.join(", ")}`
+    : `SELECT ${selectCols.join(", ")} FROM course_steps ORDER BY course_id, ${orderByCols.join(", ")}`;
   const stmt = db.prepare(sql);
   try {
     if (courseId) stmt.bind([courseId]);
@@ -405,7 +488,7 @@ export function queryCourseStepRows(db: Database, courseId?: string): CourseStep
         chapterId: String(row.chapter_id ?? ""),
         chapterTitle: String(row.chapter_title ?? ""),
         chapterIndex: readRowNumber(row, "chapter_index", "chapterIndex"),
-        stepIndex: readRowNumber(row, "step_index", "stepIndex"),
+        pageIndex: readRowNumber(row, "page_index", "step_index", "stepIndex"),
         stepType: String(row.step_type ?? "html"),
         title: String(row.title ?? ""),
         raw: String(row.raw ?? ""),

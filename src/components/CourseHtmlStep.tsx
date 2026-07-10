@@ -55,7 +55,7 @@ export default function CourseHtmlStep({
       <iframe
         title={step.title}
         className="practice-html-iframe"
-        sandbox="allow-scripts allow-same-origin"
+        sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-popups"
         srcDoc={srcDoc}
         loading="lazy"
       />
