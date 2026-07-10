@@ -212,7 +212,7 @@ export default function Admin() {
   const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books">("home");
   const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
-  const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "label" | "number" | "bookname" | "title" | "description">("background");
+  const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "navButtons" | "homeButton" | "chapterLabel" | "label" | "number" | "bookname" | "title" | "description">("background");
   const [isRestoringDb, setIsRestoringDb] = useState(false);
 
   useEffect(() => {
@@ -281,9 +281,31 @@ export default function Admin() {
     }
   }
 
-  function updateStyleConfig(category: string, key: string, value: string | boolean | number) {
+  function updateStyleConfig(path: string, keyOrValue: string | boolean | number, maybeValue?: string | boolean | number) {
     if (!homeData) return;
     const newHomeData = { ...homeData };
+    let current: any = newHomeData;
+    let key: string;
+    let value: string | boolean | number;
+    
+    if (maybeValue !== undefined) {
+      key = keyOrValue as string;
+      value = maybeValue;
+      const parts = path.split('.');
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        if (!current[part]) current[part] = {};
+        if (i === parts.length - 1) {
+          current = current[part];
+        } else {
+          current = current[part];
+        }
+      }
+    } else {
+      key = path;
+      value = keyOrValue;
+    }
+
     if (!newHomeData.style) {
       newHomeData.style = {
         main: {
@@ -347,6 +369,27 @@ export default function Admin() {
           borderBottomColor: "#e2e8f0",
           chapterLabelColor: "#64748b",
           chapterLabelFontSize: "0.65rem",
+          navButton: {
+            backgroundColor: "#e2e8f0",
+            border: "none",
+            color: "#0f172a",
+            disabledColor: "#94a3b8",
+            fontSize: 24,
+            fontWeight: "bold"
+          },
+          homeButton: {
+            backgroundColor: "#e2e8f0",
+            border: "none",
+            color: "#0f172a",
+            fontSize: 18
+          },
+          chapterLabel: {
+            backgroundColor: "rgba(15,23,42,0.05)",
+            border: "none",
+            color: "#64748b",
+            fontSize: 14,
+            fontWeight: "700"
+          }
         },
         wizardWorkspace: {
           backgroundColor: "#ffffff",
@@ -376,10 +419,28 @@ export default function Admin() {
         },
       };
     }
-    if (!newHomeData.style[category]) {
-      newHomeData.style[category] = {};
+    if (maybeValue === undefined) {
+      // Legacy case: path is category, keyOrValue is key
+      if (!newHomeData.style[path]) {
+        newHomeData.style[path] = {};
+      }
+      newHomeData.style[path][key] = value;
+    } else {
+      // New case: nested path, key is last part, current is the nested object
+      // Wait, wait, let's fix this logic: for paths like "wizardTopInfo.navButton", we need to go into style first!
+      let current2: any = newHomeData.style;
+      const parts = path.split('.');
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        if (!current2[part]) current2[part] = {};
+        if (i === parts.length - 1) {
+          break;
+        }
+        current2 = current2[part];
+      }
+      // Now current2 is the object that should have the key
+      current2[parts[parts.length - 1]][key] = value;
     }
-    newHomeData.style[category][key] = value;
     setHomeData(newHomeData);
     setHomeJson(JSON.stringify(newHomeData, null, 2));
   }
@@ -1272,10 +1333,10 @@ export default function Admin() {
             </div>
             <div className="admin-tabs" style={{ marginBottom: "16px" }}>
               <button type="button" className={`admin-tab ${wizardStyleTab === "topinfo" ? "active" : ""}`} onClick={() => setWizardStyleTab("topinfo")}>
-                Wizard Top Info
+                Navigation Menu
               </button>
               <button type="button" className={`admin-tab ${wizardStyleTab === "workspace" ? "active" : ""}`} onClick={() => setWizardStyleTab("workspace")}>
-                Wizard Workspace
+                Workspace
               </button>
               <button type="button" className={`admin-tab ${wizardStyleTab === "buttons" ? "active" : ""}`} onClick={() => setWizardStyleTab("buttons")}>
                 Wizard Buttons
@@ -1287,7 +1348,13 @@ export default function Admin() {
                   <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "background" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("background")} style={{ fontSize: "12px", padding: "6px 12px" }}>
                     Background & Border
                   </button>
-                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "label" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("label")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "navButtons" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("navButtons")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Navigation Buttons
+                  </button>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "homeButton" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("homeButton")} style={{ fontSize: "12px", padding: "6px 12px" }}>
+                    Home Button
+                  </button>
+                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "chapterLabel" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("chapterLabel")} style={{ fontSize: "12px", padding: "6px 12px" }}>
                     Chapter Label
                   </button>
                   <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "number" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("number")} style={{ fontSize: "12px", padding: "6px 12px" }}>
@@ -1299,10 +1366,104 @@ export default function Admin() {
                   <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "title" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("title")} style={{ fontSize: "12px", padding: "6px 12px" }}>
                     Chapter Title
                   </button>
-                  <button type="button" className={`admin-tab ${wizardTopInfoSubTab === "description" ? "active" : ""}`} onClick={() => setWizardTopInfoSubTab("description")} style={{ fontSize: "12px", padding: "6px 12px" }}>
-                    Description
-                  </button>
                 </div>
+
+                {/* Description panel - parent level, not sub-tab */}
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Description</h4>
+                  <div className="admin-search-row">
+                    <GradientColorPicker3
+                      label="Description Background"
+                      gradientStart={homeData?.style?.wizardTopInfo?.descriptionBackgroundColorGradientStart ?? "#ffffff"}
+                      setGradientStart={(v) => updateStyleConfig("wizardTopInfo", "descriptionBackgroundColorGradientStart", v)}
+                      gradientMiddle={homeData?.style?.wizardTopInfo?.descriptionBackgroundColorGradientMiddle ?? "#ffffff"}
+                      setGradientMiddle={(v) => updateStyleConfig("wizardTopInfo", "descriptionBackgroundColorGradientMiddle", v)}
+                      gradientEnd={homeData?.style?.wizardTopInfo?.descriptionBackgroundColorGradientEnd ?? "#f8fafc"}
+                      setGradientEnd={(v) => updateStyleConfig("wizardTopInfo", "descriptionBackgroundColorGradientEnd", v)}
+                    />
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Color</span>
+                      <input
+                        type="color"
+                        value={homeData?.style?.wizardTopInfo?.descriptionColor ?? "#64748b"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionColor", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Font Size</span>
+                      <input
+                        type="number"
+                        min="10"
+                        max="48"
+                        value={homeData?.style?.wizardTopInfo?.descriptionFontSize ?? 16}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionFontSize", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Font Weight</span>
+                      <select
+                        value={homeData?.style?.wizardTopInfo?.descriptionFontWeight ?? "normal"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionFontWeight", e.target.value)}
+                        className="admin-grid-select"
+                      >
+                        <option value="normal">Normal</option>
+                        <option value="bold">Bold</option>
+                        <option value="lighter">Lighter</option>
+                        <option value="bolder">Bolder</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                        <option value="500">500</option>
+                        <option value="600">600</option>
+                        <option value="700">700</option>
+                        <option value="800">800</option>
+                        <option value="900">900</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Line Height</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max="3"
+                        step="0.1"
+                        value={homeData?.style?.wizardTopInfo?.descriptionLineHeight ?? 1.6}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionLineHeight", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Padding Top</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="48"
+                        value={homeData?.style?.wizardTopInfo?.descriptionPaddingTop ?? 16}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionPaddingTop", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Padding Bottom</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="48"
+                        value={homeData?.style?.wizardTopInfo?.descriptionPaddingBottom ?? 16}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionPaddingBottom", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                </div>
+
                 {wizardTopInfoSubTab === "background" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Top Info Background & Border</h4>
@@ -1330,7 +1491,125 @@ export default function Admin() {
                   </label>
                 </div>
                 )}
-                {wizardTopInfoSubTab === "label" && (
+
+                {wizardTopInfoSubTab === "navButtons" && (
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Navigation Buttons</h4>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Background Color</span>
+                      <input
+                        type="color"
+                        value={homeData?.style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.navButton", "backgroundColor", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Border</span>
+                      <input
+                        type="text"
+                        value={homeData?.style?.wizardTopInfo?.navButton?.border ?? "none"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.navButton", "border", e.target.value)}
+                        className="admin-grid-input"
+                        placeholder="e.g. 1px solid #ccc"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Text Color</span>
+                      <input
+                        type="color"
+                        value={homeData?.style?.wizardTopInfo?.navButton?.color ?? "#0f172a"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.navButton", "color", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Disabled Color</span>
+                      <input
+                        type="color"
+                        value={homeData?.style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.navButton", "disabledColor", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Font Size</span>
+                      <input
+                        type="number"
+                        min="8"
+                        max="48"
+                        value={homeData?.style?.wizardTopInfo?.navButton?.fontSize ?? 24}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.navButton", "fontSize", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Font Weight</span>
+                      <input
+                        type="text"
+                        value={homeData?.style?.wizardTopInfo?.navButton?.fontWeight ?? "bold"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.navButton", "fontWeight", e.target.value)}
+                        className="admin-grid-input"
+                        placeholder="e.g. bold, 700"
+                      />
+                    </label>
+                  </div>
+                </div>
+                )}
+
+                {wizardTopInfoSubTab === "homeButton" && (
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Home Button</h4>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Background Color</span>
+                      <input
+                        type="color"
+                        value={homeData?.style?.wizardTopInfo?.homeButton?.backgroundColor ?? "#e2e8f0"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.homeButton", "backgroundColor", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Border</span>
+                      <input
+                        type="text"
+                        value={homeData?.style?.wizardTopInfo?.homeButton?.border ?? "none"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.homeButton", "border", e.target.value)}
+                        className="admin-grid-input"
+                        placeholder="e.g. 1px solid #ccc"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Text Color</span>
+                      <input
+                        type="color"
+                        value={homeData?.style?.wizardTopInfo?.homeButton?.color ?? "#0f172a"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.homeButton", "color", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Font Size</span>
+                      <input
+                        type="number"
+                        min="8"
+                        max="48"
+                        value={homeData?.style?.wizardTopInfo?.homeButton?.fontSize ?? 18}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.homeButton", "fontSize", Number(e.target.value))}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                </div>
+                )}
+
+                {wizardTopInfoSubTab === "chapterLabel" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Chapter Label</h4>
                   <label className="admin-task-editor-field">
@@ -1343,30 +1622,51 @@ export default function Admin() {
                   </label>
                   <div className="admin-search-row">
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Color</span>
+                      <span className="admin-task-editor-label">Background Color</span>
                       <input
                         type="color"
-                        value={homeData?.style?.wizardTopInfo?.chapterLabelColor ?? "#64748b"}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterLabelColor", e.target.value)}
+                        value={homeData?.style?.wizardTopInfo?.chapterLabel?.backgroundColor ?? "rgba(15,23,42,0.05)"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.chapterLabel", "backgroundColor", e.target.value)}
                         className="admin-grid-input"
                       />
                     </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Border</span>
+                      <input
+                        type="text"
+                        value={homeData?.style?.wizardTopInfo?.chapterLabel?.border ?? "none"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.chapterLabel", "border", e.target.value)}
+                        className="admin-grid-input"
+                        placeholder="e.g. 1px solid #ccc"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Color</span>
+                      <input
+                        type="color"
+                        value={homeData?.style?.wizardTopInfo?.chapterLabel?.color ?? homeData?.style?.wizardTopInfo?.chapterLabelColor ?? "#64748b"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.chapterLabel", "color", e.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  </div>
+                  <div className="admin-search-row">
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Font Size</span>
                       <input
                         type="number"
                         min="8"
                         max="48"
-                        value={homeData?.style?.wizardTopInfo?.chapterLabelFontSize ?? 10}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterLabelFontSize", Number(e.target.value))}
+                        value={homeData?.style?.wizardTopInfo?.chapterLabel?.fontSize ?? homeData?.style?.wizardTopInfo?.chapterLabelFontSize ?? 14}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.chapterLabel", "fontSize", Number(e.target.value))}
                         className="admin-grid-input"
                       />
                     </label>
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Font Weight</span>
                       <select
-                        value={homeData?.style?.wizardTopInfo?.chapterLabelFontWeight ?? "700"}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterLabelFontWeight", e.target.value)}
+                        value={homeData?.style?.wizardTopInfo?.chapterLabel?.fontWeight ?? homeData?.style?.wizardTopInfo?.chapterLabelFontWeight ?? "700"}
+                        onChange={(e) => updateStyleConfig("wizardTopInfo.chapterLabel", "fontWeight", e.target.value)}
                         className="admin-grid-select"
                       >
                         <option value="normal">Normal</option>
@@ -1387,6 +1687,7 @@ export default function Admin() {
                   </div>
                 </div>
                 )}
+
                 {wizardTopInfoSubTab === "number" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Chapter Number</h4>
@@ -1541,102 +1842,6 @@ export default function Admin() {
                         type="color"
                         value={homeData?.style?.wizardTopInfo?.chapterTitleColor ?? "#0f172a"}
                         onChange={(e) => updateStyleConfig("wizardTopInfo", "chapterTitleColor", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
-                </div>
-                )}
-                {wizardTopInfoSubTab === "description" && (
-                <div className="panel panel-bordered" style={{ padding: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Chapter Description</h4>
-                  <div className="admin-search-row">
-                    <GradientColorPicker3
-                      label="Description Background"
-                      gradientStart={homeData?.style?.wizardTopInfo?.descriptionBackgroundColorGradientStart ?? "#ffffff"}
-                      setGradientStart={(v) => updateStyleConfig("wizardTopInfo", "descriptionBackgroundColorGradientStart", v)}
-                      gradientMiddle={homeData?.style?.wizardTopInfo?.descriptionBackgroundColorGradientMiddle ?? "#ffffff"}
-                      setGradientMiddle={(v) => updateStyleConfig("wizardTopInfo", "descriptionBackgroundColorGradientMiddle", v)}
-                      gradientEnd={homeData?.style?.wizardTopInfo?.descriptionBackgroundColorGradientEnd ?? "#f8fafc"}
-                      setGradientEnd={(v) => updateStyleConfig("wizardTopInfo", "descriptionBackgroundColorGradientEnd", v)}
-                    />
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Color</span>
-                      <input
-                        type="color"
-                        value={homeData?.style?.wizardTopInfo?.descriptionColor ?? "#64748b"}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionColor", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Font Size</span>
-                      <input
-                        type="number"
-                        min="10"
-                        max="48"
-                        value={homeData?.style?.wizardTopInfo?.descriptionFontSize ?? 16}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionFontSize", Number(e.target.value))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
-                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Font Weight</span>
-                      <select
-                        value={homeData?.style?.wizardTopInfo?.descriptionFontWeight ?? "normal"}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionFontWeight", e.target.value)}
-                        className="admin-grid-select"
-                      >
-                        <option value="normal">Normal</option>
-                        <option value="bold">Bold</option>
-                        <option value="lighter">Lighter</option>
-                        <option value="bolder">Bolder</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="300">300</option>
-                        <option value="400">400</option>
-                        <option value="500">500</option>
-                        <option value="600">600</option>
-                        <option value="700">700</option>
-                        <option value="800">800</option>
-                        <option value="900">900</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Line Height</span>
-                      <input
-                        type="number"
-                        min="1"
-                        max="3"
-                        step="0.1"
-                        value={homeData?.style?.wizardTopInfo?.descriptionLineHeight ?? 1.6}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionLineHeight", Number(e.target.value))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Padding Top</span>
-                      <input
-                        type="number"
-                        min="0"
-                        max="48"
-                        value={homeData?.style?.wizardTopInfo?.descriptionPaddingTop ?? 16}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionPaddingTop", Number(e.target.value))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Padding Bottom</span>
-                      <input
-                        type="number"
-                        min="0"
-                        max="48"
-                        value={homeData?.style?.wizardTopInfo?.descriptionPaddingBottom ?? 16}
-                        onChange={(e) => updateStyleConfig("wizardTopInfo", "descriptionPaddingBottom", Number(e.target.value))}
                         className="admin-grid-input"
                       />
                     </label>

@@ -112,7 +112,6 @@ export default function ExchangeRatePanel() {
           {error && !rates && <div style={{ color: "#ffb4b4" }}>⚠ {error}</div>}
           {rates && (
             <>
-              <div>NZD: <strong>{rates.NZD?.toFixed(4) ?? "—"}</strong></div>
               <div>SGD: <strong>{rates.SGD?.toFixed(4) ?? "—"}</strong></div>
               <div>MMK: <strong>{rates.MMK?.toFixed(2) ?? "—"}</strong></div>
               <div>USD: <strong>1.0000</strong></div>

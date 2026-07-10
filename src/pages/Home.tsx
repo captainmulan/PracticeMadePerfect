@@ -9,16 +9,16 @@ import CourseBookCard from "../components/CourseBookCard";
 
 export default function Home() {
   const [heroCollapsed, setHeroCollapsed] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<"Popular" | "Search" | "Kid" | "Other">("Popular");
-  const [selectedOtherSubTab, setSelectedOtherSubTab] = useState<"IT" | "Fiction" | "Migration" | "Language">("IT");
+  const [selectedTab, setSelectedTab] = useState<"Popular" | "Search" | "All">("Popular");
+  const [selectedAllSubTab, setSelectedAllSubTab] = useState<"Kid" | "IT" | "Fiction" | "Language">("IT");
   const [searchQuery, setSearchQuery] = useState("");
   const data = getHomePageData();
   const style = data.style;
   const { courses, loaded: coursesLoaded } = useCourseCatalog();
   const rows = useMemo(() => getHomeCourseShelfRows(courses), [courses]);
   const selectedRow: CourseShelfRow | undefined = useMemo(() => {
-    if (selectedTab === "Other") {
-      return getCourseShelfRowForCategory(courses, selectedOtherSubTab);
+    if (selectedTab === "All") {
+      return getCourseShelfRowForCategory(courses, selectedAllSubTab);
     }
     if (selectedTab === "Search") {
       const query = searchQuery.trim().toLowerCase();
@@ -32,7 +32,7 @@ export default function Home() {
       return { title: "Search", items: searchItems };
     }
     return rows.find((row) => row.title === selectedTab) || rows[0];
-  }, [courses, rows, searchQuery, selectedOtherSubTab, selectedTab]);
+  }, [courses, rows, searchQuery, selectedAllSubTab, selectedTab]);
 
   return (
     <div className="page-content page-home">
@@ -111,33 +111,33 @@ export default function Home() {
       >
         <div className="container">
           <nav className="home-tabs">
-            {rows.map((row) => (
+            {["Popular", "Search", "All"].map((tabTitle) => (
               <button
-                key={row.title}
+                key={tabTitle}
                 type="button"
-                className={`home-tab-button ${selectedRow?.title === row.title ? "active" : ""}`}
-                onClick={() => setSelectedTab(row.title as "Popular" | "Search" | "Kid" | "Other")}
+                className={`home-tab-button ${selectedTab === tabTitle ? "active" : ""}`}
+                onClick={() => setSelectedTab(tabTitle as "Popular" | "Search" | "All")}
               >
-                {row.title}
+                {tabTitle}
               </button>
             ))}
           </nav>
 
-          {selectedTab === "Other" && (
+          {selectedTab === "All" && (
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
-              {(["IT", "Fiction", "Migration", "Language"] as const).map((category) => (
+              {(["Kid", "IT", "Fiction", "Language"] as const).map((category) => (
                 <button
                   key={category}
                   type="button"
-                  className={`tab ${selectedOtherSubTab === category ? "active" : ""}`}
-                  onClick={() => setSelectedOtherSubTab(category)}
+                  className={`tab ${selectedAllSubTab === category ? "active" : ""}`}
+                  onClick={() => setSelectedAllSubTab(category)}
                   style={{
                     padding: "6px 10px",
                     borderRadius: "999px",
-                    background: selectedOtherSubTab === category
+                    background: selectedAllSubTab === category
                       ? (style?.tabs?.activeBackgroundColor ?? "#0f172a")
                       : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
-                    color: selectedOtherSubTab === category ? (style?.tabs?.activeColor ?? "#ffffff") : (style?.tabs?.color ?? "#334155"),
+                    color: selectedAllSubTab === category ? (style?.tabs?.activeColor ?? "#ffffff") : (style?.tabs?.color ?? "#334155"),
                   }}
                 >
                   {category}

@@ -33,7 +33,6 @@ export default function AdminCourses() {
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [draftBook, setDraftBook] = useState<Course | null>(null);
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
-  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "chapter" | "empty-book">("book");
@@ -50,28 +49,21 @@ export default function AdminCourses() {
         setLoaded(true);
       })
       .catch((err) => setMessage(String(err)));
-      
+    
     const defaultData = loadAdminData();
     setAdminData(defaultData);
   }, []);
 
   const activeBook = draftBook ?? books.find((c) => c.id === selectedBookId) ?? null;
-  const flatSteps = useMemo(() => (activeBook ? flattenCourseSteps(activeBook) : []), [activeBook]);
-  const selectedChapter = useMemo(() => {
-    if (!activeBook) return null;
-    return activeBook.chapters.find((chapter) => chapter.id === selectedChapterId) ?? activeBook.chapters[0] ?? null;
-  }, [activeBook, selectedChapterId]);
-  const chapterSteps = useMemo(() => {
-    if (!activeBook || !selectedChapter) return [];
-    return flatSteps.filter((step) => step.chapterId === selectedChapter.id);
-  }, [activeBook, flatSteps, selectedChapter]);
+  // Flatten all steps to treat as chapters in UI
+  const allSteps = useMemo(() => (activeBook ? flattenCourseSteps(activeBook) : []), [activeBook]);
   const selectedStep = useMemo(() => {
-    if (!chapterSteps.length) return null;
+    if (!allSteps.length) return null;
     if (selectedStepId) {
-      return chapterSteps.find((step) => step.id === selectedStepId) ?? chapterSteps[0];
+      return allSteps.find((step) => step.id === selectedStepId) ?? allSteps[0];
     }
-    return chapterSteps[0];
-  }, [chapterSteps, selectedStepId]);
+    return allSteps[0];
+  }, [allSteps, selectedStepId]);
 
   function updateStyleConfig(key: string, value: string | boolean | number) {
     if (!adminData) return;
@@ -119,7 +111,6 @@ export default function AdminCourses() {
     setDraftBook(book);
     setSelectedBookId(null);
     setSelectedStepId(null);
-    setSelectedChapterId(null);
     setMessage("");
   }
 
@@ -144,53 +135,24 @@ export default function AdminCourses() {
     }));
   }
 
-  function updateChapter(chapterId: string, patch: Partial<CourseChapter>) {
+  function addChapter(stepType: CourseStepType = "html") {
     if (!activeBook) return;
-    updateActiveBook((book) => ({
-      ...book,
-      chapters: book.chapters.map((chapter) => (chapter.id === chapterId ? { ...chapter, ...patch } : chapter)),
-    }));
-  }
-
-  function addChapter() {
-    if (!activeBook) return;
-    const chapterIndex = activeBook.chapters.length;
+    const newChapterIndex = activeBook.chapters.length;
+    const newStepIndex = allSteps.length;
     const chapterId = `${activeBook.id || "book"}-ch-${Date.now()}`;
-    const chapter: CourseChapter = {
-      id: chapterId,
-      courseId: activeBook.id,
-      chapterIndex,
-      title: `Chapter ${chapterIndex + 1}`,
-      steps: [],
-    };
-    updateActiveBook((book) => ({
-      ...book,
-      chapters: [...book.chapters, chapter],
-    }));
-    setSelectedChapterId(chapterId);
-    setSelectedStepId(null);
-    setMessage("Chapter added.");
-  }
-
-  function addStep(stepType: CourseStepType) {
-    if (!activeBook) return;
-    const chapter = selectedChapter ?? activeBook.chapters[activeBook.chapters.length - 1];
-    if (!chapter) {
-      setMessage("Add a chapter first.");
-      return;
-    }
-    const stepIndex = chapter.steps.length;
+    const stepId = `${chapterId}-step-0`;
+    
     const step: CourseStep = {
-      id: `${chapter.id}-step-${Date.now()}`,
+      id: stepId,
       courseId: activeBook.id,
-      chapterId: chapter.id,
-      chapterTitle: chapter.title,
-      chapterIndex: chapter.chapterIndex,
-      stepIndex,
-      stepType,
-      title: stepType === "html" ? "Lesson" : stepType === "code-exam" ? "Code exam" : "Quiz",
+      chapterId: chapterId,
+      chapterTitle: `Chapter ${newChapterIndex + 1}`,
+      chapterIndex: newChapterIndex,
+      stepIndex: newStepIndex,
+      stepType: stepType,
+      title: "New Chapter",
       description: "",
-      contentHtml: stepType === "html" ? "<p>Lesson content</p>" : undefined,
+      contentHtml: stepType === "html" ? "<p>Chapter content</p>" : undefined,
       checklist: stepType === "code-exam" ? ["Meets requirement"] : undefined,
       verificationKeywords: stepType === "code-exam" ? [["export"]] : undefined,
       codeType: "code",
@@ -203,17 +165,21 @@ export default function AdminCourses() {
           }]
         : undefined,
     };
+
+    const chapter: CourseChapter = {
+      id: chapterId,
+      courseId: activeBook.id,
+      chapterIndex: newChapterIndex,
+      title: `Chapter ${newChapterIndex + 1}`,
+      steps: [step],
+    };
+
     updateActiveBook((book) => ({
       ...book,
-      chapters: book.chapters.map((ch) =>
-        ch.id === chapter.id ? { ...ch, steps: [...ch.steps, step] } : ch,
-      ),
+      chapters: [...book.chapters, chapter],
     }));
-    setSelectedStepId(step.id);
-    // Reset select
-    if (stepTypeSelectRef.current) {
-      stepTypeSelectRef.current.value = "";
-    }
+    setSelectedStepId(stepId);
+    setMessage("Chapter added.");
   }
 
   async function handleSaveBook() {
@@ -436,17 +402,18 @@ export default function AdminCourses() {
                           <option value="bold">Bold</option>
                           <option value="lighter">Lighter</option>
                           <option value="bolder">Bolder</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="300">300</option>
-                        <option value="400">400</option>
-                        <option value="500">500</option>
-                        <option value="600">600</option>
-                        <option value="700">700</option>
-                        <option value="800">800</option>
-                        <option value="900">900</option>
-                      </select>
-                    </label>
+                          <option value="100">100</option>
+                          <option value="200">200</option>
+                          <option value="300">300</option>
+                          <option value="400">400</option>
+                          <option value="500">500</option>
+                          <option value="600">600</option>
+                          <option value="700">700</option>
+                          <option value="800">800</option>
+                          <option value="900">900</option>
+                        </select>
+                      </label>
+                    </div>
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Color</span>
                       <input
@@ -456,40 +423,39 @@ export default function AdminCourses() {
                         className="admin-grid-input"
                       />
                     </label>
+                    <div className="admin-course-meta-row" style={{ marginTop: "12px" }}>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Position</span>
+                        <select
+                          value={activeBook.titlePosition ?? "center-center"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, titlePosition: e.target.value as any }))}
+                          className="admin-grid-select"
+                        >
+                          <option value="top-left">Top Left</option>
+                          <option value="top-center">Top Center</option>
+                          <option value="top-right">Top Right</option>
+                          <option value="center-left">Center Left</option>
+                          <option value="center-center">Center Center</option>
+                          <option value="center-right">Center Right</option>
+                          <option value="bottom-left">Bottom Left</option>
+                          <option value="bottom-center">Bottom Center</option>
+                          <option value="bottom-right">Bottom Right</option>
+                        </select>
+                      </label>
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">Alignment</span>
+                        <select
+                          value={activeBook.titleAlignment ?? "center"}
+                          onChange={(e) => updateActiveBook((c) => ({ ...c, titleAlignment: e.target.value as any }))}
+                          className="admin-grid-select"
+                        >
+                          <option value="left">Left</option>
+                          <option value="center">Center</option>
+                          <option value="right">Right</option>
+                        </select>
+                      </label>
+                    </div>
                   </div>
-                  <div className="admin-course-meta-row" style={{ marginTop: "12px" }}>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Position</span>
-                      <select
-                        value={activeBook.titlePosition ?? "center-center"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titlePosition: e.target.value as any }))}
-                        className="admin-grid-select"
-                      >
-                        <option value="top-left">Top Left</option>
-                        <option value="top-center">Top Center</option>
-                        <option value="top-right">Top Right</option>
-                        <option value="center-left">Center Left</option>
-                        <option value="center-center">Center Center</option>
-                        <option value="center-right">Center Right</option>
-                        <option value="bottom-left">Bottom Left</option>
-                        <option value="bottom-center">Bottom Center</option>
-                        <option value="bottom-right">Bottom Right</option>
-                      </select>
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Alignment</span>
-                      <select
-                        value={activeBook.titleAlignment ?? "center"}
-                        onChange={(e) => updateActiveBook((c) => ({ ...c, titleAlignment: e.target.value as any }))}
-                        className="admin-grid-select"
-                      >
-                        <option value="left">Left</option>
-                        <option value="center">Center</option>
-                        <option value="right">Right</option>
-                      </select>
-                    </label>
-                  </div>
-                </div>
                 )}
 
                 {bookSubTab === "cover" && (
@@ -770,16 +736,20 @@ export default function AdminCourses() {
             ) : (
               <>
                 <div className="admin-course-step-actions" style={{ marginBottom: "16px" }}>
-                  <button type="button" className="footer-button secondary small" onClick={addChapter}>Add Chapter</button>
                   <div className="add-step-group">
-                    <label className="admin-task-editor-label" style={{ marginRight: "8px" }}>Type:</label>
+                    <label className="admin-task-editor-label" style={{ marginRight: "8px" }}>Add Chapter:</label>
                     <select
                       ref={stepTypeSelectRef}
                       className="admin-grid-select small"
-                      onChange={(e) => addStep(e.target.value as CourseStepType)}
+                      onChange={(e) => {
+                        addChapter(e.target.value as CourseStepType);
+                        if (stepTypeSelectRef.current) {
+                          stepTypeSelectRef.current.value = "";
+                        }
+                      }}
                       defaultValue=""
                     >
-                      <option value="" disabled>Add Step...</option>
+                      <option value="" disabled>Select Type...</option>
                       <option value="html">Plain HTML</option>
                       <option value="code-exam">Code Editor</option>
                       <option value="quiz">Quiz</option>
@@ -789,67 +759,19 @@ export default function AdminCourses() {
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Chapters</h4>
                   <div className="admin-course-step-list">
-                    {activeBook?.chapters?.map((chapter) => (
+                    {allSteps.map((step, index) => (
                       <button
-                        key={chapter.id}
+                        key={step.id}
                         type="button"
-                        className={`admin-course-step-item ${selectedChapter?.id === chapter.id ? "selected" : ""}`}
-                        onClick={() => {
-                          setSelectedChapterId(chapter.id);
-                          setSelectedStepId(chapter.steps[0]?.id ?? null);
-                        }}
+                        className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
+                        onClick={() => setSelectedStepId(step.id)}
                       >
-                        <span>{chapter.chapterIndex + 1}</span>
-                        <span>{chapter.title}</span>
-                        <span>
-                          {(() => {
-                            const types = Array.from(
-                              new Set(
-                                chapter.steps.map((step) => (step.stepType === "code-exam" ? "code" : step.stepType))
-                              )
-                            );
-                            if (types.length === 0) return "none";
-                            return types.join("/");
-                          })()}
-                        </span>
+                        <span>{index + 1}</span>
+                        <span>{step.title}</span>
+                        <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
                       </button>
                     ))}
                   </div>
-                  {selectedChapter && (
-                    <div className="admin-step-meta-row" style={{ marginTop: "12px" }}>
-                      <label className="admin-task-editor-field">
-                        <span className="admin-task-editor-label">Chapter Index</span>
-                        <input
-                          type="number"
-                          value={selectedChapter.chapterIndex}
-                          onChange={(e) => updateChapter(selectedChapter.id, { chapterIndex: Number(e.target.value) })}
-                          className="admin-grid-input"
-                        />
-                      </label>
-                      <label className="admin-task-editor-field admin-task-editor-full">
-                        <span className="admin-task-editor-label">Chapter Title</span>
-                        <input
-                          value={selectedChapter.title}
-                          onChange={(e) => updateChapter(selectedChapter.id, { title: e.target.value })}
-                          className="admin-grid-input"
-                        />
-                      </label>
-                    </div>
-                  )}
-                </div>
-                <div className="admin-course-step-list">
-                  {chapterSteps.map((step) => (
-                    <button
-                      key={step.id}
-                      type="button"
-                      className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
-                      onClick={() => setSelectedStepId(step.id)}
-                    >
-                      <span>{step.stepIndex}</span>
-                      <span>{step.title}</span>
-                      <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
-                    </button>
-                  ))}
                 </div>
               </>
             )}
@@ -859,7 +781,7 @@ export default function AdminCourses() {
             <section className="admin-course-step-editor panel-bordered">
               {selectedStep ? (
                 <>
-                  <h3>Step</h3>
+                  <h3>Chapter</h3>
                   <div className="admin-step-meta-row">
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Step Index</span>
@@ -891,7 +813,7 @@ export default function AdminCourses() {
                     <span className="admin-task-editor-label">Description</span>
                     <textarea rows={2} value={selectedStep.description} onChange={(e) => updateStep(selectedStep.id, { description: e.target.value })} className="admin-grid-input" />
                   </label>
-                  <h3>Content HTML</h3>
+                  <h3>Content</h3>
                   {selectedStep.stepType === "html" ? (
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Content HTML</span>
@@ -945,7 +867,7 @@ export default function AdminCourses() {
                   ) : null}
                 </>
               ) : (
-                <div className="admin-empty-state">Select a step to view and edit its content.</div>
+                <div className="admin-empty-state">Select a chapter to view and edit its content.</div>
               )}
             </section>
           )}

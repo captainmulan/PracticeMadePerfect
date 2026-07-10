@@ -99,49 +99,99 @@ export default function PracticeWorkspace({
             ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientMiddle ?? style.wizardTopInfo.backgroundColorGradientStart} 50%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)`
             : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
           borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "8px 16px",
         }}
       >
-        <div className="chapter-info-left">
+        {/* Left Arrow */}
+        <button
+          type="button"
+          className="chapter-nav-button"
+          disabled={!canPrevious}
+          onClick={onPrevious}
+          aria-label="Previous chapter"
+          style={{
+            fontSize: "24px",
+            fontWeight: "bold",
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0",
+            border: style?.wizardTopInfo?.navButton?.border ?? "none",
+            cursor: canPrevious ? "pointer" : "not-allowed",
+            color: canPrevious ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a") : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
+          }}
+        >
+          ←
+        </button>
+
+        {/* Center: Home and Chapter */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <Link 
+            to="/" 
+            className="chapter-nav-home" 
+            aria-label="Home" 
+            style={{ 
+              textDecoration: "none", 
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: style?.wizardTopInfo?.homeButton?.backgroundColor ?? "#e2e8f0",
+              border: style?.wizardTopInfo?.homeButton?.border ?? "none",
+              color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a",
+              fontSize: "18px",
+            }}
+          >
+            🏠
+          </Link>
           <span 
             className="chapter-label"
             style={{
-              color: style?.wizardTopInfo?.chapterLabelColor ?? "#64748b",
-              fontSize: `${(style?.wizardTopInfo?.chapterLabelFontSize ?? 10) / 16}rem`,
-              fontWeight: style?.wizardTopInfo?.chapterLabelFontWeight ?? "700",
+              padding: "4px 12px",
+              borderRadius: "999px",
+              background: style?.wizardTopInfo?.chapterLabel?.backgroundColor ?? "rgba(15,23,42,0.05)",
+              border: style?.wizardTopInfo?.chapterLabel?.border ?? "none",
+              color: style?.wizardTopInfo?.chapterLabel?.color ?? style?.wizardTopInfo?.chapterLabelColor ?? "#64748b",
+              fontSize: `${(style?.wizardTopInfo?.chapterLabel?.fontSize ?? style?.wizardTopInfo?.chapterLabelFontSize ?? 14) / 16}rem`,
+              fontWeight: style?.wizardTopInfo?.chapterLabel?.fontWeight ?? style?.wizardTopInfo?.chapterLabelFontWeight ?? "700",
             }}
           >
             {`${style?.wizardTopInfo?.chapterLabelText ?? "Chapter"} ${chapterNumber ?? ""}`}
           </span>
         </div>
 
-        {(onPrevious || onNext) && (
-          <div className="chapter-nav-buttons">
-            <button
-              type="button"
-              className="chapter-nav-button"
-              disabled={!canPrevious}
-              onClick={onPrevious}
-              aria-label="Previous chapter"
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              className="chapter-nav-button"
-              disabled={!canNext}
-              onClick={onNext}
-              aria-label="Next chapter"
-            >
-              →
-            </button>
-          </div>
-        )}
-
-        <div className="top-bar-right">
-          <Link to="/" className="chapter-nav-home" aria-label="Home">
-            🏠
-          </Link>
-        </div>
+        {/* Right Arrow */}
+        <button
+          type="button"
+          className="chapter-nav-button"
+          disabled={!canNext}
+          onClick={onNext}
+          aria-label="Next chapter"
+          style={{
+            fontSize: "24px",
+            fontWeight: "bold",
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0",
+            border: style?.wizardTopInfo?.navButton?.border ?? "none",
+            cursor: canNext ? "pointer" : "not-allowed",
+            color: canNext ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a") : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
+          }}
+        >
+          →
+        </button>
       </div>
 
       {/* Step Brief */}
