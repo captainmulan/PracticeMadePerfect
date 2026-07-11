@@ -172,27 +172,8 @@
     <h1>Whack-a-Mole</h1>
     <div class="subtitle">Chapter 05 · Events (Click)</div>
   </div>
-
+  
   <div class="card">
-    <h2>📖 What is an Event?</h2>
-    <p>
-      An <strong>event</strong> is something that happens - like a
-      <strong>click</strong>!
-    </p>
-    <p>
-      The computer waits quietly until you click, then it runs your code.
-      That's called "listening" for an event.
-    </p>
-  </div>
-
-  <div class="card">
-    <h2>💻 JavaScript Code</h2>
-    <div class="code-box">hole.addEventListener("click", () => {
-  if (hole.classList.contains("up")) {
-    score++;
-  }
-});</div>
-
     <div class="stats">
       <div class="stat">
         <div class="stat-label">SCORE</div>
@@ -213,6 +194,25 @@
 
     <button id="startBtn" onclick="startGame()">▶ Start Game</button>
   </div>
+
+<div class="card">
+    <h2>📖 What is an Event?</h2>
+    <p>
+      An <strong>event</strong> is something that happens - like a
+      <strong>click</strong>!
+    </p>
+    <p>
+      The computer waits quietly until you click, then it runs your code.
+      That's called "listening" for an event.
+    </p>
+  </div>
+
+    <h2>💻 JavaScript Code</h2>
+    <div class="code-box">hole.addEventListener("click", () => {
+  if (hole.classList.contains("up")) {
+    score++;
+  }
+});</div>
 
   <div class="tip">
     🌟 <strong>Did you know?</strong><br><br>

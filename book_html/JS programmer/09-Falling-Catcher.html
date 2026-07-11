@@ -13,7 +13,7 @@
     body{
       font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
       background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 100%);
-      color:#1f2937;
+      color:#ffffff;
       min-height:100vh;
     }
     .container{
@@ -46,7 +46,7 @@
       box-shadow:0 6px 20px rgba(0,0,0,.25);
     }
     .card h2{
-      color:#7c3aed;
+      color:#1f2937;
       margin-bottom:14px;
       font-size:22px;
     }
@@ -168,6 +168,7 @@
       border-radius:12px;
       font-size:17px;
       line-height:1.7;
+      color:#1f2937;
     }
   </style>
 </head>
@@ -179,19 +180,7 @@
     <div class="subtitle">Chapter 10 · Collision Detection + Bounce + Game Physics</div>
   </div>
 
-  <div class="card">
-    <h2>💻 JavaScript Code</h2>
-    <div class="code-box">// Collision detection (do the boxes overlap?)
-if (item.x < basket.x + basket.w &&
-    item.x + item.w > basket.x &&
-    item.y + item.h > basket.y) {
-  score++;
-}
-
-// Bounce off the walls
-if (item.x <= 0 || item.x + item.w >= stageW) {
-  item.vx *= -1;
-}</div>
+  <div class="card">    
 
     <div class="stats">
       <div class="stat">
@@ -218,6 +207,19 @@ if (item.x <= 0 || item.x + item.w >= stageW) {
 
     <button id="startBtn" onclick="startGame()">▶ Start Game</button>
   </div>
+
+<h2>💻 JavaScript Code</h2>
+    <div class="code-box">// Collision detection (do the boxes overlap?)
+if (item.x < basket.x + basket.w &&
+    item.x + item.w > basket.x &&
+    item.y + item.h > basket.y) {
+  score++;
+}
+
+// Bounce off the walls
+if (item.x <= 0 || item.x + item.w >= stageW) {
+  item.vx *= -1;
+}</div>
 
   <div class="tip">
     🌟 <strong>Did you know?</strong><br><br>

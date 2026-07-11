@@ -13,7 +13,7 @@
     body{
       font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
       background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 100%);
-      color:#1f2937;
+      color:#ffffff;
       min-height:100vh;
     }
     .container{
@@ -144,6 +144,7 @@
       border-radius:12px;
       font-size:17px;
       line-height:1.7;
+color: #1f2937;
     }
   </style>
 </head>
@@ -155,17 +156,7 @@
     <div class="subtitle">Chapter 10 · Collision Detection + Bounce + Game Physics</div>
   </div>
 
-  <div class="card">
-    <h2>💻 JavaScript Code</h2>
-    <div class="code-box">// Ball vs. brick collision
-if (ball.x < brick.x + brick.w &&
-    ball.x + ball.size > brick.x &&
-    ball.y < brick.y + brick.h &&
-    ball.y + ball.size > brick.y) {
-  ball.vy *= -1;   // bounce
-  brick.alive = false;
-  score += 10;
-}</div>
+  <div class="card">   
 
     <div class="stats">
       <div class="stat">
@@ -190,6 +181,17 @@ if (ball.x < brick.x + brick.w &&
 
     <button id="startBtn" onclick="startGame()">▶ Start Game</button>
   </div>
+
+<h2>💻 JavaScript Code</h2>
+    <div class="code-box">// Ball vs. brick collision
+if (ball.x < brick.x + brick.w &&
+    ball.x + ball.size > brick.x &&
+    ball.y < brick.y + brick.h &&
+    ball.y + ball.size > brick.y) {
+  ball.vy *= -1;   // bounce
+  brick.alive = false;
+  score += 10;
+}</div>
 
   <div class="tip">
     🌟 <strong>Did you know?</strong><br><br>
