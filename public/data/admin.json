@@ -124,7 +124,22 @@
         "descriptionPaddingTop": 16,
         "descriptionPaddingBottom": 16,
         "descriptionPaddingLeft": 12,
-        "descriptionPaddingRight": 12
+        "descriptionPaddingRight": 12,
+        "navButton": {
+          "fontSize": 40
+        },
+        "homeButton": {
+          "backgroundColor": "#e2e8f0",
+          "border": "none",
+          "color": "#0f172a"
+        },
+        "chapterLabel": {
+          "backgroundColor": "rgba(15,23,42,0.05)",
+          "border": "none",
+          "color": "#64748b",
+          "fontSize": 14,
+          "fontWeight": "700"
+        }
       },
       "wizardWorkspace": {
         "backgroundColor": "#ffffff",
@@ -168,6 +183,9 @@
         "coverWidth": 100,
         "coverHeight": 150
       }
+    },
+    "wizardTopInfo": {
+      "navButton": {}
     }
   },
   "practicePageData": {

@@ -136,6 +136,23 @@ export default function AdminCourses() {
     }));
   }
 
+  function deleteStep(stepId: string) {
+    if (!activeBook) return;
+    const confirmed = window.confirm("Delete this page? This cannot be undone.");
+    if (!confirmed) {
+      return;
+    }
+    const steps = flattenCourseSteps(activeBook).filter((step) => step.id !== stepId);
+    updateActiveBook((book) => ({
+      ...book,
+      chapters: rebuildChaptersFromSteps(book.id, steps),
+    }));
+    if (selectedStepId === stepId) {
+      setSelectedStepId(null);
+    }
+    setMessage("Page deleted.");
+  }
+
   function addPage(stepType: CourseStepType = "html") {
     if (!activeBook) return;
     const newChapterIndex = 0; // Default to 0
@@ -774,16 +791,31 @@ export default function AdminCourses() {
                   <h4 style={{ marginTop: 0 }}>Pages</h4>
                   <div className="admin-course-step-list">
                     {allSteps.map((step) => (
-                      <button
+                      <div
                         key={step.id}
-                        type="button"
-                        className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
-                        onClick={() => setSelectedStepId(step.id)}
+                        style={{ display: "flex", gap: "8px", alignItems: "center" }}
                       >
-                        <span>{step.stepIndex}</span>
-                        <span>{step.title}</span>
-                        <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
-                      </button>
+                        <button
+                          type="button"
+                          className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
+                          onClick={() => setSelectedStepId(step.id)}
+                        >
+                          <span>{step.stepIndex}</span>
+                          <span>{step.title}</span>
+                          <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="footer-button secondary small"
+                          style={{ padding: "4px 8px" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteStep(step.id);
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -888,6 +920,15 @@ export default function AdminCourses() {
                       />
                     </label>
                   ) : null}
+                  <div style={{ marginTop: "16px" }}>
+                    <button
+                      type="button"
+                      className="footer-button secondary"
+                      onClick={() => deleteStep(selectedStep.id)}
+                    >
+                      Delete This Page
+                    </button>
+                  </div>
                 </>
               ) : (
                 <div className="admin-empty-state">Select a page to view and edit its content.</div>
