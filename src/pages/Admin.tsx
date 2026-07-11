@@ -11,18 +11,13 @@ import { categoryIndexByKey } from "../data/tasks";
 import { loadTasksFromBrowserSqlite } from "../utils/sqliteBrowserTaskSource";
 import { compareTasksByIndex } from "../utils/taskSort";
 import {
-  deleteTaskFromBrowserDb,
-  openBrowserDb,
-  persistBrowserDbToLocalStorage,
-  resetBrowserDbCache,
-  restoreBundledBrowserDb,
-  saveTasksToBrowserDb,
-  TaskRow,
-  upsertTaskInBrowserDb,
-  loadSqlJs,
-  shouldUsePersistedBrowserDb,
-  LOCAL_STORAGE_DB_KEY,
-} from "../utils/sqliteBrowserDb";
+  getTasks,
+  saveTask,
+  deleteTask as deleteTaskFromDb,
+  saveTasks,
+  migrateFromSqlJs,
+  exportIndexedDb
+} from "../utils/indexedDb";
 import "./Admin.css";
 import AdminCourses from "./AdminCourses";
 
@@ -260,9 +255,10 @@ export default function Admin() {
     }
   }
 
-  function deleteTask(taskId: string) {
+  async function deleteTask(taskId: string) {
     setTasks((prev) => prev.filter((task) => task.id !== taskId));
     if (selectedTaskId === taskId) setSelectedTaskId(null);
+    await deleteTaskFromDb(taskId);
   }
 
   function addTask() {
@@ -591,11 +587,9 @@ export default function Admin() {
 
       saveAdminData({ homePageData, practicePageData });
 
-      const db = await openBrowserDb();
-      saveTasksToBrowserDb(db, tasks.map(buildTaskRow));
-      persistBrowserDbToLocalStorage(db);
+      await saveTasks(tasks);
 
-      setMessage("Saved task edits to browser SQLite and localStorage.");
+      setMessage("Saved task edits to IndexedDB.");
       setDbError(null);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -625,19 +619,16 @@ export default function Admin() {
 
   async function handleExportDb() {
     try {
-      const db = await openBrowserDb();
-      const bytes = db.export();
-      const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
-      const blob = new Blob([new Uint8Array(buffer)], { type: "application/octet-stream" });
+      const blob = await exportIndexedDb();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "tasks.db";
+      a.download = "indexeddb-export.json";
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      setMessage("Exported the current browser database to tasks.db. Copy it into /deploy/tasks.db before deploying.");
+      setMessage("Exported IndexedDB data to indexeddb-export.json. This contains all courses and tasks.");
     } catch (err) {
       setMessage(String(err));
     }
@@ -703,21 +694,17 @@ export default function Admin() {
         nextTasks = tasks.map((existing) => (existing.id === task.id ? savedTask : existing));
         setTasks(nextTasks);
         if (trimmedId !== task.id) {
+          await deleteTaskFromDb(task.id);
           setSelectedTaskId(trimmedId);
         }
       }
 
-      const db = await openBrowserDb();
-      if (!isDraft && trimmedId !== task.id) {
-        deleteTaskFromBrowserDb(db, task.id);
-      }
-      upsertTaskInBrowserDb(db, buildTaskRow(savedTask));
-      persistBrowserDbToLocalStorage(db);
+      await saveTask(savedTask);
 
       const homePageData = JSON.parse(homeJson) as ContentStoreData["homePageData"];
       const practicePageMeta = JSON.parse(practiceMetaJson) as Omit<ContentStoreData["practicePageData"], "tasks">;
       saveAdminData({ homePageData, practicePageData: { ...practicePageMeta, tasks: nextTasks } });
-      setMessage("Saved task to browser SQLite and localStorage.");
+      setMessage("Saved task to IndexedDB.");
       setDbError(null);
     } catch (err) {
       setMessage(String(err));

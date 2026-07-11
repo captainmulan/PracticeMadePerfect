@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Match - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .card h2{
+      color:#2563eb;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .code-box{
+      margin:18px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:18px;
+      padding:20px;
+      font-family:Consolas,monospace;
+      font-size:17px;
+      line-height:1.6;
+      overflow:auto;
+      white-space:pre;
+    }
+    .stats{
+      display:flex;
+      justify-content:space-around;
+      margin-bottom:18px;
+    }
+    .stat{
+      text-align:center;
+    }
+    .stat-label{
+      font-size:14px;
+      color:#64748b;
+      font-weight:bold;
+    }
+    .stat-value{
+      font-size:32px;
+      font-weight:bold;
+      color:#2563eb;
+    }
+    .board{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      max-width:380px;
+      margin:0 auto;
+    }
+    .tile{
+      aspect-ratio:1/1;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:34px;
+      cursor:pointer;
+      box-shadow:0 4px 10px rgba(0,0,0,.15);
+      user-select:none;
+      transition:transform .15s;
+    }
+    .tile.flipped{
+      background:#fff;
+      border:2px solid #93c5fd;
+    }
+    .tile.matched{
+      background:#dcfce7;
+      border:2px solid #22c55e;
+      cursor:default;
+    }
+    .tile.wrong{
+      background:#fee2e2;
+      border:2px solid #ef4444;
+    }
+    .tile-symbol{
+      display:none;
+    }
+    .tile.flipped .tile-symbol,
+    .tile.matched .tile-symbol,
+    .tile.wrong .tile-symbol{
+      display:block;
+    }
+    .tile.flipped .tile-back,
+    .tile.matched .tile-back,
+    .tile.wrong .tile-back{
+      display:none;
+    }
+    .output{
+      margin-top:20px;
+      background:#ecfeff;
+      border:3px dashed #06b6d4;
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+    }
+    .output-title{
+      color:#0f766e;
+      font-weight:bold;
+      margin-bottom:10px;
+      font-size:18px;
+    }
+    #msg{
+      font-size:22px;
+      font-weight:bold;
+      color:#16a34a;
+      min-height:30px;
+    }
+    button{
+      width:100%;
+      margin-top:18px;
+      padding:18px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:22px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.2s;
+    }
+    button:active{
+      transform:scale(.98);
+    }
+    .tip{
+      margin-top:18px;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">🧠🃏</div>
+    <h1>Memory Match</h1>
+    <div class="subtitle">Chapter 07 · If / Compare</div>
+  </div>
+ 
+  <div class="card">   
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">MOVES</div>
+        <div class="stat-value" id="moves">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">MATCHES</div>
+        <div class="stat-value" id="matches">0 / 8</div>
+      </div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="output">
+      <div class="output-title">Game Status</div>
+      <div id="msg">Find all the matching pairs!</div>
+    </div>
+
+    <button id="resetBtn" onclick="resetGame()">🔄 New Game</button>
+  </div>
+
+ <div class="card">
+    <h2>📖 What is If / Compare?</h2>
+    <p>
+      An <strong>if statement</strong> lets the computer make a decision.
+      It <strong>compares</strong> two things and asks: "Are these the
+      same?"
+    </p>
+    <p>
+      If the answer is yes, the computer does one thing. If not, it does
+      something else!
+    </p>
+  </div>
+
+<h2>💻 JavaScript Code</h2>
+    <div class="code-box">if (firstCard.symbol === secondCard.symbol) {
+  // It's a match!
+  matches++;
+} else {
+  // Not a match, flip back
+}</div>
+
+  <div class="tip">
+    🌟 <strong>Did you know?</strong><br><br>
+    The symbol <code>===</code> means "is exactly equal to." Programmers
+    use it inside <code>if</code> statements to compare two values before
+    deciding what to do next.
+  </div>
+</div>
+
+<script>
+const board = document.getElementById("board");
+const movesEl = document.getElementById("moves");
+const matchesEl = document.getElementById("matches");
+const msg = document.getElementById("msg");
+const resetBtn = document.getElementById("resetBtn");
+
+const SYMBOLS = ["🍎","🍎","🐶","🐶","⚽","⚽","🚗","🚗","🌟","🌟","🎈","🎈","🍕","🍕","🎨","🎨"];
+
+let cards = [];
+let flipped = [];
+let matches = 0;
+let moves = 0;
+let locked = false;
+
+function shuffle(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildBoard(){
+  board.innerHTML = "";
+  cards = shuffle(SYMBOLS);
+  cards.forEach((symbol, i) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.dataset.index = i;
+    tile.dataset.symbol = symbol;
+    tile.innerHTML = `<div class="tile-back">❓</div><div class="tile-symbol">${symbol}</div>`;
+    tile.addEventListener("click", () => flipTile(tile));
+    board.appendChild(tile);
+  });
+}
+
+function flipTile(tile){
+  if (locked) return;
+  if (tile.classList.contains("flipped") || tile.classList.contains("matched")) return;
+  if (flipped.length === 2) return;
+
+  tile.classList.add("flipped");
+  flipped.push(tile);
+
+  if (flipped.length === 2){
+    moves++;
+    movesEl.textContent = moves;
+    locked = true;
+
+    const [first, second] = flipped;
+    if (first.dataset.symbol === second.dataset.symbol){
+      first.classList.add("matched");
+      second.classList.add("matched");
+      matches++;
+      matchesEl.textContent = matches + " / 8";
+      msg.textContent = "✅ Great match!";
+      flipped = [];
+      locked = false;
+      if (matches === 8){
+        msg.textContent = "🎉 You matched them all in " + moves + " moves!";
+      }
+    } else {
+      first.classList.add("wrong");
+      second.classList.add("wrong");
+      msg.textContent = "❌ Not a match, try again!";
+      setTimeout(() => {
+        first.classList.remove("flipped","wrong");
+        second.classList.remove("flipped","wrong");
+        flipped = [];
+        locked = false;
+      }, 700);
+    }
+  }
+}
+
+function resetGame(){
+  flipped = [];
+  matches = 0;
+  moves = 0;
+  locked = false;
+  movesEl.textContent = 0;
+  matchesEl.textContent = "0 / 8";
+  msg.textContent = "Find all the matching pairs!";
+  buildBoard();
+}
+
+buildBoard();
+</script>
+</body>
+</html>

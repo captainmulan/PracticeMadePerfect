@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Falling Catcher - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 100%);
+      color:#ffffff;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#fef08a;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.25);
+    }
+    .card h2{
+      color:#1f2937;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .code-box{
+      margin:18px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:18px;
+      padding:20px;
+      font-family:Consolas,monospace;
+      font-size:16px;
+      line-height:1.6;
+      overflow:auto;
+      white-space:pre;
+    }
+    .stats{
+      display:flex;
+      justify-content:space-around;
+      margin-bottom:16px;
+    }
+    .stat{
+      text-align:center;
+    }
+    .stat-label{
+      font-size:14px;
+      color:#64748b;
+      font-weight:bold;
+    }
+    .stat-value{
+      font-size:32px;
+      font-weight:bold;
+      color:#7c3aed;
+    }
+    .stage-wrap{
+      display:flex;
+      justify-content:center;
+    }
+    #stage{
+      position:relative;
+      width:100%;
+      max-width:360px;
+      height:420px;
+      background:linear-gradient(180deg,#dbeafe 0%,#fef3c7 100%);
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow:inset 0 0 0 4px #7c3aed;
+      touch-action:none;
+    }
+    .item{
+      position:absolute;
+      font-size:34px;
+      user-select:none;
+      pointer-events:none;
+      line-height:1;
+    }
+    #basket{
+      position:absolute;
+      bottom:10px;
+      width:80px;
+      height:50px;
+      font-size:46px;
+      text-align:center;
+      line-height:50px;
+      user-select:none;
+      pointer-events:none;
+    }
+    .controls-hint{
+      text-align:center;
+      font-size:14px;
+      color:#64748b;
+      margin-top:10px;
+    }
+    .output{
+      margin-top:20px;
+      background:#ede9fe;
+      border:3px dashed #7c3aed;
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+    }
+    .output-title{
+      color:#5b21b6;
+      font-weight:bold;
+      margin-bottom:10px;
+      font-size:18px;
+    }
+    #msg{
+      font-size:22px;
+      font-weight:bold;
+      color:#7c3aed;
+      min-height:32px;
+    }
+    button{
+      width:100%;
+      margin-top:18px;
+      padding:18px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(135deg,#7c3aed,#ec4899);
+      color:white;
+      font-size:22px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.2s;
+    }
+    button:active{
+      transform:scale(.98);
+    }
+    .tip{
+      margin-top:18px;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+      color:#1f2937;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">🧺🍎</div>
+    <h1>Falling Catcher</h1>
+    <div class="subtitle">Chapter 10 · Collision Detection + Bounce + Game Physics</div>
+  </div>
+
+  <div class="card">    
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">SCORE</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">LIVES</div>
+        <div class="stat-value" id="lives">3</div>
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <div id="stage">
+        <div id="basket">🧺</div>
+      </div>
+    </div>
+    <div class="controls-hint">⬅️ ➡️ arrow keys, or drag with your finger/mouse</div>
+
+    <div class="output">
+      <div class="output-title">Game Status</div>
+      <div id="msg">🍎 Click Start!</div>
+    </div>
+
+    <button id="startBtn" onclick="startGame()">▶ Start Game</button>
+  </div>
+
+<h2>💻 JavaScript Code</h2>
+    <div class="code-box">// Collision detection (do the boxes overlap?)
+if (item.x < basket.x + basket.w &&
+    item.x + item.w > basket.x &&
+    item.y + item.h > basket.y) {
+  score++;
+}
+
+// Bounce off the walls
+if (item.x <= 0 || item.x + item.w >= stageW) {
+  item.vx *= -1;
+}</div>
+
+  <div class="tip">
+    🌟 <strong>Did you know?</strong><br><br>
+    <strong>Collision detection</strong> is how a game checks if two things are touching.
+    We compare their invisible boxes! And <strong>bounce</strong> physics just means:
+    when something hits a wall, flip its direction (multiply speed by -1).
+  </div>
+</div>
+
+<script>
+const stage = document.getElementById("stage");
+const basket = document.getElementById("basket");
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
+const msg = document.getElementById("msg");
+const startBtn = document.getElementById("startBtn");
+
+const STAGE_W = 360;
+const STAGE_H = 420;
+const BASKET_W = 80;
+const BASKET_H = 50;
+
+let score = 0;
+let lives = 3;
+let playing = false;
+let items = [];
+let basketX = (STAGE_W - BASKET_W) / 2;
+let loopId = null;
+let spawnTimer = null;
+let dragging = false;
+
+const emojis = ["🍎","🍊","🍋","🍇","🍓","⭐"];
+
+function updateStageSize(){
+  const rect = stage.getBoundingClientRect();
+  return rect.width;
+}
+
+function positionBasket(){
+  const scale = updateStageSize() / STAGE_W;
+  basket.style.left = (basketX * scale) + "px";
+  basket.style.width = (BASKET_W * scale) + "px";
+  basket.style.fontSize = (46 * scale) + "px";
+}
+positionBasket();
+
+function moveBasketTo(clientX){
+  const rect = stage.getBoundingClientRect();
+  const scale = rect.width / STAGE_W;
+  let x = (clientX - rect.left) / scale - BASKET_W / 2;
+  x = Math.max(0, Math.min(STAGE_W - BASKET_W, x));
+  basketX = x;
+  positionBasket();
+}
+
+document.addEventListener("keydown", (e) => {
+  if (!playing) return;
+  if (e.key === "ArrowLeft") basketX = Math.max(0, basketX - 24);
+  if (e.key === "ArrowRight") basketX = Math.min(STAGE_W - BASKET_W, basketX + 24);
+  positionBasket();
+});
+
+stage.addEventListener("mousedown", (e) => { dragging = true; moveBasketTo(e.clientX); });
+window.addEventListener("mousemove", (e) => { if (dragging) moveBasketTo(e.clientX); });
+window.addEventListener("mouseup", () => dragging = false);
+stage.addEventListener("touchstart", (e) => { dragging = true; moveBasketTo(e.touches[0].clientX); });
+stage.addEventListener("touchmove", (e) => { if (dragging) moveBasketTo(e.touches[0].clientX); e.preventDefault(); }, {passive:false});
+stage.addEventListener("touchend", () => dragging = false);
+
+function spawnItem(){
+  if (!playing) return;
+  const el = document.createElement("div");
+  el.className = "item";
+  const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+  el.textContent = emoji;
+  const size = 34;
+  const x = Math.random() * (STAGE_W - size);
+  const item = {
+    el, x, y: -size,
+    w: size, h: size,
+    vy: 1.6 + Math.random() * 1.2,
+    vx: (Math.random() - 0.5) * 3
+  };
+  items.push(item);
+  stage.appendChild(el);
+  spawnTimer = setTimeout(spawnItem, 700 + Math.random() * 600);
+}
+
+function renderItem(item){
+  const scale = updateStageSize() / STAGE_W;
+  item.el.style.left = (item.x * scale) + "px";
+  item.el.style.top = (item.y * scale) + "px";
+  item.el.style.fontSize = (34 * scale) + "px";
+}
+
+function tick(){
+  if (!playing) return;
+
+  for (let i = items.length - 1; i >= 0; i--){
+    const item = items[i];
+    item.y += item.vy;
+    item.x += item.vx;
+
+    // Bounce off left/right walls
+    if (item.x <= 0){
+      item.x = 0;
+      item.vx *= -1;
+    } else if (item.x + item.w >= STAGE_W){
+      item.x = STAGE_W - item.w;
+      item.vx *= -1;
+    }
+
+    const basketY = STAGE_H - BASKET_H - 10;
+
+    // Collision detection: item box vs basket box
+    const caught =
+      item.x < basketX + BASKET_W &&
+      item.x + item.w > basketX &&
+      item.y + item.h > basketY &&
+      item.y < basketY + BASKET_H;
+
+    if (caught){
+      score++;
+      scoreEl.textContent = score;
+      item.el.remove();
+      items.splice(i, 1);
+      continue;
+    }
+
+    if (item.y > STAGE_H){
+      lives--;
+      livesEl.textContent = lives;
+      item.el.remove();
+      items.splice(i, 1);
+      if (lives <= 0){
+        endGame();
+        return;
+      }
+      continue;
+    }
+
+    renderItem(item);
+  }
+
+  loopId = requestAnimationFrame(tick);
+}
+
+function startGame(){
+  score = 0;
+  lives = 3;
+  scoreEl.textContent = score;
+  livesEl.textContent = lives;
+  msg.textContent = "🧺 Catch the falling fruit!";
+  playing = true;
+  startBtn.disabled = true;
+
+  items.forEach(item => item.el.remove());
+  items = [];
+
+  spawnItem();
+  loopId = requestAnimationFrame(tick);
+}
+
+function endGame(){
+  playing = false;
+  cancelAnimationFrame(loopId);
+  clearTimeout(spawnTimer);
+  items.forEach(item => item.el.remove());
+  items = [];
+  msg.textContent = "🎉 Game Over! Score: " + score;
+  startBtn.disabled = false;
+}
+
+window.addEventListener("resize", () => {
+  positionBasket();
+  items.forEach(renderItem);
+});
+</script>
+</body>
+</html>

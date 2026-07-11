@@ -9,6 +9,7 @@ PUBLIC_DB = ROOT / 'public' / 'data' / 'tasks.db'
 DIST_DIR = ROOT / 'dist'
 ADMIN_SRC = ROOT / 'deploy' / 'admin.json'
 DEPLOY_DB_SRC = ROOT / 'deploy' / 'tasks.db'
+DEPLOY_INDEXEDDB_SRC = ROOT / 'deploy' / 'indexeddb-export.json'
 
 if not SRC_DB.exists():
     raise SystemExit(f'Missing source database: {SRC_DB}')
@@ -27,6 +28,19 @@ if DIST_DIR.exists():
         shutil.copy2(DEPLOY_DB_SRC, dist_db)
     else:
         shutil.copy2(SRC_DB, dist_db)
+
+# Copy indexeddb-export.json if it exists (new format for IndexedDB data)
+if DEPLOY_INDEXEDDB_SRC.exists():
+    public_indexeddb = ROOT / 'public' / 'data' / 'indexeddb-export.json'
+    public_indexeddb.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(DEPLOY_INDEXEDDB_SRC, public_indexeddb)
+    print(f'Copied IndexedDB export: {DEPLOY_INDEXEDDB_SRC} -> {public_indexeddb}')
+    
+    if DIST_DIR.exists():
+        dist_indexeddb = DIST_DIR / 'data' / 'indexeddb-export.json'
+        dist_indexeddb.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(DEPLOY_INDEXEDDB_SRC, dist_indexeddb)
+        print(f'Copied IndexedDB export: {DEPLOY_INDEXEDDB_SRC} -> {dist_indexeddb}')
 
 # If a deploy/admin.json exists, copy it into public and dist and inject into index.html
 if ADMIN_SRC.exists():

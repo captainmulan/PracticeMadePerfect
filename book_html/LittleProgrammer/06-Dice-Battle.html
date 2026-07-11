@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dice Battle - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .card h2{
+      color:#2563eb;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .code-box{
+      margin:18px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:18px;
+      padding:20px;
+      font-family:Consolas,monospace;
+      font-size:17px;
+      line-height:1.6;
+      overflow:auto;
+      white-space:pre;
+    }
+    .stats{
+      display:flex;
+      justify-content:space-around;
+      margin-bottom:20px;
+    }
+    .stat{
+      text-align:center;
+    }
+    .stat-label{
+      font-size:14px;
+      color:#64748b;
+      font-weight:bold;
+    }
+    .stat-value{
+      font-size:32px;
+      font-weight:bold;
+      color:#2563eb;
+    }
+    .battle{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:24px;
+      margin-bottom:16px;
+    }
+    .player{
+      text-align:center;
+    }
+    .player-label{
+      font-weight:bold;
+      font-size:16px;
+      margin-bottom:10px;
+      color:#334155;
+    }
+    .die{
+      width:90px;
+      height:90px;
+      background:#fff;
+      border:4px solid #334155;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:52px;
+      box-shadow:0 6px 14px rgba(0,0,0,.15);
+    }
+    .vs{
+      font-size:26px;
+      font-weight:bold;
+      color:#dc2626;
+    }
+    .rolling{
+      animation:shake .1s infinite;
+    }
+    @keyframes shake{
+      0%{transform:rotate(0deg);}
+      50%{transform:rotate(8deg);}
+      100%{transform:rotate(-8deg);}
+    }
+    .output{
+      margin-top:8px;
+      background:#ecfeff;
+      border:3px dashed #06b6d4;
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+    }
+    .output-title{
+      color:#0f766e;
+      font-weight:bold;
+      margin-bottom:10px;
+      font-size:18px;
+    }
+    #msg{
+      font-size:24px;
+      font-weight:bold;
+      color:#16a34a;
+      min-height:32px;
+    }
+    button{
+      width:100%;
+      margin-top:18px;
+      padding:18px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:22px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.2s;
+    }
+    button:active{
+      transform:scale(.98);
+    }
+    button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+    }
+    .tip{
+      margin-top:18px;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">🎲⚔️</div>
+    <h1>Dice Battle</h1>
+    <div class="subtitle">Chapter 06 · Variables + Random Numbers</div>
+  </div>
+
+  <div class="card">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">YOU</div>
+        <div class="stat-value" id="playerScore">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">ROUND</div>
+        <div class="stat-value" id="round">1</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">COMPUTER</div>
+        <div class="stat-value" id="computerScore">0</div>
+      </div>
+    </div>
+
+    <div class="battle">
+      <div class="player">
+        <div class="player-label">🧑 You</div>
+        <div class="die" id="playerDie">🎲</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="player">
+        <div class="player-label">💻 Computer</div>
+        <div class="die" id="computerDie">🎲</div>
+      </div>
+    </div>
+
+    <div class="output">
+      <div class="output-title">Battle Log</div>
+      <div id="msg">Roll the dice to begin!</div>
+    </div>
+
+    <button id="rollBtn" onclick="rollDice()">🎲 Roll the Dice!</button>
+  </div>
+
+  <div class="card">
+    <h2>📖 What are Variables & Random Numbers?</h2>
+    <p>
+      A <strong>variable</strong> is a box that stores information, like a
+      score. It can change as the program runs.
+    </p>
+    <p>
+      <strong>Random numbers</strong> let the computer "roll the dice" -
+      a different number every time, just like a real die!
+    </p>
+  </div>
+
+    <h2>💻 JavaScript Code</h2>
+    <div class="code-box">let playerScore = 0;
+let computerScore = 0;
+
+let playerRoll = Math.floor(Math.random() * 6) + 1;
+let computerRoll = Math.floor(Math.random() * 6) + 1;
+
+if (playerRoll > computerRoll) playerScore++;</div>
+
+  <div class="tip">
+    🌟 <strong>Did you know?</strong><br><br>
+    <code>Math.random()</code> gives the computer a random decimal between
+    0 and 1. Multiplying and rounding it turns it into a random whole
+    number, like a dice roll from 1 to 6!
+  </div>
+</div>
+
+<script>
+const playerDie = document.getElementById("playerDie");
+const computerDie = document.getElementById("computerDie");
+const playerScoreEl = document.getElementById("playerScore");
+const computerScoreEl = document.getElementById("computerScore");
+const roundEl = document.getElementById("round");
+const msg = document.getElementById("msg");
+const rollBtn = document.getElementById("rollBtn");
+
+const faces = ["", "⚀","⚁","⚂","⚃","⚄","⚅"];
+
+let playerScore = 0;
+let computerScore = 0;
+let round = 1;
+const MAX_ROUNDS = 5;
+
+function rollDice(){
+  rollBtn.disabled = true;
+  playerDie.classList.add("rolling");
+  computerDie.classList.add("rolling");
+  msg.textContent = "Rolling...";
+
+  let ticks = 0;
+  const shuffle = setInterval(() => {
+    playerDie.textContent = faces[Math.floor(Math.random()*6)+1];
+    computerDie.textContent = faces[Math.floor(Math.random()*6)+1];
+    ticks++;
+    if (ticks > 8){
+      clearInterval(shuffle);
+      finishRoll();
+    }
+  }, 60);
+}
+
+function finishRoll(){
+  playerDie.classList.remove("rolling");
+  computerDie.classList.remove("rolling");
+
+  const playerRoll = Math.floor(Math.random() * 6) + 1;
+  const computerRoll = Math.floor(Math.random() * 6) + 1;
+
+  playerDie.textContent = faces[playerRoll];
+  computerDie.textContent = faces[computerRoll];
+
+  if (playerRoll > computerRoll){
+    playerScore++;
+    msg.textContent = "🎉 You win round " + round + "! (" + playerRoll + " vs " + computerRoll + ")";
+  } else if (computerRoll > playerRoll){
+    computerScore++;
+    msg.textContent = "💻 Computer wins round " + round + "! (" + playerRoll + " vs " + computerRoll + ")";
+  } else {
+    msg.textContent = "🤝 Round " + round + " is a tie! (" + playerRoll + " vs " + computerRoll + ")";
+  }
+
+  playerScoreEl.textContent = playerScore;
+  computerScoreEl.textContent = computerScore;
+
+  if (round >= MAX_ROUNDS){
+    setTimeout(showFinalResult, 800);
+  } else {
+    round++;
+    roundEl.textContent = round;
+    rollBtn.disabled = false;
+  }
+}
+
+function showFinalResult(){
+  if (playerScore > computerScore){
+    msg.textContent = "🏆 You won the battle, " + playerScore + " to " + computerScore + "!";
+  } else if (computerScore > playerScore){
+    msg.textContent = "😢 Computer won the battle, " + computerScore + " to " + playerScore + ".";
+  } else {
+    msg.textContent = "🤝 The battle ended in a tie, " + playerScore + " to " + computerScore + "!";
+  }
+  rollBtn.textContent = "🔄 Play Again";
+  rollBtn.disabled = false;
+  rollBtn.onclick = resetGame;
+}
+
+function resetGame(){
+  playerScore = 0;
+  computerScore = 0;
+  round = 1;
+  playerScoreEl.textContent = 0;
+  computerScoreEl.textContent = 0;
+  roundEl.textContent = 1;
+  playerDie.textContent = "🎲";
+  computerDie.textContent = "🎲";
+  msg.textContent = "Roll the dice to begin!";
+  rollBtn.textContent = "🎲 Roll the Dice!";
+  rollBtn.onclick = rollDice;
+}
+</script>
+</body>
+</html>

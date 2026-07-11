@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Falling Catcher - Quiz - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#fef08a;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:18px;
+    }
+    .progress-wrap{
+      background:rgba(255,255,255,.2);
+      border-radius:999px;
+      height:14px;
+      margin-bottom:22px;
+      overflow:hidden;
+    }
+    #progressBar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#fbbf24,#ec4899);
+      transition:width .3s;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.25);
+    }
+    .q-count{
+      color:#7c3aed;
+      font-weight:bold;
+      font-size:15px;
+      margin-bottom:8px;
+    }
+    .q-text{
+      font-size:20px;
+      line-height:1.6;
+      margin-bottom:18px;
+      font-weight:bold;
+    }
+    .choice{
+      display:block;
+      width:100%;
+      text-align:left;
+      background:#f5f3ff;
+      border:3px solid transparent;
+      border-radius:16px;
+      padding:16px 18px;
+      font-size:17px;
+      margin-bottom:12px;
+      cursor:pointer;
+      font-family:inherit;
+      color:#1f2937;
+      transition:.15s;
+    }
+    .choice:hover{
+      background:#ede9fe;
+    }
+    .choice.correct{
+      background:#dcfce7;
+      border-color:#16a34a;
+    }
+    .choice.wrong{
+      background:#fee2e2;
+      border-color:#dc2626;
+    }
+    .choice:disabled{
+      cursor:default;
+    }
+    .feedback{
+      font-size:17px;
+      line-height:1.7;
+      padding:16px;
+      border-radius:14px;
+      margin-top:10px;
+      display:none;
+    }
+    .feedback.show{
+      display:block;
+    }
+    .feedback.right-fb{
+      background:#dcfce7;
+      color:#166534;
+    }
+    .feedback.wrong-fb{
+      background:#fee2e2;
+      color:#991b1b;
+    }
+    button.nextBtn{
+      width:100%;
+      margin-top:18px;
+      padding:16px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg,#7c3aed,#ec4899);
+      color:white;
+      font-size:19px;
+      font-weight:bold;
+      cursor:pointer;
+      display:none;
+    }
+    button.nextBtn.show{
+      display:block;
+    }
+    .result{
+      text-align:center;
+    }
+    .result .emoji{
+      font-size:64px;
+      margin-bottom:10px;
+    }
+    .result h2{
+      color:#7c3aed;
+      font-size:26px;
+      margin-bottom:10px;
+    }
+    .result p{
+      font-size:19px;
+      margin-bottom:18px;
+    }
+    .retry-btn{
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg,#7c3aed,#ec4899);
+      color:white;
+      font-size:19px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">🧺🍎</div>
+    <h1>Falling Catcher Quiz</h1>
+    <div class="subtitle">Chapter 10 · Collision Detection + Bounce + Game Physics</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div id="progressBar"></div>
+  </div>
+
+  <div class="card" id="quizCard"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "What is 'collision detection' in a game?",
+    choices: [
+      "Checking if two objects' boxes are overlapping",
+      "Making an object disappear",
+      "Drawing an object on the screen",
+      "Choosing a random color for a sprite"
+    ],
+    correct: 0,
+    explain: "Collision detection compares the edges of two boxes to see if they overlap - that's how a game knows two things touched."
+  },
+  {
+    q: "In the code `if (a.x < b.x + b.w && a.x + a.w > b.x)`, what is being compared?",
+    choices: [
+      "The colors of two objects",
+      "The horizontal (left/right) edges of two boxes",
+      "The score and lives counters",
+      "The speed of the game loop"
+    ],
+    correct: 1,
+    explain: "This checks the left/right (x-axis) edges to see if the boxes overlap horizontally. A similar check is needed for the y-axis too."
+  },
+  {
+    q: "How do we make an object 'bounce' off a wall in code?",
+    choices: [
+      "Set its position to (0, 0)",
+      "Delete the object",
+      "Multiply its velocity (vx or vy) by -1",
+      "Increase its score by 1"
+    ],
+    correct: 2,
+    explain: "Multiplying velocity by -1 flips its direction - same speed, opposite way. That's exactly what a bounce is!"
+  },
+  {
+    q: "What do `vx` and `vy` usually represent?",
+    choices: [
+      "The object's color values",
+      "The horizontal and vertical velocity (speed + direction)",
+      "The width and height of the game board",
+      "The player's score and lives"
+    ],
+    correct: 1,
+    explain: "vx is horizontal speed/direction, vy is vertical speed/direction. Together they describe how an object moves each frame."
+  },
+  {
+    q: "Why does a game loop run over and over (like with requestAnimationFrame)?",
+    choices: [
+      "To reload the whole web page each time",
+      "Because JavaScript requires it to work at all",
+      "To move objects a little bit, check collisions, and redraw - many times per second",
+      "To only run the game once when it starts"
+    ],
+    correct: 2,
+    explain: "Games update in small steps, often ~60 times per second, to create the illusion of smooth motion and to catch collisions as they happen."
+  },
+  {
+    q: "In the Falling Catcher game, what happens when a falling item's box overlaps the basket's box?",
+    choices: [
+      "The game ends immediately",
+      "It's counted as a 'catch' and the score goes up",
+      "The item bounces upward forever",
+      "Nothing - overlapping boxes are ignored"
+    ],
+    correct: 1,
+    explain: "That overlap is a collision! The game detects it and reacts by scoring a catch and removing the item."
+  }
+];
+
+let current = 0;
+let scoreCount = 0;
+const quizCard = document.getElementById("quizCard");
+const progressBar = document.getElementById("progressBar");
+
+function renderQuestion(){
+  const item = questions[current];
+  progressBar.style.width = (current / questions.length * 100) + "%";
+
+  let html = `<div class="q-count">Question ${current + 1} of ${questions.length}</div>`;
+  html += `<div class="q-text">${item.q}</div>`;
+  item.choices.forEach((choice, i) => {
+    html += `<button class="choice" data-i="${i}">${choice}</button>`;
+  });
+  html += `<div class="feedback" id="feedback"></div>`;
+  html += `<button class="nextBtn" id="nextBtn">Next ➡</button>`;
+
+  quizCard.innerHTML = html;
+
+  const buttons = quizCard.querySelectorAll(".choice");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => selectAnswer(btn, item, buttons));
+  });
+}
+
+function selectAnswer(btn, item, buttons){
+  const chosen = parseInt(btn.dataset.i);
+  buttons.forEach(b => b.disabled = true);
+
+  const feedback = document.getElementById("feedback");
+  const nextBtn = document.getElementById("nextBtn");
+
+  if (chosen === item.correct){
+    btn.classList.add("correct");
+    feedback.textContent = "✅ Correct! " + item.explain;
+    feedback.className = "feedback show right-fb";
+    scoreCount++;
+  } else {
+    btn.classList.add("wrong");
+    buttons[item.correct].classList.add("correct");
+    feedback.textContent = "❌ Not quite. " + item.explain;
+    feedback.className = "feedback show wrong-fb";
+  }
+
+  nextBtn.classList.add("show");
+  nextBtn.addEventListener("click", () => {
+    current++;
+    if (current < questions.length){
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  });
+}
+
+function showResult(){
+  progressBar.style.width = "100%";
+  const pct = Math.round((scoreCount / questions.length) * 100);
+  let emoji = "🌱";
+  let msg = "Keep practicing - collision and bounce take time to click!";
+  if (pct >= 80){
+    emoji = "🏆";
+    msg = "Amazing! You really understand collision detection and bounce!";
+  } else if (pct >= 50){
+    emoji = "🎉";
+    msg = "Nice work! You're getting the hang of game physics!";
+  }
+
+  quizCard.innerHTML = `
+    <div class="result">
+      <div class="emoji">${emoji}</div>
+      <h2>You scored ${scoreCount} / ${questions.length}</h2>
+      <p>${msg}</p>
+      <button class="retry-btn" onclick="restart()">🔁 Try Again</button>
+    </div>
+  `;
+}
+
+function restart(){
+  current = 0;
+  scoreCount = 0;
+  renderQuestion();
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

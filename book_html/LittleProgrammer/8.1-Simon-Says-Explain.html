@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Simon Says Works</title>
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+body{
+font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+background:linear-gradient(180deg,#eef9ff,#fff9e8);
+color:#1f2937;
+}
+.container{
+max-width:620px;
+margin:auto;
+padding:24px 16px 40px;
+}
+.header{
+text-align:center;
+margin-bottom:28px;
+}
+.logo{
+font-size:54px;
+margin-bottom:10px;
+}
+h1{
+color:#2563eb;
+font-size:30px;
+margin-bottom:8px;
+}
+.subtitle{
+color:#64748b;
+font-size:18px;
+}
+.card{
+background:white;
+border-radius:24px;
+padding:22px;
+margin-bottom:18px;
+box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+.card h2{
+font-size:22px;
+margin-bottom:16px;
+color:#2563eb;
+}
+.step{
+display:flex;
+gap:14px;
+align-items:flex-start;
+margin-bottom:18px;
+}
+.circle{
+width:42px;
+height:42px;
+border-radius:50%;
+background:#3b82f6;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+font-weight:bold;
+flex-shrink:0;
+}
+.content h3{
+margin-bottom:6px;
+font-size:20px;
+}
+.content p{
+font-size:17px;
+line-height:1.7;
+}
+.arrow{
+text-align:center;
+font-size:36px;
+margin:8px 0;
+color:#3b82f6;
+}
+.code{
+background:#111827;
+color:#22c55e;
+padding:18px;
+border-radius:16px;
+font-family:Consolas,monospace;
+font-size:17px;
+line-height:1.6;
+margin:18px 0;
+overflow:auto;
+white-space:pre;
+}
+.demo{
+background:#ecfeff;
+border:3px dashed #06b6d4;
+padding:18px;
+border-radius:18px;
+text-align:center;
+margin-top:18px;
+}
+.stats{
+display:flex;
+justify-content:space-around;
+margin-bottom:14px;
+}
+.stat-label{
+font-size:13px;
+color:#64748b;
+font-weight:bold;
+}
+.stat-value{
+font-size:26px;
+font-weight:bold;
+color:#2563eb;
+}
+.simon-board{
+display:grid;
+grid-template-columns:1fr 1fr;
+grid-template-rows:1fr 1fr;
+gap:8px;
+width:200px;
+height:200px;
+margin:0 auto;
+border-radius:50%;
+overflow:hidden;
+box-shadow:0 8px 20px rgba(0,0,0,.2);
+}
+.pad{
+cursor:pointer;
+opacity:.55;
+transition:opacity .1s;
+}
+.pad.lit{
+opacity:1;
+filter:brightness(1.3);
+}
+.pad-green{
+background:#22c55e;
+border-radius:100% 0 0 0;
+}
+.pad-red{
+background:#ef4444;
+border-radius:0 100% 0 0;
+}
+.pad-yellow{
+background:#eab308;
+border-radius:0 0 0 100%;
+}
+.pad-blue{
+background:#3b82f6;
+border-radius:0 0 100% 0;
+}
+.center-btn{
+display:flex;
+justify-content:center;
+margin-top:-110px;
+position:relative;
+pointer-events:none;
+}
+.center-circle{
+width:64px;
+height:64px;
+background:#fff;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:12px;
+font-weight:bold;
+color:#334155;
+box-shadow:0 4px 10px rgba(0,0,0,.2);
+pointer-events:auto;
+cursor:pointer;
+text-align:center;
+}
+#msg{
+margin-top:10px;
+font-size:18px;
+font-weight:bold;
+color:#16a34a;
+min-height:26px;
+}
+.tip{
+background:#fff7d6;
+border-left:6px solid orange;
+padding:16px;
+border-radius:14px;
+font-size:17px;
+line-height:1.7;
+margin-top:18px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="logo">🟢🔴🟡🔵</div>
+<h1>How Simon Says Works</h1>
+<div class="subtitle">
+Let's see what happens inside the computer!
+</div>
+</div>
+
+<div class="card">
+<h2>💻 Our Program</h2>
+<div class="code">for (let i = 0; i < sequence.length; i++) {
+  lightUp(sequence[i]);
+  await wait(500);
+}</div>
+</div>
+
+<div class="card">
+<div class="step">
+<div class="circle">1</div>
+<div class="content">
+<h3>➕ A New Color Joins</h3>
+<p>
+Each round, the computer picks a random color and adds it
+to the end of the sequence list.
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">2</div>
+<div class="content">
+<h3>🔁 The Loop Starts</h3>
+<p>
+A <b>for loop</b> goes through the sequence list one color
+at a time, from the very first to the very last.
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">3</div>
+<div class="content">
+<h3>💡 Each Color Lights Up</h3>
+<p>
+On every loop step, the computer lights up one pad, waits
+a moment, then moves to the next.
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">4</div>
+<div class="content">
+<h3>🎮 You Repeat It</h3>
+<p>
+Now it's your turn to click the same colors, in the same
+order, using your memory.
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">5</div>
+<div class="content">
+<h3>🔂 The Loop Gets Longer</h3>
+<p>
+Every round adds one more color, so the loop repeats one
+extra time. The game keeps growing!
+</p>
+</div>
+</div>
+
+<div class="demo">
+<h3>Try It</h3>
+<div class="stats">
+<div>
+<div class="stat-label">ROUND</div>
+<div class="stat-value" id="round">0</div>
+</div>
+</div>
+<div class="simon-board">
+<div class="pad pad-green" data-color="green"></div>
+<div class="pad pad-red" data-color="red"></div>
+<div class="pad pad-yellow" data-color="yellow"></div>
+<div class="pad pad-blue" data-color="blue"></div>
+</div>
+<div class="center-btn">
+<div class="center-circle" id="startBtn">START</div>
+</div>
+<div id="msg">Press Start to begin!</div>
+</div>
+</div>
+
+<div class="tip">
+🌟 <b>Remember</b>
+<br><br>
+A loop repeats the same steps without needing new code for every
+color. That's what lets Simon play a sequence of any length!
+</div>
+</div>
+
+<script>
+const pads = document.querySelectorAll(".pad");
+const startBtn = document.getElementById("startBtn");
+const roundEl = document.getElementById("round");
+const msg = document.getElementById("msg");
+
+const COLORS = ["green","red","yellow","blue"];
+let sequence = [];
+let playerStep = 0;
+let round = 0;
+let playing = false;
+let acceptingInput = false;
+
+function wait(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function padByColor(color){
+  return document.querySelector(`.pad-${color}`);
+}
+
+async function lightUp(color, duration = 400){
+  const pad = padByColor(color);
+  pad.classList.add("lit");
+  await wait(duration);
+  pad.classList.remove("lit");
+}
+
+async function playSequence(){
+  acceptingInput = false;
+  msg.textContent = "👀 Watch the sequence...";
+  await wait(500);
+  for (let i = 0; i < sequence.length; i++){
+    await lightUp(sequence[i]);
+    await wait(200);
+  }
+  playerStep = 0;
+  acceptingInput = true;
+  msg.textContent = "🎮 Your turn! Repeat it back.";
+}
+
+function nextRound(){
+  round++;
+  roundEl.textContent = round;
+  sequence.push(COLORS[Math.floor(Math.random() * COLORS.length)]);
+  playSequence();
+}
+
+function startGame(){
+  if (playing) return;
+  playing = true;
+  sequence = [];
+  round = 0;
+  roundEl.textContent = 0;
+  nextRound();
+}
+
+function handlePadClick(color){
+  if (!acceptingInput) return;
+  lightUp(color, 200);
+
+  if (color === sequence[playerStep]){
+    playerStep++;
+    if (playerStep === sequence.length){
+      acceptingInput = false;
+      msg.textContent = "✅ Round " + round + " complete!";
+      setTimeout(nextRound, 900);
+    }
+  } else {
+    acceptingInput = false;
+    playing = false;
+    msg.textContent = "❌ Game over! You reached round " + round + ".";
+  }
+}
+
+pads.forEach(pad => {
+  pad.addEventListener("click", () => handlePadClick(pad.dataset.color));
+});
+
+startBtn.addEventListener("click", startGame);
+</script>
+</body>
+</html>

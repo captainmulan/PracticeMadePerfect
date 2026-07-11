@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Dice Battle Works</title>
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+body{
+font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+background:linear-gradient(180deg,#eef9ff,#fff9e8);
+color:#1f2937;
+}
+.container{
+max-width:620px;
+margin:auto;
+padding:24px 16px 40px;
+}
+.header{
+text-align:center;
+margin-bottom:28px;
+}
+.logo{
+font-size:54px;
+margin-bottom:10px;
+}
+h1{
+color:#2563eb;
+font-size:30px;
+margin-bottom:8px;
+}
+.subtitle{
+color:#64748b;
+font-size:18px;
+}
+.card{
+background:white;
+border-radius:24px;
+padding:22px;
+margin-bottom:18px;
+box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+.card h2{
+font-size:22px;
+margin-bottom:16px;
+color:#2563eb;
+}
+.step{
+display:flex;
+gap:14px;
+align-items:flex-start;
+margin-bottom:18px;
+}
+.circle{
+width:42px;
+height:42px;
+border-radius:50%;
+background:#3b82f6;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+font-weight:bold;
+flex-shrink:0;
+}
+.content h3{
+margin-bottom:6px;
+font-size:20px;
+}
+.content p{
+font-size:17px;
+line-height:1.7;
+}
+.arrow{
+text-align:center;
+font-size:36px;
+margin:8px 0;
+color:#3b82f6;
+}
+.code{
+background:#111827;
+color:#22c55e;
+padding:18px;
+border-radius:16px;
+font-family:Consolas,monospace;
+font-size:17px;
+line-height:1.6;
+margin:18px 0;
+overflow:auto;
+white-space:pre;
+}
+.demo{
+background:#ecfeff;
+border:3px dashed #06b6d4;
+padding:18px;
+border-radius:18px;
+text-align:center;
+margin-top:18px;
+}
+.stats{
+display:flex;
+justify-content:space-around;
+margin-bottom:16px;
+}
+.stat-label{
+font-size:13px;
+color:#64748b;
+font-weight:bold;
+}
+.stat-value{
+font-size:26px;
+font-weight:bold;
+color:#2563eb;
+}
+.battle{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:20px;
+margin-bottom:14px;
+}
+.die{
+width:70px;
+height:70px;
+background:#fff;
+border:4px solid #334155;
+border-radius:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+box-shadow:0 6px 14px rgba(0,0,0,.15);
+}
+.vs{
+font-size:20px;
+font-weight:bold;
+color:#dc2626;
+}
+.rolling{
+animation:shake .1s infinite;
+}
+@keyframes shake{
+0%{transform:rotate(0deg);}
+50%{transform:rotate(8deg);}
+100%{transform:rotate(-8deg);}
+}
+#msg{
+margin-top:10px;
+font-size:18px;
+font-weight:bold;
+color:#16a34a;
+min-height:26px;
+}
+button{
+width:100%;
+padding:18px;
+margin-top:18px;
+font-size:22px;
+font-weight:bold;
+border:none;
+border-radius:18px;
+background:linear-gradient(135deg,#3b82f6,#06b6d4);
+color:white;
+cursor:pointer;
+}
+button:active{
+transform:scale(.98);
+}
+.tip{
+background:#fff7d6;
+border-left:6px solid orange;
+padding:16px;
+border-radius:14px;
+font-size:17px;
+line-height:1.7;
+margin-top:18px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="logo">🎲⚔️</div>
+<h1>How Dice Battle Works</h1>
+<div class="subtitle">
+Let's see what happens inside the computer!
+</div>
+</div>
+
+<div class="card">
+<h2>💻 Our Program</h2>
+<div class="code">let playerScore = 0;
+
+let playerRoll = Math.floor(Math.random() * 6) + 1;
+let computerRoll = Math.floor(Math.random() * 6) + 1;
+
+if (playerRoll > computerRoll) playerScore++;</div>
+</div>
+
+<div class="card">
+<div class="step">
+<div class="circle">1</div>
+<div class="content">
+<h3>📦 Variables Are Created</h3>
+<p>
+<code>playerScore</code> and <code>computerScore</code> are boxes
+that start at 0 and will hold a number that can change.
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">2</div>
+<div class="content">
+<h3>🎲 The Computer "Rolls"</h3>
+<p>
+<code>Math.random()</code> picks a random decimal, and the code
+turns it into a whole number from 1 to 6 - just like a real die!
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">3</div>
+<div class="content">
+<h3>⚖️ The Numbers Are Compared</h3>
+<p>
+The program checks: is your roll bigger than the computer's roll?
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">4</div>
+<div class="content">
+<h3>➕ A Variable Changes</h3>
+<p>
+If you win the round, <code>playerScore</code> goes up by one.
+The box now holds a new number!
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">5</div>
+<div class="content">
+<h3>🔁 It Happens Again</h3>
+<p>
+Roll after roll, the variables keep changing until someone
+wins the battle.
+</p>
+</div>
+</div>
+
+<div class="demo">
+<h3>Try It</h3>
+<div class="stats">
+<div>
+<div class="stat-label">YOU</div>
+<div class="stat-value" id="playerScore">0</div>
+</div>
+<div>
+<div class="stat-label">COMPUTER</div>
+<div class="stat-value" id="computerScore">0</div>
+</div>
+</div>
+<div class="battle">
+<div class="die" id="playerDie">🎲</div>
+<div class="vs">VS</div>
+<div class="die" id="computerDie">🎲</div>
+</div>
+<div id="msg">Roll the dice to begin!</div>
+</div>
+<button id="rollBtn" onclick="rollDice()">🎲 Roll the Dice!</button>
+</div>
+
+<div class="tip">
+🌟 <b>Remember</b>
+<br><br>
+A variable is like a labeled box - it can hold a number now,
+and hold a <i>different</i> number later. That's what makes
+scores, health, and counters possible in every game!
+</div>
+</div>
+
+<script>
+const playerDie = document.getElementById("playerDie");
+const computerDie = document.getElementById("computerDie");
+const playerScoreEl = document.getElementById("playerScore");
+const computerScoreEl = document.getElementById("computerScore");
+const msg = document.getElementById("msg");
+const rollBtn = document.getElementById("rollBtn");
+
+const faces = ["", "⚀","⚁","⚂","⚃","⚄","⚅"];
+let playerScore = 0;
+let computerScore = 0;
+
+function rollDice(){
+  rollBtn.disabled = true;
+  playerDie.classList.add("rolling");
+  computerDie.classList.add("rolling");
+  msg.textContent = "Rolling...";
+
+  let ticks = 0;
+  const shuffle = setInterval(() => {
+    playerDie.textContent = faces[Math.floor(Math.random()*6)+1];
+    computerDie.textContent = faces[Math.floor(Math.random()*6)+1];
+    ticks++;
+    if (ticks > 8){
+      clearInterval(shuffle);
+      finishRoll();
+    }
+  }, 60);
+}
+
+function finishRoll(){
+  playerDie.classList.remove("rolling");
+  computerDie.classList.remove("rolling");
+
+  const playerRoll = Math.floor(Math.random() * 6) + 1;
+  const computerRoll = Math.floor(Math.random() * 6) + 1;
+
+  playerDie.textContent = faces[playerRoll];
+  computerDie.textContent = faces[computerRoll];
+
+  if (playerRoll > computerRoll){
+    playerScore++;
+    msg.textContent = "🎉 You win! (" + playerRoll + " vs " + computerRoll + ")";
+  } else if (computerRoll > playerRoll){
+    computerScore++;
+    msg.textContent = "💻 Computer wins! (" + playerRoll + " vs " + computerRoll + ")";
+  } else {
+    msg.textContent = "🤝 It's a tie! (" + playerRoll + " vs " + computerRoll + ")";
+  }
+
+  playerScoreEl.textContent = playerScore;
+  computerScoreEl.textContent = computerScore;
+  rollBtn.disabled = false;
+}
+</script>
+</body>
+</html>

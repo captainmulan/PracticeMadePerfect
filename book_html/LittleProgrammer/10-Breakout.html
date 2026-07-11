@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breakout - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 100%);
+      color:#ffffff;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#fef08a;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.25);
+    }
+    .card h2{
+      color:#7c3aed;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .code-box{
+      margin:18px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:18px;
+      padding:20px;
+      font-family:Consolas,monospace;
+      font-size:16px;
+      line-height:1.6;
+      overflow:auto;
+      white-space:pre;
+    }
+    .stats{
+      display:flex;
+      justify-content:space-around;
+      margin-bottom:16px;
+    }
+    .stat{
+      text-align:center;
+    }
+    .stat-label{
+      font-size:14px;
+      color:#64748b;
+      font-weight:bold;
+    }
+    .stat-value{
+      font-size:32px;
+      font-weight:bold;
+      color:#7c3aed;
+    }
+    .stage-wrap{
+      display:flex;
+      justify-content:center;
+    }
+    #gameCanvas{
+      width:100%;
+      max-width:360px;
+      height:440px;
+      background:#0f172a;
+      border-radius:18px;
+      box-shadow:inset 0 0 0 4px #7c3aed;
+      touch-action:none;
+      display:block;
+    }
+    .controls-hint{
+      text-align:center;
+      font-size:14px;
+      color:#64748b;
+      margin-top:10px;
+    }
+    .output{
+      margin-top:20px;
+      background:#ede9fe;
+      border:3px dashed #7c3aed;
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+    }
+    .output-title{
+      color:#5b21b6;
+      font-weight:bold;
+      margin-bottom:10px;
+      font-size:18px;
+    }
+    #msg{
+      font-size:22px;
+      font-weight:bold;
+      color:#7c3aed;
+      min-height:32px;
+    }
+    button{
+      width:100%;
+      margin-top:18px;
+      padding:18px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(135deg,#7c3aed,#ec4899);
+      color:white;
+      font-size:22px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.2s;
+    }
+    button:active{
+      transform:scale(.98);
+    }
+    .tip{
+      margin-top:18px;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+color: #1f2937;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">🧱🏓</div>
+    <h1>Breakout</h1>
+    <div class="subtitle">Chapter 10 · Collision Detection + Bounce + Game Physics</div>
+  </div>
+
+  <div class="card">   
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">SCORE</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">LIVES</div>
+        <div class="stat-value" id="lives">3</div>
+      </div>
+    </div>
+
+    <div class="stage-wrap">
+      <canvas id="gameCanvas" width="360" height="440"></canvas>
+    </div>
+    <div class="controls-hint">⬅️ ➡️ arrow keys, or drag with your finger/mouse</div>
+
+    <div class="output">
+      <div class="output-title">Game Status</div>
+      <div id="msg">🧱 Click Start!</div>
+    </div>
+
+    <button id="startBtn" onclick="startGame()">▶ Start Game</button>
+  </div>
+
+<h2>💻 JavaScript Code</h2>
+    <div class="code-box">// Ball vs. brick collision
+if (ball.x < brick.x + brick.w &&
+    ball.x + ball.size > brick.x &&
+    ball.y < brick.y + brick.h &&
+    ball.y + ball.size > brick.y) {
+  ball.vy *= -1;   // bounce
+  brick.alive = false;
+  score += 10;
+}</div>
+
+  <div class="tip">
+    🌟 <strong>Did you know?</strong><br><br>
+    Breakout (1976) is one of the first games to use real
+    <strong>game physics</strong> - a bouncing ball with velocity that
+    reflects off walls, a paddle, and bricks using collision detection!
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("score");
+const livesEl = document.getElementById("lives");
+const msg = document.getElementById("msg");
+const startBtn = document.getElementById("startBtn");
+
+const W = 360, H = 440;
+
+const PADDLE_W = 80, PADDLE_H = 14;
+let paddleX = (W - PADDLE_W) / 2;
+const PADDLE_Y = H - 30;
+
+const BALL_SIZE = 10;
+let ball = { x: W / 2 - BALL_SIZE / 2, y: PADDLE_Y - BALL_SIZE, vx: 2.6, vy: -3.2 };
+
+const ROWS = 5, COLS = 7;
+const BRICK_W = 42, BRICK_H = 18, BRICK_GAP = 4;
+const BRICK_TOP = 40;
+const BRICK_LEFT = (W - (COLS * (BRICK_W + BRICK_GAP) - BRICK_GAP)) / 2;
+const rowColors = ["#ec4899","#f97316","#eab308","#22c55e","#3b82f6"];
+
+let bricks = [];
+let score = 0;
+let lives = 3;
+let playing = false;
+let loopId = null;
+
+function buildBricks(){
+  bricks = [];
+  for (let r = 0; r < ROWS; r++){
+    for (let c = 0; c < COLS; c++){
+      bricks.push({
+        x: BRICK_LEFT + c * (BRICK_W + BRICK_GAP),
+        y: BRICK_TOP + r * (BRICK_H + BRICK_GAP),
+        w: BRICK_W, h: BRICK_H,
+        alive: true,
+        color: rowColors[r]
+      });
+    }
+  }
+}
+
+function resetBall(){
+  ball.x = W / 2 - BALL_SIZE / 2;
+  ball.y = PADDLE_Y - BALL_SIZE;
+  ball.vx = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random());
+  ball.vy = -3.2;
+}
+
+document.addEventListener("keydown", (e) => {
+  if (!playing) return;
+  if (e.key === "ArrowLeft") paddleX = Math.max(0, paddleX - 26);
+  if (e.key === "ArrowRight") paddleX = Math.min(W - PADDLE_W, paddleX + 26);
+});
+
+let dragging = false;
+function moveTo(clientX){
+  const rect = canvas.getBoundingClientRect();
+  const scale = rect.width / W;
+  let x = (clientX - rect.left) / scale - PADDLE_W / 2;
+  paddleX = Math.max(0, Math.min(W - PADDLE_W, x));
+}
+canvas.addEventListener("mousedown", (e) => { dragging = true; moveTo(e.clientX); });
+window.addEventListener("mousemove", (e) => { if (dragging) moveTo(e.clientX); });
+window.addEventListener("mouseup", () => dragging = false);
+canvas.addEventListener("touchstart", (e) => { dragging = true; moveTo(e.touches[0].clientX); });
+canvas.addEventListener("touchmove", (e) => { if (dragging) moveTo(e.touches[0].clientX); e.preventDefault(); }, {passive:false});
+canvas.addEventListener("touchend", () => dragging = false);
+
+function draw(){
+  ctx.clearRect(0, 0, W, H);
+
+  // Bricks
+  bricks.forEach(b => {
+    if (!b.alive) return;
+    ctx.fillStyle = b.color;
+    ctx.beginPath();
+    ctx.roundRect(b.x, b.y, b.w, b.h, 5);
+    ctx.fill();
+  });
+
+  // Paddle
+  ctx.fillStyle = "#7c3aed";
+  ctx.beginPath();
+  ctx.roundRect(paddleX, PADDLE_Y, PADDLE_W, PADDLE_H, 7);
+  ctx.fill();
+
+  // Ball
+  ctx.fillStyle = "#fde68a";
+  ctx.beginPath();
+  ctx.arc(ball.x + BALL_SIZE / 2, ball.y + BALL_SIZE / 2, BALL_SIZE / 2, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function tick(){
+  if (!playing) return;
+
+  ball.x += ball.vx;
+  ball.y += ball.vy;
+
+  // Bounce off left/right walls
+  if (ball.x <= 0){
+    ball.x = 0;
+    ball.vx *= -1;
+  } else if (ball.x + BALL_SIZE >= W){
+    ball.x = W - BALL_SIZE;
+    ball.vx *= -1;
+  }
+
+  // Bounce off top wall
+  if (ball.y <= 0){
+    ball.y = 0;
+    ball.vy *= -1;
+  }
+
+  // Collision: ball vs paddle
+  if (ball.y + BALL_SIZE >= PADDLE_Y &&
+      ball.y + BALL_SIZE <= PADDLE_Y + PADDLE_H &&
+      ball.x + BALL_SIZE > paddleX &&
+      ball.x < paddleX + PADDLE_W &&
+      ball.vy > 0){
+    ball.vy *= -1;
+    // Angle the bounce based on where it hit the paddle
+    const hitPos = (ball.x + BALL_SIZE / 2 - paddleX) / PADDLE_W;
+    ball.vx = (hitPos - 0.5) * 6;
+  }
+
+  // Collision: ball vs bricks
+  for (const brick of bricks){
+    if (!brick.alive) continue;
+    if (ball.x < brick.x + brick.w &&
+        ball.x + BALL_SIZE > brick.x &&
+        ball.y < brick.y + brick.h &&
+        ball.y + BALL_SIZE > brick.y){
+      brick.alive = false;
+      ball.vy *= -1;
+      score += 10;
+      scoreEl.textContent = score;
+      break;
+    }
+  }
+
+  // Missed the ball - lose a life
+  if (ball.y > H){
+    lives--;
+    livesEl.textContent = lives;
+    if (lives <= 0){
+      endGame(false);
+      return;
+    }
+    resetBall();
+  }
+
+  // Win condition - all bricks gone
+  if (bricks.every(b => !b.alive)){
+    endGame(true);
+    return;
+  }
+
+  draw();
+  loopId = requestAnimationFrame(tick);
+}
+
+function startGame(){
+  score = 0;
+  lives = 3;
+  scoreEl.textContent = score;
+  livesEl.textContent = lives;
+  msg.textContent = "🏓 Bounce and break the bricks!";
+  playing = true;
+  startBtn.disabled = true;
+  paddleX = (W - PADDLE_W) / 2;
+
+  buildBricks();
+  resetBall();
+  draw();
+  loopId = requestAnimationFrame(tick);
+}
+
+function endGame(won){
+  playing = false;
+  cancelAnimationFrame(loopId);
+  msg.textContent = won
+    ? "🎉 You cleared the bricks! Score: " + score
+    : "💥 Game Over! Score: " + score;
+  startBtn.disabled = false;
+}
+
+draw();
+</script>
+</body>
+</html>

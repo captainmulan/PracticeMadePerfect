@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World - Quiz - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .progress-wrap{
+      background:rgba(37,99,235,.15);
+      border-radius:999px;
+      height:14px;
+      margin-bottom:22px;
+      overflow:hidden;
+    }
+    #progressBar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#3b82f6,#06b6d4);
+      transition:width .3s;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .q-count{
+      color:#2563eb;
+      font-weight:bold;
+      font-size:15px;
+      margin-bottom:8px;
+    }
+    .q-text{
+      font-size:20px;
+      line-height:1.6;
+      margin-bottom:18px;
+      font-weight:bold;
+    }
+    .choice{
+      display:block;
+      width:100%;
+      text-align:left;
+      background:#eff6ff;
+      border:3px solid transparent;
+      border-radius:16px;
+      padding:16px 18px;
+      font-size:17px;
+      margin-bottom:12px;
+      cursor:pointer;
+      font-family:inherit;
+      color:#1f2937;
+      transition:.15s;
+    }
+    .choice:hover{
+      background:#dbeafe;
+    }
+    .choice.correct{
+      background:#dcfce7;
+      border-color:#16a34a;
+    }
+    .choice.wrong{
+      background:#fee2e2;
+      border-color:#dc2626;
+    }
+    .choice:disabled{
+      cursor:default;
+    }
+    .feedback{
+      font-size:17px;
+      line-height:1.7;
+      padding:16px;
+      border-radius:14px;
+      margin-top:10px;
+      display:none;
+    }
+    .feedback.show{
+      display:block;
+    }
+    .feedback.right-fb{
+      background:#dcfce7;
+      color:#166534;
+    }
+    .feedback.wrong-fb{
+      background:#fee2e2;
+      color:#991b1b;
+    }
+    button.nextBtn{
+      width:100%;
+      margin-top:18px;
+      padding:16px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:19px;
+      font-weight:bold;
+      cursor:pointer;
+      display:none;
+    }
+    button.nextBtn.show{
+      display:block;
+    }
+    .result{
+      text-align:center;
+    }
+    .result .emoji{
+      font-size:64px;
+      margin-bottom:10px;
+    }
+    .result h2{
+      color:#2563eb;
+      font-size:26px;
+      margin-bottom:10px;
+    }
+    .result p{
+      font-size:19px;
+      margin-bottom:18px;
+    }
+    .retry-btn{
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:19px;
+      font-weight:bold;
+      cursor:pointer;
+      margin-bottom:12px;
+    }
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .nav a{
+      flex:1;
+      text-align:center;
+      padding:16px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:bold;
+      font-size:17px;
+      background:#e2e8f0;
+      color:#334155;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">👋</div>
+    <h1>Hello World Quiz</h1>
+  </div>
+
+  <div class="progress-wrap">
+    <div id="progressBar"></div>
+  </div>
+
+  <div class="card" id="quizCard"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "What does 'sequence' mean in programming?",
+    choices: [
+      "How colorful the program looks",
+      "The order that instructions run in",
+      "How many buttons a game has",
+      "The name of the programmer"
+    ],
+    correct: 1,
+    explain: "Sequence just means 'the order things happen in.' A computer runs instructions in the exact order you write them."
+  },
+  {
+    q: "If a program says:\nconsole.log(\"Hello\");\nconsole.log(\"World\");\nwhat prints first?",
+    choices: [
+      "World",
+      "Hello",
+      "Both print at the exact same time",
+      "Nothing prints"
+    ],
+    correct: 1,
+    explain: "The computer runs line 1 first, so \"Hello\" prints before \"World\"."
+  },
+  {
+    q: "Why does making a sandwich work better in a certain order?",
+    choices: [
+      "Because sandwiches taste better that way",
+      "Because some steps depend on earlier steps being done first",
+      "Order never matters for sandwiches",
+      "Because bread is always step 3"
+    ],
+    correct: 1,
+    explain: "You can't put the bread together before adding the filling! Some steps only make sense after earlier ones are finished - that's why sequence matters."
+  },
+  {
+    q: "What happens if you use the same instructions but put them in a different order?",
+    choices: [
+      "The computer fixes the order automatically",
+      "The result can come out completely different",
+      "The program always crashes",
+      "It always prints the same result no matter what"
+    ],
+    correct: 1,
+    explain: "Same words, different order, different result! Swapping \"Hello\" and \"World\" prints \"World\" then \"Hello\" instead."
+  },
+  {
+    q: "Which best describes how a computer reads a program?",
+    choices: [
+      "It picks a random line to start with",
+      "It reads every line at the exact same instant",
+      "It reads from top to bottom, one line at a time",
+      "It only reads the last line"
+    ],
+    correct: 2,
+    explain: "A computer reads a program from top to bottom, finishing one line before moving to the next - just like reading a story."
+  }
+];
+
+let current = 0;
+let scoreCount = 0;
+const quizCard = document.getElementById("quizCard");
+const progressBar = document.getElementById("progressBar");
+
+function renderQuestion(){
+  const item = questions[current];
+  progressBar.style.width = (current / questions.length * 100) + "%";
+
+  let html = `<div class="q-count">Question ${current + 1} of ${questions.length}</div>`;
+  html += `<div class="q-text">${item.q.replace(/\n/g, "<br>")}</div>`;
+  item.choices.forEach((choice, i) => {
+    html += `<button class="choice" data-i="${i}">${choice}</button>`;
+  });
+  html += `<div class="feedback" id="feedback"></div>`;
+  html += `<button class="nextBtn" id="nextBtn">Next ➡</button>`;
+
+  quizCard.innerHTML = html;
+
+  const buttons = quizCard.querySelectorAll(".choice");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => selectAnswer(btn, item, buttons));
+  });
+}
+
+function selectAnswer(btn, item, buttons){
+  const chosen = parseInt(btn.dataset.i);
+  buttons.forEach(b => b.disabled = true);
+
+  const feedback = document.getElementById("feedback");
+  const nextBtn = document.getElementById("nextBtn");
+
+  if (chosen === item.correct){
+    btn.classList.add("correct");
+    feedback.textContent = "✅ Correct! " + item.explain;
+    feedback.className = "feedback show right-fb";
+    scoreCount++;
+  } else {
+    btn.classList.add("wrong");
+    buttons[item.correct].classList.add("correct");
+    feedback.textContent = "❌ Not quite. " + item.explain;
+    feedback.className = "feedback show wrong-fb";
+  }
+
+  nextBtn.classList.add("show");
+  nextBtn.addEventListener("click", () => {
+    current++;
+    if (current < questions.length){
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  });
+}
+
+function showResult(){
+  progressBar.style.width = "100%";
+  const pct = Math.round((scoreCount / questions.length) * 100);
+  let emoji = "🌱";
+  let msg = "Keep practicing - sequence takes a little time to click!";
+  if (pct >= 80){
+    emoji = "🏆";
+    msg = "Amazing! You really understand program sequence!";
+  } else if (pct >= 50){
+    emoji = "🎉";
+    msg = "Nice work! You're getting the hang of it!";
+  }
+
+  quizCard.innerHTML = `
+    <div class="result">
+      <div class="emoji">${emoji}</div>
+      <h2>You scored ${scoreCount} / ${questions.length}</h2>
+      <p>${msg}</p>
+      <button class="retry-btn" onclick="restart()">🔁 Try Again</button>
+    </div>
+  `;
+}
+
+function restart(){
+  current = 0;
+  scoreCount = 0;
+  renderQuestion();
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

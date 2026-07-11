@@ -9,17 +9,21 @@ export function useCourseCatalog() {
 
   useEffect(() => {
     let active = true;
-    loadCoursesFromBrowserDb()
-      .then((data) => {
+    (async () => {
+      try {
+        console.log("loading courses");
+        const data = await loadCoursesFromBrowserDb();
+        console.log("loaded courses:", data);
         if (!active) return;
         setCourses(data);
         setLoaded(true);
-      })
-      .catch((err) => {
+      } catch (err) {
+        console.error("Error loading courses:", err);
         if (!active) return;
         setError(String(err));
         setLoaded(true);
-      });
+      }
+    })();
     return () => {
       active = false;
     };
