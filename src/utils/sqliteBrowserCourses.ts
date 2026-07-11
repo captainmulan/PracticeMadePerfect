@@ -160,7 +160,7 @@ function courseToRows(course: Course): { course: CourseRow; chapters: ChapterRow
     coverWidth: course.coverWidth ?? null,
     coverHeight: course.coverHeight ?? null,
     artifactType: course.artifactType,
-    raw: JSON.stringify(course, null, 2),
+    raw: JSON.stringify(course),
   };
 
   const chapters: ChapterRow[] = course.chapters.map((chapter) => ({
@@ -168,7 +168,7 @@ function courseToRows(course: Course): { course: CourseRow; chapters: ChapterRow
     courseId: course.id,
     title: chapter.title,
     chapterIndex: chapter.chapterIndex,
-    raw: JSON.stringify(chapter, null, 2),
+    raw: JSON.stringify(chapter),
   }));
 
   const steps: CourseStepRow[] = course.chapters.flatMap((chapter) =>
@@ -181,7 +181,7 @@ function courseToRows(course: Course): { course: CourseRow; chapters: ChapterRow
       pageIndex: step.stepIndex,
       stepType: step.stepType,
       title: step.title,
-      raw: JSON.stringify(step, null, 2),
+      raw: JSON.stringify(step),
     })),
   );
 

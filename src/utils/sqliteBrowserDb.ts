@@ -84,14 +84,17 @@ async function fetchDatabaseFile(): Promise<Uint8Array> {
       migrateLegacySchema(cachedDb);
       cachedDb.close();
       return cachedBytes;
-    } catch {
-      window.localStorage.removeItem(LOCAL_STORAGE_DB_KEY);
+    } catch (error) {
+      console.warn("Failed to load cached database, falling back to bundled", error);
+      // Don't delete cached data unless we have a better one saved!
     }
   }
 
   const bundledBytes = await fetchBundledDatabaseBytes();
   try {
-    window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
+    // Only overwrite if we can save successfully
+    const newData = JSON.stringify(Array.from(bundledBytes));
+    window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, newData);
   } catch (e) {
     console.warn("Failed to save database to localStorage (quota exceeded)", e);
   }
@@ -292,13 +295,19 @@ export function persistBrowserDbToLocalStorage(db: Database) {
   const bytes = db.export();
   if (shouldUsePersistedBrowserDb()) {
     try {
-      window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
+      // Create the new data first
+      const newData = JSON.stringify(Array.from(bytes));
+      // Temporarily keep a copy of old data in case we need to revert
+      let oldData: string | null = null;
+      try {
+        oldData = window.localStorage.getItem(LOCAL_STORAGE_DB_KEY);
+      } catch {}
+      
+      // Try to save the new data
+      window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, newData);
     } catch (e) {
       console.warn("Failed to save database to localStorage (quota exceeded)", e);
-      // If we hit quota, try to remove old entry to free space
-      try {
-        window.localStorage.removeItem(LOCAL_STORAGE_DB_KEY);
-      } catch {}
+      // Don't delete old data - keep it so user doesn't lose everything!
     }
   }
   cachedDb = null;
