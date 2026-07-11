@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World - Explained - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .card h2{
+      color:#2563eb;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .card ul{
+      margin:0 0 12px 22px;
+      font-size:18px;
+      line-height:1.8;
+    }
+    .badge{
+      display:inline-block;
+      background:#dbeafe;
+      color:#1e40af;
+      font-weight:bold;
+      padding:4px 12px;
+      border-radius:999px;
+      font-size:14px;
+      margin-bottom:10px;
+    }
+    .code-box{
+      margin:18px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:18px;
+      padding:20px;
+      font-family:Consolas,monospace;
+      font-size:16px;
+      line-height:1.6;
+      overflow:auto;
+      white-space:pre;
+    }
+    .steps{
+      counter-reset: step;
+    }
+    .step{
+      display:flex;
+      gap:14px;
+      margin-bottom:16px;
+      align-items:flex-start;
+    }
+    .step-num{
+      flex-shrink:0;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#3b82f6;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+    }
+    .step p{
+      margin:0;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .compare-wrap{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+    .compare-box{
+      flex:1;
+      min-width:130px;
+      background:#f8fafc;
+      border-radius:16px;
+      padding:14px;
+      text-align:center;
+    }
+    .compare-box .compare-title{
+      font-size:14px;
+      font-weight:bold;
+      color:#64748b;
+      margin-bottom:8px;
+    }
+    .compare-console{
+      background:#111827;
+      color:#22c55e;
+      border-radius:12px;
+      padding:12px;
+      font-family:Consolas,monospace;
+      font-size:16px;
+      line-height:1.5;
+      min-height:80px;
+    }
+    .demo-btns{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+    }
+    .demo-btns button{
+      flex:1;
+      padding:12px;
+      border:none;
+      border-radius:14px;
+      background:#3b82f6;
+      color:#fff;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    .demo-btns button:active{
+      transform:scale(.97);
+    }
+    .demo-btns button.secondary{
+      background:#94a3b8;
+    }
+    .tip{
+      margin-top:18px;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:24px;
+    }
+    .nav a{
+      flex:1;
+      text-align:center;
+      padding:16px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:bold;
+      font-size:17px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:#fff;
+    }
+    .nav a.secondary{
+      background:#e2e8f0;
+      color:#334155;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">👋</div>
+    <h1>Hello World - Explained</h1>
+    <div class="subtitle">Chapter 03 · Program Sequence</div>
+  </div>
+
+  <div class="card">
+    <span class="badge">CONCEPT 1</span>
+    <h2>📜 What is a Sequence?</h2>
+    <p>
+      A <strong>sequence</strong> is just a fancy word for "the order things
+      happen in." When you make a sandwich, you do steps in order:
+    </p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p>Get two pieces of bread</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p>Add the filling</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p>Put the bread together</p>
+      </div>
+    </div>
+    <p>
+      If you did step 3 before step 1, it wouldn't work! Computers are the
+      same - they follow instructions <strong>in the order you write them</strong>,
+      from top to bottom.
+    </p>
+  </div>
+
+  <div class="card">
+    <span class="badge">CONCEPT 2</span>
+    <h2>💻 Same Words, Different Order</h2>
+    <p>
+      Here's something surprising: using the <strong>exact same instructions</strong>
+      but in a different order gives you a totally different result!
+    </p>
+
+    <div class="code-box">console.log("Hello");
+console.log("World");</div>
+
+    <div class="compare-wrap">
+      <div class="compare-box">
+        <div class="compare-title">✅ Correct Order</div>
+        <div class="compare-console" id="correctConsole"></div>
+      </div>
+      <div class="compare-box">
+        <div class="compare-title">🔀 Swapped Order</div>
+        <div class="compare-console" id="swappedConsole"></div>
+      </div>
+    </div>
+    <div class="demo-btns">
+      <button onclick="runDemo()">▶ Run Both</button>
+      <button class="secondary" onclick="resetDemo()">🔁 Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">CONCEPT 3</span>
+    <h2>⚙️ How the Computer Reads Your Program</h2>
+    <p>
+      The computer reads your program like a story - one line, then the
+      next line, then the next - and it never skips ahead or peeks at
+      later lines first.
+    </p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p>Read line 1 and do exactly what it says.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p>Move to line 2 and do exactly what it says.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p>Keep going until there are no more lines left.</p>
+      </div>
+    </div>
+    <p>
+      This is why programmers say a program "runs from top to bottom" -
+      and why getting the sequence right matters so much!
+    </p>
+  </div>
+
+  <div class="tip">
+    🌟 <strong>Ready to play?</strong><br><br>
+    Now that you know why sequence matters, go back to
+    <strong>03-Hello-World.html</strong> and try building the blocks in the
+    right order to print "Hello World !"
+  </div>
+
+  <div class="nav">
+    <a class="secondary" href="03-Hello-World.html">⬅ Back to Game</a>
+    <a href="3.2-HelloWorld-quiz-.html">Take the Quiz ➡</a>
+  </div>
+</div>
+
+<script>
+const correctConsole = document.getElementById("correctConsole");
+const swappedConsole = document.getElementById("swappedConsole");
+
+function sleep(ms){
+  return new Promise(res => setTimeout(res, ms));
+}
+
+async function typeLines(el, lines){
+  el.innerHTML = "";
+  for (const line of lines){
+    el.innerHTML += line + "<br>";
+    await sleep(500);
+  }
+}
+
+async function runDemo(){
+  resetDemo();
+  await Promise.all([
+    typeLines(correctConsole, ["Hello", "World"]),
+    typeLines(swappedConsole, ["World", "Hello"])
+  ]);
+}
+
+function resetDemo(){
+  correctConsole.innerHTML = "";
+  swappedConsole.innerHTML = "";
+}
+</script>
+</body>
+</html>

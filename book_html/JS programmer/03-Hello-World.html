@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .card h2{
+      color:#2563eb;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .code-box{
+      margin:18px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:18px;
+      padding:20px;
+      font-family:Consolas,monospace;
+      font-size:17px;
+      line-height:1.6;
+      overflow:auto;
+      white-space:pre;
+    }
+    .blocks-palette{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+      margin-top:6px;
+    }
+    .block-btn{
+      padding:16px 20px;
+      border:none;
+      border-radius:16px;
+      background:#3b82f6;
+      color:#fff;
+      font-size:20px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .block-btn:active{
+      transform:scale(.96);
+    }
+    .block-btn:disabled{
+      background:#cbd5e1;
+      cursor:default;
+    }
+    .program-list{
+      margin-top:18px;
+      background:#f8fafc;
+      border-radius:16px;
+      padding:14px;
+      min-height:56px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .program-list .empty-hint{
+      color:#94a3b8;
+      font-size:15px;
+    }
+    .program-chip{
+      background:#dbeafe;
+      color:#1e40af;
+      font-weight:bold;
+      padding:8px 14px;
+      border-radius:10px;
+      font-size:17px;
+    }
+    .action-row{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+    }
+    .action-row button{
+      flex:1;
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      font-size:17px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    #runBtn{
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:#fff;
+    }
+    #clearBtn{
+      background:#e2e8f0;
+      color:#334155;
+    }
+    .console{
+      margin-top:18px;
+      background:#111827;
+      border-radius:18px;
+      padding:18px;
+      min-height:90px;
+      font-family:Consolas,monospace;
+      font-size:20px;
+      color:#22c55e;
+    }
+    .console-title{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      color:#94a3b8;
+      font-size:13px;
+      font-weight:bold;
+      margin-bottom:8px;
+    }
+    .output{
+      margin-top:20px;
+      background:#ecfeff;
+      border:3px dashed #06b6d4;
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+    }
+    .output-title{
+      color:#0f766e;
+      font-weight:bold;
+      margin-bottom:10px;
+      font-size:18px;
+    }
+    #msg{
+      font-size:20px;
+      font-weight:bold;
+      color:#0f766e;
+      min-height:28px;
+    }
+    .tip{
+      margin-top:18px;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:24px;
+    }
+    .nav a{
+      flex:1;
+      text-align:center;
+      padding:16px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:bold;
+      font-size:17px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:#fff;
+    }
+    .nav a.secondary{
+      background:#e2e8f0;
+      color:#334155;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">👋</div>
+    <h1>Hello World</h1>
+    <div class="subtitle">Chapter 03 · Program Sequence</div>
+  </div>
+
+  <div class="card">
+    <h2>📖 Order Matters!</h2>
+    <p>
+      A <strong>program</strong> is a list of instructions that run
+      <strong>in order</strong>, one after another. This order is called
+      a <strong>sequence</strong>.
+    </p>
+    <p>
+      If you mix up the order, you get a mixed-up result - even if you
+      use the exact same instructions!
+    </p>
+    <div class="code-box">console.log("Hello");
+console.log("World");
+console.log("!");
+
+// prints, in this exact order:
+// Hello
+// World
+// !</div>
+  </div>
+
+  <div class="card">
+    <h2>🧩 Build Your Own Program</h2>
+    <p>Tap the word blocks in the order you want them to print, then press Run!</p>
+
+    <div class="blocks-palette">
+      <button class="block-btn" data-word="Hello">Hello</button>
+      <button class="block-btn" data-word="World">World</button>
+      <button class="block-btn" data-word="!">!</button>
+    </div>
+
+    <div class="program-list" id="programList">
+      <span class="empty-hint">Tap blocks above to build your program...</span>
+    </div>
+
+    <div class="action-row">
+      <button id="runBtn">▶ Run Program</button>
+      <button id="clearBtn">🗑 Clear</button>
+    </div>
+
+    <div class="console">
+      <div class="console-title">CONSOLE OUTPUT</div>
+      <div id="consoleOutput"></div>
+    </div>
+
+    <div class="output">
+      <div class="output-title">Challenge</div>
+      <div id="msg">🎯 Try to make it print: Hello World !</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    🌟 <strong>Did you know?</strong><br><br>
+    "Hello, World!" is the very first program that most programmers ever
+    write. It's a tradition! It teaches that a computer runs your
+    instructions <strong>in the exact sequence</strong> you write them.
+  </div>
+
+  <div class="nav">
+    <a class="secondary" href="02-What-is-Programming.html">⬅ Prev</a>
+    <a href="00-Index.html">Index ⬅</a>
+  </div>
+</div>
+
+<script>
+let program = [];
+let running = false;
+
+const programList = document.getElementById("programList");
+const consoleOutput = document.getElementById("consoleOutput");
+const msg = document.getElementById("msg");
+const runBtn = document.getElementById("runBtn");
+const clearBtn = document.getElementById("clearBtn");
+const blockButtons = document.querySelectorAll(".block-btn");
+
+blockButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (running) return;
+    program.push(btn.dataset.word);
+    renderProgram();
+  });
+});
+
+function renderProgram(){
+  if (program.length === 0){
+    programList.innerHTML = `<span class="empty-hint">Tap blocks above to build your program...</span>`;
+    return;
+  }
+  programList.innerHTML = program.map(w => `<span class="program-chip">${w}</span>`).join("");
+}
+
+clearBtn.addEventListener("click", () => {
+  if (running) return;
+  program = [];
+  consoleOutput.innerHTML = "";
+  renderProgram();
+  msg.textContent = "🎯 Try to make it print: Hello World !";
+});
+
+function sleep(ms){
+  return new Promise(res => setTimeout(res, ms));
+}
+
+async function runProgram(){
+  if (running || program.length === 0) return;
+  running = true;
+  blockButtons.forEach(b => b.disabled = true);
+  consoleOutput.innerHTML = "";
+  msg.textContent = "▶ Running your program...";
+
+  for (const word of program){
+    consoleOutput.innerHTML += word + "<br>";
+    await sleep(500);
+  }
+
+  const result = program.join(" ");
+  if (result === "Hello World !"){
+    msg.textContent = "🎉 Perfect sequence! You printed Hello World !";
+  } else {
+    msg.textContent = "🤔 It printed: \"" + result + "\" - try a different order!";
+  }
+
+  blockButtons.forEach(b => b.disabled = false);
+  running = false;
+}
+
+runBtn.addEventListener("click", runProgram);
+</script>
+</body>
+</html>

@@ -412,6 +412,7 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
     titleColor: course.titleColor ?? undefined,
     titlePosition: course.titlePosition ?? undefined,
     titleTextAlign: course.titleTextAlign ?? undefined,
+    titleAlignment: course.titleAlignment ?? course.titleTextAlign ?? undefined,
     iconPosition: course.iconPosition ?? undefined,
     meta: `${course.chapters.length} chapters`,
     link: `/courses/${course.id}`,
@@ -431,10 +432,15 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     .filter((course) => course.category === "Kid")
     .map((course) => createShelfItemFromCourse(course, "Kid"));
 
+  const fictionItems = courses
+    .filter((course) => course.category === "Fiction")
+    .map((course) => createShelfItemFromCourse(course, "Fiction"));
+
   return [
     buildShelfRow("Popular", popularItems),
     { title: "Search", items: [] },
     buildShelfRow("Kid", kidItems),
+    buildShelfRow("Fiction", fictionItems),
     { title: "Other", items: [] },
   ];
 }

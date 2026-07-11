@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Little Programmer - Book Briefing</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+    }
+    .cover{
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      border-radius:28px;
+      padding:40px 28px;
+      text-align:center;
+      color:#fff;
+      box-shadow:0 10px 30px rgba(37,99,235,.35);
+      margin-bottom:22px;
+    }
+    .cover .logo{
+      font-size:70px;
+      margin-bottom:12px;
+    }
+    .cover h1{
+      font-size:34px;
+      margin-bottom:8px;
+    }
+    .cover .tagline{
+      font-size:18px;
+      opacity:.95;
+      margin-bottom:18px;
+    }
+    .cover .badges{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .cover .pill{
+      background:rgba(255,255,255,.22);
+      padding:8px 16px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:bold;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .card h2{
+      color:#2563eb;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .meta-row{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .meta-item{
+      flex:1;
+      min-width:140px;
+      background:#eff6ff;
+      border-radius:16px;
+      padding:14px;
+      text-align:center;
+    }
+    .meta-label{
+      font-size:13px;
+      font-weight:bold;
+      color:#64748b;
+      margin-bottom:4px;
+    }
+    .meta-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#1e40af;
+    }
+    .concept-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:6px;
+    }
+    .concept-item{
+      background:#f8fafc;
+      border-radius:14px;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:15px;
+      font-weight:bold;
+      color:#334155;
+    }
+    .concept-item .emoji{
+      font-size:22px;
+    }
+    .steps{
+      counter-reset: step;
+    }
+    .step{
+      display:flex;
+      gap:14px;
+      margin-bottom:16px;
+      align-items:flex-start;
+    }
+    .step-num{
+      flex-shrink:0;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#3b82f6;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+    }
+    .step p{
+      margin:0;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .tip{
+      margin-top:0;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .start-btn{
+      display:block;
+      width:100%;
+      text-align:center;
+      margin-top:6px;
+      padding:20px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:22px;
+      font-weight:bold;
+      cursor:pointer;
+      text-decoration:none;
+      transition:.2s;
+    }
+    .start-btn:active{
+      transform:scale(.98);
+    }
+    .author-row{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .author-avatar{
+      flex-shrink:0;
+      width:56px;
+      height:56px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#93c5fd,#67e8f9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+    }
+    .author-name{
+      font-size:19px;
+      font-weight:bold;
+      color:#1e293b;
+    }
+    .author-role{
+      font-size:14px;
+      color:#64748b;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="cover">
+    <div class="logo">📚</div>
+    <h1>Little Programmer</h1>
+    <div class="tagline">Learn to code through play - one fun chapter at a time!</div>
+    <div class="badges">
+      <div class="pill">🎂 Age 6–10</div>
+      <div class="pill">🎮 10 Mini-Games</div>
+      <div class="pill">💻 No Experience Needed</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📖 About This Book</h2>
+    <p>
+      <strong>Little Programmer</strong> is an interactive, game-based
+      introduction to coding for young learners. Instead of reading about
+      programming, kids <strong>play</strong> their way through it - tapping,
+      clicking, and building tiny programs to solve fun puzzles and games.
+    </p>
+    <p>
+      Each chapter pairs one big programming idea (like commands, events,
+      variables, or loops) with a hands-on mini-game, a friendly explainer,
+      and a short quiz to check understanding - building real coding
+      instincts before kids ever type a line of code.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>ℹ️ Book Details</h2>
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="meta-label">AUTHOR</div>
+        <div class="meta-value">Jimmy Cooper</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">AGE RANGE</div>
+        <div class="meta-value">6–10 years</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">CHAPTERS</div>
+        <div class="meta-value">10</div>
+      </div>
+    </div>
+    <div class="author-row" style="margin-top:14px;">
+      <div class="author-avatar">🧑‍💻</div>
+      <div>
+        <div class="author-name">Jimmy Cooper</div>
+        <div class="author-role">Author &amp; Creator, Little Programmer</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧩 What You'll Learn</h2>
+    <div class="concept-grid">
+      <div class="concept-item"><span class="emoji">🖥️</span> Computers & Programs</div>
+      <div class="concept-item"><span class="emoji">📜</span> Sequence</div>
+      <div class="concept-item"><span class="emoji">🧭</span> Commands</div>
+      <div class="concept-item"><span class="emoji">🖱️</span> Events</div>
+      <div class="concept-item"><span class="emoji">🎲</span> Variables</div>
+      <div class="concept-item"><span class="emoji">🔀</span> If / Compare</div>
+      <div class="concept-item"><span class="emoji">🔁</span> Loops</div>
+      <div class="concept-item"><span class="emoji">⚙️</span> Game Physics</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🚀 How to Use This Book</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p>Open a chapter and read the short, friendly explanation of the idea.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p>Play the mini-game - it's built entirely around that chapter's concept.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p>Dig deeper with the "Explained" page and its interactive demo.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <p>Take the short quiz to check understanding before moving on.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tip">
+      🌟 <strong>For parents & teachers:</strong> no prior coding
+      knowledge is required - either for the child or for you! Every
+      concept is introduced from scratch, in plain language, with lots
+      of visual feedback.
+    </div>
+  </div>
+
+  <a class="start-btn" href="00-Index.html">▶ Start Reading</a>
+</div>
+</body>
+</html>

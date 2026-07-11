@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Memory Match Works</title>
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+body{
+font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+background:linear-gradient(180deg,#eef9ff,#fff9e8);
+color:#1f2937;
+}
+.container{
+max-width:620px;
+margin:auto;
+padding:24px 16px 40px;
+}
+.header{
+text-align:center;
+margin-bottom:28px;
+}
+.logo{
+font-size:54px;
+margin-bottom:10px;
+}
+h1{
+color:#2563eb;
+font-size:30px;
+margin-bottom:8px;
+}
+.subtitle{
+color:#64748b;
+font-size:18px;
+}
+.card{
+background:white;
+border-radius:24px;
+padding:22px;
+margin-bottom:18px;
+box-shadow:0 5px 18px rgba(0,0,0,.08);
+}
+.card h2{
+font-size:22px;
+margin-bottom:16px;
+color:#2563eb;
+}
+.step{
+display:flex;
+gap:14px;
+align-items:flex-start;
+margin-bottom:18px;
+}
+.circle{
+width:42px;
+height:42px;
+border-radius:50%;
+background:#3b82f6;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+font-weight:bold;
+flex-shrink:0;
+}
+.content h3{
+margin-bottom:6px;
+font-size:20px;
+}
+.content p{
+font-size:17px;
+line-height:1.7;
+}
+.arrow{
+text-align:center;
+font-size:36px;
+margin:8px 0;
+color:#3b82f6;
+}
+.code{
+background:#111827;
+color:#22c55e;
+padding:18px;
+border-radius:16px;
+font-family:Consolas,monospace;
+font-size:17px;
+line-height:1.6;
+margin:18px 0;
+overflow:auto;
+white-space:pre;
+}
+.demo{
+background:#ecfeff;
+border:3px dashed #06b6d4;
+padding:18px;
+border-radius:18px;
+text-align:center;
+margin-top:18px;
+}
+.stats{
+display:flex;
+justify-content:space-around;
+margin-bottom:14px;
+}
+.stat-label{
+font-size:13px;
+color:#64748b;
+font-weight:bold;
+}
+.stat-value{
+font-size:26px;
+font-weight:bold;
+color:#2563eb;
+}
+.board{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;
+max-width:280px;
+margin:0 auto;
+}
+.tile{
+aspect-ratio:1/1;
+background:linear-gradient(135deg,#3b82f6,#06b6d4);
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:26px;
+cursor:pointer;
+box-shadow:0 4px 10px rgba(0,0,0,.15);
+user-select:none;
+}
+.tile.flipped{
+background:#fff;
+border:2px solid #93c5fd;
+}
+.tile.matched{
+background:#dcfce7;
+border:2px solid #22c55e;
+cursor:default;
+}
+.tile.wrong{
+background:#fee2e2;
+border:2px solid #ef4444;
+}
+.tile-symbol{
+display:none;
+}
+.tile.flipped .tile-symbol,
+.tile.matched .tile-symbol,
+.tile.wrong .tile-symbol{
+display:block;
+}
+.tile.flipped .tile-back,
+.tile.matched .tile-back,
+.tile.wrong .tile-back{
+display:none;
+}
+#msg{
+margin-top:12px;
+font-size:18px;
+font-weight:bold;
+color:#16a34a;
+min-height:26px;
+}
+button{
+width:100%;
+padding:18px;
+margin-top:18px;
+font-size:22px;
+font-weight:bold;
+border:none;
+border-radius:18px;
+background:linear-gradient(135deg,#3b82f6,#06b6d4);
+color:white;
+cursor:pointer;
+}
+button:active{
+transform:scale(.98);
+}
+.tip{
+background:#fff7d6;
+border-left:6px solid orange;
+padding:16px;
+border-radius:14px;
+font-size:17px;
+line-height:1.7;
+margin-top:18px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="logo">🧠🃏</div>
+<h1>How Memory Match Works</h1>
+<div class="subtitle">
+Let's see what happens inside the computer!
+</div>
+</div>
+
+<div class="card">
+<h2>💻 Our Program</h2>
+<div class="code">if (firstCard.symbol === secondCard.symbol) {
+  // It's a match!
+  matches++;
+} else {
+  // Not a match, flip back
+}</div>
+</div>
+
+<div class="card">
+<div class="step">
+<div class="circle">1</div>
+<div class="content">
+<h3>👆 You Flip Two Cards</h3>
+<p>
+You click one card, then another. The computer remembers
+both symbols.
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">2</div>
+<div class="content">
+<h3>🔎 The Computer Compares</h3>
+<p>
+It asks an <b>if</b> question: "Is the first symbol the
+<i>same</i> as the second symbol?"
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">3</div>
+<div class="content">
+<h3>✅ If They Match...</h3>
+<p>
+The cards stay face up and your match count goes up!
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">4</div>
+<div class="content">
+<h3>❌ If They Don't Match...</h3>
+<p>
+The <b>else</b> part runs instead - the cards flip back
+face down after a moment.
+</p>
+</div>
+</div>
+<div class="arrow">⬇️</div>
+<div class="step">
+<div class="circle">5</div>
+<div class="content">
+<h3>🔁 You Try Again</h3>
+<p>
+This if/else check happens every single time you flip
+two cards, until you find them all!
+</p>
+</div>
+</div>
+
+<div class="demo">
+<h3>Try It</h3>
+<div class="stats">
+<div>
+<div class="stat-label">MOVES</div>
+<div class="stat-value" id="moves">0</div>
+</div>
+<div>
+<div class="stat-label">MATCHES</div>
+<div class="stat-value" id="matches">0 / 6</div>
+</div>
+</div>
+<div class="board" id="board"></div>
+<div id="msg">Find all the matching pairs!</div>
+</div>
+<button id="resetBtn" onclick="resetGame()">🔄 New Game</button>
+</div>
+
+<div class="tip">
+🌟 <b>Remember</b>
+<br><br>
+<code>if</code> and <code>else</code> let a program choose between
+two paths. The computer always follows whichever path matches
+what's really true!
+</div>
+</div>
+
+<script>
+const board = document.getElementById("board");
+const movesEl = document.getElementById("moves");
+const matchesEl = document.getElementById("matches");
+const msg = document.getElementById("msg");
+
+const SYMBOLS = ["🍎","🍎","🐶","🐶","⚽","⚽","🚗","🚗","🌟","🌟","🎈","🎈"];
+
+let cards = [];
+let flipped = [];
+let matches = 0;
+let moves = 0;
+let locked = false;
+
+function shuffle(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildBoard(){
+  board.innerHTML = "";
+  cards = shuffle(SYMBOLS);
+  cards.forEach((symbol, i) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.dataset.symbol = symbol;
+    tile.innerHTML = `<div class="tile-back">❓</div><div class="tile-symbol">${symbol}</div>`;
+    tile.addEventListener("click", () => flipTile(tile));
+    board.appendChild(tile);
+  });
+}
+
+function flipTile(tile){
+  if (locked) return;
+  if (tile.classList.contains("flipped") || tile.classList.contains("matched")) return;
+  if (flipped.length === 2) return;
+
+  tile.classList.add("flipped");
+  flipped.push(tile);
+
+  if (flipped.length === 2){
+    moves++;
+    movesEl.textContent = moves;
+    locked = true;
+
+    const [first, second] = flipped;
+    if (first.dataset.symbol === second.dataset.symbol){
+      first.classList.add("matched");
+      second.classList.add("matched");
+      matches++;
+      matchesEl.textContent = matches + " / 6";
+      msg.textContent = "✅ Great match!";
+      flipped = [];
+      locked = false;
+      if (matches === 6){
+        msg.textContent = "🎉 You matched them all in " + moves + " moves!";
+      }
+    } else {
+      first.classList.add("wrong");
+      second.classList.add("wrong");
+      msg.textContent = "❌ Not a match, try again!";
+      setTimeout(() => {
+        first.classList.remove("flipped","wrong");
+        second.classList.remove("flipped","wrong");
+        flipped = [];
+        locked = false;
+      }, 700);
+    }
+  }
+}
+
+function resetGame(){
+  flipped = [];
+  matches = 0;
+  moves = 0;
+  locked = false;
+  movesEl.textContent = 0;
+  matchesEl.textContent = "0 / 6";
+  msg.textContent = "Find all the matching pairs!";
+  buildBoard();
+}
+
+buildBoard();
+</script>
+</body>
+</html>

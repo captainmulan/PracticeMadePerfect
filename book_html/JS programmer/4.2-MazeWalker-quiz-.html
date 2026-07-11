@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Walker - Quiz - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .progress-wrap{
+      background:rgba(37,99,235,.15);
+      border-radius:999px;
+      height:14px;
+      margin-bottom:22px;
+      overflow:hidden;
+    }
+    #progressBar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#3b82f6,#06b6d4);
+      transition:width .3s;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .q-count{
+      color:#2563eb;
+      font-weight:bold;
+      font-size:15px;
+      margin-bottom:8px;
+    }
+    .q-text{
+      font-size:20px;
+      line-height:1.6;
+      margin-bottom:18px;
+      font-weight:bold;
+    }
+    .choice{
+      display:block;
+      width:100%;
+      text-align:left;
+      background:#eff6ff;
+      border:3px solid transparent;
+      border-radius:16px;
+      padding:16px 18px;
+      font-size:17px;
+      margin-bottom:12px;
+      cursor:pointer;
+      font-family:inherit;
+      color:#1f2937;
+      transition:.15s;
+    }
+    .choice:hover{
+      background:#dbeafe;
+    }
+    .choice.correct{
+      background:#dcfce7;
+      border-color:#16a34a;
+    }
+    .choice.wrong{
+      background:#fee2e2;
+      border-color:#dc2626;
+    }
+    .choice:disabled{
+      cursor:default;
+    }
+    .feedback{
+      font-size:17px;
+      line-height:1.7;
+      padding:16px;
+      border-radius:14px;
+      margin-top:10px;
+      display:none;
+    }
+    .feedback.show{
+      display:block;
+    }
+    .feedback.right-fb{
+      background:#dcfce7;
+      color:#166534;
+    }
+    .feedback.wrong-fb{
+      background:#fee2e2;
+      color:#991b1b;
+    }
+    button.nextBtn{
+      width:100%;
+      margin-top:18px;
+      padding:16px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:19px;
+      font-weight:bold;
+      cursor:pointer;
+      display:none;
+    }
+    button.nextBtn.show{
+      display:block;
+    }
+    .result{
+      text-align:center;
+    }
+    .result .emoji{
+      font-size:64px;
+      margin-bottom:10px;
+    }
+    .result h2{
+      color:#2563eb;
+      font-size:26px;
+      margin-bottom:10px;
+    }
+    .result p{
+      font-size:19px;
+      margin-bottom:18px;
+    }
+    .retry-btn{
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:19px;
+      font-weight:bold;
+      cursor:pointer;
+      margin-bottom:12px;
+    }
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .nav a{
+      flex:1;
+      text-align:center;
+      padding:16px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:bold;
+      font-size:17px;
+      background:#e2e8f0;
+      color:#334155;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">🧭</div>
+    <h1>Maze Walker Quiz</h1>
+    <div class="subtitle">Chapter 04 · Commands (Move Up/Down/Left/Right)</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div id="progressBar"></div>
+  </div>
+
+  <div class="card" id="quizCard"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "What is a 'command' in programming?",
+    choices: [
+      "A whole story with many chapters",
+      "A single instruction that tells the computer to do one thing right now",
+      "A picture drawn on the screen",
+      "A type of wall in a maze"
+    ],
+    correct: 1,
+    explain: "A command is one simple instruction, like 'move up!' - the computer does it right away."
+  },
+  {
+    q: "In Maze Walker, what does pressing the ⬆️ Up button do to the walker's position?",
+    choices: [
+      "Moves it to a random spot",
+      "Changes its row so it moves up",
+      "Changes its column so it moves sideways",
+      "Nothing happens - up doesn't do anything"
+    ],
+    correct: 1,
+    explain: "The Up command changes the row number, moving the walker upward in the maze."
+  },
+  {
+    q: "What happens when a command tries to move the walker into a wall?",
+    choices: [
+      "The wall breaks and disappears",
+      "The walker jumps over the wall",
+      "The command is ignored and the walker stays put",
+      "The whole maze resets"
+    ],
+    correct: 2,
+    explain: "The computer checks for a wall before moving. If there's a wall, the command has no effect - the walker just stays where it is."
+  },
+  {
+    q: "Before moving the walker, what does the computer check first?",
+    choices: [
+      "How many moves have been used so far",
+      "If the new spot is a wall or off the edge of the maze",
+      "What color the maze is",
+      "If the player pressed the button twice"
+    ],
+    correct: 1,
+    explain: "The computer figures out the new spot a command would lead to, then checks if that spot is blocked before actually moving there."
+  },
+  {
+    q: "Why is a command different from the multi-step 'program' from Chapter 03?",
+    choices: [
+      "Commands and programs are exactly the same thing",
+      "A command usually does one job immediately, while a program is a whole sequence of steps",
+      "Commands can only be used in mazes",
+      "Programs never use commands at all"
+    ],
+    correct: 1,
+    explain: "A command is a single, immediate action. A program is a whole list of instructions run in sequence - and it can be made up of many commands!"
+  }
+];
+
+let current = 0;
+let scoreCount = 0;
+const quizCard = document.getElementById("quizCard");
+const progressBar = document.getElementById("progressBar");
+
+function renderQuestion(){
+  const item = questions[current];
+  progressBar.style.width = (current / questions.length * 100) + "%";
+
+  let html = `<div class="q-count">Question ${current + 1} of ${questions.length}</div>`;
+  html += `<div class="q-text">${item.q}</div>`;
+  item.choices.forEach((choice, i) => {
+    html += `<button class="choice" data-i="${i}">${choice}</button>`;
+  });
+  html += `<div class="feedback" id="feedback"></div>`;
+  html += `<button class="nextBtn" id="nextBtn">Next ➡</button>`;
+
+  quizCard.innerHTML = html;
+
+  const buttons = quizCard.querySelectorAll(".choice");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => selectAnswer(btn, item, buttons));
+  });
+}
+
+function selectAnswer(btn, item, buttons){
+  const chosen = parseInt(btn.dataset.i);
+  buttons.forEach(b => b.disabled = true);
+
+  const feedback = document.getElementById("feedback");
+  const nextBtn = document.getElementById("nextBtn");
+
+  if (chosen === item.correct){
+    btn.classList.add("correct");
+    feedback.textContent = "✅ Correct! " + item.explain;
+    feedback.className = "feedback show right-fb";
+    scoreCount++;
+  } else {
+    btn.classList.add("wrong");
+    buttons[item.correct].classList.add("correct");
+    feedback.textContent = "❌ Not quite. " + item.explain;
+    feedback.className = "feedback show wrong-fb";
+  }
+
+  nextBtn.classList.add("show");
+  nextBtn.addEventListener("click", () => {
+    current++;
+    if (current < questions.length){
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  });
+}
+
+function showResult(){
+  progressBar.style.width = "100%";
+  const pct = Math.round((scoreCount / questions.length) * 100);
+  let emoji = "🌱";
+  let msg = "Keep practicing - commands take a little time to click!";
+  if (pct >= 80){
+    emoji = "🏆";
+    msg = "Amazing! You really understand commands!";
+  } else if (pct >= 50){
+    emoji = "🎉";
+    msg = "Nice work! You're getting the hang of it!";
+  }
+
+  quizCard.innerHTML = `
+    <div class="result">
+      <div class="emoji">${emoji}</div>
+      <h2>You scored ${scoreCount} / ${questions.length}</h2>
+      <p>${msg}</p>
+      <button class="retry-btn" onclick="restart()">🔁 Try Again</button>
+      <div class="nav">
+        <a href="04-Maze-Walker.html">⬅ Back to Game</a>
+        <a href="00-Index.html">Index ⬅</a>
+      </div>
+    </div>
+  `;
+}
+
+function restart(){
+  current = 0;
+  scoreCount = 0;
+  renderQuestion();
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

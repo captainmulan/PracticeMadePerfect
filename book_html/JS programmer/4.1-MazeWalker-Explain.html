@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Walker - Explained - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:24px 16px 40px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:28px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .card h2{
+      color:#2563eb;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .card ul{
+      margin:0 0 12px 22px;
+      font-size:18px;
+      line-height:1.8;
+    }
+    .badge{
+      display:inline-block;
+      background:#dbeafe;
+      color:#1e40af;
+      font-weight:bold;
+      padding:4px 12px;
+      border-radius:999px;
+      font-size:14px;
+      margin-bottom:10px;
+    }
+    .code-box{
+      margin:18px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:18px;
+      padding:20px;
+      font-family:Consolas,monospace;
+      font-size:16px;
+      line-height:1.6;
+      overflow:auto;
+      white-space:pre;
+    }
+    .steps{
+      counter-reset: step;
+    }
+    .step{
+      display:flex;
+      gap:14px;
+      margin-bottom:16px;
+      align-items:flex-start;
+    }
+    .step-num{
+      flex-shrink:0;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#3b82f6;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+    }
+    .step p{
+      margin:0;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .demo-wrap{
+      display:flex;
+      justify-content:center;
+      margin-top:12px;
+    }
+    #demoGrid{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      grid-template-rows:repeat(5,1fr);
+      gap:4px;
+      max-width:260px;
+      aspect-ratio:1/1;
+      background:#bfdbfe;
+      padding:6px;
+      border-radius:16px;
+    }
+    .demo-cell{
+      background:#eff6ff;
+      border-radius:6px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+    }
+    .coord-readout{
+      text-align:center;
+      margin-top:10px;
+      font-family:Consolas,monospace;
+      font-size:18px;
+      color:#1e40af;
+      font-weight:bold;
+    }
+    .demo-arrow-grid{
+      display:grid;
+      grid-template-columns:repeat(3,54px);
+      grid-template-rows:repeat(2,54px);
+      gap:8px;
+      justify-content:center;
+      margin-top:14px;
+    }
+    .demo-arrow-btn{
+      width:54px;
+      height:54px;
+      border:none;
+      border-radius:14px;
+      background:#3b82f6;
+      color:#fff;
+      font-size:22px;
+      cursor:pointer;
+    }
+    .demo-arrow-btn:active{
+      transform:scale(.95);
+    }
+    .tip{
+      margin-top:18px;
+      background:#fef9c3;
+      border-left:6px solid #eab308;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:24px;
+    }
+    .nav a{
+      flex:1;
+      text-align:center;
+      padding:16px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:bold;
+      font-size:17px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:#fff;
+    }
+    .nav a.secondary{
+      background:#e2e8f0;
+      color:#334155;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">🧭</div>
+    <h1>Maze Walker - Explained</h1>
+    <div class="subtitle">Chapter 04 · Commands (Move Up/Down/Left/Right)</div>
+  </div>
+
+  <div class="card">
+    <span class="badge">CONCEPT 1</span>
+    <h2>🎮 What is a Command?</h2>
+    <p>
+      A <strong>command</strong> is a single, simple instruction that tells
+      the computer to do one exact thing right now - like "move up!"
+    </p>
+    <p>
+      Unlike a whole program with many steps, a command usually does just
+      <strong>one job</strong>, and the computer does it immediately.
+    </p>
+  </div>
+
+  <div class="card">
+    <span class="badge">CONCEPT 2</span>
+    <h2>📍 Commands Change Coordinates</h2>
+    <p>
+      Every character in a maze has a position made of two numbers: a
+      <strong>row</strong> and a <strong>column</strong>. Each command
+      changes one of those numbers:
+    </p>
+    <ul>
+      <li>⬆️ Up → row goes down by 1</li>
+      <li>⬇️ Down → row goes up by 1</li>
+      <li>⬅️ Left → column goes down by 1</li>
+      <li>➡️ Right → column goes up by 1</li>
+    </ul>
+    <div class="code-box">if (dir === "up")    row = row - 1;
+if (dir === "down")  row = row + 1;
+if (dir === "left")  col = col - 1;
+if (dir === "right") col = col + 1;</div>
+
+    <div class="demo-wrap">
+      <div id="demoGrid"></div>
+    </div>
+    <div class="coord-readout" id="coordReadout">row: 2, col: 2</div>
+    <div class="demo-arrow-grid">
+      <div></div>
+      <button class="demo-arrow-btn" data-dir="up">⬆️</button>
+      <div></div>
+      <button class="demo-arrow-btn" data-dir="left">⬅️</button>
+      <div></div>
+      <button class="demo-arrow-btn" data-dir="right">➡️</button>
+    </div>
+    <div class="demo-arrow-grid" style="grid-template-columns:54px;margin-top:8px;">
+      <button class="demo-arrow-btn" data-dir="down">⬇️</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="badge">CONCEPT 3</span>
+    <h2>🧱 What About Walls?</h2>
+    <p>
+      Before moving, the computer checks: "is there a wall at the new
+      spot?" If yes, the command is <strong>ignored</strong> - the
+      character stays put. If no, the move happens.
+    </p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p>Get the command (up, down, left, or right).</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p>Figure out the new row/column that command would move to.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p>Check if that spot is a wall or off the edge of the maze.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <p>If it's clear, move there. If not, do nothing.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    🌟 <strong>Ready to play?</strong><br><br>
+    Now you know how commands move a character step by step and why
+    walls can block them. Go try <strong>04-Maze-Walker.html</strong>
+    and guide the walker to the flag!
+  </div>
+
+  <div class="nav">
+    <a class="secondary" href="04-Maze-Walker.html">⬅ Back to Game</a>
+    <a href="4.2-MazeWalker-quiz-.html">Take the Quiz ➡</a>
+  </div>
+</div>
+
+<script>
+const GRID_SIZE = 5;
+let pos = { r: 2, c: 2 };
+
+const demoGrid = document.getElementById("demoGrid");
+const coordReadout = document.getElementById("coordReadout");
+const cells = [];
+
+for (let r = 0; r < GRID_SIZE; r++){
+  for (let c = 0; c < GRID_SIZE; c++){
+    const cell = document.createElement("div");
+    cell.className = "demo-cell";
+    demoGrid.appendChild(cell);
+    cells.push({ el: cell, r, c });
+  }
+}
+
+function render(){
+  cells.forEach(cell => {
+    cell.el.textContent = (cell.r === pos.r && cell.c === pos.c) ? "🧑" : "";
+  });
+  coordReadout.textContent = `row: ${pos.r}, col: ${pos.c}`;
+}
+render();
+
+document.querySelectorAll(".demo-arrow-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const dir = btn.dataset.dir;
+    let { r, c } = pos;
+    if (dir === "up") r--;
+    if (dir === "down") r++;
+    if (dir === "left") c--;
+    if (dir === "right") c++;
+    if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE){
+      pos = { r, c };
+      render();
+    }
+  });
+});
+</script>
+</body>
+</html>

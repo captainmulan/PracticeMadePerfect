@@ -1,12 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { CourseShelfItem } from "../utils/courseShelf";
+import { getHomePageData } from "../utils/contentStore";
 
 interface CourseNewspaperCardProps {
   item: CourseShelfItem;
 }
 
 export default function CourseNewspaperCard({ item }: CourseNewspaperCardProps) {
+  const homePageData = getHomePageData();
+  const isEmpty = !item.link || item.placeholder;
   const today = new Date();
   const dateStr = today.toLocaleDateString("en-US", {
     weekday: "long",
@@ -15,11 +18,18 @@ export default function CourseNewspaperCard({ item }: CourseNewspaperCardProps) 
     day: "numeric"
   });
 
+  const coverWidth = isEmpty
+    ? ((homePageData.style?.emptyBook as any)?.coverWidth ?? (item.coverWidth ?? 200))
+    : (item.coverWidth ?? 200);
+  const coverHeight = isEmpty
+    ? ((homePageData.style?.emptyBook as any)?.coverHeight ?? (item.coverHeight ?? 280))
+    : (item.coverHeight ?? 280);
+
   const content = (
     <div
       style={{
-        width: "200px",
-        height: "280px",
+        width: `${coverWidth}px`,
+        height: `${coverHeight}px`,
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
         position: "relative",
         display: "flex",

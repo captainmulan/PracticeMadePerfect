@@ -3136,8 +3136,6 @@ textarea {
 
 .book img,
 .book-cover {
-  width: 100px;
-  height: 150px;
   object-fit: cover;
   border-radius: 2px 6px 6px 2px;
   box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.3), 0 0 3px rgba(0, 0, 0, 0.2);
@@ -3243,8 +3241,8 @@ textarea {
 
   .book img,
   .book-cover {
-    width: 70px;
-    height: 105px;
+    max-width: 70px;
+    max-height: 105px;
   }
   
   .book {
