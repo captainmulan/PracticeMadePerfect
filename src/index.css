@@ -3239,11 +3239,7 @@ textarea {
     align-items: end;
   }
 
-  .book img,
-  .book-cover {
-    max-width: 70px;
-    max-height: 105px;
-  }
+  /* Removed max-width/max-height constraints on .book-cover to allow custom cover dimensions from admin UI */
   
   .book {
     --book-icon-font: calc(var(--book-icon-font, 72px) * 0.7);

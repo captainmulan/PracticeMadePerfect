@@ -150,6 +150,9 @@ export async function getCourses(): Promise<Course[]> {
   console.log("fetching courses");
   const courses = await promisifyRequest(coursesStore.getAll());
   console.log("courses retrieved:", courses);
+  courses.forEach((c: any) => {
+    console.log(`Course ${c.id}: coverWidth=${c.coverWidth}, coverHeight=${c.coverHeight}`);
+  });
   const chapters = await promisifyRequest(chaptersStore.getAll());
   console.log("chapters retrieved:", chapters);
   const steps = await promisifyRequest(stepsStore.getAll());
@@ -171,11 +174,15 @@ export async function getCourses(): Promise<Course[]> {
       })),
   }));
   console.log("assembled courses:", result);
+  result.forEach((c: any) => {
+    console.log(`Assembled course ${c.id}: coverWidth=${c.coverWidth}, coverHeight=${c.coverHeight}`);
+  });
   return result;
 }
 
 export async function saveCourse(course: Course): Promise<void> {
   console.log("saveCourse called for", course.id, course.title);
+  console.log("course.coverWidth:", course.coverWidth, "course.coverHeight:", course.coverHeight);
   const db = await openDb();
 
   // First: Get all existing chapters and steps in one go without await inside the transaction
@@ -305,6 +312,13 @@ async function loadCoursesFromOldSqlite(): Promise<Course[]> {
       const row = coursesStmt.getAsObject() as any;
       try {
         const courseData = JSON.parse(row.raw);
+        // Map cover_width and cover_height from SQLite columns if not present in JSON
+        if (!courseData.coverWidth && row.cover_width) {
+          courseData.coverWidth = row.cover_width;
+        }
+        if (!courseData.coverHeight && row.cover_height) {
+          courseData.coverHeight = row.cover_height;
+        }
         courses.push(courseData);
       } catch (e) {
         console.error("Failed to parse course data:", row.id, e);
