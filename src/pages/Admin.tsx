@@ -19,6 +19,9 @@ import {
   saveTasksToBrowserDb,
   TaskRow,
   upsertTaskInBrowserDb,
+  loadSqlJs,
+  shouldUsePersistedBrowserDb,
+  LOCAL_STORAGE_DB_KEY,
 } from "../utils/sqliteBrowserDb";
 import "./Admin.css";
 import AdminCourses from "./AdminCourses";
@@ -214,6 +217,8 @@ export default function Admin() {
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
   const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "navButtons" | "homeButton" | "chapterLabel" | "label" | "number" | "bookname" | "title" | "description">("background");
   const [isRestoringDb, setIsRestoringDb] = useState(false);
+  const [isImportingDb, setIsImportingDb] = useState(false);
+  const dbFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const defaultData = loadAdminData();
@@ -473,6 +478,57 @@ export default function Admin() {
     }
   }
 
+  function resetDbFileInput() {
+    if (dbFileInputRef.current) {
+      dbFileInputRef.current.value = "";
+    }
+  }
+
+  async function handleImportDb(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const enteredPassword = window.prompt("Enter admin password to import a database file:", "");
+    if (enteredPassword === null) {
+      setMessage("Database import cancelled.");
+      resetDbFileInput();
+      return;
+    }
+
+    if (enteredPassword !== "admin123") {
+      setMessage("Incorrect password. Database import cancelled.");
+      resetDbFileInput();
+      return;
+    }
+
+    setIsImportingDb(true);
+    setMessage("Importing database...");
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      const db = new (await loadSqlJs()).Database(bytes);
+      
+      // Now replace the browser DB with this imported one
+      resetBrowserDbCache();
+      if (shouldUsePersistedBrowserDb()) {
+        try {
+          window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(db.export())));
+        } catch (e) {
+          console.warn("Failed to save imported database to localStorage (quota exceeded)", e);
+        }
+      }
+      
+      setMessage("Database imported. Reloading admin data...");
+      window.location.reload();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setMessage(`Import failed: ${errorMessage}`);
+    } finally {
+      setIsImportingDb(false);
+      resetDbFileInput();
+    }
+  }
+
   function resetFileInput() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -672,6 +728,22 @@ export default function Admin() {
     <div className="page-content page-admin">
       <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
         <div className="admin-search-actions-end">
+          <button 
+            type="button" 
+            className="footer-button" 
+            onClick={() => dbFileInputRef.current?.click()} 
+            disabled={isImportingDb}
+            style={{ marginRight: "8px" }}
+          >
+            {isImportingDb ? "Importing..." : "Import DB"}
+          </button>
+          <input
+            ref={dbFileInputRef}
+            type="file"
+            accept=".db"
+            onChange={handleImportDb}
+            style={{ display: "none" }}
+          />
           <button type="button" className="footer-button" onClick={handleRestoreBundledDb} disabled={isRestoringDb}>
             {isRestoringDb ? "Restoring..." : "Restore bundled database"}
           </button>

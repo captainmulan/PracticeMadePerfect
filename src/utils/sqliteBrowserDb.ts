@@ -5,7 +5,7 @@ import { categoryIndexByKey } from "../data/tasks";
 
 const DB_FILE_URL = "/data/tasks.db";
 const DEPLOY_DB_FILE_URL = "/data/tasks.db";
-const LOCAL_STORAGE_DB_KEY = "pmp-sqlite-db";
+export const LOCAL_STORAGE_DB_KEY = "pmp-sqlite-db";
 
 export interface TaskRow {
   id: string;
@@ -20,7 +20,7 @@ export interface TaskRow {
 
 let cachedDb: Database | null = null;
 
-async function loadSqlJs(): Promise<ReturnType<typeof initSqlJs>> {
+export async function loadSqlJs(): Promise<ReturnType<typeof initSqlJs>> {
   return initSqlJs({ locateFile: () => wasmURL });
 }
 
@@ -62,7 +62,7 @@ function isLikelyTruncatedCache(cachedCount: number, bundledCount: number): bool
   return cachedCount <= 1 || cachedCount < bundledCount * 0.25;
 }
 
-function shouldUsePersistedBrowserDb(): boolean {
+export function shouldUsePersistedBrowserDb(): boolean {
   return typeof window !== "undefined" && !import.meta.env.PROD;
 }
 
@@ -90,7 +90,11 @@ async function fetchDatabaseFile(): Promise<Uint8Array> {
   }
 
   const bundledBytes = await fetchBundledDatabaseBytes();
-  window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
+  try {
+    window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bundledBytes)));
+  } catch (e) {
+    console.warn("Failed to save database to localStorage (quota exceeded)", e);
+  }
   return bundledBytes;
 }
 
@@ -287,7 +291,15 @@ export function saveTasksToBrowserDb(db: Database, tasks: TaskRow[]) {
 export function persistBrowserDbToLocalStorage(db: Database) {
   const bytes = db.export();
   if (shouldUsePersistedBrowserDb()) {
-    window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
+    try {
+      window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
+    } catch (e) {
+      console.warn("Failed to save database to localStorage (quota exceeded)", e);
+      // If we hit quota, try to remove old entry to free space
+      try {
+        window.localStorage.removeItem(LOCAL_STORAGE_DB_KEY);
+      } catch {}
+    }
   }
   cachedDb = null;
 }
@@ -306,7 +318,11 @@ export async function restoreBundledBrowserDb(): Promise<void> {
   resetBrowserDbCache();
   const bytes = await fetchBundledDatabaseBytes();
   if (shouldUsePersistedBrowserDb()) {
-    window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
+    try {
+      window.localStorage.setItem(LOCAL_STORAGE_DB_KEY, JSON.stringify(Array.from(bytes)));
+    } catch (e) {
+      console.warn("Failed to save bundled database to localStorage (quota exceeded)", e);
+    }
   }
 }
 
