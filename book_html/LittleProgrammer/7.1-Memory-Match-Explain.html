@@ -181,6 +181,15 @@ background:linear-gradient(135deg,#3b82f6,#06b6d4);
 color:white;
 cursor:pointer;
 }
+    .nav-hint{
+      margin-top:16px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
 button:active{
 transform:scale(.98);
 }
@@ -193,6 +202,16 @@ font-size:17px;
 line-height:1.7;
 margin-top:18px;
 }
+
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
 </style>
 </head>
 <body>
@@ -295,6 +314,12 @@ two cards, until you find them all!
 two paths. The computer always follows whichever path matches
 what's really true!
 </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>
@@ -385,5 +410,6 @@ function resetGame(){
 
 buildBoard();
 </script>
+
 </body>
 </html>

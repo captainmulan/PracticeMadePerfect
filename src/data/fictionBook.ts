@@ -25,6 +25,8 @@ export const FICTION_BOOK: Course = {
   category: "Fiction",
   pIndex: 2,
   artifactType: "book",
+  coverWidth: 100,
+  coverHeight: 160,
   chapters: [
     {
       id: `${FICTION_BOOK_ID}-ch-0`,

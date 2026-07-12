@@ -12,18 +12,18 @@
     }
     body{
       font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
-      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      background:linear-gradient(180deg,#e0f2fe 0%,#dcfce7 100%);
       color:#1f2937;
       min-height:100vh;
     }
     .container{
       max-width:620px;
       margin:auto;
-      padding:24px 16px 40px;
+      padding:12px 12px 20px;
     }
     .header{
       text-align:center;
-      margin-bottom:28px;
+      margin-bottom:12px;
     }
     .logo{
       font-size:54px;
@@ -36,64 +36,66 @@
     }
     .subtitle{
       color:#64748b;
-      font-size:18px;
+      font-size:14px;
     }
     .card{
       background:#fff;
       border-radius:24px;
-      padding:22px;
-      margin-bottom:18px;
+      padding:14px;
+      margin-bottom:12px;
       box-shadow:0 6px 20px rgba(0,0,0,.08);
     }
     .card h2{
       color:#2563eb;
-      margin-bottom:14px;
-      font-size:22px;
+      margin-bottom:8px;
+      font-size:20px;
     }
     .card p{
-      font-size:18px;
-      line-height:1.8;
-      margin-bottom:12px;
+      font-size:16px;
+      line-height:1.6;
+      margin-bottom:8px;
     }
     .code-box{
       margin:18px 0;
       background:#111827;
       color:#22c55e;
       border-radius:18px;
-      padding:20px;
       font-family:Consolas,monospace;
-      font-size:16px;
-      line-height:1.6;
-      overflow:auto;
-      white-space:pre;
+  font-size:13px;
+  line-height:1.35;
+  padding:14px;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-x:hidden;
     }
     .stats{
-      display:flex;
-      justify-content:space-around;
-      margin-bottom:16px;
+  display:flex;
+  justify-content:space-around;
+  margin-top:4px;
+  margin-bottom:8px;
     }
     .stat{
       text-align:center;
     }
     .stat-label{
-      font-size:14px;
+      font-size:12px;
       color:#64748b;
       font-weight:bold;
     }
     .stat-value{
-      font-size:32px;
+      font-size:28px;
       font-weight:bold;
       color:#2563eb;
     }
     #maze{
       display:grid;
-      gap:4px;
-      max-width:320px;
+      gap:3px;
+      max-width:280px;
       aspect-ratio:1/1;
       margin:0 auto;
       background:#bfdbfe;
-      padding:6px;
-      border-radius:16px;
+      padding:4px;
+      border-radius:12px;
     }
     .cell{
       background:#eff6ff;
@@ -104,24 +106,23 @@
       font-size:24px;
     }
     .cell.wall{
-      background:#78350f;
+      background:#eff6ff;
     }
     .arrow-grid{
-      display:grid;
-      grid-template-columns:repeat(3,60px);
-      grid-template-rows:repeat(2,60px);
-      gap:10px;
-      justify-content:center;
-      margin-top:18px;
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  margin-top:8px;
+  flex-wrap:nowrap;
     }
     .arrow-btn{
-      width:60px;
-      height:60px;
+      width:50px;
+      height:50px;
       border:none;
-      border-radius:16px;
+      border-radius:12px;
       background:#3b82f6;
       color:#fff;
-      font-size:26px;
+      font-size:22px;
       cursor:pointer;
       transition:.15s;
     }
@@ -130,39 +131,36 @@
     }
     .controls-hint{
       text-align:center;
-      font-size:14px;
+      font-size:12px;
       color:#64748b;
-      margin-top:10px;
+      margin-top:6px;
     }
-    .output{
-      margin-top:20px;
+    .playguide{
+      margin-top:8px;
       background:#ecfeff;
       border:3px dashed #06b6d4;
       border-radius:18px;
-      padding:18px;
+      padding:12px;
       text-align:center;
     }
-    .output-title{
+    .playguide-title{
       color:#0f766e;
       font-weight:bold;
       margin-bottom:10px;
       font-size:18px;
     }
     #msg{
-      font-size:20px;
-      font-weight:bold;
-      color:#0f766e;
-      min-height:28px;
+  font-size:15px;
     }
     button.reset-btn{
       width:100%;
-      margin-top:18px;
-      padding:18px;
+      margin-top:10px;
+      padding:12px;
       border:none;
-      border-radius:18px;
+      border-radius:14px;
       background:linear-gradient(135deg,#3b82f6,#06b6d4);
       color:white;
-      font-size:22px;
+      font-size:18px;
       font-weight:bold;
       cursor:pointer;
       transition:.2s;
@@ -171,28 +169,28 @@
       transform:scale(.98);
     }
     .tip{
-      margin-top:18px;
+      margin-top:10px;
       background:#fef9c3;
-      border-left:6px solid #eab308;
-      padding:16px;
-      border-radius:12px;
-      font-size:17px;
-      line-height:1.7;
+      border-left:5px solid #eab308;
+      padding:12px;
+      border-radius:10px;
+      font-size:15px;
+      line-height:1.5;
     }
     .nav{
       display:flex;
       justify-content:space-between;
-      gap:12px;
-      margin-top:24px;
+      gap:10px;
+      margin-top:16px;
     }
     .nav a{
       flex:1;
       text-align:center;
-      padding:16px;
-      border-radius:16px;
+      padding:12px;
+      border-radius:12px;
       text-decoration:none;
       font-weight:bold;
-      font-size:17px;
+      font-size:15px;
       background:linear-gradient(135deg,#3b82f6,#06b6d4);
       color:#fff;
     }
@@ -200,25 +198,44 @@
       background:#e2e8f0;
       color:#334155;
     }
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
 .chapter-title{
-  font-size:clamp(18px,5vw,28px);
+  font-size:clamp(16px,4vw,22px);
   font-weight:bold;
   color:#2563eb;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   text-align:center;
-  margin-bottom:12px;
+  margin-bottom:8px;
 }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <div class="chapter-title">🧭 Chapter 04 - Maze Walker</div>
+    <h3>Chapter 04 - 🧭 Maze Walker</h3>
+    <div class="chapter-title">Commands (Move Up/Down/Left/Right)</div>
   </div>
 
-  <div class="card">    
+  <div class="card">
+
+    <div class="playguide">
+      <div class="playguide-title">Play Guide</div>
+      <div class="subtitle">Press arrow buttons to move 🧑 to flag!</div>
+      <div id="msg"></div>
+    </div>
+    
+<div> </div>
+
     <div class="stats">
       <div class="stat">
         <div class="stat-label">MOVES</div>
@@ -233,21 +250,10 @@
     <div id="maze"></div>
 
     <div class="arrow-grid">
-      <div></div>
       <button class="arrow-btn" data-dir="up">⬆️</button>
-      <div></div>
       <button class="arrow-btn" data-dir="left">⬅️</button>
-      <div></div>
       <button class="arrow-btn" data-dir="right">➡️</button>
-    </div>
-    <div class="arrow-grid" style="grid-template-columns:60px;margin-top:10px;">
       <button class="arrow-btn" data-dir="down">⬇️</button>
-    </div>
-    <div class="controls-hint">Tap the arrows, or use your keyboard's arrow keys!</div>
-
-    <div class="output">
-      <div class="output-title">Command Log</div>
-      <div id="msg">🧑 Send a command to move!</div>
     </div>
 
     <button class="reset-btn" id="resetBtn">🔁 Reset Maze</button>
@@ -268,6 +274,11 @@
     computer: "move up," "move down," "move left," or "move right." The
     computer obeys instantly - unless a wall is in the way!
   </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
 
 </div>
 
@@ -321,6 +332,9 @@ for (let r = 0; r < ROWS; r++){
 function render(){
   cells.forEach(cell => {
     cell.el.textContent = "";
+    if (walls.has(cell.r + "," + cell.c)){
+      cell.el.textContent = "🧱";
+    }
     if (cell.r === goal.r && cell.c === goal.c && !(player.r === goal.r && player.c === goal.c)){
       cell.el.textContent = "🚩";
     }
@@ -382,5 +396,6 @@ resetBtn.addEventListener("click", () => {
   render();
 });
 </script>
+
 </body>
 </html>

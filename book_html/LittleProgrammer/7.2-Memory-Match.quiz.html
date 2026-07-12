@@ -172,6 +172,15 @@ background:linear-gradient(135deg,#3b82f6,#06b6d4);
 color:white;
 cursor:pointer;
 }
+    .nav-hint{
+      margin-top:16px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
 button:active{
 transform:scale(.98);
 }
@@ -188,6 +197,16 @@ font-size:17px;
 line-height:1.7;
 margin-top:18px;
 }
+
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
 </style>
 </head>
 <body>
@@ -266,6 +285,12 @@ margin-top:18px;
     <code>if</code> checks something and does one thing when it's true.
     <code>else</code> is the backup plan for when it's false!
   </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>
@@ -344,5 +369,6 @@ function resetQuiz(){
   document.getElementById('scoreMsg').textContent = "Answer all 3 questions above!";
 }
 </script>
+
 </body>
 </html>

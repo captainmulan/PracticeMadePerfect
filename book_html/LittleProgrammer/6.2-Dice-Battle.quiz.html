@@ -174,6 +174,16 @@ background:linear-gradient(135deg,#3b82f6,#06b6d4);
 color:white;
 cursor:pointer;
 }
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
+
 button:active{
 transform:scale(.98);
 }
@@ -269,6 +279,12 @@ margin-top:18px;
     Variables hold changing information, like a score. Random numbers
     let the computer make surprising choices, like a dice roll!
   </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>
@@ -347,5 +363,6 @@ function resetQuiz(){
   document.getElementById('scoreMsg').textContent = "Answer all 3 questions above!";
 }
 </script>
+
 </body>
 </html>

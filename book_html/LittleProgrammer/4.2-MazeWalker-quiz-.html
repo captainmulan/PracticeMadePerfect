@@ -162,6 +162,16 @@
       cursor:pointer;
       margin-bottom:12px;
     }
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
+
     .nav{
       display:flex;
       justify-content:space-between;
@@ -193,6 +203,12 @@
   </div>
 
   <div class="card" id="quizCard"></div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>
@@ -340,5 +356,6 @@ function restart(){
 
 renderQuestion();
 </script>
+
 </body>
 </html>

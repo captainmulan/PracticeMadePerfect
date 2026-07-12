@@ -193,6 +193,16 @@ font-size:17px;
 line-height:1.7;
 margin-top:18px;
 }
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
+
 </style>
 </head>
 <body>
@@ -296,6 +306,12 @@ extra time. The game keeps growing!
 A loop repeats the same steps without needing new code for every
 color. That's what lets Simon play a sequence of any length!
 </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>
@@ -379,5 +395,6 @@ pads.forEach(pad => {
 
 startBtn.addEventListener("click", startGame);
 </script>
+
 </body>
 </html>

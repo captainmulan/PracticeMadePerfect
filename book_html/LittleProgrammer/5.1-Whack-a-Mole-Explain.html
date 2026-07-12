@@ -181,6 +181,15 @@ font-size:17px;
 line-height:1.7;
 margin-top:18px;
 }
+    .nav-hint{
+      margin-top:16px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
 </style>
 </head>
 <body>
@@ -278,6 +287,12 @@ Click events don't run in order like a list of steps - they run
 <i>whenever</i> the click happens. That's what makes them different
 from a program like Maze Walker!
 </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>
@@ -349,5 +364,6 @@ function endGame(){
   startBtn.disabled = false;
 }
 </script>
+
 </body>
 </html>

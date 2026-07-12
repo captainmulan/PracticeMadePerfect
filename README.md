@@ -110,6 +110,52 @@ Project context:
 - This was needed because simple inline injection did not execute lesson JavaScript reliably in the workspace view.
 - When changing a lesson, keep the public version and the book copy aligned so the experience stays consistent.
 
+## Mobile-First HTML Lesson Design
+
+HTML lesson files are designed with mobile-first principles to ensure optimal viewing across all devices:
+
+**Responsive Layout:**
+- Use `viewport` meta tag: `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+- Container max-width constraints (typically 600-620px) with auto margins for centering
+- Flexible padding that adjusts based on screen size
+- Use `clamp()` for responsive font sizes that scale smoothly
+
+**Touch-Friendly Design:**
+- Button sizes minimum 44x44px for easy tapping
+- Generous spacing between interactive elements
+- Touch targets with adequate padding and visual feedback
+- Support both tap and keyboard interactions
+
+**Compact Content:**
+- Reduced padding and margins on mobile to minimize scrolling
+- Smaller font sizes and spacing on smaller screens
+- Condensed layouts that fit within viewport height when possible
+- Prioritize essential content visibility above the fold
+
+**CSS Techniques:**
+- Use relative units (%, rem, vw) instead of fixed pixels where appropriate
+- Flexbox and grid for adaptive layouts
+- Media queries for device-specific adjustments
+- `aspect-ratio` for maintaining proportions across screen sizes
+
+**Example Mobile Optimization:**
+```css
+.container {
+  max-width: 620px;
+  margin: auto;
+  padding: 12px; /* Reduced from 24px for mobile */
+}
+
+.chapter-title {
+  font-size: clamp(16px, 4vw, 22px); /* Responsive font size */
+}
+
+.button {
+  min-width: 50px; /* Touch-friendly minimum */
+  padding: 12px;
+}
+```
+
 ## Admin Features
 
 ### Home Page Customization
@@ -127,3 +173,16 @@ Project context:
 - **Restore Bundled Database:** One-click recovery to default courses (requires `admin123` password)
 - Automatically re-seeds missing built-in books
 - Useful after accidental deletions or to start fresh
+
+## Project History
+
+- Started as a SQLite-based offline learning platform.
+- Migrated to IndexedDB for a fully browser-based database.
+- Added automatic one-time migration from legacy SQLite to IndexedDB.
+- Implemented JSON export/import (`indexeddb-export.json`) for backup and deployment.
+- Firebase deployment now automatically syncs the latest exported database.
+- Built a CMS for creating books, chapters, quizzes, HTML pages and interactive courses.
+- Added Presentation Site for learners and separate Admin UI for content management.
+- Introduced bookshelf UI with customizable book covers and responsive mobile layout.
+- Added HTML-based interactive books, including **Little Programmer**, **JS Programmer**, **IT Newspaper**, Interview books, Fiction and Myanmar learning books.
+- Continually improved mobile UX, offline support, deployment workflow and content authoring.

@@ -12,18 +12,18 @@
     }
     body{
       font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
-      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      background:linear-gradient(180deg,#e0f2fe 0%,#dcfce7 100%);
       color:#1f2937;
       min-height:100vh;
     }
     .container{
       max-width:620px;
       margin:auto;
-      padding:24px 16px 40px;
+      padding:12px 12px 20px;
     }
     .header{
       text-align:center;
-      margin-bottom:28px;
+      margin-bottom:8px;
     }
     .logo{
       font-size:54px;
@@ -41,47 +41,47 @@
     .card{
       background:#fff;
       border-radius:24px;
-      padding:22px;
-      margin-bottom:18px;
+      padding:14px;
+      margin-bottom:12px;
       box-shadow:0 6px 20px rgba(0,0,0,.08);
     }
     .card h2{
       color:#2563eb;
-      margin-bottom:14px;
-      font-size:22px;
+      margin-bottom:8px;
+      font-size:20px;
     }
     .card p{
-      font-size:18px;
-      line-height:1.8;
-      margin-bottom:12px;
+      font-size:16px;
+      line-height:1.6;
+      margin-bottom:8px;
     }
     .code-box{
-      margin:18px 0;
+      margin:12px 0;
       background:#111827;
       color:#22c55e;
-      border-radius:18px;
-      padding:20px;
+      border-radius:14px;
+      padding:14px;
       font-family:Consolas,monospace;
-      font-size:17px;
-      line-height:1.6;
+      font-size:14px;
+      line-height:1.5;
       overflow:auto;
       white-space:pre;
     }
     .stats{
       display:flex;
       justify-content:space-around;
-      margin-bottom:20px;
+      margin-bottom:8px;
     }
     .stat{
       text-align:center;
     }
     .stat-label{
-      font-size:14px;
+      font-size:12px;
       color:#64748b;
       font-weight:bold;
     }
     .stat-value{
-      font-size:32px;
+      font-size:28px;
       font-weight:bold;
       color:#2563eb;
     }
@@ -89,8 +89,8 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:24px;
-      margin-bottom:16px;
+      gap:16px;
+      margin-bottom:10px;
     }
     .player{
       text-align:center;
@@ -102,16 +102,16 @@
       color:#334155;
     }
     .die{
-      width:90px;
-      height:90px;
+      width:70px;
+      height:70px;
       background:#fff;
-      border:4px solid #334155;
-      border-radius:18px;
+      border:3px solid #334155;
+      border-radius:14px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:52px;
-      box-shadow:0 6px 14px rgba(0,0,0,.15);
+      font-size:40px;
+      box-shadow:0 4px 10px rgba(0,0,0,.15);
     }
     .vs{
       font-size:26px;
@@ -126,35 +126,40 @@
       50%{transform:rotate(8deg);}
       100%{transform:rotate(-8deg);}
     }
-    .output{
+    .playguide{
       margin-top:8px;
       background:#ecfeff;
       border:3px dashed #06b6d4;
-      border-radius:18px;
-      padding:18px;
+      border-radius:14px;
+      padding:10px;
       text-align:center;
     }
-    .output-title{
+    .playguide-title{
       color:#0f766e;
       font-weight:bold;
-      margin-bottom:10px;
-      font-size:18px;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+    .playguide-desc{
+      font-size:12px;
+      color:#64748b;
+      margin-bottom:4px;
     }
     #msg{
-      font-size:24px;
+      font-size:14px;
       font-weight:bold;
       color:#16a34a;
-      min-height:32px;
+      min-height:20px;
     }
     button{
       width:100%;
-      margin-top:18px;
-      padding:18px;
+      margin-top:10px;
+      padding:12px;
       border:none;
-      border-radius:18px;
+      border-radius:14px;
       background:linear-gradient(135deg,#3b82f6,#06b6d4);
       color:white;
-      font-size:22px;
+      font-size:18px;
       font-weight:bold;
       cursor:pointer;
       transition:.2s;
@@ -167,14 +172,34 @@
       cursor:not-allowed;
     }
     .tip{
-      margin-top:18px;
+      margin-top:10px;
       background:#fef9c3;
-      border-left:6px solid #eab308;
-      padding:16px;
-      border-radius:12px;
-      font-size:17px;
-      line-height:1.7;
+      border-left:5px solid #eab308;
+      padding:12px;
+      border-radius:10px;
+      font-size:15px;
+      line-height:1.5;
     }
+.chapter-title{
+  font-size:clamp(16px,4vw,22px);
+  font-weight:bold;
+  color:#2563eb;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:center;
+  margin-bottom:8px;
+}
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
+
   </style>
 </head>
 <body>
@@ -186,6 +211,12 @@
   </div>
 
   <div class="card">
+    <div class="playguide">
+      <div class="playguide-title">Play Guide</div>
+      <div class="playguide-desc">Roll higher than the computer to win!</div>
+      <div id="msg">Press roll the dice to begin!</div>
+    </div>
+
     <div class="stats">
       <div class="stat">
         <div class="stat-label">YOU</div>
@@ -211,11 +242,6 @@
         <div class="player-label">💻 Computer</div>
         <div class="die" id="computerDie">🎲</div>
       </div>
-    </div>
-
-    <div class="output">
-      <div class="output-title">Battle Log</div>
-      <div id="msg">Roll the dice to begin!</div>
     </div>
 
     <button id="rollBtn" onclick="rollDice()">🎲 Roll the Dice!</button>
@@ -248,6 +274,12 @@ if (playerRoll > computerRoll) playerScore++;</div>
     0 and 1. Multiplying and rounding it turns it into a random whole
     number, like a dice roll from 1 to 6!
   </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>

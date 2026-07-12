@@ -52,22 +52,8 @@
       border-radius:22px;
       padding:16px 18px;
       box-shadow:0 6px 20px rgba(0,0,0,.08);
-      text-decoration:none;
       color:inherit;
-      transition:.15s;
-      border:3px solid transparent;
-    }
-    .chapter-card:hover{
-      transform:translateY(-2px);
-      border-color:#93c5fd;
-    }
-    .chapter-card.{
-      opacity:.55;
       cursor:default;
-    }
-    .chapter-card.:hover{
-      transform:none;
-      border-color:transparent;
     }
     .num-badge{
       flex-shrink:0;
@@ -124,6 +110,15 @@
       font-size:17px;
       line-height:1.7;
       text-align:center;
+    }
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
     }
   </style>
 </head>
@@ -240,6 +235,12 @@
     🌟 Every chapter teaches one new programming idea through a fun mini-game.
     Start with Chapter 01 and work your way down!
   </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 </body>
 </html>

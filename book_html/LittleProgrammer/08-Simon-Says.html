@@ -12,18 +12,18 @@
     }
     body{
       font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
-      background:linear-gradient(180deg,#e0f2fe 0%,#fef3c7 100%);
+      background:linear-gradient(180deg,#e0f2fe 0%,#dcfce7 100%);
       color:#1f2937;
       min-height:100vh;
     }
     .container{
       max-width:620px;
       margin:auto;
-      padding:24px 16px 40px;
+      padding:12px 12px 20px;
     }
     .header{
       text-align:center;
-      margin-bottom:28px;
+      margin-bottom:8px;
     }
     .logo{
       font-size:54px;
@@ -41,47 +41,47 @@
     .card{
       background:#fff;
       border-radius:24px;
-      padding:22px;
-      margin-bottom:18px;
+      padding:14px;
+      margin-bottom:12px;
       box-shadow:0 6px 20px rgba(0,0,0,.08);
     }
     .card h2{
       color:#2563eb;
-      margin-bottom:14px;
-      font-size:22px;
+      margin-bottom:8px;
+      font-size:20px;
     }
     .card p{
-      font-size:18px;
-      line-height:1.8;
-      margin-bottom:12px;
+      font-size:16px;
+      line-height:1.6;
+      margin-bottom:8px;
     }
     .code-box{
-      margin:18px 0;
+      margin:12px 0;
       background:#111827;
       color:#22c55e;
-      border-radius:18px;
-      padding:20px;
+      border-radius:14px;
+      padding:14px;
       font-family:Consolas,monospace;
-      font-size:17px;
-      line-height:1.6;
+      font-size:14px;
+      line-height:1.5;
       overflow:auto;
       white-space:pre;
     }
     .stats{
       display:flex;
       justify-content:space-around;
-      margin-bottom:20px;
+      margin-bottom:8px;
     }
     .stat{
       text-align:center;
     }
     .stat-label{
-      font-size:14px;
+      font-size:12px;
       color:#64748b;
       font-weight:bold;
     }
     .stat-value{
-      font-size:32px;
+      font-size:28px;
       font-weight:bold;
       color:#2563eb;
     }
@@ -89,13 +89,14 @@
       display:grid;
       grid-template-columns:1fr 1fr;
       grid-template-rows:1fr 1fr;
-      gap:10px;
-      width:260px;
-      height:260px;
-      margin:0 auto;
+      gap:8px;
+      width:200px;
+      height:200px;
+      margin:0 auto 10px;
       border-radius:50%;
       overflow:hidden;
-      box-shadow:0 8px 20px rgba(0,0,0,.2);
+      box-shadow:0 6px 16px rgba(0,0,0,.2);
+      position:relative;
     }
     .pad{
       cursor:pointer;
@@ -123,21 +124,21 @@
       border-radius:0 0 100% 0;
     }
     .center-btn{
-      display:flex;
-      justify-content:center;
-      margin-top:-140px;
-      position:relative;
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%);
       pointer-events:none;
     }
     .center-circle{
-      width:80px;
-      height:80px;
+      width:60px;
+      height:60px;
       background:#fff;
       border-radius:50%;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:14px;
+      font-size:11px;
       font-weight:bold;
       color:#334155;
       box-shadow:0 4px 10px rgba(0,0,0,.2);
@@ -145,35 +146,40 @@
       cursor:pointer;
       text-align:center;
     }
-    .output{
-      margin-top:20px;
+    .playguide{
+      margin-top:8px;
       background:#ecfeff;
       border:3px dashed #06b6d4;
-      border-radius:18px;
-      padding:18px;
+      border-radius:14px;
+      padding:10px;
       text-align:center;
     }
-    .output-title{
+    .playguide-title{
       color:#0f766e;
       font-weight:bold;
-      margin-bottom:10px;
-      font-size:18px;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+    .playguide-desc{
+      font-size:12px;
+      color:#64748b;
+      margin-bottom:4px;
     }
     #msg{
-      font-size:22px;
+      font-size:14px;
       font-weight:bold;
       color:#16a34a;
-      min-height:30px;
+      min-height:20px;
     }
     button.action{
       width:100%;
-      margin-top:18px;
-      padding:18px;
+      margin-top:10px;
+      padding:12px;
       border:none;
-      border-radius:18px;
+      border-radius:14px;
       background:linear-gradient(135deg,#3b82f6,#06b6d4);
       color:white;
-      font-size:22px;
+      font-size:18px;
       font-weight:bold;
       cursor:pointer;
       transition:.2s;
@@ -182,13 +188,32 @@
       transform:scale(.98);
     }
     .tip{
-      margin-top:18px;
+      margin-top:10px;
       background:#fef9c3;
-      border-left:6px solid #eab308;
-      padding:16px;
-      border-radius:12px;
-      font-size:17px;
-      line-height:1.7;
+      border-left:5px solid #eab308;
+      padding:12px;
+      border-radius:10px;
+      font-size:15px;
+      line-height:1.5;
+    }
+.chapter-title{
+  font-size:clamp(16px,4vw,22px);
+  font-weight:bold;
+  color:#2563eb;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:center;
+  margin-bottom:8px;
+}
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
     }
   </style>
 </head>
@@ -201,6 +226,12 @@
   </div> 
 
   <div class="card">
+    <div class="playguide">
+      <div class="playguide-title">Play Guide</div>
+      <div class="playguide-desc">Watch the sequence, then repeat it!</div>
+      <div id="msg">Press Start to begin!</div>
+    </div>
+
     <div class="stats">
       <div class="stat">
         <div class="stat-label">ROUND</div>
@@ -217,14 +248,9 @@
       <div class="pad pad-red" data-color="red"></div>
       <div class="pad pad-yellow" data-color="yellow"></div>
       <div class="pad pad-blue" data-color="blue"></div>
-    </div>
-    <div class="center-btn">
-      <div class="center-circle" id="startBtn">START</div>
-    </div>
-
-    <div class="output">
-      <div class="output-title">Game Status</div>
-      <div id="msg">Press Start to begin!</div>
+      <div class="center-btn">
+        <div class="center-circle" id="startBtn">START</div>
+      </div>
     </div>
   </div>
 
@@ -253,6 +279,12 @@
     character, or checking every item in a list all use loops so
     programmers don't have to repeat themselves.
   </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
 </div>
 
 <script>
@@ -342,5 +374,6 @@ pads.forEach(pad => {
 
 startBtn.addEventListener("click", startGame);
 </script>
+
 </body>
 </html>
