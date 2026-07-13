@@ -9,7 +9,7 @@ import CourseBookCard from "../components/CourseBookCard";
 
 export default function Home() {
   const [heroCollapsed, setHeroCollapsed] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<"Popular" | "Search" | "All">("Popular");
+  const [selectedTab, setSelectedTab] = useState<"Selection" | "Search" | "All">("Selection");
   const [selectedAllSubTab, setSelectedAllSubTab] = useState<"Kid" | "IT" | "Fiction" | "Language">("IT");
   const [searchQuery, setSearchQuery] = useState("");
   const data = getHomePageData();
@@ -80,20 +80,6 @@ export default function Home() {
                 >
                   Start reading
                 </Link>
-                <Link 
-                  to="/practice/react" 
-                  className="hero-secondary"
-                  style={{
-                    background: style?.buttons?.useSecondaryBackgroundColorGradient 
-                      ? `linear-gradient(180deg, ${style.buttons.secondaryBackgroundColorGradientStart} 0%, ${style.buttons.secondaryBackgroundColorGradientEnd} 100%)` 
-                      : (style?.buttons?.secondaryBackgroundColor ?? "#e2e8f0"),
-                    color: style?.buttons?.secondaryColor ?? "#334155",
-                    fontFamily: style?.buttons?.secondaryFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-                    fontWeight: style?.buttons?.secondaryFontWeight ?? "600",
-                  }}
-                >
-                  Browse books
-                </Link>
               </div>
             </>
           )}
@@ -111,12 +97,12 @@ export default function Home() {
       >
         <div className="container">
           <nav className="home-tabs">
-            {["Popular", "Search", "All"].map((tabTitle) => (
+            {["Selection", "Search", "All"].map((tabTitle) => (
               <button
                 key={tabTitle}
                 type="button"
                 className={`home-tab-button ${selectedTab === tabTitle ? "active" : ""}`}
-                onClick={() => setSelectedTab(tabTitle as "Popular" | "Search" | "All")}
+                onClick={() => setSelectedTab(tabTitle as "Selection" | "Search" | "All")}
               >
                 {tabTitle}
               </button>
@@ -167,9 +153,9 @@ export default function Home() {
           )}
 
           {!coursesLoaded ? (
-            <div className="home-course-loading">Loading courses...</div>
+            <div className="home-course-loading">Loading books...</div>
           ) : courses.length === 0 ? (
-            <div className="home-course-loading">No courses yet. Create one in Admin.</div>
+            <div className="home-course-loading">No books yet. Create one in Admin.</div>
           ) : selectedTab === "Search" ? (
             selectedRow && selectedRow.items.length > 0 ? (
               <HomeCourseShelves row={selectedRow} />

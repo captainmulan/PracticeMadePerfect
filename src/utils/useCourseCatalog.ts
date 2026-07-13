@@ -11,14 +11,14 @@ export function useCourseCatalog() {
     let active = true;
     (async () => {
       try {
-        console.log("loading courses");
+        console.log("loading books");
         const data = await loadCoursesFromBrowserDb();
-        console.log("loaded courses:", data);
+        console.log("loaded books:", data);
         if (!active) return;
         setCourses(data);
         setLoaded(true);
       } catch (err) {
-        console.error("Error loading courses:", err);
+        console.error("Error loading books:", err);
         if (!active) return;
         setError(String(err));
         setLoaded(true);

@@ -426,7 +426,7 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     .filter((course) => typeof course.pIndex === "number" && (course.pIndex ?? 0) > 0)
     .slice()
     .sort((a, b) => (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER))
-    .map((course) => createShelfItemFromCourse(course, "Popular"));
+    .map((course) => createShelfItemFromCourse(course, "Selection"));
 
   const kidItems = courses
     .filter((course) => course.category === "Kid")
@@ -437,7 +437,7 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     .map((course) => createShelfItemFromCourse(course, "Fiction"));
 
   return [
-    buildShelfRow("Popular", popularItems),
+    buildShelfRow("Selection", popularItems),
     { title: "Search", items: [] },
     buildShelfRow("Kid", kidItems),
     buildShelfRow("Fiction", fictionItems),

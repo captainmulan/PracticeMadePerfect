@@ -19,11 +19,11 @@ export default function CourseNewspaperCard({ item }: CourseNewspaperCardProps) 
   });
 
   const coverWidth = isEmpty
-    ? ((homePageData.style?.emptyBook as any)?.coverWidth ?? (item.coverWidth ?? 200))
-    : (item.coverWidth ?? 200);
+    ? ((homePageData.style?.emptyBook as any)?.coverWidth ?? (item.coverWidth ?? 100))
+    : (item.coverWidth ?? 100);
   const coverHeight = isEmpty
-    ? ((homePageData.style?.emptyBook as any)?.coverHeight ?? (item.coverHeight ?? 280))
-    : (item.coverHeight ?? 280);
+    ? ((homePageData.style?.emptyBook as any)?.coverHeight ?? (item.coverHeight ?? 160))
+    : (item.coverHeight ?? 160);
 
   const content = (
     <div
@@ -50,108 +50,95 @@ export default function CourseNewspaperCard({ item }: CourseNewspaperCardProps) 
       {/* Newspaper header */}
       <div
         style={{
-          padding: "12px 10px",
-          borderBottom: "3px double #1a1a1a",
+          padding: "6px 4px",
+          borderBottom: "2px double #1a1a1a",
           textAlign: "center",
           backgroundColor: "#f0ebe0"
         }}
       >
         <div
           style={{
-            fontSize: "10px",
+            fontSize: "6px",
             color: "#666",
-            letterSpacing: "2px",
+            letterSpacing: "1px",
             textTransform: "uppercase",
-            marginBottom: "4px"
+            marginBottom: "2px"
           }}
         >
-          Daily Edition
+          Daily
         </div>
         <div
           style={{
-            fontSize: "20px",
+            fontSize: "11px",
             fontWeight: "900",
             color: "#1a1a1a",
             fontFamily: "'Times New Roman', serif",
-            letterSpacing: "1px",
-            textTransform: "uppercase"
+            letterSpacing: "0.5px",
+            textTransform: "uppercase",
+            lineHeight: "1.1"
           }}
         >
           {item.title.toUpperCase()}
         </div>
         <div
           style={{
-            fontSize: "9px",
+            fontSize: "6px",
             color: "#444",
-            marginTop: "6px",
+            marginTop: "2px",
             fontStyle: "italic"
           }}
         >
-          {dateStr}
+          {today.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
         </div>
       </div>
 
-      {/* Newspaper content columns */}
+      {/* Newspaper content - single column for compact size */}
       <div
         style={{
           flex: 1,
-          padding: "10px",
+          padding: "6px 4px",
           display: "flex",
-          gap: "8px",
-          backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(0,0,0,0.03) 24px, rgba(0,0,0,0.03) 25px)"
+          flexDirection: "column",
+          backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(0,0,0,0.03) 18px, rgba(0,0,0,0.03) 19px)"
         }}
       >
-        {/* Left column */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: "14px", fontWeight: "bold", color: "#1a1a1a", marginBottom: "4px" }}>
-            HEADLINE
-          </div>
-          <div style={{ fontSize: "10px", color: "#333", lineHeight: "1.3" }}>
-            {item.description || "Breaking news and updates from around the world"}
-          </div>
-          {item.icon && (
-            <div
-              style={{
-                fontSize: "36px",
-                margin: "12px auto",
-                textAlign: "center"
-              }}
-            >
-              {item.icon}
-            </div>
-          )}
+        <div style={{ fontSize: "9px", fontWeight: "bold", color: "#1a1a1a", marginBottom: "3px" }}>
+          HEADLINE
         </div>
-
-        {/* Right column */}
-        <div style={{ width: "1px", backgroundColor: "#ccc", margin: "4px 0" }}></div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
-          <div style={{ fontSize: "11px", fontWeight: "bold", color: "#1a1a1a" }}>
-            LOCAL NEWS
+        <div style={{ fontSize: "7px", color: "#333", lineHeight: "1.2", marginBottom: "6px" }}>
+          {item.description || "Breaking news updates"}
+        </div>
+        {item.icon && (
+          <div
+            style={{
+              fontSize: "20px",
+              margin: "4px auto",
+              textAlign: "center"
+            }}
+          >
+            {item.icon}
           </div>
-          <div style={{ fontSize: "8px", color: "#444", lineHeight: "1.2" }}>
-            Community events and announcements happening this week
-          </div>
-          <div style={{ fontSize: "11px", fontWeight: "bold", color: "#1a1a1a", marginTop: "8px" }}>
-            OPINION
-          </div>
-          <div style={{ fontSize: "8px", color: "#444", lineHeight: "1.2" }}>
-            Editorial: The importance of lifelong learning in today's world
-          </div>
+        )}
+        <div style={{ fontSize: "8px", fontWeight: "bold", color: "#1a1a1a", marginTop: "4px" }}>
+          LOCAL
+        </div>
+        <div style={{ fontSize: "6px", color: "#444", lineHeight: "1.1" }}>
+          Community events this week
         </div>
       </div>
 
       {/* Newspaper footer */}
       <div
         style={{
-          padding: "6px 10px",
+          padding: "3px 4px",
           borderTop: "1px solid #ccc",
-          fontSize: "8px",
+          fontSize: "6px",
           color: "#666",
           textAlign: "center",
           backgroundColor: "#f0ebe0"
         }}
       >
-        Vol. 1, No. 1 • Price: $0.50
+        Vol. 1 • $0.50
       </div>
     </div>
   );
