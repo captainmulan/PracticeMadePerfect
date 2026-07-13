@@ -95,6 +95,43 @@ Chapters are rendered as HTML without requiring code rebuilds. The content is st
 
 This enables non-developers to update course content by editing data files without touching React code.
 
+## Backend Data Sync Workflow
+
+For courses with many HTML files (like Little Programmer), use this workflow to sync from local HTML files to the production database:
+
+**Step 1: Create/Edit HTML Files**
+- Create or edit HTML files in `book_html/[CourseName]/` (e.g., `book_html/LittleProgrammer/`)
+- These files serve as your source of truth for content
+
+**Step 2: Update IndexedDB Export**
+- The IndexedDB export file is located at `deploy/indexeddb-export.json`
+- This file contains all course data including HTML content
+- Update the `contentHtml` field for each step with the latest HTML file content
+- Ensure course IDs match between the export and the TypeScript definitions (e.g., `little-programmer`)
+
+**Step 3: Sync to Public/Directories**
+```bash
+npm run sync-deploy-assets
+```
+This copies the updated export to:
+- `public/data/indexeddb-export.json` (for dev server)
+- `dist/data/indexeddb-export.json` (for production build)
+
+**Step 4: Clear Browser IndexedDB**
+Since the app loads from IndexedDB, you must clear the old data:
+- Open DevTools (F12) → Application tab → IndexedDB
+- Delete the `magic-library-db` database
+- Hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)
+
+The app will now load the updated course data from `indexeddb-export.json`.
+
+**Step 5: Deploy (if needed)**
+```bash
+npm run deploy:firebase
+```
+
+This builds the app, syncs the database, and deploys to Firebase.
+
 ## Standalone raw HTML lessons
 
 Some lessons are shipped as self-contained HTML files so they can be viewed directly in the browser or embedded inside the app workspace.

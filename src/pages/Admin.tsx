@@ -16,10 +16,20 @@ import {
   deleteTask as deleteTaskFromDb,
   saveTasks,
   migrateFromSqlJs,
-  exportIndexedDb
+  exportIndexedDb,
+  clearDatabase,
+  importIndexedDb
 } from "../utils/indexedDb";
+import {
+  loadSqlJs,
+  restoreBundledBrowserDb,
+  resetBrowserDbCache,
+  shouldUsePersistedBrowserDb,
+  LOCAL_STORAGE_DB_KEY
+} from "../utils/sqliteBrowserDb";
 import "./Admin.css";
 import AdminCourses from "./AdminCourses";
+import AdminDataSync from "./AdminDataSync";
 
 const NEW_TASK_DRAFT_ID = "__draft__";
 
@@ -46,6 +56,17 @@ function resolveTaskIndex(task: PracticeTask): number | undefined {
   if (typeof task.taskIndex === "number") return task.taskIndex;
   if (typeof task.index === "number") return task.index;
   return undefined;
+}
+
+interface TaskRow {
+  id: string;
+  filename: string;
+  category: string;
+  title: string;
+  raw: string;
+  categoryIndex: number | null;
+  taskIndex: number | null;
+  type: string;
 }
 
 function buildTaskRow(task: PracticeTask): TaskRow {
@@ -207,13 +228,15 @@ export default function Admin() {
   const [dbError, setDbError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
-  const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books">("home");
+  const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books" | "data-sync">("home");
   const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
   const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "navButtons" | "homeButton" | "chapterLabel" | "label" | "number" | "bookname" | "title" | "description">("background");
   const [isRestoringDb, setIsRestoringDb] = useState(false);
   const [isImportingDb, setIsImportingDb] = useState(false);
+  const [isImportingJsonDb, setIsImportingJsonDb] = useState(false);
   const dbFileInputRef = useRef<HTMLInputElement | null>(null);
+  const jsonDbFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const defaultData = loadAdminData();
@@ -480,6 +503,46 @@ export default function Admin() {
     }
   }
 
+  function resetJsonDbFileInput() {
+    if (jsonDbFileInputRef.current) {
+      jsonDbFileInputRef.current.value = "";
+    }
+  }
+
+  async function handleImportJsonDb(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const enteredPassword = window.prompt("Enter admin password to import IndexedDB JSON file:", "");
+    if (enteredPassword === null) {
+      setMessage("Database import cancelled.");
+      resetJsonDbFileInput();
+      return;
+    }
+
+    if (enteredPassword !== "admin123") {
+      setMessage("Incorrect password. Database import cancelled.");
+      resetJsonDbFileInput();
+      return;
+    }
+
+    setIsImportingJsonDb(true);
+    setMessage("Importing IndexedDB JSON...");
+    try {
+      const text = await file.text();
+      await clearDatabase();
+      await importIndexedDb(text);
+      setMessage("IndexedDB JSON imported. Reloading admin data...");
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setMessage(`Import failed: ${errorMessage}`);
+    } finally {
+      setIsImportingJsonDb(false);
+      resetJsonDbFileInput();
+    }
+  }
+
   async function handleImportDb(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -731,6 +794,22 @@ export default function Admin() {
             onChange={handleImportDb}
             style={{ display: "none" }}
           />
+          <button 
+            type="button" 
+            className="footer-button" 
+            onClick={() => jsonDbFileInputRef.current?.click()} 
+            disabled={isImportingJsonDb}
+            style={{ marginRight: "8px" }}
+          >
+            {isImportingJsonDb ? "Importing..." : "Import JSON DB"}
+          </button>
+          <input
+            ref={jsonDbFileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImportJsonDb}
+            style={{ display: "none" }}
+          />
           <button type="button" className="footer-button" onClick={handleRestoreBundledDb} disabled={isRestoringDb}>
             {isRestoringDb ? "Restoring..." : "Restore bundled database"}
           </button>
@@ -746,6 +825,9 @@ export default function Admin() {
         </button>
         <button type="button" className={`admin-tab ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
           Book Builder
+        </button>
+        <button type="button" className={`admin-tab ${adminTab === "data-sync" ? "active" : ""}`} onClick={() => setAdminTab("data-sync")}>
+          Data Sync
         </button>
       </div>
 
@@ -2014,6 +2096,10 @@ export default function Admin() {
               </div>
             )}
           </div>
+        </section>
+      ) : adminTab === "data-sync" ? (
+        <section className="panel admin-editor admin-section">
+          <AdminDataSync />
         </section>
       ) : (
         <section className="panel admin-editor admin-section">
