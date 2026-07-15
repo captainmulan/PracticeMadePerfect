@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Congratulations</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    .trophy{
+      font-size:80px;
+      animation:bounce 1s ease-in-out infinite;
+    }
+    @keyframes bounce{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-10px);}
+    }
+    h1{
+      font-size:36px;
+      color:#ffd700;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:18px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+      text-align:center;
+    }
+    .card h2{
+      font-size:24px;
+      margin-bottom:12px;
+      color:#64ffda;
+    }
+    .card p{
+      font-size:17px;
+      line-height:1.7;
+      margin-bottom:12px;
+    }
+    .achievement-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    .achievement-item{
+      background:rgba(255,215,0,0.1);
+      border-radius:12px;
+      padding:16px;
+      text-align:center;
+    }
+    .achievement-emoji{
+      font-size:32px;
+      margin-bottom:8px;
+    }
+    .achievement-label{
+      font-size:13px;
+      color:#c4b5fd;
+      font-weight:bold;
+    }
+    .confetti{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      z-index:2;
+    }
+    .confetti-piece{
+      position:absolute;
+      width:10px;
+      height:10px;
+      animation:fall 3s linear infinite;
+    }
+    @keyframes fall{
+      0%{transform:translateY(-100vh) rotate(0deg);opacity:1;}
+      100%{transform:translateY(100vh) rotate(720deg);opacity:0;}
+    }
+    .message-box{
+      background:linear-gradient(135deg,#64ffda,#4fc3f7);
+      border-radius:20px;
+      padding:24px;
+      margin-top:20px;
+      text-align:center;
+    }
+    .message-box h3{
+      color:#0a1628;
+      font-size:22px;
+      margin-bottom:12px;
+    }
+    .message-box p{
+      color:#0a1628;
+      font-size:16px;
+      line-height:1.6;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="confetti" id="confetti"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="trophy">🏆</div>
+    <h1>Congratulations!</h1>
+    <div class="subtitle">You completed the Ocean Adventure!</div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 Amazing Job!</h2>
+    <p>
+      You've journeyed through the entire ocean and learned about all the amazing zones, creatures, and ecosystems!
+    </p>
+    <p>
+      You are now an Ocean Expert! 🎓
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Your Achievements</h2>
+    <div class="achievement-grid">
+      <div class="achievement-item">
+        <div class="achievement-emoji">☀️</div>
+        <div class="achievement-label">Sunlight Zone</div>
+      </div>
+      <div class="achievement-item">
+        <div class="achievement-emoji">🌅</div>
+        <div class="achievement-label">Twilight Zone</div>
+      </div>
+      <div class="achievement-item">
+        <div class="achievement-emoji">🌙</div>
+        <div class="achievement-label">Midnight Zone</div>
+      </div>
+      <div class="achievement-item">
+        <div class="achievement-emoji">🕳️</div>
+        <div class="achievement-label">Abyss Zone</div>
+      </div>
+      <div class="achievement-item">
+        <div class="achievement-emoji">🪸</div>
+        <div class="achievement-label">Coral Reefs</div>
+      </div>
+      <div class="achievement-item">
+        <div class="achievement-emoji">🐬</div>
+        <div class="achievement-label">Marine Mammals</div>
+      </div>
+      <div class="achievement-item">
+        <div class="achievement-emoji">🐟</div>
+        <div class="achievement-label">Fish Expert</div>
+      </div>
+      <div class="achievement-item">
+        <div class="achievement-emoji">🌊</div>
+        <div class="achievement-label">Ocean Guardian</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="message-box">
+    <h3>🚀 You're an Ocean Explorer!</h3>
+    <p>
+      You've learned about our amazing ocean. Keep asking questions, keep exploring, and keep protecting our blue planet!
+    </p>
+    <p>
+      Remember: The ocean is full of wonders waiting to be discovered. Maybe one day, YOU will discover something new!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>📚 What's Next?</h2>
+    <p>
+      Now that you're an ocean expert, you can:
+    </p>
+    <ul style="text-align:left;margin-left:20px;margin-top:12px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Watch documentaries about the ocean</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Visit an aquarium to see ocean creatures</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Learn about marine conservation</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Share what you learned with friends!</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Help protect our oceans!</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>⭐ Thank You!</h2>
+    <p>
+      Thank you for joining this Ocean Adventure! We hope you had fun learning about the amazing world beneath the waves.
+    </p>
+    <p>
+      Keep exploring, keep learning, and never stop being curious!
+    </p>
+    <div style="font-size:40px;margin-top:16px;">🌊✨🐠</div>
+  </div>
+
+<div class="nav-hint">
+  <div>You've completed all 28 chapters! 🎉</div>
+  <div>💡 You are now a certified Ocean Expert!</div>
+</div>
+
+</div>
+
+<script>
+const colors = ['#64ffda','#4fc3f7','#00bcd4','#ff6b9d','#ff9800','#ffc107'];
+const confetti = document.getElementById('confetti');
+
+function createConfetti() {
+  for (let i = 0; i < 50; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = Math.random() * 3 + 's';
+    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    confetti.appendChild(piece);
+  }
+}
+
+createConfetti();
+</script>
+</body>
+</html>

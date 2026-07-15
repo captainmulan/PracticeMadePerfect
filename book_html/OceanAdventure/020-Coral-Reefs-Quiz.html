@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Coral Reefs Quiz</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#ff6b9d;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .quiz-card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .question{
+      font-size:18px;
+      font-weight:bold;
+      margin-bottom:16px;
+      color:#fff;
+    }
+    .options{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .option{
+      padding:14px 18px;
+      background:rgba(255,255,255,0.05);
+      border:2px solid rgba(255,255,255,0.2);
+      border-radius:12px;
+      cursor:pointer;
+      font-size:16px;
+      transition:0.2s;
+    }
+    .option:hover{
+      background:rgba(255,255,255,0.1);
+      border-color:#ff6b9d;
+    }
+    .option.correct{
+      background:rgba(76,175,80,0.3);
+      border-color:#4caf50;
+    }
+    .option.wrong{
+      background:rgba(244,67,54,0.3);
+      border-color:#f44336;
+    }
+    .feedback{
+      margin-top:12px;
+      padding:12px;
+      border-radius:10px;
+      font-size:15px;
+      display:none;
+    }
+    .feedback.show{
+      display:block;
+    }
+    .feedback.correct{
+      background:rgba(76,175,80,0.2);
+      color:#81c784;
+    }
+    .feedback.wrong{
+      background:rgba(244,67,54,0.2);
+      color:#e57373;
+    }
+    .score-card{
+      background:linear-gradient(135deg,#ff6b9d,#e91e63);
+      border-radius:20px;
+      padding:24px;
+      text-align:center;
+      margin-top:20px;
+      display:none;
+    }
+    .score-card.show{
+      display:block;
+    }
+    .score-card h2{
+      font-size:24px;
+      margin-bottom:12px;
+      color:#fff;
+    }
+    .score-card .score{
+      font-size:48px;
+      font-weight:bold;
+      margin-bottom:12px;
+      color:#fff;
+    }
+    .score-card .message{
+      font-size:16px;
+      margin-bottom:16px;
+      color:#fff;
+    }
+    .retry-btn{
+      padding:14px 28px;
+      border:none;
+      border-radius:12px;
+      background:#fff;
+      color:#ff6b9d;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .retry-btn:hover{
+      transform:scale(1.05);
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>❓ Coral Reefs Quiz</h1>
+    <div class="subtitle">Test what you learned about coral reefs!</div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="question">1. What builds coral reefs?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 1, false)">Fish</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">Seaweed</div>
+      <div class="option" onclick="checkAnswer(this, 1, true)">Coral polyps</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">Sand</div>
+    </div>
+    <div class="feedback" id="feedback-1"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="question">2. What percentage of ocean species live in coral reefs?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 2, false)">5%</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">10%</div>
+      <div class="option" onclick="checkAnswer(this, 2, true)">25% or more</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">50%</div>
+    </div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="question">3. What is coral bleaching?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 3, false)">Coral turning blue</div>
+      <div class="option" onclick="checkAnswer(this, 3, true)">Coral losing its algae and turning white</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Coral growing too fast</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Coral breaking apart</div>
+    </div>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="question">4. What is the largest coral reef?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 4, false)">Belize Barrier Reef</div>
+      <div class="option" onclick="checkAnswer(this, 4, true)">Great Barrier Reef</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Red Sea Coral Reef</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Florida Reef</div>
+    </div>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+
+  <div class="quiz-card">
+    <div class="question">5. What are coral polyps related to?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 5, false)">Fish</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Crabs</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Sharks</div>
+      <div class="option" onclick="checkAnswer(this, 5, true)">Jellyfish and sea anemones</div>
+    </div>
+    <div class="feedback" id="feedback-5"></div>
+  </div>
+
+  <div class="score-card" id="scoreCard">
+    <h2>🎉 Quiz Complete!</h2>
+    <div class="score" id="finalScore">0/5</div>
+    <div class="message" id="scoreMessage"></div>
+    <button class="retry-btn" onclick="retryQuiz()">Try Again</button>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+let score = 0;
+let answered = 0;
+const totalQuestions = 5;
+
+function checkAnswer(element, questionNum, isCorrect) {
+  const parent = element.parentElement;
+  const options = parent.querySelectorAll('.option');
+  const feedback = document.getElementById('feedback-' + questionNum);
+  
+  options.forEach(opt => {
+    opt.style.pointerEvents = 'none';
+  });
+  
+  if (isCorrect) {
+    element.classList.add('correct');
+    feedback.textContent = '✅ Correct! Great job!';
+    feedback.className = 'feedback show correct';
+    score++;
+  } else {
+    element.classList.add('wrong');
+    feedback.textContent = '❌ Not quite. Try again next time!';
+    feedback.className = 'feedback show wrong';
+  }
+  
+  answered++;
+  
+  if (answered === totalQuestions) {
+    showScore();
+  }
+}
+
+function showScore() {
+  const scoreCard = document.getElementById('scoreCard');
+  const finalScore = document.getElementById('finalScore');
+  const scoreMessage = document.getElementById('scoreMessage');
+  
+  finalScore.textContent = score + '/' + totalQuestions;
+  
+  if (score === totalQuestions) {
+    scoreMessage.textContent = 'Perfect! You are a coral reef expert! 🪸';
+  } else if (score >= 4) {
+    scoreMessage.textContent = 'Great job! You know a lot about coral reefs! 🌟';
+  } else if (score >= 3) {
+    scoreMessage.textContent = 'Good effort! Keep learning about coral reefs! 📚';
+  } else {
+    scoreMessage.textContent = 'Keep practicing! You will get better! 💪';
+  }
+  
+  scoreCard.classList.add('show');
+}
+
+function retryQuiz() {
+  score = 0;
+  answered = 0;
+  
+  document.querySelectorAll('.option').forEach(opt => {
+    opt.classList.remove('correct', 'wrong');
+    opt.style.pointerEvents = 'auto';
+  });
+  
+  document.querySelectorAll('.feedback').forEach(fb => {
+    fb.classList.remove('show', 'correct', 'wrong');
+  });
+  
+  document.getElementById('scoreCard').classList.remove('show');
+}
+</script>
+</body>
+</html>

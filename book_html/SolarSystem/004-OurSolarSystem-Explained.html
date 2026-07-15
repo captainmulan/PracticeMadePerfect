@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#a78bfa;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#a78bfa;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .planet-order{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:12px;
+    }
+    .planet-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:rgba(255,255,255,0.05);
+      padding:12px;
+      border-radius:12px;
+    }
+    .planet-emoji{
+      font-size:28px;
+    }
+    .planet-name{
+      font-size:16px;
+      font-weight:bold;
+      flex:1;
+    }
+    .planet-desc{
+      font-size:13px;
+      color:#c4b5fd;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Our Solar System Explained</h1>
+    <div class="subtitle">Learn how our cosmic neighborhood works!</div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What is the Solar System?</h2>
+    <p>
+      The solar system is our cosmic neighborhood in space. It's like a big family with the Sun at the center and all the planets orbiting around it.
+    </p>
+    <p>
+      <strong>Orbit</strong> means going around in a circle. Just like the Moon orbits around Earth, all the planets orbit around the Sun!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>☀️ The Sun - Our Star</h2>
+    <p>
+      The Sun is a star, not a planet! It's a huge ball of hot, glowing gas that gives us light and heat. Without the Sun, Earth would be freezing cold and dark.
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>The Sun is so big that over 1 million Earths could fit inside it!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🪐 The 8 Planets</h2>
+    <p>
+      There are 8 planets in our solar system. They are divided into two groups:
+    </p>
+    <ul>
+      <li><strong>Inner Planets</strong> (closer to the Sun): Mercury, Venus, Earth, Mars</li>
+      <li><strong>Outer Planets</strong> (farther from the Sun): Jupiter, Saturn, Uranus, Neptune</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>📏 Order from the Sun</h2>
+    <div class="planet-order">
+      <div class="planet-row">
+        <div class="planet-emoji">☀️</div>
+        <div class="planet-name">The Sun</div>
+        <div class="planet-desc">Center of our system</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">🪨</div>
+        <div class="planet-name">Mercury</div>
+        <div class="planet-desc">Smallest planet</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">🔥</div>
+        <div class="planet-name">Venus</div>
+        <div class="planet-desc">Hottest planet</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">🌍</div>
+        <div class="planet-name">Earth</div>
+        <div class="planet-desc">Our home</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">🔴</div>
+        <div class="planet-name">Mars</div>
+        <div class="planet-desc">The red planet</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">🟠</div>
+        <div class="planet-name">Jupiter</div>
+        <div class="planet-desc">Biggest planet</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">💍</div>
+        <div class="planet-name">Saturn</div>
+        <div class="planet-desc">Has beautiful rings</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">🔵</div>
+        <div class="planet-name">Uranus</div>
+        <div class="planet-desc">Ice giant</div>
+      </div>
+      <div class="planet-row">
+        <div class="planet-emoji">🔷</div>
+        <div class="planet-name">Neptune</div>
+        <div class="planet-desc">Windiest planet</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Other Objects in Space</h2>
+    <p>
+      Besides the Sun and planets, our solar system has many other interesting things:
+    </p>
+    <ul>
+      <li><strong>Moons</strong> - Many planets have moons that orbit around them</li>
+      <li><strong>Asteroids</strong> - Rocky objects that orbit the Sun, mostly between Mars and Jupiter</li>
+      <li><strong>Comets</strong> - Dirty snowballs that leave beautiful tails when they get close to the Sun</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🚀 Why is Earth Special?</h2>
+    <p>
+      Earth is the only planet we know of that has life! It's just the right distance from the Sun - not too hot and not too cold. It has water, air, and everything living things need.
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Earth is often called the "Goldilocks Planet" because it's just right for life!</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

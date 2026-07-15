@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Coral Reefs</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#ff6b9d;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .coral-display{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:30px 0;
+    }
+    .coral-icon{
+      width:100px;
+      height:100px;
+      background:radial-gradient(circle at 30% 30%,#ff9eb5,#ff6b9d,#e91e63);
+      border-radius:50%;
+      box-shadow:0 0 40px rgba(255,107,157,0.4),inset -15px -15px 30px rgba(0,0,0,0.3);
+      cursor:pointer;
+      transition:transform 0.3s;
+      animation:sway 4s ease-in-out infinite;
+    }
+    .coral-icon:hover{
+      transform:scale(1.1);
+    }
+    @keyframes sway{
+      0%,100%{transform:rotate(-5deg);}
+      50%{transform:rotate(5deg);}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#ff6b9d;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .stat-item{
+      background:rgba(255,107,157,0.1);
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+    }
+    .stat-label{
+      font-size:13px;
+      color:#80deea;
+      margin-bottom:4px;
+    }
+    .stat-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#ff6b9d;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>🪸 Coral Reefs</h1>
+    <div class="subtitle">The rainforests of the sea!</div>
+  </div>
+
+  <div class="coral-display">
+    <div class="coral-icon" onclick="showCoralFact()"></div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What are Coral Reefs?</h2>
+    <p>
+      Coral reefs are underwater structures made by tiny animals called coral polyps. These polyps build hard skeletons out of calcium carbonate, which slowly builds up over thousands of years!
+    </p>
+    <p>
+      Coral reefs are called the "rainforests of the sea" because they're so full of life and biodiversity!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🏠 Home to Amazing Creatures</h2>
+    <p>
+      Coral reefs are home to more than 25% of all ocean species, even though they cover less than 1% of the ocean floor!
+    </p>
+    <ul style="margin-left:20px;margin-bottom:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Colorful fish</strong> - Clownfish, angelfish, butterflyfish</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Sea turtles</strong> - Green turtles, hawksbill turtles</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Sharks</strong> - Reef sharks, nurse sharks</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Octopus</strong> - Clever and colorful</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🤝 Coral and Algae Partners</h2>
+    <p>
+      Coral polyps have a special partnership with tiny algae called zooxanthellae. The algae live inside the coral and make food through photosynthesis.
+    </p>
+    <p>
+      In return, the coral provides the algae with a safe home. This partnership is why coral reefs need clear, shallow water with lots of sunlight!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>The Great Barrier Reef in Australia is so big it can be seen from space!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📏 How Big are Coral Reefs?</h2>
+    <p>
+      Coral reefs can be huge! The Great Barrier Reef is over 2,300 kilometers (1,400 miles) long - that's longer than the entire coastline of California!
+    </p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Ocean Coverage</div>
+        <div class="stat-value">Less than 1%</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Species Home</div>
+        <div class="stat-value">25%+</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Depth Range</div>
+        <div class="stat-value">Shallow</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Temperature</div>
+        <div class="stat-value">Warm</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌍 Why Coral Reefs Matter</h2>
+    <p>
+      Coral reefs are incredibly important for our planet:
+    </p>
+    <ul style="margin-left:20px;margin-bottom:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Protect coastlines</strong> - Act as barriers against storms</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Provide food</strong> - Fish for millions of people</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Support tourism</strong> - People love snorkeling and diving</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Medicine</strong> - Scientists find new medicines here</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>⚠️ Protecting Coral Reefs</h2>
+    <p>
+      Coral reefs face many threats like climate change, pollution, and overfishing. We can help by:
+    </p>
+    <ul style="margin-left:20px;margin-bottom:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Reducing pollution that reaches the ocean</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Choosing sustainable seafood</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Not touching coral when snorkeling</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Supporting reef conservation efforts</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="fact-box">
+      <h3>🎯 Tap the Coral!</h3>
+      <p>Click on the coral icon to learn a fun fact!</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const coralFacts = [
+  "Coral reefs are called the rainforests of the sea!",
+  "The Great Barrier Reef can be seen from space!",
+  "Coral reefs are made by tiny animals called polyps!",
+  "Coral reefs are home to 25% of all ocean species!",
+  "Some coral reefs are over 5,000 years old!",
+  "Coral polyps are related to jellyfish and sea anemones!",
+  "Coral reefs protect coastlines from storms!",
+  "New medicines are being discovered in coral reefs!"
+];
+let factIndex = 0;
+
+function showCoralFact() {
+  alert("🪸 " + coralFacts[factIndex]);
+  factIndex = (factIndex + 1) % coralFacts.length;
+}
+</script>
+</body>
+</html>

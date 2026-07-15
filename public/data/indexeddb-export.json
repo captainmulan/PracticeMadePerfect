@@ -2700,7 +2700,7 @@
       "iconColorMiddle": "#fff",
       "iconColorEnd": "#fff",
       "iconSize": 80,
-      "titleFontSize": 55,
+      "titleFontSize": 53,
       "titleFontWeight": "bolder",
       "titleColor": "#ffffff",
       "titlePosition": "bottom-left",
@@ -3303,7 +3303,7 @@
           ]
         }
       ],
-      "coverWidth": 100,
+      "coverWidth": 102,
       "coverHeight": 150,
       "pIndex": 1,
       "artifactType": "book"
@@ -3698,11 +3698,11 @@
       "coverColorEnd": "#2563eb",
       "coverWidth": 100,
       "coverHeight": 150,
-      "icon": "MM Letters",
+      "icon": "ကခဂ",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
       "iconColorEnd": "#fff",
-      "iconSize": 30,
+      "iconSize": 45,
       "titleFontSize": 50,
       "titleFontWeight": "bolder",
       "titleColor": "#ffffff",
@@ -6896,5 +6896,5 @@
       "type": "text"
     }
   ],
-  "exportedAt": "2026-07-13T11:44:36.693Z"
+  "exportedAt": "2026-07-13T12:17:06.715Z"
 }

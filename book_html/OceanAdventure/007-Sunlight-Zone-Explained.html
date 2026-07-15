@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Sunlight Zone Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#ffeb3b;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#ffeb3b;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Sunlight Zone Explained</h1>
+    <div class="subtitle">Learn more about the bright ocean layer!</div>
+  </div>
+
+  <div class="card">
+    <h2>☀️ Why is it Called the Sunlight Zone?</h2>
+    <p>
+      The Sunlight Zone gets its name because sunlight reaches all the way to the bottom of this zone! This is the only ocean zone where enough light reaches for plants to grow through photosynthesis.
+    </p>
+    <p>
+      Photosynthesis is how plants make food using sunlight. This process also produces oxygen, which is why the ocean is so important for the air we breathe!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>More than half of the oxygen we breathe comes from tiny ocean plants in the Sunlight Zone!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌿 Phytoplankton - Ocean's Tiny Heroes</h2>
+    <p>
+      Phytoplankton are tiny plants that float in the Sunlight Zone. They're so small you can't see them without a microscope, but they're incredibly important!
+    </p>
+    <ul>
+      <li>They produce about 50-80% of Earth's oxygen</li>
+      <li>They're the base of the ocean food chain</li>
+      <li>They help absorb carbon dioxide from the air</li>
+      <li>They feed tiny animals called zooplankton</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🐠 The Food Chain</h2>
+    <p>
+      The Sunlight Zone has a busy food chain:
+    </p>
+    <ul>
+      <li><strong>Phytoplankton</strong> - Tiny plants that make food from sunlight</li>
+      <li><strong>Zooplankton</strong> - Tiny animals that eat phytoplankton</li>
+      <li><strong>Small fish</strong> - Eat zooplankton</li>
+      <li><strong>Big fish</strong> - Eat smaller fish</li>
+      <li><strong>Top predators</strong> - Sharks, dolphins, and tuna</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🌡️ Temperature Changes</h2>
+    <p>
+      The water in the Sunlight Zone is warmest at the surface and gets cooler as you go deeper. The surface can be as warm as 30°C (86°F) in tropical areas!
+    </p>
+    <p>
+      This warm water is perfect for many sea creatures, which is why coral reefs grow best in shallow, warm waters.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🏊 Human Activities</h2>
+    <p>
+      The Sunlight Zone is where most human activities in the ocean happen:
+    </p>
+    <ul>
+      <li><strong>Fishing</strong> - Most commercial fishing happens here</li>
+      <li><strong>Swimming</strong> - People swim and play in shallow waters</li>
+      <li><strong>Snorkeling</strong> - Exploring underwater with a mask</li>
+      <li><strong>Scuba diving</strong> - Going deeper with special equipment</li>
+      <li><strong>Boating</strong> - Ships travel across the surface</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🛡️ Protecting the Sunlight Zone</h2>
+    <p>
+      The Sunlight Zone faces threats like pollution, overfishing, and climate change. We can help by:
+    </p>
+    <ul>
+      <li>Reducing plastic waste</li>
+      <li>Choosing sustainable seafood</li>
+      <li>Protecting coral reefs</li>
+      <li>Reducing pollution that runs into the ocean</li>
+    </ul>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Sunlight Zone</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#ffeb3b;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .sun-display{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:30px 0;
+    }
+    .sun{
+      width:100px;
+      height:100px;
+      background:radial-gradient(circle at 30% 30%,#fff59d,#ffeb3b,#fbc02d);
+      border-radius:50%;
+      box-shadow:0 0 60px rgba(255,235,59,0.6),0 0 100px rgba(255,235,59,0.3);
+      cursor:pointer;
+      transition:transform 0.3s;
+      animation:glow 3s ease-in-out infinite;
+    }
+    .sun:hover{
+      transform:scale(1.1);
+    }
+    @keyframes glow{
+      0%,100%{box-shadow:0 0 60px rgba(255,235,59,0.6),0 0 100px rgba(255,235,59,0.3);}
+      50%{box-shadow:0 0 80px rgba(255,235,59,0.8),0 0 120px rgba(255,235,59,0.4);}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#ffeb3b;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .stat-item{
+      background:rgba(255,235,59,0.1);
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+    }
+    .stat-label{
+      font-size:13px;
+      color:#80deea;
+      margin-bottom:4px;
+    }
+    .stat-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#ffeb3b;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>☀️ Sunlight Zone</h1>
+    <div class="subtitle">The bright top layer of the ocean!</div>
+  </div>
+
+  <div class="sun-display">
+    <div class="sun" onclick="showSunFact()"></div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What is the Sunlight Zone?</h2>
+    <p>
+      The Sunlight Zone (also called the epipelagic zone) is the top layer of the ocean where sunlight reaches all the way to the bottom!
+    </p>
+    <p>
+      This zone goes from the surface down to about 200 meters deep. It's where most ocean life lives because there's plenty of light for plants to grow.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌿 Life in the Sunlight Zone</h2>
+    <p>
+      This zone is full of life! You'll find:
+    </p>
+    <ul style="margin-left:20px;margin-bottom:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Phytoplankton</strong> - Tiny plants that make most of Earth's oxygen</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Zooplankton</strong> - Tiny animals that eat phytoplankton</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Fish</strong> - Colorful fish like clownfish and angelfish</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Sea turtles</strong> - Ancient reptiles that swim in the ocean</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Dolphins</strong> - Smart and playful marine mammals</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🪸 Coral Reefs</h2>
+    <p>
+      Coral reefs are found in the Sunlight Zone! They're like underwater cities made by tiny animals called coral polyps.
+    </p>
+    <p>
+      Coral reefs are home to more than 25% of all ocean species, even though they cover less than 1% of the ocean floor!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Coral reefs are called the "rainforests of the sea" because they're so full of life!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📏 How Deep is the Sunlight Zone?</h2>
+    <p>
+      The Sunlight Zone goes from the surface down to about 200 meters (650 feet). That's about as deep as two football fields stacked on top of each other!
+    </p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Depth Range</div>
+        <div class="stat-value">0-200 meters</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Light</div>
+        <div class="stat-value">Bright</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Temperature</div>
+        <div class="stat-value">Warm</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Life</div>
+        <div class="stat-value">Very Abundant</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🐠 Important for Humans</h2>
+    <p>
+      The Sunlight Zone is very important for humans too! It's where most fishing happens, providing food for billions of people.
+    </p>
+    <p>
+      It's also where many popular beach activities happen, like swimming, snorkeling, and surfing!
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="fact-box">
+      <h3>🎯 Tap the Sun!</h3>
+      <p>Click on the sun to learn a fun fact!</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const sunFacts = [
+  "The Sunlight Zone is also called the epipelagic zone!",
+  "Most ocean life lives in the Sunlight Zone!",
+  "Phytoplankton in this zone make most of Earth's oxygen!",
+  "Coral reefs are found in the Sunlight Zone!",
+  "This zone goes down to 200 meters deep!",
+  "The water is warmest in the Sunlight Zone!",
+  "Sea turtles live mostly in the Sunlight Zone!",
+  "Dolphins love swimming in the bright Sunlight Zone!"
+];
+let factIndex = 0;
+
+function showSunFact() {
+  alert("☀️ " + sunFacts[factIndex]);
+  factIndex = (factIndex + 1) % sunFacts.length;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Twilight Zone</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#ff9800;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .twilight-display{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:30px 0;
+    }
+    .twilight-icon{
+      width:100px;
+      height:100px;
+      background:radial-gradient(circle at 30% 30%,#ffcc80,#ff9800,#f57c00);
+      border-radius:50%;
+      box-shadow:0 0 40px rgba(255,152,0,0.4),inset -15px -15px 30px rgba(0,0,0,0.3);
+      cursor:pointer;
+      transition:transform 0.3s;
+      animation:fade 4s ease-in-out infinite;
+    }
+    .twilight-icon:hover{
+      transform:scale(1.1);
+    }
+    @keyframes fade{
+      0%,100%{opacity:0.7;}
+      50%{opacity:1;}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#ff9800;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .stat-item{
+      background:rgba(255,152,0,0.1);
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+    }
+    .stat-label{
+      font-size:13px;
+      color:#80deea;
+      margin-bottom:4px;
+    }
+    .stat-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#ff9800;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>🌅 Twilight Zone</h1>
+    <div class="subtitle">The dim middle layer of the ocean!</div>
+  </div>
+
+  <div class="twilight-display">
+    <div class="twilight-icon" onclick="showTwilightFact()"></div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What is the Twilight Zone?</h2>
+    <p>
+      The Twilight Zone (also called the mesopelagic zone) is the middle layer of the ocean where only a little bit of sunlight reaches.
+    </p>
+    <p>
+      This zone goes from about 200 meters down to 1,000 meters deep. It's always dim here, like twilight on land - that's why it's called the Twilight Zone!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>👁️ Big Eyes for Dim Light</h2>
+    <p>
+      Because there's so little light, creatures in the Twilight Zone have special adaptations to see in the dark.
+    </p>
+    <ul style="margin-left:20px;margin-bottom:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Big eyes</strong> - To catch as much light as possible</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Bioluminescence</strong> - Some make their own light</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Sensitive vision</strong> - Can see even the tiniest light</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🦑 Creatures of the Twilight Zone</h2>
+    <p>
+      Many amazing creatures live in this dim zone:
+    </p>
+    <ul style="margin-left:20px;margin-bottom:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Lanternfish</strong> - Have light-producing organs</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Squid</strong> - Can change color and make light</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong>Octopus</strong> - Have special eyes for dim light</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;"><strong> Hatchetfish</strong> - Have thin bodies and big eyes</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>📏 How Deep is the Twilight Zone?</h2>
+    <p>
+      The Twilight Zone goes from about 200 meters down to 1,000 meters deep. That's about as deep as the Empire State Building is tall!
+    </p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Depth Range</div>
+        <div class="stat-value">200-1,000m</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Light</div>
+        <div class="stat-value">Very Dim</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Temperature</div>
+        <div class="stat-value">Cool</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Pressure</div>
+        <div class="stat-value">Medium</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>✨ Bioluminescence</h2>
+    <p>
+      Many Twilight Zone creatures can make their own light! This is called bioluminescence. They use it to:
+    </p>
+    <ul style="margin-left:20px;margin-bottom:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Attract prey in the dark</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Communicate with each other</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Hide from predators by matching light from above</li>
+    </ul>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Bioluminescence is the same chemical reaction that makes fireflies glow on land!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌊 Daily Migration</h2>
+    <p>
+      Many Twilight Zone creatures do something amazing every day - they migrate up and down! At night, they swim up to the Sunlight Zone to eat. During the day, they swim back down to hide in the dark.
+    </p>
+    <p>
+      This is the largest migration of animals on Earth!
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="fact-box">
+      <h3>🎯 Tap the Icon!</h3>
+      <p>Click on the twilight icon to learn a fun fact!</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const twilightFacts = [
+  "The Twilight Zone is also called the mesopelagic zone!",
+  "It's always dim here, like twilight on land!",
+  "Lanternfish are the most common fish in this zone!",
+  "Many creatures here make their own light!",
+  "This zone has the largest animal migration on Earth!",
+  "Creatures here have huge eyes to see in the dark!",
+  "The pressure here is much stronger than at the surface!",
+  "Squid in this zone can change color and glow!"
+];
+let factIndex = 0;
+
+function showTwilightFact() {
+  alert("🌅 " + twilightFacts[factIndex]);
+  factIndex = (factIndex + 1) % twilightFacts.length;
+}
+</script>
+</body>
+</html>

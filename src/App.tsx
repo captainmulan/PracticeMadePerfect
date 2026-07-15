@@ -3,7 +3,7 @@ import { StageNavProvider } from "./context/StageNavContext";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
 import CourseWizard from "./pages/CourseWizard";
-import Admin from "./pages/Admin";
+import AdminAuth from "./pages/AdminAuth";
 import { getHomePageData } from "./utils/contentStore";
 
 function AppContent() {
@@ -27,7 +27,7 @@ function AppContent() {
           <Route path="/practice" element={<Navigate to="/" replace />} />
           <Route path="/practice/:categoryKey" element={<Practice />} />
           <Route path="/courses/:courseId" element={<CourseWizard />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<AdminAuth />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Book Briefing</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    .wave-icon{
+      font-size:60px;
+      animation:wave 2s ease-in-out infinite;
+    }
+    @keyframes wave{
+      0%,100%{transform:rotate(-5deg);}
+      50%{transform:rotate(5deg);}
+    }
+    h1{
+      font-size:36px;
+      color:#64ffda;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:18px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#64ffda;
+      margin-bottom:12px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .info-item{
+      background:rgba(100,255,218,0.1);
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+    }
+    .info-label{
+      font-size:13px;
+      color:#80deea;
+      margin-bottom:4px;
+    }
+    .info-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#64ffda;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <div class="wave-icon">🌊</div>
+    <h1>Ocean Adventure</h1>
+    <div class="subtitle">An exciting journey into the deep blue sea!</div>
+  </div>
+
+  <div class="card">
+    <h2>📖 About This Book</h2>
+    <p>
+      Welcome to Ocean Adventure! This book will take you on an amazing journey through the world's oceans. You'll learn about different ocean zones, amazing sea creatures, and why the ocean is so important for our planet.
+    </p>
+    <p>
+      Get ready to dive deep and discover the wonders of the underwater world!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>📚 Book Details</h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Age Group</div>
+        <div class="info-value">7-8 years</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Chapters</div>
+        <div class="info-value">28</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Theme</div>
+        <div class="info-value">Ocean & Sea Life</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Activities</div>
+        <div class="info-value">Quizzes & Fun Facts</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 What You'll Learn</h2>
+    <ul style="margin-left:20px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">About the different ocean zones</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Amazing sea creatures and how they live</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Why coral reefs are important</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">About marine mammals like dolphins and whales</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">How to protect our oceans</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🎮 How to Use This Book</h2>
+    <p>
+      Each chapter has fun activities to help you learn:
+    </p>
+    <ul style="margin-left:20px;margin-top:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">📖 Read about ocean topics</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">🎯 Click on pictures to learn fun facts</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">❓ Take quizzes to test your knowledge</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">🌟 Earn achievements as you learn</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🌊 Why the Ocean Matters</h2>
+    <p>
+      The ocean covers more than 70% of Earth's surface! It's home to millions of amazing creatures and helps keep our planet healthy. Learning about the ocean helps us understand how to protect it for future generations.
+    </p>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

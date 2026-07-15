@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Index</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#64ffda;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .chapter-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+      gap:12px;
+    }
+    .chapter-card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:16px;
+      padding:16px;
+      border:1px solid rgba(255,255,255,0.1);
+      cursor:pointer;
+      transition:transform 0.2s,background 0.2s;
+    }
+    .chapter-card:hover{
+      transform:translateY(-4px);
+      background:rgba(255,255,255,0.15);
+    }
+    .chapter-number{
+      font-size:14px;
+      color:#80deea;
+      margin-bottom:4px;
+    }
+    .chapter-emoji{
+      font-size:32px;
+      margin-bottom:8px;
+    }
+    .chapter-title{
+      font-size:15px;
+      font-weight:bold;
+      color:#64ffda;
+      margin-bottom:4px;
+    }
+    .chapter-concept{
+      font-size:12px;
+      color:#b0bec5;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Ocean Adventure Index</h1>
+    <div class="subtitle">Choose a chapter to explore!</div>
+  </div>
+
+  <div class="chapter-grid">
+    <div class="chapter-card">
+      <div class="chapter-number">001</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Book Briefing</div>
+      <div class="chapter-concept">Introduction</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">002</div>
+      <div class="chapter-emoji">📑</div>
+      <div class="chapter-title">Index</div>
+      <div class="chapter-concept">Chapter List</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">003</div>
+      <div class="chapter-emoji">🌊</div>
+      <div class="chapter-title">Ocean Overview</div>
+      <div class="chapter-concept">All Zones</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">004</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Ocean Explained</div>
+      <div class="chapter-concept">Learn More</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">005</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Ocean Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">006</div>
+      <div class="chapter-emoji">☀️</div>
+      <div class="chapter-title">Sunlight Zone</div>
+      <div class="chapter-concept">Top Layer</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">007</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Sunlight Explained</div>
+      <div class="chapter-concept">Deep Dive</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">008</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Sunlight Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">009</div>
+      <div class="chapter-emoji">🌅</div>
+      <div class="chapter-title">Twilight Zone</div>
+      <div class="chapter-concept">Middle Layer</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">010</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Twilight Explained</div>
+      <div class="chapter-concept">Deep Dive</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">011</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Twilight Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">012</div>
+      <div class="chapter-emoji">🌙</div>
+      <div class="chapter-title">Midnight Zone</div>
+      <div class="chapter-concept">Deep Dark</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">013</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Midnight Explained</div>
+      <div class="chapter-concept">Deep Dive</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">014</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Midnight Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">015</div>
+      <div class="chapter-emoji">🕳️</div>
+      <div class="chapter-title">Abyss Zone</div>
+      <div class="chapter-concept">Very Deep</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">016</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Abyss Explained</div>
+      <div class="chapter-concept">Deep Dive</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">017</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Abyss Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">018</div>
+      <div class="chapter-emoji">🪸</div>
+      <div class="chapter-title">Coral Reefs</div>
+      <div class="chapter-concept">Ocean Cities</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">019</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Coral Explained</div>
+      <div class="chapter-concept">Deep Dive</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">020</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Coral Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">021</div>
+      <div class="chapter-emoji">🐬</div>
+      <div class="chapter-title">Marine Mammals</div>
+      <div class="chapter-concept">Ocean Friends</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">022</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Mammals Explained</div>
+      <div class="chapter-concept">Deep Dive</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">023</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Mammals Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">024</div>
+      <div class="chapter-emoji">🐟</div>
+      <div class="chapter-title">Fish</div>
+      <div class="chapter-concept">Swimming Friends</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">025</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Fish Explained</div>
+      <div class="chapter-concept">Deep Dive</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">026</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Fish Quiz</div>
+      <div class="chapter-concept">Test Yourself</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">027</div>
+      <div class="chapter-emoji">📚</div>
+      <div class="chapter-title">Conclusion</div>
+      <div class="chapter-concept">Summary</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">028</div>
+      <div class="chapter-emoji">🏆</div>
+      <div class="chapter-title">Congratulations</div>
+      <div class="chapter-concept">You Did It!</div>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

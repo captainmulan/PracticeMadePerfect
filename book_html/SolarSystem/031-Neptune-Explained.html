@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Neptune Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#4b70dd;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#4b70dd;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Neptune Explained</h1>
+    <div class="subtitle">Learn more about the windy planet!</div>
+  </div>
+
+  <div class="card">
+    <h2>🧮 Mathematical Discovery</h2>
+    <p>
+      Neptune is the only planet discovered through mathematical prediction! In the 1840s, astronomers noticed that Uranus wasn't moving the way it should.
+    </p>
+    <p>
+      Two mathematicians, Urbain Le Verrier and John Couch Adams, calculated that another planet must be pulling on Uranus. In 1846, astronomers looked where they predicted - and found Neptune!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Neptune was found within 1 degree of where the math said it would be!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💨 Supersonic Winds</h2>
+    <p>
+      Neptune has the fastest winds in the solar system, reaching speeds of 2,100 km/h (1,300 mph). That's faster than the speed of sound on Earth!
+    </p>
+    <p>
+      These winds create huge storms in Neptune's atmosphere. The most famous is the Great Dark Spot, a storm similar to Jupiter's Great Red Spot. However, Neptune's storms come and go more quickly.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Triton - The Strange Moon</h2>
+    <p>
+      Neptune's largest moon, Triton, is very unusual. It orbits Neptune backwards (retrograde orbit), which means it moves in the opposite direction of Neptune's rotation.
+    </p>
+    <p>
+      Scientists think Triton was once a dwarf planet that Neptune captured billions of years ago. Triton is slowly getting closer to Neptune and will eventually crash into it or break apart!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>❄️ Ice Giant Structure</h2>
+    <p>
+      Like Uranus, Neptune is an ice giant. It has three main layers:
+    </p>
+    <ul>
+      <li><strong>Atmosphere</strong> - Made of hydrogen, helium, and methane</li>
+      <li><strong>Mantle</strong> - Made of water, ammonia, and methane ices</li>
+      <li><strong>Core</strong> - Rocky core about the size of Earth</li>
+    </ul>
+    <p>
+      The methane in Neptune's atmosphere gives it its beautiful blue color, just like Uranus.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🔭 Exploring Neptune</h2>
+    <p>
+      Only one spacecraft has ever visited Neptune - Voyager 2 in 1989. It flew by Neptune and took amazing photos of the planet and its moons.
+    </p>
+    <p>
+      Voyager 2 discovered Neptune's rings, six new moons, and the Great Dark Spot. No other spacecraft has visited Neptune since, but scientists hope to send more missions in the future!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌡️ Cold and Distant</h2>
+    <p>
+      Neptune is the farthest planet from the Sun, so it's very cold and receives very little sunlight. A year on Neptune is 165 Earth years - that's a long time to wait for your birthday!
+    </p>
+    <p>
+      Despite being so far, Neptune still has weather and seasons, just like Earth. But each season lasts for over 40 Earth years!
+    </p>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

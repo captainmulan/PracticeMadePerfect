@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Mars Activity</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#e27b58;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .mars-display{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:30px 0;
+    }
+    .mars{
+      width:110px;
+      height:110px;
+      background:radial-gradient(circle at 30% 30%,#e27b58,#b85c3d,#8b4513);
+      border-radius:50%;
+      box-shadow:0 0 40px rgba(226,123,88,0.4),inset -15px -15px 30px rgba(0,0,0,0.4);
+      cursor:pointer;
+      transition:transform 0.3s;
+      animation:float 5s ease-in-out infinite;
+    }
+    .mars:hover{
+      transform:scale(1.1);
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-8px);}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(226,123,88,0.3);
+    }
+    .card h2{
+      color:#e27b58;
+      margin-bottom:12px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .feature-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .feature-item{
+      background:rgba(226,123,88,0.1);
+      border:2px solid rgba(226,123,88,0.3);
+      border-radius:12px;
+      padding:16px;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .feature-item:hover{
+      background:rgba(226,123,88,0.2);
+      border-color:#e27b58;
+      transform:scale(1.05);
+    }
+    .feature-emoji{
+      font-size:36px;
+      margin-bottom:8px;
+    }
+    .feature-name{
+      font-size:14px;
+      font-weight:bold;
+      color:#e27b58;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>🔴 Mars Activity</h1>
+    <div class="subtitle">Tap to explore the red planet!</div>
+  </div>
+
+  <div class="mars-display">
+    <div class="mars" onclick="showMarsFact()"></div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Activity Instructions</h2>
+    <p>
+      Tap on Mars above to learn fun facts! Then tap on the different features below to discover what makes Mars so special.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🏔️ Mars's Amazing Features</h2>
+    <p>
+      Mars has incredible surface features! Tap on each one to learn more:
+    </p>
+    <div class="feature-grid">
+      <div class="feature-item" onclick="showFeatureFact('volcano')">
+        <div class="feature-emoji">🌋</div>
+        <div class="feature-name">Olympus Mons</div>
+      </div>
+      <div class="feature-item" onclick="showFeatureFact('canyon')">
+        <div class="feature-emoji">🏜️</div>
+        <div class="feature-name">Valles Marineris</div>
+      </div>
+      <div class="feature-item" onclick="showFeatureFact('ice')">
+        <div class="feature-emoji">❄️</div>
+        <div class="feature-name">Polar Ice Caps</div>
+      </div>
+      <div class="feature-item" onclick="showFeatureFact('dust')">
+        <div class="feature-emoji">🌪️</div>
+        <div class="feature-name">Dust Storms</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌡️ Cold and Dry</h2>
+    <p>
+      Mars is very cold! The average temperature is about -60°C (-80°F). It can get as cold as -125°C (-195°F) at the poles and as warm as 20°C (68°F) at the equator.
+    </p>
+    <p>
+      Mars is also very dry. It has polar ice caps made of water ice and dry ice (frozen carbon dioxide), but liquid water doesn't exist on the surface today.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🤖 Exploring Mars</h2>
+    <p>
+      Many robots have visited Mars! Scientists have sent rovers like Curiosity and Perseverance, landers like InSight, orbiters that circle Mars, and even a helicopter called Ingenuity - the first aircraft on another planet!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Mars's Moons</h2>
+    <p>
+      Mars has two small moons named Phobos and Deimos. They're shaped like potatoes and are probably captured asteroids!
+    </p>
+    <p>
+      Phobos is getting closer to Mars and might crash into it in about 50 million years!
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="fact-box">
+      <h3>💡 Challenge</h3>
+      <p>Try tapping on Mars and all the features to learn everything about this amazing red planet!</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const marsFacts = [
+  "Mars is named after the Roman god of war!",
+  "Mars has two tiny moons: Phobos and Deimos!",
+  "A day on Mars is almost the same as Earth!",
+  "Mars has the biggest volcano in the solar system!",
+  "Mars has seasons like Earth!",
+  "Mars has dust storms that can last for months!",
+  "Mars has the longest canyon in the solar system!",
+  "Humans might visit Mars in the future!"
+];
+let factIndex = 0;
+
+function showMarsFact() {
+  alert("🔴 " + marsFacts[factIndex]);
+  factIndex = (factIndex + 1) % marsFacts.length;
+}
+
+const featureFacts = {
+  'volcano': "Olympus Mons is the largest volcano in the solar system! It's 3 times taller than Mount Everest and about the size of Arizona!",
+  'canyon': "Valles Marineris is a huge canyon system on Mars. It's 4,000 km long - that's longer than the entire United States!",
+  'ice': "Mars has polar ice caps made of water ice and dry ice (frozen carbon dioxide). Scientists think there might be water ice underground too!",
+  'dust': "Mars has huge dust storms that can cover the entire planet! These storms can last for months and are the biggest dust storms in the solar system!"
+};
+
+function showFeatureFact(feature) {
+  alert("🔬 " + feature.charAt(0).toUpperCase() + feature.slice(1) + ": " + featureFacts[feature]);
+}
+</script>
+</body>
+</html>

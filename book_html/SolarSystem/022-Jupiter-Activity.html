@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Jupiter Activity</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#d4a574;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .jupiter-display{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:30px 0;
+    }
+    .jupiter{
+      width:160px;
+      height:160px;
+      background:linear-gradient(180deg,#d4a574 0%,#c9a846 20%,#b8865a 40%,#d4a574 60%,#c9a846 80%,#b8865a 100%);
+      border-radius:50%;
+      box-shadow:0 0 50px rgba(212,165,116,0.4),inset -20px -20px 40px rgba(0,0,0,0.3);
+      cursor:pointer;
+      transition:transform 0.3s;
+      animation:float 6s ease-in-out infinite;
+      position:relative;
+    }
+    .jupiter::before{
+      content:'';
+      position:absolute;
+      width:100%;
+      height:100%;
+      background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.1) 50%,transparent 100%);
+      border-radius:50%;
+    }
+    .jupiter:hover{
+      transform:scale(1.1);
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-6px);}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(212,165,116,0.3);
+    }
+    .card h2{
+      color:#d4a574;
+      margin-bottom:12px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .moon-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .moon-item{
+      background:rgba(212,165,116,0.1);
+      border:2px solid rgba(212,165,116,0.3);
+      border-radius:12px;
+      padding:16px;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .moon-item:hover{
+      background:rgba(212,165,116,0.2);
+      border-color:#d4a574;
+      transform:scale(1.05);
+    }
+    .moon-emoji{
+      font-size:36px;
+      margin-bottom:8px;
+    }
+    .moon-name{
+      font-size:14px;
+      font-weight:bold;
+      color:#d4a574;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>🟠 Jupiter Activity</h1>
+    <div class="subtitle">Tap to explore the giant planet!</div>
+  </div>
+
+  <div class="jupiter-display">
+    <div class="jupiter" onclick="showJupiterFact()"></div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Activity Instructions</h2>
+    <p>
+      Tap on Jupiter above to learn fun facts! Then tap on the different moons below to discover Jupiter's amazing family of moons.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Jupiter's Famous Moons</h2>
+    <p>
+      Jupiter has at least 95 moons! The four biggest ones are called the Galilean moons. Tap on each one to learn more:
+    </p>
+    <div class="moon-grid">
+      <div class="moon-item" onclick="showMoonFact('io')">
+        <div class="moon-emoji">🌋</div>
+        <div class="moon-name">Io</div>
+      </div>
+      <div class="moon-item" onclick="showMoonFact('europa')">
+        <div class="moon-emoji">🧊</div>
+        <div class="moon-name">Europa</div>
+      </div>
+      <div class="moon-item" onclick="showMoonFact('ganymede')">
+        <div class="moon-emoji">🌍</div>
+        <div class="moon-name">Ganymede</div>
+      </div>
+      <div class="moon-item" onclick="showMoonFact('callisto')">
+        <div class="moon-emoji">🌑</div>
+        <div class="moon-name">Callisto</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌀 The Great Red Spot</h2>
+    <p>
+      Jupiter has a famous storm called the Great Red Spot. It's a giant storm that's been going for hundreds of years!
+    </p>
+    <p>
+      The storm is so big that 2-3 Earths could fit inside it! Scientists aren't sure why it's red or how long it will last.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>💨 Fast Rotation</h2>
+    <p>
+      Jupiter spins very fast! A day on Jupiter is only about 10 hours long. This fast spinning makes Jupiter bulge at the middle - it's not a perfect sphere!
+    </p>
+    <p>
+      The fast rotation also creates strong winds and storms on Jupiter.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🛡️ Jupiter's Protection</h2>
+    <p>
+      Jupiter acts like a cosmic vacuum cleaner! Its strong gravity pulls in space rocks and comets that might otherwise hit Earth.
+    </p>
+    <p>
+      In 1994, a comet called Shoemaker-Levy 9 crashed into Jupiter. If it had hit Earth instead, it would have caused huge damage!
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="fact-box">
+      <h3>💡 Challenge</h3>
+      <p>Try tapping on Jupiter and all the moons to learn everything about this amazing giant planet!</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const jupiterFacts = [
+  "Jupiter is the largest planet in the solar system!",
+  "Jupiter has at least 95 moons!",
+  "Jupiter's Great Red Spot is a giant storm!",
+  "Jupiter spins faster than any other planet!",
+  "Jupiter is made mostly of hydrogen and helium!",
+  "Jupiter could fit 1,300 Earths inside it!",
+  "Jupiter protects Earth from space rocks!",
+  "Jupiter has a faint ring system!"
+];
+let factIndex = 0;
+
+function showJupiterFact() {
+  alert("🟠 " + jupiterFacts[factIndex]);
+  factIndex = (factIndex + 1) % jupiterFacts.length;
+}
+
+const moonFacts = {
+  'io': "Io is the most volcanically active moon in the solar system! It has over 400 active volcanoes that erupt constantly!",
+  'europa': "Europa might have a huge ocean under its icy surface! Scientists think it could be one of the best places to look for alien life!",
+  'ganymede': "Ganymede is the biggest moon in the entire solar system! It's even bigger than the planet Mercury!",
+  'callisto': "Callisto is the most heavily cratered object in the solar system! Its surface has remained unchanged for billions of years."
+};
+
+function showMoonFact(moon) {
+  alert("🔬 " + moon.charAt(0).toUpperCase() + moon.slice(1) + ": " + moonFacts[moon]);
+}
+</script>
+</body>
+</html>

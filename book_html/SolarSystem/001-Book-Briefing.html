@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Book Briefing</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .cover{
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      border-radius:28px;
+      padding:40px 28px;
+      text-align:center;
+      color:#fff;
+      box-shadow:0 10px 40px rgba(102,126,234,0.4);
+      margin-bottom:22px;
+      position:relative;
+      overflow:hidden;
+    }
+    .cover::before{
+      content:'';
+      position:absolute;
+      top:-50%;
+      left:-50%;
+      width:200%;
+      height:200%;
+      background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);
+      animation:rotate 20s linear infinite;
+    }
+    @keyframes rotate{
+      from{transform:rotate(0deg);}
+      to{transform:rotate(360deg);}
+    }
+    .cover .logo{
+      font-size:70px;
+      margin-bottom:12px;
+      position:relative;
+      z-index:1;
+    }
+    .cover h1{
+      font-size:34px;
+      margin-bottom:8px;
+      position:relative;
+      z-index:1;
+    }
+    .cover .tagline{
+      font-size:18px;
+      opacity:.95;
+      margin-bottom:18px;
+      position:relative;
+      z-index:1;
+    }
+    .cover .badges{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      position:relative;
+      z-index:1;
+    }
+    .cover .pill{
+      background:rgba(255,255,255,.22);
+      padding:8px 16px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:bold;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,.2);
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#a78bfa;
+      margin-bottom:14px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:18px;
+      line-height:1.8;
+      margin-bottom:12px;
+    }
+    .meta-row{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .meta-item{
+      flex:1;
+      min-width:140px;
+      background:rgba(167,139,250,0.2);
+      border-radius:16px;
+      padding:14px;
+      text-align:center;
+    }
+    .meta-label{
+      font-size:13px;
+      font-weight:bold;
+      color:#c4b5fd;
+      margin-bottom:4px;
+    }
+    .meta-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#fff;
+    }
+    .concept-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:6px;
+    }
+    .concept-item{
+      background:rgba(255,255,255,0.05);
+      border-radius:14px;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:15px;
+      font-weight:bold;
+      color:#e0e7ff;
+    }
+    .concept-item .emoji{
+      font-size:22px;
+    }
+    .steps{
+      counter-reset: step;
+    }
+    .step{
+      display:flex;
+      gap:14px;
+      margin-bottom:16px;
+      align-items:flex-start;
+    }
+    .step-num{
+      flex-shrink:0;
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:#667eea;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
+    }
+    .step p{
+      margin:0;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .tip{
+      margin-top:0;
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+    .start-btn{
+      display:block;
+      width:100%;
+      text-align:center;
+      margin-top:6px;
+      padding:20px;
+      border:none;
+      border-radius:18px;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:white;
+      font-size:22px;
+      font-weight:bold;
+      cursor:pointer;
+      text-decoration:none;
+      transition:.2s;
+    }
+    .start-btn:active{
+      transform:scale(.98);
+    }
+    .author-row{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .author-avatar{
+      flex-shrink:0;
+      width:56px;
+      height:56px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#a78bfa,#667eea);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+    }
+    .author-name{
+      font-size:19px;
+      font-weight:bold;
+      color:#fff;
+    }
+    .author-role{
+      font-size:14px;
+      color:#c4b5fd;
+    }
+    .speech{
+      background:rgba(251,191,36,0.15);
+      border-radius:16px;
+      padding:18px;
+      margin-top:12px;
+      position:relative;
+    }
+    .speech::before{
+      content:'💬';
+      position:absolute;
+      top:-12px;
+      left:20px;
+      font-size:24px;
+    }
+    .speech p{
+      font-size:17px;
+      line-height:1.7;
+      font-style:italic;
+      margin:0;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="cover">
+    <div class="logo">🌌</div>
+    <h1>Solar System Adventure</h1>
+    <div class="tagline">Explore space, one planet at a time!</div>
+    <div class="badges">
+      <div class="pill">🎂 Age 7–8</div>
+      <div class="pill">🪐 8 Planets</div>
+      <div class="pill">🎮 Fun Activities</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📖 About This Book</h2>
+    <p>
+      <strong>Solar System Adventure</strong> is an interactive journey through our cosmic neighborhood. Instead of just reading about planets, you'll <strong>explore</strong> them through fun animations, activities, and quizzes!
+    </p>
+    <p>
+      Each chapter introduces you to a new planet or the Sun with simple explanations, colorful visuals, and interactive elements. You'll learn amazing facts about space while having fun!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>ℹ️ Book Details</h2>
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="meta-label">AUTHOR</div>
+        <div class="meta-value">Space Explorer</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">AGE RANGE</div>
+        <div class="meta-value">7–8 years</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">CHAPTERS</div>
+        <div class="meta-value">34</div>
+      </div>
+    </div>
+    <div class="author-row" style="margin-top:14px;">
+      <div class="author-avatar">👨‍🚀</div>
+      <div>
+        <div class="author-name">Space Explorer</div>
+        <div class="author-role">Author &amp; Creator, Solar System Adventure</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💬 Author's Message</h2>
+    <div class="speech">
+      <p>
+        "Hello, young explorer! I created this book to share my love for space with you. The solar system is full of wonders, and I want you to discover them all. Each planet has its own special story, and I can't wait for you to learn about them. Let's blast off on this amazing adventure together!"
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧩 What You'll Learn</h2>
+    <div class="concept-grid">
+      <div class="concept-item"><span class="emoji">☀️</span> The Sun</div>
+      <div class="concept-item"><span class="emoji">🪐</span> All 8 Planets</div>
+      <div class="concept-item"><span class="emoji">🌙</span> The Moon</div>
+      <div class="concept-item"><span class="emoji">💫</span> Space Facts</div>
+      <div class="concept-item"><span class="emoji">🌍</span> Planet Sizes</div>
+      <div class="concept-item"><span class="emoji">🔭</span> Distances</div>
+      <div class="concept-item"><span class="emoji">❄️</span> Temperature</div>
+      <div class="concept-item"><span class="emoji">🎯</span> Fun Quizzes</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🚀 How to Use This Book</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p>Start with the book briefing (this page) to learn about the adventure ahead.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p>Check the Index to see all the chapters and planets you'll explore.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p>Visit each planet chapter to see animations and learn fun facts.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <p>Read the "Explained" page to understand more about each planet.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <p>Take the quiz to test what you learned before moving to the next planet.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tip">
+      🌟 <strong>For parents & teachers:</strong> This book is designed for curious young minds aged 7-8. Simple language, colorful visuals, and interactive elements make learning about space fun and engaging!
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - The Sun Quiz Time</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#ffd700;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .vs-bar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:rgba(255,255,255,0.1);
+      border-radius:16px;
+      padding:16px;
+      margin-bottom:20px;
+    }
+    .player-info{
+      text-align:center;
+      flex:1;
+    }
+    .player-emoji{
+      font-size:48px;
+    }
+    .player-name{
+      font-size:14px;
+      margin-top:4px;
+    }
+    .player-score{
+      font-size:24px;
+      font-weight:bold;
+      color:#ffd700;
+    }
+    .vs-text{
+      font-size:28px;
+      font-weight:bold;
+      color:#ff9800;
+      margin:0 16px;
+    }
+    .quiz-card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(255,215,0,0.3);
+    }
+    .question{
+      font-size:18px;
+      font-weight:bold;
+      margin-bottom:16px;
+      color:#fff;
+    }
+    .options{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .option{
+      padding:14px 18px;
+      background:rgba(255,255,255,0.05);
+      border:2px solid rgba(255,255,255,0.2);
+      border-radius:12px;
+      cursor:pointer;
+      font-size:16px;
+      transition:0.2s;
+      text-align:center;
+    }
+    .option:hover{
+      background:rgba(255,255,255,0.1);
+      border-color:#ffd700;
+    }
+    .option.correct{
+      background:rgba(76,175,80,0.3);
+      border-color:#4caf50;
+    }
+    .option.wrong{
+      background:rgba(244,67,54,0.3);
+      border-color:#f44336;
+    }
+    .feedback{
+      margin-top:12px;
+      padding:12px;
+      border-radius:10px;
+      font-size:15px;
+      display:none;
+    }
+    .feedback.show{
+      display:block;
+    }
+    .feedback.correct{
+      background:rgba(76,175,80,0.2);
+      color:#81c784;
+    }
+    .feedback.wrong{
+      background:rgba(244,67,54,0.2);
+      color:#e57373;
+    }
+    .podium{
+      display:none;
+      background:linear-gradient(135deg,#ffd700,#ff8c00);
+      border-radius:20px;
+      padding:24px;
+      margin-top:20px;
+    }
+    .podium.show{
+      display:block;
+    }
+    .podium h2{
+      text-align:center;
+      color:#0f0c29;
+      font-size:24px;
+      margin-bottom:20px;
+    }
+    .podium-stand{
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      gap:12px;
+      height:150px;
+    }
+    .stand{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .stand-emoji{
+      font-size:48px;
+      margin-bottom:8px;
+    }
+    .stand-name{
+      font-size:12px;
+      color:#0f0c29;
+      margin-bottom:4px;
+    }
+    .stand-bar{
+      background:linear-gradient(180deg,#c0c0c0,#a0a0a0);
+      border-radius:8px 8px 0 0;
+      width:60px;
+    }
+    .stand-bar.gold{
+      background:linear-gradient(180deg,#ffd700,#ff9800);
+    }
+    .stand-bar.bronze{
+      background:linear-gradient(180deg,#cd7f32,#a0522d);
+    }
+    .next-btn{
+      width:100%;
+      padding:16px;
+      background:linear-gradient(135deg,#a78bfa,#7c3aed);
+      border:none;
+      border-radius:12px;
+      color:#e0e7ff;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:transform 0.2s;
+      margin-top:16px;
+    }
+    .next-btn:hover{
+      transform:scale(1.02);
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>❓ The Sun Quiz Time!</h1>
+    <div class="subtitle">Compete against Prof. Cosmos!</div>
+  </div>
+
+  <div class="vs-bar">
+    <div class="player-info">
+      <div class="player-emoji" id="playerEmoji">🧭</div>
+      <div class="player-name" id="playerName">You</div>
+      <div class="player-score" id="playerScore">0</div>
+    </div>
+    <div class="vs-text">VS</div>
+    <div class="player-info">
+      <div class="player-emoji">🔭</div>
+      <div class="player-name">Prof. Cosmos</div>
+      <div class="player-score" id="profScore">0</div>
+    </div>
+  </div>
+
+  <div class="quiz-card" id="quizContainer">
+    <div class="question" id="question">Loading question...</div>
+    <div id="quizContent"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <div class="podium" id="podium">
+    <h2>🏆 Quiz Complete!</h2>
+    <div class="podium-stand">
+      <div class="stand">
+        <div class="stand-emoji">🥉</div>
+        <div class="stand-name" id="thirdName">-</div>
+        <div class="stand-bar bronze" style="height:60px;"></div>
+      </div>
+      <div class="stand">
+        <div class="stand-emoji">🥇</div>
+        <div class="stand-name" id="firstName">-</div>
+        <div class="stand-bar gold" style="height:100px;"></div>
+      </div>
+      <div class="stand">
+        <div class="stand-emoji">🥈</div>
+        <div class="stand-name" id="secondName">-</div>
+        <div class="stand-bar" style="height:80px;"></div>
+      </div>
+    </div>
+    <button class="next-btn" onclick="nextChapter()">Next Chapter →</button>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Answer the quiz questions to compete against Prof. Cosmos!</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const playerName = localStorage.getItem('solarPlayerName') || 'Explorer';
+const playerCharacter = localStorage.getItem('solarPlayerCharacter') || 'explorer';
+const characterEmojis = {
+  'explorer': '🧭',
+  'astronaut': '👨‍🚀',
+  'scientist': '🔬',
+  'pilot': '✈️',
+  'engineer': '🔧',
+  'captain': '⚓'
+};
+
+document.getElementById('playerEmoji').textContent = characterEmojis[playerCharacter];
+document.getElementById('playerName').textContent = playerName;
+
+let playerScore = 0;
+let profScore = 0;
+let currentQuestion = 0;
+
+const questions = [
+  {
+    question: 'What is the Sun made of mostly?',
+    options: ['Rock and metal', 'Hydrogen and helium', 'Oxygen and nitrogen', 'Water and ice'],
+    correct: 1
+  },
+  {
+    question: 'How hot is the Sun\'s surface?',
+    options: ['1,000°C', '2,500°C', '5,500°C', '10,000°C'],
+    correct: 2
+  },
+  {
+    question: 'What process creates energy in the Sun?',
+    options: ['Nuclear fusion', 'Nuclear fission', 'Burning fuel', 'Electricity'],
+    correct: 0
+  },
+  {
+    question: 'How long does it take for light from the Sun to reach Earth?',
+    options: ['1 second', '1 minute', '8 minutes', '1 hour'],
+    correct: 2
+  },
+  {
+    question: 'What is the hottest part of the Sun?',
+    options: ['Surface', 'Core', 'Corona', 'Atmosphere'],
+    correct: 1
+  }
+];
+
+function loadQuestion() {
+  if (currentQuestion >= questions.length) {
+    showPodium();
+    return;
+  }
+
+  const q = questions[currentQuestion];
+  document.getElementById('question').textContent = q.question;
+  const content = document.getElementById('quizContent');
+  content.innerHTML = '<div class="options"></div>';
+  const optionsDiv = content.querySelector('.options');
+  
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'option';
+    btn.textContent = opt;
+    btn.onclick = () => checkAnswer(i, q.correct);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(selected, correct) {
+  const feedback = document.getElementById('feedback');
+  const options = document.querySelectorAll('.option');
+  
+  options.forEach(opt => opt.style.pointerEvents = 'none');
+  
+  if (selected === correct) {
+    options[selected].classList.add('correct');
+    feedback.textContent = '✅ Correct! Great job!';
+    feedback.className = 'feedback show correct';
+    playerScore++;
+  } else {
+    options[selected].classList.add('wrong');
+    options[correct].classList.add('correct');
+    feedback.textContent = '❌ Not quite. Prof. Cosmos gets this one!';
+    feedback.className = 'feedback show wrong';
+    profScore++;
+  }
+  
+  updateScores();
+  setTimeout(() => {
+    currentQuestion++;
+    feedback.classList.remove('show');
+    loadQuestion();
+  }, 1500);
+}
+
+function updateScores() {
+  document.getElementById('playerScore').textContent = playerScore;
+  document.getElementById('profScore').textContent = profScore;
+}
+
+function showPodium() {
+  document.getElementById('quizContainer').style.display = 'none';
+  document.getElementById('podium').classList.add('show');
+  
+  const scores = [
+    {name: playerName, score: playerScore},
+    {name: 'Prof. Cosmos', score: profScore},
+    {name: 'Random Astronaut', score: Math.floor(Math.random() * 3)}
+  ];
+  
+  scores.sort((a, b) => b.score - a.score);
+  
+  document.getElementById('firstName').textContent = scores[0].name;
+  document.getElementById('secondName').textContent = scores[1].name;
+  document.getElementById('thirdName').textContent = scores[2].name;
+}
+
+function nextChapter() {
+  window.location.href = '010-Mercury-Activity.html';
+}
+
+loadQuestion();
+</script>
+</body>
+</html>

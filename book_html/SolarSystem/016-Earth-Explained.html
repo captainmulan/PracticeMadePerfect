@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Earth Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#4a90d9;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#4a90d9;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Earth Explained</h1>
+    <div class="subtitle">Learn more about our home!</div>
+  </div>
+
+  <div class="card">
+    <h2>🌍 The Goldilocks Planet</h2>
+    <p>
+      Earth is often called the "Goldilocks Planet" because it's just right for life! It's not too close to the Sun (like Venus) and not too far (like Mars).
+    </p>
+    <p>
+      This perfect distance allows liquid water to exist, which is essential for all life as we know it.
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>If Earth were 5% closer to the Sun, it would be too hot for life. If it were 5% farther, it would be too cold!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌊 The Water Planet</h2>
+    <p>
+      About 71% of Earth's surface is covered in water. This is why Earth looks blue from space! The water is in oceans, seas, lakes, rivers, and even underground.
+    </p>
+    <p>
+      Only about 3% of Earth's water is fresh water - the rest is salt water in the oceans. And most of the fresh water is frozen in ice!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌬️ Earth's Atmosphere</h2>
+    <p>
+      Earth's atmosphere is a layer of gases that surrounds the planet. It's made mostly of nitrogen (78%) and oxygen (21%).
+    </p>
+    <p>
+      The atmosphere:
+    </p>
+    <ul>
+      <li>Protects us from harmful radiation</li>
+      <li>Keeps the planet warm enough for life</li>
+      <li>Burns up most space rocks before they hit the ground</li>
+      <li>Provides the oxygen we breathe</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🧲 Earth's Magnetic Field</h2>
+    <p>
+      Earth has a strong magnetic field that acts like a giant shield. It protects us from dangerous particles coming from the Sun (solar wind).
+    </p>
+    <p>
+      This magnetic field is created by the movement of liquid iron in Earth's outer core. It's what makes compasses work!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Earth's magnetic field extends thousands of kilometers into space!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌙 The Moon's Influence</h2>
+    <p>
+      Earth's Moon is very important for life on Earth:
+    </p>
+    <ul>
+      <li>It causes ocean tides (the rising and falling of sea levels)</li>
+      <li>It stabilizes Earth's rotation, keeping our seasons regular</li>
+      <li>It provides light at night</li>
+      <li>It may have helped life spread across Earth</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🏔️ Earth's Changing Surface</h2>
+    <p>
+      Earth's surface is always changing! Plate tectonics (moving pieces of Earth's crust) create mountains, volcanoes, and earthquakes.
+    </p>
+    <p>
+      Weather and erosion (wind and water) also shape the land over millions of years. This is why Earth has such diverse landscapes!
+    </p>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

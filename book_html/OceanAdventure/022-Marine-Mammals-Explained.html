@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Marine Mammals Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#00bcd4;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#00bcd4;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Marine Mammals Explained</h1>
+    <div class="subtitle">Learn more about ocean mammals!</div>
+  </div>
+
+  <div class="card">
+    <h2>🌡️ Warm-Blooded Ocean Dwellers</h2>
+    <p>
+      Unlike fish, marine mammals are warm-blooded! This means they keep their body temperature constant, even in cold ocean water.
+    </p>
+    <p>
+      They have thick layers of fat called blubber under their skin to keep them warm. Blubber also stores energy and helps them float!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Some whales have blubber up to 30 centimeters (12 inches) thick!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🫁 Breathing at the Surface</h2>
+    <p>
+      Marine mammals have lungs and must come to the surface to breathe. They have a special blowhole on top of their head that they use to breathe.
+    </p>
+    <p>
+      When they exhale, the warm air from their lungs hits the cold air and creates a spout of water vapor - that's the "blow" you see from whales!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🔊 Echolocation</h2>
+    <p>
+      Toothed whales and dolphins use echolocation to find food and navigate. They make clicking sounds that bounce off objects and return as echoes.
+    </p>
+    <p>
+      By listening to these echoes, they can tell what's around them, even in dark or murky water! It's like having built-in sonar!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🐋 Baleen vs. Toothed Whales</h2>
+    <p>
+      Whales are divided into two main groups:
+    </p>
+    <ul>
+      <li><strong>Baleen whales</strong> - Have baleen plates instead of teeth. They filter huge amounts of water to catch tiny krill and plankton. Examples: blue whale, humpback whale.</li>
+      <li><strong>Toothed whales</strong> - Have teeth and hunt fish and squid. They use echolocation to find prey. Examples: sperm whale, orca, dolphins.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>👨‍👩‍👧‍👦 Social Behavior</h2>
+    <p>
+      Many marine mammals are very social! Dolphins live in pods and work together to hunt and protect each other. Whales communicate with complex songs that can travel for miles.
+    </p>
+    <p>
+      Some marine mammals, like orcas, stay with their families for their entire lives!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🦭 Pinnipeds - Seals and Sea Lions</h2>
+    <p>
+      Pinnipeds are "fin-footed" marine mammals. They spend time both in water and on land.
+    </p>
+    <ul>
+      <li><strong>True seals</strong> - No external ear flaps, move on land by wiggling on their bellies</li>
+      <li><strong>Eared seals</strong> - Have external ear flaps, can walk on land using their front flippers</li>
+      <li><strong>Walruses</strong> - Have long tusks and thick whiskers for finding food on the ocean floor</li>
+    </ul>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Midnight Zone Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#9c27b0;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#9c27b0;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Midnight Zone Explained</h1>
+    <div class="subtitle">Learn more about the dark deep ocean!</div>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Life in Total Darkness</h2>
+    <p>
+      The Midnight Zone is completely dark - no sunlight reaches this deep. Creatures here have evolved amazing ways to survive without light.
+    </p>
+    <p>
+      Many have lost their eyes entirely since there's nothing to see. Others have developed huge eyes to detect the tiniest amounts of bioluminescent light.
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>The Midnight Zone is also called the bathypelagic zone by scientists!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎣 The Anglerfish's Amazing Lure</h2>
+    <p>
+      The anglerfish is one of the most famous Midnight Zone creatures. Female anglerfish have a special glowing lure on their head that attracts prey in the dark.
+    </p>
+    <p>
+      When a curious fish comes close to investigate the light, the anglerfish snaps it up with its huge mouth full of sharp teeth!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🦑 The Giant Squid</h2>
+    <p>
+      The giant squid lives in the Midnight Zone and can grow up to 13 meters (43 feet) long! That's longer than a school bus!
+    </p>
+    <p>
+      Giant squid have the largest eyes of any animal - each eye can be as big as a dinner plate. These huge eyes help them see in the dark and spot predators like sperm whales.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌡️ Surviving the Cold and Pressure</h2>
+    <p>
+      Midnight Zone creatures have special adaptations to survive the extreme conditions:
+    </p>
+    <ul>
+      <li><strong>Slow metabolism</strong> - They move slowly to save energy</li>
+      <li><strong>Flexible bodies</strong> - No swim bladders to handle pressure</li>
+      <li><strong>Special proteins</strong> - Keep their cells from freezing</li>
+      <li><strong>Efficient hunters</strong> - Can't afford to miss a meal</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🍽️ Food is Scarce</h2>
+    <p>
+      Food is very hard to find in the Midnight Zone. Most food comes from above in the form of "marine snow" - dead plants and animals that sink from the surface.
+    </p>
+    <p>
+      Some creatures migrate up to the Twilight Zone at night to feed, then return to the darkness during the day.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🔬 Still Being Discovered</h2>
+    <p>
+      Scientists are still discovering new species in the Midnight Zone! Because it's so deep and hard to explore, there are many creatures we haven't seen yet.
+    </p>
+    <p>
+      New deep-sea submersibles and robots are helping us explore this mysterious zone and learn more about its amazing inhabitants.
+    </p>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

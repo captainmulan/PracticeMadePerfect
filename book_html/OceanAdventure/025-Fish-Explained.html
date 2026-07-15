@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Fish Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#ff5722;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#ff5722;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Fish Explained</h1>
+    <div class="subtitle">Learn more about ocean fish!</div>
+  </div>
+
+  <div class="card">
+    <h2>🫁 Breathing Underwater</h2>
+    <p>
+      Fish breathe using gills, which are special organs that take oxygen from the water. Water flows over the gills, and tiny blood vessels absorb the oxygen.
+    </p>
+    <p>
+      This is very different from how humans breathe - we need to come to the surface to breathe air, but fish can breathe underwater their whole lives!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Some fish can survive out of water for a short time because they can breathe through their skin!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌡️ Cold-Blooded Creatures</h2>
+    <p>
+      Fish are cold-blooded, which means their body temperature changes with the water temperature. This is different from warm-blooded animals like humans and marine mammals.
+    </p>
+    <p>
+      Being cold-blooded helps fish survive in different water temperatures, but it also means they're less active in cold water!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🎨 Scales and Skin</h2>
+    <p>
+      Most fish have scales covering their body. Scales protect the fish from injury and parasites. They're made of the same material as human fingernails!
+    </p>
+    <p>
+      Fish also have a slimy coating called mucus that helps them swim faster and protects them from infections.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🐠 Schooling Behavior</h2>
+    <p>
+      Many fish swim together in groups called schools. Schooling helps fish in many ways:
+    </p>
+    <ul>
+      <li><strong>Protection</strong> - Harder for predators to catch one fish</li>
+      <li><strong>Confusion</strong> - The school looks like one big animal</li>
+      <li><strong>Efficiency</strong> - Swimming together saves energy</li>
+      <li><strong>Foraging</strong> - More eyes to find food</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🌊 Migration</h2>
+    <p>
+      Many fish migrate, or travel long distances, for food or to have babies. Some famous migrations include:
+    </p>
+    <ul>
+      <li><strong>Salmon</strong> - Swim from ocean to rivers to lay eggs</li>
+      <li><strong>Tuna</strong> - Travel across oceans following food</li>
+      <li><strong>Eels</strong> - Migrate thousands of kilometers to spawn</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🔬 Fish Diversity</h2>
+    <p>
+      Fish are incredibly diverse! They range from the tiny Paedocypris (8 mm) to the massive whale shark (12 meters). They live in every ocean habitat from coral reefs to the deep sea!
+    </p>
+    <p>
+      Scientists are still discovering new fish species every year, especially in deep ocean areas that are hard to explore.
+    </p>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>
