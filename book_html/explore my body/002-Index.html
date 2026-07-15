@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore My Body - Index</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
+      color:#1565c0;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .hearts{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 80px 100px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 140px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 200px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 260px 70px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 320px 110px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 380px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 440px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 500px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 560px 100px,rgba(233,30,99,0.2),transparent);
+      background-size:900px 150px;
+      animation:float 15s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#ff6b6b;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#1976d2;
+      font-size:16px;
+    }
+    .chapter-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+      gap:12px;
+      margin-top:20px;
+    }
+    .chapter-card{
+      background:rgba(255,255,255,0.8);
+      backdrop-filter:blur(10px);
+      border-radius:16px;
+      padding:16px;
+      border:2px solid rgba(255,107,107,0.3);
+      cursor:pointer;
+      transition:transform 0.2s,border-color 0.2s;
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    }
+    .chapter-card:hover{
+      transform:scale(1.05);
+      border-color:#ff6b6b;
+    }
+    .chapter-number{
+      font-size:24px;
+      font-weight:bold;
+      color:#ff6b6b;
+      margin-bottom:8px;
+    }
+    .chapter-emoji{
+      font-size:32px;
+      margin-bottom:8px;
+    }
+    .chapter-title{
+      font-size:14px;
+      font-weight:bold;
+      color:#1565c0;
+      margin-bottom:4px;
+    }
+    .chapter-type{
+      font-size:12px;
+      color:#1976d2;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#1976d2;
+      background:rgba(255,255,255,0.6);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="hearts"></div>
+<div class="container">
+  <div class="header">
+    <h1>📖 Explore My Body Index</h1>
+    <div class="subtitle">Choose a chapter to explore!</div>
+  </div>
+
+  <div class="chapter-grid">
+    <div class="chapter-card">
+      <div class="chapter-number">001</div>
+      <div class="chapter-emoji">📚</div>
+      <div class="chapter-title">Book Briefing</div>
+      <div class="chapter-type">Introduction</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">002</div>
+      <div class="chapter-emoji">📋</div>
+      <div class="chapter-title">Index</div>
+      <div class="chapter-type">Chapter List</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">003</div>
+      <div class="chapter-emoji">🎮</div>
+      <div class="chapter-title">Character Selection</div>
+      <div class="chapter-type">Choose Your Hero</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">004</div>
+      <div class="chapter-emoji">🫀</div>
+      <div class="chapter-title">Your Amazing Heart</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">005</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Amazing Heart</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">006</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Amazing Heart</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">007</div>
+      <div class="chapter-emoji">🧠</div>
+      <div class="chapter-title">Your Brain</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">008</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Brain</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">009</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Brain</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">010</div>
+      <div class="chapter-emoji">🦴</div>
+      <div class="chapter-title">Your Bones</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">011</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Bones</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">012</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Bones</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">013</div>
+      <div class="chapter-emoji">💪</div>
+      <div class="chapter-title">Your Muscles</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">014</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Muscles</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">015</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Muscles</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">016</div>
+      <div class="chapter-emoji">🫁</div>
+      <div class="chapter-title">Your Lungs</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">017</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Lungs</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">018</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Lungs</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">019</div>
+      <div class="chapter-emoji">🍽️</div>
+      <div class="chapter-title">Your Stomach</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">020</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Stomach</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">021</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Stomach</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">022</div>
+      <div class="chapter-emoji">👁️</div>
+      <div class="chapter-title">Your Eyes</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">023</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Eyes</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">024</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Eyes</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">025</div>
+      <div class="chapter-emoji">👂</div>
+      <div class="chapter-title">Your Ears</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">026</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Ears</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">027</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Ears</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">028</div>
+      <div class="chapter-emoji">👃</div>
+      <div class="chapter-title">Your Nose</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">029</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Nose</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">030</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Nose</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">031</div>
+      <div class="chapter-emoji">👅</div>
+      <div class="chapter-title">Your Mouth</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">032</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Mouth</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">033</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Mouth</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">034</div>
+      <div class="chapter-emoji">🧬</div>
+      <div class="chapter-title">Your Skin</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">035</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Your Skin</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">036</div>
+      <div class="chapter-emoji">❓</div>
+      <div class="chapter-title">Your Skin</div>
+      <div class="chapter-type">Quiz Time</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">037</div>
+      <div class="chapter-emoji">🤸</div>
+      <div class="chapter-title">Moving Your Body</div>
+      <div class="chapter-type">Activity</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">038</div>
+      <div class="chapter-emoji">📖</div>
+      <div class="chapter-title">Moving Your Body</div>
+      <div class="chapter-type">Explained</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">039</div>
+      <div class="chapter-emoji">📝</div>
+      <div class="chapter-title">Conclusion</div>
+      <div class="chapter-type">Summary</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">040</div>
+      <div class="chapter-emoji">🏆</div>
+      <div class="chapter-title">Final Quiz</div>
+      <div class="chapter-type">Overall Quiz</div>
+    </div>
+
+    <div class="chapter-card">
+      <div class="chapter-number">041</div>
+      <div class="chapter-emoji">🎉</div>
+      <div class="chapter-title">Congratulations</div>
+      <div class="chapter-type">You Did It!</div>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

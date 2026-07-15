@@ -956,6 +956,46 @@ export default function Admin() {
             {homeStyleTab === "hero" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Hero Section</h4>
+                <div style={{ marginBottom: "16px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Hero Theme</span>
+                    <select
+                      value={homeData?.style?.heroTheme?.selectedTheme ?? "space"}
+                      onChange={(e) => {
+                        const selectedTheme = e.target.value;
+                        updateStyleConfig("heroTheme", "selectedTheme", selectedTheme);
+                        // Only apply preset values if not custom
+                        if (selectedTheme !== "custom") {
+                          const preset = homeData?.style?.themePresets?.[selectedTheme as keyof typeof homeData.style.themePresets];
+                          if (preset && preset.hero) {
+                            // Apply hero styles from preset
+                            updateStyleConfig("hero", "backgroundColor", preset.hero.backgroundColor);
+                            updateStyleConfig("hero", "backgroundColorGradientStart", preset.hero.backgroundColorGradientStart);
+                            updateStyleConfig("hero", "backgroundColorGradientMiddle", preset.hero.backgroundColorGradientMiddle);
+                            updateStyleConfig("hero", "backgroundColorGradientEnd", preset.hero.backgroundColorGradientEnd);
+                            updateStyleConfig("hero", "useBackgroundColorGradient", preset.hero.useBackgroundColorGradient);
+                            updateStyleConfig("hero", "color", preset.hero.color);
+                            updateStyleConfig("hero", "eyebrowColor", preset.hero.eyebrowColor);
+                            updateStyleConfig("hero", "titleColor", preset.hero.titleColor);
+                            updateStyleConfig("hero", "descriptionColor", preset.hero.descriptionColor);
+                          }
+                        }
+                      }}
+                      className="admin-grid-input"
+                    >
+                      {(homeData?.style?.heroTheme?.availableThemes ?? ["space", "ocean", "dinosaur", "custom"]).map((theme: string) => (
+                        <option key={theme} value={theme}>
+                          {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {homeData?.style?.heroTheme?.selectedTheme === "custom" && (
+                    <div style={{ marginTop: "8px", fontSize: "12px", color: "#6b7280" }}>
+                      Use the gradient controls below to customize your hero theme
+                    </div>
+                  )}
+                </div>
                 <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
                     <input

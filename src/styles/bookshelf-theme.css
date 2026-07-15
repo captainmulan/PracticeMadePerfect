@@ -97,7 +97,7 @@ body[data-bookshelf-theme="space"] .home-categories::before {
     radial-gradient(2px 2px at 800px 80px,#fff,transparent),
     radial-gradient(1px 1px at 850px 170px,#fff,transparent);
   background-size: 900px 200px;
-  animation: twinkle 4s ease-in-out infinite, moveStars 60s linear infinite;
+  animation: twinkle 4s ease-in-out infinite, moveStars 90s linear infinite;
   z-index: 0;
 }
 
@@ -117,7 +117,7 @@ body[data-bookshelf-theme="space"] .home-categories .rocket-container::before {
   content: '🚀';
   position: absolute;
   font-size: 2rem;
-  animation: flyRocket 20s linear infinite;
+  animation: flyRocket 35s linear infinite;
   opacity: 0.8;
   filter: drop-shadow(0 0 10px rgba(255,200,100,0.8));
 }
@@ -165,7 +165,7 @@ body[data-bookshelf-theme="space"] .home-categories::after {
     radial-gradient(2px 2px at 850px 150px,rgba(255,255,255,0.5),transparent),
     radial-gradient(1px 1px at 950px 250px,rgba(255,255,255,0.5),transparent);
   background-size: 1000px 300px;
-  animation: twinkle 3s ease-in-out infinite reverse, moveStars 80s linear infinite reverse;
+  animation: twinkle 3s ease-in-out infinite reverse, moveStars 120s linear infinite reverse;
   z-index: 0;
 }
 
@@ -453,16 +453,247 @@ body[data-bookshelf-theme="space"] .primary-button:active {
     inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
-body[data-bookshelf-theme="space"] .home-hero,
-body[data-bookshelf-theme="space"] .practice-workspace-top {
-  background: rgba(255,255,255,0.05);
+/* Hero section themes - independent from bookshelf theme */
+body[data-hero-theme="space"] .home-hero {
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
   backdrop-filter: blur(10px);
   border: 2px solid rgba(102,126,234,0.3);
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(102,126,234,0.2),
     0 8px 32px rgba(0,0,0,0.3),
     inset 0 1px 0 rgba(255,255,255,0.1);
   border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stars in hero section */
+body[data-hero-theme="space"] .home-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+    radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+    radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+    radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+    radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+    radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+    radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+    radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+    radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+    radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+    radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+    radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+    radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+    radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+    radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+  background-size: 900px 200px;
+  animation: twinkle 4s ease-in-out infinite;
+  z-index: 0;
+}
+
+body[data-hero-theme="space"] .home-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(118,75,162,0.8), rgba(167,139,250,0.8), rgba(118,75,162,0.8), transparent);
+  z-index: 1;
+}
+
+body[data-hero-theme="space"] .home-hero > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Rocket and Superman in hero section */
+body[data-hero-theme="space"] .home-hero .rocket-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+body[data-hero-theme="space"] .home-hero .rocket-container::before {
+  content: '🚀';
+  position: absolute;
+  font-size: 2rem;
+  animation: flyRocket 35s linear infinite;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 10px rgba(255,200,100,0.8));
+}
+
+/* Astronaut animation */
+body[data-hero-theme="space"] .home-hero .rocket-container::after {
+  content: '🪐';
+  position: absolute;
+  font-size: 2.5rem;
+  animation: flyAstronaut 35s linear infinite;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 10px rgba(100,200,255,0.8));
+}
+
+body[data-bookshelf-theme="space"] .home-categories .rocket-container::after {
+  content: '🪐';
+  position: absolute;
+  font-size: 2.5rem;
+  animation: flyAstronaut 35s linear infinite;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 10px rgba(100,200,255,0.8));
+}
+
+@keyframes flyAstronaut {
+  0% {
+    right: -50px;
+    top: 30%;
+    transform: scaleX(-1) rotate(-15deg);
+  }
+  25% {
+    top: 60%;
+  }
+  50% {
+    top: 20%;
+  }
+  75% {
+    top: 50%;
+  }
+  100% {
+    right: calc(100% + 50px);
+    top: 40%;
+    transform: scaleX(-1) rotate(-15deg);
+  }
+}
+
+/* Dinosaur hero theme */
+body[data-hero-theme="dinosaur"] .home-hero {
+  background: linear-gradient(180deg, #2d2416 0%, #4a3c2e 50%, #3d3228 100%) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139,90,43,0.3);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ocean hero theme */
+body[data-hero-theme="ocean"] .home-hero {
+  background: linear-gradient(180deg, #0a192f 0%, #112240 50%, #0d1b2a 100%) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(100,200,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fallback for bookshelf theme when hero theme is not set (for backward compatibility) */
+body[data-bookshelf-theme="space"] .home-hero,
+body[data-bookshelf-theme="space"] .practice-workspace-top {
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(102,126,234,0.3);
+  box-shadow:
+    0 0 20px rgba(102,126,234,0.2),
+    0 8px 32px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stars in hero section for bookshelf theme fallback */
+body[data-bookshelf-theme="space"] .home-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+    radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+    radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+    radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+    radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+    radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+    radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+    radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+    radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+    radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+    radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+    radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+    radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+    radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+    radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+  background-size: 900px 200px;
+  animation: twinkle 4s ease-in-out infinite;
+  z-index: 0;
+}
+
+body[data-bookshelf-theme="space"] .home-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(118,75,162,0.8), rgba(167,139,250,0.8), rgba(118,75,162,0.8), transparent);
+  z-index: 1;
+}
+
+body[data-bookshelf-theme="space"] .home-hero > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Rocket and Superman in hero section for bookshelf theme fallback */
+body[data-bookshelf-theme="space"] .home-hero .rocket-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+body[data-bookshelf-theme="space"] .home-hero .rocket-container::before {
+  content: '🚀';
+  position: absolute;
+  font-size: 2rem;
+  animation: flyRocket 35s linear infinite;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 10px rgba(255,200,100,0.8));
+}
+
+body[data-bookshelf-theme="space"] .home-hero .rocket-container::after {
+  content: '🪐';
+  position: absolute;
+  font-size: 2.5rem;
+  animation: flyAstronaut 35s linear infinite;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 10px rgba(100,200,255,0.8));
 }
 
 /* Dinosaur Theme */
@@ -515,6 +746,17 @@ body[data-bookshelf-theme="dinosaur"] .tab.active {
   box-shadow: 0 4px 12px rgba(139,90,43,0.4);
 }
 
+body[data-bookshelf-theme="dinosaur"] .home-hero,
+body[data-bookshelf-theme="dinosaur"] .practice-workspace-top {
+  background: linear-gradient(180deg, #2d2416 0%, #4a3c2e 50%, #3d3228 100%) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139,90,43,0.3);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
 /* Ocean Theme */
 body[data-bookshelf-theme="ocean"] {
   background: #f8fafc !important;
@@ -563,6 +805,17 @@ body[data-bookshelf-theme="ocean"] .tab.active {
   background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(0,180,216,0.4);
+}
+
+body[data-bookshelf-theme="ocean"] .home-hero,
+body[data-bookshelf-theme="ocean"] .practice-workspace-top {
+  background: linear-gradient(180deg, #0a192f 0%, #112240 50%, #0d1b2a 100%) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(100,200,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
 /* ── Unified content column (header + main stay aligned) ── */
@@ -732,6 +985,10 @@ body[data-bookshelf-theme="ocean"] .tab.active {
   color: var(--shelf-sage-dark);
   background: rgba(139, 139, 122, 0.1);
   border-radius: 6px;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  z-index: 10;
 }
 
 .page-home .hero-cta {

@@ -11,21 +11,24 @@ function AppContent() {
   const homeData = getHomePageData();
   const style = homeData.style;
   const selectedTheme = style?.bookshelfTheme?.selectedTheme ?? "space";
+  const heroTheme = style?.heroTheme?.selectedTheme ?? "space";
   const isCustomTheme = selectedTheme === "custom";
 
-  const backgroundStyle = isCustomTheme 
-    ? (style?.main?.useGradient 
-        ? `linear-gradient(180deg, ${style.main.backgroundGradientStart} 0%, ${style.main.backgroundGradientEnd} 100%)` 
+  const backgroundStyle = isCustomTheme
+    ? (style?.main?.useGradient
+        ? `linear-gradient(180deg, ${style.main.backgroundGradientStart} 0%, ${style.main.backgroundGradientEnd} 100%)`
         : (style?.main?.backgroundColor ?? "#f8fafc"))
     : undefined;
 
   // Set data attribute on body for theme CSS
   useEffect(() => {
     document.body.setAttribute('data-bookshelf-theme', selectedTheme);
+    document.body.setAttribute('data-hero-theme', heroTheme);
     return () => {
       document.body.removeAttribute('data-bookshelf-theme');
+      document.body.removeAttribute('data-hero-theme');
     };
-  }, [selectedTheme]);
+  }, [selectedTheme, heroTheme]);
 
   return (
     <div 

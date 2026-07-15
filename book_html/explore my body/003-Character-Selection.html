@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore My Body - Character Selection</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
+      color:#1565c0;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .hearts{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 80px 100px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 140px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 200px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 260px 70px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 320px 110px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 380px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 440px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 500px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 560px 100px,rgba(233,30,99,0.2),transparent);
+      background-size:900px 150px;
+      animation:float 15s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#ff6b6b;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#1976d2;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.8);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(255,107,107,0.3);
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    }
+    .card h2{
+      color:#ff6b6b;
+      margin-bottom:12px;
+      font-size:22px;
+    }
+    .input-group{
+      margin-bottom:16px;
+    }
+    .input-group label{
+      display:block;
+      font-size:16px;
+      margin-bottom:8px;
+      color:#1976d2;
+    }
+    .input-group input{
+      width:100%;
+      padding:12px 16px;
+      border:2px solid rgba(255,107,107,0.5);
+      border-radius:12px;
+      background:rgba(255,255,255,0.9);
+      color:#1565c0;
+      font-size:16px;
+      font-family:inherit;
+    }
+    .input-group input::placeholder{
+      color:#90caf9;
+    }
+    .input-group input:focus{
+      outline:none;
+      border-color:#ff6b6b;
+    }
+    .character-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+    .character-option{
+      background:rgba(255,255,255,0.9);
+      border:2px solid rgba(255,107,107,0.3);
+      border-radius:16px;
+      padding:16px;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.2s;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+    .character-option:hover{
+      border-color:#ff6b6b;
+      transform:scale(1.05);
+    }
+    .character-option.selected{
+      border-color:#ff6b6b;
+      background:rgba(255,107,107,0.2);
+      box-shadow:0 0 20px rgba(255,107,107,0.4);
+    }
+    .character-emoji{
+      font-size:48px;
+      margin-bottom:8px;
+    }
+    .character-name{
+      font-size:14px;
+      font-weight:bold;
+      color:#1565c0;
+    }
+    .btn{
+      width:100%;
+      padding:16px;
+      background:linear-gradient(135deg,#ff6b6b,#ee5a5a);
+      border:none;
+      border-radius:12px;
+      color:#ffffff;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:transform 0.2s;
+      margin-top:20px;
+      box-shadow:0 4px 12px rgba(238,90,90,0.3);
+    }
+    .btn:hover{
+      transform:scale(1.02);
+    }
+    .btn:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+    }
+    .vs-section{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin:20px 0;
+      padding:20px;
+      background:rgba(255,255,255,0.5);
+      border-radius:16px;
+    }
+    .vs-character{
+      text-align:center;
+    }
+    .vs-emoji{
+      font-size:64px;
+    }
+    .vs-name{
+      font-size:14px;
+      margin-top:8px;
+      color:#1565c0;
+    }
+    .vs-text{
+      font-size:32px;
+      font-weight:bold;
+      color:#ff6b6b;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#1976d2;
+      background:rgba(255,255,255,0.6);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="hearts"></div>
+<div class="container">
+  <div class="header">
+    <h1>🎮 Choose Your Character</h1>
+    <div class="subtitle">Who will you be on this adventure?</div>
+  </div>
+
+  <div class="card">
+    <h2>👤 What's Your Name?</h2>
+    <div class="input-group">
+      <label for="playerName">Enter your name:</label>
+      <input type="text" id="playerName" placeholder="Type your name here..." maxlength="20">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🫀 Choose Your Body Explorer Character</h2>
+    <div class="character-grid">
+      <div class="character-option" onclick="selectCharacter(this, 'explorer')">
+        <div class="character-emoji">🔍</div>
+        <div class="character-name">Explorer</div>
+      </div>
+      <div class="character-option" onclick="selectCharacter(this, 'scientist')">
+        <div class="character-emoji">🔬</div>
+        <div class="character-name">Scientist</div>
+      </div>
+      <div class="character-option" onclick="selectCharacter(this, 'doctor')">
+        <div class="character-emoji">👨‍⚕️</div>
+        <div class="character-name">Doctor</div>
+      </div>
+      <div class="character-option" onclick="selectCharacter(this, 'nurse')">
+        <div class="character-emoji">👩‍⚕️</div>
+        <div class="character-name">Nurse</div>
+      </div>
+      <div class="character-option" onclick="selectCharacter(this, 'athlete')">
+        <div class="character-emoji">🏃</div>
+        <div class="character-name">Athlete</div>
+      </div>
+      <div class="character-option" onclick="selectCharacter(this, 'detective')">
+        <div class="character-emoji">🕵️</div>
+        <div class="character-name">Detective</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>⚔️ Your Adventure</h2>
+    <div class="vs-section">
+      <div class="vs-character">
+        <div class="vs-emoji" id="selectedEmoji">❓</div>
+        <div class="vs-name" id="selectedName">You</div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="vs-character">
+        <div class="vs-emoji">👨‍⚕️</div>
+        <div class="vs-name">Dr. Body</div>
+      </div>
+    </div>
+    <p style="font-size:14px;line-height:1.6;color:#1976d2;">
+      You'll be learning with Dr. Body, a friendly doctor who will help you discover how your amazing body works!
+    </p>
+  </div>
+
+  <button class="btn" id="startBtn" onclick="startAdventure()" disabled>Start Adventure! 🚀</button>
+
+<div class="nav-hint">
+  <div>💡 Enter your name and choose a character to begin!</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+let selectedCharacter = null;
+const characterEmojis = {
+  'explorer': '🔍',
+  'scientist': '🔬',
+  'doctor': '👨‍⚕️',
+  'nurse': '👩‍⚕️',
+  'athlete': '🏃',
+  'detective': '🕵️'
+};
+
+function selectCharacter(element, character) {
+  document.querySelectorAll('.character-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  element.classList.add('selected');
+  selectedCharacter = character;
+  
+  document.getElementById('selectedEmoji').textContent = characterEmojis[character];
+  checkReady();
+}
+
+document.getElementById('playerName').addEventListener('input', checkReady);
+
+function checkReady() {
+  const name = document.getElementById('playerName').value.trim();
+  const btn = document.getElementById('startBtn');
+  
+  if (name.length > 0 && selectedCharacter) {
+    btn.disabled = false;
+    document.getElementById('selectedName').textContent = name;
+  } else {
+    btn.disabled = true;
+  }
+}
+
+function startAdventure() {
+  const name = document.getElementById('playerName').value.trim();
+  
+  localStorage.setItem('bodyPlayerName', name);
+  localStorage.setItem('bodyPlayerCharacter', selectedCharacter);
+  
+  alert(`Welcome, ${name} the ${selectedCharacter.charAt(0).toUpperCase() + selectedCharacter.slice(1)}! Your body adventure begins now!`);
+  
+  window.location.href = '004-Your-Amazing-Heart-Activity.html';
+}
+</script>
+</body>
+</html>

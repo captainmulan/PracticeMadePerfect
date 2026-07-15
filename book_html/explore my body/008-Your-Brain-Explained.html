@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore My Body - Your Brain Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
+      color:#1565c0;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .hearts{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 80px 100px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 140px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 200px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 260px 70px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 320px 110px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 380px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 440px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 500px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 560px 100px,rgba(233,30,99,0.2),transparent);
+      background-size:900px 150px;
+      animation:float 15s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#ff6b6b;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#1976d2;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.8);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(255,107,107,0.3);
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    }
+    .card h2{
+      color:#ff6b6b;
+      margin-bottom:12px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+      color:#1565c0;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+      color:#1565c0;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+      color:#1565c0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#1976d2;
+      background:rgba(255,255,255,0.6);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="hearts"></div>
+<div class="container">
+  <div class="header">
+    <h1>📖 Your Brain Explained</h1>
+    <div class="subtitle">Learn more about your amazing brain!</div>
+  </div>
+
+  <div class="card">
+    <h2>🧠 What Is Your Brain?</h2>
+    <p>
+      Your brain is the most complex organ in your body! It's like a super computer that controls everything you do - thinking, feeling, moving, and even breathing!
+    </p>
+    <p>
+      Your brain is made up of billions of tiny cells called neurons that send messages to each other at lightning speed!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Your brain has about 86 billion neurons - that's more than 10 times the number of people on Earth!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏗️ Parts of Your Brain</h2>
+    <p>
+      Your brain has different parts, each with special jobs:
+    </p>
+    <ul>
+      <li><strong>Cerebrum</strong> - The largest part, handles thinking and learning</li>
+      <li><strong>Cerebellum</strong> - Helps with balance and coordination</li>
+      <li><strong>Brainstem</strong> - Controls breathing and heart rate</li>
+      <li><strong>Hippocampus</strong> - Helps make memories</li>
+      <li><strong>Amygdala</strong> - Handles emotions</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>⚡ How Your Brain Works</h2>
+    <p>
+      Your brain sends electrical signals through neurons to control your body. These signals travel at speeds up to 268 miles per hour!
+    </p>
+    <p>
+      When you learn something new, your brain creates new connections between neurons. This is how you remember things and get better at skills!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>💤 Your Brain Never Sleeps</h2>
+    <p>
+      Even when you're sleeping, your brain is hard at work! It processes what you learned during the day and helps form memories.
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Your brain uses about 20% of your body's energy, even though it only weighs about 3 pounds!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Keeping Your Brain Healthy</h2>
+    <p>
+      You can help keep your brain strong and healthy by:
+    </p>
+    <ul>
+      <li>Reading and learning new things</li>
+      <li>Getting enough sleep</li>
+      <li>Eating healthy foods like fish and nuts</li>
+      <li>Exercising and playing sports</li>
+      <li>Challenging yourself with puzzles and games</li>
+    </ul>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

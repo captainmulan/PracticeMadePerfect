@@ -44,6 +44,7 @@ export default function Home() {
             : (style?.hero?.backgroundColor ?? "#ffffff"),
         }}
       >
+        <div className="rocket-container"></div>
         <button
           type="button"
           className="home-hero-toggle"
@@ -104,6 +105,15 @@ export default function Home() {
                 type="button"
                 className={`home-tab-button ${selectedTab === tabTitle ? "active" : ""}`}
                 onClick={() => setSelectedTab(tabTitle as "Selection" | "Search" | "All")}
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  padding: "10px 8px",
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
+                }}
               >
                 {tabTitle}
               </button>

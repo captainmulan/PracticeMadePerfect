@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore My Body - Your Stomach Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
+      color:#1565c0;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .hearts{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 80px 100px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 140px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 200px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 260px 70px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 320px 110px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 380px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 440px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 500px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 560px 100px,rgba(233,30,99,0.2),transparent);
+      background-size:900px 150px;
+      animation:float 15s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#ff6b6b;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#1976d2;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.8);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(255,107,107,0.3);
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    }
+    .card h2{
+      color:#ff6b6b;
+      margin-bottom:12px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+      color:#1565c0;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+      color:#1565c0;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+      color:#1565c0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#1976d2;
+      background:rgba(255,255,255,0.6);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="hearts"></div>
+<div class="container">
+  <div class="header">
+    <h1>📖 Your Stomach Explained</h1>
+    <div class="subtitle">Learn more about your amazing stomach!</div>
+  </div>
+
+  <div class="card">
+    <h2>🍽️ What Is Your Stomach?</h2>
+    <p>
+      Your stomach is a J-shaped organ in your belly that helps digest food! It's like a muscular bag that mixes and breaks down the food you eat.
+    </p>
+    <p>
+      Your stomach is about the size of your fist when empty, but it can stretch to hold about 1 liter of food!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Your stomach makes a new protective lining every few days to keep the acid from hurting it!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔬 How Digestion Works</h2>
+    <p>
+      When food enters your stomach, special muscles squeeze and mix it like a blender. Your stomach also makes strong acid that helps break down food into smaller pieces.
+    </p>
+    <p>
+      The acid in your stomach is so strong it could dissolve metal! But your stomach has a special mucus lining that protects it from getting hurt by the acid.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>⏱️ The Digestive Journey</h2>
+    <p>
+      Food stays in your stomach for about 2 to 6 hours. During this time, it's mixed with acid and turned into a thick liquid called chyme.
+    </p>
+    <p>
+      After your stomach finishes its work, the chyme moves into your small intestine, where more digestion happens and your body absorbs nutrients!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🥗 Keeping Your Stomach Healthy</h2>
+    <p>
+      You can help keep your stomach healthy by:
+    </p>
+    <ul>
+      <li>Eating slowly and chewing food well</li>
+      <li>Eating healthy foods like fruits and vegetables</li>
+      <li>Drinking plenty of water</li>
+      <li>Not eating too much at once</li>
+      <li>Avoiding too many spicy or greasy foods</li>
+    </ul>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Your stomach growls when it's empty because it's pushing air and fluids around - it's your stomach saying "I'm hungry!"</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

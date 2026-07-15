@@ -192,6 +192,10 @@ export const homePageData = {
       selectedTheme: "space",
       availableThemes: ["space", "dinosaur", "ocean", "gradient", "custom"],
     },
+    heroTheme: {
+      selectedTheme: "space",
+      availableThemes: ["space", "ocean", "dinosaur", "custom"],
+    },
     themePresets: {
       space: {
         backgroundColor: "#0f0c29",

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore My Body - Your Bones Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
+      color:#1565c0;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .hearts{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 80px 100px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 140px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 200px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 260px 70px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 320px 110px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 380px 50px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(4px 4px at 440px 90px,rgba(233,30,99,0.2),transparent),
+        radial-gradient(3px 3px at 500px 60px,rgba(244,67,54,0.3),transparent),
+        radial-gradient(5px 5px at 560px 100px,rgba(233,30,99,0.2),transparent);
+      background-size:900px 150px;
+      animation:float 15s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#ff6b6b;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#1976d2;
+      font-size:16px;
+    }
+    .card{
+      background:rgba(255,255,255,0.8);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(255,107,107,0.3);
+      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    }
+    .card h2{
+      color:#ff6b6b;
+      margin-bottom:12px;
+      font-size:22px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+      color:#1565c0;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+      color:#1565c0;
+    }
+    .fact-box{
+      background:rgba(255,193,7,0.2);
+      border-left:6px solid #ffc107;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#ffc107;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+      color:#1565c0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#1976d2;
+      background:rgba(255,255,255,0.6);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="hearts"></div>
+<div class="container">
+  <div class="header">
+    <h1>📖 Your Bones Explained</h1>
+    <div class="subtitle">Learn more about your amazing bones!</div>
+  </div>
+
+  <div class="card">
+    <h2>🦴 What Are Your Bones?</h2>
+    <p>
+      Your bones are the hard parts inside your body that give you shape and support! They work like a frame that holds everything together.
+    </p>
+    <p>
+      Your bones are alive - they have blood vessels and nerves inside them. They can grow and repair themselves if they get hurt!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>You have 206 bones in your body as an adult, but babies are born with about 270 bones!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🏗️ What Do Your Bones Do?</h2>
+    <p>
+      Your bones have many important jobs:
+    </p>
+    <ul>
+      <li><strong>Support</strong> - They hold your body up and give you shape</li>
+      <li><strong>Protection</strong> - They protect your organs (like your skull protects your brain)</li>
+      <li><strong>Movement</strong> - They work with muscles to help you move</li>
+      <li><strong>Blood Making</strong> - Bone marrow makes blood cells</li>
+      <li><strong>Storage</strong> - They store minerals like calcium</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🦴 Types of Bones</h2>
+    <p>
+      Your body has different types of bones:
+    </p>
+    <ul>
+      <li><strong>Long bones</strong> - Like your arm and leg bones</li>
+      <li><strong>Short bones</strong> - Like the bones in your wrists and ankles</li>
+      <li><strong>Flat bones</strong> - Like your ribs and skull bones</li>
+      <li><strong>Irregular bones</strong> - Like your vertebrae (spine bones)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>💪 Keeping Your Bones Strong</h2>
+    <p>
+      You can help keep your bones strong and healthy by:
+    </p>
+    <ul>
+      <li>Drinking milk and eating dairy products</li>
+      <li>Eating foods with calcium like cheese and yogurt</li>
+      <li>Playing sports and being active</li>
+      <li>Getting enough vitamin D from sunshine</li>
+      <li>Wearing safety gear like helmets</li>
+    </ul>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>The longest bone in your body is the femur (thigh bone) - it's about 1/4 of your height!</p>
+    </div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>
