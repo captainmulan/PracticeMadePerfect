@@ -1307,6 +1307,72 @@ export default function Admin() {
             {homeStyleTab === "bookshelf" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Bookshelf</h4>
+                <div style={{ marginBottom: "16px" }}>
+                  <label className="admin-task-editor-field">
+                    <span className="admin-task-editor-label">Theme Preset</span>
+                    <select
+                      value={homeData?.style?.bookshelfTheme?.selectedTheme ?? "space"}
+                      onChange={(e) => {
+                        const selectedTheme = e.target.value;
+                        updateStyleConfig("bookshelfTheme", "selectedTheme", selectedTheme);
+                        // Only apply preset values if not custom
+                        if (selectedTheme !== "custom") {
+                          const preset = homeData?.style?.themePresets?.[selectedTheme as keyof typeof homeData.style.themePresets];
+                          if (preset) {
+                            // Apply bookshelf background
+                            updateStyleConfig("bookshelf", "backgroundColor", preset.backgroundColor);
+                            updateStyleConfig("bookshelf", "backgroundColorGradientStart", preset.backgroundColorGradientStart);
+                            updateStyleConfig("bookshelf", "backgroundColorGradientMiddle", preset.backgroundColorGradientMiddle);
+                            updateStyleConfig("bookshelf", "backgroundColorGradientEnd", preset.backgroundColorGradientEnd);
+                            updateStyleConfig("bookshelf", "useBackgroundColorGradient", preset.useBackgroundColorGradient);
+                            updateStyleConfig("bookshelf", "borderColor", preset.borderColor);
+                            
+                            // Apply tabs styles
+                            if (preset.tabs) {
+                              updateStyleConfig("tabs", "backgroundColor", preset.tabs.backgroundColor);
+                              updateStyleConfig("tabs", "backgroundColorGradientStart", preset.tabs.backgroundColorGradientStart);
+                              updateStyleConfig("tabs", "backgroundColorGradientMiddle", preset.tabs.backgroundColorGradientMiddle);
+                              updateStyleConfig("tabs", "backgroundColorGradientEnd", preset.tabs.backgroundColorGradientEnd);
+                              updateStyleConfig("tabs", "useBackgroundColorGradient", preset.tabs.useBackgroundColorGradient);
+                              updateStyleConfig("tabs", "color", preset.tabs.color);
+                              updateStyleConfig("tabs", "activeBackgroundColor", preset.tabs.activeBackgroundColor);
+                              updateStyleConfig("tabs", "activeBackgroundColorGradientStart", preset.tabs.activeBackgroundColorGradientStart);
+                              updateStyleConfig("tabs", "activeBackgroundColorGradientMiddle", preset.tabs.activeBackgroundColorGradientMiddle);
+                              updateStyleConfig("tabs", "activeBackgroundColorGradientEnd", preset.tabs.activeBackgroundColorGradientEnd);
+                              updateStyleConfig("tabs", "useActiveBackgroundColorGradient", preset.tabs.useActiveBackgroundColorGradient);
+                              updateStyleConfig("tabs", "activeColor", preset.tabs.activeColor);
+                            }
+                            
+                            // Apply hero styles
+                            if (preset.hero) {
+                              updateStyleConfig("hero", "backgroundColor", preset.hero.backgroundColor);
+                              updateStyleConfig("hero", "backgroundColorGradientStart", preset.hero.backgroundColorGradientStart);
+                              updateStyleConfig("hero", "backgroundColorGradientMiddle", preset.hero.backgroundColorGradientMiddle);
+                              updateStyleConfig("hero", "backgroundColorGradientEnd", preset.hero.backgroundColorGradientEnd);
+                              updateStyleConfig("hero", "useBackgroundColorGradient", preset.hero.useBackgroundColorGradient);
+                              updateStyleConfig("hero", "color", preset.hero.color);
+                              updateStyleConfig("hero", "eyebrowColor", preset.hero.eyebrowColor);
+                              updateStyleConfig("hero", "titleColor", preset.hero.titleColor);
+                              updateStyleConfig("hero", "descriptionColor", preset.hero.descriptionColor);
+                            }
+                          }
+                        }
+                      }}
+                      className="admin-grid-input"
+                    >
+                      {(homeData?.style?.bookshelfTheme?.availableThemes ?? ["space", "dinosaur", "ocean", "gradient", "custom"]).map((theme: string) => (
+                        <option key={theme} value={theme}>
+                          {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {homeData?.style?.bookshelfTheme?.selectedTheme === "custom" && (
+                    <div style={{ marginTop: "8px", fontSize: "12px", color: "#6b7280" }}>
+                      Use the gradient controls below to customize your theme
+                    </div>
+                  )}
+                </div>
                 <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
                     <input

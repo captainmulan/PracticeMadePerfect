@@ -35,6 +35,536 @@
   --tab-active: var(--shelf-sage);
 }
 
+/* Space Theme - Star background and glassmorphism */
+body[data-bookshelf-theme="space"] {
+  background: #f8fafc !important;
+}
+
+body[data-bookshelf-theme="space"] .home-categories {
+  --shelf-blush-start: #0f0c29;
+  --shelf-blush-end: #24243e;
+  --shelf-sage: #667eea;
+  --shelf-sage-dark: #764ba2;
+  --shelf-sage-light: #a78bfa;
+  --shelf-ink: #e0e7ff;
+  --shelf-ink-muted: #c4b5fd;
+  --shelf-ink-subtle: #a78bfa;
+  --shelf-border: rgba(255,255,255,0.1);
+  --shelf-border-strong: rgba(255,255,255,0.2);
+  --shelf-cream: rgba(255,255,255,0.05);
+  --shelf-card: rgba(255,255,255,0.1);
+  --shelf-board: rgba(255,255,255,0.08);
+  --shelf-editor-bg: rgba(255,255,255,0.03);
+  --shelf-editor-surface: rgba(255,255,255,0.05);
+  --shelf-editor-text: #e0e7ff;
+  --shelf-editor-muted: #a78bfa;
+  --shelf-editor-border: rgba(255,255,255,0.1);
+  --shelf-shadow: rgba(0,0,0,0.3);
+  --shelf-shadow-strong: rgba(0,0,0,0.5);
+  --tab-active: #667eea;
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Moving stars with parallax effect */
+body[data-bookshelf-theme="space"] .home-categories::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+    radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+    radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+    radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+    radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+    radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+    radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+    radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+    radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+    radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+    radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+    radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+    radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+    radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+    radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+  background-size: 900px 200px;
+  animation: twinkle 4s ease-in-out infinite, moveStars 60s linear infinite;
+  z-index: 0;
+}
+
+/* Flying rocket in bookshelf - use a wrapper approach */
+body[data-bookshelf-theme="space"] .home-categories .rocket-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+body[data-bookshelf-theme="space"] .home-categories .rocket-container::before {
+  content: '🚀';
+  position: absolute;
+  font-size: 2rem;
+  animation: flyRocket 20s linear infinite;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 10px rgba(255,200,100,0.8));
+}
+
+@keyframes flyRocket {
+  0% {
+    left: -50px;
+    top: 80%;
+    transform: rotate(-45deg);
+  }
+  25% {
+    top: 20%;
+  }
+  50% {
+    top: 60%;
+  }
+  75% {
+    top: 30%;
+  }
+  100% {
+    left: calc(100% + 50px);
+    top: 70%;
+    transform: rotate(-45deg);
+  }
+}
+
+/* Second layer of stars for depth */
+body[data-bookshelf-theme="space"] .home-categories::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 50px 100px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(1px 1px at 150px 200px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(2px 2px at 250px 50px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(1px 1px at 350px 150px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(2px 2px at 450px 250px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(1px 1px at 550px 100px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(2px 2px at 650px 200px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(1px 1px at 750px 50px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(2px 2px at 850px 150px,rgba(255,255,255,0.5),transparent),
+    radial-gradient(1px 1px at 950px 250px,rgba(255,255,255,0.5),transparent);
+  background-size: 1000px 300px;
+  animation: twinkle 3s ease-in-out infinite reverse, moveStars 80s linear infinite reverse;
+  z-index: 0;
+}
+
+@keyframes twinkle {
+  0%,100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes moveStars {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-200px); }
+}
+
+body[data-bookshelf-theme="space"] .home-categories > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 3D Hero Panel */
+body[data-bookshelf-theme="space"] .hero-banner {
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+  border: 2px solid rgba(102,126,234,0.5) !important;
+  box-shadow: 
+    0 0 30px rgba(102,126,234,0.4),
+    0 8px 32px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.15) !important;
+  border-radius: 24px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stars in hero banner */
+body[data-bookshelf-theme="space"] .hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+    radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+    radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+    radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+    radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+    radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+    radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+    radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+    radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+    radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+    radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+    radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+    radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+    radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+    radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+  background-size: 900px 200px;
+  animation: twinkle 4s ease-in-out infinite;
+  z-index: 0;
+}
+
+body[data-bookshelf-theme="space"] .hero-banner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(118,75,162,0.8), rgba(167,139,250,0.8), rgba(118,75,162,0.8), transparent);
+  z-index: 1;
+}
+
+body[data-bookshelf-theme="space"] .hero-banner > * {
+  position: relative;
+  z-index: 2;
+}
+
+body[data-bookshelf-theme="space"] .hero-banner .hero-title {
+  color: #ffffff !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5), 0 0 20px rgba(102,126,234,0.5);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+body[data-bookshelf-theme="space"] .hero-banner .hero-subtitle {
+  color: #c4b5fd !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  font-weight: 600;
+}
+
+body[data-bookshelf-theme="space"] .hero-banner .hero-description {
+  color: #e0e7ff !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+body[data-bookshelf-theme="space"] .hero-banner .hero-category-tag,
+body[data-bookshelf-theme="space"] .hero-banner .hero-type-tag {
+  color: #a78bfa !important;
+  background: rgba(102,126,234,0.3) !important;
+  border: 1px solid rgba(167,139,250,0.4);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+body[data-bookshelf-theme="space"] .hero-banner .hero-task-id {
+  color: #c4b5fd !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+body[data-bookshelf-theme="space"] .home-categories.panel,
+body[data-bookshelf-theme="space"] .practice-workspace.panel {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(102,126,234,0.3);
+  box-shadow: 
+    0 0 20px rgba(102,126,234,0.2),
+    0 8px 32px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  border-radius: 24px;
+}
+
+/* 3D Tabs */
+body[data-bookshelf-theme="space"] .tab {
+  background: linear-gradient(135deg, rgba(102,126,234,0.3) 0%, rgba(118,75,162,0.3) 100%);
+  color: #e0e7ff;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(102,126,234,0.4);
+  box-shadow: 
+    0 4px 8px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+body[data-bookshelf-theme="space"] .tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 12px rgba(102,126,234,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  border-color: rgba(167,139,250,0.6);
+}
+
+body[data-bookshelf-theme="space"] .tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  box-shadow: 
+    0 8px 16px rgba(102,126,234,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.3),
+    0 0 20px rgba(102,126,234,0.4);
+  border-color: rgba(167,139,250,0.8);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* 3D Category Cards - High Quality Book Look */
+body[data-bookshelf-theme="space"] .category-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+  border: 3px solid rgba(102,126,234,0.5) !important;
+  box-shadow: 
+    0 8px 16px rgba(0,0,0,0.4),
+    0 0 30px rgba(102,126,234,0.3),
+    inset 0 2px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.3) !important;
+  border-radius: 12px !important;
+  transform-style: preserve-3d;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #ffffff !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Book spine effect */
+body[data-bookshelf-theme="space"] .category-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.4), rgba(102,126,234,0.2), transparent);
+  border-right: 1px solid rgba(102,126,234,0.3);
+}
+
+/* Book cover shine effect */
+body[data-bookshelf-theme="space"] .category-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+body[data-bookshelf-theme="space"] .category-card:hover {
+  transform: translateY(-8px) rotateX(5deg) rotateY(-2deg);
+  box-shadow: 
+    0 16px 32px rgba(0,0,0,0.5),
+    0 0 40px rgba(102,126,234,0.5),
+    inset 0 2px 0 rgba(255,255,255,0.15),
+    inset 0 -2px 0 rgba(0,0,0,0.4);
+  border-color: rgba(167,139,250,0.8);
+}
+
+body[data-bookshelf-theme="space"] .category-card-title {
+  color: #ffffff !important;
+  text-shadow: 0 3px 6px rgba(0,0,0,0.6), 0 0 15px rgba(102,126,234,0.4);
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  font-size: 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+body[data-bookshelf-theme="space"] .category-card-subtitle {
+  color: #c4b5fd !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  font-weight: 600;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Add book cover texture */
+body[data-bookshelf-theme="space"] .category-card {
+  background-image: 
+    linear-gradient(135deg, rgba(102,126,234,0.1) 0%, transparent 50%, rgba(118,75,162,0.1) 100%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.02) 2px,
+      rgba(255,255,255,0.02) 4px
+    ) !important;
+}
+
+/* 3D Buttons */
+body[data-bookshelf-theme="space"] button,
+body[data-bookshelf-theme="space"] .action-button,
+body[data-bookshelf-theme="space"] .panel-toggle,
+body[data-bookshelf-theme="space"] .practice-code-button,
+body[data-bookshelf-theme="space"] .primary-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
+  border: 2px solid rgba(167,139,250,0.5) !important;
+  box-shadow: 
+    0 4px 8px rgba(0,0,0,0.3),
+    0 0 15px rgba(102,126,234,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3) !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+body[data-bookshelf-theme="space"] button:hover,
+body[data-bookshelf-theme="space"] .action-button:hover,
+body[data-bookshelf-theme="space"] .panel-toggle:hover,
+body[data-bookshelf-theme="space"] .practice-code-button:hover,
+body[data-bookshelf-theme="space"] .primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 12px rgba(102,126,234,0.5),
+    0 0 25px rgba(102,126,234,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  border-color: rgba(167,139,250,0.8);
+}
+
+body[data-bookshelf-theme="space"] button:active,
+body[data-bookshelf-theme="space"] .action-button:active,
+body[data-bookshelf-theme="space"] .panel-toggle:active,
+body[data-bookshelf-theme="space"] .practice-code-button:active,
+body[data-bookshelf-theme="space"] .primary-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+body[data-bookshelf-theme="space"] .home-hero,
+body[data-bookshelf-theme="space"] .practice-workspace-top {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(102,126,234,0.3);
+  box-shadow: 
+    0 0 20px rgba(102,126,234,0.2),
+    0 8px 32px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  border-radius: 20px;
+}
+
+/* Dinosaur Theme */
+body[data-bookshelf-theme="dinosaur"] {
+  background: #f8fafc !important;
+}
+
+body[data-bookshelf-theme="dinosaur"] .home-categories {
+  --shelf-blush-start: #2d2416;
+  --shelf-blush-end: #3d3228;
+  --shelf-sage: #8b5a2b;
+  --shelf-sage-dark: #a0522d;
+  --shelf-sage-light: #d4a574;
+  --shelf-ink: #e8d4b8;
+  --shelf-ink-muted: #c9a86c;
+  --shelf-ink-subtle: #d4a574;
+  --shelf-border: rgba(139,90,43,0.3);
+  --shelf-border-strong: rgba(139,90,43,0.5);
+  --shelf-cream: rgba(139,90,43,0.1);
+  --shelf-card: rgba(139,90,43,0.15);
+  --shelf-board: rgba(139,90,43,0.12);
+  --shelf-editor-bg: rgba(139,90,43,0.08);
+  --shelf-editor-surface: rgba(139,90,43,0.1);
+  --shelf-editor-text: #e8d4b8;
+  --shelf-editor-muted: #c9a86c;
+  --shelf-editor-border: rgba(139,90,43,0.2);
+  --shelf-shadow: rgba(139,90,43,0.2);
+  --shelf-shadow-strong: rgba(139,90,43,0.4);
+  --tab-active: #8b5a2b;
+  background: linear-gradient(180deg, #2d2416 0%, #4a3c2e 50%, #3d3228 100%) !important;
+}
+
+body[data-bookshelf-theme="dinosaur"] .home-categories.panel,
+body[data-bookshelf-theme="dinosaur"] .practice-workspace.panel {
+  background: rgba(139,90,43,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139,90,43,0.3);
+}
+
+body[data-bookshelf-theme="dinosaur"] .tab {
+  background: rgba(139,90,43,0.2);
+  color: #e8d4b8;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(139,90,43,0.3);
+}
+
+body[data-bookshelf-theme="dinosaur"] .tab.active {
+  background: linear-gradient(135deg, #8b5a2b 0%, #a0522d 100%);
+  color: #fff8e7;
+  box-shadow: 0 4px 12px rgba(139,90,43,0.4);
+}
+
+/* Ocean Theme */
+body[data-bookshelf-theme="ocean"] {
+  background: #f8fafc !important;
+}
+
+body[data-bookshelf-theme="ocean"] .home-categories {
+  --shelf-blush-start: #0a192f;
+  --shelf-blush-end: #0d1b2a;
+  --shelf-sage: #00b4d8;
+  --shelf-sage-dark: #0096c7;
+  --shelf-sage-light: #48cae4;
+  --shelf-ink: #b8d4e8;
+  --shelf-ink-muted: #ade8f4;
+  --shelf-ink-subtle: #48cae4;
+  --shelf-border: rgba(100,200,255,0.2);
+  --shelf-border-strong: rgba(100,200,255,0.4);
+  --shelf-cream: rgba(0,180,216,0.08);
+  --shelf-card: rgba(0,180,216,0.1);
+  --shelf-board: rgba(0,180,216,0.08);
+  --shelf-editor-bg: rgba(0,180,216,0.05);
+  --shelf-editor-surface: rgba(0,180,216,0.08);
+  --shelf-editor-text: #b8d4e8;
+  --shelf-editor-muted: #48cae4;
+  --shelf-editor-border: rgba(100,200,255,0.15);
+  --shelf-shadow: rgba(0,180,216,0.15);
+  --shelf-shadow-strong: rgba(0,180,216,0.3);
+  --tab-active: #00b4d8;
+  background: linear-gradient(180deg, #0a192f 0%, #112240 50%, #0d1b2a 100%) !important;
+}
+
+body[data-bookshelf-theme="ocean"] .home-categories.panel,
+body[data-bookshelf-theme="ocean"] .practice-workspace.panel {
+  background: rgba(0,180,216,0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(100,200,255,0.2);
+}
+
+body[data-bookshelf-theme="ocean"] .tab {
+  background: rgba(100,200,255,0.1);
+  color: #b8d4e8;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(100,200,255,0.2);
+}
+
+body[data-bookshelf-theme="ocean"] .tab.active {
+  background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,180,216,0.4);
+}
+
 /* ── Unified content column (header + main stay aligned) ── */
 .app-shell:has(.page-home) .app-header-inner,
 .app-main:has(.page-home) {
@@ -151,39 +681,6 @@
 .app-shell:has(.practice-page),
 .app-shell:has(.course-wizard-page) {
   color: var(--shelf-ink);
-}
-
-.app-shell:has(.page-home) .app-header,
-.app-shell:has(.practice-page) .app-header,
-.app-shell:has(.course-wizard-page) .app-header {
-  /* Admin-configured styles in App.tsx will override these defaults */
-}
-
-.app-shell:has(.page-home) .app-logo,
-.app-shell:has(.practice-page) .app-logo,
-.app-shell:has(.course-wizard-page) .app-logo {
-  /* Admin-configured styles in App.tsx will override these defaults */
-}
-
-.app-shell:has(.page-home) .page-tag,
-.app-shell:has(.practice-page) .page-tag,
-.app-shell:has(.course-wizard-page) .page-tag {
-  /* Admin-configured styles in App.tsx will override these defaults */
-}
-
-.app-shell:has(.page-home) .nav-link,
-.app-shell:has(.practice-page) .nav-link,
-.app-shell:has(.course-wizard-page) .nav-link {
-  /* Admin-configured styles in App.tsx will override these defaults */
-}
-
-.app-shell:has(.page-home) .nav-link.active,
-.app-shell:has(.page-home) .nav-link:hover,
-.app-shell:has(.practice-page) .nav-link.active,
-.app-shell:has(.practice-page) .nav-link:hover,
-.app-shell:has(.course-wizard-page) .nav-link.active,
-.app-shell:has(.course-wizard-page) .nav-link:hover {
-  /* Admin-configured styles in App.tsx will override these defaults */
 }
 
 .app-main:has(.page-home),

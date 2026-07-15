@@ -95,6 +95,7 @@ export default function Home() {
           borderColor: style?.bookshelf?.borderColor ?? "#e2e8f0"
         }}
       >
+        <div className="rocket-container"></div>
         <div className="container">
           <nav className="home-tabs">
             {["Selection", "Search", "All"].map((tabTitle) => (
