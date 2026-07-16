@@ -2945,17 +2945,22 @@ textarea {
 }
 
 .home-hero-toggle {
-  position: absolute;
-  top: 14px;
-  right: 14px;
+  position: absolute !important;
+  top: 16px !important;
+  right: 14px !important;
+  left: auto !important;
   background: none;
   border: none;
   color: #ffffff;
-  font-size: 1.35rem;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 2px 6px;
   line-height: 1;
+  z-index: 100 !important;
+  min-width: 24px;
+  min-height: 24px;
+  pointer-events: auto !important;
 }
 
 .home-hero.collapsed .home-hero-description,
@@ -3534,6 +3539,13 @@ textarea {
   .home-shelf-grid {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+
+  .home-hero-toggle {
+    font-size: 0.9rem;
+    padding: 3px 6px;
+    min-width: 20px;
+    min-height: 20px;
   }
 }
 

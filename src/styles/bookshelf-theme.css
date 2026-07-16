@@ -983,12 +983,16 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
 
 .page-home .home-hero-toggle {
   color: var(--shelf-sage-dark);
-  background: rgba(139, 139, 122, 0.1);
-  border-radius: 6px;
-  position: absolute;
-  right: 16px;
-  top: 16px;
-  z-index: 10;
+  background: none;
+  border-radius: 0;
+  position: absolute !important;
+  right: 16px !important;
+  top: 16px !important;
+  left: auto !important;
+  z-index: 100 !important;
+  min-width: 24px;
+  min-height: 24px;
+  pointer-events: auto !important;
 }
 
 .page-home .hero-cta {
