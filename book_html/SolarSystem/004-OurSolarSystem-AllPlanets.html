@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - All Planets</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#a78bfa;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .solar-system{
+      position:relative;
+      width:100%;
+      height:500px;
+      background:rgba(0,0,0,0.3);
+      border-radius:20px;
+      margin:20px 0;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .sun{
+      position:absolute;
+      width:80px;
+      height:80px;
+      background:radial-gradient(circle,#ffd700,#ff8c00);
+      border-radius:50%;
+      box-shadow:0 0 60px #ffd700,0 0 100px #ff8c00;
+      z-index:10;
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%,100%{transform:scale(1);}
+      50%{transform:scale(1.05);}
+    }
+    .orbit{
+      position:absolute;
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:50%;
+      animation:rotate linear infinite;
+    }
+    .planet{
+      position:absolute;
+      border-radius:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+    }
+    .mercury-orbit{
+      width:120px;
+      height:120px;
+      animation-duration:4s;
+    }
+    .mercury{
+      width:12px;
+      height:12px;
+      background:radial-gradient(circle at 30% 30%,#e0e0e0,#a0a0a0,#606060);
+      left:100%;
+      box-shadow:inset -2px -2px 4px rgba(0,0,0,0.4);
+    }
+    .venus-orbit{
+      width:160px;
+      height:160px;
+      animation-duration:6s;
+    }
+    .venus{
+      width:16px;
+      height:16px;
+      background:radial-gradient(circle at 30% 30%,#ffd700,#e6a832,#b8860b);
+      left:100%;
+      box-shadow:inset -3px -3px 6px rgba(0,0,0,0.3);
+    }
+    .earth-orbit{
+      width:210px;
+      height:210px;
+      animation-duration:8s;
+    }
+    .earth{
+      width:18px;
+      height:18px;
+      background:radial-gradient(circle at 30% 30%,#6b93d6,#4a90d9,#2d5a8a);
+      left:100%;
+      box-shadow:inset -3px -3px 6px rgba(0,0,0,0.4);
+      position:relative;
+    }
+    .earth::before{
+      content:'';
+      position:absolute;
+      width:6px;
+      height:4px;
+      background:#2e8b57;
+      border-radius:50%;
+      top:30%;
+      left:20%;
+      opacity:0.7;
+    }
+    .earth::after{
+      content:'';
+      position:absolute;
+      width:5px;
+      height:3px;
+      background:#2e8b57;
+      border-radius:50%;
+      bottom:25%;
+      right:25%;
+      opacity:0.6;
+    }
+    .mars-orbit{
+      width:260px;
+      height:260px;
+      animation-duration:10s;
+    }
+    .mars{
+      width:14px;
+      height:14px;
+      background:radial-gradient(circle at 30% 30%,#e27b58,#c1440e,#8b2500);
+      left:100%;
+      box-shadow:inset -3px -3px 6px rgba(0,0,0,0.4);
+    }
+    .jupiter-orbit{
+      width:340px;
+      height:340px;
+      animation-duration:14s;
+    }
+    .jupiter{
+      width:35px;
+      height:35px;
+      background:linear-gradient(180deg,#d4a574 0%,#c9956a 20%,#e8b87a 40%,#d4a574 60%,#b8865a 80%,#a07850 100%);
+      left:100%;
+      box-shadow:inset -5px -5px 10px rgba(0,0,0,0.3);
+    }
+    .saturn-orbit{
+      width:420px;
+      height:420px;
+      animation-duration:18s;
+    }
+    .saturn{
+      width:30px;
+      height:30px;
+      background:linear-gradient(180deg,#f4d59e 0%,#e8c87a 30%,#d4b87a 70%,#c9a860 100%);
+      left:100%;
+      position:relative;
+      box-shadow:inset -4px -4px 8px rgba(0,0,0,0.3);
+    }
+    .saturn::after{
+      content:'';
+      position:absolute;
+      width:50px;
+      height:12px;
+      background:linear-gradient(90deg,transparent,rgba(244,213,158,0.8),rgba(212,184,122,0.6),rgba(244,213,158,0.8),transparent);
+      border-radius:50%;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%) rotate(-20deg);
+      border:2px solid rgba(212,184,122,0.5);
+    }
+    .uranus-orbit{
+      width:500px;
+      height:500px;
+      animation-duration:22s;
+    }
+    .uranus{
+      width:22px;
+      height:22px;
+      background:radial-gradient(circle at 30% 30%,#b8f4f8,#7de3f4,#4fc3d4);
+      left:100%;
+      box-shadow:inset -4px -4px 8px rgba(0,0,0,0.3);
+    }
+    .neptune-orbit{
+      width:580px;
+      height:580px;
+      animation-duration:26s;
+    }
+    .neptune{
+      width:20px;
+      height:20px;
+      background:radial-gradient(circle at 30% 30%,#6b8cff,#4b70dd,#3a5ab8);
+      left:100%;
+      box-shadow:inset -4px -4px 8px rgba(0,0,0,0.4);
+    }
+    @keyframes rotate{
+      from{transform:rotate(0deg);}
+      to{transform:rotate(360deg);}
+    }
+    .planet-info{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-top:20px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .planet-info h2{
+      color:#a78bfa;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .planet-info p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .planet-list{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+      margin-top:15px;
+    }
+    .planet-item{
+      background:rgba(255,255,255,0.05);
+      border-radius:12px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:14px;
+      font-weight:bold;
+    }
+    .planet-item .emoji{
+      font-size:20px;
+    }
+    .controls{
+      display:flex;
+      justify-content:center;
+      gap:15px;
+      margin-top:20px;
+    }
+    .control-btn{
+      padding:12px 24px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .control-btn:hover{
+      transform:scale(1.05);
+    }
+    .control-btn:active{
+      transform:scale(0.95);
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+    .memory-game{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-top:20px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .memory-game h2{
+      color:#a78bfa;
+      margin-bottom:16px;
+      font-size:20px;
+      text-align:center;
+    }
+    .memory-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:16px;
+    }
+    .memory-card{
+      aspect-ratio:1;
+      background:rgba(255,255,255,0.1);
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      cursor:pointer;
+      transition:0.3s;
+      border:2px solid rgba(255,255,255,0.2);
+    }
+    .memory-card:hover{
+      transform:scale(1.05);
+      background:rgba(255,255,255,0.15);
+    }
+    .memory-card.flipped{
+      background:rgba(167,139,250,0.3);
+      border-color:#a78bfa;
+    }
+    .memory-card.matched{
+      background:rgba(34,197,94,0.3);
+      border-color:#22c55e;
+    }
+    .game-status{
+      text-align:center;
+      margin-top:16px;
+      font-size:16px;
+      color:#c4b5fd;
+    }
+    .restart-btn{
+      display:block;
+      margin:16px auto 0;
+      padding:12px 24px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .restart-btn:hover{
+      transform:scale(1.05);
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>🪐 Our Solar System</h1>
+    <div class="subtitle">Watch all the planets orbit around the Sun!</div>
+  </div>
+
+  <div class="solar-system" id="solarSystem">
+    <div class="sun"></div>
+    
+    <div class="orbit mercury-orbit">
+      <div class="planet mercury"></div>
+    </div>
+    
+    <div class="orbit venus-orbit">
+      <div class="planet venus"></div>
+    </div>
+    
+    <div class="orbit earth-orbit">
+      <div class="planet earth"></div>
+    </div>
+    
+    <div class="orbit mars-orbit">
+      <div class="planet mars"></div>
+    </div>
+    
+    <div class="orbit jupiter-orbit">
+      <div class="planet jupiter"></div>
+    </div>
+    
+    <div class="orbit saturn-orbit">
+      <div class="planet saturn"></div>
+    </div>
+    
+    <div class="orbit uranus-orbit">
+      <div class="planet uranus"></div>
+    </div>
+    
+    <div class="orbit neptune-orbit">
+      <div class="planet neptune"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="control-btn" onclick="toggleAnimation()">⏯️ Pause/Play</button>
+    <button class="control-btn" onclick="changeSpeed()">🚀 Change Speed</button>
+  </div>
+
+  <div class="planet-info">
+    <h2>🌟 Meet Our Solar System Family!</h2>
+    <p>
+      Our solar system has 8 planets that all orbit around the Sun. Each planet is unique and special in its own way!
+    </p>
+    
+    <div class="planet-list">
+      <div class="planet-item"><span class="emoji">☀️</span> Sun - Our star</div>
+      <div class="planet-item"><span class="emoji">🪨</span> Mercury - Smallest</div>
+      <div class="planet-item"><span class="emoji">🔥</span> Venus - Hottest</div>
+      <div class="planet-item"><span class="emoji">🌍</span> Earth - Our home</div>
+      <div class="planet-item"><span class="emoji">🔴</span> Mars - The red planet</div>
+      <div class="planet-item"><span class="emoji">🟠</span> Jupiter - Biggest</div>
+      <div class="planet-item"><span class="emoji">💍</span> Saturn - Has rings</div>
+      <div class="planet-item"><span class="emoji">🔵</span> Uranus - Ice giant</div>
+      <div class="planet-item"><span class="emoji">🔷</span> Neptune - Windy</div>
+    </div>
+  </div>
+
+  <div class="memory-game">
+    <h2>🎮 Planet Memory Match!</h2>
+    <p style="text-align:center;color:#c4b5fd;font-size:14px;">Match the planet pairs to win!</p>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <div class="game-status" id="gameStatus">Moves: 0</div>
+    <button class="restart-btn" onclick="initMemoryGame()">🔄 New Game</button>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+let isPaused = false;
+let speedMultiplier = 1;
+const orbits = document.querySelectorAll('.orbit');
+
+function toggleAnimation() {
+  isPaused = !isPaused;
+  orbits.forEach(orbit => {
+    orbit.style.animationPlayState = isPaused ? 'paused' : 'running';
+  });
+}
+
+function changeSpeed() {
+  speedMultiplier = speedMultiplier === 1 ? 0.5 : speedMultiplier === 0.5 ? 2 : 1;
+  const speeds = {
+    'mercury-orbit': 4,
+    'venus-orbit': 6,
+    'earth-orbit': 8,
+    'mars-orbit': 10,
+    'jupiter-orbit': 14,
+    'saturn-orbit': 18,
+    'uranus-orbit': 22,
+    'neptune-orbit': 26
+  };
+  
+  orbits.forEach(orbit => {
+    const baseSpeed = speeds[orbit.classList[0]];
+    orbit.style.animationDuration = (baseSpeed / speedMultiplier) + 's';
+  });
+}
+
+// Memory Game
+const planets = ['☀️', '🪨', '🔥', '🌍', '🔴', '🟠', '💍', '🔵'];
+let memoryCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let moves = 0;
+let canFlip = true;
+
+function initMemoryGame() {
+  const grid = document.getElementById('memoryGrid');
+  grid.innerHTML = '';
+  memoryCards = [...planets, ...planets];
+  memoryCards.sort(() => Math.random() - 0.5);
+  flippedCards = [];
+  matchedPairs = 0;
+  moves = 0;
+  canFlip = true;
+  document.getElementById('gameStatus').textContent = 'Moves: 0';
+  
+  memoryCards.forEach((emoji, index) => {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.index = index;
+    card.dataset.emoji = emoji;
+    card.textContent = '❓';
+    card.onclick = () => flipCard(card);
+    grid.appendChild(card);
+  });
+}
+
+function flipCard(card) {
+  if (!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+  
+  card.textContent = card.dataset.emoji;
+  card.classList.add('flipped');
+  flippedCards.push(card);
+  
+  if (flippedCards.length === 2) {
+    moves++;
+    document.getElementById('gameStatus').textContent = 'Moves: ' + moves;
+    canFlip = false;
+    
+    if (flippedCards[0].dataset.emoji === flippedCards[1].dataset.emoji) {
+      flippedCards.forEach(c => c.classList.add('matched'));
+      matchedPairs++;
+      flippedCards = [];
+      canFlip = true;
+      
+      if (matchedPairs === planets.length) {
+        document.getElementById('gameStatus').textContent = '🎉 You won in ' + moves + ' moves!';
+      }
+    } else {
+      setTimeout(() => {
+        flippedCards.forEach(c => {
+          c.textContent = '❓';
+          c.classList.remove('flipped');
+        });
+        flippedCards = [];
+        canFlip = true;
+      }, 1000);
+    }
+  }
+}
+
+// Initialize memory game on load
+initMemoryGame();
+</script>
+</body>
+</html>

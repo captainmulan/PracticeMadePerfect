@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Saturn</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#f4d59e;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .saturn-display{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:30px 0;
+    }
+    .saturn-container{
+      position:relative;
+      width:180px;
+      height:140px;
+      cursor:pointer;
+    }
+    .saturn{
+      width:100px;
+      height:100px;
+      background:radial-gradient(circle at 30% 30%,#f4d59e,#d4b87a,#b8865a);
+      border-radius:50%;
+      box-shadow:0 0 40px rgba(244,213,158,0.4),inset -15px -15px 30px rgba(0,0,0,0.3);
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      animation:float 7s ease-in-out infinite;
+    }
+    .ring{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:160px;
+      height:50px;
+      border:8px solid rgba(244,213,158,0.6);
+      border-radius:50%;
+      animation:rotate 20s linear infinite;
+    }
+    .ring::before{
+      content:'';
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:140px;
+      height:35px;
+      border:6px solid rgba(212,184,122,0.4);
+      border-radius:50%;
+    }
+    .saturn-container:hover .saturn{
+      transform:translate(-50%,-50%) scale(1.1);
+    }
+    @keyframes float{
+      0%,100%{transform:translate(-50%,-50%) translateY(0);}
+      50%{transform:translate(-50%,-50%) translateY(-5px);}
+    }
+    @keyframes rotate{
+      from{transform:translate(-50%,-50%) rotate(0deg);}
+      to{transform:translate(-50%,-50%) rotate(360deg);}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#f4d59e;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .stat-item{
+      background:rgba(244,213,158,0.1);
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+    }
+    .stat-label{
+      font-size:13px;
+      color:#c4b5fd;
+      margin-bottom:4px;
+    }
+    .stat-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#f4d59e;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+    .planet-game{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-top:20px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .planet-game h2{
+      color:#f4d59e;
+      margin-bottom:16px;
+      font-size:20px;
+      text-align:center;
+    }
+    .planet-game p{
+      text-align:center;
+      color:#c4b5fd;
+      font-size:14px;
+      margin-bottom:16px;
+    }
+    .game-canvas{
+      position:relative;
+      height:50vh;
+      min-height:300px;
+      max-height:500px;
+      background:rgba(244,213,158,0.2);
+      border-radius:16px;
+      overflow:hidden;
+      border:2px solid rgba(244,213,158,0.3);
+      touch-action:none;
+    }
+    canvas{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+    .touch-controls{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:12px;
+    }
+    .touch-btn{
+      width:60px;
+      height:60px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.15);
+      border:2px solid rgba(244,213,158,0.3);
+      color:#fff;
+      font-size:24px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-select:none;
+      transition:background 0.2s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .touch-btn:active{
+      background:rgba(255,255,255,0.3);
+    }
+    .touch-btn:hover{
+      background:rgba(255,255,255,0.25);
+    }
+    .game-score{
+      text-align:center;
+      font-size:20px;
+      color:#f4d59e;
+      font-weight:bold;
+      margin-top:16px;
+    }
+    .game-timer{
+      text-align:center;
+      font-size:16px;
+      color:#c4b5fd;
+      margin-top:8px;
+    }
+    .start-game-btn{
+      display:block;
+      margin:16px auto 0;
+      padding:12px 24px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,#f4d59e,#d4b87a);
+      color:#fff;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .start-game-btn:hover{
+      transform:scale(1.05);
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>💍 Saturn</h1>
+    <div class="subtitle">The ringed planet!</div>
+  </div>
+
+  <div class="saturn-display">
+    <div class="saturn-container" onclick="showSaturnFact()">
+      <div class="ring"></div>
+      <div class="saturn"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What is Saturn?</h2>
+    <p>
+      Saturn is the sixth planet from the Sun and is famous for its beautiful rings! It's a gas giant like Jupiter, made mostly of hydrogen and helium.
+    </p>
+    <p>
+      Saturn is the second-largest planet in our solar system. It's so big that over 750 Earths could fit inside it!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>💍 Saturn's Amazing Rings</h2>
+    <p>
+      Saturn's rings are made of billions of pieces of ice and rock! The pieces range from tiny grains to house-sized chunks.
+    </p>
+    <p>
+      The rings are very wide - about 282,000 km across - but very thin, only about 10 meters thick in some places!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Saturn's rings are mostly made of water ice - like frozen snowflakes!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📏 How Big is Saturn?</h2>
+    <p>
+      Saturn is huge - 116,460 km across! It's about 9 times wider than Earth. Like Jupiter, Saturn spins very fast, which makes it bulge at the middle.
+    </p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Diameter</div>
+        <div class="stat-value">116,460 km</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Distance from Sun</div>
+        <div class="stat-value">1.4 billion km</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Day Length</div>
+        <div class="stat-value">10.7 hours</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Year Length</div>
+        <div class="stat-value">29 Earth years</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Saturn's Moons</h2>
+    <p>
+      Saturn has at least 146 moons - more than any other planet! The biggest one is Titan, which is larger than Mercury!
+    </p>
+    <p>
+      Titan is special because it has a thick atmosphere and liquid lakes on its surface - but the lakes are made of methane, not water!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🎈 Could You Float on Saturn?</h2>
+    <p>
+      Saturn is the only planet that would float in water! This is because it's less dense than water. If you had a big enough bathtub, Saturn would float!
+    </p>
+    <p>
+      This is because Saturn is made mostly of gas, which is very light compared to water or rock.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌀 Hexagonal Storm</h2>
+    <p>
+      Saturn has a strange hexagonal (six-sided) storm at its north pole! This storm has been there for decades and is about 30,000 km across.
+    </p>
+    <p>
+      Scientists aren't sure why the storm is hexagonal - it's a mystery they're still studying!
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="fact-box">
+      <h3>🎯 Tap Saturn!</h3>
+      <p>Click on the planet to learn a fun fact!</p>
+    </div>
+  </div>
+
+  <div class="planet-game">
+    <h2>🎮 Ring Collector!</h2>
+    <p>Tap when the rotating ring aligns with the target!</p>
+    <div class="game-canvas" id="gameCanvas">
+      <canvas id="gameCanvasElement"></canvas>
+    </div>
+    <div class="touch-controls">
+      <button class="touch-btn" id="tapBtn" style="width:120px;">🎯 TAP!</button>
+    </div>
+    <div class="game-score" id="gameScore">Score: 0</div>
+    <div class="game-timer" id="gameTimer">Level: 1</div>
+    <button class="start-game-btn" id="startGameBtn" onclick="startGame()">💍 Start Game!</button>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const saturnFacts = [
+  "Saturn has the most moons of any planet - over 140!",
+  "Saturn's rings are mostly made of ice!",
+  "Saturn could float in water!",
+  "Saturn has a hexagonal storm at its north pole!",
+  "Saturn's moon Titan has lakes of methane!",
+  "Saturn is the least dense planet!",
+  "Saturn's rings are very young - only 100 million years old!",
+  "Saturn spins so fast a day is only 10.7 hours!"
+];
+let factIndex = 0;
+
+function showSaturnFact() {
+  alert("💍 " + saturnFacts[factIndex]);
+  factIndex = (factIndex + 1) % saturnFacts.length;
+}
+
+function checkFact(btn, isCorrect) {
+  const result = document.getElementById('gameResult');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    result.textContent = '✅ Correct! Great job!';
+    result.style.color = '#4ade80';
+  } else {
+    btn.classList.add('wrong');
+    result.textContent = '❌ Not quite. Try again!';
+    result.style.color = '#f87171';
+  }
+}
+
+// Ring Collector Game - Reflex-style timing game
+let gameScore = 0;
+let gameLevel = 1;
+let animationFrame;
+let isGameRunning = false;
+let canvas, ctx;
+let ringAngle = 0;
+let ringSpeed = 0.05;
+let targetAngle = 0;
+let targetWidth = 0.3;
+let lives = 3;
+
+function startGame() {
+  if (isGameRunning) return;
+  
+  canvas = document.getElementById('gameCanvasElement');
+  ctx = canvas.getContext('2d');
+  
+  // Set canvas size
+  const canvasContainer = document.getElementById('gameCanvas');
+  canvas.width = canvasContainer.clientWidth;
+  canvas.height = canvasContainer.clientHeight;
+  
+  isGameRunning = true;
+  gameScore = 0;
+  gameLevel = 1;
+  lives = 3;
+  ringSpeed = 0.05;
+  targetWidth = 0.3;
+  
+  document.getElementById('gameScore').textContent = 'Score: 0';
+  document.getElementById('gameTimer').textContent = 'Level: 1';
+  document.getElementById('startGameBtn').disabled = true;
+  document.getElementById('startGameBtn').textContent = '💍 Playing...';
+  
+  // Set new target
+  setNewTarget();
+  
+  // Tap controls
+  const tapBtn = document.getElementById('tapBtn');
+  
+  tapBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(); });
+  tapBtn.addEventListener('click', handleTap);
+  
+  // Keyboard controls
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && isGameRunning) {
+      e.preventDefault();
+      handleTap();
+    }
+  });
+  
+  // Start game loop
+  gameLoop();
+}
+
+function setNewTarget() {
+  targetAngle = Math.random() * Math.PI * 2;
+  ringAngle = 0;
+}
+
+function handleTap() {
+  if (!isGameRunning) return;
+  
+  // Normalize angles to 0-2PI
+  const normalizedRingAngle = ringAngle % (Math.PI * 2);
+  const normalizedTargetAngle = targetAngle % (Math.PI * 2);
+  
+  // Calculate difference
+  let angleDiff = Math.abs(normalizedRingAngle - normalizedTargetAngle);
+  if (angleDiff > Math.PI) {
+    angleDiff = Math.PI * 2 - angleDiff;
+  }
+  
+  // Check if within target width
+  const targetHalfWidth = targetWidth / 2;
+  
+  if (angleDiff <= targetHalfWidth) {
+    // Success!
+    gameScore += 10 * gameLevel;
+    document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+    
+    // Level up every 50 points
+    if (gameScore >= gameLevel * 50) {
+      gameLevel++;
+     ringSpeed += 0.02;
+      targetWidth = Math.max(0.15, targetWidth - 0.02);
+      document.getElementById('gameTimer').textContent = 'Level: ' + gameLevel;
+    }
+    
+    setNewTarget();
+  } else {
+    // Miss!
+    lives--;
+    if (lives <= 0) {
+      endGame();
+    }
+  }
+}
+
+function gameLoop() {
+  if (!isGameRunning) return;
+  
+  // Clear canvas
+  ctx.fillStyle = 'rgba(244, 213, 158, 0.1)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const radius = Math.min(canvas.width, canvas.height) * 0.35;
+  
+  // Draw Saturn planet in center
+  ctx.fillStyle = '#f4d59e';
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius * 0.4, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Draw Saturn ring base
+  ctx.strokeStyle = 'rgba(244, 213, 158, 0.3)';
+  ctx.lineWidth = 15;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  // Draw target zone
+  ctx.strokeStyle = '#4ade80';
+  ctx.lineWidth = 15;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, targetAngle - targetWidth / 2, targetAngle + targetWidth / 2);
+  ctx.stroke();
+  
+  // Draw rotating ring piece
+  ctx.strokeStyle = '#f4d59e';
+  ctx.lineWidth = 15;
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, ringAngle - 0.1, ringAngle + 0.1);
+  ctx.stroke();
+  
+  // Draw ring piece indicator
+  ctx.fillStyle = '#f4d59e';
+  const indicatorX = centerX + Math.cos(ringAngle) * radius;
+  const indicatorY = centerY + Math.sin(ringAngle) * radius;
+  ctx.beginPath();
+  ctx.arc(indicatorX, indicatorY, 8, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Draw lives
+  ctx.fillStyle = '#f87171';
+  ctx.font = '20px Comic Sans MS';
+  ctx.textAlign = 'left';
+  ctx.fillText('❤️'.repeat(lives), 20, 30);
+  
+  // Update ring angle
+  ringAngle += ringSpeed;
+  
+  animationFrame = requestAnimationFrame(gameLoop);
+}
+
+function endGame() {
+  isGameRunning = false;
+  cancelAnimationFrame(animationFrame);
+  
+  const tapBtn = document.getElementById('tapBtn');
+  tapBtn.removeEventListener('touchstart', null);
+  tapBtn.removeEventListener('click', null);
+  
+  document.getElementById('startGameBtn').disabled = false;
+  document.getElementById('startGameBtn').textContent = '💍 Play Again!';
+  
+  // Draw game over screen
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillStyle = '#f4d59e';
+  ctx.font = 'bold 24px Comic Sans MS';
+  ctx.textAlign = 'center';
+  ctx.fillText('🎉 Game Over!', canvas.width / 2, canvas.height / 2 - 20);
+  
+  ctx.font = '20px Comic Sans MS';
+  ctx.fillText('Score: ' + gameScore, canvas.width / 2, canvas.height / 2 + 20);
+  ctx.fillText('Level: ' + gameLevel, canvas.width / 2, canvas.height / 2 + 50);
+}
+</script>
+</body>
+</html>

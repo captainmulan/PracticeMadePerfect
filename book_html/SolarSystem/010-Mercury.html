@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Mercury</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#b5b5b5;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .mercury-display{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin:30px 0;
+    }
+    .mercury{
+      width:100px;
+      height:100px;
+      background:radial-gradient(circle at 30% 30%,#d4d4d4,#8c8c8c,#5a5a5a);
+      border-radius:50%;
+      box-shadow:0 0 30px rgba(181,181,181,0.3),inset -10px -10px 20px rgba(0,0,0,0.4);
+      cursor:pointer;
+      transition:transform 0.3s;
+      animation:float 3s ease-in-out infinite;
+    }
+    .mercury:hover{
+      transform:scale(1.1);
+    }
+    @keyframes float{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-10px);}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#b5b5b5;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:12px;
+    }
+    .stat-item{
+      background:rgba(181,181,181,0.1);
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+    }
+    .stat-label{
+      font-size:13px;
+      color:#c4b5fd;
+      margin-bottom:4px;
+    }
+    .stat-value{
+      font-size:18px;
+      font-weight:bold;
+      color:#b5b5b5;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+    .planet-game{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-top:20px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .planet-game h2{
+      color:#a0a0a0;
+      margin-bottom:16px;
+      font-size:20px;
+      text-align:center;
+    }
+    .planet-game p{
+      text-align:center;
+      color:#c4b5fd;
+      font-size:14px;
+      margin-bottom:16px;
+    }
+    .game-canvas{
+      position:relative;
+      height:50vh;
+      min-height:300px;
+      max-height:500px;
+      background:rgba(0,0,0,0.5);
+      border-radius:16px;
+      overflow:hidden;
+      border:2px solid rgba(181,181,181,0.3);
+      touch-action:none;
+    }
+    canvas{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+    .touch-controls{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:12px;
+    }
+    .touch-btn{
+      width:60px;
+      height:60px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.15);
+      border:2px solid rgba(181,181,181,0.3);
+      color:#fff;
+      font-size:24px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-select:none;
+      transition:background 0.2s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .touch-btn:active{
+      background:rgba(255,255,255,0.3);
+    }
+    .touch-btn:hover{
+      background:rgba(255,255,255,0.25);
+    }
+    .game-score{
+      text-align:center;
+      font-size:20px;
+      color:#a0a0a0;
+      font-weight:bold;
+      margin-top:16px;
+    }
+    .game-timer{
+      text-align:center;
+      font-size:16px;
+      color:#c4b5fd;
+      margin-top:8px;
+    }
+    .start-game-btn{
+      display:block;
+      margin:16px auto 0;
+      padding:12px 24px;
+      border:none;
+      border-radius:12px;
+      background:linear-gradient(135deg,#a0a0a0,#808080);
+      color:#fff;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .start-game-btn:hover{
+      transform:scale(1.05);
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>🪨 Mercury</h1>
+    <div class="subtitle">The smallest planet!</div>
+  </div>
+
+  <div class="mercury-display">
+    <div class="mercury" onclick="showMercuryFact()"></div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What is Mercury?</h2>
+    <p>
+      Mercury is the smallest planet in our solar system and the closest to the Sun. It's only slightly bigger than Earth's Moon!
+    </p>
+    <p>
+      Even though it's closest to the Sun, it's not the hottest planet (that's Venus!). Mercury has no atmosphere to trap heat.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌡️ Hot and Cold</h2>
+    <p>
+      Mercury has extreme temperatures! During the day, it can get up to 430°C (800°F) - super hot! But at night, it drops to -180°C (-290°F) - freezing cold!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>One day on Mercury is 59 Earth days long, but one year is only 88 Earth days!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📏 How Big is Mercury?</h2>
+    <p>
+      Mercury is tiny compared to other planets. It's only about 4,879 km across - that's about 1/3 the size of Earth!
+    </p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Diameter</div>
+        <div class="stat-value">4,879 km</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Distance from Sun</div>
+        <div class="stat-value">58 million km</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Day Length</div>
+        <div class="stat-value">59 Earth days</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Year Length</div>
+        <div class="stat-value">88 Earth days</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔭 What's on Mercury?</h2>
+    <p>
+      Mercury's surface is covered in craters, just like our Moon! It has lots of bumps and holes from space rocks hitting it long ago.
+    </p>
+    <p>
+      There are also big plains called "maria" (which means "seas" in Latin), but they're not real seas - they're just flat areas made of hardened lava!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🚀 Can We Visit Mercury?</h2>
+    <p>
+      Mercury is very hard to visit because it's so close to the Sun. The heat would melt most spacecraft! But scientists have sent robots to study it.
+    </p>
+    <p>
+      The MESSENGER spacecraft visited Mercury from 2011 to 2015, and the BepiColombo mission is there now!
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="fact-box">
+      <h3>🎯 Tap Mercury!</h3>
+      <p>Click on the planet to learn a fun fact!</p>
+    </div>
+  </div>
+
+  <div class="planet-game">
+    <h2>🎮 Meteor Dodge!</h2>
+    <p>Dodge falling meteors and survive as long as possible!</p>
+    <div class="game-canvas" id="gameCanvas">
+      <canvas id="gameCanvasElement"></canvas>
+    </div>
+    <div class="touch-controls">
+      <button class="touch-btn" id="leftBtn">⬅️</button>
+      <button class="touch-btn" id="rightBtn">➡️</button>
+    </div>
+    <div class="game-score" id="gameScore">Score: 0</div>
+    <div class="game-timer" id="gameTimer">Time: 30s</div>
+    <button class="start-game-btn" id="startGameBtn" onclick="startGame()">🚀 Start Game!</button>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const mercuryFacts = [
+  "Mercury is named after the Roman messenger god!",
+  "Mercury has no moons!",
+  "Mercury has no rings!",
+  "Mercury is the fastest planet - it orbits the Sun in just 88 days!",
+  "Mercury has ice in craters that never see sunlight!",
+  "Mercury's gravity is much weaker than Earth's!",
+  "You would weigh much less on Mercury!",
+  "Mercury has a huge crater called Caloris Basin!"
+];
+let factIndex = 0;
+
+function showMercuryFact() {
+  alert("🪨 " + mercuryFacts[factIndex]);
+  factIndex = (factIndex + 1) % mercuryFacts.length;
+}
+
+function checkFact(btn, isCorrect) {
+  const result = document.getElementById('gameResult');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    result.textContent = '✅ Correct! Great job!';
+    result.style.color = '#4ade80';
+  } else {
+    btn.classList.add('wrong');
+    result.textContent = '❌ Not quite. Try again!';
+    result.style.color = '#f87171';
+  }
+}
+
+// Meteor Dodge Game - Canvas-based
+let gameScore = 0;
+let gameTime = 30;
+let gameInterval;
+let spawnInterval;
+let animationFrame;
+let isGameRunning = false;
+let canvas, ctx;
+let player;
+let meteors = [];
+let keys = {};
+let moveLeft = false;
+let moveRight = false;
+
+function startGame() {
+  if (isGameRunning) return;
+  
+  canvas = document.getElementById('gameCanvasElement');
+  ctx = canvas.getContext('2d');
+  
+  // Set canvas size
+  const canvasContainer = document.getElementById('gameCanvas');
+  canvas.width = canvasContainer.clientWidth;
+  canvas.height = canvasContainer.clientHeight;
+  
+  isGameRunning = true;
+  gameScore = 0;
+  gameTime = 30;
+  meteors = [];
+  
+  // Initialize player
+  player = {
+    x: canvas.width / 2,
+    y: canvas.height - 50,
+    width: 40,
+    height: 40,
+    speed: 5
+  };
+  
+  document.getElementById('gameScore').textContent = 'Score: 0';
+  document.getElementById('gameTimer').textContent = 'Time: 30s';
+  document.getElementById('startGameBtn').disabled = true;
+  document.getElementById('startGameBtn').textContent = '🚀 Playing...';
+  
+  // Enable controls
+  document.addEventListener('keydown', handleKeyDown);
+  document.addEventListener('keyup', handleKeyUp);
+  
+  // Touch controls
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  
+  leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveLeft = true; });
+  leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveLeft = false; });
+  rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveRight = true; });
+  rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveRight = false; });
+  
+  leftBtn.addEventListener('mousedown', () => moveLeft = true);
+  leftBtn.addEventListener('mouseup', () => moveLeft = false);
+  rightBtn.addEventListener('mousedown', () => moveRight = true);
+  rightBtn.addEventListener('mouseup', () => moveRight = false);
+  
+  // Spawn meteors
+  spawnInterval = setInterval(() => {
+    if (!isGameRunning) return;
+    spawnMeteor();
+  }, 800);
+  
+  // Game timer
+  gameInterval = setInterval(() => {
+    gameTime--;
+    document.getElementById('gameTimer').textContent = 'Time: ' + gameTime + 's';
+    
+    if (gameTime <= 0) {
+      endGame();
+    }
+  }, 1000);
+  
+  // Start game loop
+  gameLoop();
+}
+
+function handleKeyDown(e) {
+  if (!isGameRunning) return;
+  
+  if (e.key === 'ArrowLeft' || e.key === 'a') {
+    keys.left = true;
+  } else if (e.key === 'ArrowRight' || e.key === 'd') {
+    keys.right = true;
+  }
+  
+  // Prevent scrolling
+  if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
+
+function handleKeyUp(e) {
+  if (e.key === 'ArrowLeft' || e.key === 'a') {
+    keys.left = false;
+  } else if (e.key === 'ArrowRight' || e.key === 'd') {
+    keys.right = false;
+  }
+}
+
+function spawnMeteor() {
+  const size = Math.random() * 20 + 15;
+  meteors.push({
+    x: Math.random() * (canvas.width - size),
+    y: -size,
+    width: size,
+    height: size,
+    speed: Math.random() * 3 + 2,
+    rotation: 0,
+    rotationSpeed: (Math.random() - 0.5) * 0.1
+  });
+}
+
+function gameLoop() {
+  if (!isGameRunning) return;
+  
+  // Clear canvas
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Update player position
+  if (keys.left || moveLeft) {
+    player.x -= player.speed;
+  }
+  if (keys.right || moveRight) {
+    player.x += player.speed;
+  }
+  
+  // Keep player in bounds
+  player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
+  
+  // Draw player (spaceship)
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  
+  // Spaceship body
+  ctx.fillStyle = '#4a90d9';
+  ctx.beginPath();
+  ctx.moveTo(0, -player.height / 2);
+  ctx.lineTo(-player.width / 2, player.height / 2);
+  ctx.lineTo(player.width / 2, player.height / 2);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Spaceship window
+  ctx.fillStyle = '#87ceeb';
+  ctx.beginPath();
+  ctx.arc(0, 0, 8, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Engine flame
+  ctx.fillStyle = '#ff6b35';
+  ctx.beginPath();
+  ctx.moveTo(-8, player.height / 2);
+  ctx.lineTo(0, player.height / 2 + 15 + Math.random() * 5);
+  ctx.lineTo(8, player.height / 2);
+  ctx.closePath();
+  ctx.fill();
+  
+  ctx.restore();
+  
+  // Update and draw meteors
+  meteors.forEach((meteor, index) => {
+    meteor.y += meteor.speed;
+    meteor.rotation += meteor.rotationSpeed;
+    
+    // Draw meteor
+    ctx.save();
+    ctx.translate(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+    ctx.rotate(meteor.rotation);
+    
+    // Meteor body
+    ctx.fillStyle = '#8b4513';
+    ctx.beginPath();
+    ctx.arc(0, 0, meteor.width / 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Meteor crater
+    ctx.fillStyle = '#5a3010';
+    ctx.beginPath();
+    ctx.arc(-meteor.width / 4, -meteor.height / 4, meteor.width / 6, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
+    
+    // Check collision
+    if (isColliding(player, meteor)) {
+      meteors.splice(index, 1);
+      gameScore -= 5;
+      document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+    }
+    
+    // Remove if off screen
+    if (meteor.y > canvas.height + meteor.height) {
+      meteors.splice(index, 1);
+      gameScore += 10;
+      document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+    }
+  });
+  
+  // Draw stars background
+  ctx.fillStyle = '#fff';
+  for (let i = 0; i < 20; i++) {
+    const x = (Math.sin(Date.now() / 1000 + i) * 0.5 + 0.5) * canvas.width;
+    const y = (Math.cos(Date.now() / 1000 + i * 2) * 0.5 + 0.5) * canvas.height;
+    ctx.fillRect(x, y, 2, 2);
+  }
+  
+  animationFrame = requestAnimationFrame(gameLoop);
+}
+
+function isColliding(player, meteor) {
+  const playerLeft = player.x - player.width / 2;
+  const playerRight = player.x + player.width / 2;
+  const playerTop = player.y - player.height / 2;
+  const playerBottom = player.y + player.height / 2;
+  
+  const meteorLeft = meteor.x;
+  const meteorRight = meteor.x + meteor.width;
+  const meteorTop = meteor.y;
+  const meteorBottom = meteor.y + meteor.height;
+  
+  return !(playerRight < meteorLeft || 
+           playerLeft > meteorRight || 
+           playerBottom < meteorTop || 
+           playerTop > meteorBottom);
+}
+
+function endGame() {
+  isGameRunning = false;
+  clearInterval(gameInterval);
+  clearInterval(spawnInterval);
+  cancelAnimationFrame(animationFrame);
+  
+  document.removeEventListener('keydown', handleKeyDown);
+  document.removeEventListener('keyup', handleKeyUp);
+  
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  
+  leftBtn.removeEventListener('touchstart', null);
+  leftBtn.removeEventListener('touchend', null);
+  rightBtn.removeEventListener('touchstart', null);
+  rightBtn.removeEventListener('touchend', null);
+  
+  document.getElementById('startGameBtn').disabled = false;
+  document.getElementById('startGameBtn').textContent = '🚀 Play Again!';
+  
+  // Draw game over screen
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillStyle = '#a0a0a0';
+  ctx.font = 'bold 24px Comic Sans MS';
+  ctx.textAlign = 'center';
+  ctx.fillText('🎉 Game Over!', canvas.width / 2, canvas.height / 2 - 20);
+  
+  ctx.font = '20px Comic Sans MS';
+  ctx.fillText('Score: ' + gameScore, canvas.width / 2, canvas.height / 2 + 20);
+}
+</script>
+</body>
+</html>
