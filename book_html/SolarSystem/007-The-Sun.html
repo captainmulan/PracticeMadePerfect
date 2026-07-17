@@ -12,7 +12,7 @@
     }
     body{
       font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
-      background:linear-gradient(180deg,#0f0c29 0%,#302b63 50%,#24243e 100%);
+      background:#0f0c29;
       color:#e0e7ff;
       min-height:100vh;
       position:relative;
@@ -97,7 +97,7 @@
       50%{transform:scale(1.05);}
     }
     .card{
-      background:rgba(255,255,255,0.1);
+      background:#1a1735;
       backdrop-filter:blur(10px);
       border-radius:20px;
       padding:20px;
@@ -163,7 +163,7 @@
       border-radius:10px;
     }
     .sun-game{
-      background:rgba(255,255,255,0.1);
+      background:#1a1735;
       backdrop-filter:blur(10px);
       border-radius:20px;
       padding:20px;
@@ -185,7 +185,7 @@
     .game-area{
       position:relative;
       height:200px;
-      background:rgba(0,0,0,0.3);
+      background:#12102a;
       border-radius:16px;
       overflow:hidden;
       cursor:crosshair;
@@ -232,6 +232,24 @@
     .start-game-btn:hover{
       transform:scale(1.05);
     }
+  
+    .planet-svg-panel{background:#12102a;border-radius:20px;border:1px solid rgba(255,215,0,0.45);padding:12px;margin:20px 0;}
+    .svg-viewport{width:100%;aspect-ratio:1;max-height:340px;border-radius:14px;overflow:hidden;background:#0a0820;touch-action:none;}
+    .svg-viewport svg{width:100%;height:100%;display:block;cursor:grab;}
+    .planet-info-panel{margin-top:10px;min-height:52px;padding:12px 14px;background:#1a1735;border-radius:12px;border-left:4px solid #ffd700;font-size:14px;line-height:1.55;}
+    .planet-info-panel strong{color:#ffd700;font-size:15px;}
+    .svg-controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+    .svg-ctrl{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:13px;font-weight:bold;cursor:pointer;min-height:44px;}
+    .svg-ctrl.active{background:linear-gradient(135deg,#f59e0b,#ef4444);}
+    .game-desc{text-align:center;color:#c4b5fd;font-size:14px;margin-bottom:14px;line-height:1.55;padding:0 8px;}
+    .game-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(8,6,24,0.94);padding:22px 26px;border-radius:16px;text-align:center;border:2px solid #ffd700;z-index:10;min-width:220px;max-width:90%;}
+    .game-overlay h3{color:#ffd700;margin-bottom:8px;font-size:20px;}
+    .game-overlay p{color:#ddd;margin-bottom:14px;font-size:14px;line-height:1.5;}
+    .overlay-btn{padding:10px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
+    .game-hud{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .game-hud-item{background:#1a1735;padding:8px 14px;border-radius:8px;font-size:15px;font-weight:bold;color:#ffd700;border:1px solid rgba(255,215,0,0.45);}
+    .game-canvas{position:relative;}
+
   </style>
 </head>
 <body>
@@ -242,8 +260,21 @@
     <div class="subtitle">Our amazing star!</div>
   </div>
 
-  <div class="sun-display">
-    <div class="sun" onclick="showSunFact()"></div>
+    <div class="planet-svg-panel">
+    <div class="svg-viewport" id="svgViewport">
+      <svg id="planetSvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="The Sun">
+        <defs><clipPath id="globe"><circle r="88"/></clipPath></defs>
+        <g id="planetGroup"></g>
+      </svg>
+    </div>
+    <div class="planet-info-panel" id="planetInfo">👆 Tap the Sun for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
+    <div class="svg-controls">
+      <button class="svg-ctrl" id="btnSpin" type="button">Stop/Start spin</button>
+      <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
+      <button class="svg-ctrl" id="btnZoomOut" type="button">🔍 −</button>
+      <button class="svg-ctrl" id="btnRotL" type="button">↺</button>
+      <button class="svg-ctrl" id="btnRotR" type="button">↻</button>
+    </div>
   </div>
 
   <div class="card">
@@ -339,12 +370,6 @@ const sunFacts = [
   "The Sun is actually a yellow dwarf star!",
   "Solar flares can be bigger than Earth!"
 ];
-let factIndex = 0;
-
-function showSunFact() {
-  alert("🌟 " + sunFacts[factIndex]);
-  factIndex = (factIndex + 1) % sunFacts.length;
-}
 
 // Sun Ray Catching Game
 let gameScore = 0;
@@ -422,6 +447,187 @@ function endGame() {
   const gameArea = document.getElementById('gameArea');
   gameArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ffd700;font-size:24px;font-weight:bold;">🎉 Game Over! Score: ' + gameScore + '</div>';
 }
+
+/* Planet texture art — NASA-style sphere maps (Solar System Scope textures, CC BY 4.0) */
+const StylizedPlanet = {
+  NS: 'http://www.w3.org/2000/svg',
+  BASE: 'assets/planets/',
+  FILES: {
+    sun: 'sun.jpg',
+    mercury: 'mercury.jpg',
+    venus: 'venus.jpg',
+    earth: 'earth.jpg',
+    mars: 'mars.jpg',
+    jupiter: 'jupiter.jpg',
+    saturn: 'saturn.jpg',
+    uranus: 'uranus.jpg',
+    neptune: 'neptune.jpg'
+  },
+  el(tag, a) {
+    const e = document.createElementNS(this.NS, tag);
+    for (const k in a) e.setAttribute(k, a[k]);
+    return e;
+  },
+  svgRoot(g) {
+    return g.ownerSVGElement || document.getElementById('planetSvg') || document.getElementById('solarSvg');
+  },
+  ensureClip(svg, id, r) {
+    if (svg.querySelector('#' + id)) return 'url(#' + id + ')';
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = this.el('defs', {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const cp = this.el('clipPath', { id: id });
+    cp.appendChild(this.el('circle', { r: String(r) }));
+    defs.appendChild(cp);
+    return 'url(#' + id + ')';
+  },
+  ensureShading(svg) {
+    if (svg.querySelector('#sphereShade')) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = this.el('defs', {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const rg = this.el('radialGradient', { id: 'sphereShade', cx: '35%', cy: '32%', r: '65%' });
+    rg.appendChild(this.el('stop', { offset: '0%', 'stop-color': '#ffffff', 'stop-opacity': '0.22' }));
+    rg.appendChild(this.el('stop', { offset: '55%', 'stop-color': '#000000', 'stop-opacity': '0' }));
+    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#000000', 'stop-opacity': '0.45' }));
+    defs.appendChild(rg);
+  },
+  ensureSunGlow(svg) {
+    if (svg.querySelector('#sunCorona')) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = this.el('defs', {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const rg = this.el('radialGradient', { id: 'sunCorona', cx: '50%', cy: '50%', r: '50%' });
+    rg.appendChild(this.el('stop', { offset: '70%', 'stop-color': '#ff9800', 'stop-opacity': '0' }));
+    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#ff9800', 'stop-opacity': '0.55' }));
+    defs.appendChild(rg);
+  },
+  tex(type) {
+    return this.BASE + (this.FILES[type] || 'earth.jpg');
+  },
+  sphere(g, type, r, clip) {
+    const S = this;
+    g.appendChild(S.el('image', {
+      href: S.tex(type),
+      x: String(-r), y: String(-r),
+      width: String(r * 2), height: String(r * 2),
+      'clip-path': clip,
+      preserveAspectRatio: 'xMidYMid slice'
+    }));
+    g.appendChild(S.el('circle', {
+      r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none'
+    }));
+  },
+  drawSaturn(g, r, clip, svg) {
+    const S = this;
+    const tilt = -20;
+    const rx = r * 2.05;
+    const ry = r * 0.5;
+    g.appendChild(S.el('image', {
+      href: S.BASE + 'saturn_rings.png',
+      x: String(-rx), y: String(-ry),
+      width: String(rx * 2), height: String(ry * 2),
+      transform: 'rotate(' + tilt + ')',
+      opacity: '0.92'
+    }));
+    S.sphere(g, 'saturn', r, clip);
+    g.appendChild(S.el('ellipse', {
+      rx: String(rx), ry: String(ry),
+      fill: 'none', stroke: 'rgba(210,180,130,0.35)',
+      'stroke-width': String(Math.max(0.5, r * 0.06)),
+      transform: 'rotate(' + tilt + ')',
+      'pointer-events': 'none'
+    }));
+  },
+  drawSun(g, r, clip, svg) {
+    const S = this;
+    if (svg) S.ensureSunGlow(svg);
+    g.appendChild(S.el('circle', { r: String(r * 1.35), fill: 'url(#sunCorona)', 'pointer-events': 'none' }));
+    S.sphere(g, 'sun', r, clip);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      g.appendChild(S.el('line', {
+        x1: String(Math.cos(a) * r * 1.05), y1: String(Math.sin(a) * r * 1.05),
+        x2: String(Math.cos(a) * r * 1.28), y2: String(Math.sin(a) * r * 1.28),
+        stroke: '#ffc107', 'stroke-width': String(Math.max(1, r * 0.04)), opacity: '0.55',
+        'pointer-events': 'none'
+      }));
+    }
+  },
+  draw(g, type, r) {
+    r = r || 88;
+    const S = this;
+    const svg = S.svgRoot(g);
+    const clipId = r === 88 ? 'globe' : 'globe-r' + Math.round(r * 10);
+    const clip = svg ? S.ensureClip(svg, clipId, r) : '';
+    if (svg) S.ensureShading(svg);
+    if (type === 'saturn') {
+      S.drawSaturn(g, r, clip, svg);
+      return;
+    }
+    if (type === 'sun') {
+      S.drawSun(g, r, clip, svg);
+      return;
+    }
+    if (S.FILES[type]) {
+      S.sphere(g, type, r, clip);
+      return;
+    }
+    g.appendChild(S.el('circle', { r: String(r), fill: '#888' }));
+  }
+};
+
+function makePlanetViewer(planetType, facts, label) {
+  return {
+    facts: facts, fi: 0, spin: true, zoom: 1, rot: 0, drag: 0, ang: 0,
+    init() {
+      this.svg = document.getElementById('planetSvg');
+      this.g = document.getElementById('planetGroup');
+      this.info = document.getElementById('planetInfo');
+      if (!this.svg || !this.g || !this.info) return;
+      this.svg.addEventListener('click', () => this.nextFact());
+      const btnSpin = document.getElementById('btnSpin');
+      btnSpin.onclick = () => {
+        this.spin = !this.spin;
+        btnSpin.classList.toggle('active', !this.spin);
+      };
+      btnSpin.textContent = 'Stop/Start spin';
+      document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
+      document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
+      document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };
+      document.getElementById('btnRotR').onclick = () => { this.rot += 18; };
+      let lx = 0, drag = false;
+      this.svg.onmousedown = e => { drag = true; lx = e.clientX; };
+      window.onmousemove = e => { if (drag) { this.drag += (e.clientX - lx) * 0.35; lx = e.clientX; } };
+      window.onmouseup = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
+      this.svg.ontouchstart = e => { drag = true; lx = e.touches[0].clientX; };
+      this.svg.ontouchmove = e => { if (drag) { this.drag += (e.touches[0].clientX - lx) * 0.35; lx = e.touches[0].clientX; } };
+      this.svg.ontouchend = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
+      const loop = () => { if (this.spin) this.ang += 0.012; this.draw(); requestAnimationFrame(loop); };
+      this.draw();
+      loop();
+    },
+    nextFact() {
+      this.fi = (this.fi + 1) % this.facts.length;
+      this.info.innerHTML = '<strong>' + label + '</strong><br>' + this.facts[this.fi];
+    },
+    draw() {
+      while (this.g.firstChild) this.g.removeChild(this.g.firstChild);
+      this.g.setAttribute('transform', 'translate(200,200) rotate(' + (this.rot + this.drag) + ') scale(' + this.zoom + ') rotate(' + this.ang + ')');
+      StylizedPlanet.draw(this.g, planetType, 88);
+    }
+  };
+}
+
+const PlanetViewer = makePlanetViewer('sun', sunFacts, '☀️ The Sun');
+try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
+
 </script>
 </body>
 </html>
