@@ -145,9 +145,10 @@ function makePlanetViewer(planetType, facts, label) {
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => {
         this.spin = !this.spin;
+        btnSpin.textContent = this.spin ? 'Stop' : 'Spin';
         btnSpin.classList.toggle('active', !this.spin);
       };
-      btnSpin.textContent = 'Stop/Start spin';
+      btnSpin.textContent = 'Stop';
       document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
       document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
       document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };

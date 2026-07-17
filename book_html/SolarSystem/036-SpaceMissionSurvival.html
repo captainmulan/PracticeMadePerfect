@@ -5,264 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Mission Survival</title>
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
+    *{margin:0;padding:0;box-sizing:border-box;}
     body{
       font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
       background:#0f0c29;
       color:#e0e7ff;
       min-height:100vh;
-      position:relative;
-      overflow:hidden;
+      overflow-x:hidden;
     }
     .stars{
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      pointer-events:none;
+      position:fixed;inset:0;pointer-events:none;z-index:0;
       background-image:
         radial-gradient(2px 2px at 20px 30px,#fff,transparent),
         radial-gradient(2px 2px at 40px 70px,#fff,transparent),
         radial-gradient(1px 1px at 90px 40px,#fff,transparent),
         radial-gradient(2px 2px at 130px 80px,#fff,transparent),
-        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
         radial-gradient(2px 2px at 200px 50px,#fff,transparent),
-        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
-        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
-        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(1px 1px at 300px 90px,#fff,transparent),
         radial-gradient(2px 2px at 400px 60px,#fff,transparent),
-        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
         radial-gradient(2px 2px at 500px 100px,#fff,transparent),
-        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
-        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
-        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
-        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
-        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
-        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
-        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent);
       background-size:900px 200px;
       animation:twinkle 4s ease-in-out infinite;
-      z-index:0;
     }
-    @keyframes twinkle{
-      0%,100%{opacity:0.3;}
-      50%{opacity:0.8;}
-    }
-    .container{
-      max-width:900px;
-      margin:auto;
-      padding:20px;
-      position:relative;
-      z-index:1;
-    }
-    .header{
-      text-align:center;
-      margin-bottom:20px;
-    }
-    h1{
-      font-size:36px;
-      color:#ff6b6b;
-      margin-bottom:8px;
-      text-shadow:0 0 20px rgba(255,107,107,0.5);
-    }
-    .subtitle{
-      color:#c4b5fd;
-      font-size:18px;
-    }
+    @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:.8}}
+    .container{max-width:900px;margin:auto;padding:20px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:16px;}
+    h1{font-size:32px;color:#ff6b6b;margin-bottom:6px;text-shadow:0 0 20px rgba(255,107,107,.45);}
+    .subtitle{color:#c4b5fd;font-size:16px;}
     .game-info{
-      display:flex;
-      justify-content:space-between;
-      background:#1a1735;
-      backdrop-filter:blur(10px);
-      border-radius:16px;
-      padding:16px 24px;
-      margin-bottom:20px;
-      border:1px solid rgba(255,255,255,0.1);
+      display:flex;justify-content:space-between;gap:8px;
+      background:#1a1735;border-radius:16px;padding:14px 18px;margin-bottom:14px;
+      border:1px solid rgba(255,255,255,.1);
     }
-    .info-item{
-      text-align:center;
+    .info-item{text-align:center;flex:1;}
+    .info-label{font-size:12px;color:#c4b5fd;margin-bottom:2px;}
+    .info-value{font-size:22px;font-weight:bold;color:#ff6b6b;}
+    .game-wrap{
+      position:relative;height:50vh;min-height:320px;max-height:480px;
+      background:#12102a;border-radius:20px;overflow:hidden;
+      border:2px solid rgba(255,107,107,.35);margin-bottom:14px;touch-action:none;
     }
-    .info-label{
-      font-size:14px;
-      color:#c4b5fd;
-      margin-bottom:4px;
+    #gameCanvas{display:block;width:100%;height:100%;}
+    .game-overlay{
+      position:absolute;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;text-align:center;
+      background:rgba(8,6,24,.88);padding:20px;z-index:5;
     }
-    .info-value{
-      font-size:24px;
-      font-weight:bold;
-      color:#ff6b6b;
-    }
-    .game-canvas{
-      position:relative;
-      height:50vh;
-      min-height:300px;
-      max-height:500px;
-      background:rgba(0,0,0,0.5);
-      border-radius:20px;
-      overflow:hidden;
-      border:3px solid rgba(255,107,107,0.3);
-      margin-bottom:20px;
-      touch-action:none;
-    }
-    .spaceship{
-      position:absolute;
-      width:50px;
-      height:50px;
-      font-size:40px;
-      cursor:pointer;
-      transition:transform 0.1s;
-      z-index:10;
-    }
-    .asteroid{
-      position:absolute;
-      width:30px;
-      height:30px;
-      background:radial-gradient(circle,#8b4513,#5a3010);
-      border-radius:50%;
-      animation:asteroidMove linear infinite;
-    }
-    @keyframes asteroidMove{
-      from{top:-35px;}
-      to{top:535px;}
-    }
-    .meteor{
-      position:absolute;
-      width:25px;
-      height:25px;
-      background:radial-gradient(circle,#ff6b6b,#c92a2a);
-      border-radius:50%;
-      animation:meteorFall linear infinite;
-    }
-    @keyframes meteorFall{
-      from{top:-30px;}
-      to{top:530px;}
-    }
-    .powerup{
-      position:absolute;
-      width:35px;
-      height:35px;
-      font-size:28px;
-      cursor:pointer;
-      animation:powerupPulse 1s ease-in-out infinite;
-    }
-    @keyframes powerupPulse{
-      0%,100%{transform:scale(1);}
-      50%{transform:scale(1.15);}
-    }
-    .shield{
-      position:absolute;
-      width:70px;
-      height:70px;
-      border:3px solid rgba(74,144,217,0.8);
-      border-radius:50%;
-      pointer-events:none;
-      display:none;
-    }
-    .health-bar{
-      position:absolute;
-      bottom:20px;
-      left:50%;
-      transform:translateX(-50%);
-      width:200px;
-      height:20px;
-      background:rgba(0,0,0,0.5);
-      border-radius:10px;
-      border:2px solid rgba(255,255,255,0.3);
-    }
-    .health-fill{
-      height:100%;
-      background:linear-gradient(90deg,#4ade80,#22c55e);
-      border-radius:8px;
-      transition:width 0.3s;
-    }
-    .controls{
-      text-align:center;
-      margin-bottom:20px;
-    }
-    .control-btn{
-      padding:12px 24px;
-      margin:0 8px;
-      border:none;
-      border-radius:12px;
+    .game-overlay h3{color:#ff6b6b;font-size:24px;margin-bottom:8px;}
+    .game-overlay p{color:#ddd;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+    .overlay-btn{
+      padding:12px 28px;border:none;border-radius:12px;
       background:linear-gradient(135deg,#ff6b6b,#c92a2a);
-      color:#fff;
-      font-size:16px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.2s;
+      color:#fff;font-size:16px;font-weight:bold;cursor:pointer;
     }
-    .control-btn:hover{
-      transform:scale(1.05);
+    .controls{text-align:center;margin-bottom:14px;}
+    .control-btn{
+      padding:12px 22px;margin:0 6px;border:none;border-radius:12px;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;font-size:15px;font-weight:bold;cursor:pointer;
     }
-    .touch-controls{
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      margin-bottom:20px;
-    }
+    .touch-controls{display:flex;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
     .touch-btn{
-      width:45px;
-      height:45px;
-      border-radius:50%;
-      border:3px solid rgba(255,107,107,0.5);
-      background:rgba(255,107,107,0.2);
-      color:#fff;
-      font-size:20px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      user-select:none;
-      -webkit-user-select:none;
-      touch-action:manipulation;
-    }
-    .touch-btn:active{
-      background:rgba(255,107,107,0.5);
-      transform:scale(0.95);
-    }
-    .touch-controls-row{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
+      width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,107,107,.45);
+      background:rgba(255,107,107,.15);color:#fff;font-size:20px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;touch-action:manipulation;
     }
     .instructions{
-      background:#1a1735;
-      backdrop-filter:blur(10px);
-      border-radius:16px;
-      padding:16px;
-      border:1px solid rgba(255,255,255,0.1);
+      background:#1a1735;border-radius:16px;padding:16px;border:1px solid rgba(255,255,255,.1);
     }
-    .instructions h3{
-      color:#ff6b6b;
-      margin-bottom:12px;
-      font-size:18px;
-    }
-    .instructions ul{
-      margin-left:20px;
-    }
-    .instructions li{
-      font-size:15px;
-      line-height:1.7;
-      margin-bottom:8px;
-    }
-    .wave-announcement{
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%, -50%);
-      font-size:48px;
-      font-weight:bold;
-      color:#ff6b6b;
-      text-shadow:0 0 30px rgba(255,107,107,0.8);
-      display:none;
-      z-index:100;
-    }
+    .instructions h3{color:#ff6b6b;margin-bottom:10px;font-size:18px;}
+    .instructions li{font-size:14px;line-height:1.6;margin-bottom:6px;margin-left:18px;}
   </style>
 </head>
 <body>
@@ -270,432 +83,286 @@
 <div class="container">
   <div class="header">
     <h1>🛸 Space Mission Survival</h1>
-    <div class="subtitle">Survive the dangers of deep space!</div>
+    <div class="subtitle">Dodge asteroids, grab hearts, survive the waves!</div>
   </div>
 
   <div class="game-info">
-    <div class="info-item">
-      <div class="info-label">Score</div>
-      <div class="info-value" id="score">0</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">Wave</div>
-      <div class="info-value" id="wave">1</div>
-    </div>
-    <div class="info-item">
-      <div class="info-label">Lives</div>
-      <div class="info-value" id="livesDisplay">❤️❤️❤️❤️❤️</div>
-    </div>
+    <div class="info-item"><div class="info-label">Score</div><div class="info-value" id="score">0</div></div>
+    <div class="info-item"><div class="info-label">Wave</div><div class="info-value" id="wave">1</div></div>
+    <div class="info-item"><div class="info-label">Lives</div><div class="info-value" id="livesDisplay">❤️❤️❤️❤️❤️</div></div>
   </div>
 
-  <div class="game-canvas" id="gameCanvas">
-    <div class="spaceship" id="spaceship">🛸</div>
-    <div class="shield" id="shield"></div>
-    <div class="health-bar">
-      <div class="health-fill" id="healthFill" style="width:100%"></div>
+  <div class="game-wrap" id="gameWrap">
+    <canvas id="gameCanvas"></canvas>
+    <div class="game-overlay" id="startOverlay">
+      <h3>🛸 Ready for Launch?</h3>
+      <p>Move your ship with arrows, WASD, or touch buttons. Avoid rocks and meteors. Collect ❤️ to restore a life!</p>
+      <button class="overlay-btn" type="button" onclick="startGame()">▶️ Start Mission</button>
     </div>
-    <div class="wave-announcement" id="waveAnnouncement"></div>
+    <div class="game-overlay" id="endOverlay" style="display:none;">
+      <h3 id="endTitle">💥 Mission Failed!</h3>
+      <p id="endStats">Score: 0</p>
+      <button class="overlay-btn" type="button" onclick="startGame()">🔄 Try Again</button>
+    </div>
   </div>
 
   <div class="touch-controls">
-    <div class="touch-controls-row">
-      <button class="touch-btn" id="upBtn">⬆️</button>
-    </div>
-    <div class="touch-controls-row" style="flex-direction:row;">
-      <button class="touch-btn" id="leftBtn">⬅️</button>
-      <button class="touch-btn" id="downBtn">⬇️</button>
-      <button class="touch-btn" id="rightBtn">➡️</button>
-    </div>
+    <button class="touch-btn" id="upBtn" type="button">⬆️</button>
+    <button class="touch-btn" id="leftBtn" type="button">⬅️</button>
+    <button class="touch-btn" id="downBtn" type="button">⬇️</button>
+    <button class="touch-btn" id="rightBtn" type="button">➡️</button>
   </div>
 
   <div class="controls">
-    <button class="control-btn" onclick="startGame()">🛸 Start Mission</button>
-    <button class="control-btn" onclick="resetGame()">🔄 Reset</button>
+    <button class="control-btn" type="button" onclick="startGame()">▶️ Start</button>
+    <button class="control-btn" type="button" onclick="resetGame()">🔄 Reset</button>
   </div>
 
   <div class="instructions">
     <h3>🎮 How to Play</h3>
     <ul>
-      <li>Use <strong>Arrow Keys</strong>, <strong>WASD</strong>, or <strong>Touch Buttons</strong> to move your spaceship</li>
-      <li>Avoid falling asteroids and meteors (lose 1 life each hit)</li>
-      <li>Collect power-ups to restore lives (+1 life)</li>
-      <li>Survive as long as possible - waves get harder!</li>
-      <li>Score points for every second you survive</li>
-      <li>Game over when you lose all 5 lives</li>
+      <li>Use <strong>Arrow Keys</strong>, <strong>WASD</strong>, or touch buttons to fly</li>
+      <li>Dodge brown asteroids and red meteors</li>
+      <li>Collect ❤️ power-ups for +1 life</li>
+      <li>Survive longer — waves get faster!</li>
     </ul>
   </div>
 </div>
 
 <script>
-let score = 0;
-let lives = 5;
-let wave = 1;
-let gameInterval;
-let asteroidInterval;
-let meteorInterval;
-let powerupInterval;
-let scoreInterval;
+let canvas, ctx, wrap;
+let score = 0, lives = 5, wave = 1;
 let isGameRunning = false;
-let spaceshipX = 50;
-let spaceshipY = 80;
-let hasShield = false;
-let shieldTimeout;
+let ship = { x: 0, y: 0, size: 28, speed: 5 };
+let hazards = [];
+let powerups = [];
+let keys = {};
+let moveDir = { up: false, down: false, left: false, right: false };
+let spawnTimer = 0, powerTimer = 0, waveTimer = 0, scoreTimer = 0;
+let animId = 0;
+let touchBound = false;
 
-function startGame() {
-  if (isGameRunning) return;
-  
-  isGameRunning = true;
-  score = 0;
-  lives = 5;
-  wave = 1;
-  spaceshipX = 50;
-  spaceshipY = 80;
-  hasShield = false;
-  
-  updateUI();
-  
-  const gameCanvas = document.getElementById('gameCanvas');
-  const spaceship = document.getElementById('spaceship');
-  
-  // Clear existing elements
-  gameCanvas.querySelectorAll('.asteroid, .meteor, .powerup').forEach(e => e.remove());
-  
-  // Position spaceship
-  spaceship.style.left = spaceshipX + '%';
-  spaceship.style.bottom = spaceshipY + '%';
-  
-  // Enable controls
-  document.addEventListener('keydown', handleKeyDown);
-  setupTouchControls();
-  
-  // Start spawning hazards
-  startWave();
-  
-  // Score timer
-  scoreInterval = setInterval(() => {
-    if (!isGameRunning) return;
-    score += 10;
-    document.getElementById('score').textContent = score;
-  }, 1000);
-}
-
-function startWave() {
-  // Show wave announcement
-  const announcement = document.getElementById('waveAnnouncement');
-  announcement.textContent = 'Wave ' + wave;
-  announcement.style.display = 'block';
-  
-  setTimeout(() => {
-    announcement.style.display = 'none';
-  }, 2000);
-  
-  // Spawn asteroids based on wave
-  const asteroidRate = Math.max(400, 1000 - (wave * 100));
-  asteroidInterval = setInterval(() => {
-    if (!isGameRunning) return;
-    spawnAsteroid();
-  }, asteroidRate);
-  
-  // Spawn meteors based on wave
-  const meteorRate = Math.max(600, 1500 - (wave * 100));
-  meteorInterval = setInterval(() => {
-    if (!isGameRunning) return;
-    spawnMeteor();
-  }, meteorRate);
-  
-  // Spawn power-ups
-  powerupInterval = setInterval(() => {
-    if (!isGameRunning) return;
-    spawnPowerup();
-  }, 5000);
-  
-  // Advance wave after 15 seconds
-  setTimeout(() => {
-    if (isGameRunning) {
-      wave++;
-      document.getElementById('wave').textContent = wave;
-      clearInterval(asteroidInterval);
-      clearInterval(meteorInterval);
-      clearInterval(powerupInterval);
-      startWave();
-    }
-  }, 15000);
-}
-
-function handleKeyDown(e) {
-  if (!isGameRunning) return;
-  
-  // Prevent default scrolling for arrow keys
-  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
-    e.preventDefault();
-  }
-  
-  const spaceship = document.getElementById('spaceship');
-  
-  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-    spaceshipX = Math.max(5, spaceshipX - 5);
-  } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-    spaceshipX = Math.min(90, spaceshipX + 5);
-  } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-    spaceshipY = Math.min(90, spaceshipY + 5);
-  } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-    spaceshipY = Math.max(10, spaceshipY - 5);
-  }
-  
-  spaceship.style.left = spaceshipX + '%';
-  spaceship.style.bottom = spaceshipY + '%';
-}
-
-function setupTouchControls() {
-  const upBtn = document.getElementById('upBtn');
-  const downBtn = document.getElementById('downBtn');
-  const leftBtn = document.getElementById('leftBtn');
-  const rightBtn = document.getElementById('rightBtn');
-  
-  let moveInterval;
-  
-  function startMoving(direction) {
-    if (moveInterval) clearInterval(moveInterval);
-    
-    moveInterval = setInterval(() => {
-      if (!isGameRunning) {
-        clearInterval(moveInterval);
-        return;
-      }
-      
-      const spaceship = document.getElementById('spaceship');
-      
-      if (direction === 'up') {
-        spaceshipY = Math.min(90, spaceshipY + 5);
-      } else if (direction === 'down') {
-        spaceshipY = Math.max(10, spaceshipY - 5);
-      } else if (direction === 'left') {
-        spaceshipX = Math.max(5, spaceshipX - 5);
-      } else if (direction === 'right') {
-        spaceshipX = Math.min(90, spaceshipX + 5);
-      }
-      
-      spaceship.style.left = spaceshipX + '%';
-      spaceship.style.bottom = spaceshipY + '%';
-    }, 50);
-  }
-  
-  function stopMoving() {
-    if (moveInterval) {
-      clearInterval(moveInterval);
-      moveInterval = null;
-    }
-  }
-  
-  // Touch events
-  upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('up'); });
-  upBtn.addEventListener('touchend', stopMoving);
-  downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('down'); });
-  downBtn.addEventListener('touchend', stopMoving);
-  leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('left'); });
-  leftBtn.addEventListener('touchend', stopMoving);
-  rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('right'); });
-  rightBtn.addEventListener('touchend', stopMoving);
-  
-  // Mouse events for desktop testing
-  upBtn.addEventListener('mousedown', () => startMoving('up'));
-  upBtn.addEventListener('mouseup', stopMoving);
-  upBtn.addEventListener('mouseleave', stopMoving);
-  downBtn.addEventListener('mousedown', () => startMoving('down'));
-  downBtn.addEventListener('mouseup', stopMoving);
-  downBtn.addEventListener('mouseleave', stopMoving);
-  leftBtn.addEventListener('mousedown', () => startMoving('left'));
-  leftBtn.addEventListener('mouseup', stopMoving);
-  leftBtn.addEventListener('mouseleave', stopMoving);
-  rightBtn.addEventListener('mousedown', () => startMoving('right'));
-  rightBtn.addEventListener('mouseup', stopMoving);
-  rightBtn.addEventListener('mouseleave', stopMoving);
-}
-
-function spawnAsteroid() {
-  const gameCanvas = document.getElementById('gameCanvas');
-  const asteroid = document.createElement('div');
-  asteroid.className = 'asteroid';
-  
-  const randomX = Math.random() * 80 + 10;
-  asteroid.style.left = randomX + '%';
-  asteroid.style.animationDuration = (Math.random() * 1.5 + 1.5 + (wave * 0.1)) + 's';
-  
-  gameCanvas.appendChild(asteroid);
-  
-  asteroid.onclick = function() {
-    asteroid.remove();
-    score += 15;
-    document.getElementById('score').textContent = score;
-  };
-  
-  const checkCollision = setInterval(() => {
-    if (!isGameRunning || !asteroid.parentNode) {
-      clearInterval(checkCollision);
-      return;
-    }
-    
-    const asteroidRect = asteroid.getBoundingClientRect();
-    const spaceshipRect = document.getElementById('spaceship').getBoundingClientRect();
-    
-    if (isColliding(asteroidRect, spaceshipRect)) {
-      clearInterval(checkCollision);
-      asteroid.remove();
-      takeDamage(20);
-    }
-  }, 50);
-  
-  setTimeout(() => {
-    if (asteroid.parentNode) asteroid.remove();
-  }, 3000);
-}
-
-function spawnMeteor() {
-  const gameCanvas = document.getElementById('gameCanvas');
-  const meteor = document.createElement('div');
-  meteor.className = 'meteor';
-  
-  const randomX = Math.random() * 80 + 10;
-  meteor.style.left = randomX + '%';
-  meteor.style.animationDuration = (Math.random() * 1 + 1 + (wave * 0.15)) + 's';
-  
-  gameCanvas.appendChild(meteor);
-  
-  meteor.onclick = function() {
-    meteor.remove();
-    score += 20;
-    document.getElementById('score').textContent = score;
-  };
-  
-  const checkCollision = setInterval(() => {
-    if (!isGameRunning || !meteor.parentNode) {
-      clearInterval(checkCollision);
-      return;
-    }
-    
-    const meteorRect = meteor.getBoundingClientRect();
-    const spaceshipRect = document.getElementById('spaceship').getBoundingClientRect();
-    
-    if (isColliding(meteorRect, spaceshipRect)) {
-      clearInterval(checkCollision);
-      meteor.remove();
-      takeDamage(25);
-    }
-  }, 50);
-  
-  setTimeout(() => {
-    if (meteor.parentNode) meteor.remove();
-  }, 2500);
-}
-
-function spawnPowerup() {
-  const gameCanvas = document.getElementById('gameCanvas');
-  const powerup = document.createElement('div');
-  powerup.className = 'powerup';
-  powerup.textContent = '❤️';
-  
-  const randomX = Math.random() * 70 + 15;
-  const randomY = Math.random() * 60 + 20;
-  powerup.style.left = randomX + '%';
-  powerup.style.top = randomY + '%';
-  
-  powerup.onclick = function() {
-    powerup.remove();
-    heal(25);
-    score += 30;
-    document.getElementById('score').textContent = score;
-  };
-  
-  gameCanvas.appendChild(powerup);
-  
-  setTimeout(() => {
-    if (powerup.parentNode) powerup.remove();
-  }, 4000);
-}
-
-function takeDamage(amount) {
-  if (hasShield) {
-    hasShield = false;
-    document.getElementById('shield').style.display = 'none';
-    return;
-  }
-  
-  lives--;
-  updateUI();
-  
-  if (lives <= 0) {
-    gameOver();
-  }
-}
-
-function heal(amount) {
-  lives = Math.min(5, lives + 1);
-  updateUI();
-}
-
-function updateUI() {
-  const hearts = '❤️'.repeat(lives);
-  document.getElementById('livesDisplay').textContent = hearts;
-}
-
-function isColliding(rect1, rect2) {
-  return !(rect1.right < rect2.left || 
-           rect1.left > rect2.right || 
-           rect1.bottom < rect2.top || 
-           rect1.top > rect2.bottom);
-}
-
-function gameOver() {
-  isGameRunning = false;
-  clearInterval(asteroidInterval);
-  clearInterval(meteorInterval);
-  clearInterval(powerupInterval);
-  clearInterval(scoreInterval);
-  document.removeEventListener('keydown', handleKeyDown);
-  
-  const gameCanvas = document.getElementById('gameCanvas');
-  gameCanvas.innerHTML = `
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#ff6b6b;font-size:28px;font-weight:bold;">
-      <div>💥 Mission Failed!</div>
-      <div style="font-size:20px;margin-top:16px;color:#fff;">Final Score: ${score}</div>
-      <div style="font-size:18px;margin-top:8px;color:#c4b5fd;">Waves Survived: ${wave}</div>
-    </div>
-  `;
+function resizeCanvas() {
+  wrap = document.getElementById('gameWrap');
+  canvas = document.getElementById('gameCanvas');
+  if (!wrap || !canvas) return;
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  ctx = canvas.getContext('2d');
 }
 
 function resetGame() {
-  isGameRunning = false;
-  clearInterval(asteroidInterval);
-  clearInterval(meteorInterval);
-  clearInterval(powerupInterval);
-  clearInterval(scoreInterval);
-  document.removeEventListener('keydown', handleKeyDown);
-  
-  score = 0;
-  lives = 5;
-  wave = 1;
-  spaceshipX = 50;
-  spaceshipY = 80;
-  hasShield = false;
-  
+  stopGame(false);
+  score = 0; lives = 5; wave = 1;
+  hazards = []; powerups = [];
   updateUI();
-  document.getElementById('score').textContent = '0';
-  document.getElementById('wave').textContent = '1';
-  
-  const gameCanvas = document.getElementById('gameCanvas');
-  gameCanvas.innerHTML = `
-    <div class="spaceship" id="spaceship">🛸</div>
-    <div class="shield" id="shield"></div>
-    <div class="health-bar">
-      <div class="health-fill" id="healthFill" style="width:100%"></div>
-    </div>
-    <div class="wave-announcement" id="waveAnnouncement"></div>
-  `;
-  
-  const spaceship = document.getElementById('spaceship');
-  spaceship.style.left = '50%';
-  spaceship.style.bottom = '10px';
+  document.getElementById('startOverlay').style.display = 'flex';
+  document.getElementById('endOverlay').style.display = 'none';
 }
+
+function stopGame(showEnd) {
+  isGameRunning = false;
+  cancelAnimationFrame(animId);
+  document.removeEventListener('keydown', onKeyDown);
+  document.removeEventListener('keyup', onKeyUp);
+  if (showEnd) {
+    document.getElementById('endTitle').textContent = '💥 Mission Failed!';
+    document.getElementById('endStats').textContent = 'Final Score: ' + score + ' | Wave: ' + wave;
+    document.getElementById('endOverlay').style.display = 'flex';
+  }
+}
+
+function startGame() {
+  resizeCanvas();
+  if (!ctx) return;
+  stopGame(false);
+  document.getElementById('startOverlay').style.display = 'none';
+  document.getElementById('endOverlay').style.display = 'none';
+  score = 0; lives = 5; wave = 1;
+  hazards = []; powerups = [];
+  ship.x = canvas.width / 2;
+  ship.y = canvas.height - 60;
+  spawnTimer = 0; powerTimer = 0; waveTimer = 0; scoreTimer = 0;
+  isGameRunning = true;
+  updateUI();
+  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
+  if (!touchBound) { bindTouch(); touchBound = true; }
+  animId = requestAnimationFrame(loop);
+}
+
+function bindTouch() {
+  function bind(btn, dir, val) {
+    btn.addEventListener('touchstart', e => { e.preventDefault(); moveDir[dir] = val; });
+    btn.addEventListener('touchend', e => { e.preventDefault(); moveDir[dir] = false; });
+    btn.addEventListener('mousedown', () => { moveDir[dir] = val; });
+    btn.addEventListener('mouseup', () => { moveDir[dir] = false; });
+    btn.addEventListener('mouseleave', () => { moveDir[dir] = false; });
+  }
+  bind(document.getElementById('upBtn'), 'up', true);
+  bind(document.getElementById('downBtn'), 'down', true);
+  bind(document.getElementById('leftBtn'), 'left', true);
+  bind(document.getElementById('rightBtn'), 'right', true);
+}
+
+function onKeyDown(e) {
+  if (!isGameRunning) return;
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.up = true;
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.down = true;
+}
+
+function onKeyUp(e) {
+  if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') keys.up = false;
+  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') keys.down = false;
+}
+
+function updateUI() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('wave').textContent = wave;
+  document.getElementById('livesDisplay').textContent = '❤️'.repeat(Math.max(0, lives));
+}
+
+function spawnHazard() {
+  const meteor = Math.random() < 0.35 + wave * 0.03;
+  hazards.push({
+    x: 20 + Math.random() * (canvas.width - 40),
+    y: -20,
+    r: meteor ? 10 + Math.random() * 8 : 14 + Math.random() * 12,
+    vy: (meteor ? 2.8 : 2.2) + wave * 0.25 + Math.random(),
+    type: meteor ? 'meteor' : 'asteroid'
+  });
+}
+
+function spawnPowerup() {
+  powerups.push({
+    x: 30 + Math.random() * (canvas.width - 60),
+    y: -20,
+    r: 16,
+    vy: 1.6 + wave * 0.1
+  });
+}
+
+function hit(a, b, pad) {
+  pad = pad || 0;
+  const dx = a.x - b.x, dy = a.y - b.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  return dist < a.r + b.r - pad;
+}
+
+function loop(ts) {
+  if (!isGameRunning) return;
+  if (!ctx) return;
+
+  const left = keys.left || moveDir.left;
+  const right = keys.right || moveDir.right;
+  const up = keys.up || moveDir.up;
+  const down = keys.down || moveDir.down;
+  if (left) ship.x -= ship.speed;
+  if (right) ship.x += ship.speed;
+  if (up) ship.y -= ship.speed;
+  if (down) ship.y += ship.speed;
+  ship.x = Math.max(ship.size, Math.min(canvas.width - ship.size, ship.x));
+  ship.y = Math.max(ship.size, Math.min(canvas.height - ship.size, ship.y));
+
+  spawnTimer += 16;
+  powerTimer += 16;
+  waveTimer += 16;
+  scoreTimer += 16;
+  const spawnRate = Math.max(450, 1100 - wave * 80);
+  if (spawnTimer > spawnRate) { spawnTimer = 0; spawnHazard(); }
+  if (powerTimer > 4500) { powerTimer = 0; spawnPowerup(); }
+  if (waveTimer > 15000) { waveTimer = 0; wave++; updateUI(); }
+  if (scoreTimer > 1000) { scoreTimer = 0; score += 10; updateUI(); }
+
+  hazards.forEach(h => { h.y += h.vy; });
+  powerups.forEach(p => { p.y += p.vy; });
+  hazards = hazards.filter(h => h.y < canvas.height + 40);
+  powerups = powerups.filter(p => p.y < canvas.height + 40);
+
+  for (let i = hazards.length - 1; i >= 0; i--) {
+    if (hit(hazards[i], { x: ship.x, y: ship.y, r: ship.size * 0.55 })) {
+      hazards.splice(i, 1);
+      lives--;
+      updateUI();
+      if (lives <= 0) { stopGame(true); return; }
+    }
+  }
+  for (let i = powerups.length - 1; i >= 0; i--) {
+    if (hit(powerups[i], { x: ship.x, y: ship.y, r: ship.size * 0.6 })) {
+      powerups.splice(i, 1);
+      lives = Math.min(5, lives + 1);
+      score += 30;
+      updateUI();
+    }
+  }
+
+  draw();
+  animId = requestAnimationFrame(loop);
+}
+
+function draw() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#0a0820');
+  g.addColorStop(1, '#1a1240');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = 0; i < 40; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.2 + (i % 5) * 0.12) + ')';
+    ctx.beginPath();
+    ctx.arc((i * 97 + 30) % canvas.width, (i * 53 + tsMod(i)) % canvas.height, 1 + (i % 2), 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  hazards.forEach(h => {
+    if (h.type === 'meteor') {
+      const grd = ctx.createRadialGradient(h.x - 3, h.y - 3, 1, h.x, h.y, h.r);
+      grd.addColorStop(0, '#ff8787');
+      grd.addColorStop(1, '#c92a2a');
+      ctx.fillStyle = grd;
+    } else {
+      const grd = ctx.createRadialGradient(h.x - 4, h.y - 4, 2, h.x, h.y, h.r);
+      grd.addColorStop(0, '#a0724a');
+      grd.addColorStop(1, '#4a3018');
+      ctx.fillStyle = grd;
+    }
+    ctx.beginPath();
+    ctx.arc(h.x, h.y, h.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  powerups.forEach(p => {
+    ctx.font = (p.r * 1.6) + 'px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('❤️', p.x, p.y);
+  });
+
+  ctx.save();
+  ctx.translate(ship.x, ship.y);
+  ctx.shadowColor = '#74c0fc';
+  ctx.shadowBlur = 16;
+  ctx.font = (ship.size * 1.4) + 'px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🛸', 0, 0);
+  ctx.restore();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = '13px Comic Sans MS';
+  ctx.textAlign = 'left';
+  ctx.fillText('Wave ' + wave, 12, 22);
+}
+
+function tsMod(i) { return (Date.now() / 40 + i * 17) % 600; }
+
+window.addEventListener('resize', () => { if (isGameRunning) resizeCanvas(); });
+resetGame();
 </script>
 </body>
 </html>

@@ -170,68 +170,20 @@
       margin-top:20px;
       border:1px solid rgba(255,255,255,0.1);
     }
-    .sun-game h2{
-      color:#ffd700;
-      margin-bottom:16px;
-      font-size:20px;
-      text-align:center;
-    }
-    .sun-game p{
-      text-align:center;
-      color:#c4b5fd;
-      font-size:14px;
-      margin-bottom:16px;
-    }
-    .game-area{
-      position:relative;
-      height:200px;
-      background:#12102a;
-      border-radius:16px;
-      overflow:hidden;
-      cursor:crosshair;
-    }
-    .sun-ray{
-      position:absolute;
-      width:30px;
-      height:30px;
-      background:radial-gradient(circle,#ffd700,#ff8c00);
-      border-radius:50%;
-      cursor:pointer;
-      animation:twinkle 1s ease-in-out infinite;
-      box-shadow:0 0 20px #ffd700;
-    }
-    .sun-ray:hover{
-      transform:scale(1.2);
-    }
-    .game-score{
-      text-align:center;
-      font-size:20px;
-      color:#ffd700;
-      font-weight:bold;
-      margin-top:16px;
-    }
-    .game-timer{
-      text-align:center;
-      font-size:16px;
-      color:#c4b5fd;
-      margin-top:8px;
-    }
-    .start-game-btn{
-      display:block;
-      margin:16px auto 0;
-      padding:12px 24px;
-      border:none;
-      border-radius:12px;
-      background:linear-gradient(135deg,#ffd700,#ff8c00);
-      color:#0f0c29;
-      font-size:16px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.2s;
-    }
-    .start-game-btn:hover{
-      transform:scale(1.05);
-    }
+    .sun-game h2{color:#ffd700;margin-bottom:8px;font-size:20px;text-align:center;}
+    .sun-game .game-desc{text-align:center;color:#c4b5fd;font-size:14px;margin-bottom:14px;line-height:1.55;}
+    .game-canvas-wrap{position:relative;height:360px;background:#12102a;border-radius:16px;overflow:hidden;touch-action:none;}
+    #sunGameCanvas{display:block;width:100%;height:100%;}
+    .game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(8,6,24,.9);text-align:center;padding:20px;z-index:5;}
+    .game-overlay h3{color:#ffd700;margin-bottom:8px;font-size:22px;}
+    .game-overlay p{color:#ddd;font-size:14px;margin-bottom:14px;line-height:1.5;max-width:300px;}
+    .overlay-btn{padding:10px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#0f0c29;font-size:15px;font-weight:bold;cursor:pointer;}
+    .game-hud{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .game-hud-item{background:#1a1735;padding:8px 14px;border-radius:8px;font-size:15px;font-weight:bold;color:#ffd700;border:1px solid rgba(255,215,0,0.45);}
+    .touch-controls{display:grid;grid-template-columns:repeat(3,52px);gap:8px;justify-content:center;margin-top:12px;}
+    .touch-btn{width:52px;height:52px;border-radius:12px;border:2px solid rgba(255,215,0,0.45);background:rgba(255,215,0,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+    .touch-btn.jump{grid-column:2;background:rgba(255,140,0,0.25);}
+    .touch-btn.empty{visibility:hidden;border:none;background:none;}
   
     .planet-svg-panel{background:#12102a;border-radius:20px;border:1px solid rgba(255,215,0,0.45);padding:12px;margin:20px 0;}
     .svg-viewport{width:100%;aspect-ratio:1;max-height:340px;border-radius:14px;overflow:hidden;background:#0a0820;touch-action:none;}
@@ -269,7 +221,7 @@
     </div>
     <div class="planet-info-panel" id="planetInfo">👆 Tap the Sun for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
     <div class="svg-controls">
-      <button class="svg-ctrl" id="btnSpin" type="button">Stop/Start spin</button>
+      <button class="svg-ctrl" id="btnSpin" type="button">Stop</button>
       <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
       <button class="svg-ctrl" id="btnZoomOut" type="button">🔍 −</button>
       <button class="svg-ctrl" id="btnRotL" type="button">↺</button>
@@ -344,12 +296,33 @@
   </div>
 
   <div class="sun-game">
-    <h2>🎮 Catch the Sun Rays!</h2>
-    <p>Click on the glowing sun rays before they disappear!</p>
-    <div class="game-area" id="gameArea"></div>
-    <div class="game-score" id="gameScore">Score: 0</div>
-    <div class="game-timer" id="gameTimer">Time: 15s</div>
-    <button class="start-game-btn" id="startGameBtn" onclick="startSunGame()">🌟 Start Game!</button>
+    <h2>☀️ Climb to the Sun!</h2>
+    <p class="game-desc">Jump on solar platforms like Mario! Move ← → and jump up to reach the Sun. Dodge solar flares!</p>
+    <div class="game-canvas-wrap" id="sunGameWrap">
+      <canvas id="sunGameCanvas"></canvas>
+      <div class="game-overlay" id="sunStartScreen">
+        <h3>☀️ Solar Climb!</h3>
+        <p>Use ← → to move, ↑ or Jump to leap onto platforms. Reach the Sun at the top!</p>
+        <button class="overlay-btn" type="button" onclick="startSunClimb()">▶️ Start</button>
+      </div>
+      <div class="game-overlay" id="sunEndScreen" style="display:none;">
+        <h3 id="sunEndTitle">🎉 You Made It!</h3>
+        <p id="sunEndStats">Score: 0</p>
+        <button class="overlay-btn" type="button" onclick="startSunClimb()">🔄 Play Again</button>
+      </div>
+    </div>
+    <div class="touch-controls">
+      <button class="touch-btn empty" type="button" tabindex="-1"></button>
+      <button class="touch-btn jump" id="sunJumpBtn" type="button">⬆️</button>
+      <button class="touch-btn empty" type="button" tabindex="-1"></button>
+      <button class="touch-btn" id="sunLeftBtn" type="button">⬅️</button>
+      <button class="touch-btn empty" type="button" tabindex="-1"></button>
+      <button class="touch-btn" id="sunRightBtn" type="button">➡️</button>
+    </div>
+    <div class="game-hud">
+      <span class="game-hud-item" id="sunGameScore">Height: 0m</span>
+      <span class="game-hud-item" id="sunGameTimer">⏱ 90s | ❤️❤️❤️</span>
+    </div>
   </div>
 
 <div class="nav-hint">
@@ -371,81 +344,183 @@ const sunFacts = [
   "Solar flares can be bigger than Earth!"
 ];
 
-// Sun Ray Catching Game
-let gameScore = 0;
-let gameTime = 15;
-let gameInterval;
-let spawnInterval;
-let isGameRunning = false;
+// ☀️ Solar Climb — Mario-style platform climb to the Sun
+let sunCanvas, sunCtx, sunRunning = false;
+let sunPlayer, sunPlatforms = [], sunFlares = [], sunCamY = 0;
+let sunTime = 90, sunLives = 3, sunHeight = 0, sunAnimId, sunTimerId;
+let sunKeys = {}, sunMoveL = false, sunMoveR = false, sunJumpReq = false;
 
-function startSunGame() {
-  if (isGameRunning) return;
-  
-  isGameRunning = true;
-  gameScore = 0;
-  gameTime = 15;
-  
-  document.getElementById('gameScore').textContent = 'Score: 0';
-  document.getElementById('gameTimer').textContent = 'Time: 15s';
-  document.getElementById('startGameBtn').disabled = true;
-  document.getElementById('startGameBtn').textContent = '🌟 Playing...';
-  
-  const gameArea = document.getElementById('gameArea');
-  gameArea.innerHTML = '';
-  
-  // Spawn sun rays
-  spawnInterval = setInterval(() => {
-    if (!isGameRunning) return;
-    spawnSunRay(gameArea);
-  }, 800);
-  
-  // Game timer
-  gameInterval = setInterval(() => {
-    gameTime--;
-    document.getElementById('gameTimer').textContent = 'Time: ' + gameTime + 's';
-    
-    if (gameTime <= 0) {
-      endGame();
-    }
+function startSunClimb() {
+  const wrap = document.getElementById('sunGameWrap');
+  sunCanvas = document.getElementById('sunGameCanvas');
+  sunCtx = sunCanvas.getContext('2d');
+  sunCanvas.width = wrap.clientWidth;
+  sunCanvas.height = wrap.clientHeight;
+  document.getElementById('sunStartScreen').style.display = 'none';
+  document.getElementById('sunEndScreen').style.display = 'none';
+  sunRunning = true;
+  sunTime = 90; sunLives = 3; sunHeight = 0; sunCamY = 0;
+  sunFlares = [];
+  sunPlayer = { x: sunCanvas.width / 2, y: sunCanvas.height - 40, w: 24, h: 28, vx: 0, vy: 0, onGround: false };
+  sunPlatforms = buildSunPlatforms(sunCanvas.width);
+  updateSunHud();
+  document.addEventListener('keydown', sunKeyDown);
+  document.addEventListener('keyup', sunKeyUp);
+  bindSunTouch();
+  if (sunTimerId) clearInterval(sunTimerId);
+  sunTimerId = setInterval(function() {
+    if (!sunRunning) return;
+    sunTime--;
+    updateSunHud();
+    if (sunTime <= 0) endSunClimb(false);
   }, 1000);
+  sunLoop();
 }
 
-function spawnSunRay(gameArea) {
-  const ray = document.createElement('div');
-  ray.className = 'sun-ray';
-  
-  const maxX = gameArea.offsetWidth - 30;
-  const maxY = gameArea.offsetHeight - 30;
-  
-  ray.style.left = Math.random() * maxX + 'px';
-  ray.style.top = Math.random() * maxY + 'px';
-  
-  ray.onclick = function() {
-    gameScore += 10;
-    document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-    ray.remove();
-  };
-  
-  gameArea.appendChild(ray);
-  
-  // Remove after 2 seconds if not clicked
-  setTimeout(() => {
-    if (ray.parentNode) {
-      ray.remove();
+function buildSunPlatforms(w) {
+  const plats = [{ x: w / 2 - 60, y: 0, width: 120, h: 14 }];
+  let y = sunCanvas.height - 30;
+  for (let i = 0; i < 18; i++) {
+    const pw = 70 + Math.random() * 70;
+    plats.push({ x: Math.random() * (w - pw - 20) + 10, y: y, width: pw, h: 14 });
+    y -= 55 + Math.random() * 35;
+  }
+  plats.push({ x: w / 2 - 80, y: y - 40, width: 160, h: 16, isSun: true });
+  return plats;
+}
+
+function bindSunTouch() {
+  const L = document.getElementById('sunLeftBtn');
+  const R = document.getElementById('sunRightBtn');
+  const J = document.getElementById('sunJumpBtn');
+  if (L._bound) return;
+  L._bound = R._bound = J._bound = true;
+  L.addEventListener('touchstart', e => { e.preventDefault(); sunMoveL = true; });
+  L.addEventListener('touchend', () => { sunMoveL = false; });
+  R.addEventListener('touchstart', e => { e.preventDefault(); sunMoveR = true; });
+  R.addEventListener('touchend', () => { sunMoveR = false; });
+  J.addEventListener('touchstart', e => { e.preventDefault(); sunJumpReq = true; });
+  L.addEventListener('mousedown', () => { sunMoveL = true; });
+  L.addEventListener('mouseup', () => { sunMoveL = false; });
+  R.addEventListener('mousedown', () => { sunMoveR = true; });
+  R.addEventListener('mouseup', () => { sunMoveR = false; });
+  J.addEventListener('mousedown', () => { sunJumpReq = true; });
+}
+
+function sunKeyDown(e) {
+  if (!sunRunning) return;
+  if (['ArrowLeft','ArrowRight','ArrowUp',' '].includes(e.key)) e.preventDefault();
+  if (e.key === 'ArrowLeft' || e.key === 'a') sunKeys.left = true;
+  if (e.key === 'ArrowRight' || e.key === 'd') sunKeys.right = true;
+  if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') sunJumpReq = true;
+}
+
+function sunKeyUp(e) {
+  if (e.key === 'ArrowLeft' || e.key === 'a') sunKeys.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd') sunKeys.right = false;
+}
+
+function updateSunHud() {
+  document.getElementById('sunGameScore').textContent = 'Height: ' + sunHeight + 'm';
+  document.getElementById('sunGameTimer').textContent = '⏱ ' + sunTime + 's | ' + '❤️'.repeat(sunLives) + '🖤'.repeat(Math.max(0, 3 - sunLives));
+}
+
+function endSunClimb(won) {
+  sunRunning = false;
+  cancelAnimationFrame(sunAnimId);
+  clearInterval(sunTimerId);
+  document.removeEventListener('keydown', sunKeyDown);
+  document.removeEventListener('keyup', sunKeyUp);
+  document.getElementById('sunEndTitle').textContent = won ? '☀️ You Reached the Sun!' : '💥 Solar Fall!';
+  document.getElementById('sunEndStats').textContent = 'Height: ' + sunHeight + 'm | Time left: ' + sunTime + 's';
+  document.getElementById('sunEndScreen').style.display = 'flex';
+}
+
+function sunLoop() {
+  if (!sunRunning) return;
+  const p = sunPlayer;
+  const grav = 0.55;
+  const jumpV = -11;
+  const speed = 5;
+  if (sunKeys.left || sunMoveL) p.vx = -speed;
+  else if (sunKeys.right || sunMoveR) p.vx = speed;
+  else p.vx *= 0.75;
+  if (sunJumpReq && p.onGround) { p.vy = jumpV; p.onGround = false; }
+  sunJumpReq = false;
+  p.vy += grav;
+  p.x += p.vx;
+  p.y += p.vy;
+  p.x = Math.max(p.w, Math.min(sunCanvas.width - p.w, p.x));
+  p.onGround = false;
+  sunPlatforms.forEach(pl => {
+    const py = pl.y - sunCamY;
+    if (p.vy >= 0 && p.y + p.h / 2 >= py && p.y + p.h / 2 <= py + pl.h + p.vy + 2 &&
+        p.x + p.w / 2 > pl.x && p.x - p.w / 2 < pl.x + pl.width) {
+      p.y = py - p.h / 2;
+      p.vy = 0;
+      p.onGround = true;
+      if (pl.isSun) endSunClimb(true);
     }
-  }, 2000);
+  });
+  if (p.y - sunCamY > sunCanvas.height + 40) {
+    sunLives--;
+    updateSunHud();
+    if (sunLives <= 0) { endSunClimb(false); return; }
+    p.x = sunCanvas.width / 2; p.y = sunCanvas.height - 60; p.vy = 0;
+    sunCamY = Math.max(0, sunCamY - 200);
+  }
+  const targetCam = Math.max(0, -(p.y - sunCanvas.height * 0.55));
+  if (targetCam > sunCamY) sunCamY += (targetCam - sunCamY) * 0.08;
+  sunHeight = Math.max(sunHeight, Math.floor(-sunCamY / 8));
+  if (Math.random() < 0.02) sunFlares.push({ x: Math.random() * sunCanvas.width, y: sunCamY - 20, w: 40, h: 12, vx: (Math.random() - 0.5) * 6 });
+  sunFlares.forEach(f => { f.x += f.vx; f.y = sunCamY + 80 + Math.sin(Date.now() / 200) * 30; });
+  sunFlares = sunFlares.filter(f => f.x > -50 && f.x < sunCanvas.width + 50);
+  sunFlares.forEach(f => {
+    const fy = f.y - sunCamY;
+    if (Math.abs(p.x - f.x) < 30 && Math.abs(p.y - f.y) < 22) {
+      sunLives--;
+      updateSunHud();
+      f.x = -9999;
+      if (sunLives <= 0) { endSunClimb(false); return; }
+    }
+  });
+  drawSunClimb();
+  sunAnimId = requestAnimationFrame(sunLoop);
 }
 
-function endGame() {
-  isGameRunning = false;
-  clearInterval(gameInterval);
-  clearInterval(spawnInterval);
-  
-  document.getElementById('startGameBtn').disabled = false;
-  document.getElementById('startGameBtn').textContent = '🌟 Play Again!';
-  
-  const gameArea = document.getElementById('gameArea');
-  gameArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ffd700;font-size:24px;font-weight:bold;">🎉 Game Over! Score: ' + gameScore + '</div>';
+function drawSunClimb() {
+  const c = sunCtx, W = sunCanvas.width, H = sunCanvas.height;
+  const bg = c.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#1a0800'); bg.addColorStop(1, '#0f0c29');
+  c.fillStyle = bg; c.fillRect(0, 0, W, H);
+  for (let i = 0; i < 30; i++) {
+    c.fillStyle = 'rgba(255,255,255,0.25)';
+    c.beginPath(); c.arc((i * 97) % W, ((i * 61) % H + sunCamY * 0.1) % H, 1, 0, Math.PI * 2); c.fill();
+  }
+  sunPlatforms.forEach(pl => {
+    const py = pl.y - sunCamY;
+    if (py < -30 || py > H + 30) return;
+    if (pl.isSun) {
+      const grd = c.createRadialGradient(pl.x + pl.width / 2, py, 5, pl.x + pl.width / 2, py, 50);
+      grd.addColorStop(0, '#fff176'); grd.addColorStop(1, '#ff8c00');
+      c.fillStyle = grd;
+      c.beginPath(); c.arc(pl.x + pl.width / 2, py, 45, 0, Math.PI * 2); c.fill();
+      c.font = '36px serif'; c.textAlign = 'center'; c.fillText('☀️', pl.x + pl.width / 2, py + 12);
+    } else {
+      c.fillStyle = '#ff9800';
+      c.fillRect(pl.x, py, pl.width, pl.h);
+      c.fillStyle = '#ffd54f';
+      c.fillRect(pl.x + 4, py + 3, pl.width - 8, pl.h - 6);
+    }
+  });
+  sunFlares.forEach(f => {
+    const fy = f.y - sunCamY;
+    c.fillStyle = 'rgba(255,100,0,0.85)';
+    c.beginPath(); c.ellipse(f.x, fy, f.w / 2, f.h / 2, 0, 0, Math.PI * 2); c.fill();
+  });
+  const py = sunPlayer.y - sunCamY;
+  c.font = '26px serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillText('🧑‍🚀', sunPlayer.x, py);
 }
 
 /* Planet texture art — NASA-style sphere maps (Solar System Scope textures, CC BY 4.0) */
@@ -524,41 +599,54 @@ const StylizedPlanet = {
       r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none'
     }));
   },
+  ensureSaturnRingClips(svg, r) {
+    if (svg.querySelector('#saturnRingBack')) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = this.el('defs', {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const pad = r * 3;
+    const back = this.el('clipPath', { id: 'saturnRingBack' });
+    back.appendChild(this.el('rect', { x: String(-pad), y: String(-pad), width: String(pad * 2), height: String(pad) }));
+    defs.appendChild(back);
+    const front = this.el('clipPath', { id: 'saturnRingFront' });
+    front.appendChild(this.el('rect', { x: String(-pad), y: '0', width: String(pad * 2), height: String(pad) }));
+    defs.appendChild(front);
+  },
+  ringEllipses(g, rx, ry, sw, tilt, clipUrl) {
+    const S = this;
+    const grp = S.el('g', { transform: 'rotate(' + tilt + ')', 'clip-path': clipUrl || '' });
+    const bands = [
+      [1, 'rgba(200,170,120,0.55)', 1],
+      [0.88, 'rgba(230,205,160,0.45)', 0.55],
+      [0.76, 'rgba(170,140,90,0.35)', 0.35]
+    ];
+    bands.forEach(([scale, color, wScale]) => {
+      grp.appendChild(S.el('ellipse', {
+        rx: String(rx * scale), ry: String(ry * scale),
+        fill: 'none', stroke: color,
+        'stroke-width': String(Math.max(0.8, sw * wScale))
+      }));
+    });
+    g.appendChild(grp);
+  },
   drawSaturn(g, r, clip, svg) {
     const S = this;
-    const tilt = -20;
-    const rx = r * 2.05;
+    const tilt = -18;
+    const rx = r * 2.15;
     const ry = r * 0.5;
-    g.appendChild(S.el('image', {
-      href: S.BASE + 'saturn_rings.png',
-      x: String(-rx), y: String(-ry),
-      width: String(rx * 2), height: String(ry * 2),
-      transform: 'rotate(' + tilt + ')',
-      opacity: '0.92'
-    }));
+    const sw = Math.max(1, r * 0.1);
+    if (svg) S.ensureSaturnRingClips(svg, r);
+    S.ringEllipses(g, rx, ry, sw, tilt, 'url(#saturnRingBack)');
     S.sphere(g, 'saturn', r, clip);
-    g.appendChild(S.el('ellipse', {
-      rx: String(rx), ry: String(ry),
-      fill: 'none', stroke: 'rgba(210,180,130,0.35)',
-      'stroke-width': String(Math.max(0.5, r * 0.06)),
-      transform: 'rotate(' + tilt + ')',
-      'pointer-events': 'none'
-    }));
+    S.ringEllipses(g, rx, ry, sw, tilt, 'url(#saturnRingFront)');
   },
   drawSun(g, r, clip, svg) {
     const S = this;
     if (svg) S.ensureSunGlow(svg);
     g.appendChild(S.el('circle', { r: String(r * 1.35), fill: 'url(#sunCorona)', 'pointer-events': 'none' }));
     S.sphere(g, 'sun', r, clip);
-    for (let i = 0; i < 8; i++) {
-      const a = i * Math.PI / 4;
-      g.appendChild(S.el('line', {
-        x1: String(Math.cos(a) * r * 1.05), y1: String(Math.sin(a) * r * 1.05),
-        x2: String(Math.cos(a) * r * 1.28), y2: String(Math.sin(a) * r * 1.28),
-        stroke: '#ffc107', 'stroke-width': String(Math.max(1, r * 0.04)), opacity: '0.55',
-        'pointer-events': 'none'
-      }));
-    }
   },
   draw(g, type, r) {
     r = r || 88;
@@ -595,9 +683,10 @@ function makePlanetViewer(planetType, facts, label) {
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => {
         this.spin = !this.spin;
+        btnSpin.textContent = this.spin ? 'Stop' : 'Spin';
         btnSpin.classList.toggle('active', !this.spin);
       };
-      btnSpin.textContent = 'Stop/Start spin';
+      btnSpin.textContent = 'Stop';
       document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
       document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
       document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };

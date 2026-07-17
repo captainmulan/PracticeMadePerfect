@@ -73,13 +73,13 @@
       color:#c4b5fd;
       font-size:16px;
     }
-    .saturn-display{
+    .ringShip-display{
       display:flex;
       justify-content:center;
       align-items:center;
       margin:30px 0;
     }
-    .saturn-container{
+    .ringShip-container{
       position:relative;
       width:180px;
       height:140px;
@@ -98,7 +98,7 @@
       box-shadow:0 0 15px rgba(244,213,158,0.3);
       z-index:1;
     }
-    .saturn{
+    .ringShip{
       width:100px;
       height:100px;
       background:linear-gradient(180deg,
@@ -145,7 +145,7 @@
       border:5px solid rgba(180,160,100,0.5);
       border-radius:50%;
     }
-    .saturn-container:hover .saturn{
+    .ringShip-container:hover .ringShip{
       transform:translate(-50%,-50%) scale(1.1);
     }
     @keyframes float{
@@ -352,14 +352,11 @@
     </div>
     <div class="planet-info-panel" id="planetInfo">👆 Tap the planet for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
     <div class="svg-controls">
-      <button class="svg-ctrl" id="btnSpin" type="button">Stop/Start spin</button>
+      <button class="svg-ctrl" id="btnSpin" type="button">Stop</button>
       <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
       <button class="svg-ctrl" id="btnZoomOut" type="button">🔍 −</button>
       <button class="svg-ctrl" id="btnRotL" type="button">↺</button>
       <button class="svg-ctrl" id="btnRotR" type="button">↻</button>
-    </div>
-  </div>
-      <div class="saturn"></div>
     </div>
   </div>
 
@@ -511,6 +508,40 @@ function checkFact(btn, isCorrect) {
   }
 }
 
+
+function drawStarfield() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#050414');
+  g.addColorStop(1, '#12102a');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < 40; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 5) * 0.12) + ')';
+    ctx.beginPath();
+    ctx.arc((i * 131) % canvas.width, (i * 73) % canvas.height, 0.8 + (i % 3), 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+function formatHudTimeLives() {
+  return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
+}
+function startHudTimer() {
+  if (typeof hudTimer !== 'undefined' && hudTimer) clearInterval(hudTimer);
+  hudTimer = setInterval(function() {
+    if (!isGameRunning) return;
+    gameTime--;
+    const el = document.getElementById('gameTimer');
+    if (el) el.textContent = formatHudTimeLives();
+    if (gameTime <= 0) endGame();
+  }, 1000);
+}
+function loseLife() {
+  gameLives--;
+  const el = document.getElementById('gameTimer');
+  if (el) el.textContent = formatHudTimeLives();
+  if (gameLives <= 0) endGame();
+}
+
 // Ring Collector Game - Move Saturn to catch rings and avoid asteroids
 let gameScore = 0;
 let gameLives = 3;
@@ -519,12 +550,14 @@ let animationFrame;
 let spawnInterval;
 let isGameRunning = false;
 let canvas, ctx;
-let saturn;
+let ringShip;
 let rings = [];
 let asteroids = [];
 let keys = {};
 let moveLeft = false;
 let moveRight = false;
+let gameTime = 60;
+let hudTimer;
 
 function startGame() {
   if (isGameRunning) return;
@@ -542,12 +575,13 @@ function startGame() {
   isGameRunning = true;
   gameScore = 0;
   gameLives = 3;
+  gameTime = 60;
   gameLevel = 1;
   rings = [];
   asteroids = [];
   
   // Initialize Saturn
-  saturn = {
+  ringShip = {
     x: canvas.width / 2,
     y: canvas.height - 80,
     width: 80,
@@ -556,10 +590,8 @@ function startGame() {
   };
   
   document.getElementById('gameScore').textContent = 'Score: 0';
-  document.getElementById('gameTimer').textContent = 'Lives: ❤️❤️❤️';
-  document.getElementById('startGameBtn').disabled = true;
-  document.getElementById('startGameBtn').textContent = '💍 Playing...';
-  
+  updateLivesDisplay();
+  startHudTimer();  
   // Enable controls
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('keyup', handleKeyUp);
@@ -638,7 +670,7 @@ function spawnItem() {
 
 function updateLivesDisplay() {
   const hearts = '❤️'.repeat(gameLives) + '🖤'.repeat(3 - gameLives);
-  document.getElementById('gameTimer').textContent = 'Lives: ' + hearts;
+  document.getElementById('gameTimer').textContent = '⏱ ' + gameTime + 's | ' + hearts;
 }
 
 function gameLoop() {
@@ -649,14 +681,14 @@ function gameLoop() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
   // Update Saturn position
-  if (keys.left || moveLeft) saturn.x -= saturn.speed;
-  if (keys.right || moveRight) saturn.x += saturn.speed;
+  if (keys.left || moveLeft) ringShip.x -= ringShip.speed;
+  if (keys.right || moveRight) ringShip.x += ringShip.speed;
   
   // Keep Saturn in bounds
-  saturn.x = Math.max(saturn.width / 2, Math.min(canvas.width - saturn.width / 2, saturn.x));
+  ringShip.x = Math.max(ringShip.width / 2, Math.min(canvas.width - ringShip.width / 2, ringShip.x));
   
-  ctx.font = saturn.width+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('🪐', saturn.x, saturn.y);
+  ctx.font = ringShip.width+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('🪐', ringShip.x, ringShip.y);
   
   // Update and draw rings
   rings.forEach((ring, index) => {
@@ -691,8 +723,8 @@ function gameLoop() {
     ctx.restore();
     
     // Check collision with Saturn
-    const dx = saturn.x - ring.x;
-    const dy = saturn.y - ring.y;
+    const dx = ringShip.x - ring.x;
+    const dy = ringShip.y - ring.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
     if (distance < 40 + ring.radius) {
@@ -746,8 +778,8 @@ function gameLoop() {
     ctx.restore();
     
     // Check collision with Saturn
-    const dx = saturn.x - asteroid.x;
-    const dy = saturn.y - asteroid.y;
+    const dx = ringShip.x - asteroid.x;
+    const dy = ringShip.y - asteroid.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
     if (distance < 40 + asteroid.width / 2) {
@@ -790,11 +822,7 @@ function endGame() {
   leftBtn.removeEventListener('touchstart', null);
   leftBtn.removeEventListener('touchend', null);
   rightBtn.removeEventListener('touchstart', null);
-  rightBtn.removeEventListener('touchend', null);
-  
-  document.getElementById('startGameBtn').disabled = false;
-  document.getElementById('startGameBtn').textContent = '💍 Play Again!';
-  
+  rightBtn.removeEventListener('touchend', null);  
   const _es = document.getElementById('endScreen');
   if (_es) {
     _es.style.display = 'block';
@@ -886,41 +914,54 @@ const StylizedPlanet = {
       r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none'
     }));
   },
+  ensureSaturnRingClips(svg, r) {
+    if (svg.querySelector('#saturnRingBack')) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = this.el('defs', {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const pad = r * 3;
+    const back = this.el('clipPath', { id: 'saturnRingBack' });
+    back.appendChild(this.el('rect', { x: String(-pad), y: String(-pad), width: String(pad * 2), height: String(pad) }));
+    defs.appendChild(back);
+    const front = this.el('clipPath', { id: 'saturnRingFront' });
+    front.appendChild(this.el('rect', { x: String(-pad), y: '0', width: String(pad * 2), height: String(pad) }));
+    defs.appendChild(front);
+  },
+  ringEllipses(g, rx, ry, sw, tilt, clipUrl) {
+    const S = this;
+    const grp = S.el('g', { transform: 'rotate(' + tilt + ')', 'clip-path': clipUrl || '' });
+    const bands = [
+      [1, 'rgba(200,170,120,0.55)', 1],
+      [0.88, 'rgba(230,205,160,0.45)', 0.55],
+      [0.76, 'rgba(170,140,90,0.35)', 0.35]
+    ];
+    bands.forEach(([scale, color, wScale]) => {
+      grp.appendChild(S.el('ellipse', {
+        rx: String(rx * scale), ry: String(ry * scale),
+        fill: 'none', stroke: color,
+        'stroke-width': String(Math.max(0.8, sw * wScale))
+      }));
+    });
+    g.appendChild(grp);
+  },
   drawSaturn(g, r, clip, svg) {
     const S = this;
-    const tilt = -20;
-    const rx = r * 2.05;
+    const tilt = -18;
+    const rx = r * 2.15;
     const ry = r * 0.5;
-    g.appendChild(S.el('image', {
-      href: S.BASE + 'saturn_rings.png',
-      x: String(-rx), y: String(-ry),
-      width: String(rx * 2), height: String(ry * 2),
-      transform: 'rotate(' + tilt + ')',
-      opacity: '0.92'
-    }));
+    const sw = Math.max(1, r * 0.1);
+    if (svg) S.ensureSaturnRingClips(svg, r);
+    S.ringEllipses(g, rx, ry, sw, tilt, 'url(#saturnRingBack)');
     S.sphere(g, 'saturn', r, clip);
-    g.appendChild(S.el('ellipse', {
-      rx: String(rx), ry: String(ry),
-      fill: 'none', stroke: 'rgba(210,180,130,0.35)',
-      'stroke-width': String(Math.max(0.5, r * 0.06)),
-      transform: 'rotate(' + tilt + ')',
-      'pointer-events': 'none'
-    }));
+    S.ringEllipses(g, rx, ry, sw, tilt, 'url(#saturnRingFront)');
   },
   drawSun(g, r, clip, svg) {
     const S = this;
     if (svg) S.ensureSunGlow(svg);
     g.appendChild(S.el('circle', { r: String(r * 1.35), fill: 'url(#sunCorona)', 'pointer-events': 'none' }));
     S.sphere(g, 'sun', r, clip);
-    for (let i = 0; i < 8; i++) {
-      const a = i * Math.PI / 4;
-      g.appendChild(S.el('line', {
-        x1: String(Math.cos(a) * r * 1.05), y1: String(Math.sin(a) * r * 1.05),
-        x2: String(Math.cos(a) * r * 1.28), y2: String(Math.sin(a) * r * 1.28),
-        stroke: '#ffc107', 'stroke-width': String(Math.max(1, r * 0.04)), opacity: '0.55',
-        'pointer-events': 'none'
-      }));
-    }
   },
   draw(g, type, r) {
     r = r || 88;
@@ -957,9 +998,10 @@ function makePlanetViewer(planetType, facts, label) {
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => {
         this.spin = !this.spin;
+        btnSpin.textContent = this.spin ? 'Stop' : 'Spin';
         btnSpin.classList.toggle('active', !this.spin);
       };
-      btnSpin.textContent = 'Stop/Start spin';
+      btnSpin.textContent = 'Stop';
       document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
       document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
       document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };

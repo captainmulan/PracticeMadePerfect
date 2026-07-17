@@ -343,7 +343,7 @@
     </div>
     <div class="planet-info-panel" id="planetInfo">👆 Tap the planet for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
     <div class="svg-controls">
-      <button class="svg-ctrl" id="btnSpin" type="button">Stop/Start spin</button>
+      <button class="svg-ctrl" id="btnSpin" type="button">Stop</button>
       <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
       <button class="svg-ctrl" id="btnZoomOut" type="button">🔍 −</button>
       <button class="svg-ctrl" id="btnRotL" type="button">↺</button>
@@ -510,6 +510,40 @@ function checkFact(btn, isCorrect) {
   }
 }
 
+
+function drawStarfield() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#050414');
+  g.addColorStop(1, '#12102a');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < 40; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 5) * 0.12) + ')';
+    ctx.beginPath();
+    ctx.arc((i * 131) % canvas.width, (i * 73) % canvas.height, 0.8 + (i % 3), 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+function formatHudTimeLives() {
+  return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
+}
+function startHudTimer() {
+  if (typeof hudTimer !== 'undefined' && hudTimer) clearInterval(hudTimer);
+  hudTimer = setInterval(function() {
+    if (!isGameRunning) return;
+    gameTime--;
+    const el = document.getElementById('gameTimer');
+    if (el) el.textContent = formatHudTimeLives();
+    if (gameTime <= 0) endGame();
+  }, 1000);
+}
+function loseLife() {
+  gameLives--;
+  const el = document.getElementById('gameTimer');
+  if (el) el.textContent = formatHudTimeLives();
+  if (gameLives <= 0) endGame();
+}
+
 // Space Station Builder Game - Canvas-based construction
 let gameModules = 0;
 let gameEnergy = 100;
@@ -524,6 +558,9 @@ let moveUp = false;
 let moveDown = false;
 let moveLeft = false;
 let moveRight = false;
+let gameTime = 90;
+let gameLives = 3;
+let hudTimer;
 
 function startGame() {
   if (isGameRunning) return;
@@ -541,6 +578,8 @@ function startGame() {
   isGameRunning = true;
   gameModules = 0;
   gameEnergy = 100;
+  gameTime = 90;
+  gameLives = 3;
   modules = [];
   energyOrbs = [];
   
@@ -560,9 +599,8 @@ function startGame() {
   }
   
   document.getElementById('gameScore').textContent = 'Modules: 0';
-  document.getElementById('gameTimer').textContent = 'Energy: 100%';
-  document.getElementById('startGameBtn').disabled = true;
-  document.getElementById('startGameBtn').textContent = '🛰️ Playing...';
+  document.getElementById('gameTimer').textContent = formatHudTimeLives();
+  startHudTimer();
   
   // Enable controls
   document.addEventListener('keydown', handleKeyDown);
@@ -645,7 +683,8 @@ function spawnEnergyOrb() {
 function placeModule() {
   if (builder.holdingModule && gameEnergy >= 20) {
     gameEnergy -= 20;
-    document.getElementById('gameTimer').textContent = 'Energy: ' + Math.max(0, Math.floor(gameEnergy)) + '%';
+    if (gameEnergy <= 0) { loseLife(); if (isGameRunning) gameEnergy = 100; }
+    document.getElementById('gameTimer').textContent = formatHudTimeLives();
     
     modules.push({
       x: builder.x,
@@ -676,8 +715,7 @@ function gameLoop() {
   if (!isGameRunning) return;
   
   // Clear canvas
-  ctx.fillStyle = 'rgba(74, 144, 217, 0.1)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawStarfield();
   
   // Draw Earth in background with improved graphics
   const earthGradient = ctx.createRadialGradient(
@@ -790,7 +828,7 @@ function gameLoop() {
         energyOrbs.splice(index, 1);
         builder.holdingModule = true;
         gameEnergy += 10;
-        document.getElementById('gameTimer').textContent = 'Energy: ' + Math.min(100, Math.floor(gameEnergy)) + '%';
+        document.getElementById('gameTimer').textContent = formatHudTimeLives();
       }
     }
   });
@@ -827,46 +865,17 @@ function gameLoop() {
 
 function endGame() {
   isGameRunning = false;
+  if (hudTimer) clearInterval(hudTimer);
   cancelAnimationFrame(animationFrame);
-  
   document.removeEventListener('keydown', handleKeyDown);
   document.removeEventListener('keyup', handleKeyUp);
-  
-  const upBtn = document.getElementById('upBtn');
-  const downBtn = document.getElementById('downBtn');
-  const leftBtn = document.getElementById('leftBtn');
-  const rightBtn = document.getElementById('rightBtn');
-  
-  upBtn.removeEventListener('touchstart', null);
-  upBtn.removeEventListener('touchend', null);
-  downBtn.removeEventListener('touchstart', null);
-  downBtn.removeEventListener('touchend', null);
-  leftBtn.removeEventListener('touchstart', null);
-  leftBtn.removeEventListener('touchend', null);
-  rightBtn.removeEventListener('touchstart', null);
-  rightBtn.removeEventListener('touchend', null);
-  
-  document.getElementById('startGameBtn').disabled = false;
-  document.getElementById('startGameBtn').textContent = '🛰️ Play Again!';
-  
-  // Draw game over screen
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  ctx.fillStyle = '#4a90d9';
-  ctx.font = 'bold 24px Comic Sans MS';
-  ctx.textAlign = 'center';
-  
-  if (gameModules >= 10) {
-    ctx.fillText('🎉 Station Complete!', canvas.width / 2, canvas.height / 2 - 20);
-  } else {
-    ctx.fillText('🛰️ Game Over!', canvas.width / 2, canvas.height / 2 - 20);
-  }
-  
-  ctx.font = '20px Comic Sans MS';
-  ctx.fillText('Modules Built: ' + gameModules, canvas.width / 2, canvas.height / 2 + 20);
+  const endScreen = document.getElementById('endScreen');
+  const endTitle = document.getElementById('endTitle');
+  const endStats = document.getElementById('endStats');
+  if (endTitle) endTitle.textContent = gameModules >= 10 ? '🎉 Station Complete!' : '🛰️ Game Over!';
+  if (endStats) endStats.textContent = 'Modules Built: ' + gameModules;
+  if (endScreen) endScreen.style.display = 'block';
 }
-
 /* Planet texture art — NASA-style sphere maps (Solar System Scope textures, CC BY 4.0) */
 const StylizedPlanet = {
   NS: 'http://www.w3.org/2000/svg',
@@ -943,41 +952,54 @@ const StylizedPlanet = {
       r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none'
     }));
   },
+  ensureSaturnRingClips(svg, r) {
+    if (svg.querySelector('#saturnRingBack')) return;
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = this.el('defs', {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const pad = r * 3;
+    const back = this.el('clipPath', { id: 'saturnRingBack' });
+    back.appendChild(this.el('rect', { x: String(-pad), y: String(-pad), width: String(pad * 2), height: String(pad) }));
+    defs.appendChild(back);
+    const front = this.el('clipPath', { id: 'saturnRingFront' });
+    front.appendChild(this.el('rect', { x: String(-pad), y: '0', width: String(pad * 2), height: String(pad) }));
+    defs.appendChild(front);
+  },
+  ringEllipses(g, rx, ry, sw, tilt, clipUrl) {
+    const S = this;
+    const grp = S.el('g', { transform: 'rotate(' + tilt + ')', 'clip-path': clipUrl || '' });
+    const bands = [
+      [1, 'rgba(200,170,120,0.55)', 1],
+      [0.88, 'rgba(230,205,160,0.45)', 0.55],
+      [0.76, 'rgba(170,140,90,0.35)', 0.35]
+    ];
+    bands.forEach(([scale, color, wScale]) => {
+      grp.appendChild(S.el('ellipse', {
+        rx: String(rx * scale), ry: String(ry * scale),
+        fill: 'none', stroke: color,
+        'stroke-width': String(Math.max(0.8, sw * wScale))
+      }));
+    });
+    g.appendChild(grp);
+  },
   drawSaturn(g, r, clip, svg) {
     const S = this;
-    const tilt = -20;
-    const rx = r * 2.05;
+    const tilt = -18;
+    const rx = r * 2.15;
     const ry = r * 0.5;
-    g.appendChild(S.el('image', {
-      href: S.BASE + 'saturn_rings.png',
-      x: String(-rx), y: String(-ry),
-      width: String(rx * 2), height: String(ry * 2),
-      transform: 'rotate(' + tilt + ')',
-      opacity: '0.92'
-    }));
+    const sw = Math.max(1, r * 0.1);
+    if (svg) S.ensureSaturnRingClips(svg, r);
+    S.ringEllipses(g, rx, ry, sw, tilt, 'url(#saturnRingBack)');
     S.sphere(g, 'saturn', r, clip);
-    g.appendChild(S.el('ellipse', {
-      rx: String(rx), ry: String(ry),
-      fill: 'none', stroke: 'rgba(210,180,130,0.35)',
-      'stroke-width': String(Math.max(0.5, r * 0.06)),
-      transform: 'rotate(' + tilt + ')',
-      'pointer-events': 'none'
-    }));
+    S.ringEllipses(g, rx, ry, sw, tilt, 'url(#saturnRingFront)');
   },
   drawSun(g, r, clip, svg) {
     const S = this;
     if (svg) S.ensureSunGlow(svg);
     g.appendChild(S.el('circle', { r: String(r * 1.35), fill: 'url(#sunCorona)', 'pointer-events': 'none' }));
     S.sphere(g, 'sun', r, clip);
-    for (let i = 0; i < 8; i++) {
-      const a = i * Math.PI / 4;
-      g.appendChild(S.el('line', {
-        x1: String(Math.cos(a) * r * 1.05), y1: String(Math.sin(a) * r * 1.05),
-        x2: String(Math.cos(a) * r * 1.28), y2: String(Math.sin(a) * r * 1.28),
-        stroke: '#ffc107', 'stroke-width': String(Math.max(1, r * 0.04)), opacity: '0.55',
-        'pointer-events': 'none'
-      }));
-    }
   },
   draw(g, type, r) {
     r = r || 88;
@@ -1014,9 +1036,10 @@ function makePlanetViewer(planetType, facts, label) {
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => {
         this.spin = !this.spin;
+        btnSpin.textContent = this.spin ? 'Stop' : 'Spin';
         btnSpin.classList.toggle('active', !this.spin);
       };
-      btnSpin.textContent = 'Stop/Start spin';
+      btnSpin.textContent = 'Stop';
       document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
       document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
       document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };

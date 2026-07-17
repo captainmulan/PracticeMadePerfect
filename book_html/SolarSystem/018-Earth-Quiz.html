@@ -60,6 +60,11 @@
       position:relative;
       z-index:1;
     }
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px 12px 16px;
+      }
+    }
     .header{
       text-align:center;
       margin-bottom:12px;
@@ -152,7 +157,7 @@
     }
     .option:hover{
       background:#1a1735;
-      border-color:#4a90d9;
+      border-color:#ffd700;
     }
     .option.correct{
       background:rgba(34,197,94,0.3);
@@ -181,99 +186,230 @@
       color:#f87171;
     }
     .score-card{
-      background:linear-gradient(135deg,#4a90d9,#2d5a8a);
-      border-radius:20px;
-      padding:24px;
+      background:linear-gradient(135deg, rgba(255,215,0,0.98), rgba(255,165,0,0.98));
+      border-radius:24px;
+      padding:10px 20px 60px;
       text-align:center;
       margin-top:20px;
       display:none;
+      box-shadow: 0 16px 48px rgba(255, 215, 0, 0.35);
+      border:4px solid #fff176;
+      z-index: 10;
+      position: relative;
     }
     .score-card.show{
       display:block;
+      animation: slideUp 0.5s ease-out;
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     .score-card h2{
-      font-size:24px;
-      margin-bottom:12px;
-      color:#fff;
+      font-size:26px;
+      margin-top: 0;
+      margin-bottom:30px;
+      color:#1a1240;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+    }
+    .score-display{
+      background:linear-gradient(135deg, #1a1240, #3a2f70);
+      border-radius:18px;
+      padding:18px;
+      margin-bottom:18px;
+      box-shadow: inset 0 4px 12px rgba(0,0,0,0.35);
+      position: relative;
+      z-index: 20;
     }
     .score-card .score{
-      font-size:48px;
+      font-size:52px;
       font-weight:bold;
-      margin-bottom:12px;
-      color:#fff;
+      margin-bottom:6px;
+      color:#ffe066;
+      text-shadow: 0 0 18px rgba(255, 224, 102, 0.7);
+    }
+    .score-label{
+      font-size:13px;
+      color:#d1c4ff;
+      text-transform: uppercase;
+      letter-spacing:2px;
     }
     .score-card .message{
-      font-size:16px;
+      font-size:17px;
+      margin-top:10px;
       margin-bottom:16px;
-      color:#fff;
+      color:#ffffff;
+      font-weight:bold;
+      padding:10px;
+      background:#1a1240;
+      border-radius:12px;
     }
     .podium{
       display:flex;
       justify-content:center;
       align-items:flex-end;
-      gap:15px;
-      margin-top:20px;
-      height:150px;
+      gap:14px;
+      margin-top:120px;
+      height:140px;
+      padding:6px;
+      overflow: visible;
     }
     .podium-place{
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:5px;
+      gap:4px;
+      transition:transform 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .podium-place:hover{
+      transform:translateY(-1px);
     }
     .podium-character{
-      font-size:40px;
-      margin-bottom:5px;
+      font-size:42px;
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      animation: none;
     }
     .podium-bar{
-      border-radius:8px 8px 0 0;
+      border-radius:12px 12px 0 0;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:20px;
+      font-size:22px;
       font-weight:bold;
       color:#fff;
       position:relative;
+      box-shadow: 0 -4px 18px rgba(0,0,0,0.25);
     }
     .podium-bar.first{
-      width:80px;
-      height:90px;
-      background:linear-gradient(180deg,#e6b800,#cc9900);
+      width:100px;
+      height:100px;
+      background:linear-gradient(180deg,#b8860b,#8b6914);
+      box-shadow: 0 -4px 20px rgba(184,134,11,0.45);
     }
     .podium-bar.second{
-      width:70px;
-      height:70px;
+      width:90px;
+      height:80px;
       background:linear-gradient(180deg,#c0c0c0,#a0a0a0);
-    }
-    .podium-bar.third{
-      width:60px;
-      height:55px;
-      background:linear-gradient(180deg,#cd7f32,#a0522d);
+      box-shadow: 0 -4px 18px rgba(192,192,192,0.35);
     }
     .rank-badge{
       position:absolute;
-      top:5px;
-      font-size:24px;
+      top:-10px;
+      font-size:26px;
+      animation: none;
     }
     .podium-name{
-      font-size:12px;
-      color:#fff;
-      margin-top:5px;
+      font-size:13px;
+      color:#1a1240;
+      margin-top:6px;
       text-align:center;
+      font-weight:bold;
+      background:rgba(255,255,255,0.6);
+      padding:5px 9px;
+      border-radius:8px;
     }
-    .retry-btn{
+    .podium-score{
+      font-size:15px;
+      color:#ffffff;
+      font-weight:bold;
+      background:#1a1240;
+      padding:3px 7px;
+      border-radius:6px;
+    }
+    .button-group{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+    .retry-btn, .continue-btn{
       padding:14px 28px;
       border:none;
-      border-radius:12px;
-      background:#fff;
-      color:#4a90d9;
-      font-size:18px;
+      border-radius:14px;
+      font-size:15px;
       font-weight:bold;
       cursor:pointer;
-      transition:0.2s;
+      transition:all 0.3s ease;
+      box-shadow:0 5px 16px rgba(0,0,0,0.25);
+    }
+    .retry-btn{
+      background:linear-gradient(135deg,#1a1240,#3a2f70);
+      color:#ffe066;
     }
     .retry-btn:hover{
-      transform:scale(1.05);
+      transform:scale(1.06);
+      box-shadow:0 7px 22px rgba(0,0,0,0.35);
+    }
+    .continue-btn{
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+      color:#fff;
+    }
+    .continue-btn:hover{
+      transform:scale(1.06);
+      box-shadow:0 7px 22px rgba(34,197,94,0.35);
+    }
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .score-card {
+        padding:10px 14px 60px;
+        margin-top: 14px;
+      }
+      .score-card h2 {
+        font-size: 20px;
+      }
+      .score-card .score {
+        font-size: 10px;
+      }
+      .score-display {
+        padding: 9px;
+      }
+      .score-card .message {
+        margin-top: 8px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color:#ffffff;
+        background:#1a1240;
+      }
+      .podium {
+        height: 120px;
+        gap: 12px;
+        padding: 6px;
+        margin-top: 120px;
+      }
+      .podium-character {
+        font-size: 36px;
+      }
+      .podium-bar.first {
+        width: 85px;
+        height: 90px;
+        background:linear-gradient(180deg,#b8860b,#8b6914);
+      }
+      .podium-bar.second {
+        width: 75px;
+        height: 70px;
+      }
+      .rank-badge {
+        font-size: 22px;
+        top: -8px;
+      }
+      .button-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .retry-btn, .continue-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 14px;
+      }
     }
     .nav-hint{
       margin-top:12px;
@@ -284,6 +420,7 @@
       padding:6px;
       border-radius:8px;
     }
+  
   </style>
 </head>
 <body>
@@ -291,31 +428,23 @@
 <div class="container">
   <div class="header">
     <h1>❓ Earth Quiz</h1>
-    <div class="subtitle">Test what you learned about Earth!</div>
-    <div class="player-info" id="playerInfo">
-      <span id="playerCharacter">👨‍🚀</span>
-      <span id="playerName">Ariel</span>
-    </div>
   </div>
 
   <div class="competition-bar">
     <div class="competitor">
+      <div class="competitor-icon" id="playerIcon">👨‍🚀</div>
       <div class="competitor-name" id="playerName2">Ariel</div>
       <div class="competitor-score" id="playerScore">0</div>
     </div>
     <div class="vs-divider">VS</div>
     <div class="competitor">
+      <div class="competitor-icon">🌍</div>
       <div class="competitor-name">Gaia</div>
       <div class="competitor-score" id="computerScore">0</div>
     </div>
-    <div class="vs-divider">VS</div>
-    <div class="competitor">
-      <div class="competitor-name">Terra</div>
-      <div class="competitor-score" id="bot2Score">0</div>
-    </div>
   </div>
 
-  <div class="quiz-card active" id="quizCard-1">
+<div class="quiz-card active" id="quizCard-1">
     <div class="question">1. How much of Earth's surface is covered in water?</div>
     <div class="options">
       <div class="option" onclick="checkAnswer(this, 1, false)">50%</div>
@@ -372,32 +501,29 @@
 
   <div class="score-card" id="scoreCard">
     <h2>🎉 Quiz Complete!</h2>
-    <div class="score" id="finalScore">0/5</div>
-    <div class="message" id="scoreMessage"></div>
     <div class="podium" id="podium">
       <div class="podium-place" id="podium-second">
-        <div class="podium-character" id="podium-char-2">👨‍🚀</div>
+        <div class="podium-character" id="podium-char-2">🌍</div>
         <div class="podium-bar second">
           <span class="rank-badge">🥈</span>
         </div>
-        <div class="podium-name" id="podium-name-2">Ariel</div>
+        <div class="podium-score" id="podium-score-2">0</div>
+        <div class="podium-name" id="podium-name-2">Gaia</div>
       </div>
       <div class="podium-place" id="podium-first">
         <div class="podium-character" id="podium-char-1">👨‍🚀</div>
         <div class="podium-bar first">
           <span class="rank-badge">🥇</span>
         </div>
+        <div class="podium-score" id="podium-score-1">0</div>
         <div class="podium-name" id="podium-name-1">Ariel</div>
       </div>
-      <div class="podium-place" id="podium-third">
-        <div class="podium-character" id="podium-char-3">👨‍🚀</div>
-        <div class="podium-bar third">
-          <span class="rank-badge">🥉</span>
-        </div>
-        <div class="podium-name" id="podium-name-3">Ariel</div>
-      </div>
     </div>
-    <button class="retry-btn" onclick="retryQuiz()">Try Again</button>
+    <div class="message" id="scoreMessage"></div>
+    <div class="button-group">
+      <button class="retry-btn" onclick="retryQuiz()">🔄 Try Again</button>
+      <button class="continue-btn" onclick="continueToNext()">➡️ Continue</button>
+    </div>
   </div>
 
 <div class="nav-hint">
@@ -405,14 +531,11 @@
   <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
 </div>
 
-</div>
-
 <script>
 let score = 0;
 let currentQuestion = 1;
 const totalQuestions = 5;
 let computerScore = 0;
-let bot2Score = 0;
 
 function checkAnswer(element, questionNum, isCorrect) {
   const parent = element.parentElement;
@@ -428,13 +551,6 @@ function checkAnswer(element, questionNum, isCorrect) {
   if (computerCorrect) {
     computerScore++;
     document.getElementById('computerScore').textContent = computerScore;
-  }
-  
-  // Bot2 answers randomly (60% chance of being correct)
-  const bot2Correct = Math.random() < 0.6;
-  if (bot2Correct) {
-    bot2Score++;
-    document.getElementById('bot2Score').textContent = bot2Score;
   }
   
   if (isCorrect) {
@@ -471,24 +587,19 @@ function nextQuestion() {
 
 function showScore() {
   const scoreCard = document.getElementById('scoreCard');
-  const finalScore = document.getElementById('finalScore');
   const scoreMessage = document.getElementById('scoreMessage');
   const podium = document.getElementById('podium');
   
-  finalScore.textContent = score + '/' + totalQuestions;
   
   const userName = localStorage.getItem('userName') || 'Ariel';
   const userCharacter = localStorage.getItem('userCharacter') || '👨‍🚀';
-  const bot1Name = 'Gaia';
-  const bot1Character = '🌍';
-  const bot2Name = 'Terra';
-  const bot2Character = '🌱';
+  const botName = 'Gaia';
+  const botCharacter = '🌍';
   
   // Create competitors array with scores
   const competitors = [
     { name: userName, character: userCharacter, score: score, isPlayer: true },
-    { name: bot1Name, character: bot1Character, score: computerScore, isPlayer: false },
-    { name: bot2Name, character: bot2Character, score: bot2Score, isPlayer: false }
+    { name: botName, character: botCharacter, score: computerScore, isPlayer: false }
   ];
   
   // Sort by score (descending)
@@ -497,16 +608,15 @@ function showScore() {
   // Update podium
   document.getElementById('podium-char-1').textContent = competitors[0].character;
   document.getElementById('podium-name-1').textContent = competitors[0].name;
+  document.getElementById('podium-score-1').textContent = competitors[0].score;
   
   document.getElementById('podium-char-2').textContent = competitors[1].character;
   document.getElementById('podium-name-2').textContent = competitors[1].name;
-  
-  document.getElementById('podium-char-3').textContent = competitors[2].character;
-  document.getElementById('podium-name-3').textContent = competitors[2].name;
+  document.getElementById('podium-score-2').textContent = competitors[1].score;
   
   // Update message
   if (competitors[0].isPlayer) {
-    scoreMessage.textContent = '🎉 ' + userName + ' wins the race! Amazing!';
+    scoreMessage.textContent = '🎉 ' + userName + ' wins! Amazing job!';
   } else {
     scoreMessage.textContent = competitors[0].name + ' won this time. Try again!';
   }
@@ -515,11 +625,15 @@ function showScore() {
   scoreCard.classList.add('show');
 }
 
+function continueToNext() {
+  // This function can be customized to navigate to the next chapter
+  alert('Great job! Continue to the next chapter using the navigation arrows!');
+}
+
 function retryQuiz() {
   score = 0;
   currentQuestion = 1;
   computerScore = 0;
-  bot2Score = 0;
   
   document.querySelectorAll('.quiz-card').forEach((card, index) => {
     card.classList.remove('active');
@@ -538,7 +652,6 @@ function retryQuiz() {
   document.getElementById('scoreCard').classList.remove('show');
   document.getElementById('playerScore').textContent = '0';
   document.getElementById('computerScore').textContent = '0';
-  document.getElementById('bot2Score').textContent = '0';
 }
 
 // Load player info
@@ -548,8 +661,10 @@ function loadPlayerInfo() {
   document.getElementById('playerName').textContent = userName;
   document.getElementById('playerCharacter').textContent = userCharacter;
   document.getElementById('playerName2').textContent = userName;
+  document.getElementById('playerIcon').textContent = userCharacter;
 }
 loadPlayerInfo();
+
 </script>
 </body>
 </html>
