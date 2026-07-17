@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solar System Adventure - Quiz</title>
+  <title>Solar System Adventure - Solar System Quiz</title>
   <style>
     *{
       margin:0;
@@ -59,9 +59,11 @@
       padding:12px 16px 20px;
       position:relative;
       z-index:1;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px 12px 16px;
+      }
     }
     .header{
       text-align:center;
@@ -69,7 +71,7 @@
     }
     h1{
       font-size:24px;
-      color:#a78bfa;
+      color:#ffd700;
       margin-bottom:4px;
     }
     .subtitle{
@@ -155,7 +157,7 @@
     }
     .option:hover{
       background:rgba(255,255,255,0.1);
-      border-color:#a78bfa;
+      border-color:#ffd700;
     }
     .option.correct{
       background:rgba(34,197,94,0.3);
@@ -184,96 +186,230 @@
       color:#f87171;
     }
     .score-card{
-      background:linear-gradient(135deg,#667eea,#764ba2);
-      border-radius:20px;
-      padding:24px;
+      background:linear-gradient(135deg, rgba(255,215,0,0.98), rgba(255,165,0,0.98));
+      border-radius:24px;
+      padding:10px 20px 60px;
       text-align:center;
       margin-top:20px;
       display:none;
+      box-shadow: 0 16px 48px rgba(255, 215, 0, 0.35);
+      border:4px solid #fff176;
+      z-index: 10;
+      position: relative;
     }
     .score-card.show{
       display:block;
+      animation: slideUp 0.5s ease-out;
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
     .score-card h2{
-      font-size:24px;
-      margin-bottom:12px;
+      font-size:26px;
+      margin-top: 0;
+      margin-bottom:30px;
+      color:#1a1240;
+      text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+    }
+    .score-display{
+      background:linear-gradient(135deg, #1a1240, #3a2f70);
+      border-radius:18px;
+      padding:18px;
+      margin-bottom:18px;
+      box-shadow: inset 0 4px 12px rgba(0,0,0,0.35);
+      position: relative;
+      z-index: 20;
     }
     .score-card .score{
-      font-size:48px;
+      font-size:52px;
       font-weight:bold;
-      margin-bottom:12px;
+      margin-bottom:6px;
+      color:#ffe066;
+      text-shadow: 0 0 18px rgba(255, 224, 102, 0.7);
+    }
+    .score-label{
+      font-size:13px;
+      color:#d1c4ff;
+      text-transform: uppercase;
+      letter-spacing:2px;
     }
     .score-card .message{
-      font-size:16px;
+      font-size:17px;
+      margin-top:10px;
       margin-bottom:16px;
+      color:#ffffff;
+      font-weight:bold;
+      padding:10px;
+      background:#1a1240;
+      border-radius:12px;
     }
     .podium{
       display:flex;
       justify-content:center;
       align-items:flex-end;
-      gap:15px;
-      margin-top:20px;
-      height:150px;
+      gap:14px;
+      margin-top:120px;
+      height:140px;
+      padding:6px;
+      overflow: visible;
     }
     .podium-place{
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:5px;
+      gap:4px;
+      transition:transform 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .podium-place:hover{
+      transform:translateY(-1px);
     }
     .podium-character{
-      font-size:40px;
-      margin-bottom:5px;
+      font-size:42px;
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      animation: none;
     }
     .podium-bar{
-      border-radius:8px 8px 0 0;
+      border-radius:12px 12px 0 0;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:20px;
+      font-size:22px;
       font-weight:bold;
       color:#fff;
       position:relative;
+      box-shadow: 0 -4px 18px rgba(0,0,0,0.25);
     }
     .podium-bar.first{
-      width:80px;
-      height:90px;
-      background:linear-gradient(180deg,#ffd700,#ffaa00);
+      width:100px;
+      height:100px;
+      background:linear-gradient(180deg,#b8860b,#8b6914);
+      box-shadow: 0 -4px 20px rgba(184,134,11,0.45);
     }
     .podium-bar.second{
-      width:70px;
-      height:70px;
+      width:90px;
+      height:80px;
       background:linear-gradient(180deg,#c0c0c0,#a0a0a0);
-    }
-    .podium-bar.third{
-      width:60px;
-      height:55px;
-      background:linear-gradient(180deg,#cd7f32,#a0522d);
+      box-shadow: 0 -4px 18px rgba(192,192,192,0.35);
     }
     .rank-badge{
       position:absolute;
-      top:5px;
-      font-size:24px;
+      top:-10px;
+      font-size:26px;
+      animation: none;
     }
     .podium-name{
-      font-size:12px;
-      color:#c4b5fd;
-      margin-top:5px;
+      font-size:13px;
+      color:#1a1240;
+      margin-top:6px;
       text-align:center;
+      font-weight:bold;
+      background:rgba(255,255,255,0.6);
+      padding:5px 9px;
+      border-radius:8px;
     }
-    .retry-btn{
+    .podium-score{
+      font-size:15px;
+      color:#ffffff;
+      font-weight:bold;
+      background:#1a1240;
+      padding:3px 7px;
+      border-radius:6px;
+    }
+    .button-group{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+    .retry-btn, .continue-btn{
       padding:14px 28px;
       border:none;
-      border-radius:12px;
-      background:#fff;
-      color:#667eea;
-      font-size:18px;
+      border-radius:14px;
+      font-size:15px;
       font-weight:bold;
       cursor:pointer;
-      transition:0.2s;
+      transition:all 0.3s ease;
+      box-shadow:0 5px 16px rgba(0,0,0,0.25);
+    }
+    .retry-btn{
+      background:linear-gradient(135deg,#1a1240,#3a2f70);
+      color:#ffe066;
     }
     .retry-btn:hover{
-      transform:scale(1.05);
+      transform:scale(1.06);
+      box-shadow:0 7px 22px rgba(0,0,0,0.35);
+    }
+    .continue-btn{
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+      color:#fff;
+    }
+    .continue-btn:hover{
+      transform:scale(1.06);
+      box-shadow:0 7px 22px rgba(34,197,94,0.35);
+    }
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+      .score-card {
+        padding:10px 14px 60px;
+        margin-top: 14px;
+      }
+      .score-card h2 {
+        font-size: 20px;
+      }
+      .score-card .score {
+        font-size: 10px;
+      }
+      .score-display {
+        padding: 9px;
+      }
+      .score-card .message {
+        margin-top: 8px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color:#ffffff;
+        background:#1a1240;
+      }
+      .podium {
+        height: 120px;
+        gap: 12px;
+        padding: 6px;
+        margin-top: 120px;
+      }
+      .podium-character {
+        font-size: 36px;
+      }
+      .podium-bar.first {
+        width: 85px;
+        height: 90px;
+        background:linear-gradient(180deg,#b8860b,#8b6914);
+      }
+      .podium-bar.second {
+        width: 75px;
+        height: 70px;
+      }
+      .rank-badge {
+        font-size: 22px;
+        top: -8px;
+      }
+      .button-group {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .retry-btn, .continue-btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 14px;
+      }
     }
     .nav-hint{
       margin-top:12px;
@@ -291,16 +427,11 @@
 <div class="container">
   <div class="header">
     <h1>❓ Solar System Quiz</h1>
-    <div class="subtitle">Test what you learned about our solar system!</div>
-    <div class="player-info" id="playerInfo">
-      <span id="playerCharacter">👨‍🚀</span>
-      <span id="playerName">Ariel</span>
-    </div>
   </div>
 
   <div class="competition-bar">
     <div class="competitor">
-      <div class="competitor-icon" id="playerCharacter2">👨‍🚀</div>
+      <div class="competitor-icon" id="playerIcon">👨‍🚀</div>
       <div class="competitor-name" id="playerName2">Ariel</div>
       <div class="competitor-score" id="playerScore">0</div>
     </div>
@@ -312,34 +443,119 @@
     </div>
   </div>
 
+  <div class="quiz-card active" id="quizCard-1">
+    <div class="question">1. What is at the center of our solar system?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 1, false)">Earth</div>
+      <div class="option" onclick="checkAnswer(this, 1, true)">The Sun</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">Jupiter</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">The Moon</div>
+    </div>
+    <div class="feedback" id="feedback-1"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-2">
+    <div class="question">2. How many planets are in our solar system?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 2, false)">7</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">9</div>
+      <div class="option" onclick="checkAnswer(this, 2, true)">8</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">10</div>
+    </div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-3">
+    <div class="question">3. Which planet is known as the "Red Planet"?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 3, false)">Venus</div>
+      <div class="option" onclick="checkAnswer(this, 3, true)">Mars</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Jupiter</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Saturn</div>
+    </div>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-4">
+    <div class="question">4. Which planet is the largest?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 4, false)">Earth</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Saturn</div>
+      <div class="option" onclick="checkAnswer(this, 4, true)">Jupiter</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Neptune</div>
+    </div>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-5">
+    <div class="question">5. Which planet has beautiful rings?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 5, false)">Jupiter</div>
+      <div class="option" onclick="checkAnswer(this, 5, true)">Saturn</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Uranus</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Neptune</div>
+    </div>
+    <div class="feedback" id="feedback-5"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-6">
+    <div class="question">6. Which planet is the hottest?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 6, false)">Mercury</div>
+      <div class="option" onclick="checkAnswer(this, 6, true)">Venus</div>
+      <div class="option" onclick="checkAnswer(this, 6, false)">Mars</div>
+      <div class="option" onclick="checkAnswer(this, 6, false)">The Sun</div>
+    </div>
+    <div class="feedback" id="feedback-6"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-7">
+    <div class="question">7. Which planet is the smallest?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 7, true)">Mercury</div>
+      <div class="option" onclick="checkAnswer(this, 7, false)">Venus</div>
+      <div class="option" onclick="checkAnswer(this, 7, false)">Mars</div>
+      <div class="option" onclick="checkAnswer(this, 7, false)">Earth</div>
+    </div>
+    <div class="feedback" id="feedback-7"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-8">
+    <div class="question">8. Which planet is our home?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 8, false)">Mars</div>
+      <div class="option" onclick="checkAnswer(this, 8, false)">Venus</div>
+      <div class="option" onclick="checkAnswer(this, 8, true)">Earth</div>
+      <div class="option" onclick="checkAnswer(this, 8, false)">Jupiter</div>
+    </div>
+    <div class="feedback" id="feedback-8"></div>
+  </div>
+
   <div class="score-card" id="scoreCard">
     <h2>🎉 Quiz Complete!</h2>
-    <div class="score" id="finalScore">0/8</div>
-    <div class="message" id="scoreMessage"></div>
     <div class="podium" id="podium">
       <div class="podium-place" id="podium-second">
-        <div class="podium-character" id="podium-char-2">👨‍🚀</div>
+        <div class="podium-character" id="podium-char-2">🤖</div>
         <div class="podium-bar second">
           <span class="rank-badge">🥈</span>
         </div>
-        <div class="podium-name" id="podium-name-2">Ariel</div>
+        <div class="podium-score" id="podium-score-2">0</div>
+        <div class="podium-name" id="podium-name-2">SolarBot</div>
       </div>
       <div class="podium-place" id="podium-first">
         <div class="podium-character" id="podium-char-1">👨‍🚀</div>
         <div class="podium-bar first">
           <span class="rank-badge">🥇</span>
         </div>
+        <div class="podium-score" id="podium-score-1">0</div>
         <div class="podium-name" id="podium-name-1">Ariel</div>
       </div>
-      <div class="podium-place" id="podium-third">
-        <div class="podium-character" id="podium-char-3">👨‍🚀</div>
-        <div class="podium-bar third">
-          <span class="rank-badge">🥉</span>
-        </div>
-        <div class="podium-name" id="podium-name-3">Ariel</div>
-      </div>
     </div>
-    <button class="retry-btn" onclick="retryQuiz()">Try Again</button>
+    <div class="message" id="scoreMessage"></div>
+    <div class="button-group">
+      <button class="retry-btn" onclick="retryQuiz()">🔄 Try Again</button>
+      <button class="continue-btn" onclick="continueToNext()">➡️ Continue</button>
+    </div>
   </div>
 
 <div class="nav-hint">
@@ -350,97 +566,10 @@
 </div>
 
 <script>
-const allQuestions = [
-  {
-    question: "What is at the center of our solar system?",
-    options: ["Earth", "The Sun", "Jupiter", "The Moon"],
-    correct: 1
-  },
-  {
-    question: "How many planets are in our solar system?",
-    options: ["7", "9", "8", "10"],
-    correct: 2
-  },
-  {
-    question: "Which planet is known as the \"Red Planet\"?",
-    options: ["Venus", "Mars", "Jupiter", "Saturn"],
-    correct: 1
-  },
-  {
-    question: "Which planet is the largest?",
-    options: ["Earth", "Saturn", "Jupiter", "Neptune"],
-    correct: 2
-  },
-  {
-    question: "Which planet has beautiful rings?",
-    options: ["Jupiter", "Saturn", "Uranus", "Neptune"],
-    correct: 1
-  },
-  {
-    question: "Which planet is the hottest?",
-    options: ["Mercury", "Venus", "Mars", "The Sun"],
-    correct: 1
-  },
-  {
-    question: "Which planet is the smallest?",
-    options: ["Mercury", "Venus", "Mars", "Earth"],
-    correct: 0
-  },
-  {
-    question: "Which planet is our home?",
-    options: ["Mars", "Venus", "Earth", "Jupiter"],
-    correct: 2
-  },
-  {
-    question: "Which planet is closest to the Sun?",
-    options: ["Venus", "Mercury", "Earth", "Mars"],
-    correct: 1
-  },
-  {
-    question: "Which planet has the most moons?",
-    options: ["Jupiter", "Saturn", "Uranus", "Neptune"],
-    correct: 1
-  }
-];
-
 let score = 0;
 let currentQuestion = 1;
-let totalQuestions = 8;
-let quizQuestions = [];
+const totalQuestions = 8;
 let computerScore = 0;
-
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-function initializeQuiz() {
-  quizQuestions = shuffleArray([...allQuestions]).slice(0, totalQuestions);
-  renderQuestions();
-}
-
-function renderQuestions() {
-  const container = document.querySelector('.container');
-  const existingCards = container.querySelectorAll('.quiz-card');
-  existingCards.forEach(card => card.remove());
-  
-  quizQuestions.forEach((q, index) => {
-    const card = document.createElement('div');
-    card.className = 'quiz-card' + (index === 0 ? ' active' : '');
-    card.id = 'quizCard-' + (index + 1);
-    card.innerHTML = `
-      <div class="question">${index + 1}. ${q.question}</div>
-      <div class="options">
-        ${q.options.map((opt, i) => `<div class="option" onclick="checkAnswer(this, ${index + 1}, ${i === q.correct})">${opt}</div>`).join('')}
-      </div>
-      <div class="feedback" id="feedback-${index + 1}"></div>
-    `;
-    container.insertBefore(card, document.getElementById('scoreCard'));
-  });
-}
 
 function checkAnswer(element, questionNum, isCorrect) {
   const parent = element.parentElement;
@@ -492,52 +621,47 @@ function nextQuestion() {
 
 function showScore() {
   const scoreCard = document.getElementById('scoreCard');
-  const finalScore = document.getElementById('finalScore');
   const scoreMessage = document.getElementById('scoreMessage');
   const podium = document.getElementById('podium');
   
-  finalScore.textContent = score + '/' + totalQuestions;
   
   const userName = localStorage.getItem('userName') || 'Ariel';
   const userCharacter = localStorage.getItem('userCharacter') || '👨‍🚀';
   const botName = 'SolarBot';
   const botCharacter = '🤖';
   
-  // Determine podium positions
-  let firstPlace, secondPlace, thirdPlace;
+  // Create competitors array with scores
+  const competitors = [
+    { name: userName, character: userCharacter, score: score, isPlayer: true },
+    { name: botName, character: botCharacter, score: computerScore, isPlayer: false }
+  ];
   
-  if (score > computerScore) {
-    // Player wins
-    firstPlace = { name: userName, character: userCharacter, isPlayer: true };
-    secondPlace = { name: botName, character: botCharacter, isPlayer: false };
-    thirdPlace = { name: botName, character: botCharacter, isPlayer: false };
-    scoreMessage.textContent = '🎉 ' + userName + ' wins the race! Amazing!';
-  } else if (score < computerScore) {
-    // Bot wins
-    firstPlace = { name: botName, character: botCharacter, isPlayer: false };
-    secondPlace = { name: userName, character: userCharacter, isPlayer: true };
-    thirdPlace = { name: userName, character: userCharacter, isPlayer: true };
-    scoreMessage.textContent = '🤖 ' + botName + ' won this time. Try again!';
-  } else {
-    // Tie - player gets first place
-    firstPlace = { name: userName, character: userCharacter, isPlayer: true };
-    secondPlace = { name: botName, character: botCharacter, isPlayer: false };
-    thirdPlace = { name: userName, character: userCharacter, isPlayer: true };
-    scoreMessage.textContent = '🤝 It\'s a tie! ' + userName + ' takes gold!';
-  }
+  // Sort by score (descending)
+  competitors.sort((a, b) => b.score - a.score);
   
   // Update podium
-  document.getElementById('podium-char-1').textContent = firstPlace.character;
-  document.getElementById('podium-name-1').textContent = firstPlace.name;
+  document.getElementById('podium-char-1').textContent = competitors[0].character;
+  document.getElementById('podium-name-1').textContent = competitors[0].name;
+  document.getElementById('podium-score-1').textContent = competitors[0].score;
   
-  document.getElementById('podium-char-2').textContent = secondPlace.character;
-  document.getElementById('podium-name-2').textContent = secondPlace.name;
+  document.getElementById('podium-char-2').textContent = competitors[1].character;
+  document.getElementById('podium-name-2').textContent = competitors[1].name;
+  document.getElementById('podium-score-2').textContent = competitors[1].score;
   
-  document.getElementById('podium-char-3').textContent = thirdPlace.character;
-  document.getElementById('podium-name-3').textContent = thirdPlace.name;
+  // Update message
+  if (competitors[0].isPlayer) {
+    scoreMessage.textContent = '🎉 ' + userName + ' wins! Amazing job!';
+  } else {
+    scoreMessage.textContent = competitors[0].name + ' won this time. Try again!';
+  }
   
   podium.style.display = 'flex';
   scoreCard.classList.add('show');
+}
+
+function continueToNext() {
+  // This function can be customized to navigate to the next chapter
+  alert('Great job! Continue to the next chapter using the navigation arrows!');
 }
 
 function retryQuiz() {
@@ -545,24 +669,33 @@ function retryQuiz() {
   currentQuestion = 1;
   computerScore = 0;
   
-  initializeQuiz();
+  document.querySelectorAll('.quiz-card').forEach((card, index) => {
+    card.classList.remove('active');
+    if (index === 0) card.classList.add('active');
+  });
+  
+  document.querySelectorAll('.option').forEach(opt => {
+    opt.classList.remove('correct', 'wrong');
+    opt.style.pointerEvents = 'auto';
+  });
+  
+  document.querySelectorAll('.feedback').forEach(fb => {
+    fb.classList.remove('show', 'correct', 'wrong');
+  });
   
   document.getElementById('scoreCard').classList.remove('show');
   document.getElementById('playerScore').textContent = '0';
   document.getElementById('computerScore').textContent = '0';
 }
 
-// Initialize quiz on page load
-initializeQuiz();
-
 // Load player info
 function loadPlayerInfo() {
   const userName = localStorage.getItem('userName') || 'Ariel';
   const userCharacter = localStorage.getItem('userCharacter') || '👨‍🚀';
-  document.getElementById('playerName').textContent = userName;
-  document.getElementById('playerCharacter').textContent = userCharacter;
   document.getElementById('playerName2').textContent = userName;
-  document.getElementById('playerCharacter2').textContent = userCharacter;
+  document.getElementById('playerIcon').textContent = userCharacter;
+  document.getElementById('podium-char-1').textContent = userCharacter;
+  document.getElementById('podium-name-1').textContent = userName;
 }
 loadPlayerInfo();
 </script>

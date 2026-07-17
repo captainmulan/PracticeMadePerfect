@@ -193,6 +193,25 @@ HTML lesson files are designed with mobile-first principles to ensure optimal vi
 }
 ```
 
+## Quiz UI/UX Design
+The quiz end screen has been updated to provide a clean, engaging experience:
+
+**Key Features:**
+- **Competition Bar:** 1 vs 1 score display for player vs computer opponent
+- **Score Card:** Prominent score display with dark background for contrast
+- **Podium Display:** First and second place with distinct gold/silver gradients
+- **Responsive Design:** Mobile-first with media queries for small screens
+- **High Visibility:** No yellow-on-yellow text, all elements have strong contrast
+- **No Overlaps:** Careful margin/padding to ensure all elements are visible
+
+**Color Palette:**
+- Score card: Gold-orange gradient background (#ffd700 → #ffa500)
+- Score display: Dark purple gradient (#1a1240 → #3a2f70)
+- First place: Dark gold (#b8860b → #8b6914)
+- Second place: Silver (#c0c0c0 → #a0a0a0)
+- Text colors: White on dark backgrounds, dark on light backgrounds
+
+
 ## Admin Features
 
 ### Home Page Customization

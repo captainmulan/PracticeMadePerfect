@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Defender</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a2a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #gameCanvas {
+            display: block;
+            border: 2px solid rgba(255, 200, 0, 0.5);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(255, 200, 0, 0.2);
+        }
+        .ui-container {
+            width: 100%;
+            max-width: 700px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .ui-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .ui-label {
+            color: #aaa;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        .ui-value {
+            color: #ffd700;
+        }
+        .start-screen, .game-over-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid rgba(255, 200, 0, 0.6);
+            z-index: 100;
+        }
+        .start-screen h1, .game-over-screen h1 {
+            color: #ffd700;
+            margin-bottom: 12px;
+            font-size: 32px;
+        }
+        .start-screen p, .game-over-screen p {
+            color: #ccc;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff6b6b, #ff9500);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .touch-controls {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .touch-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 200, 0, 0.7);
+            background: rgba(255, 200, 0, 0.2);
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .touch-btn:active {
+            background: rgba(255, 200, 0, 0.5);
+        }
+        @media (max-width: 600px) {
+            .ui-item {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+            .start-screen, .game-over-screen {
+                padding: 20px;
+            }
+            .start-screen h1, .game-over-screen h1 {
+                font-size: 24px;
+            }
+            .touch-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="title" style="text-align:center; margin-bottom:10px; font-size:20px; color:#ffd700; font-weight:bold;">
+        Before we go to chapter, let's defend the Sun first
+    </div>
+    <div class="ui-container">
+        <div class="ui-item">
+            <span class="ui-label">⭐ Score:</span>
+            <span class="ui-value" id="scoreDisplay">0</span>
+        </div>
+        <div class="ui-item">
+            <span class="ui-label">🏆 Level:</span>
+            <span class="ui-value" id="levelDisplay">1</span>
+        </div>
+        <div class="ui-item">
+            <span class="ui-label">❤️ Lives:</span>
+            <span class="ui-value" id="livesDisplay">5</span>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas" width="700" height="600"></canvas>
+
+    <div class="touch-controls">
+        <button class="touch-btn" id="leftBtn">⬅️</button>
+        <button class="touch-btn" id="rightBtn">➡️</button>
+    </div>
+
+    <div class="start-screen" id="startScreen">
+        <h1>🌞 Solar System Defender</h1>
+        <p>Protect the Sun! Rotate the cannon with arrow keys or touch controls.<br>Auto-fire every 250ms! Destroy asteroids before they hit!</p>
+        <button class="btn" onclick="startGame()">▶️ Start Game</button>
+    </div>
+
+    <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+        <h1>💥 Game Over</h1>
+        <p id="finalStats">Final Score: 0 | Level: 1</p>
+        <button class="btn" onclick="restartGame()">🔄 Restart</button>
+    </div>
+
+    <script>
+        // Game setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const sunRadius = 50;
+
+        // Game state
+        let gameRunning = false;
+        let score = 0;
+        let lives = 5;
+        let level = 1;
+        let cannonAngle = -Math.PI / 2; // Start pointing up
+        let lastFireTime = 0;
+        const fireInterval = 250; // ms
+
+        // Game objects
+        let bullets = [];
+        let asteroids = [];
+        let particles = [];
+        let stars = [];
+
+        // Input state
+        let moveLeft = false;
+        let moveRight = false;
+        let keys = {};
+
+        // Initialize stars for background
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < 100; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 2 + 0.5,
+                    alpha: Math.random() * 0.7 + 0.3
+                });
+            }
+        }
+
+        // Draw stars
+        function drawStars() {
+            ctx.fillStyle = '#0a0a1a';
+            ctx.fillRect(0, 0, width, height);
+            
+            stars.forEach(star => {
+                ctx.globalAlpha = star.alpha;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        // Draw sun
+        function drawSun() {
+            // Big glow
+            const glow1 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, sunRadius + 80);
+            glow1.addColorStop(0, 'rgba(255, 100, 0, 0.3)');
+            glow1.addColorStop(0.5, 'rgba(255, 150, 0, 0.1)');
+            glow1.addColorStop(1, 'rgba(255, 200, 0, 0)');
+            ctx.fillStyle = glow1;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, sunRadius + 80, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Smaller glow
+            const glow2 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, sunRadius + 40);
+            glow2.addColorStop(0, 'rgba(255, 200, 0, 0.4)');
+            glow2.addColorStop(1, 'rgba(255, 200, 0, 0)');
+            ctx.fillStyle = glow2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, sunRadius + 40, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sun body
+            const sunGrad = ctx.createRadialGradient(centerX - 10, centerY - 10, 10, centerX, centerY, sunRadius);
+            sunGrad.addColorStop(0, '#fffacd'); // Light yellow
+            sunGrad.addColorStop(0.3, '#ffd700'); // Gold
+            sunGrad.addColorStop(0.7, '#ffa500'); // Orange
+            sunGrad.addColorStop(1, '#ff8c00'); // Dark orange
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, sunRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sunspots
+            ctx.fillStyle = 'rgba(139, 69, 19, 0.4)';
+            ctx.beginPath();
+            ctx.arc(centerX - 20, centerY - 10, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX + 15, centerY + 15, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX + 5, centerY - 20, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw cannon
+        function drawCannon() {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(cannonAngle + Math.PI / 2);
+            
+            // Cannon barrel
+            ctx.fillStyle = '#8b4513'; // Brown
+            ctx.fillRect(-10, -90, 20, 70);
+            
+            // Cannon tip
+            ctx.fillStyle = '#654321'; // Darker brown
+            ctx.fillRect(-12, -95, 24, 12);
+            
+            // Cannon base
+            ctx.fillStyle = '#555';
+            ctx.beginPath();
+            ctx.arc(0, 0, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        // Spawn asteroid
+        function spawnAsteroid() {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.max(width, height) / 2 + 50;
+            const size = 20 + Math.random() * 30;
+            const speed = (1 + Math.random() * 1.5) + (level - 1) * 0.3;
+            
+            asteroids.push({
+                x: centerX + Math.cos(angle) * distance,
+                y: centerY + Math.sin(angle) * distance,
+                radius: size,
+                speed: speed,
+                angle: angle + Math.PI // Move towards center
+            });
+        }
+
+        // Fire bullet
+        function fireBullet() {
+            const now = Date.now();
+            if (now - lastFireTime < fireInterval) return;
+            lastFireTime = now;
+            
+            bullets.push({
+                x: centerX + Math.cos(cannonAngle) * 100,
+                y: centerY + Math.sin(cannonAngle) * 100,
+                vx: Math.cos(cannonAngle) * 12,
+                vy: Math.sin(cannonAngle) * 12,
+                radius: 8
+            });
+        }
+
+        // Create explosion
+        function createExplosion(x, y, color, count = 15) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 2;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 4 + 2,
+                    color: color,
+                    life: 1
+                });
+            }
+        }
+
+        // Check collisions
+        function checkCollisions() {
+            // Bullet vs Asteroid
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const b = bullets[i];
+                for (let j = asteroids.length - 1; j >= 0; j--) {
+                    const a = asteroids[j];
+                    const dx = b.x - a.x;
+                    const dy = b.y - a.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < b.radius + a.radius) {
+                        createExplosion(a.x, a.y, a.radius > 30 ? '#ff6600' : '#ffaa00');
+                        score += Math.floor(a.radius);
+                        bullets.splice(i, 1);
+                        asteroids.splice(j, 1);
+                        
+                        // Level up check
+                        if (score >= level * 200) {
+                            level++;
+                            document.getElementById('levelDisplay').textContent = level;
+                        }
+                        
+                        document.getElementById('scoreDisplay').textContent = score;
+                        break;
+                    }
+                }
+            }
+            
+            // Asteroid vs Sun
+            for (let i = asteroids.length - 1; i >= 0; i--) {
+                const a = asteroids[i];
+                const dx = a.x - centerX;
+                const dy = a.y - centerY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < a.radius + sunRadius) {
+                    createExplosion(a.x, a.y, '#ff4444', 25);
+                    asteroids.splice(i, 1);
+                    lives--;
+                    document.getElementById('livesDisplay').textContent = lives;
+                    
+                    if (lives <= 0) {
+                        endGame();
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Update game objects
+        function update() {
+            // Rotate cannon
+            if (moveLeft || keys['ArrowLeft'] || keys['a']) cannonAngle -= 0.08;
+            if (moveRight || keys['ArrowRight'] || keys['d']) cannonAngle += 0.08;
+            
+            // Auto fire
+            fireBullet();
+            
+            // Update bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const b = bullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+                
+                // Remove off-screen
+                if (b.x < -50 || b.x > width + 50 || b.y < -50 || b.y > height + 50) {
+                    bullets.splice(i, 1);
+                }
+            }
+            
+            // Update asteroids
+            for (let i = asteroids.length - 1; i >= 0; i--) {
+                const a = asteroids[i];
+                const dx = centerX - a.x;
+                const dy = centerY - a.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                a.x += (dx / dist) * a.speed;
+                a.y += (dy / dist) * a.speed;
+            }
+            
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.03;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+            
+            checkCollisions();
+        }
+
+        // Draw everything
+        function draw() {
+            drawStars();
+            drawSun();
+            
+            // Draw asteroids
+            asteroids.forEach(a => {
+                ctx.fillStyle = `hsl(${30 + Math.random() * 20}, 60%, 40%)`;
+                ctx.beginPath();
+                ctx.arc(a.x, a.y, a.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Craters
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.arc(a.x + a.radius * 0.3, a.y - a.radius * 0.2, a.radius * 0.25, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Draw bullets
+            ctx.fillStyle = '#ff0000';
+            ctx.shadowColor = '#ffff00';
+            ctx.shadowBlur = 20;
+            bullets.forEach(b => {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, 8, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+            
+            drawCannon();
+            
+            // Draw particles
+            particles.forEach(p => {
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        // Game loop
+        let lastSpawn = 0;
+        function gameLoop(timestamp) {
+            if (!gameRunning) return;
+            
+            // Spawn asteroids
+            const spawnInterval = Math.max(1400 - level * 100, 500);
+            if (timestamp - lastSpawn > spawnInterval) {
+                spawnAsteroid();
+                lastSpawn = timestamp;
+            }
+            
+            update();
+            draw();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        function startGame() {
+            score = 0;
+            lives = 5;
+            level = 1;
+            cannonAngle = -Math.PI / 2;
+            bullets = [];
+            asteroids = [];
+            particles = [];
+            lastSpawn = 0;
+            
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('livesDisplay').textContent = lives;
+            document.getElementById('levelDisplay').textContent = level;
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            
+            gameRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // End game
+        function endGame() {
+            gameRunning = false;
+            document.getElementById('finalStats').textContent = `Final Score: ${score} | Level: ${level}`;
+            document.getElementById('gameOverScreen').style.display = 'block';
+        }
+
+        // Restart game
+        function restartGame() {
+            startGame();
+        }
+
+        // Input handling
+        document.addEventListener('keydown', e => {
+            keys[e.key] = true;
+        });
+        document.addEventListener('keyup', e => {
+            keys[e.key] = false;
+        });
+        
+        // Touch controls
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        
+        leftBtn.addEventListener('touchstart', e => {
+            e.preventDefault();
+            moveLeft = true;
+        });
+        leftBtn.addEventListener('touchend', () => moveLeft = false);
+        leftBtn.addEventListener('mousedown', () => moveLeft = true);
+        leftBtn.addEventListener('mouseup', () => moveLeft = false);
+        leftBtn.addEventListener('mouseleave', () => moveLeft = false);
+        
+        rightBtn.addEventListener('touchstart', e => {
+            e.preventDefault();
+            moveRight = true;
+        });
+        rightBtn.addEventListener('touchend', () => moveRight = false);
+        rightBtn.addEventListener('mousedown', () => moveRight = true);
+        rightBtn.addEventListener('mouseup', () => moveRight = false);
+        rightBtn.addEventListener('mouseleave', () => moveRight = false);
+
+        // Make canvas responsive
+        function resizeCanvas() {
+            const maxWidth = Math.min(window.innerWidth - 40, 700);
+            const scale = maxWidth / 700;
+            canvas.style.width = `${700 * scale}px`;
+            canvas.style.height = `${600 * scale}px`;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // Initialize
+        initStars();
+        drawStars();
+        drawSun();
+        drawCannon();
+        resizeCanvas();
+    </script>
+</body>
+</html>
