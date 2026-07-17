@@ -136,17 +136,17 @@
     .touch-controls{
       display:flex;
       justify-content:center;
-      gap:20px;
+      gap:12px;
       margin-bottom:20px;
     }
     .touch-btn{
-      width:60px;
-      height:60px;
+      width:45px;
+      height:45px;
       border-radius:50%;
       border:3px solid rgba(255,215,0,0.5);
       background:rgba(255,215,0,0.2);
       color:#fff;
-      font-size:24px;
+      font-size:20px;
       cursor:pointer;
       display:flex;
       align-items:center;
@@ -217,8 +217,8 @@
       <div class="info-value" id="planetsVisited">0/8</div>
     </div>
     <div class="info-item">
-      <div class="info-label">Time</div>
-      <div class="info-value" id="time">60s</div>
+      <div class="info-label">Lives</div>
+      <div class="info-value" id="livesDisplay">❤️❤️❤️❤️❤️</div>
     </div>
   </div>
 
@@ -248,8 +248,8 @@
       <li>Use <strong>Arrow Keys</strong>, <strong>WASD</strong>, or <strong>Touch Buttons</strong> to move your spaceship</li>
       <li>Visit all 8 planets to learn about them (+50 points each)</li>
       <li>Collect stars for bonus points (+10 points each)</li>
-      <li>Avoid asteroids that fly across the screen (-20 points if hit)</li>
-      <li>Complete the mission before time runs out!</li>
+      <li>Avoid asteroids that fly across the screen (lose 1 life each hit)</li>
+      <li>Game over when you lose all 5 lives</li>
     </ul>
   </div>
 </div>
@@ -258,7 +258,7 @@
 // Solar System Explorer - Canvas-based game
 let score = 0;
 let planetsVisited = 0;
-let timeLeft = 60;
+let lives = 5;
 let gameInterval;
 let spawnInterval;
 let animationFrame;
@@ -303,7 +303,7 @@ function startGame() {
   isGameRunning = true;
   score = 0;
   planetsVisited = 0;
-  timeLeft = 60;
+  lives = 5;
   visitedPlanets.clear();
   planets = [];
   stars = [];
@@ -323,7 +323,7 @@ function startGame() {
   
   document.getElementById('score').textContent = '0';
   document.getElementById('planetsVisited').textContent = '0/8';
-  document.getElementById('time').textContent = '60s';
+  updateLivesDisplay();
   
   // Enable controls
   document.addEventListener('keydown', handleKeyDown);
@@ -341,16 +341,6 @@ function startGame() {
     if (!isGameRunning) return;
     spawnAsteroid();
   }, 3000);
-  
-  // Game timer
-  gameInterval = setInterval(() => {
-    timeLeft--;
-    document.getElementById('time').textContent = timeLeft + 's';
-    
-    if (timeLeft <= 0) {
-      endGame();
-    }
-  }, 1000);
   
   // Start game loop
   gameLoop();
@@ -534,8 +524,7 @@ function gameLoop() {
     
     if (distance < spaceship.width / 2 + asteroid.radius) {
       asteroids.splice(index, 1);
-      score -= 20;
-      document.getElementById('score').textContent = score;
+      loseLife();
     }
     
     // Remove if off screen
@@ -615,6 +604,20 @@ function visitPlanet(planet) {
   }, 3000);
 }
 
+function updateLivesDisplay() {
+  const hearts = '❤️'.repeat(lives);
+  document.getElementById('livesDisplay').textContent = hearts;
+}
+
+function loseLife() {
+  lives--;
+  updateLivesDisplay();
+  
+  if (lives <= 0) {
+    endGame();
+  }
+}
+
 function endGame() {
   isGameRunning = false;
   clearInterval(gameInterval);
@@ -631,7 +634,7 @@ function endGame() {
   ctx.fillStyle = '#ffd700';
   ctx.font = 'bold 28px Comic Sans MS';
   ctx.textAlign = 'center';
-  ctx.fillText('🎉 Mission Complete!', canvas.width / 2, canvas.height / 2 - 30);
+  ctx.fillText('💥 Mission Failed!', canvas.width / 2, canvas.height / 2 - 30);
   
   ctx.font = '20px Comic Sans MS';
   ctx.fillStyle = '#fff';
@@ -653,12 +656,12 @@ function resetGame() {
   
   score = 0;
   planetsVisited = 0;
-  timeLeft = 60;
+  lives = 5;
   visitedPlanets.clear();
   
   document.getElementById('score').textContent = '0';
   document.getElementById('planetsVisited').textContent = '0/8';
-  document.getElementById('time').textContent = '60s';
+  updateLivesDisplay();
   
   // Clear canvas
   ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';

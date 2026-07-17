@@ -202,17 +202,17 @@
     .touch-controls{
       display:flex;
       justify-content:center;
-      gap:20px;
+      gap:12px;
       margin-bottom:20px;
     }
     .touch-btn{
-      width:60px;
-      height:60px;
+      width:45px;
+      height:45px;
       border-radius:50%;
       border:3px solid rgba(255,107,107,0.5);
       background:rgba(255,107,107,0.2);
       color:#fff;
-      font-size:24px;
+      font-size:20px;
       cursor:pointer;
       display:flex;
       align-items:center;
@@ -283,8 +283,8 @@
       <div class="info-value" id="wave">1</div>
     </div>
     <div class="info-item">
-      <div class="info-label">Health</div>
-      <div class="info-value" id="healthDisplay">100%</div>
+      <div class="info-label">Lives</div>
+      <div class="info-value" id="livesDisplay">❤️❤️❤️❤️❤️</div>
     </div>
   </div>
 
@@ -317,18 +317,18 @@
     <h3>🎮 How to Play</h3>
     <ul>
       <li>Use <strong>Arrow Keys</strong>, <strong>WASD</strong>, or <strong>Touch Buttons</strong> to move your spaceship</li>
-      <li>Avoid falling asteroids and meteors (-20 health each hit)</li>
-      <li>Collect power-ups to restore health (+25 health)</li>
+      <li>Avoid falling asteroids and meteors (lose 1 life each hit)</li>
+      <li>Collect power-ups to restore lives (+1 life)</li>
       <li>Survive as long as possible - waves get harder!</li>
       <li>Score points for every second you survive</li>
-      <li>Game over when health reaches 0%</li>
+      <li>Game over when you lose all 5 lives</li>
     </ul>
   </div>
 </div>
 
 <script>
 let score = 0;
-let health = 100;
+let lives = 5;
 let wave = 1;
 let gameInterval;
 let asteroidInterval;
@@ -346,7 +346,7 @@ function startGame() {
   
   isGameRunning = true;
   score = 0;
-  health = 100;
+  lives = 5;
   wave = 1;
   spaceshipX = 50;
   spaceshipY = 80;
@@ -620,30 +620,22 @@ function takeDamage(amount) {
     return;
   }
   
-  health = Math.max(0, health - amount);
+  lives--;
   updateUI();
   
-  if (health <= 0) {
+  if (lives <= 0) {
     gameOver();
   }
 }
 
 function heal(amount) {
-  health = Math.min(100, health + amount);
+  lives = Math.min(5, lives + 1);
   updateUI();
 }
 
 function updateUI() {
-  document.getElementById('healthDisplay').textContent = health + '%';
-  document.getElementById('healthFill').style.width = health + '%';
-  
-  if (health <= 30) {
-    document.getElementById('healthFill').style.background = 'linear-gradient(90deg, #ef4444, #c92a2a)';
-  } else if (health <= 60) {
-    document.getElementById('healthFill').style.background = 'linear-gradient(90deg, #fbbf24, #f59e0b)';
-  } else {
-    document.getElementById('healthFill').style.background = 'linear-gradient(90deg, #4ade80, #22c55e)';
-  }
+  const hearts = '❤️'.repeat(lives);
+  document.getElementById('livesDisplay').textContent = hearts;
 }
 
 function isColliding(rect1, rect2) {
@@ -680,7 +672,7 @@ function resetGame() {
   document.removeEventListener('keydown', handleKeyDown);
   
   score = 0;
-  health = 100;
+  lives = 5;
   wave = 1;
   spaceshipX = 50;
   spaceshipY = 80;

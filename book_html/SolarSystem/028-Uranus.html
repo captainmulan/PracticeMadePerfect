@@ -82,7 +82,7 @@
     .uranus{
       width:120px;
       height:120px;
-      background:radial-gradient(circle at 30% 30%,#7de3f4,#5bc4d4,#3aa8c4);
+      background:radial-gradient(circle at 30% 30%,#a8e6cf,#7de3f4,#5bc4d4,#4aa8b8);
       border-radius:50%;
       box-shadow:0 0 40px rgba(125,227,244,0.4),inset -15px -15px 30px rgba(0,0,0,0.3);
       cursor:pointer;
@@ -423,6 +423,9 @@ function checkFact(btn, isCorrect) {
 // Ice Maze Game - Procedural maze generation
 let gameLevel = 1;
 let gameMoves = 0;
+let gameTime = 60;
+let gameLives = 3;
+let gameInterval;
 let animationFrame;
 let isGameRunning = false;
 let canvas, ctx;
@@ -432,6 +435,7 @@ let mazeHeight = 15;
 let cellSize;
 let player = { x: 0, y: 0 };
 let goal = { x: 0, y: 0 };
+let hazards = [];
 let keys = {};
 let moveUp = false;
 let moveDown = false;
@@ -452,11 +456,14 @@ function startGame() {
   isGameRunning = true;
   gameLevel = 1;
   gameMoves = 0;
+  gameTime = 60;
+  gameLives = 3;
   mazeWidth = 11;
   mazeHeight = 11;
+  hazards = [];
   
   document.getElementById('gameScore').textContent = 'Level: 1';
-  document.getElementById('gameTimer').textContent = 'Moves: 0';
+  document.getElementById('gameTimer').textContent = 'Time: 60s | Lives: ❤️❤️❤️';
   document.getElementById('startGameBtn').disabled = true;
   document.getElementById('startGameBtn').textContent = '🧊 Playing...';
   
@@ -497,6 +504,19 @@ function startGame() {
   leftBtn.addEventListener('mouseup', () => moveLeft = false);
   rightBtn.addEventListener('mousedown', () => moveRight = true);
   rightBtn.addEventListener('mouseup', () => moveRight = false);
+  
+  // Spawn hazards
+  spawnHazards();
+  
+  // Game timer
+  gameInterval = setInterval(() => {
+    gameTime--;
+    updateLivesDisplay();
+    
+    if (gameTime <= 0) {
+      endGame();
+    }
+  }, 1000);
   
   // Start game loop
   gameLoop();
@@ -541,6 +561,32 @@ function generateMaze() {
   
   // Ensure goal is accessible
   maze[mazeHeight - 2][mazeWidth - 2] = 0;
+}
+
+function spawnHazards() {
+  hazards = [];
+  const numHazards = Math.min(3 + gameLevel, 8);
+  
+  for (let i = 0; i < numHazards; i++) {
+    let hx, hy;
+    do {
+      hx = Math.floor(Math.random() * (mazeWidth - 4)) + 2;
+      hy = Math.floor(Math.random() * (mazeHeight - 4)) + 2;
+    } while (maze[hy][hx] === 1 || (hx === 1 && hy === 1) || (hx === mazeWidth - 2 && hy === mazeHeight - 2));
+    
+    hazards.push({
+      x: hx,
+      y: hy,
+      dx: Math.random() > 0.5 ? 1 : -1,
+      dy: Math.random() > 0.5 ? 1 : -1,
+      moveTimer: 0
+    });
+  }
+}
+
+function updateLivesDisplay() {
+  const hearts = '❤️'.repeat(gameLives) + '🖤'.repeat(3 - gameLives);
+  document.getElementById('gameTimer').textContent = 'Time: ' + gameTime + 's | Lives: ' + hearts;
 }
 
 function handleKeyDown(e) {
@@ -589,7 +635,7 @@ function movePlayer() {
       player.x = newX;
       player.y = newY;
       gameMoves++;
-      document.getElementById('gameTimer').textContent = 'Moves: ' + gameMoves;
+      updateLivesDisplay();
       
       // Check if reached goal
       if (player.x === goal.x && player.y === goal.y) {
@@ -601,7 +647,9 @@ function movePlayer() {
 
 function nextLevel() {
   gameLevel++;
+  gameTime = 60; // Reset time for each level
   document.getElementById('gameScore').textContent = 'Level: ' + gameLevel;
+  updateLivesDisplay();
   
   // Increase maze size
   if (gameLevel % 2 === 0) {
@@ -611,7 +659,6 @@ function nextLevel() {
   
   // Reset moves
   gameMoves = 0;
-  document.getElementById('gameTimer').textContent = 'Moves: 0';
   
   // Generate new maze
   generateMaze();
@@ -622,6 +669,9 @@ function nextLevel() {
   
   // Recalculate cell size
   cellSize = Math.min(canvas.width / mazeWidth, canvas.height / mazeHeight);
+  
+  // Respawn hazards
+  spawnHazards();
 }
 
 function gameLoop() {
@@ -683,6 +733,52 @@ function gameLoop() {
   ctx.textBaseline = 'middle';
   ctx.fillText('😊', offsetX + player.x * cellSize + cellSize / 2, offsetY + player.y * cellSize + cellSize / 2);
   
+  // Update and draw hazards
+  hazards.forEach(hazard => {
+    hazard.moveTimer++;
+    
+    // Move hazard every 30 frames
+    if (hazard.moveTimer >= 30) {
+      hazard.moveTimer = 0;
+      
+      const newX = hazard.x + hazard.dx;
+      const newY = hazard.y + hazard.dy;
+      
+      // Check if new position is valid
+      if (newX > 0 && newX < mazeWidth - 1 && newY > 0 && newY < mazeHeight - 1 && maze[newY][newX] === 0) {
+        hazard.x = newX;
+        hazard.y = newY;
+      } else {
+        // Reverse direction
+        hazard.dx *= -1;
+        hazard.dy *= -1;
+      }
+    }
+    
+    // Draw hazard (ice crystal)
+    ctx.fillStyle = '#FF6B6B';
+    ctx.beginPath();
+    ctx.moveTo(offsetX + hazard.x * cellSize + cellSize / 2, offsetY + hazard.y * cellSize + cellSize / 4);
+    ctx.lineTo(offsetX + hazard.x * cellSize + cellSize / 4, offsetY + hazard.y * cellSize + cellSize * 0.75);
+    ctx.lineTo(offsetX + hazard.x * cellSize + cellSize * 0.75, offsetY + hazard.y * cellSize + cellSize * 0.75);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Check collision with player
+    if (hazard.x === player.x && hazard.y === player.y) {
+      gameLives--;
+      updateLivesDisplay();
+      
+      // Reset player position
+      player = { x: 1, y: 1 };
+      
+      if (gameLives <= 0) {
+        endGame();
+        return;
+      }
+    }
+  });
+  
   // Move player
   movePlayer();
   
@@ -691,6 +787,7 @@ function gameLoop() {
 
 function endGame() {
   isGameRunning = false;
+  clearInterval(gameInterval);
   cancelAnimationFrame(animationFrame);
   
   document.removeEventListener('keydown', handleKeyDown);
@@ -720,7 +817,14 @@ function endGame() {
   ctx.fillStyle = '#7de3f4';
   ctx.font = 'bold 24px Comic Sans MS';
   ctx.textAlign = 'center';
-  ctx.fillText('🎉 Great Job!', canvas.width / 2, canvas.height / 2 - 20);
+  
+  if (gameLives <= 0) {
+    ctx.fillText('💔 Game Over!', canvas.width / 2, canvas.height / 2 - 20);
+  } else if (gameTime <= 0) {
+    ctx.fillText('⏰ Time\'s Up!', canvas.width / 2, canvas.height / 2 - 20);
+  } else {
+    ctx.fillText('🎉 Great Job!', canvas.width / 2, canvas.height / 2 - 20);
+  }
   
   ctx.font = '20px Comic Sans MS';
   ctx.fillText('Level: ' + gameLevel, canvas.width / 2, canvas.height / 2 + 20);

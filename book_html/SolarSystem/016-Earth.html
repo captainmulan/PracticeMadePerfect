@@ -97,10 +97,36 @@
       width:100%;
       height:100%;
       background:
-        radial-gradient(circle at 20% 30%,rgba(76,175,80,0.6) 0%,transparent 30%),
-        radial-gradient(circle at 70% 60%,rgba(76,175,80,0.5) 0%,transparent 25%),
-        radial-gradient(circle at 50% 80%,rgba(76,175,80,0.4) 0%,transparent 20%);
+        /* North America */
+        radial-gradient(ellipse at 25% 25%,rgba(76,175,80,0.8) 0%,rgba(76,175,80,0.4) 15%,transparent 25%),
+        /* South America */
+        radial-gradient(ellipse at 30% 70%,rgba(76,175,80,0.8) 0%,rgba(76,175,80,0.4) 12%,transparent 22%),
+        /* Europe */
+        radial-gradient(ellipse at 52% 28%,rgba(76,175,80,0.8) 0%,rgba(76,175,80,0.4) 10%,transparent 18%),
+        /* Africa */
+        radial-gradient(ellipse at 52% 55%,rgba(76,175,80,0.8) 0%,rgba(76,175,80,0.4) 14%,transparent 24%),
+        /* Asia */
+        radial-gradient(ellipse at 75% 30%,rgba(76,175,80,0.8) 0%,rgba(76,175,80,0.4) 18%,transparent 30%),
+        /* Australia */
+        radial-gradient(ellipse at 82% 72%,rgba(76,175,80,0.8) 0%,rgba(76,175,80,0.4) 10%,transparent 18%),
+        /* Antarctica */
+        radial-gradient(ellipse at 50% 92%,rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.3) 8%,transparent 15%);
       border-radius:50%;
+      animation:rotate 20s linear infinite;
+    }
+    .earth::after{
+      content:'';
+      position:absolute;
+      width:100%;
+      height:100%;
+      background:
+        /* Clouds */
+        radial-gradient(ellipse at 15% 40%,rgba(255,255,255,0.5) 0%,transparent 20%),
+        radial-gradient(ellipse at 60% 35%,rgba(255,255,255,0.4) 0%,transparent 18%),
+        radial-gradient(ellipse at 85% 50%,rgba(255,255,255,0.5) 0%,transparent 22%),
+        radial-gradient(ellipse at 40% 75%,rgba(255,255,255,0.4) 0%,transparent 15%);
+      border-radius:50%;
+      animation:rotate 25s linear infinite reverse;
     }
     .earth:hover{
       transform:scale(1.1);
@@ -243,6 +269,13 @@
     }
     .touch-btn.empty{
       visibility:hidden;
+    }
+    .touch-btn.place{
+      background:rgba(255,215,0,0.2);
+      border-color:rgba(255,215,0,0.5);
+    }
+    .touch-btn.place:active{
+      background:rgba(255,215,0,0.4);
     }
     .game-score{
       text-align:center;
@@ -387,7 +420,7 @@
       <button class="touch-btn" id="upBtn">⬆️</button>
       <button class="touch-btn empty"></button>
       <button class="touch-btn" id="leftBtn">⬅️</button>
-      <button class="touch-btn empty"></button>
+      <button class="touch-btn place" id="placeBtn">📦</button>
       <button class="touch-btn" id="rightBtn">➡️</button>
       <button class="touch-btn empty"></button>
       <button class="touch-btn" id="downBtn">⬇️</button>
@@ -497,6 +530,7 @@ function startGame() {
   const downBtn = document.getElementById('downBtn');
   const leftBtn = document.getElementById('leftBtn');
   const rightBtn = document.getElementById('rightBtn');
+  const placeBtn = document.getElementById('placeBtn');
   
   upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveUp = true; });
   upBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveUp = false; });
@@ -506,6 +540,7 @@ function startGame() {
   leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveLeft = false; });
   rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveRight = true; });
   rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveRight = false; });
+  placeBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if (builder.holdingModule) placeModule(); });
   
   upBtn.addEventListener('mousedown', () => moveUp = true);
   upBtn.addEventListener('mouseup', () => moveUp = false);
@@ -515,6 +550,7 @@ function startGame() {
   leftBtn.addEventListener('mouseup', () => moveLeft = false);
   rightBtn.addEventListener('mousedown', () => moveRight = true);
   rightBtn.addEventListener('mouseup', () => moveRight = false);
+  placeBtn.addEventListener('mousedown', () => { if (builder.holdingModule) placeModule(); });
   
   // Start game loop
   gameLoop();
@@ -600,11 +636,76 @@ function gameLoop() {
   ctx.fillStyle = 'rgba(74, 144, 217, 0.1)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
-  // Draw Earth in background
-  ctx.fillStyle = 'rgba(74, 144, 217, 0.3)';
+  // Draw Earth in background with improved graphics
+  const earthGradient = ctx.createRadialGradient(
+    canvas.width / 2, canvas.height + 150, 0,
+    canvas.width / 2, canvas.height + 150, 200
+  );
+  earthGradient.addColorStop(0, '#4a90d9');
+  earthGradient.addColorStop(0.5, '#2d5a8a');
+  earthGradient.addColorStop(1, '#1e3a5a');
+  ctx.fillStyle = earthGradient;
   ctx.beginPath();
   ctx.arc(canvas.width / 2, canvas.height + 150, 200, 0, Math.PI * 2);
   ctx.fill();
+  
+  // Draw continents (simplified shapes)
+  ctx.fillStyle = 'rgba(76, 175, 80, 0.6)';
+  
+  // North America-like shape
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2 - 80, canvas.height + 50);
+  ctx.quadraticCurveTo(canvas.width / 2 - 60, canvas.height + 20, canvas.width / 2 - 40, canvas.height + 40);
+  ctx.quadraticCurveTo(canvas.width / 2 - 20, canvas.height + 30, canvas.width / 2, canvas.height + 60);
+  ctx.quadraticCurveTo(canvas.width / 2 + 20, canvas.height + 40, canvas.width / 2 + 40, canvas.height + 70);
+  ctx.quadraticCurveTo(canvas.width / 2 + 30, canvas.height + 100, canvas.width / 2, canvas.height + 120);
+  ctx.quadraticCurveTo(canvas.width / 2 - 30, canvas.height + 100, canvas.width / 2 - 80, canvas.height + 50);
+  ctx.fill();
+  
+  // Europe/Africa-like shape
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2 + 20, canvas.height + 80);
+  ctx.quadraticCurveTo(canvas.width / 2 + 40, canvas.height + 60, canvas.width / 2 + 60, canvas.height + 70);
+  ctx.quadraticCurveTo(canvas.width / 2 + 80, canvas.height + 90, canvas.width / 2 + 70, canvas.height + 120);
+  ctx.quadraticCurveTo(canvas.width / 2 + 50, canvas.height + 140, canvas.width / 2 + 30, canvas.height + 130);
+  ctx.quadraticCurveTo(canvas.width / 2 + 10, canvas.height + 110, canvas.width / 2 + 20, canvas.height + 80);
+  ctx.fill();
+  
+  // Asia-like shape
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2 + 70, canvas.height + 60);
+  ctx.quadraticCurveTo(canvas.width / 2 + 100, canvas.height + 40, canvas.width / 2 + 130, canvas.height + 70);
+  ctx.quadraticCurveTo(canvas.width / 2 + 140, canvas.height + 100, canvas.width / 2 + 120, canvas.height + 130);
+  ctx.quadraticCurveTo(canvas.width / 2 + 90, canvas.height + 120, canvas.width / 2 + 70, canvas.height + 60);
+  ctx.fill();
+  
+  // South America-like shape
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2 - 30, canvas.height + 130);
+  ctx.quadraticCurveTo(canvas.width / 2 - 10, canvas.height + 150, canvas.width / 2 + 10, canvas.height + 180);
+  ctx.quadraticCurveTo(canvas.width / 2 - 10, canvas.height + 200, canvas.width / 2 - 40, canvas.height + 180);
+  ctx.quadraticCurveTo(canvas.width / 2 - 50, canvas.height + 150, canvas.width / 2 - 30, canvas.height + 130);
+  ctx.fill();
+  
+  // Australia-like shape
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2 + 100, canvas.height + 160);
+  ctx.quadraticCurveTo(canvas.width / 2 + 130, canvas.height + 150, canvas.width / 2 + 140, canvas.height + 170);
+  ctx.quadraticCurveTo(canvas.width / 2 + 120, canvas.height + 190, canvas.width / 2 + 90, canvas.height + 180);
+  ctx.quadraticCurveTo(canvas.width / 2 + 95, canvas.height + 170, canvas.width / 2 + 100, canvas.height + 160);
+  ctx.fill();
+  
+  // Clouds
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  for (let i = 0; i < 5; i++) {
+    const cloudX = canvas.width / 2 + Math.sin(i * 1.5) * 100;
+    const cloudY = canvas.height + 50 + i * 30;
+    ctx.beginPath();
+    ctx.arc(cloudX, cloudY, 15 + Math.random() * 10, 0, Math.PI * 2);
+    ctx.arc(cloudX + 15, cloudY - 5, 12 + Math.random() * 8, 0, Math.PI * 2);
+    ctx.arc(cloudX + 30, cloudY, 10 + Math.random() * 6, 0, Math.PI * 2);
+    ctx.fill();
+  }
   
   // Update builder position
   if (keys.up || moveUp) builder.y -= builder.speed;

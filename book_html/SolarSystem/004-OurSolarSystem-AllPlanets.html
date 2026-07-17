@@ -316,7 +316,7 @@
       padding:10px;
       border-radius:10px;
     }
-    .memory-game{
+    .orbit-builder{
       background:rgba(255,255,255,0.1);
       backdrop-filter:blur(10px);
       border-radius:20px;
@@ -324,41 +324,33 @@
       margin-top:20px;
       border:1px solid rgba(255,255,255,0.1);
     }
-    .memory-game h2{
+    .orbit-builder h2{
       color:#a78bfa;
       margin-bottom:16px;
       font-size:20px;
       text-align:center;
     }
-    .memory-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-      margin-top:16px;
+    .orbit-builder p{
+      text-align:center;
+      color:#c4b5fd;
+      font-size:14px;
+      margin-bottom:16px;
     }
-    .memory-card{
-      aspect-ratio:1;
-      background:rgba(255,255,255,0.1);
-      border-radius:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:28px;
-      cursor:pointer;
-      transition:0.3s;
-      border:2px solid rgba(255,255,255,0.2);
+    .game-canvas{
+      position:relative;
+      height:50vh;
+      min-height:300px;
+      max-height:500px;
+      background:rgba(0,0,0,0.3);
+      border-radius:16px;
+      overflow:hidden;
+      border:2px solid rgba(167,139,250,0.3);
+      touch-action:none;
     }
-    .memory-card:hover{
-      transform:scale(1.05);
-      background:rgba(255,255,255,0.15);
-    }
-    .memory-card.flipped{
-      background:rgba(167,139,250,0.3);
-      border-color:#a78bfa;
-    }
-    .memory-card.matched{
-      background:rgba(34,197,94,0.3);
-      border-color:#22c55e;
+    canvas{
+      display:block;
+      width:100%;
+      height:100%;
     }
     .game-status{
       text-align:center;
@@ -381,6 +373,14 @@
     }
     .restart-btn:hover{
       transform:scale(1.05);
+    }
+    @keyframes shake{
+      0%,100%{transform:translateX(0);}
+      25%{transform:translateX(-10px);}
+      75%{transform:translateX(10px);}
+    }
+    .shake{
+      animation:shake 0.3s ease-in-out;
     }
   </style>
 </head>
@@ -452,12 +452,14 @@
     </div>
   </div>
 
-  <div class="memory-game">
-    <h2>🎮 Planet Memory Match!</h2>
-    <p style="text-align:center;color:#c4b5fd;font-size:14px;">Match the planet pairs to win!</p>
-    <div class="memory-grid" id="memoryGrid"></div>
-    <div class="game-status" id="gameStatus">Moves: 0</div>
-    <button class="restart-btn" onclick="initMemoryGame()">🔄 New Game</button>
+  <div class="orbit-builder">
+    <h2>🎮 Planet Orbit Builder!</h2>
+    <p>Drag each planet to the correct orbit around the Sun!</p>
+    <div class="game-canvas" id="gameCanvas">
+      <canvas id="gameCanvasElement"></canvas>
+    </div>
+    <div class="game-status" id="gameStatus">Planets placed: 0/8</div>
+    <button class="restart-btn" onclick="initOrbitBuilder()">🔄 New Game</button>
   </div>
 
 <div class="nav-hint">
@@ -498,72 +500,281 @@ function changeSpeed() {
   });
 }
 
-// Memory Game
-const planets = ['☀️', '🪨', '🔥', '🌍', '🔴', '🟠', '💍', '🔵'];
-let memoryCards = [];
-let flippedCards = [];
-let matchedPairs = 0;
-let moves = 0;
-let canFlip = true;
+// Planet Orbit Builder Game
+let canvas, ctx;
+let planets = [];
+let gameOrbits = [];
+let sun;
+let draggedPlanet = null;
+let planetsPlaced = 0;
+let animationFrame;
+let isGameComplete = false;
+let celebrationAnimation = 0;
 
-function initMemoryGame() {
-  const grid = document.getElementById('memoryGrid');
-  grid.innerHTML = '';
-  memoryCards = [...planets, ...planets];
-  memoryCards.sort(() => Math.random() - 0.5);
-  flippedCards = [];
-  matchedPairs = 0;
-  moves = 0;
-  canFlip = true;
-  document.getElementById('gameStatus').textContent = 'Moves: 0';
+const planetData = [
+  { name: 'Mercury', color: '#a0a0a0', size: 12, orbitRadius: 60, emoji: '🪨' },
+  { name: 'Venus', color: '#e6a832', size: 16, orbitRadius: 80, emoji: '�' },
+  { name: 'Earth', color: '#4a90d9', size: 18, orbitRadius: 105, emoji: '🌍' },
+  { name: 'Mars', color: '#c1440e', size: 14, orbitRadius: 130, emoji: '🔴' },
+  { name: 'Jupiter', color: '#d4a574', size: 35, orbitRadius: 170, emoji: '🟠' },
+  { name: 'Saturn', color: '#f4d59e', size: 30, orbitRadius: 210, emoji: '💍' },
+  { name: 'Uranus', color: '#7de3f4', size: 22, orbitRadius: 250, emoji: '🔵' },
+  { name: 'Neptune', color: '#4b70dd', size: 20, orbitRadius: 290, emoji: '🔷' }
+];
+
+function initOrbitBuilder() {
+  canvas = document.getElementById('gameCanvasElement');
+  ctx = canvas.getContext('2d');
   
-  memoryCards.forEach((emoji, index) => {
-    const card = document.createElement('div');
-    card.className = 'memory-card';
-    card.dataset.index = index;
-    card.dataset.emoji = emoji;
-    card.textContent = '❓';
-    card.onclick = () => flipCard(card);
-    grid.appendChild(card);
-  });
+  // Set canvas size
+  const canvasContainer = document.getElementById('gameCanvas');
+  canvas.width = canvasContainer.clientWidth;
+  canvas.height = canvasContainer.clientHeight;
+  
+  planetsPlaced = 0;
+  isGameComplete = false;
+  celebrationAnimation = 0;
+  
+  document.getElementById('gameStatus').textContent = 'Planets placed: 0/8';
+  
+  // Initialize sun
+  sun = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    radius: 40
+  };
+  
+  // Initialize orbits
+  gameOrbits = planetData.map(data => ({
+    radius: data.orbitRadius,
+    targetPlanet: data.name
+  }));
+  
+  // Initialize planets (shuffled positions at bottom)
+  const shuffledPlanets = [...planetData].sort(() => Math.random() - 0.5);
+  planets = shuffledPlanets.map((data, index) => ({
+    ...data,
+    x: 50 + (index % 4) * 80,
+    y: canvas.height - 50,
+    originalX: 50 + (index % 4) * 80,
+    originalY: canvas.height - 50,
+    placed: false,
+    locked: false,
+    angle: Math.random() * Math.PI * 2
+  }));
+  
+  // Enable drag events
+  canvas.addEventListener('mousedown', handleMouseDown);
+  canvas.addEventListener('mousemove', handleMouseMove);
+  canvas.addEventListener('mouseup', handleMouseUp);
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+  canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+  canvas.addEventListener('touchend', handleTouchEnd);
+  
+  // Start game loop
+  if (animationFrame) cancelAnimationFrame(animationFrame);
+  gameLoop();
 }
 
-function flipCard(card) {
-  if (!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+function handleMouseDown(e) {
+  if (isGameComplete) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
   
-  card.textContent = card.dataset.emoji;
-  card.classList.add('flipped');
-  flippedCards.push(card);
+  checkDragStart(x, y);
+}
+
+function handleMouseMove(e) {
+  if (!draggedPlanet) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
   
-  if (flippedCards.length === 2) {
-    moves++;
-    document.getElementById('gameStatus').textContent = 'Moves: ' + moves;
-    canFlip = false;
+  draggedPlanet.x = x;
+  draggedPlanet.y = y;
+}
+
+function handleMouseUp(e) {
+  if (!draggedPlanet) return;
+  checkDrop();
+  draggedPlanet = null;
+}
+
+function handleTouchStart(e) {
+  if (isGameComplete) return;
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const x = e.touches[0].clientX - rect.left;
+  const y = e.touches[0].clientY - rect.top;
+  
+  checkDragStart(x, y);
+}
+
+function handleTouchMove(e) {
+  if (!draggedPlanet) return;
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const x = e.touches[0].clientX - rect.left;
+  const y = e.touches[0].clientY - rect.top;
+  
+  draggedPlanet.x = x;
+  draggedPlanet.y = y;
+}
+
+function handleTouchEnd(e) {
+  if (!draggedPlanet) return;
+  checkDrop();
+  draggedPlanet = null;
+}
+
+function checkDragStart(x, y) {
+  for (let planet of planets) {
+    if (planet.locked) continue;
     
-    if (flippedCards[0].dataset.emoji === flippedCards[1].dataset.emoji) {
-      flippedCards.forEach(c => c.classList.add('matched'));
-      matchedPairs++;
-      flippedCards = [];
-      canFlip = true;
-      
-      if (matchedPairs === planets.length) {
-        document.getElementById('gameStatus').textContent = '🎉 You won in ' + moves + ' moves!';
-      }
-    } else {
-      setTimeout(() => {
-        flippedCards.forEach(c => {
-          c.textContent = '❓';
-          c.classList.remove('flipped');
-        });
-        flippedCards = [];
-        canFlip = true;
-      }, 1000);
+    const dx = x - planet.x;
+    const dy = y - planet.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance < planet.size + 10) {
+      draggedPlanet = planet;
+      break;
     }
   }
 }
 
-// Initialize memory game on load
-initMemoryGame();
+function checkDrop() {
+  if (!draggedPlanet) return;
+  
+  const dx = draggedPlanet.x - sun.x;
+  const dy = draggedPlanet.y - sun.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  
+  // Find closest orbit
+  let closestOrbit = null;
+  let closestDistance = Infinity;
+  
+  for (let orbit of gameOrbits) {
+    const orbitDistance = Math.abs(distance - orbit.radius);
+    if (orbitDistance < closestDistance) {
+      closestDistance = orbitDistance;
+      closestOrbit = orbit;
+    }
+  }
+  
+  // Check if dropped in correct orbit
+  if (closestOrbit && closestDistance < 20) {
+    if (closestOrbit.targetPlanet === draggedPlanet.name) {
+      // Correct orbit!
+      draggedPlanet.placed = true;
+      draggedPlanet.locked = true;
+      draggedPlanet.angle = Math.atan2(dy, dx);
+      planetsPlaced++;
+      document.getElementById('gameStatus').textContent = 'Planets placed: ' + planetsPlaced + '/8';
+      
+      // Check win condition
+      if (planetsPlaced === 8) {
+        isGameComplete = true;
+        document.getElementById('gameStatus').textContent = '🎉 All planets placed! Watch them orbit!';
+      }
+    } else {
+      // Wrong orbit - shake
+      shakePlanet(draggedPlanet);
+      draggedPlanet.x = draggedPlanet.originalX;
+      draggedPlanet.y = draggedPlanet.originalY;
+    }
+  } else {
+    // Not near any orbit - return to original position
+    draggedPlanet.x = draggedPlanet.originalX;
+    draggedPlanet.y = draggedPlanet.originalY;
+  }
+}
+
+function shakePlanet(planet) {
+  const canvasEl = document.getElementById('gameCanvas');
+  canvasEl.classList.add('shake');
+  setTimeout(() => canvasEl.classList.remove('shake'), 300);
+}
+
+function gameLoop() {
+  // Clear canvas
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw sun
+  ctx.fillStyle = '#ffd700';
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, sun.radius, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Sun glow
+  ctx.shadowColor = '#ffd700';
+  ctx.shadowBlur = 30;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  
+  // Draw orbits
+  gameOrbits.forEach(orbit => {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(sun.x, sun.y, orbit.radius, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+  
+  // Update and draw planets
+  planets.forEach(planet => {
+    if (planet.locked && isGameComplete) {
+      // Animate orbit when complete
+      planet.angle += 0.01;
+      planet.x = sun.x + Math.cos(planet.angle) * planet.orbitRadius;
+      planet.y = sun.y + Math.sin(planet.angle) * planet.orbitRadius;
+    } else if (planet.locked) {
+      // Stay in orbit position
+      planet.x = sun.x + Math.cos(planet.angle) * planet.orbitRadius;
+      planet.y = sun.y + Math.sin(planet.angle) * planet.orbitRadius;
+    }
+    
+    // Draw planet
+    ctx.fillStyle = planet.color;
+    ctx.beginPath();
+    ctx.arc(planet.x, planet.y, planet.size, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Planet shine
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.beginPath();
+    ctx.arc(planet.x - planet.size * 0.3, planet.y - planet.size * 0.3, planet.size * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw emoji for mobile-friendly visual
+    ctx.font = (planet.size * 1.5) + 'px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(planet.emoji, planet.x, planet.y);
+  });
+  
+  // Celebration animation
+  if (isGameComplete) {
+    celebrationAnimation += 0.05;
+    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+    for (let i = 0; i < 8; i++) {
+      const angle = celebrationAnimation + (i * Math.PI / 4);
+      const x = sun.x + Math.cos(angle) * 350;
+      const y = sun.y + Math.sin(angle) * 350;
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  
+  animationFrame = requestAnimationFrame(gameLoop);
+}
+
+// Initialize game on load
+window.onload = function() {
+  initOrbitBuilder();
+};
 </script>
 </body>
 </html>

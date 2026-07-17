@@ -82,12 +82,28 @@
     .mars{
       width:110px;
       height:110px;
-      background:radial-gradient(circle at 30% 30%,#e27b58,#b85c3d,#8b4513);
+      background:radial-gradient(circle at 30% 30%,
+        #d4a574 0%,
+        #c9a86c 20%,
+        #b8865a 40%,
+        #a67c52 60%,
+        #8b6914 80%,
+        #6b4423 100%
+      );
       border-radius:50%;
       box-shadow:0 0 40px rgba(226,123,88,0.4),inset -15px -15px 30px rgba(0,0,0,0.4);
       cursor:pointer;
       transition:transform 0.3s;
       animation:float 5s ease-in-out infinite;
+      position:relative;
+    }
+    .mars::before{
+      content:'';
+      position:absolute;
+      width:100%;
+      height:100%;
+      background:radial-gradient(circle at 70% 70%,rgba(139,105,20,0.4) 0%,transparent 50%);
+      border-radius:50%;
     }
     .mars:hover{
       transform:scale(1.1);
@@ -564,17 +580,48 @@ function gameLoop() {
   ctx.fillStyle = 'rgba(226, 123, 88, 0.1)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
-  // Draw Mars terrain
-  ctx.fillStyle = '#C1440E';
-  for (let i = 0; i < 5; i++) {
+  // Draw Mars terrain with improved graphics
+  // Base terrain gradient
+  const terrainGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  terrainGradient.addColorStop(0, '#8B4513');
+  terrainGradient.addColorStop(0.3, '#C1440E');
+  terrainGradient.addColorStop(0.7, '#D2691E');
+  terrainGradient.addColorStop(1, '#A0522D');
+  ctx.fillStyle = terrainGradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Add terrain texture/dunes
+  ctx.fillStyle = 'rgba(139, 69, 19, 0.3)';
+  for (let i = 0; i < 8; i++) {
+    const duneX = (i * canvas.width / 7) + Math.sin(Date.now() / 2000 + i) * 15;
+    const duneY = canvas.height - 100 + Math.cos(Date.now() / 3000 + i) * 20;
+    
     ctx.beginPath();
-    ctx.arc(
-      (i * canvas.width / 4) + Math.sin(Date.now() / 1000 + i) * 20,
-      canvas.height - 50 + Math.cos(Date.now() / 2000 + i) * 10,
-      80 + i * 20,
-      0,
-      Math.PI * 2
-    );
+    ctx.ellipse(duneX, duneY, 60 + i * 10, 30 + i * 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  // Add small rocks scattered on terrain
+  ctx.fillStyle = 'rgba(105, 105, 105, 0.4)';
+  for (let i = 0; i < 20; i++) {
+    const rockX = (i * canvas.width / 20) + Math.sin(i * 2) * 30;
+    const rockY = canvas.height - 50 + Math.cos(i * 3) * 40;
+    const rockSize = 3 + Math.random() * 5;
+    
+    ctx.beginPath();
+    ctx.arc(rockX, rockY, rockSize, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  // Add dust particles
+  ctx.fillStyle = 'rgba(193, 154, 107, 0.2)';
+  for (let i = 0; i < 15; i++) {
+    const dustX = Math.random() * canvas.width;
+    const dustY = Math.random() * canvas.height;
+    const dustSize = 2 + Math.random() * 3;
+    
+    ctx.beginPath();
+    ctx.arc(dustX, dustY, dustSize, 0, Math.PI * 2);
     ctx.fill();
   }
   
@@ -665,28 +712,102 @@ function gameLoop() {
     }
   });
   
-  // Draw rover
+  // Draw rover with improved graphics
   ctx.save();
   ctx.translate(rover.x, rover.y);
   ctx.rotate(rover.angle);
   
-  // Rover body
-  ctx.fillStyle = '#CD853F';
-  ctx.fillRect(-rover.width / 2, -rover.height / 2, rover.width, rover.height);
+  // Rover body with gradient
+  const bodyGradient = ctx.createLinearGradient(-rover.width / 2, -rover.height / 2, rover.width / 2, rover.height / 2);
+  bodyGradient.addColorStop(0, '#E8B87A');
+  bodyGradient.addColorStop(0.5, '#CD853F');
+  bodyGradient.addColorStop(1, '#A0522D');
+  ctx.fillStyle = bodyGradient;
   
-  // Rover wheels
-  ctx.fillStyle = '#333';
+  // Main body (rounded rectangle)
   ctx.beginPath();
-  ctx.arc(-rover.width / 2, -rover.height / 2, 8, 0, Math.PI * 2);
-  ctx.arc(rover.width / 2, -rover.height / 2, 8, 0, Math.PI * 2);
-  ctx.arc(-rover.width / 2, rover.height / 2, 8, 0, Math.PI * 2);
-  ctx.arc(rover.width / 2, rover.height / 2, 8, 0, Math.PI * 2);
+  ctx.roundRect(-rover.width / 2, -rover.height / 2, rover.width, rover.height, 5);
   ctx.fill();
   
-  // Rover camera
+  // Solar panel on top
+  ctx.fillStyle = '#1E3A5A';
+  ctx.fillRect(-rover.width / 3, -rover.height / 2 - 8, rover.width / 1.5, 8);
+  
+  // Solar panel grid lines
+  ctx.strokeStyle = '#4169E1';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath();
+    ctx.moveTo(-rover.width / 3 + i * (rover.width / 6), -rover.height / 2 - 8);
+    ctx.lineTo(-rover.width / 3 + i * (rover.width / 6), -rover.height / 2);
+    ctx.stroke();
+  }
+  
+  // Rover wheels with detail
+  ctx.fillStyle = '#2F2F2F';
+  const wheelPositions = [
+    { x: -rover.width / 2 - 3, y: -rover.height / 2 },
+    { x: rover.width / 2 + 3, y: -rover.height / 2 },
+    { x: -rover.width / 2 - 3, y: rover.height / 2 },
+    { x: rover.width / 2 + 3, y: rover.height / 2 }
+  ];
+  
+  wheelPositions.forEach(pos => {
+    // Wheel outer
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Wheel inner
+    ctx.fillStyle = '#4F4F4F';
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Wheel hub
+    ctx.fillStyle = '#6F6F6F';
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Reset color for next wheel
+    ctx.fillStyle = '#2F2F2F';
+  });
+  
+  // Camera mast
+  ctx.fillStyle = '#8B8B8B';
+  ctx.fillRect(-3, -rover.height / 2 - 15, 6, 15);
+  
+  // Camera head
   ctx.fillStyle = '#4169E1';
   ctx.beginPath();
-  ctx.arc(0, -5, 6, 0, Math.PI * 2);
+  ctx.arc(0, -rover.height / 2 - 18, 8, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Camera lens
+  ctx.fillStyle = '#1E3A5A';
+  ctx.beginPath();
+  ctx.arc(0, -rover.height / 2 - 18, 4, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Camera lens shine
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.beginPath();
+  ctx.arc(-2, -rover.height / 2 - 20, 2, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Antenna
+  ctx.strokeStyle = '#8B8B8B';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(5, -rover.height / 2 - 10);
+  ctx.lineTo(12, -rover.height / 2 - 20);
+  ctx.stroke();
+  
+  // Antenna tip
+  ctx.fillStyle = '#FFD700';
+  ctx.beginPath();
+  ctx.arc(12, -rover.height / 2 - 20, 2, 0, Math.PI * 2);
   ctx.fill();
   
   ctx.restore();

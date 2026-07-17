@@ -85,10 +85,35 @@
       height:140px;
       cursor:pointer;
     }
+    .ring{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:180px;
+      height:55px;
+      border:12px solid rgba(244,213,158,0.7);
+      border-radius:50%;
+      animation:rotate 20s linear infinite;
+      box-shadow:0 0 15px rgba(244,213,158,0.3);
+      z-index:1;
+    }
     .saturn{
       width:100px;
       height:100px;
-      background:radial-gradient(circle at 30% 30%,#f4d59e,#d4b87a,#b8865a);
+      background:linear-gradient(180deg,
+        #e8d4a8 0%,
+        #d4b87a 10%,
+        #c9a86c 20%,
+        #d4b87a 30%,
+        #e8d4a8 40%,
+        #c9a86c 50%,
+        #d4b87a 60%,
+        #e8d4a8 70%,
+        #c9a86c 80%,
+        #d4b87a 90%,
+        #b8865a 100%
+      );
       border-radius:50%;
       box-shadow:0 0 40px rgba(244,213,158,0.4),inset -15px -15px 30px rgba(0,0,0,0.3);
       position:absolute;
@@ -96,17 +121,7 @@
       left:50%;
       transform:translate(-50%,-50%);
       animation:float 7s ease-in-out infinite;
-    }
-    .ring{
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%);
-      width:160px;
-      height:50px;
-      border:8px solid rgba(244,213,158,0.6);
-      border-radius:50%;
-      animation:rotate 20s linear infinite;
+      z-index:2;
     }
     .ring::before{
       content:'';
@@ -114,9 +129,20 @@
       top:50%;
       left:50%;
       transform:translate(-50%,-50%);
-      width:140px;
-      height:35px;
-      border:6px solid rgba(212,184,122,0.4);
+      width:155px;
+      height:40px;
+      border:8px solid rgba(212,184,122,0.6);
+      border-radius:50%;
+    }
+    .ring::after{
+      content:'';
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:130px;
+      height:28px;
+      border:5px solid rgba(180,160,100,0.5);
       border-radius:50%;
     }
     .saturn-container:hover .saturn{
@@ -394,15 +420,16 @@
 
   <div class="planet-game">
     <h2>🎮 Ring Collector!</h2>
-    <p>Tap when the rotating ring aligns with the target!</p>
+    <p>Move Saturn to catch rings and avoid asteroids!</p>
     <div class="game-canvas" id="gameCanvas">
       <canvas id="gameCanvasElement"></canvas>
     </div>
     <div class="touch-controls">
-      <button class="touch-btn" id="tapBtn" style="width:120px;">🎯 TAP!</button>
+      <button class="touch-btn" id="leftBtn">⬅️</button>
+      <button class="touch-btn" id="rightBtn">➡️</button>
     </div>
     <div class="game-score" id="gameScore">Score: 0</div>
-    <div class="game-timer" id="gameTimer">Level: 1</div>
+    <div class="game-timer" id="gameTimer">Lives: ❤️❤️❤️</div>
     <button class="start-game-btn" id="startGameBtn" onclick="startGame()">💍 Start Game!</button>
   </div>
 
@@ -444,17 +471,20 @@ function checkFact(btn, isCorrect) {
   }
 }
 
-// Ring Collector Game - Reflex-style timing game
+// Ring Collector Game - Move Saturn to catch rings and avoid asteroids
 let gameScore = 0;
+let gameLives = 3;
 let gameLevel = 1;
 let animationFrame;
+let spawnInterval;
 let isGameRunning = false;
 let canvas, ctx;
-let ringAngle = 0;
-let ringSpeed = 0.05;
-let targetAngle = 0;
-let targetWidth = 0.3;
-let lives = 3;
+let saturn;
+let rings = [];
+let asteroids = [];
+let keys = {};
+let moveLeft = false;
+let moveRight = false;
 
 function startGame() {
   if (isGameRunning) return;
@@ -469,79 +499,104 @@ function startGame() {
   
   isGameRunning = true;
   gameScore = 0;
+  gameLives = 3;
   gameLevel = 1;
-  lives = 3;
-  ringSpeed = 0.05;
-  targetWidth = 0.3;
+  rings = [];
+  asteroids = [];
+  
+  // Initialize Saturn
+  saturn = {
+    x: canvas.width / 2,
+    y: canvas.height - 80,
+    width: 80,
+    height: 60,
+    speed: 6
+  };
   
   document.getElementById('gameScore').textContent = 'Score: 0';
-  document.getElementById('gameTimer').textContent = 'Level: 1';
+  document.getElementById('gameTimer').textContent = 'Lives: ❤️❤️❤️';
   document.getElementById('startGameBtn').disabled = true;
   document.getElementById('startGameBtn').textContent = '💍 Playing...';
   
-  // Set new target
-  setNewTarget();
+  // Enable controls
+  document.addEventListener('keydown', handleKeyDown);
+  document.addEventListener('keyup', handleKeyUp);
   
-  // Tap controls
-  const tapBtn = document.getElementById('tapBtn');
+  // Touch controls
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
   
-  tapBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleTap(); });
-  tapBtn.addEventListener('click', handleTap);
+  leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveLeft = true; });
+  leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveLeft = false; });
+  rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveRight = true; });
+  rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveRight = false; });
   
-  // Keyboard controls
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && isGameRunning) {
-      e.preventDefault();
-      handleTap();
-    }
-  });
+  leftBtn.addEventListener('mousedown', () => moveLeft = true);
+  leftBtn.addEventListener('mouseup', () => moveLeft = false);
+  rightBtn.addEventListener('mousedown', () => moveRight = true);
+  rightBtn.addEventListener('mouseup', () => moveRight = false);
+  
+  // Spawn items
+  spawnInterval = setInterval(() => {
+    if (!isGameRunning) return;
+    spawnItem();
+  }, 800);
   
   // Start game loop
   gameLoop();
 }
 
-function setNewTarget() {
-  targetAngle = Math.random() * Math.PI * 2;
-  ringAngle = 0;
-}
-
-function handleTap() {
+function handleKeyDown(e) {
   if (!isGameRunning) return;
   
-  // Normalize angles to 0-2PI
-  const normalizedRingAngle = ringAngle % (Math.PI * 2);
-  const normalizedTargetAngle = targetAngle % (Math.PI * 2);
-  
-  // Calculate difference
-  let angleDiff = Math.abs(normalizedRingAngle - normalizedTargetAngle);
-  if (angleDiff > Math.PI) {
-    angleDiff = Math.PI * 2 - angleDiff;
+  if (e.key === 'ArrowLeft' || e.key === 'a') {
+    keys.left = true;
+  } else if (e.key === 'ArrowRight' || e.key === 'd') {
+    keys.right = true;
   }
   
-  // Check if within target width
-  const targetHalfWidth = targetWidth / 2;
+  // Prevent scrolling
+  if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    e.preventDefault();
+  }
+}
+
+function handleKeyUp(e) {
+  if (e.key === 'ArrowLeft' || e.key === 'a') {
+    keys.left = false;
+  } else if (e.key === 'ArrowRight' || e.key === 'd') {
+    keys.right = false;
+  }
+}
+
+function spawnItem() {
+  const isAsteroid = Math.random() > 0.6;
+  const isRainbow = !isAsteroid && Math.random() > 0.9;
   
-  if (angleDiff <= targetHalfWidth) {
-    // Success!
-    gameScore += 10 * gameLevel;
-    document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-    
-    // Level up every 50 points
-    if (gameScore >= gameLevel * 50) {
-      gameLevel++;
-     ringSpeed += 0.02;
-      targetWidth = Math.max(0.15, targetWidth - 0.02);
-      document.getElementById('gameTimer').textContent = 'Level: ' + gameLevel;
-    }
-    
-    setNewTarget();
+  if (isAsteroid) {
+    asteroids.push({
+      x: Math.random() * (canvas.width - 40) + 20,
+      y: -30,
+      width: 30,
+      height: 30,
+      speed: 2 + gameLevel * 0.5,
+      rotation: 0
+    });
   } else {
-    // Miss!
-    lives--;
-    if (lives <= 0) {
-      endGame();
-    }
+    rings.push({
+      x: Math.random() * (canvas.width - 40) + 20,
+      y: -30,
+      radius: 15,
+      speed: 2 + gameLevel * 0.3,
+      isRainbow: isRainbow,
+      rotation: 0
+    });
   }
+}
+
+function updateLivesDisplay() {
+  const hearts = '❤️'.repeat(gameLives) + '🖤'.repeat(3 - gameLives);
+  document.getElementById('gameTimer').textContent = 'Lives: ' + hearts;
 }
 
 function gameLoop() {
@@ -551,64 +606,175 @@ function gameLoop() {
   ctx.fillStyle = 'rgba(244, 213, 158, 0.1)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const radius = Math.min(canvas.width, canvas.height) * 0.35;
+  // Update Saturn position
+  if (keys.left || moveLeft) saturn.x -= saturn.speed;
+  if (keys.right || moveRight) saturn.x += saturn.speed;
   
-  // Draw Saturn planet in center
-  ctx.fillStyle = '#f4d59e';
+  // Keep Saturn in bounds
+  saturn.x = Math.max(saturn.width / 2, Math.min(canvas.width - saturn.width / 2, saturn.x));
+  
+  // Draw Saturn
+  ctx.save();
+  ctx.translate(saturn.x, saturn.y);
+  
+  // Saturn body
+  const saturnGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 35);
+  saturnGradient.addColorStop(0, '#f4d59e');
+  saturnGradient.addColorStop(0.5, '#d4b87a');
+  saturnGradient.addColorStop(1, '#b8865a');
+  ctx.fillStyle = saturnGradient;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius * 0.4, 0, Math.PI * 2);
+  ctx.arc(0, 0, 35, 0, Math.PI * 2);
   ctx.fill();
   
-  // Draw Saturn ring base
-  ctx.strokeStyle = 'rgba(244, 213, 158, 0.3)';
-  ctx.lineWidth = 15;
+  // Saturn rings (tilted)
+  ctx.strokeStyle = 'rgba(244, 213, 158, 0.8)';
+  ctx.lineWidth = 8;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.ellipse(0, 0, 55, 15, -0.3, 0, Math.PI * 2);
   ctx.stroke();
   
-  // Draw target zone
-  ctx.strokeStyle = '#4ade80';
-  ctx.lineWidth = 15;
+  ctx.strokeStyle = 'rgba(212, 184, 122, 0.5)';
+  ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, targetAngle - targetWidth / 2, targetAngle + targetWidth / 2);
+  ctx.ellipse(0, 0, 45, 12, -0.3, 0, Math.PI * 2);
   ctx.stroke();
   
-  // Draw rotating ring piece
-  ctx.strokeStyle = '#f4d59e';
-  ctx.lineWidth = 15;
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, ringAngle - 0.1, ringAngle + 0.1);
-  ctx.stroke();
+  ctx.restore();
   
-  // Draw ring piece indicator
+  // Update and draw rings
+  rings.forEach((ring, index) => {
+    ring.y += ring.speed;
+    ring.rotation += 0.05;
+    
+    // Draw ring
+    ctx.save();
+    ctx.translate(ring.x, ring.y);
+    ctx.rotate(ring.rotation);
+    
+    if (ring.isRainbow) {
+      // Rainbow ring
+      const rainbowGradient = ctx.createLinearGradient(-ring.radius, -ring.radius, ring.radius, ring.radius);
+      rainbowGradient.addColorStop(0, '#FF6B6B');
+      rainbowGradient.addColorStop(0.25, '#FFD93D');
+      rainbowGradient.addColorStop(0.5, '#6BCB77');
+      rainbowGradient.addColorStop(0.75, '#4D96FF');
+      rainbowGradient.addColorStop(1, '#9B59B6');
+      ctx.strokeStyle = rainbowGradient;
+      ctx.lineWidth = 6;
+    } else {
+      // Normal ring
+      ctx.strokeStyle = 'rgba(244, 213, 158, 0.8)';
+      ctx.lineWidth = 4;
+    }
+    
+    ctx.beginPath();
+    ctx.ellipse(0, 0, ring.radius, ring.radius * 0.3, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    ctx.restore();
+    
+    // Check collision with Saturn
+    const dx = saturn.x - ring.x;
+    const dy = saturn.y - ring.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance < 40 + ring.radius) {
+      rings.splice(index, 1);
+      const points = ring.isRainbow ? 30 : 10;
+      gameScore += points;
+      document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+      
+      // Level up every 100 points
+      if (gameScore >= gameLevel * 100) {
+        gameLevel++;
+      }
+    }
+    
+    // Remove if off screen
+    if (ring.y > canvas.height + 30) {
+      rings.splice(index, 1);
+    }
+  });
+  
+  // Update and draw asteroids
+  asteroids.forEach((asteroid, index) => {
+    asteroid.y += asteroid.speed;
+    asteroid.rotation += 0.03;
+    
+    // Draw asteroid
+    ctx.save();
+    ctx.translate(asteroid.x, asteroid.y);
+    ctx.rotate(asteroid.rotation);
+    
+    ctx.fillStyle = '#696969';
+    ctx.beginPath();
+    // Irregular asteroid shape
+    ctx.moveTo(-asteroid.width / 2, -asteroid.height / 4);
+    ctx.lineTo(-asteroid.width / 4, -asteroid.height / 2);
+    ctx.lineTo(asteroid.width / 4, -asteroid.height / 2);
+    ctx.lineTo(asteroid.width / 2, -asteroid.height / 4);
+    ctx.lineTo(asteroid.width / 2, asteroid.height / 4);
+    ctx.lineTo(asteroid.width / 4, asteroid.height / 2);
+    ctx.lineTo(-asteroid.width / 4, asteroid.height / 2);
+    ctx.lineTo(-asteroid.width / 2, asteroid.height / 4);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Asteroid crater
+    ctx.fillStyle = '#555';
+    ctx.beginPath();
+    ctx.arc(-5, -5, 5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
+    
+    // Check collision with Saturn
+    const dx = saturn.x - asteroid.x;
+    const dy = saturn.y - asteroid.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance < 40 + asteroid.width / 2) {
+      asteroids.splice(index, 1);
+      gameLives--;
+      updateLivesDisplay();
+      
+      if (gameLives <= 0) {
+        endGame();
+        return;
+      }
+    }
+    
+    // Remove if off screen
+    if (asteroid.y > canvas.height + 30) {
+      asteroids.splice(index, 1);
+    }
+  });
+  
+  // Draw level indicator
   ctx.fillStyle = '#f4d59e';
-  const indicatorX = centerX + Math.cos(ringAngle) * radius;
-  const indicatorY = centerY + Math.sin(ringAngle) * radius;
-  ctx.beginPath();
-  ctx.arc(indicatorX, indicatorY, 8, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // Draw lives
-  ctx.fillStyle = '#f87171';
-  ctx.font = '20px Comic Sans MS';
-  ctx.textAlign = 'left';
-  ctx.fillText('❤️'.repeat(lives), 20, 30);
-  
-  // Update ring angle
-  ringAngle += ringSpeed;
+  ctx.font = '16px Comic Sans MS';
+  ctx.textAlign = 'right';
+  ctx.fillText('Level: ' + gameLevel, canvas.width - 20, 30);
   
   animationFrame = requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
   isGameRunning = false;
+  clearInterval(spawnInterval);
   cancelAnimationFrame(animationFrame);
   
-  const tapBtn = document.getElementById('tapBtn');
-  tapBtn.removeEventListener('touchstart', null);
-  tapBtn.removeEventListener('click', null);
+  document.removeEventListener('keydown', handleKeyDown);
+  document.removeEventListener('keyup', handleKeyUp);
+  
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  
+  leftBtn.removeEventListener('touchstart', null);
+  leftBtn.removeEventListener('touchend', null);
+  rightBtn.removeEventListener('touchstart', null);
+  rightBtn.removeEventListener('touchend', null);
   
   document.getElementById('startGameBtn').disabled = false;
   document.getElementById('startGameBtn').textContent = '💍 Play Again!';
@@ -620,7 +786,7 @@ function endGame() {
   ctx.fillStyle = '#f4d59e';
   ctx.font = 'bold 24px Comic Sans MS';
   ctx.textAlign = 'center';
-  ctx.fillText('🎉 Game Over!', canvas.width / 2, canvas.height / 2 - 20);
+  ctx.fillText('💔 Game Over!', canvas.width / 2, canvas.height / 2 - 20);
   
   ctx.font = '20px Comic Sans MS';
   ctx.fillText('Score: ' + gameScore, canvas.width / 2, canvas.height / 2 + 20);

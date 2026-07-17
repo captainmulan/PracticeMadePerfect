@@ -82,7 +82,29 @@
     .jupiter{
       width:160px;
       height:160px;
-      background:linear-gradient(180deg,#d4a574 0%,#c9a846 20%,#b8865a 40%,#d4a574 60%,#c9a846 80%,#b8865a 100%);
+      background:linear-gradient(180deg,
+        #a67c52 0%,
+        #e8d4b8 5%,
+        #c9a86c 10%,
+        #a67c52 15%,
+        #e8d4b8 20%,
+        #c9a86c 25%,
+        #a67c52 30%,
+        #e8d4b8 35%,
+        #c9a86c 40%,
+        #a67c52 45%,
+        #e8d4b8 50%,
+        #c9a86c 55%,
+        #a67c52 60%,
+        #e8d4b8 65%,
+        #c9a86c 70%,
+        #a67c52 75%,
+        #e8d4b8 80%,
+        #c9a86c 85%,
+        #a67c52 90%,
+        #e8d4b8 95%,
+        #8b6914 100%
+      );
       border-radius:50%;
       box-shadow:0 0 50px rgba(212,165,116,0.4),inset -20px -20px 40px rgba(0,0,0,0.3);
       cursor:pointer;
@@ -97,6 +119,17 @@
       height:100%;
       background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.1) 50%,transparent 100%);
       border-radius:50%;
+    }
+    .jupiter::after{
+      content:'';
+      position:absolute;
+      width:35px;
+      height:25px;
+      background:radial-gradient(ellipse at 30% 30%,#c1440e,#8b2500);
+      border-radius:50%;
+      top:55%;
+      left:60%;
+      box-shadow:inset -3px -3px 8px rgba(0,0,0,0.3);
     }
     .jupiter:hover{
       transform:scale(1.1);
@@ -555,33 +588,101 @@ function gameLoop() {
   // Keep player in bounds
   player.y = Math.max(player.height / 2, Math.min(canvas.height - player.height / 2, player.y));
   
-  // Draw player (spaceship)
+  // Draw player (rocket) with improved graphics
   ctx.save();
   ctx.translate(player.x, player.y);
   
-  // Spaceship body
-  ctx.fillStyle = '#d4a574';
+  // Rocket body with gradient
+  const bodyGradient = ctx.createLinearGradient(-15, 0, 20, 0);
+  bodyGradient.addColorStop(0, '#E8B87A');
+  bodyGradient.addColorStop(0.3, '#d4a574');
+  bodyGradient.addColorStop(0.7, '#c9a846');
+  bodyGradient.addColorStop(1, '#b8865a');
+  ctx.fillStyle = bodyGradient;
+  
+  // Main rocket body (elongated)
   ctx.beginPath();
-  ctx.moveTo(20, 0);
-  ctx.lineTo(-15, -15);
-  ctx.lineTo(-15, 15);
+  ctx.moveTo(25, 0);
+  ctx.lineTo(-15, -12);
+  ctx.lineTo(-15, 12);
   ctx.closePath();
   ctx.fill();
   
-  // Spaceship window
-  ctx.fillStyle = '#87ceeb';
+  // Rocket nose cone
+  const noseGradient = ctx.createLinearGradient(15, 0, 25, 0);
+  noseGradient.addColorStop(0, '#FF6B6B');
+  noseGradient.addColorStop(1, '#FF4444');
+  ctx.fillStyle = noseGradient;
   ctx.beginPath();
-  ctx.arc(5, 0, 6, 0, Math.PI * 2);
+  ctx.moveTo(25, 0);
+  ctx.lineTo(15, -8);
+  ctx.lineTo(15, 8);
+  ctx.closePath();
   ctx.fill();
   
+  // Cockpit window
+  ctx.fillStyle = '#1E3A5A';
+  ctx.beginPath();
+  ctx.ellipse(5, 0, 8, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Window glass
+  ctx.fillStyle = '#87CEEB';
+  ctx.beginPath();
+  ctx.ellipse(5, 0, 6, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Window shine
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  ctx.beginPath();
+  ctx.ellipse(3, -2, 2, 1.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Rocket fins
+  ctx.fillStyle = '#b8865a';
+  // Top fin
+  ctx.beginPath();
+  ctx.moveTo(-15, -12);
+  ctx.lineTo(-25, -20);
+  ctx.lineTo(-15, -5);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Bottom fin
+  ctx.beginPath();
+  ctx.moveTo(-15, 12);
+  ctx.lineTo(-25, 20);
+  ctx.lineTo(-15, 5);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Engine exhaust with glow
+  ctx.shadowColor = '#FF6B35';
+  ctx.shadowBlur = 20;
+  
   // Engine flame
-  ctx.fillStyle = '#ff6b35';
+  const flameGradient = ctx.createLinearGradient(-15, 0, -35, 0);
+  flameGradient.addColorStop(0, '#FFD700');
+  flameGradient.addColorStop(0.3, '#FF6B35');
+  flameGradient.addColorStop(0.7, '#FF4500');
+  flameGradient.addColorStop(1, 'transparent');
+  ctx.fillStyle = flameGradient;
+  
   ctx.beginPath();
   ctx.moveTo(-15, -8);
-  ctx.lineTo(-25 - Math.random() * 5, 0);
+  ctx.lineTo(-35 - Math.random() * 10, 0);
   ctx.lineTo(-15, 8);
   ctx.closePath();
   ctx.fill();
+  
+  ctx.shadowBlur = 0;
+  
+  // Engine glow ring
+  ctx.strokeStyle = 'rgba(255, 107, 53, 0.5)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(-15, 0, 10, 0, Math.PI * 2);
+  ctx.stroke();
   
   ctx.restore();
   

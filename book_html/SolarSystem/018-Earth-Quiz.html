@@ -238,7 +238,7 @@
     .podium-bar.first{
       width:80px;
       height:90px;
-      background:linear-gradient(180deg,#ffd700,#ffaa00);
+      background:linear-gradient(180deg,#e6b800,#cc9900);
     }
     .podium-bar.second{
       width:70px;
@@ -300,15 +300,18 @@
 
   <div class="competition-bar">
     <div class="competitor">
-      <div class="competitor-icon" id="playerCharacter2">👨‍🚀</div>
       <div class="competitor-name" id="playerName2">Ariel</div>
       <div class="competitor-score" id="playerScore">0</div>
     </div>
     <div class="vs-divider">VS</div>
     <div class="competitor">
-      <div class="competitor-icon">🌍</div>
-      <div class="competitor-name">EarthBot</div>
+      <div class="competitor-name">Gaia</div>
       <div class="competitor-score" id="computerScore">0</div>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="competitor">
+      <div class="competitor-name">Terra</div>
+      <div class="competitor-score" id="bot2Score">0</div>
     </div>
   </div>
 
@@ -409,6 +412,7 @@ let score = 0;
 let currentQuestion = 1;
 const totalQuestions = 5;
 let computerScore = 0;
+let bot2Score = 0;
 
 function checkAnswer(element, questionNum, isCorrect) {
   const parent = element.parentElement;
@@ -424,6 +428,13 @@ function checkAnswer(element, questionNum, isCorrect) {
   if (computerCorrect) {
     computerScore++;
     document.getElementById('computerScore').textContent = computerScore;
+  }
+  
+  // Bot2 answers randomly (60% chance of being correct)
+  const bot2Correct = Math.random() < 0.6;
+  if (bot2Correct) {
+    bot2Score++;
+    document.getElementById('bot2Score').textContent = bot2Score;
   }
   
   if (isCorrect) {
@@ -468,41 +479,37 @@ function showScore() {
   
   const userName = localStorage.getItem('userName') || 'Ariel';
   const userCharacter = localStorage.getItem('userCharacter') || '👨‍🚀';
-  const botName = 'EarthBot';
-  const botCharacter = '🌍';
+  const bot1Name = 'Gaia';
+  const bot1Character = '🌍';
+  const bot2Name = 'Terra';
+  const bot2Character = '🌱';
   
-  // Determine podium positions
-  let firstPlace, secondPlace, thirdPlace;
+  // Create competitors array with scores
+  const competitors = [
+    { name: userName, character: userCharacter, score: score, isPlayer: true },
+    { name: bot1Name, character: bot1Character, score: computerScore, isPlayer: false },
+    { name: bot2Name, character: bot2Character, score: bot2Score, isPlayer: false }
+  ];
   
-  if (score > computerScore) {
-    // Player wins
-    firstPlace = { name: userName, character: userCharacter, isPlayer: true };
-    secondPlace = { name: botName, character: botCharacter, isPlayer: false };
-    thirdPlace = { name: botName, character: botCharacter, isPlayer: false };
-    scoreMessage.textContent = '🎉 ' + userName + ' wins the race! Amazing!';
-  } else if (score < computerScore) {
-    // Bot wins
-    firstPlace = { name: botName, character: botCharacter, isPlayer: false };
-    secondPlace = { name: userName, character: userCharacter, isPlayer: true };
-    thirdPlace = { name: userName, character: userCharacter, isPlayer: true };
-    scoreMessage.textContent = '🌍 ' + botName + ' won this time. Try again!';
-  } else {
-    // Tie - player gets first place
-    firstPlace = { name: userName, character: userCharacter, isPlayer: true };
-    secondPlace = { name: botName, character: botCharacter, isPlayer: false };
-    thirdPlace = { name: userName, character: userCharacter, isPlayer: true };
-    scoreMessage.textContent = '🤝 It\'s a tie! ' + userName + ' takes gold!';
-  }
+  // Sort by score (descending)
+  competitors.sort((a, b) => b.score - a.score);
   
   // Update podium
-  document.getElementById('podium-char-1').textContent = firstPlace.character;
-  document.getElementById('podium-name-1').textContent = firstPlace.name;
+  document.getElementById('podium-char-1').textContent = competitors[0].character;
+  document.getElementById('podium-name-1').textContent = competitors[0].name;
   
-  document.getElementById('podium-char-2').textContent = secondPlace.character;
-  document.getElementById('podium-name-2').textContent = secondPlace.name;
+  document.getElementById('podium-char-2').textContent = competitors[1].character;
+  document.getElementById('podium-name-2').textContent = competitors[1].name;
   
-  document.getElementById('podium-char-3').textContent = thirdPlace.character;
-  document.getElementById('podium-name-3').textContent = thirdPlace.name;
+  document.getElementById('podium-char-3').textContent = competitors[2].character;
+  document.getElementById('podium-name-3').textContent = competitors[2].name;
+  
+  // Update message
+  if (competitors[0].isPlayer) {
+    scoreMessage.textContent = '🎉 ' + userName + ' wins the race! Amazing!';
+  } else {
+    scoreMessage.textContent = competitors[0].name + ' won this time. Try again!';
+  }
   
   podium.style.display = 'flex';
   scoreCard.classList.add('show');
@@ -512,6 +519,7 @@ function retryQuiz() {
   score = 0;
   currentQuestion = 1;
   computerScore = 0;
+  bot2Score = 0;
   
   document.querySelectorAll('.quiz-card').forEach((card, index) => {
     card.classList.remove('active');
@@ -530,6 +538,7 @@ function retryQuiz() {
   document.getElementById('scoreCard').classList.remove('show');
   document.getElementById('playerScore').textContent = '0';
   document.getElementById('computerScore').textContent = '0';
+  document.getElementById('bot2Score').textContent = '0';
 }
 
 // Load player info
@@ -539,7 +548,6 @@ function loadPlayerInfo() {
   document.getElementById('playerName').textContent = userName;
   document.getElementById('playerCharacter').textContent = userCharacter;
   document.getElementById('playerName2').textContent = userName;
-  document.getElementById('playerCharacter2').textContent = userCharacter;
 }
 loadPlayerInfo();
 </script>

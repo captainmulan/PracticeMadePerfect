@@ -82,12 +82,21 @@
     .venus{
       width:120px;
       height:120px;
-      background:radial-gradient(circle at 30% 30%,#f5deb3,#e6c87a,#c9a846,#b8865a);
+      background:radial-gradient(circle at 30% 30%,#fff8dc,#f5deb3,#e6c87a,#d4b87a);
       border-radius:50%;
-      box-shadow:0 0 40px rgba(230,200,122,0.4),inset -15px -15px 30px rgba(0,0,0,0.3);
+      box-shadow:0 0 40px rgba(245,222,179,0.5),inset -15px -15px 30px rgba(0,0,0,0.2);
       cursor:pointer;
       transition:transform 0.3s;
       animation:float 4s ease-in-out infinite;
+      position:relative;
+    }
+    .venus::before{
+      content:'';
+      position:absolute;
+      width:100%;
+      height:100%;
+      background:linear-gradient(135deg,rgba(255,255,255,0.3) 0%,transparent 50%,rgba(230,200,122,0.2) 100%);
+      border-radius:50%;
     }
     .venus:hover{
       transform:scale(1.1);
@@ -182,16 +191,39 @@
       font-size:14px;
       margin-bottom:16px;
     }
+    .game-container{
+      display:flex;
+      gap:20px;
+      align-items:flex-start;
+      justify-content:center;
+      flex-wrap:nowrap;
+      max-width:100%;
+    }
     .game-canvas{
       position:relative;
-      height:50vh;
-      min-height:300px;
+      height:60vh;
+      min-height:350px;
       max-height:500px;
+      width:55%;
+      flex-shrink:0;
       background:rgba(255,100,0,0.2);
       border-radius:16px;
       overflow:hidden;
       border:2px solid rgba(230,200,122,0.3);
       touch-action:none;
+    }
+    .game-controls{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      align-items:center;
+      flex-shrink:0;
+      min-width:200px;
+    }
+    .game-lives{
+      font-size:28px;
+      text-align:center;
+      line-height:1.2;
     }
     canvas{
       display:block;
@@ -200,20 +232,18 @@
     }
     .touch-controls{
       display:grid;
-      grid-template-columns:repeat(3,60px);
-      grid-template-rows:repeat(3,60px);
-      gap:8px;
-      justify-content:center;
-      margin-top:12px;
+      grid-template-columns:repeat(3,45px);
+      grid-template-rows:repeat(3,45px);
+      gap:4px;
     }
     .touch-btn{
-      width:60px;
-      height:60px;
-      border-radius:12px;
+      width:45px;
+      height:45px;
+      border-radius:10px;
       background:rgba(255,255,255,0.15);
       border:2px solid rgba(230,200,122,0.3);
       color:#fff;
-      font-size:24px;
+      font-size:20px;
       cursor:pointer;
       user-select:none;
       -webkit-user-select:none;
@@ -259,6 +289,17 @@
     }
     .start-game-btn:hover{
       transform:scale(1.05);
+    }
+    @media (max-width: 768px) {
+      .game-container{
+        flex-wrap:wrap;
+      }
+      .game-canvas{
+        width:100%;
+      }
+      .game-controls{
+        width:100%;
+      }
     }
   </style>
 </head>
@@ -363,19 +404,24 @@
   <div class="planet-game">
     <h2>🎮 Volcano Escape!</h2>
     <p>Climb up the volcano while avoiding lava and rocks!</p>
-    <div class="game-canvas" id="gameCanvas">
-      <canvas id="gameCanvasElement"></canvas>
-    </div>
-    <div class="touch-controls">
-      <button class="touch-btn empty"></button>
-      <button class="touch-btn" id="upBtn">⬆️</button>
-      <button class="touch-btn empty"></button>
-      <button class="touch-btn" id="leftBtn">⬅️</button>
-      <button class="touch-btn empty"></button>
-      <button class="touch-btn" id="rightBtn">➡️</button>
-      <button class="touch-btn empty"></button>
-      <button class="touch-btn" id="downBtn">⬇️</button>
-      <button class="touch-btn empty"></button>
+    <div class="game-container">
+      <div class="game-canvas" id="gameCanvas">
+        <canvas id="gameCanvasElement"></canvas>
+      </div>
+      <div class="game-controls">
+        <div class="game-lives" id="gameLives">❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️</div>
+        <div class="touch-controls">
+          <button class="touch-btn empty"></button>
+          <button class="touch-btn" id="upBtn">⬆️</button>
+          <button class="touch-btn empty"></button>
+          <button class="touch-btn" id="leftBtn">⬅️</button>
+          <button class="touch-btn empty"></button>
+          <button class="touch-btn" id="rightBtn">➡️</button>
+          <button class="touch-btn empty"></button>
+          <button class="touch-btn" id="downBtn">⬇️</button>
+          <button class="touch-btn empty"></button>
+        </div>
+      </div>
     </div>
     <div class="game-score" id="gameScore">Score: 0</div>
     <div class="game-timer" id="gameTimer">Height: 0m</div>
@@ -423,6 +469,7 @@ function checkFact(btn, isCorrect) {
 // Volcano Escape Game - Platform climbing game
 let gameScore = 0;
 let gameHeight = 0;
+let gameLives = 5;
 let animationFrame;
 let isGameRunning = false;
 let canvas, ctx;
@@ -437,31 +484,47 @@ let moveLeft = false;
 let moveRight = false;
 let cameraY = 0;
 
+function updateLivesDisplay() {
+  const hearts = '❤️'.repeat(gameLives);
+  document.getElementById('gameLives').textContent = hearts;
+}
+
+function loseLife() {
+  gameLives--;
+  updateLivesDisplay();
+  
+  if (gameLives <= 0) {
+    endGame();
+  } else {
+    // Reset player position to starting platform
+    const startPlatform = platforms.find(p => p.y === canvas.height - 50);
+    if (startPlatform) {
+      player.x = canvas.width / 2;
+      player.y = startPlatform.y - 20;
+      player.velocityY = 0;
+      player.onGround = true;
+      cameraY = 0;
+    }
+  }
+}
+
 function startGame() {
   if (isGameRunning) return;
   
   canvas = document.getElementById('gameCanvasElement');
   ctx = canvas.getContext('2d');
   
-  // Set canvas size
+  // Set canvas size with proper scaling
   const canvasContainer = document.getElementById('gameCanvas');
-  canvas.width = canvasContainer.clientWidth;
-  canvas.height = canvasContainer.clientHeight;
+  const rect = canvasContainer.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
   
   isGameRunning = true;
   gameScore = 0;
   gameHeight = 0;
+  gameLives = 5;
   cameraY = 0;
-  
-  // Initialize player
-  player = {
-    x: canvas.width / 2,
-    y: canvas.height - 100,
-    width: 30,
-    height: 40,
-    velocityY: 0,
-    onGround: false
-  };
   
   // Generate initial platforms
   platforms = [];
@@ -469,20 +532,32 @@ function startGame() {
   rocks = [];
   
   // Starting platform
+  const startPlatformY = canvas.height - 50;
   platforms.push({
     x: canvas.width / 2 - 50,
-    y: canvas.height - 50,
+    y: startPlatformY,
     width: 100,
     height: 20
   });
   
+  // Initialize player - position exactly on top of platform
+  player = {
+    x: canvas.width / 2,
+    y: startPlatformY - 20, // platform.y - player.height/2
+    width: 30,
+    height: 40,
+    velocityY: 0,
+    onGround: true
+  };
+  
   // Generate more platforms upward
-  for (let i = 1; i < 20; i++) {
-    generatePlatform(canvas.height - 50 - i * 80);
+  for (let i = 1; i < 30; i++) {
+    generatePlatform(canvas.height - 50 - i * 60);
   }
   
   document.getElementById('gameScore').textContent = 'Score: 0';
   document.getElementById('gameTimer').textContent = 'Height: 0m';
+  updateLivesDisplay();
   document.getElementById('startGameBtn').disabled = true;
   document.getElementById('startGameBtn').textContent = '🔥 Playing...';
   
@@ -591,36 +666,42 @@ function gameLoop() {
   // Keep player in bounds
   player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x));
   
-  // Gravity
-  player.velocityY += 0.5;
-  player.y += player.velocityY;
-  
   // Jump
   if ((keys.up || moveUp) && player.onGround) {
     player.velocityY = -12;
     player.onGround = false;
   }
   
-  // Platform collision
+  // Apply gravity only when not on ground
+  if (!player.onGround) {
+    player.velocityY += 0.5;
+    player.y += player.velocityY;
+  }
+  
+  // Platform collision - simple distance-based snapping
   player.onGround = false;
   platforms.forEach(platform => {
-    const platformScreenY = platform.y - cameraY;
+    const playerBottom = player.y + player.height / 2;
+    const platformTop = platform.y;
     
+    // Check if player is within platform horizontal bounds
     if (player.x + player.width / 2 > platform.x &&
-        player.x - player.width / 2 < platform.x + platform.width &&
-        player.y + player.height / 2 > platformScreenY &&
-        player.y + player.height / 2 < platformScreenY + platform.height + 10 &&
-        player.velocityY > 0) {
-      player.y = platformScreenY - player.height / 2;
-      player.velocityY = 0;
-      player.onGround = true;
+        player.x - player.width / 2 < platform.x + platform.width) {
+      
+      // Check if player is close to platform surface (within 10 pixels)
+      const distance = playerBottom - platformTop;
+      if (distance >= -5 && distance <= 10) {
+        // Snap player to platform surface
+        player.y = platformTop - player.height / 2;
+        player.velocityY = 0;
+        player.onGround = true;
+      }
     }
   });
   
-  // Camera follow
-  if (player.y < canvas.height / 2) {
-    cameraY = player.y - canvas.height / 2;
-  }
+  // Camera follow - keep player centered when climbing
+  const targetCameraY = player.y - canvas.height / 2;
+  cameraY += (targetCameraY - cameraY) * 0.1; // Smooth camera follow
   
   // Update height
   gameHeight = Math.max(0, Math.floor(-cameraY / 10));
@@ -643,13 +724,27 @@ function gameLoop() {
   platforms.forEach(platform => {
     const screenY = platform.y - cameraY;
     if (screenY > -50 && screenY < canvas.height + 50) {
-      // Platform
-      ctx.fillStyle = '#8B4513';
+      // Platform base with gradient
+      const gradient = ctx.createLinearGradient(platform.x, screenY, platform.x, screenY + platform.height);
+      gradient.addColorStop(0, '#A0522D');
+      gradient.addColorStop(0.5, '#8B4513');
+      gradient.addColorStop(1, '#654321');
+      ctx.fillStyle = gradient;
       ctx.fillRect(platform.x, screenY, platform.width, platform.height);
       
-      // Platform top
-      ctx.fillStyle = '#A0522D';
-      ctx.fillRect(platform.x, screenY, platform.width, 5);
+      // Platform top (grassy/rocky surface)
+      ctx.fillStyle = '#CD853F';
+      ctx.fillRect(platform.x, screenY, platform.width, 4);
+      
+      // Add texture details
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      for (let i = 0; i < 3; i++) {
+        const detailX = platform.x + Math.random() * platform.width;
+        const detailY = screenY + 5 + Math.random() * (platform.height - 10);
+        ctx.beginPath();
+        ctx.arc(detailX, detailY, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
   });
   
@@ -659,10 +754,21 @@ function gameLoop() {
     const screenY = lavaDrop.y - cameraY;
     
     if (screenY > -50 && screenY < canvas.height + 50) {
-      ctx.fillStyle = '#FF4500';
+      // Lava glow
+      ctx.shadowColor = '#FF4500';
+      ctx.shadowBlur = 15;
+      
+      // Lava drop with gradient
+      const gradient = ctx.createRadialGradient(lavaDrop.x, screenY, 0, lavaDrop.x, screenY, lavaDrop.width / 2);
+      gradient.addColorStop(0, '#FFD700');
+      gradient.addColorStop(0.5, '#FF6347');
+      gradient.addColorStop(1, '#FF4500');
+      ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(lavaDrop.x, screenY, lavaDrop.width / 2, 0, Math.PI * 2);
       ctx.fill();
+      
+      ctx.shadowBlur = 0;
       
       // Check collision with player
       const dx = player.x - lavaDrop.x;
@@ -670,7 +776,9 @@ function gameLoop() {
       const distance = Math.sqrt(dx * dx + dy * dy);
       
       if (distance < player.width / 2 + lavaDrop.width / 2) {
-        endGame();
+        loseLife();
+        // Remove lava drop after collision
+        lavaDrop.y = -1000;
       }
     }
   });
@@ -689,20 +797,49 @@ function gameLoop() {
           player.x - player.width / 2 < rock.x + rock.width &&
           player.y + player.height / 2 > screenY &&
           player.y - player.height / 2 < screenY + rock.height) {
-        endGame();
+        loseLife();
+        // Remove rock after collision
+        rock.y = -1000;
       }
     }
   });
   
-  // Draw player
-  ctx.fillStyle = '#e6c87a';
-  ctx.fillRect(player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
+  // Draw player with improved graphics
+  const playerScreenY = player.y - cameraY;
   
-  // Player face
-  ctx.fillStyle = '#fff';
-  ctx.font = '20px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('👨‍🚀', player.x, player.y + 5);
+  // Body
+  const bodyGradient = ctx.createLinearGradient(player.x - player.width / 2, playerScreenY - player.height / 2, player.x + player.width / 2, playerScreenY + player.height / 2);
+  bodyGradient.addColorStop(0, '#e6c87a');
+  bodyGradient.addColorStop(0.5, '#d4a574');
+  bodyGradient.addColorStop(1, '#c9956a');
+  ctx.fillStyle = bodyGradient;
+  
+  // Rounded body
+  ctx.beginPath();
+  ctx.roundRect(player.x - player.width / 2, playerScreenY - player.height / 2, player.width, player.height, 8);
+  ctx.fill();
+  
+  // Helmet
+  ctx.fillStyle = '#87CEEB';
+  ctx.beginPath();
+  ctx.arc(player.x, playerScreenY - 5, 12, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Helmet shine
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.beginPath();
+  ctx.arc(player.x - 3, playerScreenY - 8, 4, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Visor
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+  ctx.beginPath();
+  ctx.arc(player.x, playerScreenY - 5, 8, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Backpack
+  ctx.fillStyle = '#c9956a';
+  ctx.fillRect(player.x - player.width / 2 - 5, playerScreenY - 5, 8, 20);
   
   // Draw volcano background
   ctx.fillStyle = 'rgba(139, 69, 19, 0.3)';
@@ -715,7 +852,7 @@ function gameLoop() {
   
   // Check if player fell
   if (player.y > canvas.height + 100) {
-    endGame();
+    loseLife();
   }
   
   animationFrame = requestAnimationFrame(gameLoop);
