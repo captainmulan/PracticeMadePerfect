@@ -2,6 +2,31 @@
 
 This directory contains interactive educational ebooks designed for children aged 7-8.
 
+## Solar System Adventure
+
+**Target Age:** 7-8 years  
+**Chapters:** 37
+
+An interactive journey through the solar system: intro arcade game, all planets with texture viewers and minigames, competitive quizzes, and a Planet Memory Parade finale.
+
+**Features:**
+- Standalone HTML with embedded CSS/JS
+- Space theme (`.stars` background, purple/gold palette)
+- Character selection → `localStorage`
+- NASA-style planet textures (`assets/planets/`)
+- Canvas minigames with time + lives HUD
+
+**Detailed structure:** See [SolarSystem/README.md](SolarSystem/README.md)
+
+**Chapter overview:**
+- 001–003: Briefing, Index, Character Selection
+- 004: Solar System Defender (intro game)
+- 005–007: Solar system overview (animation, explained, quiz)
+- 008–034: Sun + 8 planets (each: activity, explained, quiz)
+- 035–037: Conclusion, Planet Memory Parade finale, Congratulations
+
+---
+
 ## Ocean Adventure
 
 **Author:** PracticeMadePerfect  
@@ -19,8 +44,10 @@ A comprehensive journey through the ocean, covering:
 - Standalone HTML files with embedded CSS and JavaScript
 - Ocean-themed dark blue gradient backgrounds with bubble animations
 - Interactive clickable zones and creatures
-- Interactive quizzes with immediate feedback and scoring
+- **Competitive quizzes** with VS bar, one-question-at-a-time flow, and podium finish (aligned with Solar System)
 - Kid-friendly language and responsive design
+
+**Detailed structure:** See [OceanAdventure/README.md](OceanAdventure/README.md)
 
 **Chapter Structure:**
 - 001-002: Introduction (Book Briefing, Index)

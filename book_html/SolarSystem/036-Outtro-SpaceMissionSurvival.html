@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Solar Core Blitz</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:#0f0c29;color:#e0e7ff;min-height:100vh;overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;inset:0;pointer-events:none;z-index:0;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 300px 90px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 700px 110px,#fff,transparent);
+      background-size:900px 200px;animation:twinkle 4s ease-in-out infinite;
+    }
+    @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:.85}}
+    .container{max-width:720px;margin:auto;padding:20px 16px 40px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:14px;}
+    h1{font-size:30px;color:#ff6b6b;margin-bottom:6px;text-shadow:0 0 18px rgba(255,107,107,.45);}
+    .subtitle{color:#c4b5fd;font-size:15px;line-height:1.5;}
+    .hud{
+      display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+      background:#1a1735;border-radius:14px;padding:12px 16px;margin-bottom:12px;
+      border:1px solid rgba(255,255,255,.1);font-weight:bold;font-size:15px;
+    }
+    .game-wrap{
+      position:relative;height:52vh;min-height:340px;max-height:520px;
+      background:#12102a;border-radius:22px;border:2px solid rgba(255,107,107,.4);
+      overflow:hidden;touch-action:none;margin-bottom:14px;
+    }
+    #gameCanvas{display:block;width:100%;height:100%;cursor:crosshair;}
+    .game-overlay{
+      position:absolute;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;text-align:center;
+      background:rgba(8,6,24,.9);padding:20px;z-index:5;
+    }
+    .game-overlay h3{color:#ff6b6b;font-size:24px;margin-bottom:8px;}
+    .game-overlay p{color:#ddd;font-size:14px;line-height:1.55;margin-bottom:14px;max-width:320px;}
+    .overlay-btn{
+      padding:12px 28px;border:none;border-radius:12px;
+      background:linear-gradient(135deg,#ff6b6b,#c92a2a);color:#fff;
+      font-size:16px;font-weight:bold;cursor:pointer;
+    }
+    .fire-btn{
+      display:block;width:100%;max-width:280px;margin:0 auto 14px;
+      padding:16px;border:none;border-radius:16px;
+      background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a0800;
+      font-size:18px;font-weight:bold;cursor:pointer;touch-action:manipulation;
+      box-shadow:0 4px 20px rgba(255,140,0,.4);
+    }
+    .fire-btn:active{transform:scale(.96);}
+    .instructions{
+      background:#1a1735;border-radius:16px;padding:16px;border:1px solid rgba(255,255,255,.1);
+    }
+    .instructions h3{color:#ff6b6b;margin-bottom:8px;font-size:17px;}
+    .instructions li{font-size:14px;line-height:1.6;margin-bottom:6px;margin-left:18px;}
+    .nav-hint{
+      margin-top:18px;text-align:center;font-size:13px;color:#a78bfa;
+      background:rgba(167,139,250,.1);padding:10px;border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>☀️ Solar Core Blitz</h1>
+    <div class="subtitle">Finale action mission! Blast incoming threats before they hit the Sun. Aim with tap or mouse — hold to rapid-fire!</div>
+  </div>
+
+  <div class="hud">
+    <span id="hudScore">Score: 0</span>
+    <span id="hudWave">Wave: 1</span>
+    <span id="hudTimer">⏱ 90s | ❤️❤️❤️</span>
+  </div>
+
+  <div class="game-wrap" id="gameWrap">
+    <canvas id="gameCanvas"></canvas>
+    <div class="game-overlay" id="startOverlay">
+      <h3>🚀 Final Battle!</h3>
+      <p>Asteroids and comets are rushing the Sun! Your orbiting ship auto-aims toward your finger or cursor. Tap and hold to unleash laser blasts!</p>
+      <button class="overlay-btn" id="startBtn" type="button">▶️ Launch Defense</button>
+    </div>
+    <div class="game-overlay" id="endOverlay" style="display:none;">
+      <h3 id="endTitle">💥 Mission Over</h3>
+      <p id="endStats">Score: 0</p>
+      <button class="overlay-btn" id="retryBtn" type="button">🔄 Fight Again</button>
+    </div>
+  </div>
+
+  <button class="fire-btn" id="mobileFire" type="button">🔥 HOLD TO FIRE</button>
+
+  <div class="instructions">
+    <h3>🎮 Controls</h3>
+    <ul>
+      <li><strong>Desktop:</strong> Move mouse to aim — click or hold to fire lasers</li>
+      <li><strong>Mobile:</strong> Touch the arena to aim — hold the 🔥 button to fire</li>
+      <li>Destroy rocks ☄️ and red comets before they reach the Sun</li>
+      <li>Survive <strong>5 waves</strong> or max out your score before time runs out!</li>
+    </ul>
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+
+<script>
+let canvas, ctx, wrap, running = false;
+let score = 0, wave = 1, gameTime = 90, lives = 3;
+let timerId, animId, spawnId;
+let ship = { angle: 0, orbit: 0, r: 58 };
+let aim = { x: 0, y: 0 };
+let sun = { x: 0, y: 0, r: 36, pulse: 0 };
+let enemies = [], lasers = [], particles = [], powerups = [];
+let firing = false, fireCooldown = 0, spawnRate = 900;
+let killsThisWave = 0, killsNeeded = 8;
+
+function resize() {
+  wrap = document.getElementById('gameWrap');
+  canvas = document.getElementById('gameCanvas');
+  if (!wrap || !canvas) return false;
+  const w = wrap.clientWidth || 320;
+  const h = wrap.clientHeight || 340;
+  canvas.width = w;
+  canvas.height = h;
+  if (!ctx) ctx = canvas.getContext('2d');
+  sun.x = canvas.width / 2;
+  sun.y = canvas.height / 2;
+  ship.orbit = Math.min(canvas.width, canvas.height) * 0.22;
+  aim.x = canvas.width / 2;
+  aim.y = canvas.height * 0.2;
+  return true;
+}
+
+function updateHud() {
+  document.getElementById('hudScore').textContent = 'Score: ' + score;
+  document.getElementById('hudWave').textContent = 'Wave: ' + wave;
+  document.getElementById('hudTimer').textContent =
+    '⏱ ' + gameTime + 's | ' + '❤️'.repeat(lives) + '🖤'.repeat(Math.max(0, 3 - lives));
+}
+
+function drawStarfield() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#050414');
+  g.addColorStop(1, '#12102a');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < 45; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.1 + (i % 4) * 0.1) + ')';
+    ctx.beginPath();
+    ctx.arc((i * 137) % canvas.width, (i * 89) % canvas.height, 0.6 + (i % 3) * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function shipPos() {
+  return {
+    x: sun.x + Math.cos(ship.angle) * ship.orbit,
+    y: sun.y + Math.sin(ship.angle) * ship.orbit
+  };
+}
+
+function spawnEnemy() {
+  if (!running) return;
+  const edge = Math.floor(Math.random() * 4);
+  let x, y, vx, vy;
+  const speed = 1.2 + wave * 0.35 + Math.random() * 0.8;
+  const pad = 20;
+  if (edge === 0) { x = Math.random() * canvas.width; y = -pad; }
+  else if (edge === 1) { x = canvas.width + pad; y = Math.random() * canvas.height; }
+  else if (edge === 2) { x = Math.random() * canvas.width; y = canvas.height + pad; }
+  else { x = -pad; y = Math.random() * canvas.height; }
+  const dx = sun.x - x, dy = sun.y - y;
+  const dist = Math.hypot(dx, dy) || 1;
+  vx = (dx / dist) * speed;
+  vy = (dy / dist) * speed;
+  const isComet = Math.random() < 0.22 + wave * 0.03;
+  enemies.push({
+    x, y, vx, vy,
+    r: isComet ? 14 + Math.random() * 8 : 10 + Math.random() * 14,
+    hp: isComet ? 2 : 1,
+    comet: isComet,
+    rot: Math.random() * Math.PI * 2
+  });
+}
+
+function spawnPowerup() {
+  if (!running || Math.random() > 0.012) return;
+  powerups.push({
+    x: 40 + Math.random() * (canvas.width - 80),
+    y: 40 + Math.random() * (canvas.height - 80),
+    r: 14, bob: Math.random() * Math.PI * 2, type: Math.random() < 0.5 ? 'life' : 'time'
+  });
+}
+
+function fireLaser() {
+  const sp = shipPos();
+  const dx = aim.x - sp.x, dy = aim.y - sp.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const speed = 11;
+  lasers.push({
+    x: sp.x, y: sp.y,
+    vx: (dx / dist) * speed, vy: (dy / dist) * speed,
+    life: 50
+  });
+}
+
+function burst(x, y, color, n) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 1 + Math.random() * 4;
+    particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 20 + Math.random() * 15, color });
+  }
+}
+
+function hitSun() {
+  lives--;
+  burst(sun.x, sun.y, '#ff9800', 20);
+  updateHud();
+  if (lives <= 0) endBlitz(false);
+}
+
+function nextWave() {
+  wave++;
+  killsThisWave = 0;
+  killsNeeded = 6 + wave * 2;
+  spawnRate = Math.max(350, spawnRate - 80);
+  clearInterval(spawnId);
+  spawnId = setInterval(spawnEnemy, spawnRate);
+  if (wave > 5) endBlitz(true);
+}
+
+function update() {
+  ship.angle += 0.018;
+  const sp = shipPos();
+  ship.angle = Math.atan2(aim.y - sun.y, aim.x - sun.x);
+
+  if (firing && fireCooldown <= 0) {
+    fireLaser();
+    fireCooldown = 5;
+  }
+  if (fireCooldown > 0) fireCooldown--;
+
+  enemies.forEach((e, ei) => {
+    e.x += e.vx;
+    e.y += e.vy;
+    e.rot += 0.04;
+    const d = Math.hypot(e.x - sun.x, e.y - sun.y);
+    if (d < sun.r + e.r - 4) {
+      enemies.splice(ei, 1);
+      hitSun();
+    }
+  });
+
+  lasers.forEach((l, li) => {
+    l.x += l.vx;
+    l.y += l.vy;
+    l.life--;
+    if (l.life <= 0 || l.x < -10 || l.x > canvas.width + 10 || l.y < -10 || l.y > canvas.height + 10) {
+      lasers.splice(li, 1);
+      return;
+    }
+    enemies.forEach((e, ei) => {
+      if (Math.hypot(l.x - e.x, l.y - e.y) < e.r + 4) {
+        lasers.splice(li, 1);
+        e.hp--;
+        if (e.hp <= 0) {
+          enemies.splice(ei, 1);
+          score += e.comet ? 25 : 10;
+          killsThisWave++;
+          burst(e.x, e.y, e.comet ? '#ff6b6b' : '#aaa', 12);
+          if (killsThisWave >= killsNeeded) nextWave();
+        } else {
+          burst(e.x, e.y, '#ffaa00', 6);
+        }
+      }
+    });
+  });
+
+  powerups.forEach((p, pi) => {
+    p.bob += 0.06;
+    if (Math.hypot(sp.x - p.x, sp.y - (p.y + Math.sin(p.bob) * 4)) < p.r + 18) {
+      if (p.type === 'life') { lives = Math.min(3, lives + 1); }
+      else { gameTime = Math.min(99, gameTime + 8); }
+      powerups.splice(pi, 1);
+      burst(p.x, p.y, '#4ade80', 10);
+      updateHud();
+    }
+  });
+
+  particles.forEach((p, i) => {
+    p.x += p.vx; p.y += p.vy; p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  });
+
+  sun.pulse += 0.05;
+  updateHud();
+}
+
+function draw() {
+  if (!ctx || !canvas.width || !canvas.height) return;
+  drawStarfield();
+
+  ctx.save();
+  const corona = ctx.createRadialGradient(sun.x, sun.y, sun.r * 0.3, sun.x, sun.y, sun.r * 2.2);
+  corona.addColorStop(0, 'rgba(255,200,0,0.35)');
+  corona.addColorStop(1, 'rgba(255,100,0,0)');
+  ctx.fillStyle = corona;
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, sun.r * 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  const sg = ctx.createRadialGradient(sun.x - 8, sun.y - 8, 2, sun.x, sun.y, sun.r + Math.sin(sun.pulse) * 3);
+  sg.addColorStop(0, '#fff176');
+  sg.addColorStop(1, '#ff6b00');
+  ctx.fillStyle = sg;
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, sun.r + Math.sin(sun.pulse) * 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.font = '32px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('☀️', sun.x, sun.y + 2);
+  ctx.restore();
+
+  const sp = shipPos();
+  ctx.save();
+  ctx.translate(sp.x, sp.y);
+  ctx.rotate(Math.atan2(aim.y - sp.y, aim.x - sp.x));
+  ctx.fillStyle = '#667eea';
+  ctx.beginPath();
+  ctx.moveTo(18, 0);
+  ctx.lineTo(-12, -10);
+  ctx.lineTo(-8, 0);
+  ctx.lineTo(-12, 10);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#ff6b6b';
+  ctx.beginPath();
+  ctx.moveTo(-10, 0);
+  ctx.lineTo(-18 - Math.random() * 6, -4);
+  ctx.lineTo(-18 - Math.random() * 6, 4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(255,215,0,0.15)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(sun.x, sun.y, ship.orbit, 0, Math.PI * 2);
+  ctx.stroke();
+
+  enemies.forEach(e => {
+    ctx.save();
+    ctx.translate(e.x, e.y);
+    ctx.rotate(e.rot);
+    if (e.comet) {
+      ctx.fillStyle = '#ff6b6b';
+      ctx.beginPath();
+      ctx.moveTo(e.r, 0);
+      ctx.lineTo(-e.r * 0.6, e.r * 0.5);
+      ctx.lineTo(-e.r * 0.3, 0);
+      ctx.lineTo(-e.r * 0.6, -e.r * 0.5);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.fillStyle = '#8B7355';
+      ctx.beginPath();
+      ctx.arc(0, 0, e.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#6B5344';
+      ctx.beginPath();
+      ctx.arc(-e.r * 0.2, -e.r * 0.2, e.r * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  });
+
+  lasers.forEach(l => {
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 3;
+    ctx.shadowColor = '#ff8c00';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(l.x, l.y);
+    ctx.lineTo(l.x - l.vx * 2, l.y - l.vy * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  });
+
+  powerups.forEach(p => {
+    const py = p.y + Math.sin(p.bob) * 4;
+    ctx.font = '22px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p.type === 'life' ? '❤️' : '⏱️', p.x, py);
+  });
+
+  particles.forEach(p => {
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.life / 30;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+
+  if (running) {
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = '12px Comic Sans MS';
+    ctx.textAlign = 'center';
+    ctx.fillText('Wave ' + wave + ' — ' + killsThisWave + '/' + killsNeeded + ' destroyed', canvas.width / 2, 18);
+  }
+}
+
+function loop() {
+  if (!running) return;
+  update();
+  draw();
+  spawnPowerup();
+  animId = requestAnimationFrame(loop);
+}
+
+function setAim(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  aim.x = (clientX - rect.left) * (canvas.width / rect.width);
+  aim.y = (clientY - rect.top) * (canvas.height / rect.height);
+}
+
+function bindInput() {
+  if (canvas._bound) return;
+  canvas._bound = true;
+  canvas.addEventListener('mousemove', e => setAim(e.clientX, e.clientY));
+  canvas.addEventListener('mousedown', () => { firing = true; });
+  canvas.addEventListener('mouseup', () => { firing = false; });
+  canvas.addEventListener('mouseleave', () => { firing = false; });
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    firing = true;
+    setAim(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    setAim(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { firing = false; });
+
+  const btn = document.getElementById('mobileFire');
+  btn.addEventListener('touchstart', e => { e.preventDefault(); firing = true; }, { passive: false });
+  btn.addEventListener('touchend', () => { firing = false; });
+  btn.addEventListener('mousedown', () => { firing = true; });
+  btn.addEventListener('mouseup', () => { firing = false; });
+}
+
+function startBlitz() {
+  document.getElementById('startOverlay').style.display = 'none';
+  document.getElementById('endOverlay').style.display = 'none';
+  if (!resize()) {
+    requestAnimationFrame(startBlitz);
+    return;
+  }
+  bindInput();
+  running = true;
+  score = 0; wave = 1; gameTime = 90; lives = 3;
+  killsThisWave = 0; killsNeeded = 8; spawnRate = 900;
+  enemies = []; lasers = []; particles = []; powerups = [];
+  firing = false; fireCooldown = 0;
+  updateHud();
+  clearInterval(timerId);
+  clearInterval(spawnId);
+  timerId = setInterval(function() {
+    if (!running) return;
+    gameTime--;
+    updateHud();
+    if (gameTime <= 0) endBlitz(score >= 80);
+  }, 1000);
+  spawnId = setInterval(spawnEnemy, spawnRate);
+  cancelAnimationFrame(animId);
+  loop();
+}
+
+function initPage() {
+  resize();
+  if (ctx) draw();
+  document.getElementById('startBtn').addEventListener('click', startBlitz);
+  document.getElementById('retryBtn').addEventListener('click', startBlitz);
+  window.startBlitz = startBlitz;
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPage);
+} else {
+  initPage();
+}
+
+function endBlitz(won) {
+  running = false;
+  firing = false;
+  clearInterval(timerId);
+  clearInterval(spawnId);
+  cancelAnimationFrame(animId);
+  document.getElementById('endTitle').textContent = won ? '🏆 Solar Hero!' : '💥 Sun Struck!';
+  document.getElementById('endStats').textContent =
+    'Score: ' + score + ' | Wave: ' + wave + ' | Time left: ' + gameTime + 's';
+  document.getElementById('endOverlay').style.display = 'flex';
+}
+
+window.addEventListener('resize', () => { if (canvas) resize(); });
+</script>
+</body>
+</html>

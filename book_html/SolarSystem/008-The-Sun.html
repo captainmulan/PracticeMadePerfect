@@ -453,16 +453,16 @@ function sunLoop() {
   p.x = Math.max(p.w, Math.min(sunCanvas.width - p.w, p.x));
   p.onGround = false;
   sunPlatforms.forEach(pl => {
-    const py = pl.y - sunCamY;
-    if (p.vy >= 0 && p.y + p.h / 2 >= py && p.y + p.h / 2 <= py + pl.h + p.vy + 2 &&
+    if (p.vy >= 0 && p.y + p.h / 2 >= pl.y && p.y + p.h / 2 <= pl.y + pl.h + p.vy + 2 &&
         p.x + p.w / 2 > pl.x && p.x - p.w / 2 < pl.x + pl.width) {
-      p.y = py - p.h / 2;
+      p.y = pl.y - p.h / 2;
       p.vy = 0;
       p.onGround = true;
       if (pl.isSun) endSunClimb(true);
     }
   });
-  if (p.y - sunCamY > sunCanvas.height + 40) {
+  const playerScreenY = p.y - sunCamY;
+  if (playerScreenY > sunCanvas.height + 40) {
     sunLives--;
     updateSunHud();
     if (sunLives <= 0) { endSunClimb(false); return; }
@@ -470,7 +470,7 @@ function sunLoop() {
     sunCamY = Math.max(0, sunCamY - 200);
   }
   const targetCam = Math.max(0, -(p.y - sunCanvas.height * 0.55));
-  if (targetCam > sunCamY) sunCamY += (targetCam - sunCamY) * 0.08;
+  sunCamY += (targetCam - sunCamY) * 0.12;
   sunHeight = Math.max(sunHeight, Math.floor(-sunCamY / 8));
   if (Math.random() < 0.02) sunFlares.push({ x: Math.random() * sunCanvas.width, y: sunCamY - 20, w: 40, h: 12, vx: (Math.random() - 0.5) * 6 });
   sunFlares.forEach(f => { f.x += f.vx; f.y = sunCamY + 80 + Math.sin(Date.now() / 200) * 30; });
