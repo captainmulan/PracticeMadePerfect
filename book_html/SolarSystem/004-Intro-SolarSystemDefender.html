@@ -148,8 +148,17 @@
             max-width: 100%;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            align-items: center;
+            gap: 12px;
             margin-top: 10px;
+            flex-shrink: 0;
+        }
+        .touch-hint {
+            font-size: 12px;
+            color: #c4b5fd;
+            opacity: 0.9;
+            user-select: none;
+            white-space: nowrap;
         }
         .touch-btn {
             width: 80px;
@@ -575,6 +584,145 @@ body.big-game-page:has(.game-shell) .game-stage {
     justify-content: center;
   }
 }
+  
+body.reading-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+
+/* solar-ui-audit-overrides */
+body.reading-page,
+body.reading-page:has(.container),
+body.reading-page:has(.quiz-card),
+body.reading-page:has(.character-grid) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.reading-page:has(.character-grid) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+body.big-planet-page:has(.planet-svg-panel) .svg-viewport,
+body.big-planet-page .svg-viewport {
+  max-height: min(96vw, calc(100svh - 168px)) !important;
+  min-height: min(72vw, calc(100svh - 200px)) !important;
+}
+body.big-planet-page .sun-game .game-canvas-wrap,
+body.big-planet-page .planet-game .game-canvas,
+body.big-planet-page .planet-game .game-canvas-wrap {
+  width: 100% !important;
+  height: min(50vh, 440px) !important;
+  min-height: min(42vh, 300px) !important;
+  max-height: min(56vh, 480px) !important;
+}
+body.big-planet-page .sun-game,
+body.big-planet-page .planet-game {
+  margin-bottom: 8px !important;
+}
+body.big-planet-page .nav-hint {
+  margin-top: 8px !important;
+  padding-bottom: 8px !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+@media (max-width: 639px) {
+  body.big-planet-page .sun-game .game-canvas-wrap,
+  body.big-planet-page .planet-game .game-canvas,
+  body.big-planet-page .planet-game .game-canvas-wrap {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+}
+@media (min-width: 640px) {
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+  }
+}
+body.all-planets-page:has(#solarSvg) .svg-wrap {
+  max-height: min(96vw, calc(100svh - 162px)) !important;
+  min-height: min(43svh, calc(100svh - 168px), 96vw) !important;
+}
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+}
+html:has(body.big-game-page) {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+body.big-game-page:has(.game-shell) .game-shell {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.big-game-page:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+@media (min-width: 768px) {
+  body.big-game-page:has(.game-shell) .stage-wrap {
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+  body.big-game-page:has(.game-shell) .game-stage {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: unset !important;
+    margin: 0 !important;
+  }
+}
+body.big-game-page:has(.fire-btn) .game-wrap {
+  min-height: min(calc(100svh - 178px), 78vh) !important;
+  height: min(calc(100svh - 178px), 78vh) !important;
+  max-height: none !important;
+}
+@media (min-width: 640px) {
+  body:has(.planet-svg-panel) .svg-viewport,
+  body:has(.planet-game) .game-canvas,
+  body:has(.sun-game) .game-canvas-wrap {
+    max-height: none !important;
+  }
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+  }
+}
   </style>
 <script>
 (function (w) {
@@ -642,9 +790,10 @@ body.big-game-page:has(.game-shell) .game-stage {
     </div>
     </div>
 
-    <div class="touch-controls">
-        <button class="touch-btn" id="leftBtn">⬅️</button>
-        <button class="touch-btn" id="rightBtn">➡️</button>
+    <div class="touch-controls" aria-label="Cannon aim controls">
+        <button class="touch-btn" id="leftBtn" type="button" aria-label="Rotate cannon left" title="Rotate left">⬅️</button>
+        <span class="touch-hint">Aim cannon</span>
+        <button class="touch-btn" id="rightBtn" type="button" aria-label="Rotate cannon right" title="Rotate right">➡️</button>
     </div>
 </div>
 
@@ -656,7 +805,8 @@ body.big-game-page:has(.game-shell) .game-stage {
         const height = canvas.height;
         const centerX = width / 2;
         const centerY = height / 2;
-        const sunRadius = 50;
+        const GAME_SCALE = 0.55;
+        const sunRadius = 50 * GAME_SCALE;
 
         // Game state
         let gameRunning = false;
@@ -708,27 +858,29 @@ body.big-game-page:has(.game-shell) .game-stage {
 
         // Draw sun
         function drawSun() {
+            const glowOuter = sunRadius + 80 * GAME_SCALE;
+            const glowMid = sunRadius + 40 * GAME_SCALE;
             // Big glow
-            const glow1 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, sunRadius + 80);
+            const glow1 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowOuter);
             glow1.addColorStop(0, 'rgba(255, 100, 0, 0.3)');
             glow1.addColorStop(0.5, 'rgba(255, 150, 0, 0.1)');
             glow1.addColorStop(1, 'rgba(255, 200, 0, 0)');
             ctx.fillStyle = glow1;
             ctx.beginPath();
-            ctx.arc(centerX, centerY, sunRadius + 80, 0, Math.PI * 2);
+            ctx.arc(centerX, centerY, glowOuter, 0, Math.PI * 2);
             ctx.fill();
             
             // Smaller glow
-            const glow2 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, sunRadius + 40);
+            const glow2 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowMid);
             glow2.addColorStop(0, 'rgba(255, 200, 0, 0.4)');
             glow2.addColorStop(1, 'rgba(255, 200, 0, 0)');
             ctx.fillStyle = glow2;
             ctx.beginPath();
-            ctx.arc(centerX, centerY, sunRadius + 40, 0, Math.PI * 2);
+            ctx.arc(centerX, centerY, glowMid, 0, Math.PI * 2);
             ctx.fill();
             
             // Sun body
-            const sunGrad = ctx.createRadialGradient(centerX - 10, centerY - 10, 10, centerX, centerY, sunRadius);
+            const sunGrad = ctx.createRadialGradient(centerX - 10 * GAME_SCALE, centerY - 10 * GAME_SCALE, 10 * GAME_SCALE, centerX, centerY, sunRadius);
             sunGrad.addColorStop(0, '#fffacd'); // Light yellow
             sunGrad.addColorStop(0.3, '#ffd700'); // Gold
             sunGrad.addColorStop(0.7, '#ffa500'); // Orange
@@ -741,13 +893,13 @@ body.big-game-page:has(.game-shell) .game-stage {
             // Sunspots
             ctx.fillStyle = 'rgba(139, 69, 19, 0.4)';
             ctx.beginPath();
-            ctx.arc(centerX - 20, centerY - 10, 8, 0, Math.PI * 2);
+            ctx.arc(centerX - 20 * GAME_SCALE, centerY - 10 * GAME_SCALE, 8 * GAME_SCALE, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(centerX + 15, centerY + 15, 6, 0, Math.PI * 2);
+            ctx.arc(centerX + 15 * GAME_SCALE, centerY + 15 * GAME_SCALE, 6 * GAME_SCALE, 0, Math.PI * 2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(centerX + 5, centerY - 20, 5, 0, Math.PI * 2);
+            ctx.arc(centerX + 5 * GAME_SCALE, centerY - 20 * GAME_SCALE, 5 * GAME_SCALE, 0, Math.PI * 2);
             ctx.fill();
         }
 
@@ -757,18 +909,24 @@ body.big-game-page:has(.game-shell) .game-stage {
             ctx.translate(centerX, centerY);
             ctx.rotate(cannonAngle + Math.PI / 2);
             
+            const barrelW = 20 * GAME_SCALE;
+            const barrelH = 70 * GAME_SCALE;
+            const tipW = 24 * GAME_SCALE;
+            const tipH = 12 * GAME_SCALE;
+            const baseR = 25 * GAME_SCALE;
+            
             // Cannon barrel
             ctx.fillStyle = '#8b4513'; // Brown
-            ctx.fillRect(-10, -90, 20, 70);
+            ctx.fillRect(-barrelW / 2, -90 * GAME_SCALE, barrelW, barrelH);
             
             // Cannon tip
             ctx.fillStyle = '#654321'; // Darker brown
-            ctx.fillRect(-12, -95, 24, 12);
+            ctx.fillRect(-tipW / 2, -95 * GAME_SCALE, tipW, tipH);
             
             // Cannon base
             ctx.fillStyle = '#555';
             ctx.beginPath();
-            ctx.arc(0, 0, 25, 0, Math.PI * 2);
+            ctx.arc(0, 0, baseR, 0, Math.PI * 2);
             ctx.fill();
             
             ctx.restore();
@@ -778,7 +936,7 @@ body.big-game-page:has(.game-shell) .game-stage {
         function spawnAsteroid() {
             const angle = Math.random() * Math.PI * 2;
             const distance = Math.max(width, height) / 2 + 50;
-            const size = 20 + Math.random() * 30;
+            const size = (20 + Math.random() * 30) * GAME_SCALE;
             const speed = (1 + Math.random() * 1.5) + (level - 1) * 0.3;
             
             asteroids.push({
@@ -797,11 +955,11 @@ body.big-game-page:has(.game-shell) .game-stage {
             lastFireTime = now;
             
             bullets.push({
-                x: centerX + Math.cos(cannonAngle) * 100,
-                y: centerY + Math.sin(cannonAngle) * 100,
+                x: centerX + Math.cos(cannonAngle) * 100 * GAME_SCALE,
+                y: centerY + Math.sin(cannonAngle) * 100 * GAME_SCALE,
                 vx: Math.cos(cannonAngle) * 12,
                 vy: Math.sin(cannonAngle) * 12,
-                radius: 8
+                radius: 8 * GAME_SCALE
             });
         }
 
@@ -834,7 +992,7 @@ body.big-game-page:has(.game-shell) .game-stage {
                     const dist = Math.sqrt(dx*dx + dy*dy);
                     
                     if (dist < b.radius + a.radius) {
-                        createExplosion(a.x, a.y, a.radius > 30 ? '#ff6600' : '#ffaa00');
+                        createExplosion(a.x, a.y, a.radius > 30 * GAME_SCALE ? '#ff6600' : '#ffaa00');
                         score += Math.floor(a.radius);
                         bullets.splice(i, 1);
                         asteroids.splice(j, 1);
@@ -940,7 +1098,7 @@ body.big-game-page:has(.game-shell) .game-stage {
             ctx.shadowBlur = 20;
             bullets.forEach(b => {
                 ctx.beginPath();
-                ctx.arc(b.x, b.y, 8, 0, Math.PI * 2);
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
                 ctx.fill();
             });
             ctx.shadowBlur = 0;
@@ -1069,5 +1227,28 @@ body.big-game-page:has(.game-shell) .game-stage {
         drawCannon();
         resizeCanvas();
     </script>
+<script>
+/* solar-ui-fit-frame */
+(function () {
+  function fitGameFrame() {
+    if (!document.body.classList.contains("big-game-page")) return;
+    const h = window.innerHeight + "px";
+    document.documentElement.style.height = h;
+    document.documentElement.style.minHeight = h;
+    document.body.style.height = h;
+    document.body.style.minHeight = h;
+    const shell = document.querySelector(".game-shell");
+    if (shell) {
+      shell.style.height = h;
+      shell.style.minHeight = h;
+    }
+  }
+  fitGameFrame();
+  window.addEventListener("resize", fitGameFrame);
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(fitGameFrame).observe(document.documentElement);
+  }
+})();
+</script>
 </body>
 </html>

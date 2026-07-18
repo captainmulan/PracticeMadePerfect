@@ -12,7 +12,10 @@
     "migrate-tasks": "python scripts/migrate_taskdefs_to_sqlite.py",
     "migrate-db-index": "python scripts/migrate_db_index_columns.py",
     "generate-task-bundle": "python scripts/generate_tasks_bundle.py",
-    "rebuild-tasks": "python scripts/migrate_taskdefs_to_sqlite.py && python scripts/generate_tasks_bundle.py"
+    "rebuild-tasks": "python scripts/migrate_taskdefs_to_sqlite.py && python scripts/generate_tasks_bundle.py",
+    "audit:solar-ui": "node book_html/SolarSystem/_audit-solar-ui-loop.mjs",
+    "audit:solar-ui:static": "node book_html/SolarSystem/_audit-solar-ui-static.mjs",
+    "audit:solar-ui:visual": "node book_html/SolarSystem/_audit-solar-ui-headless.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",
