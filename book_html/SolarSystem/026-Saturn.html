@@ -511,6 +511,7 @@ function checkFact(btn, isCorrect) {
 let gameScore = 0, gameLives = 3, gameTime = 60, hudTimer;
 let isGameRunning = false, canvas, ctx, animationFrame;
 let ringAngle = 0, ringSpeed = 0.012, hits = 0;
+let scorePopups = [], screenFlash = 0;
 const RING_GAP_CENTER = -Math.PI / 2;
 const RING_GAP_WIDTH = 0.42;
 
@@ -550,7 +551,7 @@ function startGame() {
   const box = document.getElementById('gameCanvas');
   canvas.width = box.clientWidth; canvas.height = box.clientHeight;
   isGameRunning = true; gameScore = 0; gameLives = 3; gameTime = 60;
-  ringAngle = 0; ringSpeed = 0.012; hits = 0;
+  ringAngle = 0; ringSpeed = 0.012; hits = 0; scorePopups = []; screenFlash = 0;
   document.getElementById('gameScore').textContent = 'Score: 0';
   document.getElementById('gameTimer').textContent = formatHudTimeLives();
   startHudTimer();
@@ -568,6 +569,8 @@ function trySnap() {
     gameScore += 10; hits++;
     ringSpeed = Math.min(0.028, ringSpeed + 0.001);
     document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+    scorePopups.push({ x: canvas.width / 2, y: canvas.height * 0.28, t: 45, text: '+10 ✨' });
+    screenFlash = 14;
     if (hits >= 10) endGame(true);
   } else {
     gameLives--;
@@ -623,6 +626,21 @@ function gameLoop() {
   ctx.moveTo(cx, cy + pr + 20); ctx.lineTo(cx - 8, cy + pr + 38); ctx.lineTo(cx + 8, cy + pr + 38); ctx.closePath(); ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '13px Comic Sans MS'; ctx.textAlign = 'center';
   ctx.fillText('Tap when gap is at top!', cx, canvas.height - 16);
+  if (screenFlash > 0) {
+    ctx.fillStyle = 'rgba(74,222,128,' + (screenFlash / 40) + ')';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    screenFlash--;
+  }
+  scorePopups.forEach(p => {
+    p.t--;
+    ctx.globalAlpha = Math.max(0, p.t / 45);
+    ctx.font = 'bold ' + (18 + (45 - p.t) * 0.3) + 'px Comic Sans MS';
+    ctx.fillStyle = '#ffd700';
+    ctx.textAlign = 'center';
+    ctx.fillText(p.text, p.x, p.y - (45 - p.t));
+    ctx.globalAlpha = 1;
+  });
+  scorePopups = scorePopups.filter(p => p.t > 0);
   animationFrame = requestAnimationFrame(gameLoop);
 }
 function endGame(won) {

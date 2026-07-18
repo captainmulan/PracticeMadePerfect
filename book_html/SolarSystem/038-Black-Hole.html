@@ -168,9 +168,13 @@ const StylizedPlanet = {
   drawBlackHole(g, r, clip, svg) {
     const S = this;
     if (svg) { S.ensureBhGlow(svg); S.ensureShading(svg); }
-    g.appendChild(S.el('circle', { r: String(r * 1.15), fill: 'url(#bhGlow)', 'pointer-events': 'none' }));
-    g.appendChild(S.el('circle', { r: String(r * 0.58), fill: '#000000' }));
-    g.appendChild(S.el('circle', { r: String(r * 0.58), fill: 'url(#sphereShade)', 'pointer-events': 'none', opacity: '0.35' }));
+    const ring = S.el('g', { transform: 'rotate(-22)' });
+    ring.appendChild(S.el('ellipse', { rx: String(r * 1.72), ry: String(r * 0.44), fill: 'none', stroke: 'rgba(251,146,60,0.95)', 'stroke-width': '15' }));
+    ring.appendChild(S.el('ellipse', { rx: String(r * 1.52), ry: String(r * 0.36), fill: 'none', stroke: 'rgba(251,191,36,0.45)', 'stroke-width': '5' }));
+    g.appendChild(ring);
+    g.appendChild(S.el('circle', { cx: '46', cy: '-20', r: '15', fill: 'rgba(253,224,71,0.9)', 'pointer-events': 'none' }));
+    g.appendChild(S.el('circle', { r: String(r * 1.12), fill: 'url(#bhGlow)', 'pointer-events': 'none' }));
+    g.appendChild(S.el('circle', { r: String(r * 0.56), fill: '#000000' }));
     g.appendChild(S.el('circle', { r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer' }));
   },
   draw(g, type, r) {
@@ -188,6 +192,7 @@ function makePlanetViewer(planetType, facts, label) {
       this.svg = document.getElementById('planetSvg'); this.g = document.getElementById('planetGroup'); this.info = document.getElementById('planetInfo');
       if (!this.svg || !this.g || !this.info) return;
       const S = this;
+      S.spin = true;
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => { S.spin = !S.spin; btnSpin.textContent = S.spin ? 'Stop' : 'Spin'; btnSpin.classList.toggle('active', !S.spin); };
       btnSpin.textContent = 'Stop';
@@ -200,7 +205,11 @@ function makePlanetViewer(planetType, facts, label) {
       const onUp = e => { if (!S.dragging) return; const p = e.changedTouches ? e.changedTouches[0] : e; if (!S.dragMoved && p && S.hitPlanet(p.clientX, p.clientY)) S.nextFact(); if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; } };
       this.svg.addEventListener('mousedown', onDown); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
       this.svg.addEventListener('touchstart', onDown, { passive: true }); this.svg.addEventListener('touchmove', onMove, { passive: true }); this.svg.addEventListener('touchend', onUp);
-      const loop = () => { if (S.spin) S.ang += 0.012; S.draw(); requestAnimationFrame(loop); }; this.draw(); loop();
+      const loop = () => { if (S.spin) S.ang += 0.022; S.draw(); requestAnimationFrame(loop); };
+      S.spin = true;
+      btnSpin.textContent = 'Stop';
+      this.draw();
+      loop();
     },
     hitPlanet(cx, cy) { const pt = this.svg.createSVGPoint(); pt.x = cx; pt.y = cy; const m = this.g.getScreenCTM(); if (!m) return false; const p = pt.matrixTransform(m.inverse()); return p.x * p.x + p.y * p.y <= 88 * 88; },
     nextFact() { this.fi = (this.fi + 1) % this.facts.length; this.info.innerHTML = '<strong>' + label + '</strong><br>' + this.facts[this.fi]; },
@@ -208,7 +217,14 @@ function makePlanetViewer(planetType, facts, label) {
   };
 }
 const PlanetViewer = makePlanetViewer('blackhole', blackHoleFacts, '🕳️ Black Hole');
-try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
+function initBlackHoleViewer() {
+  try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBlackHoleViewer);
+} else {
+  initBlackHoleViewer();
+}
 
 let canvas, ctx, isGameRunning = false, gameScore = 0, gameTime = 60, gameLives = 3;
 let angle = 0, orbitRadius = 0, minR = 0, maxR = 0, cx = 0, cy = 0;

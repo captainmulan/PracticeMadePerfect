@@ -30,7 +30,8 @@
     .game-canvas{position:relative;height:50vh;min-height:300px;max-height:500px;background:rgba(245,158,11,0.15);border-radius:16px;overflow:hidden;border:2px solid rgba(245,158,11,0.3);touch-action:none;cursor:crosshair;}
     canvas{display:block;width:100%;height:100%;}
     .game-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(8,6,24,0.94);padding:22px 26px;border-radius:16px;text-align:center;border:2px solid #f59e0b;z-index:10;min-width:220px;max-width:90%;}
-    .game-overlay h3{color:#ffd700;margin-bottom:8px;font-size:20px;}
+    .game-overlay.end-popup h3{writing-mode:vertical-rl;text-orientation:upright;letter-spacing:3px;margin:0 auto 14px;line-height:1.2;max-height:70vh;}
+    .game-overlay.end-popup{flex-direction:column;align-items:center;display:flex;}
     .game-overlay p{color:#ddd;margin-bottom:14px;font-size:14px;line-height:1.5;}
     .overlay-btn{padding:10px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
     .planet-svg-panel{background:#12102a;border-radius:20px;border:1px solid rgba(245,158,11,0.45);padding:12px;margin:20px 0;}
@@ -109,7 +110,7 @@
         <p>TAP falling meteors to protect the planet. Don't let them hit the ground!</p>
         <button class="overlay-btn" type="button" onclick="startGame()">▶️ Start</button>
       </div>
-      <div class="game-overlay" id="endScreen" style="display:none;">
+      <div class="game-overlay end-popup" id="endScreen" style="display:none;">
         <h3 id="endTitle">🎉 Great job!</h3>
         <p id="endStats">Score: 0</p>
         <button class="overlay-btn" type="button" onclick="startGame()">🔄 Play Again</button>
@@ -233,16 +234,17 @@ function drawHud() {
 }
 
 function spawnMeteor() {
-  meteors.push({ x: 30 + Math.random() * (canvas.width - 60), y: -20, r: 16 + Math.random() * 10, speed: 0.9 + Math.random() * 0.8, tail: Math.random() * Math.PI });
+  meteors.push({ x: 30 + Math.random() * (canvas.width - 60), y: -20, r: 22 + Math.random() * 8, speed: 0.55 + Math.random() * 0.45, tail: Math.random() * Math.PI });
 }
 
 function drawMeteor(m) {
-  ctx.save(); ctx.translate(m.x, m.y);
-  const grad = ctx.createRadialGradient(-m.r * 0.3, -m.r * 0.3, 0, 0, 0, m.r);
-  grad.addColorStop(0, '#fcd34d'); grad.addColorStop(0.6, '#b45309'); grad.addColorStop(1, '#78350f');
-  ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0, 0, m.r, 0, Math.PI * 2); ctx.fill();
-  ctx.strokeStyle = 'rgba(255,200,100,0.6)'; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.moveTo(0, -m.r); ctx.lineTo(-m.r * 1.5, -m.r * 3); ctx.stroke();
+  ctx.save();
+  ctx.translate(m.x, m.y);
+  ctx.globalAlpha = 1;
+  ctx.font = (m.r * 1.6) + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('☄️', 0, 0);
   ctx.restore();
 }
 

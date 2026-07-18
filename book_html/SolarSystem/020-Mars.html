@@ -199,8 +199,8 @@
       margin-bottom:16px;
     }
     
-    .game-hud-float{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:6px;z-index:6;pointer-events:none;flex-wrap:wrap;}
-    .game-hud-float span{background:rgba(0,0,0,0.65);padding:5px 10px;border-radius:8px;font-size:12px;font-weight:bold;color:#fff;border:1px solid rgba(255,255,255,0.2);}
+    .game-hud-float{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:4px;z-index:6;pointer-events:none;flex-wrap:wrap;}
+    .game-hud-float span{background:rgba(0,0,0,0.65);padding:4px 8px;border-radius:8px;font-size:11px;font-weight:bold;color:#fff;border:1px solid rgba(255,255,255,0.2);}
     .game-canvas{position:relative;}
 
     .game-canvas{
@@ -423,7 +423,7 @@
     <h2>🚀 Mars Rover Explorer!</h2>
     <p class="game-desc">Drive the rover with arrows. Collect rock samples 💎 — avoid craters!</p>
     <div class="game-canvas" id="gameCanvas">
-      <div class="game-hud-float"><span id="gameScore">Samples: 0</span><span id="gameTimer">⏱ 75s | ⛽100% | ❤️❤️❤️</span></div>
+      <div class="game-hud-float"><span id="gameScore">Samples: 0</span><span id="gameTimer">⏱ 90s | ❤️❤️❤️</span><span id="gameEnergy">⛽ 100%</span></div>
       <canvas id="gameCanvasElement"></canvas>
       <div class="game-overlay" id="startScreen">
         <h3>🚀 Mars Rover Explorer!</h3>
@@ -501,7 +501,11 @@ function drawStarfield() {
   }
 }
 function formatHudTimeLives() {
-  return '⏱ ' + gameTime + 's | ⛽' + Math.round(gameFuel) + '% | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
+  return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
+}
+function updateMarsHud() {
+  document.getElementById('gameTimer').textContent = formatHudTimeLives();
+  document.getElementById('gameEnergy').textContent = '⛽ ' + Math.round(gameFuel) + '%';
 }
 function startHudTimer() {
   if (typeof hudTimer !== 'undefined' && hudTimer) clearInterval(hudTimer);
@@ -510,13 +514,13 @@ function startHudTimer() {
     gameTime--;
     const el = document.getElementById('gameTimer');
     if (el) el.textContent = formatHudTimeLives();
+    updateMarsHud();
     if (gameTime <= 0) endGame();
   }, 1000);
 }
 function loseLife() {
   gameLives--;
-  const el = document.getElementById('gameTimer');
-  if (el) el.textContent = formatHudTimeLives();
+  updateMarsHud();
   if (gameLives <= 0) endGame();
 }
 
@@ -534,10 +538,11 @@ let moveUp = false;
 let moveDown = false;
 let moveLeft = false;
 let moveRight = false;
-let gameTime = 75;
+let gameTime = 90;
 let gameLives = 3;
 let hudTimer;
 let marsControlsBound = false;
+let hitCooldown = 0;
 
 function resetMarsControls() {
   keys = {};
@@ -561,8 +566,9 @@ function startGame() {
   isGameRunning = true;
   gameSamples = 0;
   gameFuel = 100;
-  gameTime = 75;
+  gameTime = 90;
   gameLives = 3;
+  hitCooldown = 0;
   
   // Initialize rover
   rover = {
@@ -570,15 +576,15 @@ function startGame() {
     y: canvas.height / 2,
     width: 40,
     height: 30,
-    speed: 3,
-    angle: 0
+    speed: 3.5,
+    facingRight: true
   };
   
-  // Generate rocks and obstacles
+  // Generate rocks and fire hazards
   rocks = [];
   obstacles = [];
   
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 10; i++) {
     rocks.push({
       x: Math.random() * (canvas.width - 40) + 20,
       y: Math.random() * (canvas.height - 40) + 20,
@@ -588,17 +594,17 @@ function startGame() {
     });
   }
   
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 4; i++) {
     obstacles.push({
       x: Math.random() * (canvas.width - 60) + 30,
       y: Math.random() * (canvas.height - 60) + 30,
-      width: 40,
-      height: 30
+      size: 34,
+      active: true
     });
   }
   
   document.getElementById('gameScore').textContent = 'Samples: 0';
-  document.getElementById('gameTimer').textContent = formatHudTimeLives();
+  updateMarsHud();
   startHudTimer();
   
   if (!marsControlsBound) {
@@ -678,9 +684,40 @@ function drawMarsCrater(cx, cy, r) {
   ctx.strokeStyle = 'rgba(60,30,20,0.5)';
   ctx.lineWidth = 2;
   ctx.stroke();
-  ctx.font = (r * 0.7) + 'px serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🔥', cx, cy);
+}
+
+function drawFireObstacle(x, y, size) {
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.font = size + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🔥', x, y);
+  ctx.restore();
+}
+
+function drawRover(x, y, facingRight) {
+  ctx.save();
+  ctx.translate(x, y);
+  if (!facingRight) ctx.scale(-1, 1);
+  ctx.font = '38px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.globalAlpha = 1;
+  ctx.fillText('🚙', 0, 0);
+  ctx.restore();
+}
+
+function drawEnergyBar() {
+  const barY = canvas.height - 16;
+  const barW = canvas.width - 24;
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(12, barY, barW, 10);
+  ctx.fillStyle = gameFuel > 25 ? '#4ade80' : '#f87171';
+  ctx.fillRect(12, barY, barW * (gameFuel / 100), 10);
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(12, barY, barW, 10);
 }
 
 function gameLoop() {
@@ -738,26 +775,26 @@ function gameLoop() {
     ctx.fill();
   }
   
+  if (hitCooldown > 0) hitCooldown--;
+  
   // Update rover position
   let moved = false;
   if (keys.up || moveUp) {
     rover.y -= rover.speed;
-    rover.angle = -Math.PI / 2;
     moved = true;
   }
   if (keys.down || moveDown) {
     rover.y += rover.speed;
-    rover.angle = Math.PI / 2;
     moved = true;
   }
   if (keys.left || moveLeft) {
     rover.x -= rover.speed;
-    rover.angle = Math.PI;
+    rover.facingRight = true;
     moved = true;
   }
   if (keys.right || moveRight) {
     rover.x += rover.speed;
-    rover.angle = 0;
+    rover.facingRight = false;
     moved = true;
   }
   
@@ -765,36 +802,32 @@ function gameLoop() {
   rover.x = Math.max(rover.width / 2, Math.min(canvas.width - rover.width / 2, rover.x));
   rover.y = Math.max(rover.height / 2, Math.min(canvas.height - rover.height / 2, rover.y));
   
-  // Consume fuel when moving
+  // Consume fuel when moving (gentle drain)
   if (moved) {
-    gameFuel -= 0.05;
+    gameFuel -= 0.02;
     if (gameFuel <= 0) {
       loseLife();
       if (!isGameRunning) return;
       gameFuel = 100;
+      hitCooldown = 60;
     }
-    document.getElementById('gameTimer').textContent = formatHudTimeLives();
+    updateMarsHud();
   }
   
-  // Draw obstacles (craters / hazards)
-  obstacles.forEach((obstacle, i) => {
-    const ox = obstacle.x + obstacle.width / 2;
-    const oy = obstacle.y + obstacle.height / 2;
-    ctx.font = (obstacle.width * 0.9) + 'px serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('🔥', ox, oy);
-    
-    if (rover.x + rover.width / 2 > obstacle.x &&
-        rover.x - rover.width / 2 < obstacle.x + obstacle.width &&
-        rover.y + rover.height / 2 > obstacle.y &&
-        rover.y - rover.height / 2 < obstacle.y + obstacle.height) {
-      gameFuel -= 15;
-      if (gameFuel <= 0) {
-        loseLife();
-        if (!isGameRunning) return;
-        gameFuel = 100;
-      }
-      document.getElementById('gameTimer').textContent = formatHudTimeLives();
+  // Fire hazards — one hit = one life, fire disappears
+  obstacles.forEach(obstacle => {
+    if (!obstacle.active || hitCooldown > 0) return;
+    const ox = obstacle.x;
+    const oy = obstacle.y;
+    const hitR = obstacle.size * 0.45 + rover.width / 2;
+    if (Math.hypot(rover.x - ox, rover.y - oy) < hitR) {
+      obstacle.active = false;
+      loseLife();
+      if (!isGameRunning) return;
+      hitCooldown = 90;
+      rover.x = canvas.width / 2;
+      rover.y = canvas.height / 2;
+      updateMarsHud();
     }
   });
   
@@ -822,8 +855,7 @@ function gameLoop() {
         gameSamples++;
         document.getElementById('gameScore').textContent = 'Samples: ' + gameSamples;
         
-        // Check if all rocks collected
-        if (rocks.every(r => r.collected)) {
+        if (gameSamples >= 8) {
           endGame();
           return;
         }
@@ -831,10 +863,12 @@ function gameLoop() {
     }
   });
   
-  // Draw rover (Wall-E style bot)
-  ctx.font = '36px serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🚙', rover.x, rover.y);
+  obstacles.forEach(obstacle => {
+    if (obstacle.active) drawFireObstacle(obstacle.x, obstacle.y, obstacle.size);
+  });
+  
+  drawRover(rover.x, rover.y, rover.facingRight);
+  drawEnergyBar();
   
   animationFrame = requestAnimationFrame(gameLoop);
 }
@@ -847,9 +881,14 @@ function endGame() {
   const endScreen = document.getElementById('endScreen');
   const endTitle = document.getElementById('endTitle');
   const endStats = document.getElementById('endStats');
-  if (endTitle) endTitle.textContent = rocks.every(r => r.collected) ? '🎉 Mission Complete!' : '🔴 Out of Fuel!';
-  if (endStats) endStats.textContent = 'Samples Collected: ' + gameSamples;
-  if (endScreen) endScreen.style.display = 'block';
+  if (endTitle) {
+    if (gameSamples >= 8) endTitle.textContent = '🎉 Mission Complete!';
+    else if (gameTime <= 0) endTitle.textContent = '⏱ Time Up!';
+    else if (gameLives <= 0) endTitle.textContent = '💥 Game Over!';
+    else endTitle.textContent = '🔴 Out of Fuel!';
+  }
+  if (endStats) endStats.textContent = 'Samples: ' + gameSamples + ' | Energy: ' + Math.round(gameFuel) + '%';
+  if (endScreen) endScreen.style.display = 'flex';
 }
 /* Planet texture art — NASA-style sphere maps (Solar System Scope textures, CC BY 4.0) */
 const StylizedPlanet = {
