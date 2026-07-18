@@ -1124,6 +1124,45 @@ body[data-bookshelf-theme="space"] .page-home .shelf-board {
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
+body[data-bookshelf-theme="space"] .page-home .home-login-section,
+body[data-bookshelf-theme="space"] .page-home .home-announcements {
+  background: rgba(15, 12, 41, 0.72);
+  border-color: rgba(102, 126, 234, 0.35);
+  color: #e2e8f0;
+}
+
+body[data-bookshelf-theme="space"] .page-home .home-login-section-title,
+body[data-bookshelf-theme="space"] .page-home .home-announcement-title {
+  color: #f8fafc;
+}
+
+body[data-bookshelf-theme="space"] .page-home .home-login-field,
+body[data-bookshelf-theme="space"] .page-home .home-announcement-body,
+body[data-bookshelf-theme="space"] .page-home .home-announcements-empty,
+body[data-bookshelf-theme="space"] .page-home .home-selection-search-meta {
+  color: #cbd5e1;
+}
+
+body[data-bookshelf-theme="space"] .page-home .home-login-field input,
+body[data-bookshelf-theme="space"] .page-home .home-selection-search-input {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(148, 163, 184, 0.35);
+  color: #f8fafc;
+}
+
+body[data-bookshelf-theme="space"] .page-home .home-announcement-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(102, 126, 234, 0.25);
+}
+
+body[data-bookshelf-theme="space"] .page-home .home-login-mode-tabs {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body[data-bookshelf-theme="space"] .page-home .home-login-mode-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 /* ── Combined practice workspace (hero + editor in one card) ── */
 .practice-workspace.panel {
   padding: 0;

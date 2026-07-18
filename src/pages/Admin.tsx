@@ -30,6 +30,7 @@ import {
 import "./Admin.css";
 import AdminCourses from "./AdminCourses";
 import AdminDataSync from "./AdminDataSync";
+import AdminAnnouncements from "../components/AdminAnnouncements";
 
 const NEW_TASK_DRAFT_ID = "__draft__";
 
@@ -228,7 +229,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
   const [dbError, setDbError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
-  const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books" | "data-sync">("home");
+  const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books" | "announcements" | "data-sync">("home");
   const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
   const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "navButtons" | "homeButton" | "chapterLabel" | "label" | "number" | "bookname" | "title" | "description">("background");
@@ -786,6 +787,9 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
           </button>
           <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
             Book Builder
+          </button>
+          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "announcements" ? "active" : ""}`} onClick={() => setAdminTab("announcements")}>
+            Announcements
           </button>
         </div>
 
@@ -2214,6 +2218,10 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
       ) : adminTab === "data-sync" ? (
         <section className="panel admin-editor admin-section">
           <AdminDataSync />
+        </section>
+      ) : adminTab === "announcements" ? (
+        <section className="panel admin-editor admin-section">
+          <AdminAnnouncements />
         </section>
       ) : (
         <section className="panel admin-editor admin-section">

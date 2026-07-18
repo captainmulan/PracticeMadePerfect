@@ -1,14 +1,16 @@
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
 import type { PracticeTask } from "../data/tasks";
+import type { Announcement } from "../types/announcement";
 
 const DB_NAME = "magic-library-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 // Define our store names
 const STORE_TASKS = "tasks";
 const STORE_COURSES = "courses";
 const STORE_CHAPTERS = "chapters";
 const STORE_STEPS = "steps";
+const STORE_ANNOUNCEMENTS = "announcements";
 
 // IndexedDB helper function to promisify requests
 function promisifyRequest<T>(request: IDBRequest<T>): Promise<T> {
@@ -66,6 +68,16 @@ async function openDb(): Promise<IDBDatabase> {
       stepStore.createIndex("stepIndex", "stepIndex", { unique: false });
     } else {
       console.log("steps store already exists");
+    }
+
+    if (!db.objectStoreNames.contains(STORE_ANNOUNCEMENTS)) {
+      console.log("creating announcements store");
+      const announcementStore = db.createObjectStore(STORE_ANNOUNCEMENTS, { keyPath: "id" });
+      announcementStore.createIndex("publishedAt", "publishedAt", { unique: false });
+      announcementStore.createIndex("isActive", "isActive", { unique: false });
+      announcementStore.createIndex("sortOrder", "sortOrder", { unique: false });
+    } else {
+      console.log("announcements store already exists");
     }
   };
 
@@ -276,6 +288,72 @@ export async function deleteCourse(courseId: string): Promise<void> {
   });
 }
 
+const DEFAULT_ANNOUNCEMENTS: Announcement[] = [
+  {
+    id: "welcome",
+    title: "Welcome to Magic Library",
+    body: "Explore interactive books and courses. New content is added regularly.",
+    publishedAt: new Date().toISOString(),
+    isActive: true,
+    sortOrder: 0,
+  },
+];
+
+function sortAnnouncements(items: Announcement[]): Announcement[] {
+  return items.slice().sort((a, b) => {
+    const orderA = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
+    if (orderA !== orderB) return orderA - orderB;
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+  });
+}
+
+export async function getAnnouncements(): Promise<Announcement[]> {
+  const db = await openDb();
+  if (!db.objectStoreNames.contains(STORE_ANNOUNCEMENTS)) {
+    return [];
+  }
+  const transaction = db.transaction(STORE_ANNOUNCEMENTS, "readonly");
+  const store = transaction.objectStore(STORE_ANNOUNCEMENTS);
+  const items = await promisifyRequest(store.getAll());
+  return sortAnnouncements(items);
+}
+
+export async function getActiveAnnouncements(): Promise<Announcement[]> {
+  const items = await getAnnouncements();
+  return sortAnnouncements(items.filter((item) => item.isActive));
+}
+
+export async function saveAnnouncement(announcement: Announcement): Promise<void> {
+  const db = await openDb();
+  const transaction = db.transaction(STORE_ANNOUNCEMENTS, "readwrite");
+  const store = transaction.objectStore(STORE_ANNOUNCEMENTS);
+  store.put(announcement);
+  await new Promise<void>((resolve, reject) => {
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+}
+
+export async function deleteAnnouncement(announcementId: string): Promise<void> {
+  const db = await openDb();
+  const transaction = db.transaction(STORE_ANNOUNCEMENTS, "readwrite");
+  const store = transaction.objectStore(STORE_ANNOUNCEMENTS);
+  store.delete(announcementId);
+  await new Promise<void>((resolve, reject) => {
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+}
+
+export async function ensureAnnouncementsSeeded(): Promise<void> {
+  const existing = await getAnnouncements();
+  if (existing.length > 0) return;
+  for (const announcement of DEFAULT_ANNOUNCEMENTS) {
+    await saveAnnouncement(announcement);
+  }
+}
+
 // --- Initialization (Load defaults if no data exists) ---
 import { DEFAULT_COURSES } from "../data/courses";
 import { FICTION_BOOK } from "../data/fictionBook";
@@ -361,6 +439,7 @@ export async function migrateFromSqlJs(): Promise<void> {
 
   if (testCourses.length > 0) {
     console.log("Courses already exist, skipping initialization");
+    await ensureAnnouncementsSeeded();
     return;
   }
 
@@ -368,6 +447,7 @@ export async function migrateFromSqlJs(): Promise<void> {
   const loadedFromExport = await loadFromIndexedDbExport();
   if (loadedFromExport) {
     console.log("Initialization complete (from indexeddb-export.json)");
+    await ensureAnnouncementsSeeded();
     return;
   }
 
@@ -389,6 +469,7 @@ export async function migrateFromSqlJs(): Promise<void> {
       await saveCourse(course);
     }
   }
+  await ensureAnnouncementsSeeded();
   console.log("Initialization complete!");
 }
 
@@ -396,10 +477,12 @@ export async function exportIndexedDb(): Promise<Blob> {
   const db = await openDb();
   const courses = await getCourses();
   const tasks = await getTasks();
+  const announcements = await getAnnouncements();
   
   const exportData = {
     courses,
     tasks,
+    announcements,
     exportedAt: new Date().toISOString(),
   };
   
@@ -430,6 +513,14 @@ export async function importIndexedDb(jsonData: string): Promise<void> {
     // Import tasks
     if (data.tasks.length > 0) {
       await saveTasks(data.tasks);
+    }
+
+    if (Array.isArray(data.announcements)) {
+      for (const announcement of data.announcements) {
+        await saveAnnouncement(announcement);
+      }
+    } else {
+      await ensureAnnouncementsSeeded();
     }
     
     console.log(`Imported ${data.courses.length} courses and ${data.tasks.length} tasks`);

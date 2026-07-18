@@ -3472,6 +3472,177 @@ textarea {
   background: #fb923c;
 }
 
+.home-selection-search {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.home-selection-search-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+}
+
+.home-selection-search-meta {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.home-login-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.home-login-section,
+.home-announcements {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.home-login-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.home-login-section-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.home-login-mode-tabs {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+}
+
+.home-login-mode-tab {
+  border: none;
+  background: transparent;
+  color: #475569;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.home-login-mode-tab.active {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.home-login-form {
+  display: grid;
+  gap: 12px;
+}
+
+.home-login-field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.home-login-field input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.home-login-message {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(251, 191, 36, 0.16);
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.home-login-submit {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.home-announcements-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.home-announcement-card {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.home-announcement-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.home-announcement-title {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.home-announcement-date {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.home-announcement-body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
+.home-announcements-empty {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .home-login-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
 .course-book-card .course-book-cover {
   position: relative;
 }

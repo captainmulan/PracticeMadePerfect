@@ -438,7 +438,6 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
 
   return [
     buildShelfRow("Selection", popularItems),
-    { title: "Search", items: [] },
     buildShelfRow("Kid", kidItems),
     buildShelfRow("Fiction", fictionItems),
     { title: "Other", items: [] },
