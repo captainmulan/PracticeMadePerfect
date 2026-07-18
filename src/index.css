@@ -4619,16 +4619,20 @@ textarea {
 .course-quiz-explanation {
   margin: 8px 0 0;
   color: #475569;
-  font-size: 0.82rem;
+  font-size: 1.125rem;
+  line-height: 1.5;
 }
 
 .course-quiz-submit {
   width: auto;
   min-width: 140px;
+  font-size: 1.05rem;
 }
 
 .course-quiz-summary {
   font-weight: 700;
   color: #0f172a;
+  font-size: 1.125rem;
+  line-height: 1.5;
 }
 

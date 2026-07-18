@@ -29,12 +29,20 @@
             align-items: stretch;
             box-sizing: border-box;
         }
+        .stage-wrap {
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .game-stage {
             position: relative;
-            width: 100%;
-            max-width: 100%;
+            width: min(100%, 700px, calc((100vh - 150px) * 7 / 6));
             aspect-ratio: 7 / 6;
-            max-height: min(62vh, 580px);
+            height: auto;
+            max-height: calc(100vh - 150px);
             margin: 0 auto;
             overflow: hidden;
             border: 2px solid rgba(255, 200, 0, 0.5);
@@ -177,7 +185,7 @@
             .btn { padding: 8px 14px; }
             .touch-controls { gap: 12px; margin-top: 6px; }
             .touch-btn { width: 56px; height: 56px; font-size: 22px; }
-            .game-stage { max-height: min(40vh, 260px); }
+            .game-stage { width: min(100%, calc((100vh - 130px) * 7 / 6)); max-height: calc(100vh - 130px); }
         }
     /* solar-desktop-fit */
 html {
@@ -234,15 +242,21 @@ body:has(.game-shell) .ui-container {
   flex-shrink: 0;
   max-width: 100%;
 }
-body:has(.game-shell) .game-stage {
-  flex: 0 1 auto;
-  align-self: stretch;
-  min-height: 0 !important;
-  height: auto !important;
-  max-height: min(62vh, 580px);
+body:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
-  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body:has(.game-shell) .game-stage {
+  flex: 0 0 auto;
+  width: min(100%, 700px, calc((100vh - 140px) * 7 / 6));
+  height: auto;
+  max-height: calc(100vh - 140px);
   aspect-ratio: 7 / 6;
+  margin: 0 auto;
 }
 body:has(.game-shell) .touch-controls {
   flex-shrink: 0;
@@ -381,8 +395,8 @@ body:has(.character-grid) .character-name {
     gap: 10px;
   }
   body:has(.game-shell) .game-stage {
-    max-height: min(68vh, 640px);
-    min-height: min(48vw, 420px);
+    width: min(100%, 700px, calc((100vh - 130px) * 7 / 6));
+    max-height: calc(100vh - 130px);
   }
   body:has(.game-shell) .touch-btn {
     width: 72px;
@@ -486,6 +500,81 @@ body:has(.character-grid) .character-name {
     font-size: 18px;
   }
 }
+/* big-game-first-view — intro defender fills mobile screen */
+body.big-game-page {
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+}
+body.big-game-page .game-shell {
+  min-height: 100%;
+  height: 100%;
+  max-height: none;
+  padding: 4px 6px 6px;
+}
+body.big-game-page .game-shell .title {
+  display: none;
+}
+body.big-game-page .ui-container {
+  margin-bottom: 4px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+}
+body.big-game-page .ui-item {
+  font-size: 13px;
+  padding: 5px 8px;
+}
+body.big-game-page .stage-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+body.big-game-page .game-stage {
+  flex: 1 1 auto;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0;
+}
+body.big-game-page .touch-controls {
+  flex-shrink: 0;
+  margin-top: 4px;
+  gap: 14px;
+}
+body.big-game-page .touch-btn {
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
+}
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+}
+@media (min-width: 768px) {
+  body.big-game-page .game-stage {
+    flex: 0 0 auto;
+    width: min(100%, 700px, calc((100vh - 120px) * 7 / 6)) !important;
+    height: auto !important;
+    max-height: calc(100vh - 120px) !important;
+    aspect-ratio: 7 / 6 !important;
+    margin: 0 auto;
+  }
+  body.big-game-page .stage-wrap {
+    align-items: center;
+    justify-content: center;
+  }
+}
   </style>
 <script>
 (function (w) {
@@ -515,7 +604,7 @@ body:has(.character-grid) .character-name {
 })(window);
 </script>
 </head>
-<body>
+<body class="big-game-page">
 <div class="game-shell">
     <div class="title" style="text-align:center; margin-bottom:10px; font-size:20px; color:#ffd700; font-weight:bold;">
         Before we go to chapter, let's defend the Sun first
@@ -535,6 +624,7 @@ body:has(.character-grid) .character-name {
         </div>
     </div>
 
+    <div class="stage-wrap">
     <div class="game-stage">
     <canvas id="gameCanvas" width="700" height="600"></canvas>
 
@@ -548,6 +638,7 @@ body:has(.character-grid) .character-name {
         <h1>💥 Game Over</h1>
         <p id="finalStats">Final Score: 0 | Level: 1</p>
         <button class="btn" onclick="restartGame()">🔄 Restart</button>
+    </div>
     </div>
     </div>
 
@@ -948,14 +1039,22 @@ body:has(.character-grid) .character-name {
         rightBtn.addEventListener('mouseup', () => moveRight = false);
         rightBtn.addEventListener('mouseleave', () => moveRight = false);
 
-        // Make canvas responsive
+        // Keep canvas buffer at game coordinates; scale crisply to the stage box.
+        const BASE_W = 700;
+        const BASE_H = 600;
+
         function resizeCanvas() {
             const stage = document.querySelector('.game-stage');
             if (!stage) return;
-            const w = stage.clientWidth;
-            const h = stage.clientHeight;
-            canvas.style.width = w + 'px';
-            canvas.style.height = h + 'px';
+            const displayW = stage.clientWidth;
+            const displayH = stage.clientHeight;
+            if (!displayW || !displayH) return;
+            canvas.style.width = displayW + 'px';
+            canvas.style.height = displayH + 'px';
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.round(BASE_W * dpr);
+            canvas.height = Math.round(BASE_H * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
         window.addEventListener('resize', resizeCanvas);
         const stageEl = document.querySelector('.game-stage');

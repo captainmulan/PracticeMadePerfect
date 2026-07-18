@@ -355,6 +355,84 @@ body:has(.character-grid) .character-name {
     font-size: 18px;
   }
 }
+/* big-game-first-view — finale blitz fills mobile screen, scroll for tips */
+body.big-game-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.big-game-page .container {
+  min-height: 100svh;
+  height: auto !important;
+  max-height: none !important;
+  display: flex;
+  flex-direction: column;
+  overflow: visible !important;
+  padding: 6px 8px 24px;
+}
+body.big-game-page .header {
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+body.big-game-page .header h1 {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+body.big-game-page .header .subtitle {
+  font-size: 12px;
+  line-height: 1.35;
+}
+body.big-game-page .hud {
+  margin-bottom: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+body.big-game-page .game-wrap {
+  flex: none;
+  width: 100%;
+  min-height: min(calc(100svh - 178px), 78vh) !important;
+  height: min(calc(100svh - 178px), 78vh) !important;
+  max-height: none !important;
+  margin-bottom: 8px;
+}
+body.big-game-page .fire-btn {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+  padding: 12px;
+  font-size: 15px;
+}
+body.big-game-page .scroll-cue {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 13px;
+  color: #a78bfa;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+body.big-game-page:has(.fire-btn) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.big-game-page:has(.fire-btn) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+body.big-game-page:has(.fire-btn) .game-wrap {
+  flex: none !important;
+  min-height: min(calc(100svh - 178px), 78vh) !important;
+  height: min(calc(100svh - 178px), 78vh) !important;
+  max-height: none !important;
+}
+@media (min-width: 768px) {
+  body.big-game-page .game-wrap {
+    min-height: 480px !important;
+    height: min(58vh, 560px) !important;
+  }
+}
   </style>
 <script>
 (function (w) {
@@ -384,7 +462,7 @@ body:has(.character-grid) .character-name {
 })(window);
 </script>
 </head>
-<body>
+<body class="big-game-page">
 <div class="stars"></div>
 <div class="container">
   <div class="header">
@@ -413,6 +491,8 @@ body:has(.character-grid) .character-name {
   </div>
 
   <button class="fire-btn" id="mobileFire" type="button">🔥 HOLD TO FIRE</button>
+
+  <p class="scroll-cue">↓ Scroll for controls help and navigation tips</p>
 
   <div class="instructions">
     <h3>🎮 Controls</h3>

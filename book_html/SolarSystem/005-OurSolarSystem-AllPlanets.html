@@ -44,7 +44,7 @@
       z-index:0;
     }
     @keyframes twinkle{0%,100%{opacity:0.3;}50%{opacity:0.8;}}
-    .container{max-width:640px;margin:auto;padding:12px 14px 16px;height:100%;display:flex;flex-direction:column;overflow:hidden;
+    .container{max-width:640px;margin:auto;padding:12px 14px 24px;
       position:relative;
       z-index:1;
     }
@@ -67,7 +67,9 @@
       cursor:grab;
       aspect-ratio:1;
       width:100%;
-      max-height:min(52vw, 320px);
+      max-width:min(100%, 520px);
+      height:auto;
+      margin:0 auto;
     }
     .svg-wrap{position:relative;}
     .svg-wrap:active{cursor:grabbing;}
@@ -78,7 +80,9 @@
       pointer-events:none;
       border-radius:16px;
       box-shadow:inset 0 -40px 60px rgba(0,0,0,0.55), inset 0 0 0 3px rgba(255,215,0,0.25);
-      background:linear-gradient(180deg, rgba(10,8,32,0.12) 0%, rgba(10,8,32,0) 35%, rgba(10,8,32,0.45) 100%);
+      background:
+        radial-gradient(ellipse 130% 90% at 50% 118%, transparent 42%, rgba(0,0,0,0.42) 100%),
+        linear-gradient(180deg, rgba(10,8,32,0.12) 0%, rgba(10,8,32,0) 35%, rgba(10,8,32,0.45) 100%);
     }
     #solarSvg{display:block;width:100%;height:100%;min-height:0;}
     .ctrl-row{
@@ -214,6 +218,75 @@
     }
     .planet-hit{cursor:pointer;}
     .planet-hit:hover circle,.planet-hit:hover ellipse{filter:brightness(1.2);}
+    /* All Planets page: big rocket window first, scroll for the rest */
+    body.all-planets-page {
+      overflow-x: hidden;
+      overflow-y: auto !important;
+      height: auto !important;
+      min-height: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+    body.all-planets-page .container {
+      height: auto !important;
+      max-height: none !important;
+      max-width: min(960px, 100%);
+      overflow: visible !important;
+      display: block;
+      padding: 8px 10px 32px;
+    }
+    body.all-planets-page .header {
+      margin-bottom: 8px;
+    }
+    body.all-planets-page .header h1 {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    body.all-planets-page .header .subtitle {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    body.all-planets-page .solar-panel {
+      flex: none;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    body.all-planets-page .svg-wrap {
+      width: min(96vw, 720px);
+      max-width: none;
+      height: min(96vw, calc(100svh - 168px));
+      max-height: min(96vw, calc(100svh - 168px));
+      aspect-ratio: 1;
+      margin: 0 auto;
+    }
+    body.all-planets-page .ctrl-row {
+      margin-top: 10px;
+    }
+    body.all-planets-page .scroll-cue {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 13px;
+      color: #a78bfa;
+      opacity: 0.85;
+    }
+    body.all-planets-page .info-panel,
+    body.all-planets-page .minigame-panel {
+      max-height: none !important;
+      overflow: visible !important;
+    }
+    @media (min-width: 640px) {
+      body.all-planets-page .svg-wrap {
+        width: min(92vw, 820px);
+        height: min(92vw, calc(100svh - 156px));
+        max-height: min(92vw, calc(100svh - 156px));
+      }
+    }
+    @media (min-width: 900px) {
+      body.all-planets-page .svg-wrap {
+        width: min(88vw, 920px);
+        height: min(78vh, 920px);
+        max-height: min(78vh, 920px);
+      }
+    }
   /* solar-desktop-fit */
 html {
   min-height: 100%;
@@ -518,6 +591,42 @@ body:has(.character-grid) .character-name {
     font-size: 18px;
   }
 }
+body.all-planets-page:has(#solarSvg) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.all-planets-page:has(#solarSvg) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.all-planets-page:has(#solarSvg) .solar-panel {
+  flex: none !important;
+}
+body.all-planets-page:has(#solarSvg) .svg-wrap {
+  flex: none !important;
+  max-height: min(96vw, calc(100svh - 168px)) !important;
+}
+body.all-planets-page:has(#solarSvg) .info-panel,
+body.all-planets-page:has(#solarSvg) .nav-hint {
+  display: block !important;
+}
+body.all-planets-page:has(#solarSvg) .minigame-panel {
+  max-height: none !important;
+  overflow: visible !important;
+  flex: none !important;
+}
+@media (min-width: 640px) {
+  body.all-planets-page:has(#solarSvg) .svg-wrap {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+  }
+}
+@media (min-width: 900px) {
+  body.all-planets-page:has(#solarSvg) .svg-wrap {
+    max-height: min(78vh, 920px) !important;
+  }
+}
   </style>
 <script>
 (function (w) {
@@ -547,12 +656,12 @@ body:has(.character-grid) .character-name {
 })(window);
 </script>
 </head>
-<body>
+<body class="all-planets-page">
 <div class="stars"></div>
 <div class="container">
   <div class="header">
     <h1>🪐 Our Solar System</h1>
-    <div class="subtitle">Explore all 8 planets orbiting the Sun — tap one for a cool fact!</div>
+    <div class="subtitle">View from your rocket window — planets near you look bigger! Tap one for a cool fact.</div>
   </div>
 
   <div class="panel solar-panel">
@@ -571,12 +680,13 @@ body:has(.character-grid) .character-name {
       <button class="ctrl-btn" id="btnRotR">↻ Rotate R</button>
       <button class="ctrl-btn" id="btnReset">🔄 Reset</button>
     </div>
+    <p class="scroll-cue">↓ Scroll for planet facts and the ordering game</p>
   </div>
 
   <div class="panel info-panel" id="infoPanel">
-    <h2>🌟 Pick a Planet!</h2>
-    <p>Tap any planet in the solar system above to learn something awesome about it. You can also drag the view to spin around!</p>
-    <p class="hint">💡 Tip: Use the controls to pause, speed up, zoom in, or rotate the whole system.</p>
+    <h2>🚀 Rocket Window View</h2>
+    <p>Look out from your spacecraft! Planets close to the window look bigger, and far-away planets look smaller. Tap a planet to learn a cool fact.</p>
+    <p class="hint">💡 Drag to spin the view, or use Rotate / Zoom controls.</p>
   </div>
 
   <div class="panel minigame-panel">
@@ -859,18 +969,40 @@ const StylizedPlanet = {
   /* ── Solar System Viewer ── */
   const Solar = {
     svg: null, viewG: null, info: null,
-    playing: true, speedIdx: 1, zoom: 0.9, rot: 32, drag: 0,
+    playing: true, speedIdx: 1, zoom: 0.9, rot: 0, drag: 0,
     angles: {}, spinAngles: {}, sunSpin: 0, selected: null,
-    ORBIT_TILT: 0.52,
-    DEFAULT_ROT: 32,
+    ORBIT_TILT: 0.72,
+    DEFAULT_ROT: 0,
     DEFAULT_ZOOM: 0.9,
-    VIEW_CY: 300,
+    VIEW_CY: 318,
     maxOrbitR: 278,
+    CAMERA_NEAR: 0.38,
+    CAMERA_FAR: 1.42,
+    orbitPoint(ang, orbitR, tilt) {
+      const t = tilt || this.ORBIT_TILT;
+      return {
+        px: Math.cos(ang) * orbitR,
+        py: Math.sin(ang) * orbitR * t,
+      };
+    },
+    windowDepth(py, orbitR, tilt) {
+      const span = orbitR * Math.abs(tilt || this.ORBIT_TILT);
+      if (!span) return 0.5;
+      return (py / span + 1) / 2;
+    },
+    windowScale(py, orbitR, tilt) {
+      const near = this.windowDepth(py, orbitR, tilt);
+      return this.CAMERA_NEAR + near * (this.CAMERA_FAR - this.CAMERA_NEAR);
+    },
+    windowOpacity(py, orbitR, tilt) {
+      const near = this.windowDepth(py, orbitR, tilt);
+      return 0.48 + near * 0.52;
+    },
     fitView(){
-      const pad = 36;
+      const pad = 24;
       const half = 300 - pad;
-      const planetPad = 22;
-      const z = Math.min(1.1, half / (this.maxOrbitR + planetPad));
+      const planetPad = 16;
+      const z = Math.min(1.38, half / (this.maxOrbitR + planetPad));
       this.DEFAULT_ZOOM = Math.round(z * 100) / 100;
       if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
     },
@@ -945,7 +1077,7 @@ const StylizedPlanet = {
     },
     showDefaultInfo(){
       this.selected = null;
-      this.info.innerHTML = '<h2>🌟 Pick a Planet!</h2><p>Tap any planet in the solar system above to learn something awesome about it. You can also drag the view to spin around!</p><p class="hint">💡 Tip: Use the controls to pause, speed up, zoom in, or rotate the whole system.</p>';
+      this.info.innerHTML = '<h2>🚀 Rocket Window View</h2><p>Look out from your spacecraft! Planets close to the window look bigger, and far-away planets look smaller. Tap a planet to learn a cool fact.</p><p class="hint">💡 Drag to spin the view, or use Rotate / Zoom controls.</p>';
     },
     drawSun(g){
       StylizedPlanet.draw(g, 'sun', 28);
@@ -957,12 +1089,12 @@ const StylizedPlanet = {
       while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
       const cx = 300, cy = this.VIEW_CY || 300;
       const rot = this.rot + this.drag;
-      const tilt = this.ORBIT_TILT || 0.52;
+      const tilt = this.ORBIT_TILT || 0.72;
       this.viewG.setAttribute('transform', 'translate(' + cx + ',' + cy + ') rotate(' + rot + ') scale(' + this.zoom + ')');
 
       PLANETS.forEach(p => {
         this.viewG.appendChild(el('ellipse', {
-          cx:0, cy:0, rx:p.orbitR, ry:p.orbitR * tilt,
+          cx:0, cy:0, rx:p.orbitR, ry:p.orbitR * Math.abs(tilt),
           fill:'none', stroke:'rgba(255,255,255,0.14)', 'stroke-width':1
         }));
       });
@@ -973,18 +1105,18 @@ const StylizedPlanet = {
 
       const drawList = PLANETS.map(p => {
         const ang = this.angles[p.id];
-        const px = Math.cos(ang) * p.orbitR;
-        const py = Math.sin(ang) * p.orbitR * tilt;
-        const depth = (Math.sin(ang) + 1) / 2;
-        const scale = 0.72 + depth * 0.65;
-        return { p, px, py, scale, ang, depth };
+        const pos = this.orbitPoint(ang, p.orbitR, tilt);
+        const scale = this.windowScale(pos.py, p.orbitR, tilt);
+        const opacity = this.windowOpacity(pos.py, p.orbitR, tilt);
+        return { p, px: pos.px, py: pos.py, scale, opacity, ang };
       }).sort((a, b) => a.py - b.py);
 
-      drawList.forEach(({ p, px, py, scale }) => {
+      drawList.forEach(({ p, px, py, scale, opacity }) => {
         const pg = el('g', {
           class:'planet-hit',
-          transform:'translate(' + px + ',' + py + ') scale(' + scale + ') rotate(' + (this.spinAngles[p.id] || 0) + ')',
-          'data-id': p.id
+          transform:'translate(' + px + ',' + py + ') scale(' + scale.toFixed(3) + ') rotate(' + (this.spinAngles[p.id] || 0) + ')',
+          'data-id': p.id,
+          opacity: opacity.toFixed(3)
         });
         this.drawPlanetBody(pg, p, p.size);
         this.viewG.appendChild(pg);

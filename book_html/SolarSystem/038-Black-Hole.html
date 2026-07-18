@@ -41,7 +41,104 @@
     .svg-controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
     .svg-ctrl{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:13px;font-weight:bold;cursor:pointer;min-height:44px;}
     .svg-ctrl.active{background:linear-gradient(135deg,#f59e0b,#ef4444);}
-  /* solar-desktop-fit */
+  /* big-planet-first-view */
+body.big-planet-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.big-planet-page .container {
+  height: auto !important;
+  max-height: none !important;
+  max-width: min(960px, 100%);
+  overflow: visible !important;
+  display: block;
+  padding: 8px 10px 32px;
+}
+body.big-planet-page .header {
+  margin-bottom: 8px;
+}
+body.big-planet-page .header h1 {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+body.big-planet-page .header .subtitle {
+  font-size: 13px;
+  line-height: 1.35;
+}
+body.big-planet-page .planet-svg-panel {
+  margin: 0 0 10px;
+  padding: 10px;
+}
+body.big-planet-page .svg-viewport {
+  width: min(96vw, 720px);
+  max-width: none;
+  height: min(96vw, calc(100svh - 168px));
+  max-height: min(96vw, calc(100svh - 168px));
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+body.big-planet-page .planet-info-panel {
+  margin-top: 8px;
+}
+body.big-planet-page .svg-controls {
+  margin-top: 10px;
+}
+body.big-planet-page .scroll-cue {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: #a78bfa;
+  opacity: 0.85;
+}
+@media (min-width: 640px) {
+  body.big-planet-page .svg-viewport {
+    width: min(92vw, 820px);
+    height: min(92vw, calc(100svh - 156px));
+    max-height: min(92vw, calc(100svh - 156px));
+  }
+}
+@media (min-width: 900px) {
+  body.big-planet-page .svg-viewport {
+    width: min(88vw, 920px);
+    height: min(78vh, 920px);
+    max-height: min(78vh, 920px);
+  }
+}
+body.big-planet-page:has(.planet-svg-panel) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.big-planet-page:has(.planet-svg-panel) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+  flex: none !important;
+  max-height: min(96vw, calc(100svh - 168px)) !important;
+}
+body.big-planet-page:has(.planet-game) .container,
+body.big-planet-page:has(.sun-game) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+@media (min-width: 640px) {
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+  }
+}
+@media (min-width: 900px) {
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    max-height: min(78vh, 920px) !important;
+  }
+}
+/* solar-desktop-fit */
 html {
   min-height: 100%;
 }
@@ -361,7 +458,7 @@ body:has(.character-grid) .character-name {
 })(window);
 </script>
 </head>
-<body>
+<body class="big-planet-page">
 <div class="stars"></div>
 <div class="container">
   <div class="header">
@@ -385,6 +482,7 @@ body:has(.character-grid) .character-name {
       <button class="svg-ctrl" id="btnRotR" type="button">↻</button>
     </div>
   </div>
+    <p class="scroll-cue">↓ Scroll for facts and the mini-game</p>
 
   <div class="card">
     <h2>🌟 What is a Black Hole?</h2>
@@ -505,7 +603,7 @@ const StylizedPlanet = {
 
 function defaultPlanetZoom(svg, planetType) {
   const w = svg ? (svg.clientWidth || svg.getBoundingClientRect().width || 320) : 320;
-  let zoom = w <= 360 ? 1.72 : w <= 480 ? 1.5 : w <= 640 ? 1.28 : 1.12;
+  let zoom = w <= 360 ? 1.88 : w <= 480 ? 1.65 : w <= 640 ? 1.45 : w <= 820 ? 1.28 : 1.15;
   const fitRadius = 168;
   const bodyR = 88;
   if (planetType === "sun") {

@@ -245,7 +245,8 @@
   color: #0f172a;
   margin: 0;
   padding: 0 0 4px 0;
-  line-height: 1.5;
+  line-height: 1.55;
+  font-size: 1.125rem;
 }
 
 .course-step-quiz .course-quiz-question {
@@ -265,7 +266,8 @@
   width: 100%;
   max-width: 100%;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.25rem;
+  line-height: 1.45;
   color: #0f172a;
   padding: 0;
   margin: 0 0 10px 0;
@@ -284,7 +286,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 10px;
   cursor: pointer;
   color: #0f172a;
@@ -292,6 +294,8 @@
   border: 1px solid #e2e8f0;
   flex-wrap: wrap;
   min-width: 0;
+  font-size: 1.125rem;
+  line-height: 1.45;
 }
 
 .course-step-quiz .course-quiz-option span {
