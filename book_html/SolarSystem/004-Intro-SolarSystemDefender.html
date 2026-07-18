@@ -15,14 +15,31 @@
             background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a2a 100%);
             color: #fff;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+            margin: 0;
+        }
+        .game-shell {
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 8px 10px 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            box-sizing: border-box;
+        }
+        .game-stage {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            min-height: 220px;
         }
         #gameCanvas {
             display: block;
+            width: 100%;
+            height: auto;
+            max-height: min(52vh, 420px);
             border: 2px solid rgba(255, 200, 0, 0.5);
             border-radius: 12px;
             box-shadow: 0 0 30px rgba(255, 200, 0, 0.2);
@@ -56,15 +73,22 @@
         }
         .start-screen, .game-over-screen {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.85);
-            padding: 30px;
-            border-radius: 16px;
+            inset: 8px;
+            margin: auto;
+            width: calc(100% - 16px);
+            max-width: 360px;
+            max-height: calc(100% - 16px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.88);
+            padding: 16px 14px;
+            border-radius: 14px;
             text-align: center;
             border: 2px solid rgba(255, 200, 0, 0.6);
             z-index: 100;
+            box-sizing: border-box;
         }
         .start-screen h1, .game-over-screen h1 {
             color: #ffd700;
@@ -117,25 +141,48 @@
             background: rgba(255, 200, 0, 0.5);
         }
         @media (max-width: 600px) {
-            .ui-item {
-                font-size: 14px;
-                padding: 6px 12px;
-            }
-            .start-screen, .game-over-screen {
-                padding: 20px;
-            }
-            .start-screen h1, .game-over-screen h1 {
-                font-size: 24px;
-            }
-            .touch-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-            }
+            .game-shell { padding: 6px 8px 12px; }
+            .title { font-size: 15px !important; margin-bottom: 6px !important; line-height: 1.35; }
+            .ui-container { margin-bottom: 6px; gap: 4px; }
+            .ui-item { font-size: 12px; padding: 5px 8px; }
+            .start-screen h1, .game-over-screen h1 { font-size: 20px; margin-bottom: 8px; }
+            .start-screen p, .game-over-screen p { font-size: 13px; margin-bottom: 12px; }
+            .btn { padding: 10px 20px; font-size: 16px; }
+            .touch-controls { gap: 12px; margin-top: 6px; }
+            .touch-btn { width: 56px; height: 56px; font-size: 22px; }
+            #gameCanvas { max-height: min(46vh, 320px); }
         }
     </style>
+<script>
+(function (w) {
+  var BOOK = "solarsystem";
+  function key(name) {
+    return "book:" + BOOK + ":" + name;
+  }
+  w.SolarPlayer = {
+    getUserName: function () {
+      return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer";
+    },
+    getCharacter: function () {
+      return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "👨‍🚀";
+    },
+    getCharacterName: function () {
+      return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Astronaut";
+    },
+    save: function (name, character, characterName) {
+      localStorage.setItem(key("userName"), name);
+      localStorage.setItem(key("userCharacter"), character);
+      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userCharacter", character);
+      if (characterName != null) localStorage.setItem("characterName", characterName);
+    },
+  };
+})(window);
+</script>
 </head>
 <body>
+<div class="game-shell">
     <div class="title" style="text-align:center; margin-bottom:10px; font-size:20px; color:#ffd700; font-weight:bold;">
         Before we go to chapter, let's defend the Sun first
     </div>
@@ -154,12 +201,8 @@
         </div>
     </div>
 
+    <div class="game-stage">
     <canvas id="gameCanvas" width="700" height="600"></canvas>
-
-    <div class="touch-controls">
-        <button class="touch-btn" id="leftBtn">⬅️</button>
-        <button class="touch-btn" id="rightBtn">➡️</button>
-    </div>
 
     <div class="start-screen" id="startScreen">
         <h1>🌞 Solar System Defender</h1>
@@ -172,6 +215,13 @@
         <p id="finalStats">Final Score: 0 | Level: 1</p>
         <button class="btn" onclick="restartGame()">🔄 Restart</button>
     </div>
+    </div>
+
+    <div class="touch-controls">
+        <button class="touch-btn" id="leftBtn">⬅️</button>
+        <button class="touch-btn" id="rightBtn">➡️</button>
+    </div>
+</div>
 
     <script>
         // Game setup

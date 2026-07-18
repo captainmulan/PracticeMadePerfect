@@ -3,6 +3,7 @@ import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/
 import { flattenCourseSteps } from "../data/courses";
 import { loadCoursesFromBrowserDb, persistCourse, removeCourse, reloadCourses } from "../utils/sqliteBrowserCourses";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
+import AdminBookUploadPanel from "../components/AdminBookUploadPanel";
 
 function slugify(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -39,6 +40,7 @@ export default function AdminCourses() {
   const [bookSubTab, setBookSubTab] = useState<"general" | "title" | "cover" | "logo">("general");
   const [adminData, setAdminData] = useState<any>(null);
   const [isDeletingBook, setIsDeletingBook] = useState(false);
+  const [showUploadPanel, setShowUploadPanel] = useState(false);
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
@@ -234,6 +236,49 @@ export default function AdminCourses() {
     }
   }
 
+  async function handleImportedBook(course: Course, summary: string, saveImmediately: boolean) {
+    const trimmedId = course.id.trim() || slugify(course.title);
+    const normalized: Course = {
+      ...course,
+      id: trimmedId,
+      chapters: course.chapters.map((chapter) => ({
+        ...chapter,
+        courseId: trimmedId,
+        steps: chapter.steps.map((step) => ({
+          ...step,
+          courseId: trimmedId,
+          chapterId: chapter.id,
+          chapterTitle: chapter.title,
+          chapterIndex: chapter.chapterIndex,
+        })),
+      })),
+    };
+
+    if (saveImmediately) {
+      try {
+        await persistCourse(normalized);
+        const refreshed = await reloadCourses();
+        setBooks(refreshed);
+        setDraftBook(null);
+        setSelectedBookId(normalized.id);
+        setSelectedStepId(normalized.chapters[0]?.steps[0]?.id ?? null);
+        setShowUploadPanel(false);
+        setBookBuilderTab("page");
+        setMessage(summary);
+      } catch (err) {
+        setMessage(String(err));
+      }
+      return;
+    }
+
+    setDraftBook(normalized);
+    setSelectedBookId(null);
+    setSelectedStepId(normalized.chapters[0]?.steps[0]?.id ?? null);
+    setShowUploadPanel(false);
+    setBookBuilderTab("page");
+    setMessage(summary);
+  }
+
   async function handleDeleteBook() {
     const targetBookId = activeBook?.id?.trim();
     if (!targetBookId || draftBook || isDeletingBook) return;
@@ -296,6 +341,7 @@ export default function AdminCourses() {
         </select>
         <div className="admin-book-actions">
           <button type="button" className="footer-button secondary small" onClick={startNewBook}>New Book</button>
+          <button type="button" className="footer-button secondary small" onClick={() => setShowUploadPanel(true)}>Upload New Book</button>
           <button type="button" className="footer-button small" onClick={handleSaveBook}>Save Book</button>
           {!draftBook && activeBook ? (
             <button type="button" className="footer-button secondary small" onClick={handleDeleteBook} disabled={isDeletingBook}>
@@ -306,6 +352,14 @@ export default function AdminCourses() {
       </div>
 
       {message && <div className="admin-course-message">{message}</div>}
+
+      {showUploadPanel ? (
+        <AdminBookUploadPanel
+          books={books}
+          onImported={handleImportedBook}
+          onCancel={() => setShowUploadPanel(false)}
+        />
+      ) : null}
 
       {activeBook ? (
         <div className={`admin-courses-grid ${bookBuilderTab === "book" || bookBuilderTab === "empty-book" ? "admin-courses-grid-book-only" : ""}`}>

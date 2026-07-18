@@ -476,6 +476,107 @@
   min-width: auto !important;
 }
 
+.admin-book-upload {
+  margin-bottom: 14px;
+  padding: 16px;
+  background: #f8fafc;
+}
+
+.admin-book-upload-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-book-upload-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.admin-book-upload-help {
+  margin: 0 0 12px;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.admin-book-upload-help code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  font-size: 0.85em;
+}
+
+.admin-book-upload-actions {
+  margin-bottom: 12px;
+}
+
+.admin-book-upload-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-book-upload-summary {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.admin-book-upload-page-list {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.admin-book-upload-page-list li {
+  display: grid;
+  grid-template-columns: 88px minmax(120px, 1fr) minmax(120px, 1fr);
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+.admin-book-upload-page-list li:last-child {
+  border-bottom: none;
+}
+
+.admin-book-upload-page-list strong {
+  color: #0f172a;
+}
+
+.admin-book-upload-more {
+  font-style: italic;
+}
+
+.admin-book-upload-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-book-upload-error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.admin-book-upload-warning {
+  background: #fffbeb;
+  color: #92400e;
+  margin-bottom: 10px;
+}
+
 .admin-step-meta-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -519,5 +620,16 @@
 @media (max-width: 900px) {
   .admin-courses-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-book-upload-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-book-upload-page-list li {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }
