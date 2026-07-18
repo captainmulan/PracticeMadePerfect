@@ -1,4 +1,5 @@
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
+import { flattenCourseSteps } from "../data/courses";
 
 export interface ParsedHtmlPage {
   fileName: string;
@@ -18,6 +19,124 @@ export interface BookImportPreview {
   existingBookId?: string;
 }
 
+export interface ExistingBookPageMapping {
+  fileName: string;
+  pageNumber: number;
+  stepTitle?: string;
+  matched: boolean;
+}
+
+export interface ExistingBookMergeResult {
+  course: Course;
+  updatedCount: number;
+  unmatchedFiles: string[];
+  mappings: ExistingBookPageMapping[];
+}
+
+function findStepForPageNumber(steps: CourseStep[], pageNumber: number): CourseStep | undefined {
+  const byStepIndex = steps.find((step) => step.stepIndex === pageNumber);
+  if (byStepIndex) return byStepIndex;
+
+  const byZeroBasedIndex = steps.find((step) => step.stepIndex === pageNumber - 1);
+  if (byZeroBasedIndex) return byZeroBasedIndex;
+
+  if (pageNumber >= 1 && pageNumber <= steps.length) {
+    return steps[pageNumber - 1];
+  }
+
+  return undefined;
+}
+
+export function previewExistingBookPageMappings(
+  course: Course,
+  pages: ParsedHtmlPage[],
+): ExistingBookPageMapping[] {
+  const steps = flattenCourseSteps(course);
+
+  return pages.map((page) => {
+    const pageNumber = resolvePageNumberFromFileName(page.fileName) ??
+      (page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : null);
+
+    if (pageNumber == null) {
+      return { fileName: page.fileName, pageNumber: -1, matched: false };
+    }
+
+    const step = findStepForPageNumber(steps, pageNumber);
+    return {
+      fileName: page.fileName,
+      pageNumber,
+      stepTitle: step?.title,
+      matched: Boolean(step && step.stepType === "html"),
+    };
+  });
+}
+
+export function mergeHtmlPagesIntoExistingCourse(
+  course: Course,
+  pages: ParsedHtmlPage[],
+): ExistingBookMergeResult {
+  const steps = flattenCourseSteps(course);
+  const contentUpdates = new Map<string, string>();
+  const titleUpdates = new Map<string, string>();
+  const unmatchedFiles: string[] = [];
+  const mappings: ExistingBookPageMapping[] = [];
+  let updatedCount = 0;
+
+  for (const page of pages) {
+    const pageNumber = resolvePageNumberFromFileName(page.fileName) ??
+      (page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : null);
+
+    if (pageNumber == null) {
+      unmatchedFiles.push(page.fileName);
+      mappings.push({ fileName: page.fileName, pageNumber: -1, matched: false });
+      continue;
+    }
+
+    const step = findStepForPageNumber(steps, pageNumber);
+    if (!step || step.stepType !== "html") {
+      unmatchedFiles.push(page.fileName);
+      mappings.push({ fileName: page.fileName, pageNumber, matched: false });
+      continue;
+    }
+
+    contentUpdates.set(step.id, page.content);
+    if (page.title) {
+      titleUpdates.set(step.id, page.title);
+    }
+    updatedCount += 1;
+    mappings.push({
+      fileName: page.fileName,
+      pageNumber,
+      stepTitle: step.title,
+      matched: true,
+    });
+  }
+
+  const mergedCourse: Course = {
+    ...course,
+    chapters: course.chapters.map((chapter) => ({
+      ...chapter,
+      steps: chapter.steps.map((step) => {
+        if (!contentUpdates.has(step.id)) {
+          return step;
+        }
+        return {
+          ...step,
+          contentHtml: contentUpdates.get(step.id),
+          title: titleUpdates.get(step.id) ?? step.title,
+        };
+      }),
+    })),
+  };
+
+  return {
+    course: mergedCourse,
+    updatedCount,
+    unmatchedFiles,
+    mappings,
+  };
+}
+
 function slugify(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -26,14 +145,31 @@ function humanizeSegment(value: string) {
   return value.replace(/[_\-]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
-export function parseHtmlFileName(fileName: string): { pageNumber: number; sortOrder: number; title: string } {
+export function resolvePageNumberFromFileName(fileName: string): number | null {
   const base = fileName.replace(/\.html?$/i, "");
   const numericMatch = base.match(/^(\d+)/);
   if (numericMatch) {
-    const pageNumber = Number.parseInt(numericMatch[0], 10);
-    const remainder = base.slice(numericMatch[0].length).replace(/^[_\-.]+/, "");
-    const title = humanizeSegment(remainder) || `Page ${pageNumber}`;
-    return { pageNumber, sortOrder: pageNumber, title };
+    return Number.parseInt(numericMatch[0], 10);
+  }
+
+  const pageMatch = base.match(/^page[_\-.]?(\d+)$/i);
+  if (pageMatch) {
+    return Number.parseInt(pageMatch[1], 10);
+  }
+
+  return null;
+}
+
+export function parseHtmlFileName(fileName: string): { pageNumber: number; sortOrder: number; title: string } {
+  const base = fileName.replace(/\.html?$/i, "");
+  const resolved = resolvePageNumberFromFileName(fileName);
+  if (resolved != null) {
+    const numericMatch = base.match(/^(\d+)/);
+    const remainder = numericMatch
+      ? base.slice(numericMatch[0].length).replace(/^[_\-.]+/, "")
+      : base.replace(/^page[_\-.]?\d+/i, "").replace(/^[_\-.]+/, "");
+    const title = humanizeSegment(remainder) || `Page ${resolved}`;
+    return { pageNumber: resolved, sortOrder: resolved, title };
   }
 
   return {

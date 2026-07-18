@@ -229,8 +229,8 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
   const [dbError, setDbError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
-  const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books" | "announcements" | "data-sync">("home");
-  const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
+  const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books" | "data-sync">("home");
+  const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs" | "announcements">("main");
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
   const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "navButtons" | "homeButton" | "chapterLabel" | "label" | "number" | "bookname" | "title" | "description">("background");
   const [isRestoringDb, setIsRestoringDb] = useState(false);
@@ -788,9 +788,6 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
           <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
             Book Builder
           </button>
-          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "announcements" ? "active" : ""}`} onClick={() => setAdminTab("announcements")}>
-            Announcements
-          </button>
         </div>
 
         <div className="admin-top-divider" aria-hidden="true" />
@@ -892,6 +889,9 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
               </button>
               <button type="button" className={`admin-tab ${homeStyleTab === "tabs" ? "active" : ""}`} onClick={() => setHomeStyleTab("tabs")}>
                 Tabs / Submenu
+              </button>
+              <button type="button" className={`admin-tab ${homeStyleTab === "announcements" ? "active" : ""}`} onClick={() => setHomeStyleTab("announcements")}>
+                Announcements
               </button>
             </div>
             {homeStyleTab === "json" && (
@@ -1578,6 +1578,9 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </label>
               </div>
             )}
+            {homeStyleTab === "announcements" && (
+              <AdminAnnouncements />
+            )}
           </div>
         </section>
       ) : adminTab === "wizard-style" ? (
@@ -2218,10 +2221,6 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
       ) : adminTab === "data-sync" ? (
         <section className="panel admin-editor admin-section">
           <AdminDataSync />
-        </section>
-      ) : adminTab === "announcements" ? (
-        <section className="panel admin-editor admin-section">
-          <AdminAnnouncements />
         </section>
       ) : (
         <section className="panel admin-editor admin-section">

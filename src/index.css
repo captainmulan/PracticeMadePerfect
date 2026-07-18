@@ -2894,11 +2894,14 @@ textarea {
 }
 
 .page-home {
-  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100svh - 44px - env(safe-area-inset-bottom, 0px));
   overflow-x: clip;
   max-width: 100%;
   gap: 10px;
   padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
 }
 
 .app-main:has(.page-home) {
@@ -3020,11 +3023,22 @@ textarea {
 }
 
 .home-categories {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
   padding: 10px 10px 12px;
   overflow-x: clip;
   overflow-y: visible;
   max-width: 100%;
   border-radius: 18px;
+  min-height: 0;
+}
+
+.home-categories .container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 .home-categories.panel {
@@ -3252,10 +3266,11 @@ textarea {
 
 .shelf-board {
   height: 20px;
-  background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 50%, #d0d0d0 100%);
+  background: linear-gradient(180deg, #ececec 0%, #d8d8d8 52%, #c4c4c4 100%);
   border-radius: 0 0 4px 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.95), inset 0 -2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
+  opacity: 1;
 }
 
 .shelf-board::before {
@@ -3499,6 +3514,8 @@ textarea {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 16px;
   align-items: start;
+  flex: 1 1 auto;
+  min-height: 100%;
 }
 
 .home-login-section,

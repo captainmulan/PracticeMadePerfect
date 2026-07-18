@@ -146,6 +146,27 @@
       color:#ffd700;
       font-weight:bold;
     }
+    .msg{
+      margin-top:12px;
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:15px;
+      line-height:1.6;
+      text-align:center;
+      flex-shrink:0;
+    }
+    .nav-hint{
+      margin-top:10px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+      flex-shrink:0;
+    }
     @media (max-width: 480px) {
       .container{padding:10px 10px 14px;}
       h1{font-size:22px;margin-bottom:6px;}
@@ -159,9 +180,8 @@
       .character-name{font-size:10px;margin-top:2px;}
     }
   /* solar-desktop-fit */
-html, body {
-  height: 100%;
-  min-height: 0 !important;
+html {
+  min-height: 100%;
 }
 body:has(.character-grid),
 body:has(.game-shell),
@@ -169,9 +189,29 @@ body:has(#solarSvg),
 body:has(.fire-btn),
 body:has(.planet-game) {
   overflow: hidden !important;
+  height: 100%;
+  min-height: 0 !important;
 }
-.container,
+body:not(:has(.character-grid)):not(:has(.game-shell)):not(:has(#solarSvg)):not(:has(.fire-btn)):not(:has(.planet-game)) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100%;
+  height: auto;
+}
 .game-shell {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.character-grid) .container,
+body:has(.game-shell) .container,
+body:has(#solarSvg) .container,
+body:has(.fire-btn) .container,
+body:has(.planet-game) .container {
   height: 100%;
   max-height: 100%;
   display: flex;
@@ -243,7 +283,7 @@ body:has(.fire-btn) .fire-btn {
 }
 body:has(.character-grid) .container {
   padding: 8px 12px 10px;
-  justify-content: center;
+  justify-content: flex-start;
 }
 body:has(.character-grid) .header {
   margin-bottom: 8px;
@@ -267,6 +307,19 @@ body:has(.character-grid) .character-grid {
   margin-bottom: 0;
   flex-shrink: 0;
 }
+body:has(.character-grid) .msg {
+  margin-top: auto;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .nav-hint {
+  margin-top: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
 body:has(.character-grid) .character-option {
   padding: 6px 2px;
   font-size: 26px;
@@ -280,7 +333,7 @@ body:has(.character-grid) .character-name {
 @media (min-width: 640px), (min-width: 768px) and (max-width: 1024px) {
   body:has(.character-grid) .container {
     padding: 6px 12px 8px;
-    justify-content: center;
+    justify-content: flex-start;
   }
   body:has(.character-grid) h1 {
     font-size: 20px;
@@ -499,6 +552,15 @@ body:has(.character-grid) .character-name {
       🐶
       <div class="character-name">Space Pup</div>
     </div>
+  </div>
+
+  <div class="msg">
+    🚀 Pick your explorer and type your name — they will appear in quizzes and games throughout your space adventure!
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
   </div>
 
 </div>

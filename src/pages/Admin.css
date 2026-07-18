@@ -689,6 +689,22 @@
   margin-bottom: 12px;
 }
 
+.admin-book-upload-mode {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.admin-book-upload-mode-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+}
+
 .admin-book-upload-meta {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

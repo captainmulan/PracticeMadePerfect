@@ -66,7 +66,8 @@
       touch-action:none;
       cursor:grab;
       aspect-ratio:1;
-      max-height:280px;
+      width:100%;
+      max-height:min(52vw, 320px);
     }
     .svg-wrap{position:relative;}
     .svg-wrap:active{cursor:grabbing;}
@@ -214,9 +215,8 @@
     .planet-hit{cursor:pointer;}
     .planet-hit:hover circle,.planet-hit:hover ellipse{filter:brightness(1.2);}
   /* solar-desktop-fit */
-html, body {
-  height: 100%;
-  min-height: 0 !important;
+html {
+  min-height: 100%;
 }
 body:has(.character-grid),
 body:has(.game-shell),
@@ -224,9 +224,29 @@ body:has(#solarSvg),
 body:has(.fire-btn),
 body:has(.planet-game) {
   overflow: hidden !important;
+  height: 100%;
+  min-height: 0 !important;
 }
-.container,
+body:not(:has(.character-grid)):not(:has(.game-shell)):not(:has(#solarSvg)):not(:has(.fire-btn)):not(:has(.planet-game)) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100%;
+  height: auto;
+}
 .game-shell {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.character-grid) .container,
+body:has(.game-shell) .container,
+body:has(#solarSvg) .container,
+body:has(.fire-btn) .container,
+body:has(.planet-game) .container {
   height: 100%;
   max-height: 100%;
   display: flex;
@@ -269,15 +289,17 @@ body:has(#solarSvg) .solar-panel {
   padding: 8px;
 }
 body:has(#solarSvg) .svg-wrap {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
-  max-height: none;
-  aspect-ratio: unset;
+  max-height: min(42vh, 360px);
+  aspect-ratio: 1;
+  width: 100%;
   height: auto;
 }
 body:has(#solarSvg) #solarSvg {
   min-height: 0;
   height: 100%;
+  width: 100%;
 }
 body:has(#solarSvg) .minigame-panel {
   flex-shrink: 0;
@@ -403,6 +425,17 @@ body:has(.character-grid) .character-name {
   body:has(#solarSvg) .nav-hint {
     display: none;
   }
+  body:has(#solarSvg) .solar-panel {
+    flex: 0 0 auto;
+  }
+  body:has(#solarSvg) .svg-wrap {
+    max-height: min(38vh, 340px);
+  }
+  body:has(#solarSvg) .minigame-panel {
+    flex: 1 1 auto;
+    max-height: none;
+    min-height: 0;
+  }
   body:has(.fire-btn) .header {
     margin-bottom: 4px;
     flex-shrink: 0;
@@ -524,7 +557,7 @@ body:has(.character-grid) .character-name {
 
   <div class="panel solar-panel">
     <div class="svg-wrap" id="svgWrap">
-      <svg id="solarSvg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-label="Interactive solar system">
+      <svg id="solarSvg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Interactive solar system">
         <defs></defs>
         <g id="viewGroup"></g>
       </svg>
@@ -826,17 +859,28 @@ const StylizedPlanet = {
   /* ── Solar System Viewer ── */
   const Solar = {
     svg: null, viewG: null, info: null,
-    playing: true, speedIdx: 1, zoom: 1.12, rot: 32, drag: 0,
+    playing: true, speedIdx: 1, zoom: 0.9, rot: 32, drag: 0,
     angles: {}, spinAngles: {}, sunSpin: 0, selected: null,
     ORBIT_TILT: 0.52,
     DEFAULT_ROT: 32,
-    DEFAULT_ZOOM: 1.12,
-    VIEW_CY: 318,
+    DEFAULT_ZOOM: 0.9,
+    VIEW_CY: 300,
+    maxOrbitR: 278,
+    fitView(){
+      const pad = 36;
+      const half = 300 - pad;
+      const planetPad = 22;
+      const z = Math.min(1.1, half / (this.maxOrbitR + planetPad));
+      this.DEFAULT_ZOOM = Math.round(z * 100) / 100;
+      if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
+    },
     init(){
       this.svg = document.getElementById('solarSvg');
       this.viewG = document.getElementById('viewGroup');
       this.info = document.getElementById('infoPanel');
       if (!this.svg || !this.viewG) return;
+      this._userZoomed = false;
+      this.fitView();
       const defaults = seedDefaultSolarAngles();
       PLANETS.forEach(p => { this.angles[p.id] = defaults[p.id]; this.spinAngles[p.id] = 0; });
       this.bindControls();
@@ -854,6 +898,7 @@ const StylizedPlanet = {
       });
       this.draw();
       this.loop();
+      window.addEventListener('resize', () => this.fitView());
     },
     bindControls(){
       document.getElementById('btnPlay').onclick = () => {
@@ -864,12 +909,13 @@ const StylizedPlanet = {
         this.speedIdx = (this.speedIdx + 1) % SPEEDS.length;
         document.getElementById('btnSpeed').textContent = '🚀 Speed: ' + SPEEDS[this.speedIdx] + '×';
       };
-      document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.5, this.zoom + 0.2); };
-      document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.5, this.zoom - 0.2); };
+      document.getElementById('btnZoomIn').onclick = () => { this._userZoomed = true; this.zoom = Math.min(2.5, this.zoom + 0.2); };
+      document.getElementById('btnZoomOut').onclick = () => { this._userZoomed = true; this.zoom = Math.max(0.5, this.zoom - 0.2); };
       document.getElementById('btnRotL').onclick = () => { this.rot -= 20; };
       document.getElementById('btnRotR').onclick = () => { this.rot += 20; };
       document.getElementById('btnReset').onclick = () => {
-        this.zoom = this.DEFAULT_ZOOM;
+        this._userZoomed = false;
+        this.fitView();
         this.rot = this.DEFAULT_ROT;
         this.drag = 0;
         this.playing = true; this.speedIdx = 1;
@@ -909,7 +955,7 @@ const StylizedPlanet = {
     },
     draw(){
       while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
-      const cx = 300, cy = this.VIEW_CY || 318;
+      const cx = 300, cy = this.VIEW_CY || 300;
       const rot = this.rot + this.drag;
       const tilt = this.ORBIT_TILT || 0.52;
       this.viewG.setAttribute('transform', 'translate(' + cx + ',' + cy + ') rotate(' + rot + ') scale(' + this.zoom + ')');

@@ -341,7 +341,7 @@ export default function AdminCourses() {
         </select>
         <div className="admin-book-actions">
           <button type="button" className="admin-btn admin-btn-book secondary small" onClick={startNewBook}>New Book</button>
-          <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => setShowUploadPanel(true)}>Upload New Book</button>
+          <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => setShowUploadPanel(true)}>Upload Book</button>
           <button type="button" className="admin-btn admin-btn-book small" onClick={handleSaveBook}>Save Book</button>
           {!draftBook && activeBook ? (
             <button type="button" className="admin-btn admin-btn-book danger small" onClick={handleDeleteBook} disabled={isDeletingBook}>
@@ -356,6 +356,7 @@ export default function AdminCourses() {
       {showUploadPanel ? (
         <AdminBookUploadPanel
           books={books}
+          selectedBookId={selectedBookId}
           onImported={handleImportedBook}
           onCancel={() => setShowUploadPanel(false)}
         />

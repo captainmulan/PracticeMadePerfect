@@ -7,7 +7,13 @@ import HomeCourseShelves from "../components/HomeCourseShelves";
 import HomeLoginPanel from "../components/HomeLoginPanel";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
 
-type HomeShelfTab = "Selection" | "All" | "Login";
+const HOME_SHELF_TABS = [
+  { id: "Search", label: "Search" },
+  { id: "Category", label: "Category" },
+  { id: "Login", label: "Login" },
+] as const;
+
+type HomeShelfTab = (typeof HOME_SHELF_TABS)[number]["id"];
 
 function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["courses"], query: string) {
   const normalized = query.trim().toLowerCase();
@@ -21,21 +27,21 @@ function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["cour
 
 export default function Home() {
   const [heroCollapsed, setHeroCollapsed] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Selection");
-  const [selectedAllSubTab, setSelectedAllSubTab] = useState<"Kid" | "IT" | "Fiction" | "Language">("IT");
+  const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
+  const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<"Kid" | "IT" | "Fiction" | "Language">("IT");
   const [searchQuery, setSearchQuery] = useState("");
   const data = getHomePageData();
   const style = data.style;
   const { courses, loaded: coursesLoaded } = useCourseCatalog();
   const rows = useMemo(() => getHomeCourseShelfRows(courses), [courses]);
-  const isSearching = selectedTab === "Selection" && searchQuery.trim().length > 0;
+  const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
 
   const selectedRow: CourseShelfRow | undefined = useMemo(() => {
     if (selectedTab === "Login") {
       return undefined;
     }
-    if (selectedTab === "All") {
-      return getCourseShelfRowForCategory(courses, selectedAllSubTab);
+    if (selectedTab === "Category") {
+      return getCourseShelfRowForCategory(courses, selectedCategorySubTab);
     }
     if (isSearching) {
       const searchItems = filterCoursesByQuery(courses, searchQuery)
@@ -45,7 +51,7 @@ export default function Home() {
       return { title: "Selection", items: searchItems };
     }
     return rows.find((row) => row.title === "Selection") || rows[0];
-  }, [courses, isSearching, rows, searchQuery, selectedAllSubTab, selectedTab]);
+  }, [courses, isSearching, rows, searchQuery, selectedCategorySubTab, selectedTab]);
 
   return (
     <div className="page-content page-home">
@@ -112,12 +118,12 @@ export default function Home() {
         <div className="rocket-container"></div>
         <div className="container">
           <nav className="home-tabs">
-            {(["Selection", "All", "Login"] as const).map((tabTitle) => (
+            {HOME_SHELF_TABS.map((tab) => (
               <button
-                key={tabTitle}
+                key={tab.id}
                 type="button"
-                className={`home-tab-button ${selectedTab === tabTitle ? "active" : ""}`}
-                onClick={() => setSelectedTab(tabTitle)}
+                className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
+                onClick={() => setSelectedTab(tab.id)}
                 style={{
                   flex: 1,
                   minWidth: 0,
@@ -128,12 +134,12 @@ export default function Home() {
                   textOverflow: "ellipsis",
                 }}
               >
-                {tabTitle}
+                {tab.label}
               </button>
             ))}
           </nav>
 
-          {selectedTab === "Selection" && (
+          {selectedTab === "Search" && (
             <div className="home-selection-search">
               <input
                 className="home-selection-search-input"
@@ -151,21 +157,21 @@ export default function Home() {
             </div>
           )}
 
-          {selectedTab === "All" && (
+          {selectedTab === "Category" && (
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
               {(["Kid", "IT", "Fiction", "Language"] as const).map((category) => (
                 <button
                   key={category}
                   type="button"
-                  className={`tab ${selectedAllSubTab === category ? "active" : ""}`}
-                  onClick={() => setSelectedAllSubTab(category)}
+                  className={`tab ${selectedCategorySubTab === category ? "active" : ""}`}
+                  onClick={() => setSelectedCategorySubTab(category)}
                   style={{
                     padding: "6px 10px",
                     borderRadius: "999px",
-                    background: selectedAllSubTab === category
+                    background: selectedCategorySubTab === category
                       ? (style?.tabs?.activeBackgroundColor ?? "#0f172a")
                       : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
-                    color: selectedAllSubTab === category ? (style?.tabs?.activeColor ?? "#ffffff") : (style?.tabs?.color ?? "#334155"),
+                    color: selectedCategorySubTab === category ? (style?.tabs?.activeColor ?? "#ffffff") : (style?.tabs?.color ?? "#334155"),
                   }}
                 >
                   {category}

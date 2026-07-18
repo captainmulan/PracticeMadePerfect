@@ -21,20 +21,20 @@
         }
         .game-shell {
             width: 100%;
-            max-width: 700px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 8px 10px 16px;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;
             box-sizing: border-box;
         }
         .game-stage {
             position: relative;
             width: 100%;
-            max-width: 700px;
-            aspect-ratio: 700 / 600;
-            max-height: 300px;
+            max-width: 100%;
+            aspect-ratio: 7 / 6;
+            max-height: min(62vh, 580px);
             margin: 0 auto;
             overflow: hidden;
             border: 2px solid rgba(255, 200, 0, 0.5);
@@ -54,7 +54,7 @@
         }
         .ui-container {
             width: 100%;
-            max-width: 700px;
+            max-width: 100%;
             padding: 10px;
             display: flex;
             justify-content: space-between;
@@ -137,7 +137,7 @@
         }
         .touch-controls {
             width: 100%;
-            max-width: 700px;
+            max-width: 100%;
             display: flex;
             justify-content: center;
             gap: 20px;
@@ -180,9 +180,8 @@
             .game-stage { max-height: min(40vh, 260px); }
         }
     /* solar-desktop-fit */
-html, body {
-  height: 100%;
-  min-height: 0 !important;
+html {
+  min-height: 100%;
 }
 body:has(.character-grid),
 body:has(.game-shell),
@@ -190,9 +189,29 @@ body:has(#solarSvg),
 body:has(.fire-btn),
 body:has(.planet-game) {
   overflow: hidden !important;
+  height: 100%;
+  min-height: 0 !important;
 }
-.container,
+body:not(:has(.character-grid)):not(:has(.game-shell)):not(:has(#solarSvg)):not(:has(.fire-btn)):not(:has(.planet-game)) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100%;
+  height: auto;
+}
 .game-shell {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.character-grid) .container,
+body:has(.game-shell) .container,
+body:has(#solarSvg) .container,
+body:has(.fire-btn) .container,
+body:has(.planet-game) .container {
   height: 100%;
   max-height: 100%;
   display: flex;
@@ -202,6 +221,9 @@ body:has(.planet-game) {
 }
 body:has(.game-shell) .game-shell {
   padding: 4px 8px 6px;
+  max-width: 100%;
+  width: 100%;
+  align-items: stretch;
 }
 body:has(.game-shell) .game-shell .title {
   display: none;
@@ -210,18 +232,22 @@ body:has(.game-shell) .ui-container {
   margin-bottom: 4px;
   padding: 4px 8px;
   flex-shrink: 0;
+  max-width: 100%;
 }
 body:has(.game-shell) .game-stage {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  align-self: stretch;
   min-height: 0 !important;
   height: auto !important;
-  max-height: none !important;
+  max-height: min(62vh, 580px);
   width: 100%;
+  max-width: 100%;
   aspect-ratio: 7 / 6;
 }
 body:has(.game-shell) .touch-controls {
   flex-shrink: 0;
   margin-top: 4px;
+  max-width: 100%;
 }
 body:has(#solarSvg) .container {
   padding: 8px 12px 10px;
@@ -353,6 +379,15 @@ body:has(.character-grid) .character-name {
   }
   body:has(.game-shell) .touch-controls {
     gap: 10px;
+  }
+  body:has(.game-shell) .game-stage {
+    max-height: min(68vh, 640px);
+    min-height: min(48vw, 420px);
+  }
+  body:has(.game-shell) .touch-btn {
+    width: 72px;
+    height: 72px;
+    font-size: 28px;
   }
   body:has(#solarSvg) .header {
     margin-bottom: 6px;
@@ -923,6 +958,10 @@ body:has(.character-grid) .character-name {
             canvas.style.height = h + 'px';
         }
         window.addEventListener('resize', resizeCanvas);
+        const stageEl = document.querySelector('.game-stage');
+        if (stageEl && typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(resizeCanvas).observe(stageEl);
+        }
 
         // Initialize
         initStars();
