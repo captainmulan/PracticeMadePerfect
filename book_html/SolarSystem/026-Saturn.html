@@ -335,42 +335,275 @@
     .game-canvas{position:relative;}
 
   /* solar-desktop-fit */
-@media (min-width: 640px) {
-  .planet-svg-panel .svg-viewport,
-  .svg-viewport {
-    max-height: 240px !important;
-    min-height: 0 !important;
+html, body {
+  height: 100%;
+  min-height: 0 !important;
+}
+body:has(.character-grid),
+body:has(.game-shell),
+body:has(#solarSvg),
+body:has(.fire-btn),
+body:has(.planet-game) {
+  overflow: hidden !important;
+}
+.container,
+.game-shell {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.game-shell) .game-shell {
+  padding: 4px 8px 6px;
+}
+body:has(.game-shell) .game-shell .title {
+  display: none;
+}
+body:has(.game-shell) .ui-container {
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+body:has(.game-shell) .game-stage {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100%;
+  aspect-ratio: 7 / 6;
+}
+body:has(.game-shell) .touch-controls {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+body:has(#solarSvg) .container {
+  padding: 8px 12px 10px;
+}
+body:has(#solarSvg) .solar-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+  padding: 8px;
+}
+body:has(#solarSvg) .svg-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: unset;
+  height: auto;
+}
+body:has(#solarSvg) #solarSvg {
+  min-height: 0;
+  height: 100%;
+}
+body:has(#solarSvg) .minigame-panel {
+  flex-shrink: 0;
+  max-height: 34%;
+  overflow-y: auto;
+}
+body:has(.fire-btn) .container {
+  padding: 4px 12px 6px;
+}
+body:has(.fire-btn) .game-wrap {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+}
+body:has(.fire-btn) .fire-btn {
+  flex-shrink: 0;
+}
+body:has(.character-grid) .container {
+  padding: 8px 12px 10px;
+  justify-content: center;
+}
+body:has(.character-grid) .header {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .preview-section {
+  padding: 8px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .preview-character {
+  font-size: 36px;
+  margin-bottom: 4px;
+}
+body:has(.character-grid) input[type="text"] {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .character-grid {
+  gap: 6px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .character-option {
+  padding: 6px 2px;
+  font-size: 26px;
+  border-width: 2px;
+  border-radius: 12px;
+}
+body:has(.character-grid) .character-name {
+  font-size: 10px;
+  margin-top: 2px;
+}
+@media (min-width: 640px), (min-width: 768px) and (max-width: 1024px) {
+  body:has(.character-grid) .container {
+    padding: 6px 12px 8px;
+    justify-content: center;
   }
-  .game-stage,
-  .game-wrap,
-  .game-canvas-wrap,
-  .game-canvas {
-    height: 280px !important;
-    min-height: 220px !important;
-    max-height: 280px !important;
+  body:has(.character-grid) h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
   }
-  .planet-game {
-    padding: 14px;
-    margin-top: 14px;
+  body:has(.character-grid) .header {
+    margin-bottom: 6px;
+    flex-shrink: 0;
   }
-  .planet-game h2 {
-    margin-bottom: 10px;
-    font-size: 18px;
-  }
-  .planet-game p {
-    margin-bottom: 10px;
+  body:has(.character-grid) .subtitle {
     font-size: 13px;
   }
+  body:has(.character-grid) .preview-section {
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .preview-character {
+    font-size: 32px;
+    margin-bottom: 2px;
+  }
+  body:has(.character-grid) .preview-name {
+    font-size: 15px;
+  }
+  body:has(.character-grid) input[type="text"] {
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .character-grid {
+    gap: 6px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .character-option {
+    padding: 4px 2px;
+    font-size: 24px;
+    border-width: 2px;
+    border-radius: 10px;
+  }
+  body:has(.character-grid) .character-name {
+    font-size: 9px;
+    margin-top: 1px;
+  }
+  body:has(.game-shell) .ui-item {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+  body:has(.game-shell) .touch-controls {
+    gap: 10px;
+  }
+  body:has(#solarSvg) .header {
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(#solarSvg) h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  body:has(#solarSvg) .subtitle {
+    font-size: 13px;
+  }
+  body:has(#solarSvg) .info-panel,
+  body:has(#solarSvg) .nav-hint {
+    display: none;
+  }
+  body:has(.fire-btn) .header {
+    margin-bottom: 4px;
+    flex-shrink: 0;
+  }
+  body:has(.fire-btn) .header h1 {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+  body:has(.fire-btn) .header .subtitle {
+    display: none;
+  }
+  body:has(.fire-btn) .hud {
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  body:has(.fire-btn) .game-wrap {
+    margin-bottom: 4px;
+  }
+  body:has(.fire-btn) .fire-btn {
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  body:has(.fire-btn) .instructions,
+  body:has(.fire-btn) .nav-hint {
+    display: none;
+  }
+  .planet-svg-panel .svg-viewport,
+  .svg-viewport {
+    max-height: 220px !important;
+    min-height: 0 !important;
+  }
+  .planet-game .game-canvas,
+  .game-canvas-wrap {
+    height: 220px !important;
+    min-height: 180px !important;
+    max-height: 220px !important;
+  }
+  .planet-game {
+    padding: 10px;
+    margin-top: 10px;
+    flex-shrink: 0;
+  }
+  .planet-game h2 {
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+  .planet-game p {
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
   .touch-controls {
-    margin-top: 8px;
-    grid-template-columns: repeat(3, 52px);
-    grid-template-rows: repeat(3, 52px);
+    margin-top: 6px;
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(3, 48px);
     gap: 6px;
   }
   .touch-btn {
-    width: 52px;
-    height: 52px;
-    font-size: 20px;
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+}
+@media (max-height: 760px) {
+  body:has(.character-grid) .preview-character {
+    font-size: 28px;
+  }
+  body:has(.character-grid) .character-option {
+    font-size: 22px;
+    padding: 3px 2px;
+  }
+  body:has(.game-shell) .touch-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+  body:has(.fire-btn) .header h1 {
+    font-size: 18px;
   }
 }
   </style>
