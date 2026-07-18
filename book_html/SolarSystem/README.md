@@ -1,6 +1,6 @@
 # Solar System Adventure — Book Structure Guide
 
-This folder contains **37 standalone HTML chapters** for an interactive space ebook aimed at ages 7–8. Each file is self-contained (embedded CSS + JavaScript). Navigation between chapters is handled by the **parent ebook shell** using the numeric prefix in each filename (`001`, `002`, …).
+This folder contains **43 standalone HTML chapters** for an interactive space ebook aimed at ages 7–8. Each file is self-contained (embedded CSS + JavaScript). Navigation between chapters is handled by the **parent ebook shell** using the numeric prefix in each filename (`001`, `002`, …).
 
 Use this document as the blueprint when creating the next book in `book_html/`.
 
@@ -24,7 +24,7 @@ Use this document as the blueprint when creating the next book in `book_html/`.
 NNN-Slug.html
 ```
 
-- **NNN** — Three-digit order (001–037). The shell sorts chapters by this number.
+- **NNN** — Three-digit order (001–043). The shell sorts chapters by this number.
 - **Slug** — Human-readable topic, Pascal-Case words separated by hyphens.
 
 Examples:
@@ -34,7 +34,7 @@ Examples:
 
 ---
 
-## Chapter map (37 files)
+## Chapter map (43 files)
 
 | # | File | Type | Purpose |
 |---|------|------|---------|
@@ -54,9 +54,11 @@ Examples:
 | 26–28 | Saturn | | |
 | 29–31 | Uranus | | |
 | 32–34 | Neptune | | |
-| 35 | `035-Conclusion.html` | Reading | Summary |
-| 36 | `036-Outtro-*.html` | **Finale action game** | Defend the Sun — aim and blast (e.g. Solar Core Blitz) |
-| 37 | `037-Congratulations.html` | End | Celebration / certificate tone |
+| 35–37 | Meteors | | Activity + Meteor Shield tap game, Explained, Quiz (VS Rocky) |
+| 38–40 | Black Holes | | Activity + Orbit Escape timing game, Explained, Quiz (VS Void Vortex) |
+| 41 | `041-Conclusion.html` | Reading | Summary |
+| 42 | `042-Outtro-*.html` | **Finale action game** | Defend the Sun — aim and blast (e.g. Solar Core Blitz) |
+| 43 | `043-Congratulations.html` | End | Celebration / certificate tone |
 
 **Planet trio pattern** (repeat for Sun + 8 planets):
 
@@ -130,6 +132,8 @@ Features:
 | Saturn | Ring dodge | 60s | 3 |
 | Uranus | Ice maze | 60s | 3 |
 | Neptune | Deep dive | 90s | 3 |
+| Meteors | Meteor Shield (tap to destroy) | 60s | 3 |
+| Black Holes | Orbit Escape (timing tap boost) | 60s | 3 |
 
 Shared helpers (copy into each game script):
 - `drawStarfield()`, `formatHudTimeLives()`, `startHudTimer()`, `loseLife()`

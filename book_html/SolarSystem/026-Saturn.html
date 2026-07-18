@@ -242,6 +242,11 @@
       font-size:14px;
       margin-bottom:16px;
     }
+    
+    .game-hud-float{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:6px;z-index:6;pointer-events:none;flex-wrap:wrap;}
+    .game-hud-float span{background:rgba(0,0,0,0.65);padding:5px 10px;border-radius:8px;font-size:12px;font-weight:bold;color:#fff;border:1px solid rgba(255,255,255,0.2);}
+    .game-canvas{position:relative;}
+
     .game-canvas{
       position:relative;
       height:50vh;
@@ -447,13 +452,14 @@
   </div>
 
   <div class="planet-game">
-    <h2>💍 Ring Collector!</h2>
-    <p class="game-desc">Move Saturn ← → to catch golden rings. Dodge asteroids ☄️!</p>
+    <h2>💍 Ring Gap Snap!</h2>
+    <p class="game-desc">Saturn's rings are spinning! Tap when the golden gap reaches the top to launch your probe through the rings.</p>
     <div class="game-canvas" id="gameCanvas">
+      <div class="game-hud-float"><span id="gameScore">Score: 0</span><span id="gameTimer">⏱ 60s | ❤️❤️❤️</span></div>
       <canvas id="gameCanvasElement"></canvas>
       <div class="game-overlay" id="startScreen">
-        <h3>💍 Ring Collector!</h3>
-        <p>Move Saturn ← → to catch golden rings. Dodge asteroids ☄️!</p>
+        <h3>💍 Ring Gap Snap!</h3>
+        <p>Watch the gap in Saturn's rings. Press TAP (or Space) when the gap is at the top!</p>
         <button class="overlay-btn" type="button" onclick="startGame()">▶️ Start</button>
       </div>
       <div class="game-overlay" id="endScreen" style="display:none;">
@@ -462,22 +468,14 @@
         <button class="overlay-btn" type="button" onclick="startGame()">🔄 Play Again</button>
       </div>
     </div>
-    <div class="touch-controls">
-      <button class="touch-btn" id="leftBtn">⬅️</button>
-      <button class="touch-btn" id="rightBtn">➡️</button>
-    </div>
-    <div class="game-score" id="gameScore">Score: 0</div>
-    <div class="game-timer" id="gameTimer">Lives: ❤️❤️❤️</div>
-    
+    <button type="button" id="tapBtn" style="display:block;width:100%;max-width:280px;margin:14px auto;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a0800;font-size:18px;font-weight:bold;cursor:pointer;">🎯 TAP / SPACE</button>
   </div>
-
 <div class="nav-hint">
   <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
   <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
 </div>
 
 </div>
-
 <script>
 const saturnFacts = [
   "Saturn has the most moons of any planet - over 140!",
@@ -509,333 +507,103 @@ function checkFact(btn, isCorrect) {
 }
 
 
-function drawStarfield() {
-  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  g.addColorStop(0, '#050414');
-  g.addColorStop(1, '#12102a');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < 40; i++) {
-    ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 5) * 0.12) + ')';
-    ctx.beginPath();
-    ctx.arc((i * 131) % canvas.width, (i * 73) % canvas.height, 0.8 + (i % 3), 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
+// Ring Gap Snap — timing game (tap when gap aligns)
+let gameScore = 0, gameLives = 3, gameTime = 60, hudTimer;
+let isGameRunning = false, canvas, ctx, animationFrame;
+let ringAngle = 0, ringSpeed = 0.025, gapSize = 0.55, hits = 0;
+
 function formatHudTimeLives() {
   return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
 }
 function startHudTimer() {
-  if (typeof hudTimer !== 'undefined' && hudTimer) clearInterval(hudTimer);
+  if (hudTimer) clearInterval(hudTimer);
   hudTimer = setInterval(function() {
     if (!isGameRunning) return;
     gameTime--;
-    const el = document.getElementById('gameTimer');
-    if (el) el.textContent = formatHudTimeLives();
+    document.getElementById('gameTimer').textContent = formatHudTimeLives();
     if (gameTime <= 0) endGame();
   }, 1000);
 }
-function loseLife() {
-  gameLives--;
-  const el = document.getElementById('gameTimer');
-  if (el) el.textContent = formatHudTimeLives();
-  if (gameLives <= 0) endGame();
+function drawStarfield() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#050414'); g.addColorStop(1, '#12102a');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < 35; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.1 + (i % 4) * 0.1) + ')';
+    ctx.beginPath(); ctx.arc((i * 131) % canvas.width, (i * 73) % canvas.height, 1, 0, Math.PI * 2); ctx.fill();
+  }
 }
-
-// Ring Collector Game - Move Saturn to catch rings and avoid asteroids
-let gameScore = 0;
-let gameLives = 3;
-let gameLevel = 1;
-let animationFrame;
-let spawnInterval;
-let isGameRunning = false;
-let canvas, ctx;
-let ringShip;
-let rings = [];
-let asteroids = [];
-let keys = {};
-let moveLeft = false;
-let moveRight = false;
-let gameTime = 60;
-let hudTimer;
-
 function startGame() {
   if (isGameRunning) return;
-  const _ss = document.getElementById('startScreen'); if (_ss) _ss.style.display = 'none';
-  const _es = document.getElementById('endScreen'); if (_es) _es.style.display = 'none';
-  
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'none';
   canvas = document.getElementById('gameCanvasElement');
   ctx = canvas.getContext('2d');
-  
-  // Set canvas size
-  const canvasContainer = document.getElementById('gameCanvas');
-  canvas.width = canvasContainer.clientWidth;
-  canvas.height = canvasContainer.clientHeight;
-  
-  isGameRunning = true;
-  gameScore = 0;
-  gameLives = 3;
-  gameTime = 60;
-  gameLevel = 1;
-  rings = [];
-  asteroids = [];
-  
-  // Initialize Saturn
-  ringShip = {
-    x: canvas.width / 2,
-    y: canvas.height - 80,
-    width: 80,
-    height: 60,
-    speed: 6
-  };
-  
+  const box = document.getElementById('gameCanvas');
+  canvas.width = box.clientWidth; canvas.height = box.clientHeight;
+  isGameRunning = true; gameScore = 0; gameLives = 3; gameTime = 60;
+  ringAngle = 0; ringSpeed = 0.025; hits = 0;
   document.getElementById('gameScore').textContent = 'Score: 0';
-  updateLivesDisplay();
-  startHudTimer();  
-  // Enable controls
-  document.addEventListener('keydown', handleKeyDown);
-  document.addEventListener('keyup', handleKeyUp);
-  
-  // Touch controls
-  const leftBtn = document.getElementById('leftBtn');
-  const rightBtn = document.getElementById('rightBtn');
-  
-  leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveLeft = true; });
-  leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveLeft = false; });
-  rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveRight = true; });
-  rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveRight = false; });
-  
-  leftBtn.addEventListener('mousedown', () => moveLeft = true);
-  leftBtn.addEventListener('mouseup', () => moveLeft = false);
-  rightBtn.addEventListener('mousedown', () => moveRight = true);
-  rightBtn.addEventListener('mouseup', () => moveRight = false);
-  
-  // Spawn items
-  spawnInterval = setInterval(() => {
-    if (!isGameRunning) return;
-    spawnItem();
-  }, 800);
-  
-  // Start game loop
+  document.getElementById('gameTimer').textContent = formatHudTimeLives();
+  startHudTimer();
+  document.addEventListener('keydown', onKey);
+  document.getElementById('tapBtn').onclick = trySnap;
   gameLoop();
 }
-
-function handleKeyDown(e) {
+function onKey(e) {
   if (!isGameRunning) return;
-  
-  if (e.key === 'ArrowLeft' || e.key === 'a') {
-    keys.left = true;
-  } else if (e.key === 'ArrowRight' || e.key === 'd') {
-    keys.right = true;
-  }
-  
-  // Prevent scrolling
-  if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
-    e.preventDefault();
-  }
+  if (e.code === 'Space') { e.preventDefault(); trySnap(); }
 }
-
-function handleKeyUp(e) {
-  if (e.key === 'ArrowLeft' || e.key === 'a') {
-    keys.left = false;
-  } else if (e.key === 'ArrowRight' || e.key === 'd') {
-    keys.right = false;
-  }
-}
-
-function spawnItem() {
-  const isAsteroid = Math.random() > 0.6;
-  const isRainbow = !isAsteroid && Math.random() > 0.9;
-  
-  if (isAsteroid) {
-    asteroids.push({
-      x: Math.random() * (canvas.width - 40) + 20,
-      y: -30,
-      width: 30,
-      height: 30,
-      speed: 2 + gameLevel * 0.5,
-      rotation: 0
-    });
+function trySnap() {
+  if (!isGameRunning) return;
+  const a = ringAngle % (Math.PI * 2);
+  const diff = Math.min(Math.abs(a), Math.abs(a - Math.PI * 2));
+  if (diff < gapSize * 0.35 + 0.15) {
+    gameScore += 10; hits++;
+    ringSpeed = Math.min(0.06, ringSpeed + 0.002);
+    document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+    if (hits >= 15) endGame(true);
   } else {
-    rings.push({
-      x: Math.random() * (canvas.width - 40) + 20,
-      y: -30,
-      radius: 15,
-      speed: 2 + gameLevel * 0.3,
-      isRainbow: isRainbow,
-      rotation: 0
-    });
+    gameLives--;
+    document.getElementById('gameTimer').textContent = formatHudTimeLives();
+    if (gameLives <= 0) endGame(false);
   }
 }
-
-function updateLivesDisplay() {
-  const hearts = '❤️'.repeat(gameLives) + '🖤'.repeat(3 - gameLives);
-  document.getElementById('gameTimer').textContent = '⏱ ' + gameTime + 's | ' + hearts;
-}
-
 function gameLoop() {
   if (!isGameRunning) return;
-  
-  // Clear canvas
-  ctx.fillStyle = 'rgba(244, 213, 158, 0.1)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // Update Saturn position
-  if (keys.left || moveLeft) ringShip.x -= ringShip.speed;
-  if (keys.right || moveRight) ringShip.x += ringShip.speed;
-  
-  // Keep Saturn in bounds
-  ringShip.x = Math.max(ringShip.width / 2, Math.min(canvas.width - ringShip.width / 2, ringShip.x));
-  
-  ctx.font = ringShip.width+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('🪐', ringShip.x, ringShip.y);
-  
-  // Update and draw rings
-  rings.forEach((ring, index) => {
-    ring.y += ring.speed;
-    ring.rotation += 0.05;
-    
-    // Draw ring
-    ctx.save();
-    ctx.translate(ring.x, ring.y);
-    ctx.rotate(ring.rotation);
-    
-    if (ring.isRainbow) {
-      // Rainbow ring
-      const rainbowGradient = ctx.createLinearGradient(-ring.radius, -ring.radius, ring.radius, ring.radius);
-      rainbowGradient.addColorStop(0, '#FF6B6B');
-      rainbowGradient.addColorStop(0.25, '#FFD93D');
-      rainbowGradient.addColorStop(0.5, '#6BCB77');
-      rainbowGradient.addColorStop(0.75, '#4D96FF');
-      rainbowGradient.addColorStop(1, '#9B59B6');
-      ctx.strokeStyle = rainbowGradient;
-      ctx.lineWidth = 6;
-    } else {
-      // Normal ring
-      ctx.strokeStyle = 'rgba(244, 213, 158, 0.8)';
-      ctx.lineWidth = 4;
-    }
-    
-    ctx.beginPath();
-    ctx.ellipse(0, 0, ring.radius, ring.radius * 0.3, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    
-    ctx.restore();
-    
-    // Check collision with Saturn
-    const dx = ringShip.x - ring.x;
-    const dy = ringShip.y - ring.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    if (distance < 40 + ring.radius) {
-      rings.splice(index, 1);
-      const points = ring.isRainbow ? 30 : 10;
-      gameScore += points;
-      document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-      
-      // Level up every 100 points
-      if (gameScore >= gameLevel * 100) {
-        gameLevel++;
-      }
-    }
-    
-    // Remove if off screen
-    if (ring.y > canvas.height + 30) {
-      rings.splice(index, 1);
-    }
-  });
-  
-  // Update and draw asteroids
-  asteroids.forEach((asteroid, index) => {
-    asteroid.y += asteroid.speed;
-    asteroid.rotation += 0.03;
-    
-    // Draw asteroid
-    ctx.save();
-    ctx.translate(asteroid.x, asteroid.y);
-    ctx.rotate(asteroid.rotation);
-    
-    ctx.fillStyle = '#696969';
-    ctx.beginPath();
-    // Irregular asteroid shape
-    ctx.moveTo(-asteroid.width / 2, -asteroid.height / 4);
-    ctx.lineTo(-asteroid.width / 4, -asteroid.height / 2);
-    ctx.lineTo(asteroid.width / 4, -asteroid.height / 2);
-    ctx.lineTo(asteroid.width / 2, -asteroid.height / 4);
-    ctx.lineTo(asteroid.width / 2, asteroid.height / 4);
-    ctx.lineTo(asteroid.width / 4, asteroid.height / 2);
-    ctx.lineTo(-asteroid.width / 4, asteroid.height / 2);
-    ctx.lineTo(-asteroid.width / 2, asteroid.height / 4);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Asteroid crater
-    ctx.fillStyle = '#555';
-    ctx.beginPath();
-    ctx.arc(-5, -5, 5, 0, Math.PI * 2);
-    ctx.fill();
-    
-    ctx.restore();
-    
-    // Check collision with Saturn
-    const dx = ringShip.x - asteroid.x;
-    const dy = ringShip.y - asteroid.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    if (distance < 40 + asteroid.width / 2) {
-      asteroids.splice(index, 1);
-      gameLives--;
-      updateLivesDisplay();
-      
-      if (gameLives <= 0) {
-        endGame();
-        return;
-      }
-    }
-    
-    // Remove if off screen
-    if (asteroid.y > canvas.height + 30) {
-      asteroids.splice(index, 1);
-    }
-  });
-  
-  // Draw level indicator
-  ctx.fillStyle = '#f4d59e';
-  ctx.font = '16px Comic Sans MS';
-  ctx.textAlign = 'right';
-  ctx.fillText('Level: ' + gameLevel, canvas.width - 20, 30);
-  
+  ringAngle += ringSpeed;
+  drawStarfield();
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  const pr = Math.min(canvas.width, canvas.height) * 0.14;
+  const rr = pr * 2.1;
+  const grd = ctx.createRadialGradient(cx - 10, cy - 10, pr * 0.2, cx, cy, pr);
+  grd.addColorStop(0, '#f4d59e'); grd.addColorStop(1, '#c9a846');
+  ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, pr, 0, Math.PI * 2); ctx.fill();
+  ctx.font = pr + 'px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🪐', cx, cy + 4);
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(ringAngle);
+  for (let i = 0; i < 32; i++) {
+    const a0 = (i / 32) * Math.PI * 2;
+    const a1 = a0 + (Math.PI * 2 / 32) * 0.65;
+    if (i === 0) { ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 10; }
+    else { ctx.strokeStyle = 'rgba(200,170,120,0.55)'; ctx.lineWidth = 6; }
+    ctx.beginPath(); ctx.arc(0, 0, rr, a0 + 0.08, a1); ctx.stroke();
+  }
+  ctx.restore();
+  ctx.fillStyle = '#667eea'; ctx.beginPath();
+  ctx.moveTo(cx, cy + pr + 20); ctx.lineTo(cx - 8, cy + pr + 38); ctx.lineTo(cx + 8, cy + pr + 38); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '13px Comic Sans MS'; ctx.textAlign = 'center';
+  ctx.fillText('Tap when gap is at top!', cx, canvas.height - 16);
   animationFrame = requestAnimationFrame(gameLoop);
 }
-
-function endGame() {
+function endGame(won) {
   isGameRunning = false;
-  clearInterval(spawnInterval);
+  clearInterval(hudTimer);
   cancelAnimationFrame(animationFrame);
-  
-  document.removeEventListener('keydown', handleKeyDown);
-  document.removeEventListener('keyup', handleKeyUp);
-  
-  const leftBtn = document.getElementById('leftBtn');
-  const rightBtn = document.getElementById('rightBtn');
-  
-  leftBtn.removeEventListener('touchstart', null);
-  leftBtn.removeEventListener('touchend', null);
-  rightBtn.removeEventListener('touchstart', null);
-  rightBtn.removeEventListener('touchend', null);  
-  const _es = document.getElementById('endScreen');
-  if (_es) {
-    _es.style.display = 'block';
-    const t = document.getElementById('endTitle');
-    const s = document.getElementById('endStats');
-    if (t) t.textContent = (typeof gameTime !== 'undefined' && gameTime <= 0) || (typeof gameModules !== 'undefined' && gameModules >= 10) || (typeof gameScore !== 'undefined' && gameScore >= 100) ? '🎉 Great job!' : '🎉 Done!';
-    if (s) {
-      if (typeof gameModules !== 'undefined') s.textContent = 'Modules built: ' + gameModules;
-      else if (typeof gameLives !== 'undefined') s.textContent = 'Score: ' + (gameScore||0) + ' | Lives: ' + gameLives;
-      else s.textContent = 'Score: ' + (gameScore||0);
-    }
-    return;
-  }
+  document.removeEventListener('keydown', onKey);
+  document.getElementById('endTitle').textContent = won ? '🏆 Ring Master!' : '💫 Try Again!';
+  document.getElementById('endStats').textContent = 'Score: ' + gameScore + ' | Hits: ' + hits;
+  document.getElementById('endScreen').style.display = 'flex';
 }
 
 /* Planet texture art — NASA-style sphere maps (Solar System Scope textures, CC BY 4.0) */
@@ -913,6 +681,9 @@ const StylizedPlanet = {
     g.appendChild(S.el('circle', {
       r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none'
     }));
+    g.appendChild(S.el('circle', {
+      r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer'
+    }));
   },
   ensureSaturnRingClips(svg, r) {
     if (svg.querySelector('#saturnRingBack')) return;
@@ -989,33 +760,61 @@ const StylizedPlanet = {
 function makePlanetViewer(planetType, facts, label) {
   return {
     facts: facts, fi: 0, spin: true, zoom: 1, rot: 0, drag: 0, ang: 0,
+    dragMoved: false, startX: 0, startY: 0, lx: 0, dragging: false,
     init() {
       this.svg = document.getElementById('planetSvg');
       this.g = document.getElementById('planetGroup');
       this.info = document.getElementById('planetInfo');
       if (!this.svg || !this.g || !this.info) return;
-      this.svg.addEventListener('click', () => this.nextFact());
+      const S = this;
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => {
-        this.spin = !this.spin;
-        btnSpin.textContent = this.spin ? 'Stop' : 'Spin';
-        btnSpin.classList.toggle('active', !this.spin);
+        S.spin = !S.spin;
+        btnSpin.textContent = S.spin ? 'Stop' : 'Spin';
+        btnSpin.classList.toggle('active', !S.spin);
       };
       btnSpin.textContent = 'Stop';
-      document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
-      document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
-      document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };
-      document.getElementById('btnRotR').onclick = () => { this.rot += 18; };
-      let lx = 0, drag = false;
-      this.svg.onmousedown = e => { drag = true; lx = e.clientX; };
-      window.onmousemove = e => { if (drag) { this.drag += (e.clientX - lx) * 0.35; lx = e.clientX; } };
-      window.onmouseup = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
-      this.svg.ontouchstart = e => { drag = true; lx = e.touches[0].clientX; };
-      this.svg.ontouchmove = e => { if (drag) { this.drag += (e.touches[0].clientX - lx) * 0.35; lx = e.touches[0].clientX; } };
-      this.svg.ontouchend = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
-      const loop = () => { if (this.spin) this.ang += 0.012; this.draw(); requestAnimationFrame(loop); };
+      document.getElementById('btnZoomIn').onclick = () => { S.zoom = Math.min(2.2, S.zoom + 0.15); };
+      document.getElementById('btnZoomOut').onclick = () => { S.zoom = Math.max(0.55, S.zoom - 0.15); };
+      document.getElementById('btnRotL').onclick = () => { S.rot -= 18; };
+      document.getElementById('btnRotR').onclick = () => { S.rot += 18; };
+      const onDown = e => {
+        S.dragging = true;
+        S.dragMoved = false;
+        const p = e.touches ? e.touches[0] : e;
+        S.startX = S.lx = p.clientX;
+        S.startY = p.clientY;
+      };
+      const onMove = e => {
+        if (!S.dragging) return;
+        const p = e.touches ? e.touches[0] : e;
+        if (Math.hypot(p.clientX - S.startX, p.clientY - S.startY) > 12) S.dragMoved = true;
+        if (S.dragging) { S.drag += (p.clientX - S.lx) * 0.35; S.lx = p.clientX; }
+      };
+      const onUp = e => {
+        if (!S.dragging) return;
+        const p = e.changedTouches ? e.changedTouches[0] : e;
+        if (!S.dragMoved && p && S.hitPlanet(p.clientX, p.clientY)) S.nextFact();
+        if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; }
+      };
+      this.svg.addEventListener('mousedown', onDown);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+      this.svg.addEventListener('touchstart', e => { onDown(e); }, { passive: true });
+      this.svg.addEventListener('touchmove', e => { onMove(e); }, { passive: true });
+      this.svg.addEventListener('touchend', onUp);
+      const loop = () => { if (S.spin) S.ang += 0.012; S.draw(); requestAnimationFrame(loop); };
       this.draw();
       loop();
+    },
+    hitPlanet(clientX, clientY) {
+      const pt = this.svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      const m = this.g.getScreenCTM();
+      if (!m) return false;
+      const p = pt.matrixTransform(m.inverse());
+      return p.x * p.x + p.y * p.y <= 88 * 88;
     },
     nextFact() {
       this.fi = (this.fi + 1) % this.facts.length;
@@ -1028,6 +827,13 @@ function makePlanetViewer(planetType, facts, label) {
     }
   };
 }
+
+const PlanetViewer = makePlanetViewer('earth', earthFacts, '🌍 Earth');
+try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
+
+</script>
+</body>
+</html>
 
 const PlanetViewer = makePlanetViewer('saturn', saturnFacts, '💍 Saturn');
 try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }

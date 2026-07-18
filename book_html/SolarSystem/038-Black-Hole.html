@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Black Holes</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:#0f0c29;color:#e0e7ff;min-height:100vh;position:relative;overflow-x:hidden;}
+    .stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(2px 2px at 40px 70px,#fff,transparent),radial-gradient(1px 1px at 90px 40px,#fff,transparent),radial-gradient(2px 2px at 130px 80px,#fff,transparent),radial-gradient(1px 1px at 160px 120px,#fff,transparent),radial-gradient(2px 2px at 200px 50px,#fff,transparent),radial-gradient(1px 1px at 250px 160px,#fff,transparent),radial-gradient(2px 2px at 300px 90px,#fff,transparent),radial-gradient(1px 1px at 350px 130px,#fff,transparent),radial-gradient(2px 2px at 400px 60px,#fff,transparent),radial-gradient(1px 1px at 450px 180px,#fff,transparent),radial-gradient(2px 2px at 500px 100px,#fff,transparent),radial-gradient(1px 1px at 550px 140px,#fff,transparent),radial-gradient(2px 2px at 600px 70px,#fff,transparent),radial-gradient(1px 1px at 650px 190px,#fff,transparent),radial-gradient(2px 2px at 700px 110px,#fff,transparent),radial-gradient(1px 1px at 750px 150px,#fff,transparent),radial-gradient(2px 2px at 800px 80px,#fff,transparent),radial-gradient(1px 1px at 850px 170px,#fff,transparent);background-size:900px 200px;animation:twinkle 4s ease-in-out infinite;z-index:0;}
+    @keyframes twinkle{0%,100%{opacity:0.3;}50%{opacity:0.8;}}
+    .container{max-width:640px;margin:auto;padding:24px 16px 40px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:20px;}
+    h1{font-size:32px;color:#a78bfa;margin-bottom:8px;}
+    .subtitle{color:#c4b5fd;font-size:16px;}
+    .card{background:#1a1735;backdrop-filter:blur(10px);border-radius:20px;padding:20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1);}
+    .card h2{color:#a78bfa;margin-bottom:12px;font-size:20px;}
+    .card p{font-size:16px;line-height:1.7;margin-bottom:10px;}
+    .fact-box{background:rgba(167,139,250,0.2);border-left:6px solid #a78bfa;padding:16px;border-radius:12px;margin-top:12px;}
+    .fact-box h3{color:#c4b5fd;margin-bottom:8px;font-size:18px;}
+    .fact-box p{font-size:15px;line-height:1.6;margin:0;}
+    .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;}
+    .stat-item{background:rgba(167,139,250,0.1);border-radius:12px;padding:14px;text-align:center;}
+    .stat-label{font-size:13px;color:#c4b5fd;margin-bottom:4px;}
+    .stat-value{font-size:18px;font-weight:bold;color:#a78bfa;}
+    .nav-hint{margin-top:20px;text-align:center;font-size:13px;color:#a78bfa;background:rgba(167,139,250,0.1);padding:10px;border-radius:10px;}
+    .planet-game{background:#1a1735;backdrop-filter:blur(10px);border-radius:20px;padding:20px;margin-top:20px;border:1px solid rgba(255,255,255,0.1);}
+    .planet-game h2{color:#a78bfa;margin-bottom:16px;font-size:20px;text-align:center;}
+    .game-desc{text-align:center;color:#c4b5fd;font-size:14px;margin-bottom:14px;line-height:1.55;padding:0 8px;}
+    .game-canvas{position:relative;height:50vh;min-height:300px;max-height:500px;background:rgba(30,20,60,0.5);border-radius:16px;overflow:hidden;border:2px solid rgba(167,139,250,0.3);touch-action:none;cursor:pointer;}
+    canvas{display:block;width:100%;height:100%;}
+    .game-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(8,6,24,0.94);padding:22px 26px;border-radius:16px;text-align:center;border:2px solid #a78bfa;z-index:10;min-width:220px;max-width:90%;}
+    .game-overlay h3{color:#ffd700;margin-bottom:8px;font-size:20px;}
+    .game-overlay p{color:#ddd;margin-bottom:14px;font-size:14px;line-height:1.5;}
+    .overlay-btn{padding:10px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
+    .planet-svg-panel{background:#12102a;border-radius:20px;border:1px solid rgba(167,139,250,0.45);padding:12px;margin:20px 0;}
+    .svg-viewport{width:100%;aspect-ratio:1;max-height:340px;border-radius:14px;overflow:hidden;background:#0a0820;touch-action:none;}
+    .svg-viewport svg{width:100%;height:100%;display:block;cursor:grab;}
+    .planet-info-panel{margin-top:10px;min-height:52px;padding:12px 14px;background:#1a1735;border-radius:12px;border-left:4px solid #a78bfa;font-size:14px;line-height:1.55;}
+    .planet-info-panel strong{color:#a78bfa;font-size:15px;}
+    .svg-controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+    .svg-ctrl{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:13px;font-weight:bold;cursor:pointer;min-height:44px;}
+    .svg-ctrl.active{background:linear-gradient(135deg,#f59e0b,#ef4444);}
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>🕳️ Black Holes</h1>
+    <div class="subtitle">The ultimate gravity traps!</div>
+  </div>
+
+  <div class="planet-svg-panel">
+    <div class="svg-viewport" id="svgViewport">
+      <svg id="planetSvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Black hole">
+        <defs><clipPath id="globe"><circle r="88"/></clipPath></defs>
+        <g id="planetGroup"></g>
+      </svg>
+    </div>
+    <div class="planet-info-panel" id="planetInfo">👆 Tap the black hole for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
+    <div class="svg-controls">
+      <button class="svg-ctrl" id="btnSpin" type="button">Stop</button>
+      <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
+      <button class="svg-ctrl" id="btnZoomOut" type="button">🔍 −</button>
+      <button class="svg-ctrl" id="btnRotL" type="button">↺</button>
+      <button class="svg-ctrl" id="btnRotR" type="button">↻</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What is a Black Hole?</h2>
+    <p>A black hole is a place in space where gravity is so strong that nothing — not even light — can escape once it gets too close!</p>
+    <p>Black holes form when very massive stars collapse at the end of their lives. They are invisible, but we can detect them by watching nearby stars and gas.</p>
+  </div>
+
+  <div class="card">
+    <h2>🌀 The Event Horizon</h2>
+    <p>The event horizon is the "point of no return" around a black hole. Cross it and you cannot get back out — gravity wins!</p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Time slows down near a black hole! If you could watch from far away, things near the hole would look like they move in slow motion.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📏 Black Hole Facts</h2>
+    <div class="stats-grid">
+      <div class="stat-item"><div class="stat-label">Color we see</div><div class="stat-value">Invisible!</div></div>
+      <div class="stat-item"><div class="stat-label">Light escape</div><div class="stat-value">Impossible</div></div>
+      <div class="stat-item"><div class="stat-label">Glowing ring</div><div class="stat-value">Accretion disk</div></div>
+      <div class="stat-item"><div class="stat-label">In our galaxy</div><div class="stat-value">Millions exist</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔭 How We Find Them</h2>
+    <p>Scientists spot black holes by watching stars orbit something invisible, or by seeing hot gas swirl and glow before it falls in.</p>
+    <p>In 2019, astronomers took the first picture of a black hole's shadow — a huge achievement!</p>
+  </div>
+
+  <div class="planet-game">
+    <h2>🚀 Orbit Escape!</h2>
+    <p class="game-desc">Your satellite orbits a black hole. TAP when the green pulse glows to boost outward — bad timing pulls you in!</p>
+    <div class="game-canvas" id="gameCanvas">
+      <canvas id="gameCanvasElement"></canvas>
+      <div class="game-overlay" id="startScreen">
+        <h3>🚀 Orbit Escape!</h3>
+        <p>Watch the rhythm! TAP when the orbit ring glows green to boost away from the black hole.</p>
+        <button class="overlay-btn" type="button" onclick="startGame()">▶️ Start</button>
+      </div>
+      <div class="game-overlay" id="endScreen" style="display:none;">
+        <h3 id="endTitle">🎉 Mission Complete!</h3>
+        <p id="endStats">Score: 0</p>
+        <button class="overlay-btn" type="button" onclick="startGame()">🔄 Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+
+<script>
+const blackHoleFacts = [
+  "Black holes aren't holes — they're super dense objects!",
+  "Not even light can escape past the event horizon!",
+  "Our Milky Way has a supermassive black hole at its center!",
+  "Black holes can merge and make bigger black holes!",
+  "The first black hole photo was taken in 2019!",
+  "Time slows down near a black hole!",
+  "Some black holes shoot jets of energy into space!",
+  "A black hole's gravity can bend light like a lens!"
+];
+
+const StylizedPlanet = {
+  NS: 'http://www.w3.org/2000/svg',
+  el(tag, a) { const e = document.createElementNS(this.NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; },
+  svgRoot(g) { return g.ownerSVGElement || document.getElementById('planetSvg'); },
+  ensureClip(svg, id, r) {
+    if (svg.querySelector('#' + id)) return 'url(#' + id + ')';
+    let defs = svg.querySelector('defs'); if (!defs) { defs = this.el('defs', {}); svg.insertBefore(defs, svg.firstChild); }
+    const cp = this.el('clipPath', { id }); cp.appendChild(this.el('circle', { r: String(r) })); defs.appendChild(cp);
+    return 'url(#' + id + ')';
+  },
+  ensureShading(svg) {
+    if (svg.querySelector('#sphereShade')) return;
+    let defs = svg.querySelector('defs'); if (!defs) { defs = this.el('defs', {}); svg.insertBefore(defs, svg.firstChild); }
+    const rg = this.el('radialGradient', { id: 'sphereShade', cx: '35%', cy: '32%', r: '65%' });
+    rg.appendChild(this.el('stop', { offset: '0%', 'stop-color': '#ffffff', 'stop-opacity': '0.15' }));
+    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#000000', 'stop-opacity': '0.6' }));
+    defs.appendChild(rg);
+  },
+  ensureDiskGrad(svg) {
+    if (svg.querySelector('#diskGrad')) return;
+    let defs = svg.querySelector('defs'); if (!defs) { defs = this.el('defs', {}); svg.insertBefore(defs, svg.firstChild); }
+    const rg = this.el('radialGradient', { id: 'diskGrad', cx: '50%', cy: '50%', r: '50%' });
+    rg.appendChild(this.el('stop', { offset: '60%', 'stop-color': '#1a0a2e', 'stop-opacity': '0' }));
+    rg.appendChild(this.el('stop', { offset: '85%', 'stop-color': '#a78bfa', 'stop-opacity': '0.7' }));
+    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#667eea', 'stop-opacity': '0.3' }));
+    defs.appendChild(rg);
+  },
+  drawBlackHole(g, r, clip, svg) {
+    const S = this; if (svg) { S.ensureDiskGrad(svg); S.ensureShading(svg); }
+    g.appendChild(S.el('ellipse', { rx: String(r * 1.6), ry: String(r * 0.45), fill: 'none', stroke: 'rgba(167,139,250,0.5)', 'stroke-width': '8', transform: 'rotate(-15)' }));
+    g.appendChild(S.el('circle', { r: String(r * 1.1), fill: 'url(#diskGrad)', 'pointer-events': 'none' }));
+    g.appendChild(S.el('circle', { r: String(r * 0.72), fill: '#000000', 'clip-path': clip }));
+    g.appendChild(S.el('circle', { r: String(r * 0.72), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none' }));
+    g.appendChild(S.el('circle', { r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer' }));
+  },
+  draw(g, type, r) {
+    r = r || 88; const S = this; const svg = S.svgRoot(g);
+    const clip = svg ? S.ensureClip(svg, 'globe', r) : '';
+    if (type === 'blackhole') { S.drawBlackHole(g, r, clip, svg); return; }
+    g.appendChild(S.el('circle', { r: String(r), fill: '#222' }));
+  }
+};
+
+function makePlanetViewer(planetType, facts, label) {
+  return {
+    facts, fi: 0, spin: true, zoom: 1, rot: 0, drag: 0, ang: 0, dragMoved: false, startX: 0, startY: 0, lx: 0, dragging: false,
+    init() {
+      this.svg = document.getElementById('planetSvg'); this.g = document.getElementById('planetGroup'); this.info = document.getElementById('planetInfo');
+      if (!this.svg || !this.g || !this.info) return;
+      const S = this;
+      const btnSpin = document.getElementById('btnSpin');
+      btnSpin.onclick = () => { S.spin = !S.spin; btnSpin.textContent = S.spin ? 'Stop' : 'Spin'; btnSpin.classList.toggle('active', !S.spin); };
+      btnSpin.textContent = 'Stop';
+      document.getElementById('btnZoomIn').onclick = () => { S.zoom = Math.min(2.2, S.zoom + 0.15); };
+      document.getElementById('btnZoomOut').onclick = () => { S.zoom = Math.max(0.55, S.zoom - 0.15); };
+      document.getElementById('btnRotL').onclick = () => { S.rot -= 18; };
+      document.getElementById('btnRotR').onclick = () => { S.rot += 18; };
+      const onDown = e => { S.dragging = true; S.dragMoved = false; const p = e.touches ? e.touches[0] : e; S.startX = S.lx = p.clientX; S.startY = p.clientY; };
+      const onMove = e => { if (!S.dragging) return; const p = e.touches ? e.touches[0] : e; if (Math.hypot(p.clientX - S.startX, p.clientY - S.startY) > 12) S.dragMoved = true; S.drag += (p.clientX - S.lx) * 0.35; S.lx = p.clientX; };
+      const onUp = e => { if (!S.dragging) return; const p = e.changedTouches ? e.changedTouches[0] : e; if (!S.dragMoved && p && S.hitPlanet(p.clientX, p.clientY)) S.nextFact(); if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; } };
+      this.svg.addEventListener('mousedown', onDown); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
+      this.svg.addEventListener('touchstart', onDown, { passive: true }); this.svg.addEventListener('touchmove', onMove, { passive: true }); this.svg.addEventListener('touchend', onUp);
+      const loop = () => { if (S.spin) S.ang += 0.012; S.draw(); requestAnimationFrame(loop); }; this.draw(); loop();
+    },
+    hitPlanet(cx, cy) { const pt = this.svg.createSVGPoint(); pt.x = cx; pt.y = cy; const m = this.g.getScreenCTM(); if (!m) return false; const p = pt.matrixTransform(m.inverse()); return p.x * p.x + p.y * p.y <= 88 * 88; },
+    nextFact() { this.fi = (this.fi + 1) % this.facts.length; this.info.innerHTML = '<strong>' + label + '</strong><br>' + this.facts[this.fi]; },
+    draw() { while (this.g.firstChild) this.g.removeChild(this.g.firstChild); this.g.setAttribute('transform', 'translate(200,200) rotate(' + (this.rot + this.drag) + ') scale(' + this.zoom + ') rotate(' + this.ang + ')'); StylizedPlanet.draw(this.g, planetType, 88); }
+  };
+}
+const PlanetViewer = makePlanetViewer('blackhole', blackHoleFacts, '🕳️ Black Hole');
+try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
+
+let canvas, ctx, isGameRunning = false, gameScore = 0, gameTime = 60, gameLives = 3;
+let angle = 0, orbitRadius = 0, minR = 0, maxR = 0, cx = 0, cy = 0;
+let boostWindow = false, windowTimer = 0, windowDuration = 45, windowInterval = 120;
+let hudTimer, animationFrame, shrinkRate = 0.08;
+
+function drawStarfield() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#050414'); g.addColorStop(1, '#12102a');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < 40; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 5) * 0.1) + ')';
+    ctx.beginPath(); ctx.arc((i * 113) % canvas.width, (i * 67) % canvas.height, 0.8, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+function drawHud() {
+  ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0, 0, canvas.width, 36);
+  ctx.font = 'bold 14px Comic Sans MS'; ctx.textAlign = 'left'; ctx.fillStyle = '#a78bfa';
+  ctx.fillText('⭐ ' + gameScore, 12, 24);
+  ctx.textAlign = 'center'; ctx.fillStyle = '#c4b5fd';
+  ctx.fillText('⏱ ' + gameTime + 's', canvas.width / 2, 24);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#f87171';
+  ctx.fillText('❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives)), canvas.width - 12, 24);
+}
+
+function drawBlackHoleCore() {
+  const r = Math.min(canvas.width, canvas.height) * 0.12;
+  const disk = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r * 2.5);
+  disk.addColorStop(0, 'rgba(0,0,0,1)'); disk.addColorStop(0.4, 'rgba(80,40,120,0.8)'); disk.addColorStop(0.7, 'rgba(167,139,250,0.4)'); disk.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = disk; ctx.beginPath(); ctx.arc(cx, cy, r * 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+}
+
+function drawOrbitRing() {
+  ctx.strokeStyle = boostWindow ? 'rgba(74,222,128,0.9)' : 'rgba(167,139,250,0.35)';
+  ctx.lineWidth = boostWindow ? 5 : 2;
+  ctx.setLineDash(boostWindow ? [] : [6, 6]);
+  ctx.beginPath(); ctx.arc(cx, cy, orbitRadius, 0, Math.PI * 2); ctx.stroke();
+  ctx.setLineDash([]);
+  if (boostWindow) {
+    ctx.fillStyle = 'rgba(74,222,128,0.25)'; ctx.beginPath(); ctx.arc(cx, cy, orbitRadius, 0, Math.PI * 2); ctx.fill();
+    ctx.font = 'bold 16px Comic Sans MS'; ctx.fillStyle = '#4ade80'; ctx.textAlign = 'center';
+    ctx.fillText('TAP NOW!', cx, cy - orbitRadius - 14);
+  }
+}
+
+function drawSatellite() {
+  const sx = cx + Math.cos(angle) * orbitRadius;
+  const sy = cy + Math.sin(angle) * orbitRadius;
+  ctx.save(); ctx.translate(sx, sy); ctx.rotate(angle + Math.PI / 2);
+  ctx.fillStyle = '#87ceeb'; ctx.fillRect(-8, -5, 16, 10);
+  ctx.fillStyle = '#ffd700'; ctx.fillRect(-14, -2, 6, 4); ctx.fillRect(8, -2, 6, 4);
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+function handleTap() {
+  if (!isGameRunning) return;
+  if (boostWindow) {
+    orbitRadius = Math.min(maxR, orbitRadius + 28);
+    gameScore += 15;
+    boostWindow = false;
+    windowTimer = 0;
+  } else {
+    orbitRadius = Math.max(minR, orbitRadius - 12);
+  }
+}
+
+function loseLife() {
+  gameLives--;
+  if (gameLives <= 0) endGame();
+  else { orbitRadius = (minR + maxR) / 2; angle = 0; }
+}
+
+function gameLoop() {
+  if (!isGameRunning) return;
+  angle += 0.04;
+  orbitRadius -= shrinkRate;
+  windowTimer++;
+  if (!boostWindow && windowTimer >= windowInterval) { boostWindow = true; windowTimer = 0; }
+  else if (boostWindow && windowTimer >= windowDuration) { boostWindow = false; windowTimer = 0; }
+  if (orbitRadius <= minR + 5) loseLife();
+  drawStarfield();
+  drawBlackHoleCore();
+  drawOrbitRing();
+  drawSatellite();
+  drawHud();
+  animationFrame = requestAnimationFrame(gameLoop);
+}
+
+function startGame() {
+  if (isGameRunning) return;
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'none';
+  canvas = document.getElementById('gameCanvasElement');
+  ctx = canvas.getContext('2d');
+  const box = document.getElementById('gameCanvas');
+  canvas.width = box.clientWidth; canvas.height = box.clientHeight;
+  cx = canvas.width / 2; cy = canvas.height / 2;
+  minR = Math.min(canvas.width, canvas.height) * 0.18;
+  maxR = Math.min(canvas.width, canvas.height) * 0.42;
+  orbitRadius = (minR + maxR) / 2;
+  isGameRunning = true; gameScore = 0; gameTime = 60; gameLives = 3;
+  angle = 0; boostWindow = false; windowTimer = 0;
+  if (hudTimer) clearInterval(hudTimer);
+  hudTimer = setInterval(() => { if (!isGameRunning) return; gameTime--; if (gameTime <= 0) endGame(); }, 1000);
+  canvas.onclick = () => handleTap();
+  canvas.ontouchstart = e => { e.preventDefault(); handleTap(); };
+  gameLoop();
+}
+
+function endGame() {
+  isGameRunning = false;
+  clearInterval(hudTimer);
+  cancelAnimationFrame(animationFrame);
+  document.getElementById('endScreen').style.display = 'block';
+  document.getElementById('endStats').textContent = 'Score: ' + gameScore + ' | Boosts landed!';
+}
+</script>
+</body>
+</html>

@@ -940,6 +940,9 @@ const StylizedPlanet = {
     g.appendChild(S.el('circle', {
       r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none'
     }));
+    g.appendChild(S.el('circle', {
+      r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer'
+    }));
   },
   ensureSaturnRingClips(svg, r) {
     if (svg.querySelector('#saturnRingBack')) return;
@@ -1016,33 +1019,61 @@ const StylizedPlanet = {
 function makePlanetViewer(planetType, facts, label) {
   return {
     facts: facts, fi: 0, spin: true, zoom: 1, rot: 0, drag: 0, ang: 0,
+    dragMoved: false, startX: 0, startY: 0, lx: 0, dragging: false,
     init() {
       this.svg = document.getElementById('planetSvg');
       this.g = document.getElementById('planetGroup');
       this.info = document.getElementById('planetInfo');
       if (!this.svg || !this.g || !this.info) return;
-      this.svg.addEventListener('click', () => this.nextFact());
+      const S = this;
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => {
-        this.spin = !this.spin;
-        btnSpin.textContent = this.spin ? 'Stop' : 'Spin';
-        btnSpin.classList.toggle('active', !this.spin);
+        S.spin = !S.spin;
+        btnSpin.textContent = S.spin ? 'Stop' : 'Spin';
+        btnSpin.classList.toggle('active', !S.spin);
       };
       btnSpin.textContent = 'Stop';
-      document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
-      document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
-      document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };
-      document.getElementById('btnRotR').onclick = () => { this.rot += 18; };
-      let lx = 0, drag = false;
-      this.svg.onmousedown = e => { drag = true; lx = e.clientX; };
-      window.onmousemove = e => { if (drag) { this.drag += (e.clientX - lx) * 0.35; lx = e.clientX; } };
-      window.onmouseup = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
-      this.svg.ontouchstart = e => { drag = true; lx = e.touches[0].clientX; };
-      this.svg.ontouchmove = e => { if (drag) { this.drag += (e.touches[0].clientX - lx) * 0.35; lx = e.touches[0].clientX; } };
-      this.svg.ontouchend = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
-      const loop = () => { if (this.spin) this.ang += 0.012; this.draw(); requestAnimationFrame(loop); };
+      document.getElementById('btnZoomIn').onclick = () => { S.zoom = Math.min(2.2, S.zoom + 0.15); };
+      document.getElementById('btnZoomOut').onclick = () => { S.zoom = Math.max(0.55, S.zoom - 0.15); };
+      document.getElementById('btnRotL').onclick = () => { S.rot -= 18; };
+      document.getElementById('btnRotR').onclick = () => { S.rot += 18; };
+      const onDown = e => {
+        S.dragging = true;
+        S.dragMoved = false;
+        const p = e.touches ? e.touches[0] : e;
+        S.startX = S.lx = p.clientX;
+        S.startY = p.clientY;
+      };
+      const onMove = e => {
+        if (!S.dragging) return;
+        const p = e.touches ? e.touches[0] : e;
+        if (Math.hypot(p.clientX - S.startX, p.clientY - S.startY) > 12) S.dragMoved = true;
+        if (S.dragging) { S.drag += (p.clientX - S.lx) * 0.35; S.lx = p.clientX; }
+      };
+      const onUp = e => {
+        if (!S.dragging) return;
+        const p = e.changedTouches ? e.changedTouches[0] : e;
+        if (!S.dragMoved && p && S.hitPlanet(p.clientX, p.clientY)) S.nextFact();
+        if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; }
+      };
+      this.svg.addEventListener('mousedown', onDown);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+      this.svg.addEventListener('touchstart', e => { onDown(e); }, { passive: true });
+      this.svg.addEventListener('touchmove', e => { onMove(e); }, { passive: true });
+      this.svg.addEventListener('touchend', onUp);
+      const loop = () => { if (S.spin) S.ang += 0.012; S.draw(); requestAnimationFrame(loop); };
       this.draw();
       loop();
+    },
+    hitPlanet(clientX, clientY) {
+      const pt = this.svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      const m = this.g.getScreenCTM();
+      if (!m) return false;
+      const p = pt.matrixTransform(m.inverse());
+      return p.x * p.x + p.y * p.y <= 88 * 88;
     },
     nextFact() {
       this.fi = (this.fi + 1) % this.facts.length;

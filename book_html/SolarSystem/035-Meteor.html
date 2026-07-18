@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Meteors</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:#0f0c29;color:#e0e7ff;min-height:100vh;position:relative;overflow-x:hidden;}
+    .stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(2px 2px at 40px 70px,#fff,transparent),radial-gradient(1px 1px at 90px 40px,#fff,transparent),radial-gradient(2px 2px at 130px 80px,#fff,transparent),radial-gradient(1px 1px at 160px 120px,#fff,transparent),radial-gradient(2px 2px at 200px 50px,#fff,transparent),radial-gradient(1px 1px at 250px 160px,#fff,transparent),radial-gradient(2px 2px at 300px 90px,#fff,transparent),radial-gradient(1px 1px at 350px 130px,#fff,transparent),radial-gradient(2px 2px at 400px 60px,#fff,transparent),radial-gradient(1px 1px at 450px 180px,#fff,transparent),radial-gradient(2px 2px at 500px 100px,#fff,transparent),radial-gradient(1px 1px at 550px 140px,#fff,transparent),radial-gradient(2px 2px at 600px 70px,#fff,transparent),radial-gradient(1px 1px at 650px 190px,#fff,transparent),radial-gradient(2px 2px at 700px 110px,#fff,transparent),radial-gradient(1px 1px at 750px 150px,#fff,transparent),radial-gradient(2px 2px at 800px 80px,#fff,transparent),radial-gradient(1px 1px at 850px 170px,#fff,transparent);background-size:900px 200px;animation:twinkle 4s ease-in-out infinite;z-index:0;}
+    @keyframes twinkle{0%,100%{opacity:0.3;}50%{opacity:0.8;}}
+    .container{max-width:640px;margin:auto;padding:24px 16px 40px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:20px;}
+    h1{font-size:32px;color:#f59e0b;margin-bottom:8px;}
+    .subtitle{color:#c4b5fd;font-size:16px;}
+    .card{background:#1a1735;backdrop-filter:blur(10px);border-radius:20px;padding:20px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1);}
+    .card h2{color:#f59e0b;margin-bottom:12px;font-size:20px;}
+    .card p{font-size:16px;line-height:1.7;margin-bottom:10px;}
+    .fact-box{background:rgba(251,191,36,0.2);border-left:6px solid #fbbf24;padding:16px;border-radius:12px;margin-top:12px;}
+    .fact-box h3{color:#fbbf24;margin-bottom:8px;font-size:18px;}
+    .fact-box p{font-size:15px;line-height:1.6;margin:0;}
+    .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;}
+    .stat-item{background:rgba(245,158,11,0.1);border-radius:12px;padding:14px;text-align:center;}
+    .stat-label{font-size:13px;color:#c4b5fd;margin-bottom:4px;}
+    .stat-value{font-size:18px;font-weight:bold;color:#f59e0b;}
+    .nav-hint{margin-top:20px;text-align:center;font-size:13px;color:#a78bfa;background:rgba(167,139,250,0.1);padding:10px;border-radius:10px;}
+    .planet-game{background:#1a1735;backdrop-filter:blur(10px);border-radius:20px;padding:20px;margin-top:20px;border:1px solid rgba(255,255,255,0.1);}
+    .planet-game h2{color:#f59e0b;margin-bottom:16px;font-size:20px;text-align:center;}
+    .game-desc{text-align:center;color:#c4b5fd;font-size:14px;margin-bottom:14px;line-height:1.55;padding:0 8px;}
+    .game-canvas{position:relative;height:50vh;min-height:300px;max-height:500px;background:rgba(245,158,11,0.15);border-radius:16px;overflow:hidden;border:2px solid rgba(245,158,11,0.3);touch-action:none;cursor:crosshair;}
+    canvas{display:block;width:100%;height:100%;}
+    .game-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(8,6,24,0.94);padding:22px 26px;border-radius:16px;text-align:center;border:2px solid #f59e0b;z-index:10;min-width:220px;max-width:90%;}
+    .game-overlay h3{color:#ffd700;margin-bottom:8px;font-size:20px;}
+    .game-overlay p{color:#ddd;margin-bottom:14px;font-size:14px;line-height:1.5;}
+    .overlay-btn{padding:10px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
+    .planet-svg-panel{background:#12102a;border-radius:20px;border:1px solid rgba(245,158,11,0.45);padding:12px;margin:20px 0;}
+    .svg-viewport{width:100%;aspect-ratio:1;max-height:340px;border-radius:14px;overflow:hidden;background:#0a0820;touch-action:none;}
+    .svg-viewport svg{width:100%;height:100%;display:block;cursor:grab;}
+    .planet-info-panel{margin-top:10px;min-height:52px;padding:12px 14px;background:#1a1735;border-radius:12px;border-left:4px solid #f59e0b;font-size:14px;line-height:1.55;}
+    .planet-info-panel strong{color:#f59e0b;font-size:15px;}
+    .svg-controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+    .svg-ctrl{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:13px;font-weight:bold;cursor:pointer;min-height:44px;}
+    .svg-ctrl.active{background:linear-gradient(135deg,#f59e0b,#ef4444);}
+  </style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>☄️ Meteors</h1>
+    <div class="subtitle">Shooting stars in the sky!</div>
+  </div>
+
+  <div class="planet-svg-panel">
+    <div class="svg-viewport" id="svgViewport">
+      <svg id="planetSvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Meteor">
+        <defs><clipPath id="globe"><circle r="88"/></clipPath></defs>
+        <g id="planetGroup"></g>
+      </svg>
+    </div>
+    <div class="planet-info-panel" id="planetInfo">👆 Tap the meteor for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
+    <div class="svg-controls">
+      <button class="svg-ctrl" id="btnSpin" type="button">Stop</button>
+      <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
+      <button class="svg-ctrl" id="btnZoomOut" type="button">🔍 −</button>
+      <button class="svg-ctrl" id="btnRotL" type="button">↺</button>
+      <button class="svg-ctrl" id="btnRotR" type="button">↻</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 What is a Meteor?</h2>
+    <p>A meteor is a streak of light you see when a space rock burns up in Earth's atmosphere. Kids often call them shooting stars!</p>
+    <p>Before it enters the air, the rock is called a meteoroid. If a piece survives and lands on the ground, it becomes a meteorite.</p>
+  </div>
+
+  <div class="card">
+    <h2>🔥 Burning Bright</h2>
+    <p>Meteors glow because friction heats them up. They can travel up to 70 km per second — that's super fast!</p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Most meteors are tiny — about the size of a grain of sand!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📏 Meteor Stats</h2>
+    <div class="stats-grid">
+      <div class="stat-item"><div class="stat-label">Typical speed</div><div class="stat-value">Up to 70 km/s</div></div>
+      <div class="stat-item"><div class="stat-label">Daily hits</div><div class="stat-value">Millions!</div></div>
+      <div class="stat-item"><div class="stat-label">Meteor showers</div><div class="stat-value">From comet dust</div></div>
+      <div class="stat-item"><div class="stat-label">Bright ones</div><div class="stat-value">Fireballs</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🌠 Meteor Showers</h2>
+    <p>Sometimes Earth passes through a trail of dust left by a comet. Then we see many meteors in one night — a meteor shower!</p>
+    <p>Famous showers include the Perseids in August and the Geminids in December. Grab a blanket and look up!</p>
+  </div>
+
+  <div class="planet-game">
+    <h2>🛡️ Meteor Shield!</h2>
+    <p class="game-desc">Meteors fall from the sky! TAP each one to destroy it before it hits the ground.</p>
+    <div class="game-canvas" id="gameCanvas">
+      <canvas id="gameCanvasElement"></canvas>
+      <div class="game-overlay" id="startScreen">
+        <h3>🛡️ Meteor Shield!</h3>
+        <p>TAP falling meteors to protect the planet. Don't let them hit the ground!</p>
+        <button class="overlay-btn" type="button" onclick="startGame()">▶️ Start</button>
+      </div>
+      <div class="game-overlay" id="endScreen" style="display:none;">
+        <h3 id="endTitle">🎉 Great job!</h3>
+        <p id="endStats">Score: 0</p>
+        <button class="overlay-btn" type="button" onclick="startGame()">🔄 Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+
+<script>
+const meteorFacts = [
+  "Most meteors are smaller than a grain of sand!",
+  "A meteoroid becomes a meteor when it burns in the sky!",
+  "Meteor showers happen when Earth hits comet dust!",
+  "Fireballs are extra-bright meteors!",
+  "Meteorites are meteors that land on Earth!",
+  "The Perseids happen every August!",
+  "Meteors can travel 70 km per second!",
+  "Ancient people made wishes on shooting stars!"
+];
+
+const StylizedPlanet = {
+  NS: 'http://www.w3.org/2000/svg',
+  el(tag, a) { const e = document.createElementNS(this.NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; },
+  svgRoot(g) { return g.ownerSVGElement || document.getElementById('planetSvg'); },
+  ensureClip(svg, id, r) {
+    if (svg.querySelector('#' + id)) return 'url(#' + id + ')';
+    let defs = svg.querySelector('defs'); if (!defs) { defs = this.el('defs', {}); svg.insertBefore(defs, svg.firstChild); }
+    const cp = this.el('clipPath', { id }); cp.appendChild(this.el('circle', { r: String(r) })); defs.appendChild(cp);
+    return 'url(#' + id + ')';
+  },
+  ensureShading(svg) {
+    if (svg.querySelector('#sphereShade')) return;
+    let defs = svg.querySelector('defs'); if (!defs) { defs = this.el('defs', {}); svg.insertBefore(defs, svg.firstChild); }
+    const rg = this.el('radialGradient', { id: 'sphereShade', cx: '35%', cy: '32%', r: '65%' });
+    rg.appendChild(this.el('stop', { offset: '0%', 'stop-color': '#ffffff', 'stop-opacity': '0.22' }));
+    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#000000', 'stop-opacity': '0.45' }));
+    defs.appendChild(rg);
+  },
+  ensureMeteorGrad(svg) {
+    if (svg.querySelector('#meteorGrad')) return;
+    let defs = svg.querySelector('defs'); if (!defs) { defs = this.el('defs', {}); svg.insertBefore(defs, svg.firstChild); }
+    const rg = this.el('radialGradient', { id: 'meteorGrad', cx: '35%', cy: '30%', r: '65%' });
+    rg.appendChild(this.el('stop', { offset: '0%', 'stop-color': '#fcd34d' }));
+    rg.appendChild(this.el('stop', { offset: '50%', 'stop-color': '#b45309' }));
+    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#78350f' }));
+    defs.appendChild(rg);
+  },
+  drawMeteor(g, r, clip, svg) {
+    const S = this; if (svg) S.ensureMeteorGrad(svg);
+    g.appendChild(S.el('circle', { r: String(r), fill: 'url(#meteorGrad)', 'clip-path': clip }));
+    [[-20,-15,12,8], [25,10,10,6], [-10,30,8,5]].forEach(([cx,cy,rx,ry]) => {
+      g.appendChild(S.el('ellipse', { cx: String(cx), cy: String(cy), rx: String(rx), ry: String(ry), fill: 'rgba(60,30,10,0.5)', 'clip-path': clip }));
+    });
+    g.appendChild(S.el('circle', { r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none' }));
+    g.appendChild(S.el('circle', { r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer' }));
+  },
+  draw(g, type, r) {
+    r = r || 88; const S = this; const svg = S.svgRoot(g);
+    const clip = svg ? S.ensureClip(svg, 'globe', r) : '';
+    if (svg) S.ensureShading(svg);
+    if (type === 'meteor') { S.drawMeteor(g, r, clip, svg); return; }
+    g.appendChild(S.el('circle', { r: String(r), fill: '#888' }));
+  }
+};
+
+function makePlanetViewer(planetType, facts, label) {
+  return {
+    facts, fi: 0, spin: true, zoom: 1, rot: 0, drag: 0, ang: 0, dragMoved: false, startX: 0, startY: 0, lx: 0, dragging: false,
+    init() {
+      this.svg = document.getElementById('planetSvg'); this.g = document.getElementById('planetGroup'); this.info = document.getElementById('planetInfo');
+      if (!this.svg || !this.g || !this.info) return;
+      const S = this;
+      const btnSpin = document.getElementById('btnSpin');
+      btnSpin.onclick = () => { S.spin = !S.spin; btnSpin.textContent = S.spin ? 'Stop' : 'Spin'; btnSpin.classList.toggle('active', !S.spin); };
+      btnSpin.textContent = 'Stop';
+      document.getElementById('btnZoomIn').onclick = () => { S.zoom = Math.min(2.2, S.zoom + 0.15); };
+      document.getElementById('btnZoomOut').onclick = () => { S.zoom = Math.max(0.55, S.zoom - 0.15); };
+      document.getElementById('btnRotL').onclick = () => { S.rot -= 18; };
+      document.getElementById('btnRotR').onclick = () => { S.rot += 18; };
+      const onDown = e => { S.dragging = true; S.dragMoved = false; const p = e.touches ? e.touches[0] : e; S.startX = S.lx = p.clientX; S.startY = p.clientY; };
+      const onMove = e => { if (!S.dragging) return; const p = e.touches ? e.touches[0] : e; if (Math.hypot(p.clientX - S.startX, p.clientY - S.startY) > 12) S.dragMoved = true; S.drag += (p.clientX - S.lx) * 0.35; S.lx = p.clientX; };
+      const onUp = e => { if (!S.dragging) return; const p = e.changedTouches ? e.changedTouches[0] : e; if (!S.dragMoved && p && S.hitPlanet(p.clientX, p.clientY)) S.nextFact(); if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; } };
+      this.svg.addEventListener('mousedown', onDown); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
+      this.svg.addEventListener('touchstart', onDown, { passive: true }); this.svg.addEventListener('touchmove', onMove, { passive: true }); this.svg.addEventListener('touchend', onUp);
+      const loop = () => { if (S.spin) S.ang += 0.012; S.draw(); requestAnimationFrame(loop); }; this.draw(); loop();
+    },
+    hitPlanet(cx, cy) { const pt = this.svg.createSVGPoint(); pt.x = cx; pt.y = cy; const m = this.g.getScreenCTM(); if (!m) return false; const p = pt.matrixTransform(m.inverse()); return p.x * p.x + p.y * p.y <= 88 * 88; },
+    nextFact() { this.fi = (this.fi + 1) % this.facts.length; this.info.innerHTML = '<strong>' + label + '</strong><br>' + this.facts[this.fi]; },
+    draw() { while (this.g.firstChild) this.g.removeChild(this.g.firstChild); this.g.setAttribute('transform', 'translate(200,200) rotate(' + (this.rot + this.drag) + ') scale(' + this.zoom + ') rotate(' + this.ang + ')'); StylizedPlanet.draw(this.g, planetType, 88); }
+  };
+}
+const PlanetViewer = makePlanetViewer('meteor', meteorFacts, '☄️ Meteor');
+try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
+
+let canvas, ctx, isGameRunning = false, gameScore = 0, gameTime = 60, gameLives = 3;
+let meteors = [], spawnInterval, hudTimer, animationFrame, groundY;
+
+function drawStarfield() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#050414'); g.addColorStop(1, '#12102a');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < 35; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.15 + (i % 4) * 0.1) + ')';
+    ctx.beginPath(); ctx.arc((i * 127) % canvas.width, (i * 83) % canvas.height, 0.8 + (i % 2), 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+function drawHud() {
+  ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0, 0, canvas.width, 36);
+  ctx.font = 'bold 14px Comic Sans MS'; ctx.textAlign = 'left'; ctx.fillStyle = '#f59e0b';
+  ctx.fillText('⭐ ' + gameScore, 12, 24);
+  ctx.textAlign = 'center'; ctx.fillStyle = '#c4b5fd';
+  ctx.fillText('⏱ ' + gameTime + 's', canvas.width / 2, 24);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#f87171';
+  ctx.fillText('❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives)), canvas.width - 12, 24);
+}
+
+function spawnMeteor() {
+  meteors.push({ x: 30 + Math.random() * (canvas.width - 60), y: -20, r: 14 + Math.random() * 12, speed: 2.5 + Math.random() * 2.5, tail: Math.random() * Math.PI });
+}
+
+function drawMeteor(m) {
+  ctx.save(); ctx.translate(m.x, m.y);
+  const grad = ctx.createRadialGradient(-m.r * 0.3, -m.r * 0.3, 0, 0, 0, m.r);
+  grad.addColorStop(0, '#fcd34d'); grad.addColorStop(0.6, '#b45309'); grad.addColorStop(1, '#78350f');
+  ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0, 0, m.r, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,200,100,0.6)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0, -m.r); ctx.lineTo(-m.r * 1.5, -m.r * 3); ctx.stroke();
+  ctx.restore();
+}
+
+function handleTap(clientX, clientY) {
+  if (!isGameRunning) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (clientX - rect.left) * (canvas.width / rect.width);
+  const y = (clientY - rect.top) * (canvas.height / rect.height);
+  for (let i = meteors.length - 1; i >= 0; i--) {
+    const m = meteors[i];
+    if (Math.hypot(x - m.x, y - m.y) < m.r + 18) {
+      meteors.splice(i, 1); gameScore += 10;
+      ctx.fillStyle = 'rgba(255,215,0,0.8)'; ctx.beginPath(); ctx.arc(m.x, m.y, m.r * 2, 0, Math.PI * 2); ctx.fill();
+      return;
+    }
+  }
+}
+
+function loseLife() {
+  gameLives--;
+  if (gameLives <= 0) endGame();
+}
+
+function gameLoop() {
+  if (!isGameRunning) return;
+  drawStarfield();
+  ctx.fillStyle = 'rgba(120,80,40,0.25)'; ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+  ctx.fillStyle = '#4ade80'; ctx.fillRect(0, groundY - 4, canvas.width, 4);
+  meteors.forEach((m, i) => {
+    m.y += m.speed;
+    drawMeteor(m);
+    if (m.y + m.r >= groundY) { meteors.splice(i, 1); loseLife(); }
+  });
+  drawHud();
+  animationFrame = requestAnimationFrame(gameLoop);
+}
+
+function startGame() {
+  if (isGameRunning) return;
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'none';
+  canvas = document.getElementById('gameCanvasElement');
+  ctx = canvas.getContext('2d');
+  const box = document.getElementById('gameCanvas');
+  canvas.width = box.clientWidth; canvas.height = box.clientHeight;
+  groundY = canvas.height - 40;
+  isGameRunning = true; gameScore = 0; gameTime = 60; gameLives = 3; meteors = [];
+  spawnInterval = setInterval(spawnMeteor, 700);
+  if (hudTimer) clearInterval(hudTimer);
+  hudTimer = setInterval(() => { if (!isGameRunning) return; gameTime--; if (gameTime <= 0) endGame(); }, 1000);
+  canvas.onclick = e => handleTap(e.clientX, e.clientY);
+  canvas.ontouchstart = e => { e.preventDefault(); handleTap(e.touches[0].clientX, e.touches[0].clientY); };
+  gameLoop();
+}
+
+function endGame() {
+  isGameRunning = false;
+  clearInterval(spawnInterval); clearInterval(hudTimer);
+  cancelAnimationFrame(animationFrame);
+  document.getElementById('endScreen').style.display = 'block';
+  document.getElementById('endStats').textContent = 'Score: ' + gameScore + ' | Meteors destroyed!';
+}
+</script>
+</body>
+</html>

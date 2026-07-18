@@ -198,6 +198,11 @@
       font-size:14px;
       margin-bottom:16px;
     }
+    
+    .game-hud-float{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:6px;z-index:6;pointer-events:none;flex-wrap:wrap;}
+    .game-hud-float span{background:rgba(0,0,0,0.65);padding:5px 10px;border-radius:8px;font-size:12px;font-weight:bold;color:#fff;border:1px solid rgba(255,255,255,0.2);}
+    .game-canvas{position:relative;}
+
     .game-canvas{
       position:relative;
       height:50vh;
@@ -418,6 +423,7 @@
     <h2>🚀 Mars Rover Explorer!</h2>
     <p class="game-desc">Drive the rover with arrows. Collect rock samples 💎 — avoid craters!</p>
     <div class="game-canvas" id="gameCanvas">
+      <div class="game-hud-float"><span id="gameScore">Samples: 0</span><span id="gameTimer">⏱ 75s | ❤️❤️❤️</span></div>
       <canvas id="gameCanvasElement"></canvas>
       <div class="game-overlay" id="startScreen">
         <h3>🚀 Mars Rover Explorer!</h3>
@@ -441,9 +447,6 @@
       <button class="touch-btn" id="downBtn">⬇️</button>
       <button class="touch-btn empty"></button>
     </div>
-    <div class="game-score" id="gameScore">Samples: 0</div>
-    <div class="game-timer" id="gameTimer">Fuel: 100%</div>
-    
   </div>
 
 <div class="nav-hint">
@@ -654,6 +657,20 @@ function handleKeyUp(e) {
   }
 }
 
+function drawMarsCrater(cx, cy, r) {
+  const g = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.2, r * 0.1, cx, cy, r);
+  g.addColorStop(0, '#5c4033');
+  g.addColorStop(0.6, '#8B4513');
+  g.addColorStop(1, '#C1440E');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(60,30,20,0.4)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
 function gameLoop() {
   if (!isGameRunning) return;
   
@@ -670,6 +687,10 @@ function gameLoop() {
   ctx.fillStyle = terrainGradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   
+  for (let c = 0; c < 6; c++) {
+    drawMarsCrater((c * 97 + 40) % canvas.width, (c * 53 + 80) % (canvas.height - 40) + 20, 18 + (c % 3) * 8);
+  }
+
   // Add terrain texture/dunes
   ctx.fillStyle = 'rgba(139, 69, 19, 0.3)';
   for (let i = 0; i < 8; i++) {
@@ -992,6 +1013,9 @@ const StylizedPlanet = {
     g.appendChild(S.el('circle', {
       r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none'
     }));
+    g.appendChild(S.el('circle', {
+      r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer'
+    }));
   },
   ensureSaturnRingClips(svg, r) {
     if (svg.querySelector('#saturnRingBack')) return;
@@ -1068,33 +1092,61 @@ const StylizedPlanet = {
 function makePlanetViewer(planetType, facts, label) {
   return {
     facts: facts, fi: 0, spin: true, zoom: 1, rot: 0, drag: 0, ang: 0,
+    dragMoved: false, startX: 0, startY: 0, lx: 0, dragging: false,
     init() {
       this.svg = document.getElementById('planetSvg');
       this.g = document.getElementById('planetGroup');
       this.info = document.getElementById('planetInfo');
       if (!this.svg || !this.g || !this.info) return;
-      this.svg.addEventListener('click', () => this.nextFact());
+      const S = this;
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => {
-        this.spin = !this.spin;
-        btnSpin.textContent = this.spin ? 'Stop' : 'Spin';
-        btnSpin.classList.toggle('active', !this.spin);
+        S.spin = !S.spin;
+        btnSpin.textContent = S.spin ? 'Stop' : 'Spin';
+        btnSpin.classList.toggle('active', !S.spin);
       };
       btnSpin.textContent = 'Stop';
-      document.getElementById('btnZoomIn').onclick = () => { this.zoom = Math.min(2.2, this.zoom + 0.15); };
-      document.getElementById('btnZoomOut').onclick = () => { this.zoom = Math.max(0.55, this.zoom - 0.15); };
-      document.getElementById('btnRotL').onclick = () => { this.rot -= 18; };
-      document.getElementById('btnRotR').onclick = () => { this.rot += 18; };
-      let lx = 0, drag = false;
-      this.svg.onmousedown = e => { drag = true; lx = e.clientX; };
-      window.onmousemove = e => { if (drag) { this.drag += (e.clientX - lx) * 0.35; lx = e.clientX; } };
-      window.onmouseup = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
-      this.svg.ontouchstart = e => { drag = true; lx = e.touches[0].clientX; };
-      this.svg.ontouchmove = e => { if (drag) { this.drag += (e.touches[0].clientX - lx) * 0.35; lx = e.touches[0].clientX; } };
-      this.svg.ontouchend = () => { if (drag) { this.rot += this.drag; this.drag = 0; drag = false; } };
-      const loop = () => { if (this.spin) this.ang += 0.012; this.draw(); requestAnimationFrame(loop); };
+      document.getElementById('btnZoomIn').onclick = () => { S.zoom = Math.min(2.2, S.zoom + 0.15); };
+      document.getElementById('btnZoomOut').onclick = () => { S.zoom = Math.max(0.55, S.zoom - 0.15); };
+      document.getElementById('btnRotL').onclick = () => { S.rot -= 18; };
+      document.getElementById('btnRotR').onclick = () => { S.rot += 18; };
+      const onDown = e => {
+        S.dragging = true;
+        S.dragMoved = false;
+        const p = e.touches ? e.touches[0] : e;
+        S.startX = S.lx = p.clientX;
+        S.startY = p.clientY;
+      };
+      const onMove = e => {
+        if (!S.dragging) return;
+        const p = e.touches ? e.touches[0] : e;
+        if (Math.hypot(p.clientX - S.startX, p.clientY - S.startY) > 12) S.dragMoved = true;
+        if (S.dragging) { S.drag += (p.clientX - S.lx) * 0.35; S.lx = p.clientX; }
+      };
+      const onUp = e => {
+        if (!S.dragging) return;
+        const p = e.changedTouches ? e.changedTouches[0] : e;
+        if (!S.dragMoved && p && S.hitPlanet(p.clientX, p.clientY)) S.nextFact();
+        if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; }
+      };
+      this.svg.addEventListener('mousedown', onDown);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+      this.svg.addEventListener('touchstart', e => { onDown(e); }, { passive: true });
+      this.svg.addEventListener('touchmove', e => { onMove(e); }, { passive: true });
+      this.svg.addEventListener('touchend', onUp);
+      const loop = () => { if (S.spin) S.ang += 0.012; S.draw(); requestAnimationFrame(loop); };
       this.draw();
       loop();
+    },
+    hitPlanet(clientX, clientY) {
+      const pt = this.svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      const m = this.g.getScreenCTM();
+      if (!m) return false;
+      const p = pt.matrixTransform(m.inverse());
+      return p.x * p.x + p.y * p.y <= 88 * 88;
     },
     nextFact() {
       this.fi = (this.fi + 1) % this.facts.length;
