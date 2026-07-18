@@ -510,7 +510,15 @@ function checkFact(btn, isCorrect) {
 // Ring Gap Snap — timing game (tap when gap aligns)
 let gameScore = 0, gameLives = 3, gameTime = 60, hudTimer;
 let isGameRunning = false, canvas, ctx, animationFrame;
-let ringAngle = 0, ringSpeed = 0.025, gapSize = 0.55, hits = 0;
+let ringAngle = 0, ringSpeed = 0.012, hits = 0;
+const RING_GAP_CENTER = -Math.PI / 2;
+const RING_GAP_WIDTH = 0.42;
+
+function gapAtTopDiff() {
+  let a = ringAngle % (Math.PI * 2);
+  if (a < 0) a += Math.PI * 2;
+  return Math.min(a, Math.PI * 2 - a);
+}
 
 function formatHudTimeLives() {
   return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
@@ -542,7 +550,7 @@ function startGame() {
   const box = document.getElementById('gameCanvas');
   canvas.width = box.clientWidth; canvas.height = box.clientHeight;
   isGameRunning = true; gameScore = 0; gameLives = 3; gameTime = 60;
-  ringAngle = 0; ringSpeed = 0.025; hits = 0;
+  ringAngle = 0; ringSpeed = 0.012; hits = 0;
   document.getElementById('gameScore').textContent = 'Score: 0';
   document.getElementById('gameTimer').textContent = formatHudTimeLives();
   startHudTimer();
@@ -556,18 +564,38 @@ function onKey(e) {
 }
 function trySnap() {
   if (!isGameRunning) return;
-  const a = ringAngle % (Math.PI * 2);
-  const diff = Math.min(Math.abs(a), Math.abs(a - Math.PI * 2));
-  if (diff < gapSize * 0.35 + 0.15) {
+  if (gapAtTopDiff() < 0.32) {
     gameScore += 10; hits++;
-    ringSpeed = Math.min(0.06, ringSpeed + 0.002);
+    ringSpeed = Math.min(0.028, ringSpeed + 0.001);
     document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-    if (hits >= 15) endGame(true);
+    if (hits >= 10) endGame(true);
   } else {
     gameLives--;
     document.getElementById('gameTimer').textContent = formatHudTimeLives();
     if (gameLives <= 0) endGame(false);
   }
+}
+function drawSaturnRings(rr) {
+  const N = 24;
+  const slice = (Math.PI * 2) / N;
+  for (let i = 0; i < N; i++) {
+    const mid = RING_GAP_CENTER + RING_GAP_WIDTH / 2 + i * slice;
+    const segLen = slice * 0.62;
+    const a0 = mid - segLen / 2;
+    const a1 = mid + segLen / 2;
+    ctx.strokeStyle = 'rgba(200,170,120,0.65)';
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    ctx.arc(0, 0, rr, a0, a1);
+    ctx.stroke();
+  }
+  const ga0 = RING_GAP_CENTER - RING_GAP_WIDTH / 2;
+  const ga1 = RING_GAP_CENTER + RING_GAP_WIDTH / 2;
+  ctx.strokeStyle = '#ffd700';
+  ctx.lineWidth = 12;
+  ctx.beginPath();
+  ctx.arc(0, 0, rr, ga0, ga1);
+  ctx.stroke();
 }
 function gameLoop() {
   if (!isGameRunning) return;
@@ -582,14 +610,15 @@ function gameLoop() {
   ctx.font = pr + 'px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText('🪐', cx, cy + 4);
   ctx.save(); ctx.translate(cx, cy); ctx.rotate(ringAngle);
-  for (let i = 0; i < 32; i++) {
-    const a0 = (i / 32) * Math.PI * 2;
-    const a1 = a0 + (Math.PI * 2 / 32) * 0.65;
-    if (i === 0) { ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 10; }
-    else { ctx.strokeStyle = 'rgba(200,170,120,0.55)'; ctx.lineWidth = 6; }
-    ctx.beginPath(); ctx.arc(0, 0, rr, a0 + 0.08, a1); ctx.stroke();
-  }
+  drawSaturnRings(rr);
   ctx.restore();
+  ctx.fillStyle = '#ffd700';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - pr - rr - 6);
+  ctx.lineTo(cx - 10, cy - pr - rr + 8);
+  ctx.lineTo(cx + 10, cy - pr - rr + 8);
+  ctx.closePath();
+  ctx.fill();
   ctx.fillStyle = '#667eea'; ctx.beginPath();
   ctx.moveTo(cx, cy + pr + 20); ctx.lineTo(cx - 8, cy + pr + 38); ctx.lineTo(cx + 8, cy + pr + 38); ctx.closePath(); ctx.fill();
   ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '13px Comic Sans MS'; ctx.textAlign = 'center';
@@ -827,13 +856,6 @@ function makePlanetViewer(planetType, facts, label) {
     }
   };
 }
-
-const PlanetViewer = makePlanetViewer('earth', earthFacts, '🌍 Earth');
-try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
-
-</script>
-</body>
-</html>
 
 const PlanetViewer = makePlanetViewer('saturn', saturnFacts, '💍 Saturn');
 try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }

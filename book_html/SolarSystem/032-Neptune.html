@@ -762,13 +762,6 @@ function makePlanetViewer(planetType, facts, label) {
   };
 }
 
-const PlanetViewer = makePlanetViewer('earth', earthFacts, '🌍 Earth');
-try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
-
-</script>
-</body>
-</html>
-
 const PlanetViewer = makePlanetViewer('neptune', neptuneFacts, '🔷 Neptune');
 try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err); }
 

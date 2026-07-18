@@ -58,7 +58,7 @@
         <g id="planetGroup"></g>
       </svg>
     </div>
-    <div class="planet-info-panel" id="planetInfo">👆 Tap the black hole for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
+    <div class="planet-info-panel" id="planetInfo"><strong>🕳️ Black Hole</strong><br>Tap for a fun fact! The bright orange glow is the accretion disk — hot gas swirling around the hole (like NASA's first black hole photo).</div>
     <div class="svg-controls">
       <button class="svg-ctrl" id="btnSpin" type="button">Stop</button>
       <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
@@ -153,21 +153,24 @@ const StylizedPlanet = {
     rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#000000', 'stop-opacity': '0.6' }));
     defs.appendChild(rg);
   },
-  ensureDiskGrad(svg) {
-    if (svg.querySelector('#diskGrad')) return;
+  ensureBhGlow(svg) {
+    if (svg.querySelector('#bhGlow')) return;
     let defs = svg.querySelector('defs'); if (!defs) { defs = this.el('defs', {}); svg.insertBefore(defs, svg.firstChild); }
-    const rg = this.el('radialGradient', { id: 'diskGrad', cx: '50%', cy: '50%', r: '50%' });
-    rg.appendChild(this.el('stop', { offset: '60%', 'stop-color': '#1a0a2e', 'stop-opacity': '0' }));
-    rg.appendChild(this.el('stop', { offset: '85%', 'stop-color': '#a78bfa', 'stop-opacity': '0.7' }));
-    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#667eea', 'stop-opacity': '0.3' }));
+    const rg = this.el('radialGradient', { id: 'bhGlow', cx: '50%', cy: '50%', r: '50%' });
+    rg.appendChild(this.el('stop', { offset: '0%', 'stop-color': '#000000', 'stop-opacity': '1' }));
+    rg.appendChild(this.el('stop', { offset: '52%', 'stop-color': '#000000', 'stop-opacity': '1' }));
+    rg.appendChild(this.el('stop', { offset: '58%', 'stop-color': '#fb923c', 'stop-opacity': '1' }));
+    rg.appendChild(this.el('stop', { offset: '68%', 'stop-color': '#fbbf24', 'stop-opacity': '0.95' }));
+    rg.appendChild(this.el('stop', { offset: '78%', 'stop-color': '#ea580c', 'stop-opacity': '0.55' }));
+    rg.appendChild(this.el('stop', { offset: '100%', 'stop-color': '#1a0a2e', 'stop-opacity': '0' }));
     defs.appendChild(rg);
   },
   drawBlackHole(g, r, clip, svg) {
-    const S = this; if (svg) { S.ensureDiskGrad(svg); S.ensureShading(svg); }
-    g.appendChild(S.el('ellipse', { rx: String(r * 1.6), ry: String(r * 0.45), fill: 'none', stroke: 'rgba(167,139,250,0.5)', 'stroke-width': '8', transform: 'rotate(-15)' }));
-    g.appendChild(S.el('circle', { r: String(r * 1.1), fill: 'url(#diskGrad)', 'pointer-events': 'none' }));
-    g.appendChild(S.el('circle', { r: String(r * 0.72), fill: '#000000', 'clip-path': clip }));
-    g.appendChild(S.el('circle', { r: String(r * 0.72), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none' }));
+    const S = this;
+    if (svg) { S.ensureBhGlow(svg); S.ensureShading(svg); }
+    g.appendChild(S.el('circle', { r: String(r * 1.15), fill: 'url(#bhGlow)', 'pointer-events': 'none' }));
+    g.appendChild(S.el('circle', { r: String(r * 0.58), fill: '#000000' }));
+    g.appendChild(S.el('circle', { r: String(r * 0.58), fill: 'url(#sphereShade)', 'pointer-events': 'none', opacity: '0.35' }));
     g.appendChild(S.el('circle', { r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer' }));
   },
   draw(g, type, r) {
@@ -209,8 +212,8 @@ try { PlanetViewer.init(); } catch (err) { console.error('Planet viewer:', err);
 
 let canvas, ctx, isGameRunning = false, gameScore = 0, gameTime = 60, gameLives = 3;
 let angle = 0, orbitRadius = 0, minR = 0, maxR = 0, cx = 0, cy = 0;
-let boostWindow = false, windowTimer = 0, windowDuration = 45, windowInterval = 120;
-let hudTimer, animationFrame, shrinkRate = 0.08;
+let boostWindow = false, windowTimer = 0, windowDuration = 65, windowInterval = 150;
+let hudTimer, animationFrame, shrinkRate = 0.04;
 
 function drawStarfield() {
   const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -266,12 +269,12 @@ function drawSatellite() {
 function handleTap() {
   if (!isGameRunning) return;
   if (boostWindow) {
-    orbitRadius = Math.min(maxR, orbitRadius + 28);
+    orbitRadius = Math.min(maxR, orbitRadius + 22);
     gameScore += 15;
     boostWindow = false;
     windowTimer = 0;
   } else {
-    orbitRadius = Math.max(minR, orbitRadius - 12);
+    orbitRadius = Math.max(minR, orbitRadius - 8);
   }
 }
 
@@ -283,7 +286,7 @@ function loseLife() {
 
 function gameLoop() {
   if (!isGameRunning) return;
-  angle += 0.04;
+  angle += 0.018;
   orbitRadius -= shrinkRate;
   windowTimer++;
   if (!boostWindow && windowTimer >= windowInterval) { boostWindow = true; windowTimer = 0; }

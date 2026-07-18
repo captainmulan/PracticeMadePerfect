@@ -58,7 +58,7 @@
         <g id="planetGroup"></g>
       </svg>
     </div>
-    <div class="planet-info-panel" id="planetInfo">👆 Tap the meteor for a fun fact! Spin, zoom &amp; rotate with the buttons.</div>
+    <div class="planet-info-panel" id="planetInfo"><strong>☄️ Meteor</strong><br>Watch it spin! Use the buttons below to zoom and rotate.</div>
     <div class="svg-controls">
       <button class="svg-ctrl" id="btnSpin" type="button">Stop</button>
       <button class="svg-ctrl" id="btnZoomIn" type="button">🔍 +</button>
@@ -163,13 +163,14 @@ const StylizedPlanet = {
     defs.appendChild(rg);
   },
   drawMeteor(g, r, clip, svg) {
-    const S = this; if (svg) S.ensureMeteorGrad(svg);
-    g.appendChild(S.el('circle', { r: String(r), fill: 'url(#meteorGrad)', 'clip-path': clip }));
-    [[-20,-15,12,8], [25,10,10,6], [-10,30,8,5]].forEach(([cx,cy,rx,ry]) => {
-      g.appendChild(S.el('ellipse', { cx: String(cx), cy: String(cy), rx: String(rx), ry: String(ry), fill: 'rgba(60,30,10,0.5)', 'clip-path': clip }));
+    const S = this;
+    const t = S.el('text', {
+      x: '0', y: '16', 'text-anchor': 'middle',
+      'font-size': '220',
+      'pointer-events': 'none'
     });
-    g.appendChild(S.el('circle', { r: String(r), fill: 'url(#sphereShade)', 'clip-path': clip, 'pointer-events': 'none' }));
-    g.appendChild(S.el('circle', { r: String(r), fill: 'rgba(0,0,0,0.001)', 'pointer-events': 'all', style: 'cursor:pointer' }));
+    t.textContent = '☄️';
+    g.appendChild(t);
   },
   draw(g, type, r) {
     r = r || 88; const S = this; const svg = S.svgRoot(g);
@@ -187,6 +188,7 @@ function makePlanetViewer(planetType, facts, label) {
       this.svg = document.getElementById('planetSvg'); this.g = document.getElementById('planetGroup'); this.info = document.getElementById('planetInfo');
       if (!this.svg || !this.g || !this.info) return;
       const S = this;
+      S.spin = true;
       const btnSpin = document.getElementById('btnSpin');
       btnSpin.onclick = () => { S.spin = !S.spin; btnSpin.textContent = S.spin ? 'Stop' : 'Spin'; btnSpin.classList.toggle('active', !S.spin); };
       btnSpin.textContent = 'Stop';
@@ -196,13 +198,11 @@ function makePlanetViewer(planetType, facts, label) {
       document.getElementById('btnRotR').onclick = () => { S.rot += 18; };
       const onDown = e => { S.dragging = true; S.dragMoved = false; const p = e.touches ? e.touches[0] : e; S.startX = S.lx = p.clientX; S.startY = p.clientY; };
       const onMove = e => { if (!S.dragging) return; const p = e.touches ? e.touches[0] : e; if (Math.hypot(p.clientX - S.startX, p.clientY - S.startY) > 12) S.dragMoved = true; S.drag += (p.clientX - S.lx) * 0.35; S.lx = p.clientX; };
-      const onUp = e => { if (!S.dragging) return; const p = e.changedTouches ? e.changedTouches[0] : e; if (!S.dragMoved && p && S.hitPlanet(p.clientX, p.clientY)) S.nextFact(); if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; } };
+      const onUp = e => { if (!S.dragging) return; if (S.dragging) { S.rot += S.drag; S.drag = 0; S.dragging = false; } };
       this.svg.addEventListener('mousedown', onDown); window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
       this.svg.addEventListener('touchstart', onDown, { passive: true }); this.svg.addEventListener('touchmove', onMove, { passive: true }); this.svg.addEventListener('touchend', onUp);
-      const loop = () => { if (S.spin) S.ang += 0.012; S.draw(); requestAnimationFrame(loop); }; this.draw(); loop();
+      const loop = () => { if (S.spin) S.ang += 0.018; S.draw(); requestAnimationFrame(loop); }; this.draw(); loop();
     },
-    hitPlanet(cx, cy) { const pt = this.svg.createSVGPoint(); pt.x = cx; pt.y = cy; const m = this.g.getScreenCTM(); if (!m) return false; const p = pt.matrixTransform(m.inverse()); return p.x * p.x + p.y * p.y <= 88 * 88; },
-    nextFact() { this.fi = (this.fi + 1) % this.facts.length; this.info.innerHTML = '<strong>' + label + '</strong><br>' + this.facts[this.fi]; },
     draw() { while (this.g.firstChild) this.g.removeChild(this.g.firstChild); this.g.setAttribute('transform', 'translate(200,200) rotate(' + (this.rot + this.drag) + ') scale(' + this.zoom + ') rotate(' + this.ang + ')'); StylizedPlanet.draw(this.g, planetType, 88); }
   };
 }
@@ -233,7 +233,7 @@ function drawHud() {
 }
 
 function spawnMeteor() {
-  meteors.push({ x: 30 + Math.random() * (canvas.width - 60), y: -20, r: 14 + Math.random() * 12, speed: 2.5 + Math.random() * 2.5, tail: Math.random() * Math.PI });
+  meteors.push({ x: 30 + Math.random() * (canvas.width - 60), y: -20, r: 16 + Math.random() * 10, speed: 0.9 + Math.random() * 0.8, tail: Math.random() * Math.PI });
 }
 
 function drawMeteor(m) {
@@ -263,7 +263,20 @@ function handleTap(clientX, clientY) {
 
 function loseLife() {
   gameLives--;
-  if (gameLives <= 0) endGame();
+  if (gameLives <= 0) endGame(false);
+}
+
+function endGame(won) {
+  isGameRunning = false;
+  clearInterval(spawnInterval); clearInterval(hudTimer);
+  cancelAnimationFrame(animationFrame);
+  const title = document.getElementById('endTitle');
+  if (gameLives <= 0) title.textContent = '💥 Meteors Hit Ground!';
+  else if (won || gameScore >= 30) title.textContent = '🏆 Shield Hero!';
+  else if (gameTime <= 0) title.textContent = '⏱ Time Up!';
+  else title.textContent = '🎉 Nice Try!';
+  document.getElementById('endScreen').style.display = 'flex';
+  document.getElementById('endStats').textContent = 'Score: ' + gameScore + ' | Lives left: ' + gameLives;
 }
 
 function gameLoop() {
@@ -290,20 +303,12 @@ function startGame() {
   canvas.width = box.clientWidth; canvas.height = box.clientHeight;
   groundY = canvas.height - 40;
   isGameRunning = true; gameScore = 0; gameTime = 60; gameLives = 3; meteors = [];
-  spawnInterval = setInterval(spawnMeteor, 700);
+  spawnInterval = setInterval(spawnMeteor, 950);
   if (hudTimer) clearInterval(hudTimer);
-  hudTimer = setInterval(() => { if (!isGameRunning) return; gameTime--; if (gameTime <= 0) endGame(); }, 1000);
+  hudTimer = setInterval(() => { if (!isGameRunning) return; gameTime--; if (gameTime <= 0) endGame(gameScore >= 30); }, 1000);
   canvas.onclick = e => handleTap(e.clientX, e.clientY);
   canvas.ontouchstart = e => { e.preventDefault(); handleTap(e.touches[0].clientX, e.touches[0].clientY); };
   gameLoop();
-}
-
-function endGame() {
-  isGameRunning = false;
-  clearInterval(spawnInterval); clearInterval(hudTimer);
-  cancelAnimationFrame(animationFrame);
-  document.getElementById('endScreen').style.display = 'block';
-  document.getElementById('endStats').textContent = 'Score: ' + gameScore + ' | Meteors destroyed!';
 }
 </script>
 </body>

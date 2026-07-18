@@ -423,7 +423,7 @@
     <h2>🚀 Mars Rover Explorer!</h2>
     <p class="game-desc">Drive the rover with arrows. Collect rock samples 💎 — avoid craters!</p>
     <div class="game-canvas" id="gameCanvas">
-      <div class="game-hud-float"><span id="gameScore">Samples: 0</span><span id="gameTimer">⏱ 75s | ❤️❤️❤️</span></div>
+      <div class="game-hud-float"><span id="gameScore">Samples: 0</span><span id="gameTimer">⏱ 75s | ⛽100% | ❤️❤️❤️</span></div>
       <canvas id="gameCanvasElement"></canvas>
       <div class="game-overlay" id="startScreen">
         <h3>🚀 Mars Rover Explorer!</h3>
@@ -501,7 +501,7 @@ function drawStarfield() {
   }
 }
 function formatHudTimeLives() {
-  return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
+  return '⏱ ' + gameTime + 's | ⛽' + Math.round(gameFuel) + '% | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
 }
 function startHudTimer() {
   if (typeof hudTimer !== 'undefined' && hudTimer) clearInterval(hudTimer);
@@ -537,9 +537,16 @@ let moveRight = false;
 let gameTime = 75;
 let gameLives = 3;
 let hudTimer;
+let marsControlsBound = false;
+
+function resetMarsControls() {
+  keys = {};
+  moveUp = moveDown = moveLeft = moveRight = false;
+}
 
 function startGame() {
   if (isGameRunning) return;
+  resetMarsControls();
   const _ss = document.getElementById('startScreen'); if (_ss) _ss.style.display = 'none';
   const _es = document.getElementById('endScreen'); if (_es) _es.style.display = 'none';
   
@@ -594,35 +601,37 @@ function startGame() {
   document.getElementById('gameTimer').textContent = formatHudTimeLives();
   startHudTimer();
   
-  // Enable controls
-  document.addEventListener('keydown', handleKeyDown);
-  document.addEventListener('keyup', handleKeyUp);
+  if (!marsControlsBound) {
+    marsControlsBound = true;
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    const upBtn = document.getElementById('upBtn');
+    const downBtn = document.getElementById('downBtn');
+    const leftBtn = document.getElementById('leftBtn');
+    const rightBtn = document.getElementById('rightBtn');
+    upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if (isGameRunning) moveUp = true; });
+    upBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveUp = false; });
+    downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if (isGameRunning) moveDown = true; });
+    downBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveDown = false; });
+    leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if (isGameRunning) moveLeft = true; });
+    leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveLeft = false; });
+    rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); if (isGameRunning) moveRight = true; });
+    rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveRight = false; });
+    upBtn.addEventListener('mousedown', () => { if (isGameRunning) moveUp = true; });
+    upBtn.addEventListener('mouseup', () => { moveUp = false; });
+    upBtn.addEventListener('mouseleave', () => { moveUp = false; });
+    downBtn.addEventListener('mousedown', () => { if (isGameRunning) moveDown = true; });
+    downBtn.addEventListener('mouseup', () => { moveDown = false; });
+    downBtn.addEventListener('mouseleave', () => { moveDown = false; });
+    leftBtn.addEventListener('mousedown', () => { if (isGameRunning) moveLeft = true; });
+    leftBtn.addEventListener('mouseup', () => { moveLeft = false; });
+    leftBtn.addEventListener('mouseleave', () => { moveLeft = false; });
+    rightBtn.addEventListener('mousedown', () => { if (isGameRunning) moveRight = true; });
+    rightBtn.addEventListener('mouseup', () => { moveRight = false; });
+    rightBtn.addEventListener('mouseleave', () => { moveRight = false; });
+    window.addEventListener('blur', resetMarsControls);
+  }
   
-  // Touch controls
-  const upBtn = document.getElementById('upBtn');
-  const downBtn = document.getElementById('downBtn');
-  const leftBtn = document.getElementById('leftBtn');
-  const rightBtn = document.getElementById('rightBtn');
-  
-  upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveUp = true; });
-  upBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveUp = false; });
-  downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveDown = true; });
-  downBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveDown = false; });
-  leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveLeft = true; });
-  leftBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveLeft = false; });
-  rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveRight = true; });
-  rightBtn.addEventListener('touchend', (e) => { e.preventDefault(); moveRight = false; });
-  
-  upBtn.addEventListener('mousedown', () => moveUp = true);
-  upBtn.addEventListener('mouseup', () => moveUp = false);
-  downBtn.addEventListener('mousedown', () => moveDown = true);
-  downBtn.addEventListener('mouseup', () => moveDown = false);
-  leftBtn.addEventListener('mousedown', () => moveLeft = true);
-  leftBtn.addEventListener('mouseup', () => moveLeft = false);
-  rightBtn.addEventListener('mousedown', () => moveRight = true);
-  rightBtn.addEventListener('mouseup', () => moveRight = false);
-  
-  // Start game loop
   gameLoop();
 }
 
@@ -659,16 +668,19 @@ function handleKeyUp(e) {
 
 function drawMarsCrater(cx, cy, r) {
   const g = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.2, r * 0.1, cx, cy, r);
-  g.addColorStop(0, '#5c4033');
+  g.addColorStop(0, '#3d2817');
   g.addColorStop(0.6, '#8B4513');
   g.addColorStop(1, '#C1440E');
   ctx.fillStyle = g;
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = 'rgba(60,30,20,0.4)';
+  ctx.strokeStyle = 'rgba(60,30,20,0.5)';
   ctx.lineWidth = 2;
   ctx.stroke();
+  ctx.font = (r * 0.7) + 'px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🔥', cx, cy);
 }
 
 function gameLoop() {
@@ -761,25 +773,28 @@ function gameLoop() {
       if (!isGameRunning) return;
       gameFuel = 100;
     }
+    document.getElementById('gameTimer').textContent = formatHudTimeLives();
   }
   
-  // Draw obstacles
-  obstacles.forEach(obstacle => {
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+  // Draw obstacles (craters / hazards)
+  obstacles.forEach((obstacle, i) => {
+    const ox = obstacle.x + obstacle.width / 2;
+    const oy = obstacle.y + obstacle.height / 2;
+    ctx.font = (obstacle.width * 0.9) + 'px serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('🔥', ox, oy);
     
-    // Check collision with rover
     if (rover.x + rover.width / 2 > obstacle.x &&
         rover.x - rover.width / 2 < obstacle.x + obstacle.width &&
         rover.y + rover.height / 2 > obstacle.y &&
         rover.y - rover.height / 2 < obstacle.y + obstacle.height) {
-      // Push rover back
       gameFuel -= 15;
       if (gameFuel <= 0) {
         loseLife();
         if (!isGameRunning) return;
         gameFuel = 100;
       }
+      document.getElementById('gameTimer').textContent = formatHudTimeLives();
     }
   });
   
@@ -816,121 +831,19 @@ function gameLoop() {
     }
   });
   
-  // Draw rover with improved graphics
-  ctx.save();
-  ctx.translate(rover.x, rover.y);
-  ctx.rotate(rover.angle);
-  
-  // Rover body with gradient
-  const bodyGradient = ctx.createLinearGradient(-rover.width / 2, -rover.height / 2, rover.width / 2, rover.height / 2);
-  bodyGradient.addColorStop(0, '#E8B87A');
-  bodyGradient.addColorStop(0.5, '#CD853F');
-  bodyGradient.addColorStop(1, '#A0522D');
-  ctx.fillStyle = bodyGradient;
-  
-  // Main body (rounded rectangle)
-  ctx.beginPath();
-  ctx.roundRect(-rover.width / 2, -rover.height / 2, rover.width, rover.height, 5);
-  ctx.fill();
-  
-  // Solar panel on top
-  ctx.fillStyle = '#1E3A5A';
-  ctx.fillRect(-rover.width / 3, -rover.height / 2 - 8, rover.width / 1.5, 8);
-  
-  // Solar panel grid lines
-  ctx.strokeStyle = '#4169E1';
-  ctx.lineWidth = 1;
-  for (let i = 0; i < 4; i++) {
-    ctx.beginPath();
-    ctx.moveTo(-rover.width / 3 + i * (rover.width / 6), -rover.height / 2 - 8);
-    ctx.lineTo(-rover.width / 3 + i * (rover.width / 6), -rover.height / 2);
-    ctx.stroke();
-  }
-  
-  // Rover wheels with detail
-  ctx.fillStyle = '#2F2F2F';
-  const wheelPositions = [
-    { x: -rover.width / 2 - 3, y: -rover.height / 2 },
-    { x: rover.width / 2 + 3, y: -rover.height / 2 },
-    { x: -rover.width / 2 - 3, y: rover.height / 2 },
-    { x: rover.width / 2 + 3, y: rover.height / 2 }
-  ];
-  
-  wheelPositions.forEach(pos => {
-    // Wheel outer
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 10, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Wheel inner
-    ctx.fillStyle = '#4F4F4F';
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Wheel hub
-    ctx.fillStyle = '#6F6F6F';
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Reset color for next wheel
-    ctx.fillStyle = '#2F2F2F';
-  });
-  
-  // Camera mast
-  ctx.fillStyle = '#8B8B8B';
-  ctx.fillRect(-3, -rover.height / 2 - 15, 6, 15);
-  
-  // Camera head
-  ctx.fillStyle = '#4169E1';
-  ctx.beginPath();
-  ctx.arc(0, -rover.height / 2 - 18, 8, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // Camera lens
-  ctx.fillStyle = '#1E3A5A';
-  ctx.beginPath();
-  ctx.arc(0, -rover.height / 2 - 18, 4, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // Camera lens shine
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-  ctx.beginPath();
-  ctx.arc(-2, -rover.height / 2 - 20, 2, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // Antenna
-  ctx.strokeStyle = '#8B8B8B';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(5, -rover.height / 2 - 10);
-  ctx.lineTo(12, -rover.height / 2 - 20);
-  ctx.stroke();
-  
-  // Antenna tip
-  ctx.fillStyle = '#FFD700';
-  ctx.beginPath();
-  ctx.arc(12, -rover.height / 2 - 20, 2, 0, Math.PI * 2);
-  ctx.fill();
-  
-  ctx.restore();
-  
-  // Draw fuel gauge
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-  ctx.fillRect(10, 10, 100, 15);
-  ctx.fillStyle = gameFuel > 30 ? '#4ade80' : '#f87171';
-  ctx.fillRect(10, 10, gameFuel, 15);
+  // Draw rover (Wall-E style bot)
+  ctx.font = '36px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🚙', rover.x, rover.y);
   
   animationFrame = requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
   isGameRunning = false;
+  resetMarsControls();
   if (hudTimer) clearInterval(hudTimer);
   cancelAnimationFrame(animationFrame);
-  document.removeEventListener('keydown', handleKeyDown);
-  document.removeEventListener('keyup', handleKeyUp);
   const endScreen = document.getElementById('endScreen');
   const endTitle = document.getElementById('endTitle');
   const endStats = document.getElementById('endStats');

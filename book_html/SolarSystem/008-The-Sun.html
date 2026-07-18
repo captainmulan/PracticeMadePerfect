@@ -477,8 +477,8 @@ function sunLoop() {
     p.x = sunCanvas.width / 2; p.y = sunCanvas.height - 60; p.vy = 0;
     sunCamY = Math.max(0, sunCamY - 200);
   }
-  const targetCam = Math.max(0, -(p.y - sunCanvas.height * 0.55));
-  sunCamY += (targetCam - sunCamY) * 0.12;
+  const targetCam = Math.max(0, p.y - sunCanvas.height * 0.55);
+  sunCamY += (targetCam - sunCamY) * 0.15;
   sunHeight = Math.max(sunHeight, Math.floor(-sunCamY / 8));
   if (Math.random() < 0.007) sunFlares.push({ x: Math.random() * sunCanvas.width, y: sunCamY + 60 + Math.random() * 120, w: 32, h: 10, vx: (Math.random() - 0.5) * 4 });
   sunFlares.forEach(f => { f.x += f.vx; });

@@ -450,7 +450,7 @@
     <h2>🛰️ Space Station Builder!</h2>
     <p class="game-desc">Move to grab ⚡ energy orbs, then tap 📦 to place modules. Build 10 modules!</p>
     <div class="game-canvas" id="gameCanvas">
-      <div class="game-hud-float"><span id="gameScore">Modules: 0</span><span id="gameTimer">⏱ 90s | ❤️❤️❤️</span></div>
+      <div class="game-hud-float"><span id="gameScore">Modules: 0</span><span id="gameTimer">⏱ 90s | ⚡100% | ❤️❤️❤️</span></div>
       <canvas id="gameCanvasElement"></canvas>
       <div class="game-overlay" id="startScreen">
         <h3>🛰️ Space Station Builder!</h3>
@@ -528,7 +528,7 @@ function drawStarfield() {
   }
 }
 function formatHudTimeLives() {
-  return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
+  return '⏱ ' + gameTime + 's | ⚡' + gameEnergy + '% | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
 }
 function startHudTimer() {
   if (typeof hudTimer !== 'undefined' && hudTimer) clearInterval(hudTimer);
@@ -556,6 +556,7 @@ let canvas, ctx;
 let builder;
 let modules = [];
 let energyOrbs = [];
+let debris = [];
 let keys = {};
 let moveUp = false;
 let moveDown = false;
@@ -585,6 +586,18 @@ function startGame() {
   gameLives = 3;
   modules = [];
   energyOrbs = [];
+  debris = [];
+  
+  // Floating space debris obstacles
+  for (let i = 0; i < 6; i++) {
+    debris.push({
+      x: Math.random() * (canvas.width - 80) + 40,
+      y: Math.random() * (canvas.height - 80) + 40,
+      r: 18 + Math.random() * 10,
+      vx: (Math.random() - 0.5) * 1.2,
+      vy: (Math.random() - 0.5) * 1.2
+    });
+  }
   
   // Initialize builder
   builder = {
@@ -714,25 +727,17 @@ function placeModule() {
   }
 }
 
-function drawIssModule(x, y, w, h) {
+function drawSatelliteModule(x, y, w) {
   ctx.save();
-  ctx.translate(x, y);
-  ctx.fillStyle = '#eceff1';
-  ctx.fillRect(-w / 2, -h / 2, w, h);
-  ctx.fillStyle = '#263238';
-  ctx.fillRect(-w / 2 + 4, -h / 2 + 4, w - 8, h * 0.35);
-  ctx.fillStyle = '#1565c0';
-  ctx.fillRect(-w / 2 - 16, -5, 12, 10);
-  ctx.fillRect(w / 2 + 4, -5, 12, 10);
-  ctx.fillStyle = '#ffd54f';
-  ctx.fillRect(-w / 2 - 14, -4, 8, 8);
-  ctx.fillRect(w / 2 + 6, -4, 8, 8);
-  ctx.strokeStyle = '#78909c';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, h / 2);
-  ctx.lineTo(0, h / 2 + 8);
-  ctx.stroke();
+  ctx.globalAlpha = 1;
+  const size = Math.max(42, w * 1.35);
+  ctx.font = size + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(255,255,255,0.85)';
+  ctx.shadowBlur = 6;
+  ctx.fillText('🛰️', x, y);
+  ctx.shadowBlur = 0;
   ctx.restore();
 }
 
@@ -823,17 +828,36 @@ function gameLoop() {
   builder.x = Math.max(builder.width / 2, Math.min(canvas.width - builder.width / 2, builder.x));
   builder.y = Math.max(builder.height / 2, Math.min(canvas.height - builder.height / 2, builder.y));
   
-  // Draw placed modules
-  modules.forEach(module => {
-    drawIssModule(module.x, module.y, module.width, module.height);
-    if (modules.indexOf(module) > 0) {
-      const prev = modules[modules.indexOf(module) - 1];
-      ctx.strokeStyle = 'rgba(200,200,200,0.5)';
-      ctx.lineWidth = 3;
+  // Draw placed modules (satellites)
+  modules.forEach((module, idx) => {
+    drawSatelliteModule(module.x, module.y, module.width);
+    if (idx > 0) {
+      const prev = modules[idx - 1];
+      ctx.strokeStyle = 'rgba(200,200,200,0.45)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
       ctx.beginPath();
       ctx.moveTo(prev.x, prev.y);
       ctx.lineTo(module.x, module.y);
       ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  });
+  
+  // Draw & update debris obstacles
+  debris.forEach(d => {
+    d.x += d.vx; d.y += d.vy;
+    if (d.x < d.r || d.x > canvas.width - d.r) d.vx *= -1;
+    if (d.y < d.r || d.y > canvas.height - d.r) d.vy *= -1;
+    ctx.font = (d.r * 1.4) + 'px serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('☄️', d.x, d.y);
+    if (Math.hypot(builder.x - d.x, builder.y - d.y) < d.r + builder.width / 2) {
+      gameEnergy -= 25;
+      d.x = Math.random() * (canvas.width - 80) + 40;
+      d.y = Math.random() * (canvas.height - 80) + 40;
+      if (gameEnergy <= 0) { loseLife(); if (isGameRunning) gameEnergy = 100; }
+      document.getElementById('gameTimer').textContent = formatHudTimeLives();
     }
   });
   
@@ -862,32 +886,10 @@ function gameLoop() {
     }
   });
   
-  // Draw builder
-  ctx.fillStyle = builder.holdingModule ? '#ffd700' : '#4a90d9';
-  ctx.fillRect(builder.x - builder.width / 2, builder.y - builder.height / 2, builder.width, builder.height);
-  
-  // Builder detail
-  ctx.fillStyle = '#fff';
-  ctx.font = '16px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(builder.holdingModule ? '📦' : '🤖', builder.x, builder.y);
-  
-  // Draw instructions
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-  ctx.font = '14px Comic Sans MS';
-  ctx.textAlign = 'center';
-  if (!builder.holdingModule) {
-    ctx.fillText('Collect energy orbs!', canvas.width / 2, 30);
-  } else {
-    ctx.fillText('Press SPACE to place module', canvas.width / 2, 30);
-  }
-  
-  // Draw energy bar
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-  ctx.fillRect(10, 10, 100, 15);
-  ctx.fillStyle = gameEnergy > 30 ? '#4ade80' : '#f87171';
-  ctx.fillRect(10, 10, gameEnergy, 15);
+  // Draw builder astronaut
+  ctx.font = '28px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(builder.holdingModule ? '🧑‍🚀📦' : '🧑‍🚀', builder.x, builder.y);
   
   animationFrame = requestAnimationFrame(gameLoop);
 }
