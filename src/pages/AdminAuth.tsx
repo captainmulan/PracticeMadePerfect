@@ -59,13 +59,6 @@ export default function AdminAuth() {
   }
 
   return (
-    <div>
-      <div className="admin-logout-bar">
-        <button onClick={handleLogout} className="admin-logout-button">
-          Logout
-        </button>
-      </div>
-      <Admin />
-    </div>
+    <Admin onLogout={handleLogout} />
   );
 }

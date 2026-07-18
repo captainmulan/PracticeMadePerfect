@@ -340,12 +340,12 @@ export default function AdminCourses() {
           ))}
         </select>
         <div className="admin-book-actions">
-          <button type="button" className="footer-button secondary small" onClick={startNewBook}>New Book</button>
-          <button type="button" className="footer-button secondary small" onClick={() => setShowUploadPanel(true)}>Upload New Book</button>
-          <button type="button" className="footer-button small" onClick={handleSaveBook}>Save Book</button>
+          <button type="button" className="admin-btn admin-btn-book secondary small" onClick={startNewBook}>New Book</button>
+          <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => setShowUploadPanel(true)}>Upload New Book</button>
+          <button type="button" className="admin-btn admin-btn-book small" onClick={handleSaveBook}>Save Book</button>
           {!draftBook && activeBook ? (
-            <button type="button" className="footer-button secondary small" onClick={handleDeleteBook} disabled={isDeletingBook}>
-              {isDeletingBook ? "Deleting..." : "Delete"}
+            <button type="button" className="admin-btn admin-btn-book danger small" onClick={handleDeleteBook} disabled={isDeletingBook}>
+              {isDeletingBook ? "Deleting..." : "Delete Entire Book"}
             </button>
           ) : null}
         </div>
@@ -364,18 +364,18 @@ export default function AdminCourses() {
       {activeBook ? (
         <div className={`admin-courses-grid ${bookBuilderTab === "book" || bookBuilderTab === "empty-book" ? "admin-courses-grid-book-only" : ""}`}>
           <section className="admin-course-meta panel-bordered">
-            <div className="admin-tabs" style={{ marginBottom: "16px" }}>
-              <button type="button" className={`admin-tab ${bookBuilderTab === "book" ? "active" : ""}`} onClick={() => setBookBuilderTab("book")}>Book</button>
-              <button type="button" className={`admin-tab ${bookBuilderTab === "page" ? "active" : ""}`} onClick={() => setBookBuilderTab("page")}>Page</button>
-              <button type="button" className={`admin-tab ${bookBuilderTab === "empty-book" ? "active" : ""}`} onClick={() => setBookBuilderTab("empty-book")}>Empty Book</button>
+            <div className="admin-tabs admin-tabs-page" style={{ marginBottom: "16px" }}>
+              <button type="button" className={`admin-btn admin-btn-page ${bookBuilderTab === "book" ? "active" : ""}`} onClick={() => setBookBuilderTab("book")}>Book</button>
+              <button type="button" className={`admin-btn admin-btn-page ${bookBuilderTab === "page" ? "active" : ""}`} onClick={() => setBookBuilderTab("page")}>Page</button>
+              <button type="button" className={`admin-btn admin-btn-page ${bookBuilderTab === "empty-book" ? "active" : ""}`} onClick={() => setBookBuilderTab("empty-book")}>Empty Book</button>
             </div>
             {bookBuilderTab === "book" ? (
               <>
-                <div className="admin-tabs" style={{ marginBottom: "16px" }}>
-                  <button type="button" className={`admin-tab ${bookSubTab === "general" ? "active" : ""}`} onClick={() => setBookSubTab("general")}>General</button>
-                  <button type="button" className={`admin-tab ${bookSubTab === "title" ? "active" : ""}`} onClick={() => setBookSubTab("title")}>Title</button>
-                  <button type="button" className={`admin-tab ${bookSubTab === "cover" ? "active" : ""}`} onClick={() => setBookSubTab("cover")}>Cover</button>
-                  <button type="button" className={`admin-tab ${bookSubTab === "logo" ? "active" : ""}`} onClick={() => setBookSubTab("logo")}>Logo</button>
+                <div className="admin-tabs admin-tabs-book" style={{ marginBottom: "16px" }}>
+                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "general" ? "active" : ""}`} onClick={() => setBookSubTab("general")}>General</button>
+                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "title" ? "active" : ""}`} onClick={() => setBookSubTab("title")}>Title</button>
+                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "cover" ? "active" : ""}`} onClick={() => setBookSubTab("cover")}>Cover</button>
+                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "logo" ? "active" : ""}`} onClick={() => setBookSubTab("logo")}>Logo</button>
                 </div>
 
                 {bookSubTab === "general" && (
@@ -845,31 +845,16 @@ export default function AdminCourses() {
                   <h4 style={{ marginTop: 0 }}>Pages</h4>
                   <div className="admin-course-step-list">
                     {allSteps.map((step) => (
-                      <div
+                      <button
                         key={step.id}
-                        style={{ display: "flex", gap: "8px", alignItems: "center" }}
+                        type="button"
+                        className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
+                        onClick={() => setSelectedStepId(step.id)}
                       >
-                        <button
-                          type="button"
-                          className={`admin-course-step-item ${selectedStepId === step.id ? "selected" : ""}`}
-                          onClick={() => setSelectedStepId(step.id)}
-                        >
-                          <span>{step.stepIndex}</span>
-                          <span>{step.title}</span>
-                          <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="footer-button secondary small"
-                          style={{ padding: "4px 8px" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteStep(step.id);
-                          }}
-                        >
-                          ×
-                        </button>
-                      </div>
+                        <span>{step.stepIndex}</span>
+                        <span>{step.title}</span>
+                        <span>{step.stepType === "code-exam" ? "code" : step.stepType}</span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -977,7 +962,7 @@ export default function AdminCourses() {
                   <div style={{ marginTop: "16px" }}>
                     <button
                       type="button"
-                      className="footer-button secondary"
+                      className="admin-btn admin-btn-page danger"
                       onClick={() => deleteStep(selectedStep.id)}
                     >
                       Delete This Page

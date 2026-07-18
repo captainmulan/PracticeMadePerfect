@@ -72,7 +72,7 @@ export default function AdminBookUploadPanel({ books, onImported, onCancel }: Ad
     <div className="admin-book-upload panel-bordered">
       <div className="admin-book-upload-header">
         <h3>Upload New Book</h3>
-        <button type="button" className="footer-button secondary small" onClick={onCancel}>
+        <button type="button" className="admin-btn admin-btn-book secondary small" onClick={onCancel}>
           Close
         </button>
       </div>
@@ -94,7 +94,7 @@ export default function AdminBookUploadPanel({ books, onImported, onCancel }: Ad
         />
         <button
           type="button"
-          className="footer-button small"
+          className="admin-btn admin-btn-book small"
           onClick={() => folderInputRef.current?.click()}
           disabled={isReading}
         >
@@ -154,10 +154,10 @@ export default function AdminBookUploadPanel({ books, onImported, onCancel }: Ad
           </ul>
 
           <div className="admin-book-upload-footer">
-            <button type="button" className="footer-button secondary small" onClick={() => handleCreateBook(false)}>
+            <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => handleCreateBook(false)}>
               Load as Draft
             </button>
-            <button type="button" className="footer-button small" onClick={() => handleCreateBook(true)}>
+            <button type="button" className="admin-btn admin-btn-book small" onClick={() => handleCreateBook(true)}>
               Create &amp; Save Book
             </button>
           </div>

@@ -212,7 +212,7 @@ function GradientColorPicker3({ label, gradientStart, setGradientStart, gradient
   );
 }
 
-export default function Admin() {
+export default function Admin({ onLogout }: { onLogout: () => void }) {
   const [homeJson, setHomeJson] = useState("");
   const [homeData, setHomeData] = useState<any>(null);
   const [practiceMetaJson, setPracticeMetaJson] = useState("");
@@ -776,14 +776,27 @@ export default function Admin() {
 
   return (
     <div className="page-content page-admin">
-      <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
-        <div className="admin-search-actions-end">
-          <button 
-            type="button" 
-            className="footer-button" 
-            onClick={() => dbFileInputRef.current?.click()} 
+      <div className="admin-top-toolbar">
+        <div className="admin-top-group">
+          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "home" ? "active" : ""}`} onClick={() => setAdminTab("home")}>
+            Home Page
+          </button>
+          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "wizard-style" ? "active" : ""}`} onClick={() => setAdminTab("wizard-style")}>
+            Page Style
+          </button>
+          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
+            Book Builder
+          </button>
+        </div>
+
+        <div className="admin-top-divider" aria-hidden="true" />
+
+        <div className="admin-top-group">
+          <button
+            type="button"
+            className="admin-btn admin-btn-data"
+            onClick={() => dbFileInputRef.current?.click()}
             disabled={isImportingDb}
-            style={{ marginRight: "8px" }}
           >
             {isImportingDb ? "Importing..." : "Import DB"}
           </button>
@@ -794,12 +807,11 @@ export default function Admin() {
             onChange={handleImportDb}
             style={{ display: "none" }}
           />
-          <button 
-            type="button" 
-            className="footer-button" 
-            onClick={() => jsonDbFileInputRef.current?.click()} 
+          <button
+            type="button"
+            className="admin-btn admin-btn-data"
+            onClick={() => jsonDbFileInputRef.current?.click()}
             disabled={isImportingJsonDb}
-            style={{ marginRight: "8px" }}
           >
             {isImportingJsonDb ? "Importing..." : "Import JSON DB"}
           </button>
@@ -810,25 +822,21 @@ export default function Admin() {
             onChange={handleImportJsonDb}
             style={{ display: "none" }}
           />
-          <button type="button" className="footer-button" onClick={handleRestoreBundledDb} disabled={isRestoringDb}>
-            {isRestoringDb ? "Restoring..." : "Restore bundled database"}
+          <button type="button" className="admin-btn admin-btn-data" onClick={handleRestoreBundledDb} disabled={isRestoringDb}>
+            {isRestoringDb ? "Restoring..." : "Restore Bundled Database"}
+          </button>
+          <button type="button" className={`admin-btn admin-btn-data ${adminTab === "data-sync" ? "active" : ""}`} onClick={() => setAdminTab("data-sync")}>
+            Data Sync
           </button>
         </div>
-      </div>
 
-      <div className="admin-tabs">
-        <button type="button" className={`admin-tab ${adminTab === "home" ? "active" : ""}`} onClick={() => setAdminTab("home")}>
-          Home Page
-        </button>
-        <button type="button" className={`admin-tab ${adminTab === "wizard-style" ? "active" : ""}`} onClick={() => setAdminTab("wizard-style")}>
-          Page Style
-        </button>
-        <button type="button" className={`admin-tab ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
-          Book Builder
-        </button>
-        <button type="button" className={`admin-tab ${adminTab === "data-sync" ? "active" : ""}`} onClick={() => setAdminTab("data-sync")}>
-          Data Sync
-        </button>
+        <div className="admin-top-divider" aria-hidden="true" />
+
+        <div className="admin-top-group admin-top-group-auth">
+          <button type="button" className="admin-btn admin-btn-logout" onClick={onLogout}>
+            Logout
+          </button>
+        </div>
       </div>
 
       {message && <div className="admin-course-message">{message}</div>}
