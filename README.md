@@ -147,6 +147,23 @@ Project context:
 - This was needed because simple inline injection did not execute lesson JavaScript reliably in the workspace view.
 - When changing a lesson, keep the public version and the book copy aligned so the experience stays consistent.
 
+## Interactive kids' books (`book_html/`)
+
+Age 7–8 ebooks (Solar System, Ocean Adventure, etc.) live in [book_html/](book_html/). Each book is a folder of **numbered standalone HTML chapters** loaded in order by filename (`001`, `002`, …).
+
+**Standard flow for every new book:**
+
+1. `001-Book-Briefing.html` — about the book, author **Jimmy Cooper**, author speech  
+2. `002-Index.html` — table of contents  
+3. `003-Character-Selection.html` — name + avatar  
+4. `004-Intro-*.html` — intro arcade game  
+5. Repeat per topic: **Activity (mini game) → Explained → Quiz**  
+6. Conclusion → Overall quiz → Outro game → Congratulations  
+
+**Reference:** [book_html/README.md](book_html/README.md) (master template) · [book_html/SolarSystem/README.md](book_html/SolarSystem/README.md) (43 chapters) · [book_html/OceanAdventure/README.md](book_html/OceanAdventure/README.md) (32 chapters)
+
+After editing book HTML, sync into `deploy/indexeddb-export.json` and re-import in admin if the reader loads from the database.
+
 ## Mobile-First HTML Lesson Design
 
 HTML lesson files are designed with mobile-first principles to ensure optimal viewing across all devices:

@@ -34,7 +34,7 @@
             width: 100%;
             max-width: 700px;
             aspect-ratio: 700 / 600;
-            max-height: min(52vh, 420px);
+            max-height: 300px;
             margin: 0 auto;
             overflow: hidden;
             border: 2px solid rgba(255, 200, 0, 0.5);
@@ -177,9 +177,48 @@
             .btn { padding: 8px 14px; }
             .touch-controls { gap: 12px; margin-top: 6px; }
             .touch-btn { width: 56px; height: 56px; font-size: 22px; }
-            .game-stage { max-height: min(46vh, 320px); }
+            .game-stage { max-height: min(40vh, 260px); }
         }
-    </style>
+    /* solar-desktop-fit */
+@media (min-width: 640px) {
+  .planet-svg-panel .svg-viewport,
+  .svg-viewport {
+    max-height: 240px !important;
+    min-height: 0 !important;
+  }
+  .game-stage,
+  .game-wrap,
+  .game-canvas-wrap,
+  .game-canvas {
+    height: 280px !important;
+    min-height: 220px !important;
+    max-height: 280px !important;
+  }
+  .planet-game {
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .planet-game h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  .planet-game p {
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .touch-controls {
+    margin-top: 8px;
+    grid-template-columns: repeat(3, 52px);
+    grid-template-rows: repeat(3, 52px);
+    gap: 6px;
+  }
+  .touch-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+}
+  </style>
 <script>
 (function (w) {
   var BOOK = "solarsystem";
@@ -643,10 +682,12 @@
 
         // Make canvas responsive
         function resizeCanvas() {
-            const maxWidth = Math.min(window.innerWidth - 40, 700);
-            const scale = maxWidth / 700;
-            canvas.style.width = `${700 * scale}px`;
-            canvas.style.height = `${600 * scale}px`;
+            const stage = document.querySelector('.game-stage');
+            if (!stage) return;
+            const w = stage.clientWidth;
+            const h = stage.clientHeight;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
         }
         window.addEventListener('resize', resizeCanvas);
 

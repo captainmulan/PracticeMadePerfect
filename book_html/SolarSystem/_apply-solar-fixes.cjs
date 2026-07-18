@@ -143,7 +143,7 @@ function patchIntroGame(html) {
             width: 100%;
             max-width: 700px;
             aspect-ratio: 700 / 600;
-            max-height: min(52vh, 420px);
+            max-height: 300px;
             margin: 0 auto;
             overflow: hidden;
             border: 2px solid rgba(255, 200, 0, 0.5);
@@ -253,7 +253,7 @@ function patchIntroGame(html) {
             .btn { padding: 8px 14px; }
             .touch-controls { gap: 12px; margin-top: 6px; }
             .touch-btn { width: 56px; height: 56px; font-size: 22px; }
-            .game-stage { max-height: min(46vh, 320px); }
+            .game-stage { max-height: 260px; }
         }`,
     );
   }
@@ -522,7 +522,7 @@ function patchPlanetViewerMobile(html) {
   next = next.replace(/zoom: 1, rot: 0, drag: 0, ang: 0,/g, "zoom: 1.28, rot: 0, drag: 0, ang: 0.08,");
   next = next.replace(
     /\.svg-viewport\{width:100%;aspect-ratio:1;max-height:340px;/g,
-    ".svg-viewport{width:100%;aspect-ratio:1;min-height:min(72vw,340px);max-height:min(78vw,380px);",
+    ".svg-viewport{width:100%;aspect-ratio:1;max-height:min(72vw,260px);",
   );
   return next;
 }
@@ -748,6 +748,135 @@ function patchPlanetViewerSpin(html) {
   );
 }
 
+const DESKTOP_FIT_MARKER = "/* solar-desktop-fit */";
+
+const DESKTOP_FIT_CSS = `${DESKTOP_FIT_MARKER}
+@media (min-width: 640px) {
+  .planet-svg-panel .svg-viewport,
+  .svg-viewport {
+    max-height: 240px !important;
+    min-height: 0 !important;
+  }
+  .game-stage,
+  .game-wrap,
+  .game-canvas-wrap,
+  .game-canvas {
+    height: 280px !important;
+    min-height: 220px !important;
+    max-height: 280px !important;
+  }
+  .planet-game {
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .planet-game h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  .planet-game p {
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .touch-controls {
+    margin-top: 8px;
+    grid-template-columns: repeat(3, 52px);
+    grid-template-rows: repeat(3, 52px);
+    gap: 6px;
+  }
+  .touch-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+}`;
+
+function patchDesktopGameFit(html) {
+  let next = html;
+
+  next = next.replace(
+    /\.game-canvas\{\s*position:relative;\s*height:50vh;\s*min-height:300px;\s*max-height:500px;/g,
+    ".game-canvas{position:relative;width:100%;height:280px;min-height:220px;max-height:280px;",
+  );
+  next = next.replace(
+    /\.game-canvas\{\s*position:relative;\s*height:60vh;\s*min-height:350px;\s*max-height:500px;/g,
+    ".game-canvas{position:relative;width:100%;height:280px;min-height:220px;max-height:280px;",
+  );
+  next = next.replace(
+    /\.game-canvas\{\s*position:relative;\s*height:50vh;\s*min-height:300px;\s*max-height:500px;/g,
+    ".game-canvas{position:relative;width:100%;height:280px;min-height:220px;max-height:280px;",
+  );
+  next = next.replace(
+    /height:50vh;\s*min-height:300px;\s*max-height:500px;/g,
+    "width:100%;height:280px;min-height:220px;max-height:280px;",
+  );
+  next = next.replace(
+    /height:60vh;\s*min-height:350px;\s*max-height:500px;/g,
+    "width:100%;height:280px;min-height:220px;max-height:280px;",
+  );
+
+  next = next.replace(
+    /\.svg-viewport\{width:100%;aspect-ratio:1;min-height:min\(72vw,340px\);max-height:min\(78vw,380px\);/g,
+    ".svg-viewport{width:100%;aspect-ratio:1;max-height:min(72vw,260px);",
+  );
+  next = next.replace(
+    /\.svg-viewport\{width:100%;aspect-ratio:1;max-height:340px;/g,
+    ".svg-viewport{width:100%;aspect-ratio:1;max-height:min(72vw,260px);",
+  );
+
+  next = next.replace(
+    /max-height: min\(52vh, 420px\)/g,
+    "max-height: 300px",
+  );
+  next = next.replace(
+    /max-height: min\(42vh, 300px\)/g,
+    "max-height: 300px",
+  );
+  next = next.replace(
+    /\.game-stage \{ max-height: min\(46vh, 320px\); \}/g,
+    ".game-stage { max-height: min(40vh, 260px); }",
+  );
+
+  next = next.replace(
+    /\.game-wrap\{\s*position:relative;height:52vh;min-height:340px;max-height:520px;/g,
+    ".game-wrap{position:relative;height:280px;min-height:220px;max-height:280px;",
+  );
+  next = next.replace(
+    /height:52vh;min-height:340px;max-height:520px;/g,
+    "height:280px;min-height:220px;max-height:280px;",
+  );
+
+  next = next.replace(
+    /\.game-canvas-wrap\{position:relative;height:360px;/g,
+    ".game-canvas-wrap{position:relative;height:280px;min-height:220px;max-height:280px;",
+  );
+  next = next.replace(
+    /\.game-canvas-wrap\{position:relative;height:280px;min-height:220px;max-height:280px;min-height:220px;max-height:280px;/g,
+    ".game-canvas-wrap{position:relative;height:280px;min-height:220px;max-height:280px;",
+  );
+
+  if (next.includes("Solar System Defender") && next.includes("function resizeCanvas()")) {
+    next = next.replace(
+      /function resizeCanvas\(\) \{[\s\S]*?\n        \}/,
+      `function resizeCanvas() {
+            const stage = document.querySelector('.game-stage');
+            if (!stage) return;
+            const w = stage.clientWidth;
+            const h = stage.clientHeight;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+        }`,
+    );
+  }
+
+  if (next.includes(DESKTOP_FIT_MARKER)) {
+    next = next.replace(/\/\* solar-desktop-fit \*\/[\s\S]*?(?=\n  <\/style>|\n<\/style>)/, DESKTOP_FIT_CSS);
+  } else if (next.includes("</style>")) {
+    next = next.replace("</style>", `${DESKTOP_FIT_CSS}\n  </style>`);
+  }
+
+  return next;
+}
+
 const files = fs.readdirSync(dir).filter((f) => f.endsWith(".html"));
 let changed = 0;
 for (const file of files) {
@@ -767,6 +896,7 @@ for (const file of files) {
   if (file === "011-Mercury.html") html = patchMercuryGame(html);
   html = patchPlanetViewerSpin(html);
   html = patchPlanetViewerMobile(html);
+  html = patchDesktopGameFit(html);
   html = patchPlayerStorage(html);
   html = injectPlayer(html);
   if (html !== original) {

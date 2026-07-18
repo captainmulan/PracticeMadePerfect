@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Ocean Overview</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
+      color:#e0f4ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .bubbles{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:32px;
+      color:#64ffda;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#80deea;
+      font-size:16px;
+    }
+    .ocean-display{
+      position:relative;
+      height:300px;
+      margin:20px 0;
+      border-radius:20px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#4fc3f7 0%,#0288d1 30%,#01579b 60%,#002171 100%);
+    }
+    .zone{
+      position:absolute;
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:bold;
+      color:#fff;
+      text-shadow:0 0 10px rgba(0,0,0,0.5);
+      cursor:pointer;
+      transition:transform 0.3s;
+    }
+    .zone:hover{
+      transform:scale(1.02);
+    }
+    .sunlight{
+      top:0;
+      height:25%;
+      background:linear-gradient(180deg,#81d4fa,#4fc3f7);
+    }
+    .twilight{
+      top:25%;
+      height:25%;
+      background:linear-gradient(180deg,#4fc3f7,#0288d1);
+    }
+    .midnight{
+      top:50%;
+      height:25%;
+      background:linear-gradient(180deg,#0288d1,#01579b);
+    }
+    .abyss{
+      top:75%;
+      height:25%;
+      background:linear-gradient(180deg,#01579b,#002171);
+    }
+    .creature{
+      position:absolute;
+      font-size:24px;
+      animation:swim 4s ease-in-out infinite;
+    }
+    @keyframes swim{
+      0%,100%{transform:translateX(0) translateY(0);}
+      50%{transform:translateX(20px) translateY(-10px);}
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#64ffda;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .controls{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:16px;
+    }
+    .control-btn{
+      padding:10px 20px;
+      background:rgba(100,255,218,0.2);
+      border:2px solid #64ffda;
+      border-radius:12px;
+      color:#64ffda;
+      font-size:14px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .control-btn:hover{
+      background:rgba(100,255,218,0.3);
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#80deea;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  
+    .planet-game{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:20px;padding:20px;margin:20px 0;border:1px solid rgba(100,255,218,0.35);}
+    .planet-game h2{color:#64ffda;margin-bottom:8px;font-size:20px;text-align:center;}
+    .planet-game .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:12px;line-height:1.5;padding:0 6px;}
+    .game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
+    .game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
+    .game-canvas{position:relative;height:50vh;min-height:280px;max-height:420px;background:#062035;border-radius:16px;overflow:hidden;border:2px solid rgba(100,255,218,0.35);touch-action:none;}
+    .game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+    .game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,0.92);text-align:center;padding:20px;z-index:5;}
+    .game-overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}
+    .game-overlay p{color:#cce7ff;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+    .overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
+    .touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
+    .touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>🌊 Ocean Overview</h1>
+    <div class="subtitle">Explore the different ocean zones!</div>
+  </div>
+
+  <div class="ocean-display" id="oceanDisplay">
+    <div class="zone sunlight" onclick="showZoneInfo('sunlight')">☀️ Sunlight Zone (0-200m)</div>
+    <div class="zone twilight" onclick="showZoneInfo('twilight')">🌅 Twilight Zone (200-1000m)</div>
+    <div class="zone midnight" onclick="showZoneInfo('midnight')">🌙 Midnight Zone (1000-4000m)</div>
+    <div class="zone abyss" onclick="showZoneInfo('abyss')">🕳️ Abyss Zone (4000m+)</div>
+    
+    <div class="creature" style="top:10%;left:10%;">🐠</div>
+    <div class="creature" style="top:15%;left:70%;animation-delay:1s;">🐟</div>
+    <div class="creature" style="top:35%;left:30%;animation-delay:0.5s;">🦑</div>
+    <div class="creature" style="top:60%;left:60%;animation-delay:1.5s;">🐙</div>
+    <div class="creature" style="top:85%;left:20%;animation-delay:2s;">🦈</div>
+  </div>
+
+  <div class="controls">
+    <button class="control-btn" onclick="toggleAnimation()">⏯️ Pause/Play</button>
+    <button class="control-btn" onclick="resetView()">🔄 Reset</button>
+  </div>
+
+  <div class="card">
+    <h2>🌟 The Ocean Zones</h2>
+    <p>
+      The ocean is divided into different zones based on how deep they are. Each zone has different light, temperature, and amazing creatures that live there!
+    </p>
+    <p>
+      Click on each zone in the ocean display above to learn more about it!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>☀️ Sunlight Zone</h2>
+    <p>
+      The top layer of the ocean where sunlight reaches. This is where most sea life lives! You'll find colorful fish, coral reefs, and sea turtles here.
+    </p>
+    <p>
+      Depth: 0 to 200 meters
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌅 Twilight Zone</h2>
+    <p>
+      Also called the mesopelagic zone. Very little sunlight reaches here, so it's always dim. Creatures here have big eyes to see in the dark!
+    </p>
+    <p>
+      Depth: 200 to 1,000 meters
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Midnight Zone</h2>
+    <p>
+      No sunlight reaches this zone at all! It's completely dark. Creatures here make their own light (bioluminescence) to see and communicate.
+    </p>
+    <p>
+      Depth: 1,000 to 4,000 meters
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🕳️ Abyss Zone</h2>
+    <p>
+      The deepest part of the ocean! It's extremely cold and the pressure is very high. Strange and amazing creatures live here that we're still discovering!
+    </p>
+    <p>
+      Depth: 4,000 meters and deeper
+    </p>
+  </div>
+
+
+  <div class="planet-game">
+    <h2>🌊 Zone Collector</h2>
+    <p class="game-desc">Move ← → to catch zone icons ☀️🌅🌙🕳️. Avoid trash! Reach 60 points.</p>
+    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
+    <div class="game-canvas" id="ogCanvasBox">
+      <canvas id="ogCanvas"></canvas>
+      <div class="game-overlay" id="ogStart"><h3>🌊 Zone Collector</h3><p>Move ← → to catch zone icons ☀️🌅🌙🕳️. Avoid trash! Reach 60 points.</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
+      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
+    </div>
+    <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+let animationPaused = false;
+
+function showZoneInfo(zone) {
+  const messages = {
+    sunlight: "☀️ Sunlight Zone: This is where most ocean life lives! Coral reefs, colorful fish, and sea turtles call this zone home.",
+    twilight: "🌅 Twilight Zone: Very dim light here! Creatures like lanternfish and squid have big eyes to see in the dark.",
+    midnight: "🌙 Midnight Zone: Completely dark! Creatures like anglerfish make their own light to attract prey.",
+    abyss: "🕳️ Abyss Zone: The deepest ocean! Strange creatures like giant tube worms live here in extreme conditions."
+  };
+  alert(messages[zone]);
+}
+
+function toggleAnimation() {
+  const creatures = document.querySelectorAll('.creature');
+  animationPaused = !animationPaused;
+  creatures.forEach(creature => {
+    creature.style.animationPlayState = animationPaused ? 'paused' : 'running';
+  });
+}
+
+function resetView() {
+  const creatures = document.querySelectorAll('.creature');
+  creatures.forEach(creature => {
+    creature.style.animationPlayState = 'running';
+  });
+  animationPaused = false;
+}
+</script>
+
+<script>
+const OG_CFG = {"mode":"collect","goal":60,"time":60,"lives":3,"good":["☀️","🌅","🌙","🕳️"],"bad":["🗑️","🛢️"],"player":"🤿","bgTop":"#1565c0","bgBot":"#002171"};
+const OG_FONT = '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+let ogCanvas, ogCtx, ogRunning = false, ogScore = 0, ogTime = OG_CFG.time, ogLives = OG_CFG.lives;
+let ogTimerId, ogAnimId, ogPlayer, ogItems = [], ogMoveL = false, ogMoveR = false, ogSpawn = 0;
+
+function ogViewSize() {
+  const r = document.getElementById('ogCanvasBox').getBoundingClientRect();
+  return { w: Math.max(280, r.width), h: Math.max(220, r.height) };
+}
+function ogResize() {
+  const box = document.getElementById('ogCanvasBox');
+  ogCanvas = document.getElementById('ogCanvas');
+  ogCtx = ogCanvas.getContext('2d');
+  const vs = ogViewSize();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  ogCanvas.width = Math.floor(vs.w * dpr);
+  ogCanvas.height = Math.floor(vs.h * dpr);
+  ogCanvas.style.width = vs.w + 'px';
+  ogCanvas.style.height = vs.h + 'px';
+  ogCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (ogPlayer) {
+    ogPlayer.x = Math.min(Math.max(ogPlayer.x, 30), vs.w - 30);
+    ogPlayer.y = vs.h - 36;
+  }
+}
+function ogDrawIcon(x, y, icon, size, ring) {
+  const rad = size * 0.52;
+  ogCtx.beginPath();
+  ogCtx.arc(x, y, rad + 5, 0, Math.PI * 2);
+  ogCtx.fillStyle = ring || 'rgba(0,20,40,0.72)';
+  ogCtx.fill();
+  ogCtx.strokeStyle = 'rgba(255,255,255,0.9)';
+  ogCtx.lineWidth = 2;
+  ogCtx.stroke();
+  ogCtx.font = 'bold ' + size + 'px ' + OG_FONT;
+  ogCtx.fillStyle = '#ffffff';
+  ogCtx.fillText(icon, x, y + 1);
+}
+function ogDrawBg() {
+  const vs = ogViewSize();
+  const g = ogCtx.createLinearGradient(0, 0, 0, vs.h);
+  g.addColorStop(0, OG_CFG.bgTop || '#0a3050');
+  g.addColorStop(1, OG_CFG.bgBot || '#041525');
+  ogCtx.fillStyle = g;
+  ogCtx.fillRect(0, 0, vs.w, vs.h);
+  ogCtx.fillStyle = 'rgba(0,0,0,0.35)';
+  ogCtx.fillRect(0, vs.h - 32, vs.w, 32);
+  ogCtx.fillStyle = 'rgba(100,255,218,0.35)';
+  ogCtx.fillRect(0, vs.h - 32, vs.w, 3);
+  for (let i = 0; i < 14; i++) {
+    ogCtx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 3) * 0.08) + ')';
+    ogCtx.beginPath();
+    ogCtx.arc((i * 83) % vs.w, (i * 53 + Date.now() * 0.02) % vs.h, 1.4 + (i % 2), 0, Math.PI * 2);
+    ogCtx.fill();
+  }
+}
+function ogHud() {
+  document.getElementById('ogScore').textContent = '⭐ ' + ogScore;
+  document.getElementById('ogTimer').textContent = '⏱ ' + ogTime + 's';
+  document.getElementById('ogLives').textContent = '❤️'.repeat(Math.max(0, ogLives));
+}
+function ogEnd(won) {
+  ogRunning = false;
+  clearInterval(ogTimerId);
+  cancelAnimationFrame(ogAnimId);
+  document.getElementById('ogEndTitle').textContent = won ? '🎉 Great job!' : '💫 Try again!';
+  const goalTxt = OG_CFG.mode === 'survive' ? 'You survived!' : 'Goal: ' + OG_CFG.goal;
+  document.getElementById('ogEndStats').textContent = 'Score: ' + ogScore + ' | ' + goalTxt + ' | Time left: ' + ogTime + 's';
+  document.getElementById('ogEnd').style.display = 'flex';
+}
+function ogSpawnItem() {
+  const vs = ogViewSize();
+  if (OG_CFG.mode === 'tap') {
+    const bad = Math.random() < 0.22 && OG_CFG.bad.length;
+    const pool = bad ? OG_CFG.bad : OG_CFG.good;
+    const icon = pool[Math.floor(Math.random() * pool.length)];
+    ogItems.push({ x: 36 + Math.random() * (vs.w - 72), y: 36 + Math.random() * (vs.h - 90), icon: icon, bad: bad, life: 100 + Math.random() * 50, r: 24 });
+    return;
+  }
+  const bad = OG_CFG.mode === 'survive' || (Math.random() < 0.34 && OG_CFG.bad.length);
+  const pool = bad ? OG_CFG.bad : OG_CFG.good;
+  if (!pool.length) return;
+  ogItems.push({
+    x: 28 + Math.random() * (vs.w - 56),
+    y: -28,
+    icon: pool[Math.floor(Math.random() * pool.length)],
+    bad: bad,
+    speed: 1.8 + Math.random() * 1.8,
+    r: 22
+  });
+}
+function ogLoop() {
+  if (!ogRunning) return;
+  ogSpawn++;
+  if (ogSpawn > (OG_CFG.mode === 'tap' ? 38 : 24)) { ogSpawn = 0; ogSpawnItem(); }
+  const vs = ogViewSize();
+  if (OG_CFG.mode !== 'tap' && ogPlayer) {
+    if (ogMoveL) ogPlayer.vx = -6;
+    else if (ogMoveR) ogPlayer.vx = 6;
+    else ogPlayer.vx *= 0.72;
+    ogPlayer.x = Math.max(30, Math.min(vs.w - 30, ogPlayer.x + ogPlayer.vx));
+    ogPlayer.y = vs.h - 36;
+  }
+  ogItems.forEach((it, i) => {
+    if (OG_CFG.mode === 'tap') {
+      it.life--;
+      if (it.life <= 0) ogItems.splice(i, 1);
+    } else {
+      it.y += it.speed;
+      if (ogPlayer && Math.hypot(ogPlayer.x - it.x, ogPlayer.y - it.y) < it.r + 18) {
+        ogItems.splice(i, 1);
+        if (it.bad) { ogLives--; if (ogLives <= 0) { ogEnd(false); return; } }
+        else { ogScore += 10; if (OG_CFG.goal && ogScore >= OG_CFG.goal) { ogEnd(true); return; } }
+        ogHud();
+      } else if (it.y > vs.h + 30) ogItems.splice(i, 1);
+    }
+  });
+  ogDrawBg();
+  ogCtx.textAlign = 'center';
+  ogCtx.textBaseline = 'middle';
+  ogItems.forEach(it => {
+    if (OG_CFG.mode === 'tap' && it.life < 30) ogCtx.globalAlpha = Math.max(0.35, it.life / 30);
+    ogDrawIcon(it.x, it.y, it.icon, 34, it.bad ? 'rgba(120,20,20,0.75)' : 'rgba(0,40,80,0.78)');
+    ogCtx.globalAlpha = 1;
+  });
+  if (ogPlayer && OG_CFG.mode !== 'tap') ogDrawIcon(ogPlayer.x, ogPlayer.y, ogPlayer.icon, 38, 'rgba(0,60,100,0.85)');
+  ogAnimId = requestAnimationFrame(ogLoop);
+}
+function ogTapHit(x, y) {
+  for (let i = ogItems.length - 1; i >= 0; i--) {
+    const it = ogItems[i];
+    if (Math.hypot(x - it.x, y - it.y) < it.r + 8) {
+      ogItems.splice(i, 1);
+      if (it.bad) { ogLives--; if (ogLives <= 0) { ogEnd(false); return; } }
+      else { ogScore += 10; if (ogScore >= OG_CFG.goal) { ogEnd(true); return; } }
+      ogHud();
+      return;
+    }
+  }
+}
+function ogStartGame() {
+  ogResize();
+  ogRunning = true;
+  ogScore = 0;
+  ogTime = OG_CFG.time;
+  ogLives = OG_CFG.lives;
+  ogItems = [];
+  ogSpawn = 20;
+  const vs = ogViewSize();
+  ogPlayer = { x: vs.w / 2, y: vs.h - 36, vx: 0, icon: OG_CFG.player || '🤿' };
+  document.getElementById('ogStart').style.display = 'none';
+  document.getElementById('ogEnd').style.display = 'none';
+  ogHud();
+  if (OG_CFG.mode !== 'tap') { ogSpawnItem(); ogSpawnItem(); }
+  clearInterval(ogTimerId);
+  ogTimerId = setInterval(function () {
+    if (!ogRunning) return;
+    ogTime--;
+    ogHud();
+    if (ogTime <= 0) {
+      if (OG_CFG.mode === 'survive') ogEnd(true);
+      else ogEnd(ogScore >= OG_CFG.goal);
+    }
+  }, 1000);
+  ogLoop();
+}
+function ogBindControls() {
+  const L = document.getElementById('ogLeftBtn');
+  const R = document.getElementById('ogRightBtn');
+  if (L && R && !L._og) {
+    L._og = R._og = true;
+    L.addEventListener('touchstart', e => { e.preventDefault(); ogMoveL = true; });
+    L.addEventListener('touchend', () => { ogMoveL = false; });
+    R.addEventListener('touchstart', e => { e.preventDefault(); ogMoveR = true; });
+    R.addEventListener('touchend', () => { ogMoveR = false; });
+    L.addEventListener('mousedown', () => { ogMoveL = true; });
+    L.addEventListener('mouseup', () => { ogMoveL = false; });
+    R.addEventListener('mousedown', () => { ogMoveR = true; });
+    R.addEventListener('mouseup', () => { ogMoveR = false; });
+  }
+  const c = document.getElementById('ogCanvas');
+  if (c && !c._ogTap && OG_CFG.mode === 'tap') {
+    c._ogTap = true;
+    const hit = e => {
+      if (!ogRunning) return;
+      const r = c.getBoundingClientRect();
+      const p = e.touches ? e.touches[0] : e;
+      ogTapHit(p.clientX - r.left, p.clientY - r.top);
+    };
+    c.addEventListener('click', hit);
+    c.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') ogMoveL = true; if (e.key === 'ArrowRight') ogMoveR = true; });
+  document.addEventListener('keyup', e => { if (e.key === 'ArrowLeft') ogMoveL = false; if (e.key === 'ArrowRight') ogMoveR = false; });
+}
+ogBindControls();
+window.addEventListener('resize', () => { if (ogRunning) ogResize(); });
+</script>
+</body>
+</html>

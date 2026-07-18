@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Overall Quiz</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628,#1a365d,#0f4c75);color:#e0f4ff;min-height:100vh;}
+    .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,.3),transparent),radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,.25),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;}
+    @keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+    .container{max-width:640px;margin:auto;padding:24px 16px 40px;position:relative;z-index:1;}
+    h1{text-align:center;font-size:28px;color:#64ffda;margin-bottom:6px;}
+    .subtitle{text-align:center;color:#80deea;font-size:16px;margin-bottom:16px;}
+    .competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;margin-bottom:12px;}
+    .competitor{text-align:center;}.competitor-icon{font-size:28px;}.competitor-name{font-size:12px;color:#80deea;}.competitor-score{font-size:18px;font-weight:bold;color:#ffeb3b;}
+    .vs-divider{font-size:18px;color:#64ffda;font-weight:bold;}
+    .quiz-card{display:none;background:rgba(255,255,255,.1);border-radius:20px;padding:20px;margin-bottom:16px;border:1px solid rgba(255,255,255,.1);}
+    .quiz-card.active{display:block;}
+    .question{font-size:18px;font-weight:bold;margin-bottom:16px;}
+    .option{padding:14px 18px;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.2);border-radius:12px;cursor:pointer;font-size:16px;margin-bottom:10px;}
+    .option.correct{background:rgba(76,175,80,.3);border-color:#4caf50;}
+    .option.wrong{background:rgba(244,67,54,.3);border-color:#f44336;}
+    .feedback{margin-top:12px;padding:12px;border-radius:10px;font-size:15px;display:none;}
+    .feedback.show{display:block;}.feedback.correct{background:rgba(76,175,80,.2);color:#81c784;}.feedback.wrong{background:rgba(244,67,54,.2);color:#e57373;}
+    .score-card{display:none;background:linear-gradient(135deg,rgba(100,255,218,.95),rgba(0,188,212,.95));border-radius:24px;padding:10px 20px 40px;text-align:center;margin-top:20px;border:4px solid #80deea;}
+    .score-card.show{display:block;}
+    .podium{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin-top:100px;height:140px;}
+    .podium-bar{width:80px;border-radius:12px 12px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:8px;}
+    .podium-bar.first{height:100px;background:linear-gradient(180deg,#ffd700,#daa520);}
+    .podium-bar.second{height:75px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);}
+    .podium-name{font-size:13px;color:#0a1628;font-weight:bold;background:rgba(255,255,255,.6);padding:5px 9px;border-radius:8px;margin-top:6px;}
+    .button-group{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+    .retry-btn,.continue-btn{padding:14px 28px;border:none;border-radius:12px;font-size:15px;font-weight:bold;cursor:pointer;}
+    .retry-btn{background:#0a1628;color:#64ffda;}.continue-btn{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+    .nav-hint{margin-top:20px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,.1);padding:10px;border-radius:10px;}
+  </style>
+</head>
+<body>
+<div class="bubbles"></div>
+<div class="container">
+  <h1>🏆 Ocean Master Quiz</h1>
+  <div class="subtitle">Final quiz — everything you learned in this book!</div>
+  <div class="competition-bar">
+    <div class="competitor"><div class="competitor-icon" id="playerIcon">🤿</div><div class="competitor-name" id="playerName">Explorer</div><div class="competitor-score" id="playerScore">0</div></div>
+    <div class="vs-divider">VS</div>
+    <div class="competitor"><div class="competitor-icon">🐚</div><div class="competitor-name">Professor Pearl</div><div class="competitor-score" id="computerScore">0</div></div>
+  </div>
+  <div class="quiz-card active" id="quizCard-1">
+    <div class="question">1. Which zone gets the most sunlight?</div>
+    <div class="option" onclick="checkAnswer(this,1,true)">Sunlight Zone</div>
+    <div class="option" onclick="checkAnswer(this,1,false)">Midnight Zone</div>
+    <div class="option" onclick="checkAnswer(this,1,false)">Abyss Zone</div>
+    <div class="feedback" id="feedback-1"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-2">
+    <div class="question">2. Coral reefs are often called ocean ___.</div>
+    <div class="option" onclick="checkAnswer(this,2,false)">Deserts</div>
+    <div class="option" onclick="checkAnswer(this,2,true)">Cities</div>
+    <div class="option" onclick="checkAnswer(this,2,false)">Mountains</div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-3">
+    <div class="question">3. Which animals are marine mammals?</div>
+    <div class="option" onclick="checkAnswer(this,3,false)">Sharks</div>
+    <div class="option" onclick="checkAnswer(this,3,true)">Dolphins and whales</div>
+    <div class="option" onclick="checkAnswer(this,3,false)">Jellyfish</div>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-4">
+    <div class="question">4. Fish breathe using ___.</div>
+    <div class="option" onclick="checkAnswer(this,4,true)">Gills</div>
+    <div class="option" onclick="checkAnswer(this,4,false)">Lungs like humans</div>
+    <div class="option" onclick="checkAnswer(this,4,false)">Their fins</div>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-5">
+    <div class="question">5. The twilight zone is also called the ___ zone.</div>
+    <div class="option" onclick="checkAnswer(this,5,true)">Mesopelagic</div>
+    <div class="option" onclick="checkAnswer(this,5,false)">Epipelagic</div>
+    <div class="option" onclick="checkAnswer(this,5,false)">Hadal</div>
+    <div class="feedback" id="feedback-5"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-6">
+    <div class="question">6. Why should we protect the ocean?</div>
+    <div class="option" onclick="checkAnswer(this,6,false)">It has no effect on land</div>
+    <div class="option" onclick="checkAnswer(this,6,true)">It gives oxygen, food, and a healthy planet</div>
+    <div class="option" onclick="checkAnswer(this,6,false)">Only for fishing</div>
+    <div class="feedback" id="feedback-6"></div>
+  </div>
+  <div class="score-card" id="scoreCard">
+    <h2>🎉 Final Quiz Complete!</h2>
+    <div class="podium">
+      <div><div id="podium-char-2">🐚</div><div class="podium-bar second"><span>🥈</span></div><div class="podium-name" id="podium-name-2">Professor Pearl</div></div>
+      <div><div id="podium-char-1">🤿</div><div class="podium-bar first"><span>🥇</span></div><div class="podium-name" id="podium-name-1">Explorer</div></div>
+    </div>
+    <div id="scoreMessage" style="margin-top:14px;font-weight:bold;color:#0a1628;"></div>
+    <div class="button-group"><button class="retry-btn" onclick="retryQuiz()">🔄 Try Again</button><button class="continue-btn" onclick="alert('Great job! Continue with the navigation arrows.')">➡️ Continue</button></div>
+  </div>
+  <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
+</div>
+<script>
+let score = 0, currentQuestion = 1, computerScore = 0;
+const totalQuestions = 6;
+function checkAnswer(el, n, ok) {
+  document.querySelectorAll('#quizCard-' + n + ' .option').forEach(o => o.style.pointerEvents = 'none');
+  const fb = document.getElementById('feedback-' + n);
+  if (Math.random() < 0.65) { computerScore++; document.getElementById('computerScore').textContent = computerScore; }
+  if (ok) { el.classList.add('correct'); fb.textContent = '✅ Correct!'; fb.className = 'feedback show correct'; score++; document.getElementById('playerScore').textContent = score; }
+  else { el.classList.add('wrong'); fb.textContent = '❌ Not quite!'; fb.className = 'feedback show wrong'; }
+  setTimeout(nextQuestion, 1400);
+}
+function nextQuestion() {
+  document.getElementById('quizCard-' + currentQuestion).classList.remove('active');
+  currentQuestion++;
+  if (currentQuestion <= totalQuestions) document.getElementById('quizCard-' + currentQuestion).classList.add('active');
+  else showScore();
+}
+function showScore() {
+  const userName = localStorage.getItem('userName') || 'Explorer';
+  const userCharacter = localStorage.getItem('userCharacter') || '🤿';
+  const comps = [{ name: userName, character: userCharacter, score: score, isPlayer: true }, { name: 'Professor Pearl', character: '🐚', score: computerScore, isPlayer: false }];
+  comps.sort((a, b) => b.score - a.score);
+  document.getElementById('podium-char-1').textContent = comps[0].character;
+  document.getElementById('podium-name-1').textContent = comps[0].name;
+  document.getElementById('podium-char-2').textContent = comps[1].character;
+  document.getElementById('podium-name-2').textContent = comps[1].name;
+  document.getElementById('scoreMessage').textContent = comps[0].isPlayer ? '🎉 ' + userName + ' is an Ocean Master!' : 'Professor Pearl wins — try again!';
+  document.getElementById('scoreCard').classList.add('show');
+}
+function retryQuiz() {
+  score = 0; currentQuestion = 1; computerScore = 0;
+  document.querySelectorAll('.quiz-card').forEach((c, i) => { c.classList.toggle('active', i === 0); });
+  document.querySelectorAll('.option').forEach(o => { o.classList.remove('correct', 'wrong'); o.style.pointerEvents = 'auto'; });
+  document.querySelectorAll('.feedback').forEach(f => f.className = 'feedback');
+  document.getElementById('scoreCard').classList.remove('show');
+  document.getElementById('playerScore').textContent = '0';
+  document.getElementById('computerScore').textContent = '0';
+}
+document.getElementById('playerName').textContent = localStorage.getItem('userName') || 'Explorer';
+document.getElementById('playerIcon').textContent = localStorage.getItem('userCharacter') || '🤿';
+</script>
+</body>
+</html>

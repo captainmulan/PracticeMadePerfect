@@ -291,6 +291,45 @@
       font-style:italic;
       margin:0;
     }
+  /* solar-desktop-fit */
+@media (min-width: 640px) {
+  .planet-svg-panel .svg-viewport,
+  .svg-viewport {
+    max-height: 240px !important;
+    min-height: 0 !important;
+  }
+  .game-stage,
+  .game-wrap,
+  .game-canvas-wrap,
+  .game-canvas {
+    height: 280px !important;
+    min-height: 220px !important;
+    max-height: 280px !important;
+  }
+  .planet-game {
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .planet-game h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  .planet-game p {
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+  .touch-controls {
+    margin-top: 8px;
+    grid-template-columns: repeat(3, 52px);
+    grid-template-rows: repeat(3, 52px);
+    gap: 6px;
+  }
+  .touch-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
+}
   </style>
 <script>
 (function (w) {

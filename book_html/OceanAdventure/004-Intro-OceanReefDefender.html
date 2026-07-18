@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Adventure - Reef Defender</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628,#1a365d,#0f4c75);color:#e0f4ff;min-height:100vh;}
+    .game-shell{max-width:700px;margin:0 auto;padding:10px;}
+    .title{text-align:center;font-size:24px;color:#64ffda;margin:8px 0 4px;}
+    .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:10px;line-height:1.5;padding:0 8px;}
+    .hud{display:flex;justify-content:space-between;gap:8px;background:rgba(0,0,0,.35);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-weight:bold;}
+    .game-stage{position:relative;width:100%;aspect-ratio:7/6;max-height:min(52vh,420px);border:2px solid rgba(100,255,218,.45);border-radius:14px;overflow:hidden;background:#062035;touch-action:none;}
+    canvas{display:block;width:100%;height:100%;cursor:crosshair;}
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,.92);text-align:center;padding:18px;z-index:5;}
+    .overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}
+    .overlay p{color:#cce7ff;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:300px;}
+    .btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
+    .nav-hint{margin-top:14px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,.1);padding:10px;border-radius:10px;}
+  </style>
+</head>
+<body>
+<div class="game-shell">
+  <h1 class="title">🪸 Reef Defender</h1>
+  <p class="game-desc">Tap trash and pollution before they hit the coral reef! Protect the ocean home.</p>
+  <div class="hud"><span id="hudScore">⭐ 0</span><span id="hudTime">⏱ 45s</span><span id="hudLives">❤️❤️❤️</span></div>
+  <div class="game-stage" id="stage">
+    <canvas id="gameCanvas"></canvas>
+    <div class="overlay" id="startScreen">
+      <h3>🌊 Defend the Reef!</h3>
+      <p>Tap 🥤 🛢️ 🧴 items falling toward the coral. Don't let 3 pieces hit the reef!</p>
+      <button class="btn" type="button" onclick="startGame()">▶️ Start</button>
+    </div>
+    <div class="overlay" id="endScreen" style="display:none;">
+      <h3 id="endTitle">🎉 Reef Saved!</h3>
+      <p id="endStats">Score: 0</p>
+      <button class="btn" type="button" onclick="startGame()">🔄 Play Again</button>
+    </div>
+  </div>
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+<script>
+let canvas, ctx, running = false, score = 0, timeLeft = 45, lives = 3, timerId, animId;
+let trash = [], reefY, spawnTimer = 0;
+const icons = ['🥤', '🛢️', '🧴', '🚬', '⚙️'];
+
+function resize() {
+  const stage = document.getElementById('stage');
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+  canvas.width = stage.clientWidth;
+  canvas.height = stage.clientHeight;
+  reefY = canvas.height - 36;
+}
+function drawBg() {
+  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  g.addColorStop(0, '#0a2a4a'); g.addColorStop(1, '#041525');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < 18; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.08 + (i % 3) * 0.05) + ')';
+    ctx.beginPath(); ctx.arc((i * 73) % canvas.width, (i * 41 + Date.now() * 0.02) % canvas.height, 1.2 + (i % 2), 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.fillStyle = '#ff6f61';
+  ctx.fillRect(0, reefY, canvas.width, 10);
+  ctx.fillStyle = '#26a69a';
+  for (let x = 10; x < canvas.width; x += 28) {
+    ctx.beginPath(); ctx.moveTo(x, reefY); ctx.lineTo(x + 8, reefY - 18 - (x % 3) * 6); ctx.lineTo(x + 16, reefY); ctx.fill();
+  }
+}
+function spawnTrash() {
+  trash.push({ x: 20 + Math.random() * (canvas.width - 40), y: -20, r: 18 + Math.random() * 8, icon: icons[Math.floor(Math.random() * icons.length)], speed: 1.2 + Math.random() * 1.4 });
+}
+function drawTrash() {
+  ctx.font = '22px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  trash.forEach(t => {
+    ctx.fillText(t.icon, t.x, t.y);
+  });
+}
+function updateHud() {
+  document.getElementById('hudScore').textContent = '⭐ ' + score;
+  document.getElementById('hudTime').textContent = '⏱ ' + timeLeft + 's';
+  document.getElementById('hudLives').textContent = '❤️'.repeat(Math.max(0, lives));
+}
+function endGame(won) {
+  running = false;
+  clearInterval(timerId);
+  cancelAnimationFrame(animId);
+  document.getElementById('endTitle').textContent = won ? '🎉 Reef Saved!' : '💔 Reef Damaged!';
+  document.getElementById('endStats').textContent = 'Score: ' + score + ' | Time left: ' + timeLeft + 's';
+  document.getElementById('endScreen').style.display = 'flex';
+}
+function loop() {
+  if (!running) return;
+  spawnTimer++;
+  if (spawnTimer > 38) { spawnTimer = 0; spawnTrash(); }
+  trash.forEach((t, i) => {
+    t.y += t.speed;
+    if (t.y + t.r >= reefY) {
+      trash.splice(i, 1);
+      lives--;
+      updateHud();
+      if (lives <= 0) { endGame(false); return; }
+    }
+  });
+  drawBg();
+  drawTrash();
+  animId = requestAnimationFrame(loop);
+}
+function hitTest(x, y) {
+  for (let i = trash.length - 1; i >= 0; i--) {
+    const t = trash[i];
+    if (Math.hypot(x - t.x, y - t.y) < t.r + 8) {
+      trash.splice(i, 1);
+      score += 10;
+      updateHud();
+      return;
+    }
+  }
+}
+function startGame() {
+  resize();
+  running = true; score = 0; timeLeft = 45; lives = 3; trash = []; spawnTimer = 0;
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'none';
+  updateHud();
+  clearInterval(timerId);
+  timerId = setInterval(function () {
+    if (!running) return;
+    timeLeft--;
+    updateHud();
+    if (timeLeft <= 0) endGame(true);
+  }, 1000);
+  loop();
+}
+canvas = document.getElementById('gameCanvas');
+canvas.addEventListener('click', e => {
+  if (!running) return;
+  const r = canvas.getBoundingClientRect();
+  hitTest((e.clientX - r.left) * (canvas.width / r.width), (e.clientY - r.top) * (canvas.height / r.height));
+});
+canvas.addEventListener('touchstart', e => {
+  if (!running) return;
+  e.preventDefault();
+  const t = e.touches[0], r = canvas.getBoundingClientRect();
+  hitTest((t.clientX - r.left) * (canvas.width / r.width), (t.clientY - r.top) * (canvas.height / r.height));
+}, { passive: false });
+window.addEventListener('resize', () => { if (running) resize(); });
+resize();
+</script>
+</body>
+</html>
