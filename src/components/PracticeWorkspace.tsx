@@ -2,6 +2,7 @@ import type { ChangeEvent, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import PracticeCodeEditor from "./PracticeCodeEditor";
 import { getHomePageData } from "../utils/contentStore";
+import "../styles/course.css";
 
 interface PracticeWorkspaceProps {
   bookName?: string;
@@ -99,13 +100,9 @@ export default function PracticeWorkspace({
             ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientMiddle ?? style.wizardTopInfo.backgroundColorGradientStart} 50%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)`
             : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
           borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "8px 16px",
         }}
       >
-        {/* Left Arrow */}
+        <div className="chapter-nav-side chapter-nav-side-left">
         <button
           type="button"
           className="chapter-nav-button"
@@ -129,17 +126,17 @@ export default function PracticeWorkspace({
         >
           ←
         </button>
+        </div>
 
-        {/* Center: Home and Chapter */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div className="chapter-nav-center">
           <Link 
             to="/" 
             className="chapter-nav-home" 
             aria-label="Home" 
             style={{ 
               textDecoration: "none", 
-              width: "40px",
-              height: "40px",
+              width: "32px",
+              height: "32px",
               borderRadius: "0",
               display: "flex",
               alignItems: "center",
@@ -170,7 +167,7 @@ export default function PracticeWorkspace({
           </span>
         </div>
 
-        {/* Right Arrow */}
+        <div className="chapter-nav-side chapter-nav-side-right">
         <button
           type="button"
           className="chapter-nav-button"
@@ -194,6 +191,7 @@ export default function PracticeWorkspace({
         >
           →
         </button>
+        </div>
       </div>
 
       {/* Step Brief */}

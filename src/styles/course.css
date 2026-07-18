@@ -3,15 +3,36 @@
 /* Practice Workspace Top Bar */
 .practice-workspace-top-bar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   color: #f8fafc;
-  padding: 0 16px;
+  padding: 8px 16px;
   border-radius: 0;
   width: 100%;
   box-shadow: none;
   min-height: 56px;
+}
+
+.chapter-nav-side {
+  display: flex;
+  align-items: center;
+}
+
+.chapter-nav-side-left {
+  justify-content: flex-start;
+}
+
+.chapter-nav-side-right {
+  justify-content: flex-end;
+}
+
+.chapter-nav-center {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: center;
+  min-width: 0;
 }
 
 .chapter-info {
@@ -31,13 +52,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 0 !important;
   background: transparent !important;
   color: inherit;
   font-size: 1.1rem;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .chapter-nav-home:hover {
@@ -54,9 +76,10 @@
   color: inherit !important;
   font-size: 0.85rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.02em;
   text-transform: none !important;
   white-space: nowrap;
+  line-height: 1;
 }
 
 .step-title {

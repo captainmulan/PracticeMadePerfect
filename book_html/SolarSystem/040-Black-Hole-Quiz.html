@@ -12,7 +12,14 @@
     .container{max-width:640px;margin:auto;padding:12px 16px 20px;position:relative;z-index:1;}
     .header{text-align:center;margin-bottom:12px;}
     h1{font-size:24px;color:#a78bfa;margin-bottom:4px;}
+    
+    
+    
+    
+    
+    
     .competition-bar{display:flex;justify-content:space-between;align-items:center;background:#1a1735;border-radius:12px;padding:10px;margin-bottom:12px;}
+    .competition-bar.hidden{display:none;}
     .competitor{display:flex;flex-direction:column;align-items:center;gap:4px;}
     .competitor-icon{font-size:28px;}
     .competitor-name{font-size:12px;color:#c4b5fd;}
@@ -45,9 +52,9 @@
     .podium-score{font-size:15px;color:#fff;font-weight:bold;background:#1a1240;padding:3px 7px;border-radius:6px;}
     .score-card .message{font-size:17px;margin-top:10px;margin-bottom:16px;color:#fff;font-weight:bold;padding:10px;background:#1a1240;border-radius:12px;}
     .button-group{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
-    .retry-btn,.continue-btn{padding:14px 28px;border:none;border-radius:14px;font-size:15px;font-weight:bold;cursor:pointer;}
+    .retry-btn{padding:14px 28px;border:none;border-radius:14px;font-size:15px;font-weight:bold;cursor:pointer;}
     .retry-btn{background:linear-gradient(135deg,#1a1240,#3a2f70);color:#ffe066;}
-    .continue-btn{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+    
     .nav-hint{margin-top:12px;text-align:center;font-size:11px;color:#a78bfa;background:rgba(167,139,250,0.1);padding:6px;border-radius:8px;}
   </style>
 <script>
@@ -82,10 +89,18 @@
 <div class="stars"></div>
 <div class="container">
   <div class="header"><h1>❓ Black Hole Quiz</h1></div>
-  <div class="competition-bar">
-    <div class="competitor"><div class="competitor-icon" id="playerIcon">👨‍🚀</div><div class="competitor-name" id="playerName2">Ariel</div><div class="competitor-score" id="playerScore">0</div></div>
+  <div class="competition-bar" id="liveScoreBar">
+    <div class="competitor">
+      <div class="competitor-icon" id="playerIcon">👨‍🚀</div>
+      <div class="competitor-name" id="playerName2">Explorer</div>
+      <div class="competitor-score" id="playerScore">0</div>
+    </div>
     <div class="vs-divider">VS</div>
-    <div class="competitor"><div class="competitor-icon">🌀</div><div class="competitor-name">Void Vortex</div><div class="competitor-score" id="computerScore">0</div></div>
+    <div class="competitor">
+      <div class="competitor-icon" id="botIcon">🌀</div>
+      <div class="competitor-name" id="botName">Void Vortex</div>
+      <div class="competitor-score" id="computerScore">0</div>
+    </div>
   </div>
 
   <div class="quiz-card active" id="quizCard-1">
@@ -158,7 +173,6 @@
     <div class="message" id="scoreMessage"></div>
     <div class="button-group">
       <button class="retry-btn" onclick="retryQuiz()">🔄 Try Again</button>
-      <button class="continue-btn" onclick="continueToNext()">➡️ Continue</button>
     </div>
   </div>
 
@@ -197,15 +211,17 @@ function showScore() {
   document.getElementById('podium-name-2').textContent = competitors[1].name;
   document.getElementById('podium-score-2').textContent = competitors[1].score;
   document.getElementById('scoreMessage').textContent = competitors[0].isPlayer ? '🎉 ' + userName + ' wins! Amazing job!' : 'Void Vortex won this time. Try again!';
+  document.getElementById('liveScoreBar').classList.add('hidden');
+  document.querySelectorAll('.quiz-card').forEach(c => c.classList.remove('active'));
   document.getElementById('scoreCard').classList.add('show');
 }
-function continueToNext() { alert('Great job! Continue to the next chapter using the navigation arrows!'); }
 function retryQuiz() {
   score = 0; currentQuestion = 1; computerScore = 0;
   document.querySelectorAll('.quiz-card').forEach((c, i) => { c.classList.remove('active'); if (i === 0) c.classList.add('active'); });
   document.querySelectorAll('.option').forEach(o => { o.classList.remove('correct', 'wrong'); o.style.pointerEvents = 'auto'; });
   document.querySelectorAll('.feedback').forEach(f => f.classList.remove('show', 'correct', 'wrong'));
   document.getElementById('scoreCard').classList.remove('show');
+  document.getElementById('liveScoreBar').classList.remove('hidden');
   document.getElementById('playerScore').textContent = '0';
   document.getElementById('computerScore').textContent = '0';
 }

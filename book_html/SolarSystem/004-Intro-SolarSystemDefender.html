@@ -33,16 +33,24 @@
             position: relative;
             width: 100%;
             max-width: 700px;
-            min-height: 220px;
-        }
-        #gameCanvas {
-            display: block;
-            width: 100%;
-            height: auto;
+            aspect-ratio: 700 / 600;
             max-height: min(52vh, 420px);
+            margin: 0 auto;
+            overflow: hidden;
             border: 2px solid rgba(255, 200, 0, 0.5);
             border-radius: 12px;
             box-shadow: 0 0 30px rgba(255, 200, 0, 0.2);
+            box-sizing: border-box;
+        }
+        #gameCanvas {
+            position: absolute;
+            inset: 0;
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
         }
         .ui-container {
             width: 100%;
@@ -73,44 +81,56 @@
         }
         .start-screen, .game-over-screen {
             position: absolute;
-            inset: 8px;
-            margin: auto;
-            width: calc(100% - 16px);
-            max-width: 360px;
-            max-height: calc(100% - 16px);
+            left: 10px;
+            right: 10px;
+            top: 10px;
+            bottom: 10px;
+            width: auto;
+            height: auto;
+            max-width: none;
+            max-height: none;
+            margin: 0;
+            overflow-x: hidden;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
             background: rgba(0, 0, 0, 0.88);
-            padding: 16px 14px;
-            border-radius: 14px;
+            padding: 10px 8px;
+            border-radius: 10px;
             text-align: center;
             border: 2px solid rgba(255, 200, 0, 0.6);
             z-index: 100;
             box-sizing: border-box;
         }
+        /* game-stage-overlay-v2 */
         .start-screen h1, .game-over-screen h1 {
             color: #ffd700;
-            margin-bottom: 12px;
-            font-size: 32px;
+            margin-bottom: 8px;
+            font-size: clamp(16px, 4.5vw, 32px);
+            line-height: 1.15;
+            max-width: 100%;
         }
         .start-screen p, .game-over-screen p {
             color: #ccc;
-            margin-bottom: 20px;
-            font-size: 16px;
-            line-height: 1.5;
+            margin-bottom: 12px;
+            font-size: clamp(11px, 3.2vw, 16px);
+            line-height: 1.4;
+            max-width: 100%;
+            word-break: break-word;
         }
         .btn {
-            padding: 12px 32px;
+            padding: 10px 18px;
             border: none;
             border-radius: 12px;
             background: linear-gradient(135deg, #ff6b6b, #ff9500);
             color: white;
-            font-size: 20px;
+            font-size: clamp(14px, 3.8vw, 20px);
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.1s ease;
+            max-width: 100%;
         }
         .btn:hover {
             transform: scale(1.05);
@@ -145,12 +165,19 @@
             .title { font-size: 15px !important; margin-bottom: 6px !important; line-height: 1.35; }
             .ui-container { margin-bottom: 6px; gap: 4px; }
             .ui-item { font-size: 12px; padding: 5px 8px; }
-            .start-screen h1, .game-over-screen h1 { font-size: 20px; margin-bottom: 8px; }
-            .start-screen p, .game-over-screen p { font-size: 13px; margin-bottom: 12px; }
-            .btn { padding: 10px 20px; font-size: 16px; }
+            .start-screen, .game-over-screen {
+                left: 8px;
+                right: 8px;
+                top: 8px;
+                bottom: 8px;
+                padding: 8px 6px;
+            }
+            .start-screen h1, .game-over-screen h1 { margin-bottom: 6px; }
+            .start-screen p, .game-over-screen p { margin-bottom: 10px; }
+            .btn { padding: 8px 14px; }
             .touch-controls { gap: 12px; margin-top: 6px; }
             .touch-btn { width: 56px; height: 56px; font-size: 22px; }
-            #gameCanvas { max-height: min(46vh, 320px); }
+            .game-stage { max-height: min(46vh, 320px); }
         }
     </style>
 <script>
