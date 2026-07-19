@@ -177,15 +177,6 @@
       height:auto;
       max-height:calc(100svh - 148px);
     }
-      min-height:48px;
-      margin-top:8px;
-      padding:8px 12px 4px;
-      text-align:center;
-      font-size:clamp(12px, 3.2vw, 15px);
-      line-height:1.55;
-      color:#c4b5fd;
-    }
-    .tap-tip strong{color:#e0e7ff;}
     .fp-wrap::after{
       content:'';
       position:absolute;inset:0;pointer-events:none;border-radius:16px;
@@ -1111,7 +1102,6 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         </div>
       </div>
     </div>
-    <div class="tap-tip" id="tapTip">Tap the Sun or a planet to discover a fun fact!</div>
     <div class="ctrl-row">
       <button class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
       <button class="ctrl-btn" id="btnSpeed">🚀 Speed: 0.5×</button>
@@ -1122,7 +1112,8 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   </div>
 
   <div class="panel info-panel" id="infoPanel">
-    <p class="hint">Tap the Sun or a planet to discover a fun fact!</p>
+    <h2>🪐 Our Solar System</h2>
+    <p>Our solar system has eight planets that travel around one star — the Sun.</p>
   </div>
 
   <div class="panel minigame-panel">
@@ -1179,13 +1170,20 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     sizes: { mercury:18, venus:21, earth:24, mars:21, jupiter:40, saturn:37, uranus:29, neptune:27 },
   };
   const TELESCOPE_DRAW_R = 108;
-  const DEFAULT_TIP = 'Tap the Sun or a planet to discover a fun fact!';
   const SUN_FACTS = [
     'The Sun is a star — a giant ball of hot gas that gives Earth light and warmth.',
     'Light from the Sun reaches Earth in about 8 minutes.',
     'The Sun is so big that more than one million Earths could fit inside it!',
     'The Sun\'s surface is about 5,500°C — far hotter than anything on Earth.',
     'Without the Sun, our solar system would be dark, cold, and lifeless.',
+  ];
+  const SOLAR_SYSTEM_INFO = [
+    'Our solar system has eight planets that travel around one star — the Sun.',
+    'The four inner planets are rocky worlds. The four outer planets are giant balls of gas and ice.',
+    'Everything in our solar system formed from the same cloud of gas and dust about 4.6 billion years ago.',
+    'Asteroids and comets also orbit the Sun — leftover building blocks from when the planets formed.',
+    'The solar system is mostly empty space. Even the planets are tiny compared with the distances between them.',
+    'Gravity from the Sun keeps every planet in its orbit, like a cosmic tug-of-war in balance.',
   ];
   const MOVIE_SIZES = { mercury:30, venus:32, earth:34, mars:30, jupiter:56, saturn:52, uranus:38, neptune:36 };
 
@@ -1694,38 +1692,22 @@ const StylizedPlanet = {
     modeIcon(mode) {
       return { orbit:'🛰️', vertical:'📱', telescope:'🔭', movie:'🎬' }[mode.id] || '🛰️';
     },
-    resetTapTip() {
-      const tip = document.getElementById('tapTip');
-      if (tip) tip.textContent = DEFAULT_TIP;
-    },
-    setTapTipPlanet(p, fact) {
-      const tip = document.getElementById('tapTip');
-      if (!tip || !p) return fact;
-      const line = fact || randomPlanetFact(p);
-      tip.innerHTML = '<strong>' + p.emoji + ' ' + p.name + '</strong> — ' + line;
-      return line;
-    },
-    setTapTipSun(fact) {
-      const tip = document.getElementById('tapTip');
-      if (!tip) return fact;
-      const line = fact || pickRandom(SUN_FACTS);
-      tip.innerHTML = '<strong>☀️ The Sun</strong> — ' + line;
-      return line;
-    },
     showDefaultInfo() {
       this.selected = null;
-      this.resetTapTip();
-      this.info.innerHTML = '<p class="hint">' + DEFAULT_TIP + '</p>';
+      this.initInfoPanel();
     },
-    showPlanetInfo(p, fact) {
-      const line = fact || randomPlanetFact(p);
-      this.setTapTipPlanet(p, line);
+    initInfoPanel() {
+      if (!this.info) return;
+      this.info.innerHTML = '<h2>🪐 Our Solar System</h2><p>' + pickRandom(SOLAR_SYSTEM_INFO) + '</p>';
+    },
+    showFact(p) {
+      this.selected = p.id;
+      const line = randomPlanetFact(p);
       this.info.innerHTML = '<h2>' + p.emoji + ' ' + p.name + '</h2><p>' + line + '</p>';
       return line;
     },
-    showSunInfo(fact) {
-      const line = fact || pickRandom(SUN_FACTS);
-      this.setTapTipSun(line);
+    showSunInfo() {
+      const line = pickRandom(SUN_FACTS);
       this.info.innerHTML = '<h2>☀️ The Sun</h2><p>' + line + '</p>';
       return line;
     },
@@ -1880,6 +1862,7 @@ const StylizedPlanet = {
       this.bindTelescopeArrows();
       this.loop();
       window.addEventListener('resize', () => this.fitView());
+      this.initInfoPanel();
       this.showDefaultInfo();
     },
     bindControls(){
@@ -1984,10 +1967,6 @@ const StylizedPlanet = {
         this._userZoomed = true;
         this.zoom = Math.min(3.4, Math.max(0.4, this.zoom + (e.deltaY < 0 ? 0.1 : -0.1)));
       }, { passive: false });
-    },
-    showFact(p){
-      this.selected = p.id;
-      return this.showPlanetInfo(p);
     },
     drawSun(g, sunRadius, hostSvg){
       StylizedPlanet.draw(g, 'sun', sunRadius || SUN_RADIUS_DEFAULT, hostSvg);
