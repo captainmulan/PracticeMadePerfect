@@ -1941,6 +1941,87 @@ const StylizedPlanet = {
     drawPlanetBody(g, p, s, hostSvg, soft){
       StylizedPlanet.draw(g, p.id, s, hostSvg, soft);
     },
+    /* Movie view only — Mercury/Mars share globe-r300 clip id; use pattern spheres here */
+    ensureMovieSpherePattern(svg, planetId, r) {
+      const id = 'moviePat-' + planetId;
+      if (svg.querySelector('#' + id)) return id;
+      const tex = StylizedPlanet.TEXTURES[planetId];
+      if (!tex) return null;
+      let defs = svg.querySelector('defs');
+      if (!defs) {
+        defs = el('defs', {});
+        svg.insertBefore(defs, svg.firstChild);
+      }
+      const d = r * 2;
+      const pat = el('pattern', {
+        id: id,
+        patternUnits: 'userSpaceOnUse',
+        x: String(-r),
+        y: String(-r),
+        width: String(d),
+        height: String(d),
+      });
+      pat.appendChild(el('image', {
+        href: tex,
+        'xlink:href': tex,
+        x: '0',
+        y: '0',
+        width: String(d),
+        height: String(d),
+        preserveAspectRatio: 'xMidYMid slice',
+      }));
+      defs.appendChild(pat);
+      return id;
+    },
+    drawMovieSphereBody(g, p, r, svg) {
+      const patId = this.ensureMovieSpherePattern(svg, p.id, r);
+      if (!patId) {
+        g.appendChild(el('circle', { r: String(r), fill: '#888', 'pointer-events': 'none' }));
+        return;
+      }
+      g.appendChild(el('circle', {
+        r: String(r),
+        fill: 'url(#' + patId + ')',
+        'pointer-events': 'none',
+      }));
+      g.appendChild(el('circle', {
+        r: String(r),
+        fill: 'url(#sphereShade)',
+        'pointer-events': 'none',
+      }));
+    },
+    drawMoviePlanet(g, p, r, svg) {
+      if (!svg) svg = g.ownerSVGElement;
+      if (svg) {
+        StylizedPlanet.ensureSoftBlur(svg);
+        StylizedPlanet.ensureShading(svg);
+      }
+      if (p.id === 'saturn') {
+        g.appendChild(el('ellipse', {
+          rx: String(r * 2.2), ry: String(r * 0.52),
+          fill: 'rgba(210,185,130,0.12)', filter: 'url(#softBlur)',
+          transform: 'rotate(-18)', 'pointer-events': 'none'
+        }));
+        this.drawPlanetBody(g, p, r, svg, false);
+        return;
+      }
+      g.appendChild(el('circle', {
+        r: String(r * 1.22),
+        fill: 'rgba(130,165,255,0.1)',
+        filter: 'url(#softBlur)',
+        'pointer-events': 'none'
+      }));
+      g.appendChild(el('circle', {
+        r: String(r * 1.1),
+        fill: 'rgba(255,255,255,0.05)',
+        'pointer-events': 'none'
+      }));
+      if (p.id === 'mercury' || p.id === 'mars') {
+        this.drawMovieSphereBody(g, p, r, svg);
+      } else {
+        this.drawPlanetBody(g, p, r, svg, false);
+      }
+    },
     drawOrbit(){
       while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
       const mode = this.currentMode();
@@ -2112,7 +2193,7 @@ const StylizedPlanet = {
         g.appendChild(pg);
         const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
         pg.appendChild(spinG);
-        this.drawPlanetRealistic(spinG, p, r, svg);
+        this.drawMoviePlanet(spinG, p, r, svg);
       });
     },
     drawAstronautBack(g, x, y) {
