@@ -1941,7 +1941,7 @@ const StylizedPlanet = {
     drawPlanetBody(g, p, s, hostSvg, soft){
       StylizedPlanet.draw(g, p.id, s, hostSvg, soft);
     },
-    /* Movie view only — Mercury/Mars share globe-r300 clip id; use pattern spheres here */
+    /* Movie view only — some planets share clip ids; use pattern spheres here */
     ensureMovieSpherePattern(svg, planetId, r) {
       const id = 'moviePat-' + planetId;
       if (svg.querySelector('#' + id)) return id;
@@ -2016,7 +2016,7 @@ const StylizedPlanet = {
         fill: 'rgba(255,255,255,0.05)',
         'pointer-events': 'none'
       }));
-      if (p.id === 'mercury' || p.id === 'mars') {
+      if (p.id === 'mercury' || p.id === 'mars' || p.id === 'neptune') {
         this.drawMovieSphereBody(g, p, r, svg);
       } else {
         this.drawPlanetBody(g, p, r, svg, false);
