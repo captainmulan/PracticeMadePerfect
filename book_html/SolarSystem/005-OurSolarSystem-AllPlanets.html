@@ -170,6 +170,24 @@
       position:relative;
       background:radial-gradient(ellipse at 30% 20%, rgba(40,30,90,0.5), #050510 70%);
     }
+    .view-layer-movie.active{
+      width:100%;
+      height:100%;
+    }
+    .view-layer-movie .movie-wrap{
+      aspect-ratio:800 / 420;
+      height:auto;
+      max-height:calc(100svh - 132px);
+    }
+    .view-layer-vertical.active{
+      width:100%;
+      height:100%;
+    }
+    .view-layer-vertical .vertical-fit{
+      aspect-ratio:360 / 580;
+      height:auto;
+      max-height:calc(100svh - 132px);
+    }
     .fp-wrap::after{
       content:'';
       position:absolute;inset:0;pointer-events:none;border-radius:16px;
@@ -374,6 +392,29 @@
       max-height: min(98vw, calc(100svh - 118px));
       margin: 0 auto;
     }
+    body.all-planets-page .view-stage:has(.view-layer-movie.active),
+    body.all-planets-page .view-stage:has(.view-layer-vertical.active) {
+      width: 100%;
+      max-width: 100%;
+      min-height: 0;
+      max-height: none;
+      height: auto;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+    body.all-planets-page .view-layer-movie .movie-wrap {
+      width: min(100%, calc((100svh - 148px) * 800 / 420));
+      height: auto;
+      max-height: calc(100svh - 148px);
+      margin: 0 auto;
+    }
+    body.all-planets-page .view-layer-vertical .vertical-fit {
+      width: min(100%, calc((100svh - 148px) * 360 / 580));
+      height: auto;
+      max-height: calc(100svh - 148px);
+      margin: 0 auto;
+    }
     body.all-planets-page .svg-wrap {
       width: min(98vw, 820px);
       max-width: none;
@@ -446,12 +487,28 @@
         min-height: calc(100svh - 88px) !important;
         max-height: calc(100svh - 88px) !important;
       }
+      body.all-planets-page .view-stage:has(.view-layer-movie.active),
+      body.all-planets-page .view-stage:has(.view-layer-vertical.active) {
+        min-height: 0 !important;
+        max-height: none !important;
+        height: auto !important;
+      }
       body.all-planets-page .vertical-fit,
       body.all-planets-page .telescope-wrap,
       body.all-planets-page .movie-wrap,
       body.all-planets-page .fp-wrap {
         height: calc(100svh - 88px) !important;
         max-height: calc(100svh - 88px) !important;
+      }
+      body.all-planets-page .view-layer-movie .movie-wrap {
+        width: min(100%, calc((100svh - 96px) * 800 / 420)) !important;
+        height: auto !important;
+        max-height: calc(100svh - 96px) !important;
+      }
+      body.all-planets-page .view-layer-vertical .vertical-fit {
+        width: min(100%, calc((100svh - 96px) * 360 / 580)) !important;
+        height: auto !important;
+        max-height: calc(100svh - 96px) !important;
       }
       body.all-planets-page .svg-wrap {
         aspect-ratio: unset !important;
