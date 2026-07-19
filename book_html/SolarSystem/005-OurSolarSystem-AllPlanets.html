@@ -166,14 +166,30 @@
       max-height:calc(100svh - 132px);
     }
     .view-layer-vertical.active{
+      display:flex;
+      flex-direction:column;
       width:100%;
       height:100%;
     }
     .view-layer-vertical .vertical-fit{
+      flex:0 0 auto;
       aspect-ratio:360 / 580;
       height:auto;
-      max-height:calc(100svh - 132px);
+      max-height:calc(100svh - 210px);
     }
+    .vertical-meta{
+      flex:0 0 auto;
+      width:100%;
+      padding:8px 10px 2px;
+      text-align:center;
+    }
+    .vertical-tip{
+      min-height:44px;
+      font-size:clamp(12px, 3.2vw, 15px);
+      line-height:1.55;
+      color:#c4b5fd;
+    }
+    .vertical-tip strong{color:#e0e7ff;}
     .fp-wrap::after{
       content:'';
       position:absolute;inset:0;pointer-events:none;border-radius:16px;
@@ -1073,6 +1089,9 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             <g id="verticalGroup"></g>
           </svg>
         </div>
+        <div class="vertical-meta">
+          <div class="vertical-tip" id="verticalTip">Tap a planet to learn about it!</div>
+        </div>
       </div>
       <div class="view-layer view-layer-telescope" data-layer="telescope" id="viewLayerTelescope">
         <div class="telescope-wrap">
@@ -1155,17 +1174,17 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     orbitScale: 1.55,
     sunOffsetX: 0,
     sunRadius: 36,
-    tilt: 0.52,
+    tilt: 0.58,
     planetSizeScale: 0.92,
   };
   const VERT_LINE = {
     cx: 200,
-    sunY: -28,
-    sunR: 72,
-    topClipH: 108,
-    topY: 102,
+    sunY: -22,
+    sunR: 94,
+    topClipH: 122,
+    topY: 96,
     bottomY: 572,
-    sizes: { mercury:14, venus:16, earth:18, mars:16, jupiter:30, saturn:28, uranus:22, neptune:21 },
+    sizes: { mercury:18, venus:21, earth:24, mars:21, jupiter:40, saturn:37, uranus:29, neptune:27 },
   };
   const TELESCOPE_DRAW_R = 108;
   const MOVIE_SIZES = { mercury:30, venus:32, earth:34, mars:30, jupiter:56, saturn:52, uranus:38, neptune:36 };
@@ -1486,6 +1505,7 @@ const StylizedPlanet = {
       });
       const label = document.getElementById('telescopeLabel');
       if (label && layer === 'telescope') this.updateTelescopeLabel();
+      else if (layer === 'vertical') this.resetVerticalTip();
       else this.showModeInfo();
       if (layer === 'orbit') this.fitView();
     },
@@ -1637,11 +1657,12 @@ const StylizedPlanet = {
       this.maxOrbitR = maxOrbitR;
       const largestPlanet = Math.max(...visible.map(p => p.size)) * layout.planetSizeScale;
       const sunR = layout.sunRadius;
-      const pad = this.isLandscape() ? 6 : 8;
-      const half = 270 - pad;
-      const horizHalf = Math.abs(layout.sunOffsetX) + maxOrbitR + largestPlanet + 8;
-      const vertHalf = maxOrbitR * Math.abs(layout.tilt) + Math.max(largestPlanet, sunR * 0.35) + 8;
-      const z = Math.min(1.45, half / Math.min(horizHalf, vertHalf));
+      const pad = this.isLandscape() ? 3 : 4;
+      const half = 296 - pad;
+      const horizHalf = Math.abs(layout.sunOffsetX) + maxOrbitR + largestPlanet + 4;
+      const vertHalf = maxOrbitR * Math.abs(layout.tilt) + Math.max(largestPlanet, sunR * 0.35) + 4;
+      const zFit = half / Math.min(horizHalf, vertHalf);
+      const z = Math.min(1.58, zFit * 1.06);
       const landscapeBoost = this.isLandscape() ? 1.08 : 1;
       this.DEFAULT_ZOOM = Math.round(z * mode.closeupBoost * mode.zoomBoost * landscapeBoost * 100) / 100;
       if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
@@ -1661,7 +1682,7 @@ const StylizedPlanet = {
       if (layer === 'movie') return '💡 Straight row from the Sun — tap any planet for facts.';
       if (layer === 'telescope') return '💡 Use ‹ › arrows to browse worlds · tap the planet for facts.';
       if (layer === 'orbit') return '💡 Drag to spin · pinch to zoom · tap View to cycle all four modes.';
-      if (layer === 'vertical') return '💡 Tap any world for facts · everything fits on one screen.';
+      if (layer === 'vertical') return '💡 Tap any world for facts · read the tip below the chart.';
       return '💡 Tap View to explore another mode.';
     },
     showModeInfo() {
@@ -1678,6 +1699,16 @@ const StylizedPlanet = {
       const p = PLANETS[this.telescopeIdx];
       if (label) label.textContent = '🔭 ' + p.emoji + ' ' + p.name;
       if (this.activeLayer() === 'telescope') this.updateLayerInfo(p, 'telescope');
+    },
+    resetVerticalTip() {
+      const tip = document.getElementById('verticalTip');
+      if (tip) tip.textContent = 'Tap a planet to learn about it!';
+      this.showModeInfo();
+    },
+    updateVerticalTip(p) {
+      const tip = document.getElementById('verticalTip');
+      if (!tip || !p) return;
+      tip.innerHTML = '<strong>' + p.emoji + ' ' + p.name + '</strong> — ' + p.facts;
     },
     updateLayerInfo(p, layer) {
       const hint = '💡 Use ‹ › to browse worlds · tap the planet for more.';
@@ -1763,10 +1794,18 @@ const StylizedPlanet = {
       if (!hit) return false;
       if (hit.dataset && hit.dataset.id && hit.dataset.id !== 'sun') {
         const p = PLANETS.find(x => x.id === hit.dataset.id);
-        if (p) { this.showFact(p); return true; }
+        if (p) {
+          this.showFact(p);
+          if (this.activeLayer() === 'vertical') this.updateVerticalTip(p);
+          return true;
+        }
       }
       if ((hit.dataset && hit.dataset.id === 'sun') || hit.id === 'sunHit') {
         this.info.innerHTML = '<h2>☀️ The Sun</h2><p>The Sun is a star at the center of our solar system. It\'s so big that 1.3 million Earths could fit inside it! All the planets orbit around it.</p><p class="hint">Tap a planet to learn more!</p>';
+        if (this.activeLayer() === 'vertical') {
+          const tip = document.getElementById('verticalTip');
+          if (tip) tip.innerHTML = '<strong>☀️ The Sun</strong> — The star at the center of our solar system. All eight planets orbit around it!';
+        }
         return true;
       }
       return false;
@@ -2054,12 +2093,13 @@ const StylizedPlanet = {
       const L = VERT_LINE;
       while (g.firstChild) g.removeChild(g.firstChild);
       g.appendChild(el('rect', { x: '0', y: '0', width: '400', height: '580', fill: '#050510' }));
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 120; i++) {
         g.appendChild(el('circle', {
           cx: String((i * 37.1 + 8) % 400),
           cy: String((i * 53.3 + 12) % 580),
-          r: String(0.3 + (i % 3) * 0.2),
-          fill: 'rgba(255,255,255,' + (0.15 + (i % 5) * 0.1).toFixed(2) + ')'
+          r: String(0.25 + (i % 4) * 0.18),
+          fill: 'rgba(255,255,255,' + (0.12 + (i % 7) * 0.08).toFixed(2) + ')',
+          'pointer-events': 'none'
         }));
       }
       const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top');
@@ -2068,11 +2108,17 @@ const StylizedPlanet = {
       const sunInner = el('g', { transform: 'translate(' + L.cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
       sunWrap.appendChild(sunInner);
       this.drawSunBurning(sunInner, L.sunR, svg, null);
+      sunInner.appendChild(el('circle', {
+        r: String(L.sunR * 1.15),
+        fill: 'rgba(0,0,0,0.001)',
+        'pointer-events': 'all'
+      }));
 
       const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
       PLANETS.forEach((p, i) => {
         const y = L.topY + step * (i + 1);
         const r = L.sizes[p.id] || 8;
+        const hitR = p.id === 'saturn' ? r * 1.35 : r + 6;
         const pg = el('g', {
           class: 'planet-hit',
           'data-id': p.id,
@@ -2083,14 +2129,11 @@ const StylizedPlanet = {
         const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
         pg.appendChild(spinG);
         this.drawPlanetRealistic(spinG, p, r, svg);
-        pg.appendChild(el('text', {
-          x: '0',
-          y: String(r + 14),
-          fill: '#a78bfa',
-          'font-size': '11',
-          'text-anchor': 'middle',
-          'pointer-events': 'none'
-        })).textContent = p.name;
+        pg.appendChild(el('circle', {
+          r: String(hitR),
+          fill: 'rgba(0,0,0,0.001)',
+          'pointer-events': 'all'
+        }));
       });
     },
     drawTelescope() {
