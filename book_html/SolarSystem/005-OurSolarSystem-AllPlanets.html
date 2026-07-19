@@ -62,12 +62,27 @@
     .view-stage{
       position:relative;
       width:100%;
-      min-height:min(98vw, calc(100svh - 118px));
-      max-height:min(98vw, calc(100svh - 118px));
       margin:0 auto;
     }
-    .view-layer{display:none;width:100%;height:100%;min-height:inherit;}
-    .view-layer.active{display:block;}
+    .view-layer{
+      display:block;
+      width:100%;
+      height:100%;
+      min-height:0;
+      position:absolute;
+      inset:0;
+      opacity:0;
+      visibility:hidden;
+      transition:opacity 0.32s ease, visibility 0.32s;
+      pointer-events:none;
+      z-index:1;
+    }
+    .view-layer.active{
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+      z-index:2;
+    }
     .view-layer-telescope.active{
       display:flex;
       flex-direction:column;
@@ -211,22 +226,25 @@
     #solarSvg{display:block;width:100%;height:100%;min-height:0;}
     .ctrl-row{
       display:flex;
-      flex-wrap:wrap;
-      gap:8px;
+      flex-wrap:nowrap;
+      gap:6px;
       justify-content:center;
-      margin-top:12px;
+      margin-top:6px;
     }
     .ctrl-btn{
-      padding:10px 14px;
+      padding:8px 10px;
       border:none;
-      border-radius:12px;
+      border-radius:10px;
       background:linear-gradient(135deg,#667eea,#764ba2);
       color:#fff;
       font-family:inherit;
-      font-size:14px;
+      font-size:12px;
       font-weight:bold;
       cursor:pointer;
       transition:transform 0.15s;
+      flex:1 1 0;
+      min-width:0;
+      white-space:nowrap;
     }
     .ctrl-btn:hover{transform:scale(1.05);}
     .ctrl-btn:active{transform:scale(0.95);}
@@ -344,6 +362,7 @@
     .planet-hit:hover circle,.planet-hit:hover ellipse{filter:brightness(1.2);}
     /* All Planets page: big rocket window first, scroll for the rest */
     body.all-planets-page {
+      --ap-frame-max-h: min(calc(100svh - 265px), calc(100vw * 580 / 360));
       overflow-x: hidden;
       overflow-y: auto !important;
       height: auto !important;
@@ -359,68 +378,106 @@
       padding: 8px 10px 32px;
     }
     body.all-planets-page .header {
-      margin-bottom: 8px;
-    }
-    body.all-planets-page .header h1 {
-      font-size: 22px;
       margin-bottom: 4px;
     }
+    body.all-planets-page .header h1 {
+      font-size: 20px;
+      margin-bottom: 0;
+    }
     body.all-planets-page .header .subtitle {
-      font-size: 13px;
-      line-height: 1.35;
+      display: none;
     }
     body.all-planets-page .solar-panel {
       flex: none;
-      margin-bottom: 10px;
-      padding: 10px;
+      margin-bottom: 8px;
+      padding: 8px;
     }
     body.all-planets-page .view-stage {
-      width: min(98vw, 820px);
-      max-width: none;
-      min-height: min(98vw, calc(100svh - 118px));
-      max-height: min(98vw, calc(100svh - 118px));
-      margin: 0 auto;
-    }
-    body.all-planets-page .view-stage:has(.view-layer-movie.active),
-    body.all-planets-page .view-stage:has(.view-layer-vertical.active) {
-      width: 100%;
+      width: min(100%, calc(var(--ap-frame-max-h) * 360 / 580));
       max-width: 100%;
+      aspect-ratio: 360 / 580;
+      max-height: var(--ap-frame-max-h);
       min-height: 0;
-      max-height: none;
       height: auto;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 16px;
+      background: #050510;
+    }
+    body.all-planets-page .view-layer-orbit,
+    body.all-planets-page .view-layer-orbit .svg-wrap,
+    body.all-planets-page .view-layer-vertical .vertical-fit,
+    body.all-planets-page .view-layer-telescope .telescope-wrap {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: none !important;
+      min-height: 0 !important;
+      aspect-ratio: unset !important;
+    }
+    body.all-planets-page .view-layer-movie.active {
       display: flex;
+      align-items: center;
       justify-content: center;
-      align-items: stretch;
     }
     body.all-planets-page .view-layer-movie .movie-wrap {
-      width: min(100%, calc((100svh - 148px) * 800 / 420));
-      height: auto;
-      max-height: calc(100svh - 148px);
-      margin: 0 auto;
+      width: 100% !important;
+      height: auto !important;
+      max-height: 100% !important;
+      min-height: 0 !important;
+      aspect-ratio: 800 / 420;
+      flex: 0 1 auto;
     }
-    body.all-planets-page .view-layer-vertical .vertical-fit {
-      width: min(100%, calc((100svh - 148px) * 360 / 580));
-      height: auto;
-      max-height: calc(100svh - 148px);
-      margin: 0 auto;
+    body.all-planets-page .view-layer-telescope.active {
+      display: flex;
+      flex-direction: column;
     }
-    body.all-planets-page .svg-wrap {
-      width: min(98vw, 820px);
+    body.all-planets-page .view-layer-telescope .telescope-wrap {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 6px;
+    }
+    body.all-planets-page .telescope-stage {
       max-width: none;
-      height: min(98vw, calc(100svh - 118px));
-      max-height: min(98vw, calc(100svh - 118px));
-      aspect-ratio: 1;
-      margin: 0 auto;
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+      aspect-ratio: unset;
+      border-radius: 20px;
+    }
+    body.all-planets-page .movie-wrap svg,
+    body.all-planets-page .vertical-fit svg,
+    body.all-planets-page #solarSvg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
     body.all-planets-page .ctrl-row {
-      margin-top: 10px;
+      margin-top: 6px;
+      gap: 5px;
+    }
+    body.all-planets-page .ctrl-btn {
+      padding: 7px 6px;
+      font-size: 11px;
+      border-radius: 9px;
     }
     body.all-planets-page .scroll-cue {
-      margin-top: 10px;
-      text-align: center;
+      display: none;
+    }
+    body.all-planets-page .info-panel {
+      margin-top: 6px;
+      margin-bottom: 0;
+      padding: 8px 10px;
+      background: rgba(26, 23, 53, 0.85);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    body.all-planets-page .info-panel h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    body.all-planets-page .info-panel p {
       font-size: 13px;
-      color: #a78bfa;
-      opacity: 0.85;
+      line-height: 1.45;
     }
     body.all-planets-page .info-panel,
     body.all-planets-page .minigame-panel {
@@ -428,94 +485,33 @@
       overflow: visible !important;
     }
     @media (min-width: 640px) {
-      body.all-planets-page .view-stage {
-        width: min(94vw, 880px);
-        min-height: min(94vw, calc(100svh - 108px));
-        max-height: min(94vw, calc(100svh - 108px));
-      }
-      body.all-planets-page .svg-wrap {
-        width: min(94vw, 880px);
-        height: min(94vw, calc(100svh - 108px));
-        max-height: min(94vw, calc(100svh - 108px));
+      body.all-planets-page {
+        --ap-frame-max-h: min(calc(100svh - 255px), calc(94vw * 580 / 360));
       }
     }
     @media (min-width: 900px) {
-      body.all-planets-page .view-stage {
-        width: min(90vw, 960px);
-        min-height: min(82vh, 960px);
-        max-height: min(82vh, 960px);
-      }
-      body.all-planets-page .svg-wrap {
-        width: min(90vw, 960px);
-        height: min(82vh, 960px);
-        max-height: min(82vh, 960px);
+      body.all-planets-page {
+        --ap-frame-max-h: min(calc(100svh - 280px), calc(90vw * 580 / 360));
       }
     }
     @media (orientation: landscape) and (max-height: 520px) {
+      body.all-planets-page {
+        --ap-frame-max-h: calc(100svh - 145px);
+      }
       body.all-planets-page .container {
         padding: 4px 8px 14px;
         max-width: 100%;
       }
-      body.all-planets-page .header {
-        margin-bottom: 3px;
-      }
       body.all-planets-page .header h1 {
         font-size: 16px;
-        margin-bottom: 2px;
-      }
-      body.all-planets-page .header .subtitle {
-        font-size: 11px;
-        line-height: 1.25;
       }
       body.all-planets-page .solar-panel {
         padding: 5px;
         margin-bottom: 5px;
       }
-      body.all-planets-page .view-stage {
-        width: 100% !important;
-        min-height: calc(100svh - 88px) !important;
-        max-height: calc(100svh - 88px) !important;
-      }
-      body.all-planets-page .view-stage:has(.view-layer-movie.active),
-      body.all-planets-page .view-stage:has(.view-layer-vertical.active) {
-        min-height: 0 !important;
-        max-height: none !important;
-        height: auto !important;
-      }
-      body.all-planets-page .vertical-fit,
-      body.all-planets-page .telescope-wrap,
-      body.all-planets-page .movie-wrap,
-      body.all-planets-page .fp-wrap {
-        height: calc(100svh - 88px) !important;
-        max-height: calc(100svh - 88px) !important;
-      }
-      body.all-planets-page .view-layer-movie .movie-wrap {
-        width: min(100%, calc((100svh - 96px) * 800 / 420)) !important;
-        height: auto !important;
-        max-height: calc(100svh - 96px) !important;
-      }
-      body.all-planets-page .view-layer-vertical .vertical-fit {
-        width: min(100%, calc((100svh - 96px) * 360 / 580)) !important;
-        height: auto !important;
-        max-height: calc(100svh - 96px) !important;
-      }
-      body.all-planets-page .svg-wrap {
-        aspect-ratio: unset !important;
-        width: 100% !important;
-        height: calc(100svh - 88px) !important;
-        max-height: calc(100svh - 88px) !important;
-        min-height: calc(100svh - 96px) !important;
-      }
-      body.all-planets-page .ctrl-row {
-        margin-top: 4px;
-        gap: 6px;
-      }
       body.all-planets-page .ctrl-btn {
-        padding: 6px 10px;
-        font-size: 11px;
-      }
-      body.all-planets-page .scroll-cue {
-        display: none;
+        padding: 5px 6px;
+        font-size: 10px;
       }
     }
   /* solar-desktop-fit */
@@ -837,8 +833,11 @@ body.all-planets-page:has(#solarSvg) .solar-panel {
 }
 body.all-planets-page:has(#solarSvg) .svg-wrap {
   flex: none !important;
-  max-height: min(98vw, calc(100svh - 118px)) !important;
-  min-height: min(52svh, calc(100svh - 128px), 98vw) !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: unset !important;
 }
 body.all-planets-page:has(#solarSvg) .info-panel,
 body.all-planets-page:has(#solarSvg) .nav-hint {
@@ -848,25 +847,6 @@ body.all-planets-page:has(#solarSvg) .minigame-panel {
   max-height: none !important;
   overflow: visible !important;
   flex: none !important;
-}
-@media (min-width: 640px) {
-  body.all-planets-page:has(#solarSvg) .svg-wrap {
-    max-height: min(94vw, calc(100svh - 108px)) !important;
-  }
-}
-@media (min-width: 900px) {
-  body.all-planets-page:has(#solarSvg) .svg-wrap {
-    max-height: min(82vh, 960px) !important;
-  }
-}
-@media (orientation: landscape) and (max-height: 520px) {
-  body.all-planets-page:has(#solarSvg) .svg-wrap {
-    aspect-ratio: unset !important;
-    width: 100% !important;
-    height: calc(100svh - 88px) !important;
-    max-height: calc(100svh - 88px) !important;
-    min-height: calc(100svh - 96px) !important;
-  }
 }
   
 body.reading-page {
@@ -938,25 +918,6 @@ body.big-planet-page .nav-hint {
 @media (min-width: 640px) {
   body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
     max-height: min(92vw, calc(100svh - 156px)) !important;
-  }
-}
-body.all-planets-page:has(#solarSvg) .svg-wrap {
-  max-height: min(98vw, calc(100svh - 118px)) !important;
-  min-height: min(52svh, calc(100svh - 128px), 98vw) !important;
-}
-@media (orientation: landscape) and (max-height: 520px) {
-  body.all-planets-page:has(#solarSvg) .svg-wrap {
-    aspect-ratio: unset !important;
-    width: 100% !important;
-    height: calc(100svh - 88px) !important;
-    max-height: calc(100svh - 88px) !important;
-    min-height: calc(100svh - 96px) !important;
-  }
-  body.all-planets-page:has(#solarSvg) .header h1 {
-    font-size: 16px !important;
-  }
-  body.all-planets-page:has(#solarSvg) .header .subtitle {
-    font-size: 11px !important;
   }
 }
 body.big-game-page:has(.game-shell) {
@@ -1056,7 +1017,6 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 <div class="container">
   <div class="header">
     <h1>🪐 Our Solar System</h1>
-    <div class="subtitle">Close-up from your ship — all eight planets are big and easy to tap!</div>
   </div>
 
   <div class="panel solar-panel">
@@ -1069,7 +1029,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
           </svg>
         </div>
       </div>
-      <div class="view-layer view-layer-vertical" data-layer="vertical" id="viewLayerVertical">
+      <div class="view-layer view-layer-vertical active" data-layer="vertical" id="viewLayerVertical">
         <div class="vertical-fit">
           <svg id="verticalSvg" viewBox="0 0 400 580" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Vertical solar system stack">
             <defs></defs>
@@ -1093,7 +1053,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
           <div class="telescope-detail" id="telescopeDetail"></div>
         </div>
       </div>
-      <div class="view-layer view-layer-movie active" data-layer="movie" id="viewLayerMovie">
+      <div class="view-layer view-layer-movie" data-layer="movie" id="viewLayerMovie">
         <div class="movie-wrap">
           <svg id="movieSvg" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Cinematic solar system view">
             <defs></defs>
@@ -1105,15 +1065,13 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     <div class="ctrl-row">
       <button class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
       <button class="ctrl-btn" id="btnSpeed">🚀 Speed: 0.5×</button>
-      <button class="ctrl-btn" id="btnViewMode">👁️ View: Movie</button>
+      <button class="ctrl-btn" id="btnViewMode">👁️ View: Vertical</button>
       <button class="ctrl-btn" id="btnReset">🔄 Reset</button>
     </div>
-    <p class="scroll-cue">↓ Scroll for planet facts and the ordering game</p>
-  </div>
-
-  <div class="panel info-panel" id="infoPanel">
-    <h2>🪐 Our Solar System</h2>
-    <p>Our solar system has eight planets that travel around one star — the Sun.</p>
+    <div class="info-panel" id="infoPanel">
+      <h2>🪐 Our Solar System</h2>
+      <p>Our solar system has eight planets that travel around one star — the Sun.</p>
+    </div>
   </div>
 
   <div class="panel minigame-panel">
@@ -1143,14 +1101,14 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   const PLANET_ORDER = ['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
 
   const VIEW_MODES = [
+    { id:'vertical', layer:'vertical', label:'Vertical Stack', short:'Vertical',
+      desc:'The whole solar family on one screen — half the Sun on top, eight planets in a straight line below.' },
     { id:'movie', layer:'movie', label:'Movie', short:'Movie',
       desc:'Documentary lineup — a blazing half-Sun on the edge and every planet in a straight row.' },
     { id:'telescope', layer:'telescope', label:'Telescope', short:'Telescope',
       desc:'Study one world up close — use the arrows to browse, tap the planet for its story.' },
     { id:'orbit', layer:'orbit', label:'Orbit Map', short:'Orbit', zoomBoost:1, closeupBoost:1, cameraNear:1, cameraFar:1, orbitTilt:0.52, heroBoost:1, viewCy:300, sunRadius:36, innerOrbitMax:null, innerOrbitMin:null,
       desc:'Full orbits around a centered Sun — every planet bright and easy to tap.' },
-    { id:'vertical', layer:'vertical', label:'Vertical Stack', short:'Vertical',
-      desc:'The whole solar family on one screen — half the Sun on top, eight planets in a straight line below.' },
   ];
   const SUN_RADIUS_DEFAULT = 38;
   const ORBIT_MAP_LAYOUT = {
@@ -1522,7 +1480,9 @@ const StylizedPlanet = {
       const label = document.getElementById('telescopeLabel');
       if (label && layer === 'telescope') this.updateTelescopeLabel();
       else this.showDefaultInfo();
-      if (layer === 'orbit') this.fitView();
+      if (layer === 'orbit') {
+        requestAnimationFrame(function() { Solar.fitView(); });
+      }
     },
     isLandscape() {
       return window.matchMedia('(orientation: landscape) and (max-height: 520px)').matches;
