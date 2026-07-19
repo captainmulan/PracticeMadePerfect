@@ -1090,7 +1090,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
           </svg>
         </div>
         <div class="vertical-meta">
-          <div class="vertical-tip" id="verticalTip">Tap a planet to learn about it!</div>
+          <div class="vertical-tip" id="verticalTip">Tap a planet to discover a fun fact!</div>
         </div>
       </div>
       <div class="view-layer view-layer-telescope" data-layer="telescope" id="viewLayerTelescope">
@@ -1128,9 +1128,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   </div>
 
   <div class="panel info-panel" id="infoPanel">
-    <h2>🎬 Movie</h2>
-    <p>Documentary lineup — a blazing half-Sun on the edge and every planet in a straight row.</p>
-    <p class="hint">💡 Straight row from the Sun — tap any planet for facts · tap View to cycle Movie, Telescope, Orbit and Vertical.</p>
+    <p class="hint">Tap a planet to discover a fun fact!</p>
   </div>
 
   <div class="panel minigame-panel">
@@ -1179,33 +1177,59 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   };
   const VERT_LINE = {
     cx: 200,
-    sunY: -22,
-    sunR: 94,
-    topClipH: 122,
+    sunY: -30,
+    sunR: 88,
+    topClipH: 88,
     topY: 96,
     bottomY: 572,
     sizes: { mercury:18, venus:21, earth:24, mars:21, jupiter:40, saturn:37, uranus:29, neptune:27 },
   };
   const TELESCOPE_DRAW_R = 108;
+  const DEFAULT_TIP = 'Tap a planet to discover a fun fact!';
+  const SUN_FACTS = [
+    'The Sun is a star — a giant ball of hot gas that gives Earth light and warmth.',
+    'Light from the Sun reaches Earth in about 8 minutes.',
+    'The Sun is so big that more than one million Earths could fit inside it!',
+    'The Sun\'s surface is about 5,500°C — far hotter than anything on Earth.',
+    'Without the Sun, our solar system would be dark, cold, and lifeless.',
+  ];
   const MOVIE_SIZES = { mercury:30, venus:32, earth:34, mars:30, jupiter:56, saturn:52, uranus:38, neptune:36 };
+
+  function pickRandom(list) {
+    return list[Math.floor(Math.random() * list.length)];
+  }
+  function planetFactPool(p) {
+    return p.extras ? [p.facts].concat(p.extras) : [p.facts];
+  }
+  function randomPlanetFact(p) {
+    return pickRandom(planetFactPool(p));
+  }
 
   const PLANETS = [
     { id:'mercury', name:'Mercury', emoji:'🪨', orbitR:45, size:14, baseSpeed:0.022,
-      facts:'Mercury is the smallest planet and the closest to the Sun. A day there lasts 59 Earth days — but a year is only 88 days!' },
+      facts:'Mercury is the smallest planet and the closest to the Sun. A day there lasts 59 Earth days — but a year is only 88 days!',
+      extras:['Mercury has almost no air, so its sky is always black — even at noon!','Temperatures on Mercury can swing from scorching hot to freezing cold.','Mercury is covered in craters, like Earth\'s Moon.'] },
     { id:'venus', name:'Venus', emoji:'🔥', orbitR:62, size:16, baseSpeed:0.017,
-      facts:'Venus is the hottest planet — even hotter than Mercury! Its thick clouds trap heat like a giant greenhouse.' },
+      facts:'Venus is the hottest planet — even hotter than Mercury! Its thick clouds trap heat like a giant greenhouse.',
+      extras:['Venus spins backwards compared with most planets.','A day on Venus is longer than its whole year!','Venus shines so brightly in the sky that people call it the morning or evening star.'] },
     { id:'earth', name:'Earth', emoji:'🌍', orbitR:78, size:18, baseSpeed:0.014,
-      facts:'Earth is the only planet we know of with life! About 71% of its surface is covered in water — that\'s why it looks blue from space.' },
+      facts:'Earth is the only planet we know of with life! About 71% of its surface is covered in water — that\'s why it looks blue from space.',
+      extras:['Earth\'s atmosphere protects us from harmful rays from space.','Our planet has one Moon that pulls on the oceans to make tides.','Earth is the only inner planet with big oceans of liquid water.'] },
     { id:'mars', name:'Mars', emoji:'🔴', orbitR:96, size:15, baseSpeed:0.011,
-      facts:'Mars is called the Red Planet because of iron rust in its soil. Scientists have sent rovers there to search for signs of ancient water!' },
+      facts:'Mars is called the Red Planet because of iron rust in its soil. Scientists have sent rovers there to search for signs of ancient water!',
+      extras:['Mars has the tallest volcano in the solar system — Olympus Mons!','Mars has two tiny moons named Phobos and Deimos.','A day on Mars is only a little longer than a day on Earth.'] },
     { id:'jupiter', name:'Jupiter', emoji:'🟠', orbitR:122, size:30, baseSpeed:0.008,
-      facts:'Jupiter is the biggest planet — over 1,300 Earths could fit inside it! The Great Red Spot is a storm bigger than Earth that has raged for centuries.' },
+      facts:'Jupiter is the biggest planet — over 1,300 Earths could fit inside it! The Great Red Spot is a storm bigger than Earth that has raged for centuries.',
+      extras:['Jupiter has at least 90 moons — four are as big as small planets!','Jupiter\'s stripes are giant wind bands racing around the planet.','If Jupiter were hollow, all the other planets could fit inside it.'] },
     { id:'saturn', name:'Saturn', emoji:'💍', orbitR:148, size:27, baseSpeed:0.006,
-      facts:'Saturn\'s rings are made of ice and rock chunks. They\'re only about 10 meters thick in places, but stretch hundreds of thousands of km wide!' },
+      facts:'Saturn\'s rings are made of ice and rock chunks. They\'re only about 10 meters thick in places, but stretch hundreds of thousands of km wide!',
+      extras:['Saturn is less dense than water — it would float in a giant bathtub!','Saturn\'s moon Titan has lakes of liquid methane.','Saturn\'s rings are mostly empty space — they look solid from far away.'] },
     { id:'uranus', name:'Uranus', emoji:'🔵', orbitR:172, size:21, baseSpeed:0.005,
-      facts:'Uranus spins on its side — like a rolling ball! It\'s an ice giant with a blue-green color from methane gas in its atmosphere.' },
+      facts:'Uranus spins on its side — like a rolling ball! It\'s an ice giant with a blue-green color from methane gas in its atmosphere.',
+      extras:['Uranus was the first planet found with a telescope.','Uranus has faint rings, discovered in 1977.','A season on Uranus lasts about 21 Earth years.'] },
     { id:'neptune', name:'Neptune', emoji:'🔷', orbitR:196, size:20, baseSpeed:0.004,
-      facts:'Neptune is the windiest planet — gusts can hit 2,100 km/h! It\'s so far from the Sun that one year there lasts 165 Earth years.' }
+      facts:'Neptune is the windiest planet — gusts can hit 2,100 km/h! It\'s so far from the Sun that one year there lasts 165 Earth years.',
+      extras:['Neptune was predicted by math before anyone saw it through a telescope.','Neptune\'s deep blue color comes from methane in its air.','Neptune\'s moon Triton orbits backwards compared with most moons.'] }
   ];
 
   const DEFAULT_SOLAR_ANGLES = {};
@@ -1506,7 +1530,7 @@ const StylizedPlanet = {
       const label = document.getElementById('telescopeLabel');
       if (label && layer === 'telescope') this.updateTelescopeLabel();
       else if (layer === 'vertical') this.resetVerticalTip();
-      else this.showModeInfo();
+      else this.showDefaultInfo();
       if (layer === 'orbit') this.fitView();
     },
     isLandscape() {
@@ -1677,18 +1701,19 @@ const StylizedPlanet = {
     modeIcon(mode) {
       return { orbit:'🛰️', vertical:'📱', telescope:'🔭', movie:'🎬' }[mode.id] || '🛰️';
     },
-    modeHint(mode) {
-      const layer = mode.layer || 'orbit';
-      if (layer === 'movie') return '💡 Straight row from the Sun — tap any planet for facts.';
-      if (layer === 'telescope') return '💡 Use ‹ › arrows to browse worlds · tap the planet for facts.';
-      if (layer === 'orbit') return '💡 Drag to spin · pinch to zoom · tap View to cycle all four modes.';
-      if (layer === 'vertical') return '💡 Tap any world for facts · read the tip below the chart.';
-      return '💡 Tap View to explore another mode.';
-    },
-    showModeInfo() {
-      const mode = this.currentMode();
+    showDefaultInfo() {
       this.selected = null;
-      this.info.innerHTML = '<h2>' + this.modeIcon(mode) + ' ' + mode.label + '</h2><p>' + mode.desc + '</p><p class="hint">' + this.modeHint(mode) + '</p>';
+      this.info.innerHTML = '<p class="hint">' + DEFAULT_TIP + '</p>';
+    },
+    showPlanetInfo(p, fact) {
+      const line = fact || randomPlanetFact(p);
+      this.info.innerHTML = '<h2>' + p.emoji + ' ' + p.name + '</h2><p>' + line + '</p>';
+      return line;
+    },
+    showSunInfo(fact) {
+      const line = fact || pickRandom(SUN_FACTS);
+      this.info.innerHTML = '<h2>☀️ The Sun</h2><p>' + line + '</p>';
+      return line;
     },
     shiftTelescope(delta) {
       this.telescopeIdx = (this.telescopeIdx + delta + PLANETS.length) % PLANETS.length;
@@ -1698,21 +1723,18 @@ const StylizedPlanet = {
       const label = document.getElementById('telescopeLabel');
       const p = PLANETS[this.telescopeIdx];
       if (label) label.textContent = '🔭 ' + p.emoji + ' ' + p.name;
-      if (this.activeLayer() === 'telescope') this.updateLayerInfo(p, 'telescope');
+      if (this.activeLayer() === 'telescope') this.showPlanetInfo(p);
     },
     resetVerticalTip() {
       const tip = document.getElementById('verticalTip');
-      if (tip) tip.textContent = 'Tap a planet to learn about it!';
-      this.showModeInfo();
+      if (tip) tip.textContent = DEFAULT_TIP;
+      this.showDefaultInfo();
     },
-    updateVerticalTip(p) {
+    updateVerticalTip(p, fact) {
       const tip = document.getElementById('verticalTip');
       if (!tip || !p) return;
-      tip.innerHTML = '<strong>' + p.emoji + ' ' + p.name + '</strong> — ' + p.facts;
-    },
-    updateLayerInfo(p, layer) {
-      const hint = '💡 Use ‹ › to browse worlds · tap the planet for more.';
-      this.info.innerHTML = '<h2>' + p.emoji + ' ' + p.name + '</h2><p>' + p.facts + '</p><p class="hint">' + hint + '</p>';
+      const line = fact || randomPlanetFact(p);
+      tip.innerHTML = '<strong>' + p.emoji + ' ' + p.name + '</strong> — ' + line;
     },
     makePlanetSvg(gId, type, r, vb, dataId) {
       const svg = document.createElementNS(NS, 'svg');
@@ -1779,6 +1801,17 @@ const StylizedPlanet = {
     drawPlanetSoft(g, p, r, svg) {
       this.drawPlanetRealistic(g, p, r, svg);
     },
+    drawVerticalSun(g, r, svg) {
+      if (svg) StylizedPlanet.ensureSunGlow(svg);
+      if (svg) StylizedPlanet.ensureSoftBlur(svg);
+      g.appendChild(el('circle', {
+        r: String(r * 1.1), fill: 'rgba(255,140,40,0.16)', filter: 'url(#softBlur)', 'pointer-events': 'none'
+      }));
+      g.appendChild(el('circle', {
+        r: String(r * 1.04), fill: 'rgba(255,193,7,0.18)', 'pointer-events': 'none'
+      }));
+      this.drawSun(g, r, svg);
+    },
     drawSunBurning(g, r, svg, clip) {
       if (svg) StylizedPlanet.ensureSunGlow(svg);
       if (svg) StylizedPlanet.ensureSoftBlur(svg);
@@ -1795,16 +1828,16 @@ const StylizedPlanet = {
       if (hit.dataset && hit.dataset.id && hit.dataset.id !== 'sun') {
         const p = PLANETS.find(x => x.id === hit.dataset.id);
         if (p) {
-          this.showFact(p);
-          if (this.activeLayer() === 'vertical') this.updateVerticalTip(p);
+          const fact = this.showFact(p);
+          if (this.activeLayer() === 'vertical') this.updateVerticalTip(p, fact);
           return true;
         }
       }
       if ((hit.dataset && hit.dataset.id === 'sun') || hit.id === 'sunHit') {
-        this.info.innerHTML = '<h2>☀️ The Sun</h2><p>The Sun is a star at the center of our solar system. It\'s so big that 1.3 million Earths could fit inside it! All the planets orbit around it.</p><p class="hint">Tap a planet to learn more!</p>';
+        const fact = this.showSunInfo();
         if (this.activeLayer() === 'vertical') {
           const tip = document.getElementById('verticalTip');
-          if (tip) tip.innerHTML = '<strong>☀️ The Sun</strong> — The star at the center of our solar system. All eight planets orbit around it!';
+          if (tip) tip.innerHTML = '<strong>☀️ The Sun</strong> — ' + fact;
         }
         return true;
       }
@@ -1850,7 +1883,7 @@ const StylizedPlanet = {
       this.bindTelescopeArrows();
       this.loop();
       window.addEventListener('resize', () => this.fitView());
-      this.showModeInfo();
+      this.showDefaultInfo();
     },
     bindControls(){
       document.getElementById('btnPlay').onclick = () => {
@@ -1884,7 +1917,7 @@ const StylizedPlanet = {
         const defaults = seedDefaultSolarAngles();
         PLANETS.forEach(p => { this.angles[p.id] = defaults[p.id]; });
         this.updateTelescopeLabel();
-        this.showModeInfo();
+        this.showDefaultInfo();
       };
     },
     bindDrag(){
@@ -1957,10 +1990,7 @@ const StylizedPlanet = {
     },
     showFact(p){
       this.selected = p.id;
-      this.info.innerHTML = '<h2>' + p.emoji + ' ' + p.name + '</h2><p>' + p.facts + '</p><p class="hint">Tap another planet to keep exploring!</p>';
-    },
-    showDefaultInfo(){
-      this.showModeInfo();
+      return this.showPlanetInfo(p);
     },
     drawSun(g, sunRadius, hostSvg){
       StylizedPlanet.draw(g, 'sun', sunRadius || SUN_RADIUS_DEFAULT, hostSvg);
@@ -2107,9 +2137,9 @@ const StylizedPlanet = {
       g.appendChild(sunWrap);
       const sunInner = el('g', { transform: 'translate(' + L.cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
       sunWrap.appendChild(sunInner);
-      this.drawSunBurning(sunInner, L.sunR, svg, null);
+      this.drawVerticalSun(sunInner, L.sunR, svg);
       sunInner.appendChild(el('circle', {
-        r: String(L.sunR * 1.15),
+        r: String(L.sunR * 0.95),
         fill: 'rgba(0,0,0,0.001)',
         'pointer-events': 'all'
       }));
