@@ -175,21 +175,17 @@
       flex:0 0 auto;
       aspect-ratio:360 / 580;
       height:auto;
-      max-height:calc(100svh - 210px);
+      max-height:calc(100svh - 148px);
     }
-    .vertical-meta{
-      flex:0 0 auto;
-      width:100%;
-      padding:8px 10px 2px;
+      min-height:48px;
+      margin-top:8px;
+      padding:8px 12px 4px;
       text-align:center;
-    }
-    .vertical-tip{
-      min-height:44px;
       font-size:clamp(12px, 3.2vw, 15px);
       line-height:1.55;
       color:#c4b5fd;
     }
-    .vertical-tip strong{color:#e0e7ff;}
+    .tap-tip strong{color:#e0e7ff;}
     .fp-wrap::after{
       content:'';
       position:absolute;inset:0;pointer-events:none;border-radius:16px;
@@ -1089,9 +1085,6 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             <g id="verticalGroup"></g>
           </svg>
         </div>
-        <div class="vertical-meta">
-          <div class="vertical-tip" id="verticalTip">Tap a planet to discover a fun fact!</div>
-        </div>
       </div>
       <div class="view-layer view-layer-telescope" data-layer="telescope" id="viewLayerTelescope">
         <div class="telescope-wrap">
@@ -1118,6 +1111,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         </div>
       </div>
     </div>
+    <div class="tap-tip" id="tapTip">Tap the Sun or a planet to discover a fun fact!</div>
     <div class="ctrl-row">
       <button class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
       <button class="ctrl-btn" id="btnSpeed">🚀 Speed: 0.5×</button>
@@ -1128,7 +1122,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   </div>
 
   <div class="panel info-panel" id="infoPanel">
-    <p class="hint">Tap a planet to discover a fun fact!</p>
+    <p class="hint">Tap the Sun or a planet to discover a fun fact!</p>
   </div>
 
   <div class="panel minigame-panel">
@@ -1185,7 +1179,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     sizes: { mercury:18, venus:21, earth:24, mars:21, jupiter:40, saturn:37, uranus:29, neptune:27 },
   };
   const TELESCOPE_DRAW_R = 108;
-  const DEFAULT_TIP = 'Tap a planet to discover a fun fact!';
+  const DEFAULT_TIP = 'Tap the Sun or a planet to discover a fun fact!';
   const SUN_FACTS = [
     'The Sun is a star — a giant ball of hot gas that gives Earth light and warmth.',
     'Light from the Sun reaches Earth in about 8 minutes.',
@@ -1529,7 +1523,6 @@ const StylizedPlanet = {
       });
       const label = document.getElementById('telescopeLabel');
       if (label && layer === 'telescope') this.updateTelescopeLabel();
-      else if (layer === 'vertical') this.resetVerticalTip();
       else this.showDefaultInfo();
       if (layer === 'orbit') this.fitView();
     },
@@ -1701,17 +1694,38 @@ const StylizedPlanet = {
     modeIcon(mode) {
       return { orbit:'🛰️', vertical:'📱', telescope:'🔭', movie:'🎬' }[mode.id] || '🛰️';
     },
+    resetTapTip() {
+      const tip = document.getElementById('tapTip');
+      if (tip) tip.textContent = DEFAULT_TIP;
+    },
+    setTapTipPlanet(p, fact) {
+      const tip = document.getElementById('tapTip');
+      if (!tip || !p) return fact;
+      const line = fact || randomPlanetFact(p);
+      tip.innerHTML = '<strong>' + p.emoji + ' ' + p.name + '</strong> — ' + line;
+      return line;
+    },
+    setTapTipSun(fact) {
+      const tip = document.getElementById('tapTip');
+      if (!tip) return fact;
+      const line = fact || pickRandom(SUN_FACTS);
+      tip.innerHTML = '<strong>☀️ The Sun</strong> — ' + line;
+      return line;
+    },
     showDefaultInfo() {
       this.selected = null;
+      this.resetTapTip();
       this.info.innerHTML = '<p class="hint">' + DEFAULT_TIP + '</p>';
     },
     showPlanetInfo(p, fact) {
       const line = fact || randomPlanetFact(p);
+      this.setTapTipPlanet(p, line);
       this.info.innerHTML = '<h2>' + p.emoji + ' ' + p.name + '</h2><p>' + line + '</p>';
       return line;
     },
     showSunInfo(fact) {
       const line = fact || pickRandom(SUN_FACTS);
+      this.setTapTipSun(line);
       this.info.innerHTML = '<h2>☀️ The Sun</h2><p>' + line + '</p>';
       return line;
     },
@@ -1723,18 +1737,6 @@ const StylizedPlanet = {
       const label = document.getElementById('telescopeLabel');
       const p = PLANETS[this.telescopeIdx];
       if (label) label.textContent = '🔭 ' + p.emoji + ' ' + p.name;
-      if (this.activeLayer() === 'telescope') this.showPlanetInfo(p);
-    },
-    resetVerticalTip() {
-      const tip = document.getElementById('verticalTip');
-      if (tip) tip.textContent = DEFAULT_TIP;
-      this.showDefaultInfo();
-    },
-    updateVerticalTip(p, fact) {
-      const tip = document.getElementById('verticalTip');
-      if (!tip || !p) return;
-      const line = fact || randomPlanetFact(p);
-      tip.innerHTML = '<strong>' + p.emoji + ' ' + p.name + '</strong> — ' + line;
     },
     makePlanetSvg(gId, type, r, vb, dataId) {
       const svg = document.createElementNS(NS, 'svg');
@@ -1828,17 +1830,12 @@ const StylizedPlanet = {
       if (hit.dataset && hit.dataset.id && hit.dataset.id !== 'sun') {
         const p = PLANETS.find(x => x.id === hit.dataset.id);
         if (p) {
-          const fact = this.showFact(p);
-          if (this.activeLayer() === 'vertical') this.updateVerticalTip(p, fact);
+          this.showFact(p);
           return true;
         }
       }
       if ((hit.dataset && hit.dataset.id === 'sun') || hit.id === 'sunHit') {
-        const fact = this.showSunInfo();
-        if (this.activeLayer() === 'vertical') {
-          const tip = document.getElementById('verticalTip');
-          if (tip) tip.innerHTML = '<strong>☀️ The Sun</strong> — ' + fact;
-        }
+        this.showSunInfo();
         return true;
       }
       return false;
