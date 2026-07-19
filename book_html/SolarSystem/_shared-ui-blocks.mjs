@@ -100,8 +100,8 @@ body.big-game-page:has(.game-shell) .game-shell {
 body.big-game-page:has(.game-shell) .stage-wrap {
   flex: 1 1 auto !important;
   min-height: 0 !important;
-  align-items: stretch !important;
-  justify-content: stretch !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 body.big-game-page:has(.game-shell) .game-stage {
   flex: 1 1 auto !important;
@@ -114,8 +114,8 @@ body.big-game-page:has(.game-shell) .game-stage {
 }
 @media (min-width: 768px) {
   body.big-game-page:has(.game-shell) .stage-wrap {
-    align-items: stretch !important;
-    justify-content: stretch !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   body.big-game-page:has(.game-shell) .game-stage {
     flex: 1 1 auto !important;

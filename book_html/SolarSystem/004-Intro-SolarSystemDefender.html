@@ -52,13 +52,13 @@
         }
         #gameCanvas {
             position: absolute;
-            inset: 0;
             display: block;
-            width: 100%;
-            height: 100%;
             border: none;
             border-radius: 0;
             box-shadow: none;
+            image-rendering: auto;
+            touch-action: none;
+            cursor: crosshair;
         }
         .ui-container {
             width: 100%;
@@ -243,7 +243,15 @@ body:has(.game-shell) .game-shell {
   align-items: stretch;
 }
 body:has(.game-shell) .game-shell .title {
-  display: none;
+  display: block;
+  flex-shrink: 0;
+  text-align: center;
+  margin: 0 0 6px;
+  padding: 0 8px;
+  font-size: clamp(13px, 3.5vw, 18px);
+  line-height: 1.35;
+  color: #ffd700;
+  font-weight: bold;
 }
 body:has(.game-shell) .ui-container {
   margin-bottom: 4px;
@@ -522,7 +530,15 @@ body.big-game-page .game-shell {
   padding: 4px 6px 6px;
 }
 body.big-game-page .game-shell .title {
-  display: none;
+  display: block;
+  flex-shrink: 0;
+  text-align: center;
+  margin: 0 0 4px;
+  padding: 0 6px;
+  font-size: clamp(12px, 3.2vw, 17px);
+  line-height: 1.35;
+  color: #ffd700;
+  font-weight: bold;
 }
 body.big-game-page .ui-container {
   margin-bottom: 4px;
@@ -538,8 +554,8 @@ body.big-game-page .stage-wrap {
   min-height: 0;
   width: 100%;
   display: flex;
-  align-items: stretch;
-  justify-content: stretch;
+  align-items: center;
+  justify-content: center;
 }
 body.big-game-page .game-stage {
   flex: 1 1 auto;
@@ -681,8 +697,8 @@ body.big-game-page:has(.game-shell) .game-shell {
 body.big-game-page:has(.game-shell) .stage-wrap {
   flex: 1 1 auto !important;
   min-height: 0 !important;
-  align-items: stretch !important;
-  justify-content: stretch !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 body.big-game-page:has(.game-shell) .game-stage {
   flex: 1 1 auto !important;
@@ -695,8 +711,8 @@ body.big-game-page:has(.game-shell) .game-stage {
 }
 @media (min-width: 768px) {
   body.big-game-page:has(.game-shell) .stage-wrap {
-    align-items: stretch !important;
-    justify-content: stretch !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   body.big-game-page:has(.game-shell) .game-stage {
     flex: 1 1 auto !important;
@@ -754,9 +770,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 </head>
 <body class="big-game-page">
 <div class="game-shell">
-    <div class="title" style="text-align:center; margin-bottom:10px; font-size:20px; color:#ffd700; font-weight:bold;">
-        Before we go to chapter, let's defend the Sun first
-    </div>
+    <div class="title">Before we dive in into chapters, lets play game first</div>
     <div class="ui-container">
         <div class="ui-item">
             <span class="ui-label">⭐ Score:</span>
@@ -778,7 +792,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
     <div class="start-screen" id="startScreen">
         <h1>🌞 Solar System Defender</h1>
-        <p>Protect the Sun! Rotate the cannon with arrow keys or touch controls.<br>Auto-fire every 250ms! Destroy asteroids before they hit!</p>
+        <p>Protect the Sun! Drag on the game to aim the cannon.<br>Auto-fire every 250ms! Destroy asteroids before they hit!</p>
         <button class="btn" onclick="startGame()">▶️ Start Game</button>
     </div>
 
@@ -788,12 +802,6 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         <button class="btn" onclick="restartGame()">🔄 Restart</button>
     </div>
     </div>
-    </div>
-
-    <div class="touch-controls" aria-label="Cannon aim controls">
-        <button class="touch-btn" id="leftBtn" type="button" aria-label="Rotate cannon left" title="Rotate left">⬅️</button>
-        <span class="touch-hint">Aim cannon</span>
-        <button class="touch-btn" id="rightBtn" type="button" aria-label="Rotate cannon right" title="Rotate right">➡️</button>
     </div>
 </div>
 
@@ -805,7 +813,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         const height = canvas.height;
         const centerX = width / 2;
         const centerY = height / 2;
-        const GAME_SCALE = 0.55;
+        const GAME_SCALE = 1;
         const sunRadius = 50 * GAME_SCALE;
 
         // Game state
@@ -824,8 +832,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         let stars = [];
 
         // Input state
-        let moveLeft = false;
-        let moveRight = false;
+        let isAiming = false;
         let keys = {};
 
         // Initialize stars for background
@@ -1032,9 +1039,8 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
         // Update game objects
         function update() {
-            // Rotate cannon
-            if (moveLeft || keys['ArrowLeft'] || keys['a']) cannonAngle -= 0.08;
-            if (moveRight || keys['ArrowRight'] || keys['d']) cannonAngle += 0.08;
+            if (keys['ArrowLeft'] || keys['a']) cannonAngle -= 0.08;
+            if (keys['ArrowRight'] || keys['d']) cannonAngle += 0.08;
             
             // Auto fire
             fireBullet();
@@ -1175,29 +1181,42 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             keys[e.key] = false;
         });
         
-        // Touch controls
-        const leftBtn = document.getElementById('leftBtn');
-        const rightBtn = document.getElementById('rightBtn');
-        
-        leftBtn.addEventListener('touchstart', e => {
-            e.preventDefault();
-            moveLeft = true;
-        });
-        leftBtn.addEventListener('touchend', () => moveLeft = false);
-        leftBtn.addEventListener('mousedown', () => moveLeft = true);
-        leftBtn.addEventListener('mouseup', () => moveLeft = false);
-        leftBtn.addEventListener('mouseleave', () => moveLeft = false);
-        
-        rightBtn.addEventListener('touchstart', e => {
-            e.preventDefault();
-            moveRight = true;
-        });
-        rightBtn.addEventListener('touchend', () => moveRight = false);
-        rightBtn.addEventListener('mousedown', () => moveRight = true);
-        rightBtn.addEventListener('mouseup', () => moveRight = false);
-        rightBtn.addEventListener('mouseleave', () => moveRight = false);
+        function aimFromPointer(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+            const x = (clientX - rect.left) * (BASE_W / rect.width);
+            const y = (clientY - rect.top) * (BASE_H / rect.height);
+            cannonAngle = Math.atan2(y - centerY, x - centerX);
+        }
 
-        // Keep canvas buffer at game coordinates; scale crisply to the stage box.
+        canvas.addEventListener('touchstart', e => {
+            if (!gameRunning) return;
+            e.preventDefault();
+            isAiming = true;
+            aimFromPointer(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', e => {
+            if (!gameRunning || !isAiming) return;
+            e.preventDefault();
+            aimFromPointer(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', () => { isAiming = false; });
+        canvas.addEventListener('touchcancel', () => { isAiming = false; });
+
+        canvas.addEventListener('mousedown', e => {
+            if (!gameRunning) return;
+            isAiming = true;
+            aimFromPointer(e.clientX, e.clientY);
+        });
+        window.addEventListener('mousemove', e => {
+            if (!gameRunning || !isAiming) return;
+            aimFromPointer(e.clientX, e.clientY);
+        });
+        window.addEventListener('mouseup', () => { isAiming = false; });
+
+        // Fixed 700x600 game coordinates; letterbox uniformly into the stage (no stretch).
         const BASE_W = 700;
         const BASE_H = 600;
 
@@ -1207,12 +1226,26 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             const displayW = stage.clientWidth;
             const displayH = stage.clientHeight;
             if (!displayW || !displayH) return;
-            canvas.style.width = displayW + 'px';
-            canvas.style.height = displayH + 'px';
+
+            const fitScale = Math.min(displayW / BASE_W, displayH / BASE_H);
+            const cssW = Math.max(1, Math.floor(BASE_W * fitScale));
+            const cssH = Math.max(1, Math.floor(BASE_H * fitScale));
+
+            canvas.style.width = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            canvas.style.left = Math.floor((displayW - cssW) / 2) + 'px';
+            canvas.style.top = Math.floor((displayH - cssH) / 2) + 'px';
+
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = Math.round(BASE_W * dpr);
             canvas.height = Math.round(BASE_H * dpr);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            if (!gameRunning) {
+                drawStars();
+                drawSun();
+                drawCannon();
+            }
         }
         window.addEventListener('resize', resizeCanvas);
         const stageEl = document.querySelector('.game-stage');
@@ -1222,9 +1255,6 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
         // Initialize
         initStars();
-        drawStars();
-        drawSun();
-        drawCannon();
         resizeCanvas();
     </script>
 <script>

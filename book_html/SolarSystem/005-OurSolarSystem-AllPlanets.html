@@ -251,10 +251,10 @@
       padding: 10px;
     }
     body.all-planets-page .svg-wrap {
-      width: min(96vw, 720px);
+      width: min(98vw, 820px);
       max-width: none;
-      height: min(96vw, calc(100svh - 168px));
-      max-height: min(96vw, calc(100svh - 168px));
+      height: min(98vw, calc(100svh - 118px));
+      max-height: min(98vw, calc(100svh - 118px));
       aspect-ratio: 1;
       margin: 0 auto;
     }
@@ -275,16 +275,16 @@
     }
     @media (min-width: 640px) {
       body.all-planets-page .svg-wrap {
-        width: min(92vw, 820px);
-        height: min(92vw, calc(100svh - 156px));
-        max-height: min(92vw, calc(100svh - 156px));
+        width: min(94vw, 880px);
+        height: min(94vw, calc(100svh - 108px));
+        max-height: min(94vw, calc(100svh - 108px));
       }
     }
     @media (min-width: 900px) {
       body.all-planets-page .svg-wrap {
-        width: min(88vw, 920px);
-        height: min(78vh, 920px);
-        max-height: min(78vh, 920px);
+        width: min(90vw, 960px);
+        height: min(82vh, 960px);
+        max-height: min(82vh, 960px);
       }
     }
   /* solar-desktop-fit */
@@ -606,7 +606,8 @@ body.all-planets-page:has(#solarSvg) .solar-panel {
 }
 body.all-planets-page:has(#solarSvg) .svg-wrap {
   flex: none !important;
-  max-height: min(96vw, calc(100svh - 168px)) !important;
+  max-height: min(98vw, calc(100svh - 118px)) !important;
+  min-height: min(52svh, calc(100svh - 128px), 98vw) !important;
 }
 body.all-planets-page:has(#solarSvg) .info-panel,
 body.all-planets-page:has(#solarSvg) .nav-hint {
@@ -619,12 +620,12 @@ body.all-planets-page:has(#solarSvg) .minigame-panel {
 }
 @media (min-width: 640px) {
   body.all-planets-page:has(#solarSvg) .svg-wrap {
-    max-height: min(92vw, calc(100svh - 156px)) !important;
+    max-height: min(94vw, calc(100svh - 108px)) !important;
   }
 }
 @media (min-width: 900px) {
   body.all-planets-page:has(#solarSvg) .svg-wrap {
-    max-height: min(78vh, 920px) !important;
+    max-height: min(82vh, 960px) !important;
   }
 }
   
@@ -700,8 +701,8 @@ body.big-planet-page .nav-hint {
   }
 }
 body.all-planets-page:has(#solarSvg) .svg-wrap {
-  max-height: min(96vw, calc(100svh - 162px)) !important;
-  min-height: min(43svh, calc(100svh - 168px), 96vw) !important;
+  max-height: min(98vw, calc(100svh - 118px)) !important;
+  min-height: min(52svh, calc(100svh - 128px), 98vw) !important;
 }
 body.big-game-page:has(.game-shell) {
   overflow: hidden !important;
@@ -800,7 +801,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 <div class="container">
   <div class="header">
     <h1>🪐 Our Solar System</h1>
-    <div class="subtitle">View from your rocket window — planets near you look bigger! Tap one for a cool fact.</div>
+    <div class="subtitle">Close-up from your ship — all eight planets are big and easy to tap!</div>
   </div>
 
   <div class="panel solar-panel">
@@ -823,8 +824,8 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   </div>
 
   <div class="panel info-panel" id="infoPanel">
-    <h2>🚀 Rocket Window View</h2>
-    <p>Look out from your spacecraft! Planets close to the window look bigger, and far-away planets look smaller. Tap a planet to learn a cool fact.</p>
+    <h2>🚀 Close-Up Ship View</h2>
+    <p>Orbits are squeezed closer so every planet is easy to see and tap — real space is much emptier! Planets nearer the window look a little bigger.</p>
     <p class="hint">💡 Drag to spin the view, or use Rotate / Zoom controls.</p>
   </div>
 
@@ -855,33 +856,33 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   const PLANET_ORDER = ['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
 
   const PLANETS = [
-    { id:'mercury', name:'Mercury', emoji:'🪨', orbitR:52, size:7, baseSpeed:0.022,
+    { id:'mercury', name:'Mercury', emoji:'🪨', orbitR:45, size:14, baseSpeed:0.022,
       facts:'Mercury is the smallest planet and the closest to the Sun. A day there lasts 59 Earth days — but a year is only 88 days!' },
-    { id:'venus', name:'Venus', emoji:'🔥', orbitR:72, size:9, baseSpeed:0.017,
+    { id:'venus', name:'Venus', emoji:'🔥', orbitR:62, size:16, baseSpeed:0.017,
       facts:'Venus is the hottest planet — even hotter than Mercury! Its thick clouds trap heat like a giant greenhouse.' },
-    { id:'earth', name:'Earth', emoji:'🌍', orbitR:94, size:10, baseSpeed:0.014,
+    { id:'earth', name:'Earth', emoji:'🌍', orbitR:78, size:18, baseSpeed:0.014,
       facts:'Earth is the only planet we know of with life! About 71% of its surface is covered in water — that\'s why it looks blue from space.' },
-    { id:'mars', name:'Mars', emoji:'🔴', orbitR:118, size:8, baseSpeed:0.011,
+    { id:'mars', name:'Mars', emoji:'🔴', orbitR:96, size:15, baseSpeed:0.011,
       facts:'Mars is called the Red Planet because of iron rust in its soil. Scientists have sent rovers there to search for signs of ancient water!' },
-    { id:'jupiter', name:'Jupiter', emoji:'🟠', orbitR:158, size:18, baseSpeed:0.008,
+    { id:'jupiter', name:'Jupiter', emoji:'🟠', orbitR:122, size:30, baseSpeed:0.008,
       facts:'Jupiter is the biggest planet — over 1,300 Earths could fit inside it! The Great Red Spot is a storm bigger than Earth that has raged for centuries.' },
-    { id:'saturn', name:'Saturn', emoji:'💍', orbitR:198, size:16, baseSpeed:0.006,
+    { id:'saturn', name:'Saturn', emoji:'💍', orbitR:148, size:27, baseSpeed:0.006,
       facts:'Saturn\'s rings are made of ice and rock chunks. They\'re only about 10 meters thick in places, but stretch hundreds of thousands of km wide!' },
-    { id:'uranus', name:'Uranus', emoji:'🔵', orbitR:238, size:12, baseSpeed:0.005,
+    { id:'uranus', name:'Uranus', emoji:'🔵', orbitR:172, size:21, baseSpeed:0.005,
       facts:'Uranus spins on its side — like a rolling ball! It\'s an ice giant with a blue-green color from methane gas in its atmosphere.' },
-    { id:'neptune', name:'Neptune', emoji:'🔷', orbitR:278, size:11, baseSpeed:0.004,
+    { id:'neptune', name:'Neptune', emoji:'🔷', orbitR:196, size:20, baseSpeed:0.004,
       facts:'Neptune is the windiest planet — gusts can hit 2,100 km/h! It\'s so far from the Sun that one year there lasts 165 Earth years.' }
   ];
 
   const DEFAULT_SOLAR_ANGLES = {
-    mercury: 0.85,
-    venus: 1.15,
-    earth: 0.35,
-    mars: -0.45,
-    jupiter: 2.72,
-    saturn: 3.35,
-    uranus: 0.12,
-    neptune: -0.22,
+    mercury: 0.35,
+    venus: 1.05,
+    earth: 1.75,
+    mars: 2.45,
+    jupiter: 3.15,
+    saturn: 3.85,
+    uranus: 4.55,
+    neptune: 5.25,
   };
 
   function seedDefaultSolarAngles() {
@@ -1108,15 +1109,16 @@ const StylizedPlanet = {
   /* ── Solar System Viewer ── */
   const Solar = {
     svg: null, viewG: null, info: null,
-    playing: true, speedIdx: 1, zoom: 0.9, rot: 0, drag: 0,
+    playing: true, speedIdx: 1, zoom: 1.2, rot: 0, drag: 0,
     angles: {}, spinAngles: {}, sunSpin: 0, selected: null,
-    ORBIT_TILT: 0.72,
+    ORBIT_TILT: 0.68,
     DEFAULT_ROT: 0,
-    DEFAULT_ZOOM: 0.9,
-    VIEW_CY: 318,
-    maxOrbitR: 278,
-    CAMERA_NEAR: 0.38,
-    CAMERA_FAR: 1.42,
+    DEFAULT_ZOOM: 1.2,
+    VIEW_CY: 300,
+    maxOrbitR: 196,
+    CAMERA_NEAR: 0.72,
+    CAMERA_FAR: 1.18,
+    CLOSEUP_BOOST: 1.12,
     orbitPoint(ang, orbitR, tilt) {
       const t = tilt || this.ORBIT_TILT;
       return {
@@ -1135,14 +1137,16 @@ const StylizedPlanet = {
     },
     windowOpacity(py, orbitR, tilt) {
       const near = this.windowDepth(py, orbitR, tilt);
-      return 0.48 + near * 0.52;
+      return 0.62 + near * 0.38;
     },
     fitView(){
-      const pad = 24;
+      this.maxOrbitR = Math.max(...PLANETS.map(p => p.orbitR));
+      const largestPlanet = Math.max(...PLANETS.map(p => p.size));
+      const pad = 6;
       const half = 300 - pad;
-      const planetPad = 16;
-      const z = Math.min(1.38, half / (this.maxOrbitR + planetPad));
-      this.DEFAULT_ZOOM = Math.round(z * 100) / 100;
+      const planetPad = largestPlanet * this.CAMERA_FAR + 10;
+      const z = Math.min(1.75, half / (this.maxOrbitR + planetPad));
+      this.DEFAULT_ZOOM = Math.round(z * this.CLOSEUP_BOOST * 100) / 100;
       if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
     },
     init(){
@@ -1180,7 +1184,7 @@ const StylizedPlanet = {
         this.speedIdx = (this.speedIdx + 1) % SPEEDS.length;
         document.getElementById('btnSpeed').textContent = '🚀 Speed: ' + SPEEDS[this.speedIdx] + '×';
       };
-      document.getElementById('btnZoomIn').onclick = () => { this._userZoomed = true; this.zoom = Math.min(2.5, this.zoom + 0.2); };
+      document.getElementById('btnZoomIn').onclick = () => { this._userZoomed = true; this.zoom = Math.min(2.8, this.zoom + 0.2); };
       document.getElementById('btnZoomOut').onclick = () => { this._userZoomed = true; this.zoom = Math.max(0.5, this.zoom - 0.2); };
       document.getElementById('btnRotL').onclick = () => { this.rot -= 20; };
       document.getElementById('btnRotR').onclick = () => { this.rot += 20; };
@@ -1216,10 +1220,10 @@ const StylizedPlanet = {
     },
     showDefaultInfo(){
       this.selected = null;
-      this.info.innerHTML = '<h2>🚀 Rocket Window View</h2><p>Look out from your spacecraft! Planets close to the window look bigger, and far-away planets look smaller. Tap a planet to learn a cool fact.</p><p class="hint">💡 Drag to spin the view, or use Rotate / Zoom controls.</p>';
+      this.info.innerHTML = '<h2>🚀 Close-Up Ship View</h2><p>Orbits are squeezed closer so every planet is easy to see and tap — real space is much emptier! Planets nearer the window look a little bigger.</p><p class="hint">💡 Drag to spin the view, or use Rotate / Zoom controls.</p>';
     },
     drawSun(g){
-      StylizedPlanet.draw(g, 'sun', 28);
+      StylizedPlanet.draw(g, 'sun', 38);
     },
     drawPlanetBody(g, p, s){
       StylizedPlanet.draw(g, p.id, s);
@@ -1234,7 +1238,7 @@ const StylizedPlanet = {
       PLANETS.forEach(p => {
         this.viewG.appendChild(el('ellipse', {
           cx:0, cy:0, rx:p.orbitR, ry:p.orbitR * Math.abs(tilt),
-          fill:'none', stroke:'rgba(255,255,255,0.14)', 'stroke-width':1
+          fill:'none', stroke:'rgba(255,255,255,0.22)', 'stroke-width':1.5
         }));
       });
 
