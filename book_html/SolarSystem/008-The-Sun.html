@@ -232,10 +232,66 @@
     }
     .game-hud{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;}
     .game-hud-item{background:#1a1735;padding:8px 14px;border-radius:8px;font-size:15px;font-weight:bold;color:#ffd700;border:1px solid rgba(255,215,0,0.45);}
-    .touch-controls{display:grid;grid-template-columns:repeat(3,52px);gap:8px;justify-content:center;margin-top:12px;}
-    .touch-btn{width:52px;height:52px;border-radius:12px;border:2px solid rgba(255,215,0,0.45);background:rgba(255,215,0,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
-    .touch-btn.jump{grid-column:2;background:rgba(255,140,0,0.25);}
-    .touch-btn.empty{visibility:hidden;border:none;background:none;}
+    .mobile-controls{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-top:12px;
+      padding:0 10px;
+      touch-action:none;
+      user-select:none;
+    }
+    .joystick-zone{
+      flex:0 0 auto;
+      width:112px;
+      height:112px;
+      touch-action:none;
+    }
+    .joystick-base{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      background:rgba(255,255,255,0.07);
+      border:2px solid rgba(255,215,0,0.38);
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:inset 0 0 18px rgba(0,0,0,0.35);
+    }
+    .joystick-knob{
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      border:2px solid rgba(255,255,255,0.5);
+      box-shadow:0 4px 14px rgba(0,0,0,0.4);
+      transform:translate(0,0);
+      pointer-events:none;
+      transition:transform 0.04s linear;
+    }
+    .action-btn.jump{
+      flex:0 0 auto;
+      width:74px;
+      height:74px;
+      border-radius:50%;
+      border:2px solid rgba(255,140,0,0.55);
+      background:linear-gradient(135deg,rgba(255,160,0,0.45),rgba(255,100,0,0.35));
+      color:#fff;
+      font-size:15px;
+      font-weight:bold;
+      cursor:pointer;
+      touch-action:manipulation;
+      box-shadow:0 4px 14px rgba(0,0,0,0.35);
+    }
+    .action-btn.jump:active{transform:scale(0.94);}
+    .touch-controls{display:none;}
+    @media (min-width: 768px) {
+      .joystick-zone{width:128px;height:128px;}
+      .joystick-knob{width:54px;height:54px;}
+      .action-btn.jump{width:84px;height:84px;font-size:16px;}
+    }
   
     .planet-svg-panel{background:#12102a;border-radius:20px;border:1px solid rgba(255,215,0,0.45);padding:12px;margin:20px 0;}
     .svg-viewport{width:100%;aspect-ratio:1;max-height:min(72vw,260px);border-radius:14px;overflow:hidden;background:#0a0820;touch-action:none;}
@@ -893,7 +949,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
   <div class="sun-game">
     <h2>☀️ Climb to the Sun!</h2>
-    <p class="game-desc">Jump on solar platforms! Move ← → and jump up. Touch any part of the Sun to win!</p>
+    <p class="game-desc">Jump on solar platforms! Use the move stick and Jump button. Touch the Sun to win!</p>
     <div class="game-canvas-wrap" id="sunGameWrap">
       <div class="game-hud-float">
         <span id="sunGameTimer">⏱ 90s | ❤️❤️❤️</span>
@@ -901,7 +957,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
       <canvas id="sunGameCanvas"></canvas>
       <div class="game-overlay" id="sunStartScreen">
         <h3>☀️ Solar Climb!</h3>
-        <p>← → to move, Jump to climb. Touch the Sun to win!</p>
+        <p>Use the move stick to walk and tap Jump to climb. Touch the Sun to win!</p>
         <button class="overlay-btn" type="button" onclick="startSunClimb()">▶️ Start</button>
       </div>
       <div class="game-overlay" id="sunEndScreen" style="display:none;">
@@ -910,13 +966,13 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         <button class="overlay-btn" type="button" onclick="startSunClimb()">🔄 Play Again</button>
       </div>
     </div>
-    <div class="touch-controls">
-      <button class="touch-btn empty" type="button" tabindex="-1"></button>
-      <button class="touch-btn jump" id="sunJumpBtn" type="button">⬆️</button>
-      <button class="touch-btn empty" type="button" tabindex="-1"></button>
-      <button class="touch-btn" id="sunLeftBtn" type="button">⬅️</button>
-      <button class="touch-btn empty" type="button" tabindex="-1"></button>
-      <button class="touch-btn" id="sunRightBtn" type="button">➡️</button>
+    <div class="mobile-controls" id="sunMobileControls">
+      <div class="joystick-zone" id="sunJoystickZone" aria-label="Move stick">
+        <div class="joystick-base">
+          <div class="joystick-knob" id="sunJoystickKnob"></div>
+        </div>
+      </div>
+      <button class="action-btn jump" id="sunJumpBtn" type="button" aria-label="Jump">Jump</button>
     </div>
   </div>
 
@@ -944,7 +1000,19 @@ let sunCanvas, sunCtx, sunRunning = false;
 let sunPlayer, sunPlatforms = [], sunFlares = [], sunCamY = 0;
 let sunStartPlat = null;
 let sunTime = 90, sunLives = 3, sunHeight = 0, sunAnimId, sunTimerId;
-let sunKeys = {}, sunMoveL = false, sunMoveR = false, sunJumpReq = false;
+let sunKeys = {}, sunStickX = 0, sunStickY = 0, sunJumpReq = false;
+let sunJoyPointerId = null, sunPhys = { grav: 0.58, jumpV: -10.2, speed: 4.8, maxJumpH: 76, maxJumpX: 130 };
+
+function sunPhysicsFor(w, h) {
+  const scale = Math.max(1, Math.min(w, h) / 380);
+  const grav = 0.58;
+  const jumpV = -10.2 * Math.min(1.28, 0.9 + scale * 0.14);
+  const speed = 4.8 * Math.min(1.22, 0.94 + scale * 0.1);
+  const maxJumpH = (jumpV * jumpV) / (2 * grav) * 0.88;
+  const airFrames = (-2 * jumpV / grav) * 0.9;
+  const maxJumpX = speed * airFrames * 0.88;
+  return { grav: grav, jumpV: jumpV, speed: speed, maxJumpH: maxJumpH, maxJumpX: maxJumpX };
+}
 
 function startSunClimb() {
   const wrap = document.getElementById('sunGameWrap');
@@ -957,8 +1025,9 @@ function startSunClimb() {
   sunRunning = true;
   sunTime = 90; sunLives = 3; sunHeight = 0; sunCamY = 0;
   sunFlares = [];
-  sunKeys = {}; sunMoveL = false; sunMoveR = false; sunJumpReq = false;
-  sunPlatforms = buildSunPlatforms(sunCanvas.width, sunCanvas.height);
+  sunKeys = {}; sunStickX = 0; sunStickY = 0; sunJumpReq = false; sunJoyPointerId = null;
+  sunPhys = sunPhysicsFor(sunCanvas.width, sunCanvas.height);
+  sunPlatforms = buildSunPlatforms(sunCanvas.width, sunCanvas.height, sunPhys);
   const startPlat = sunPlatforms.find(p => p.isStart) || sunPlatforms.filter(p => !p.isSun).reduce((a, b) => (a.y > b.y ? a : b));
   sunStartPlat = startPlat;
   sunPlayer = {
@@ -970,7 +1039,7 @@ function startSunClimb() {
   updateSunHud();
   document.addEventListener('keydown', sunKeyDown);
   document.addEventListener('keyup', sunKeyUp);
-  bindSunTouch();
+  bindSunControls();
   if (sunTimerId) clearInterval(sunTimerId);
   sunTimerId = setInterval(function() {
     if (!sunRunning) return;
@@ -981,38 +1050,86 @@ function startSunClimb() {
   sunLoop();
 }
 
-function buildSunPlatforms(w, h) {
+function buildSunPlatforms(w, h, phys) {
+  phys = phys || sunPhysicsFor(w, h);
   const plats = [{ x: w / 2 - 52, y: 0, width: 104, h: 14, isSun: true }];
-  const gapMin = 36;
-  const gapMax = 46;
-  const steps = Math.max(32, Math.round(h * 3.2 / gapMin));
+  const gapMin = Math.max(22, phys.maxJumpH * 0.36);
+  const gapMax = Math.max(gapMin + 8, phys.maxJumpH * 0.5);
+  const maxDx = Math.min(phys.maxJumpX, w * 0.34);
+  const steps = Math.max(28, Math.round(h * 2.6 / gapMin));
   let y = h - 20;
-  plats.push({ x: w * 0.5 - 58, y: y, width: Math.min(w - 20, 116), h: 14, isStart: true });
+  const startW = Math.max(88, Math.min(w - 24, 124));
+  let prevCx = w * 0.5;
+  plats.push({ x: prevCx - startW / 2, y: y, width: startW, h: 14, isStart: true });
   for (let i = 0; i < steps; i++) {
-    const pw = Math.max(52, 58 + Math.random() * Math.min(90, w * 0.38));
-    const x = Math.random() * Math.max(8, w - pw - 12) + 6;
+    const pw = Math.max(72, Math.min(w * 0.3, 78 + Math.random() * 36));
     y -= gapMin + Math.random() * (gapMax - gapMin);
-    plats.push({ x: x, y: y, width: pw, h: 14 });
+    const dx = (Math.random() * 2 - 1) * maxDx;
+    let cx = prevCx + dx;
+    cx = Math.max(pw / 2 + 10, Math.min(w - pw / 2 - 10, cx));
+    plats.push({ x: cx - pw / 2, y: y, width: pw, h: 14 });
+    prevCx = cx;
   }
   return plats;
 }
 
-function bindSunTouch() {
-  const L = document.getElementById('sunLeftBtn');
-  const R = document.getElementById('sunRightBtn');
-  const J = document.getElementById('sunJumpBtn');
-  if (L._bound) return;
-  L._bound = R._bound = J._bound = true;
-  L.addEventListener('touchstart', e => { e.preventDefault(); sunMoveL = true; });
-  L.addEventListener('touchend', () => { sunMoveL = false; });
-  R.addEventListener('touchstart', e => { e.preventDefault(); sunMoveR = true; });
-  R.addEventListener('touchend', () => { sunMoveR = false; });
-  J.addEventListener('touchstart', e => { e.preventDefault(); sunJumpReq = true; });
-  L.addEventListener('mousedown', () => { sunMoveL = true; });
-  L.addEventListener('mouseup', () => { sunMoveL = false; });
-  R.addEventListener('mousedown', () => { sunMoveR = true; });
-  R.addEventListener('mouseup', () => { sunMoveR = false; });
-  J.addEventListener('mousedown', () => { sunJumpReq = true; });
+function resetSunJoystick() {
+  sunStickX = 0;
+  sunStickY = 0;
+  sunJoyPointerId = null;
+  const knob = document.getElementById('sunJoystickKnob');
+  if (knob) knob.style.transform = 'translate(0px,0px)';
+}
+
+function bindSunControls() {
+  const zone = document.getElementById('sunJoystickZone');
+  const knob = document.getElementById('sunJoystickKnob');
+  const jumpBtn = document.getElementById('sunJumpBtn');
+  if (!zone || !knob || !jumpBtn || zone._bound) return;
+  zone._bound = true;
+  const base = zone.querySelector('.joystick-base');
+  const radius = 40;
+
+  function setStick(clientX, clientY) {
+    const rect = base.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    let dx = clientX - cx;
+    let dy = clientY - cy;
+    const dist = Math.hypot(dx, dy);
+    if (dist > radius) {
+      dx = dx / dist * radius;
+      dy = dy / dist * radius;
+    }
+    knob.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)';
+    sunStickX = dx / radius;
+    sunStickY = dy / radius;
+  }
+
+  zone.addEventListener('pointerdown', function(e) {
+    e.preventDefault();
+    sunJoyPointerId = e.pointerId;
+    zone.setPointerCapture(e.pointerId);
+    setStick(e.clientX, e.clientY);
+  });
+  zone.addEventListener('pointermove', function(e) {
+    if (sunJoyPointerId !== e.pointerId) return;
+    e.preventDefault();
+    setStick(e.clientX, e.clientY);
+  });
+  function releaseStick(e) {
+    if (sunJoyPointerId !== e.pointerId) return;
+    resetSunJoystick();
+  }
+  zone.addEventListener('pointerup', releaseStick);
+  zone.addEventListener('pointercancel', releaseStick);
+
+  function requestJump(e) {
+    e.preventDefault();
+    sunJumpReq = true;
+  }
+  jumpBtn.addEventListener('pointerdown', requestJump);
+  jumpBtn.addEventListener('mousedown', requestJump);
 }
 
 function sunKeyDown(e) {
@@ -1050,7 +1167,8 @@ function playerTouchesSun(p) {
 
 function endSunClimb(won) {
   sunRunning = false;
-  sunKeys = {}; sunMoveL = false; sunMoveR = false; sunJumpReq = false;
+  sunKeys = {}; sunStickX = 0; sunStickY = 0; sunJumpReq = false;
+  resetSunJoystick();
   cancelAnimationFrame(sunAnimId);
   clearInterval(sunTimerId);
   document.removeEventListener('keydown', sunKeyDown);
@@ -1063,11 +1181,14 @@ function endSunClimb(won) {
 function sunLoop() {
   if (!sunRunning) return;
   const p = sunPlayer;
-  const grav = 0.58;
-  const jumpV = -10.2;
-  const speed = 4.8;
-  if (sunKeys.left || sunMoveL) p.vx = -speed;
-  else if (sunKeys.right || sunMoveR) p.vx = speed;
+  const grav = sunPhys.grav;
+  const jumpV = sunPhys.jumpV;
+  const speed = sunPhys.speed;
+  let move = 0;
+  if (sunKeys.left) move = -1;
+  else if (sunKeys.right) move = 1;
+  else if (Math.abs(sunStickX) > 0.1) move = sunStickX;
+  if (move !== 0) p.vx = move * speed;
   else p.vx *= 0.75;
   if (sunJumpReq && p.onGround) { p.vy = jumpV; p.onGround = false; }
   sunJumpReq = false;
