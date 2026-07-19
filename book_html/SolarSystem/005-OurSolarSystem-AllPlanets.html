@@ -1065,7 +1065,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     <div class="ctrl-row">
       <button class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
       <button class="ctrl-btn" id="btnSpeed">🚀 Speed: 0.5×</button>
-      <button class="ctrl-btn" id="btnViewMode">👁️ View: Vertical</button>
+      <button class="ctrl-btn" id="btnViewMode">👁️ View1</button>
       <button class="ctrl-btn" id="btnReset">🔄 Reset</button>
     </div>
     <div class="info-panel" id="infoPanel">
@@ -1122,7 +1122,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     cx: 200,
     sunY: -30,
     sunR: 88,
-    topClipH: 88,
+    topClipH: 72,
     topY: 96,
     bottomY: 572,
     sizes: { mercury:18, venus:21, earth:24, mars:21, jupiter:40, saturn:37, uranus:29, neptune:27 },
@@ -1646,7 +1646,7 @@ const StylizedPlanet = {
       const btn = document.getElementById('btnViewMode');
       if (!btn) return;
       const mode = this.currentMode();
-      btn.textContent = '👁️ View: ' + mode.short;
+      btn.textContent = '👁️ View' + (this.viewModeIdx + 1);
       btn.classList.toggle('active', this.viewModeIdx !== 0);
     },
     modeIcon(mode) {
@@ -1748,13 +1748,20 @@ const StylizedPlanet = {
     drawVerticalSun(g, r, svg) {
       if (svg) StylizedPlanet.ensureSunGlow(svg);
       if (svg) StylizedPlanet.ensureSoftBlur(svg);
+      if (svg) StylizedPlanet.ensureShading(svg);
       g.appendChild(el('circle', {
-        r: String(r * 1.1), fill: 'rgba(255,140,40,0.16)', filter: 'url(#softBlur)', 'pointer-events': 'none'
+        r: String(r * 0.72), fill: 'rgba(255,140,40,0.12)', filter: 'url(#softBlur)', 'pointer-events': 'none'
       }));
       g.appendChild(el('circle', {
-        r: String(r * 1.04), fill: 'rgba(255,193,7,0.18)', 'pointer-events': 'none'
+        r: String(r * 0.88), fill: 'url(#sunCorona)', 'pointer-events': 'none'
       }));
-      this.drawSun(g, r, svg);
+      g.appendChild(el('circle', {
+        r: String(r * 0.82), fill: 'rgba(255,193,7,0.16)', 'pointer-events': 'none'
+      }));
+      const clip = svg ? StylizedPlanet.ensureClip(svg, 'globe-r' + Math.round(r * 10), r) : '';
+      if (!StylizedPlanet.texturedDisc(g, 'sun', r, clip, false)) {
+        StylizedPlanet.sphere(g, 'sun', r, clip, false);
+      }
     },
     drawSunBurning(g, r, svg, clip) {
       if (svg) StylizedPlanet.ensureSunGlow(svg);
