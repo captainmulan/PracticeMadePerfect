@@ -59,6 +59,123 @@
       border:1px solid rgba(255,255,255,0.1);
     }
     .solar-panel{padding:12px;}
+    .view-stage{
+      position:relative;
+      width:100%;
+      min-height:min(98vw, calc(100svh - 118px));
+      max-height:min(98vw, calc(100svh - 118px));
+      margin:0 auto;
+    }
+    .view-layer{display:none;width:100%;height:100%;min-height:inherit;}
+    .view-layer.active{display:block;}
+    .view-layer-telescope.active{
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+    }
+    .view-layer-telescope .telescope-wrap{
+      flex:0 0 auto;
+      min-height:0;
+      max-height:min(62vw, calc(100svh - 210px));
+      height:min(62vw, calc(100svh - 210px));
+    }
+    .view-layer-telescope .telescope-meta{display:none;}
+    .view-layer-secondperson.active{
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:0 4px;
+    }
+    .view-layer-secondperson .fp-wrap{
+      flex:1 1 auto;
+      min-width:0;
+      max-height:min(72vw, calc(100svh - 200px));
+      height:min(72vw, calc(100svh - 200px));
+    }
+    .view-layer-orbit .svg-wrap{
+      height:min(98vw, calc(100svh - 118px));
+      max-height:min(98vw, calc(100svh - 118px));
+      aspect-ratio:1;
+    }
+    .vertical-fit{
+      height:min(98vw, calc(100svh - 118px));
+      max-height:min(98vw, calc(100svh - 118px));
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      border-radius:16px;
+      background:#050510;
+    }
+    .vertical-fit svg{display:block;height:100%;width:auto;max-width:100%;}
+    .telescope-wrap{
+      height:min(98vw, calc(100svh - 118px));
+      max-height:min(98vw, calc(100svh - 118px));
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:8px 6px;
+    }
+    .tel-arrow{
+      flex:0 0 auto;
+      width:46px;
+      height:46px;
+      border:none;
+      border-radius:50%;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      color:#fff;
+      font-size:28px;
+      line-height:1;
+      cursor:pointer;
+      box-shadow:0 4px 14px rgba(0,0,0,0.35);
+    }
+    .tel-arrow:active{transform:scale(0.94);}
+    .telescope-stage{
+      flex:1 1 auto;
+      max-width:min(68vw, 360px);
+      aspect-ratio:1;
+      border-radius:28px;
+      overflow:hidden;
+      background:radial-gradient(circle at 50% 42%, #0a1028 0%, #020208 72%);
+      box-shadow:inset 0 0 80px rgba(0,0,0,0.85), 0 0 30px rgba(255,180,60,0.08);
+    }
+    .telescope-stage svg{display:block;width:100%;height:100%;background:transparent;}
+    .telescope-meta{
+      width:100%;
+      padding:0 10px 4px;
+      text-align:center;
+    }
+    .telescope-label{
+      font-size:clamp(15px, 4vw, 19px);
+      font-weight:bold;
+      color:#ffd700;
+    }
+    .telescope-detail{
+      margin-top:6px;
+      font-size:clamp(12px, 3.2vw, 15px);
+      line-height:1.55;
+      color:#c4b5fd;
+    }
+    .movie-wrap,.fp-wrap{
+      height:min(98vw, calc(100svh - 118px));
+      max-height:min(98vw, calc(100svh - 118px));
+      width:100%;
+      border-radius:16px;
+      overflow:hidden;
+      position:relative;
+      background:radial-gradient(ellipse at 30% 20%, rgba(40,30,90,0.5), #050510 70%);
+    }
+    .fp-wrap::after{
+      content:'';
+      position:absolute;inset:0;pointer-events:none;border-radius:16px;
+      box-shadow:inset 0 0 0 4px rgba(255,215,0,0.22), inset 0 -100px 90px rgba(0,0,0,0.55);
+    }
+    .movie-wrap svg,.fp-wrap svg{display:block;width:100%;height:100%;}
     .svg-wrap{
       background:#12102a;
       border-radius:16px;
@@ -250,6 +367,13 @@
       margin-bottom: 10px;
       padding: 10px;
     }
+    body.all-planets-page .view-stage {
+      width: min(98vw, 820px);
+      max-width: none;
+      min-height: min(98vw, calc(100svh - 118px));
+      max-height: min(98vw, calc(100svh - 118px));
+      margin: 0 auto;
+    }
     body.all-planets-page .svg-wrap {
       width: min(98vw, 820px);
       max-width: none;
@@ -274,6 +398,11 @@
       overflow: visible !important;
     }
     @media (min-width: 640px) {
+      body.all-planets-page .view-stage {
+        width: min(94vw, 880px);
+        min-height: min(94vw, calc(100svh - 108px));
+        max-height: min(94vw, calc(100svh - 108px));
+      }
       body.all-planets-page .svg-wrap {
         width: min(94vw, 880px);
         height: min(94vw, calc(100svh - 108px));
@@ -281,10 +410,66 @@
       }
     }
     @media (min-width: 900px) {
+      body.all-planets-page .view-stage {
+        width: min(90vw, 960px);
+        min-height: min(82vh, 960px);
+        max-height: min(82vh, 960px);
+      }
       body.all-planets-page .svg-wrap {
         width: min(90vw, 960px);
         height: min(82vh, 960px);
         max-height: min(82vh, 960px);
+      }
+    }
+    @media (orientation: landscape) and (max-height: 520px) {
+      body.all-planets-page .container {
+        padding: 4px 8px 14px;
+        max-width: 100%;
+      }
+      body.all-planets-page .header {
+        margin-bottom: 3px;
+      }
+      body.all-planets-page .header h1 {
+        font-size: 16px;
+        margin-bottom: 2px;
+      }
+      body.all-planets-page .header .subtitle {
+        font-size: 11px;
+        line-height: 1.25;
+      }
+      body.all-planets-page .solar-panel {
+        padding: 5px;
+        margin-bottom: 5px;
+      }
+      body.all-planets-page .view-stage {
+        width: 100% !important;
+        min-height: calc(100svh - 88px) !important;
+        max-height: calc(100svh - 88px) !important;
+      }
+      body.all-planets-page .vertical-fit,
+      body.all-planets-page .telescope-wrap,
+      body.all-planets-page .movie-wrap,
+      body.all-planets-page .fp-wrap {
+        height: calc(100svh - 88px) !important;
+        max-height: calc(100svh - 88px) !important;
+      }
+      body.all-planets-page .svg-wrap {
+        aspect-ratio: unset !important;
+        width: 100% !important;
+        height: calc(100svh - 88px) !important;
+        max-height: calc(100svh - 88px) !important;
+        min-height: calc(100svh - 96px) !important;
+      }
+      body.all-planets-page .ctrl-row {
+        margin-top: 4px;
+        gap: 6px;
+      }
+      body.all-planets-page .ctrl-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      body.all-planets-page .scroll-cue {
+        display: none;
       }
     }
   /* solar-desktop-fit */
@@ -628,6 +813,15 @@ body.all-planets-page:has(#solarSvg) .minigame-panel {
     max-height: min(82vh, 960px) !important;
   }
 }
+@media (orientation: landscape) and (max-height: 520px) {
+  body.all-planets-page:has(#solarSvg) .svg-wrap {
+    aspect-ratio: unset !important;
+    width: 100% !important;
+    height: calc(100svh - 88px) !important;
+    max-height: calc(100svh - 88px) !important;
+    min-height: calc(100svh - 96px) !important;
+  }
+}
   
 body.reading-page {
   overflow-x: hidden;
@@ -703,6 +897,21 @@ body.big-planet-page .nav-hint {
 body.all-planets-page:has(#solarSvg) .svg-wrap {
   max-height: min(98vw, calc(100svh - 118px)) !important;
   min-height: min(52svh, calc(100svh - 128px), 98vw) !important;
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  body.all-planets-page:has(#solarSvg) .svg-wrap {
+    aspect-ratio: unset !important;
+    width: 100% !important;
+    height: calc(100svh - 88px) !important;
+    max-height: calc(100svh - 88px) !important;
+    min-height: calc(100svh - 96px) !important;
+  }
+  body.all-planets-page:has(#solarSvg) .header h1 {
+    font-size: 16px !important;
+  }
+  body.all-planets-page:has(#solarSvg) .header .subtitle {
+    font-size: 11px !important;
+  }
 }
 body.big-game-page:has(.game-shell) {
   overflow: hidden !important;
@@ -805,28 +1014,71 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   </div>
 
   <div class="panel solar-panel">
-    <div class="svg-wrap" id="svgWrap">
-      <svg id="solarSvg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Interactive solar system">
-        <defs></defs>
-        <g id="viewGroup"></g>
-      </svg>
+    <div class="view-stage" id="viewStage">
+      <div class="view-layer view-layer-orbit active" data-layer="orbit" id="viewLayerOrbit">
+        <div class="svg-wrap" id="svgWrap">
+          <svg id="solarSvg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Interactive solar system orbit view">
+            <defs></defs>
+            <g id="viewGroup"></g>
+          </svg>
+        </div>
+      </div>
+      <div class="view-layer view-layer-vertical" data-layer="vertical" id="viewLayerVertical">
+        <div class="vertical-fit">
+          <svg id="verticalSvg" viewBox="0 0 400 580" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Vertical solar system stack">
+            <defs></defs>
+            <g id="verticalGroup"></g>
+          </svg>
+        </div>
+      </div>
+      <div class="view-layer view-layer-telescope" data-layer="telescope" id="viewLayerTelescope">
+        <div class="telescope-wrap">
+          <button type="button" class="tel-arrow" id="telPrev" aria-label="Previous planet">‹</button>
+          <div class="telescope-stage">
+            <svg id="telescopeSvg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Telescope planet view">
+              <defs></defs>
+              <g id="telescopeGroup"></g>
+            </svg>
+          </div>
+          <button type="button" class="tel-arrow" id="telNext" aria-label="Next planet">›</button>
+        </div>
+        <div class="telescope-meta">
+          <div class="telescope-label" id="telescopeLabel">🔭 Mercury</div>
+          <div class="telescope-detail" id="telescopeDetail"></div>
+        </div>
+      </div>
+      <div class="view-layer view-layer-movie" data-layer="movie" id="viewLayerMovie">
+        <div class="movie-wrap">
+          <svg id="movieSvg" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Cinematic solar system view">
+            <defs></defs>
+            <g id="movieGroup"></g>
+          </svg>
+        </div>
+      </div>
+      <div class="view-layer view-layer-secondperson" data-layer="secondperson" id="viewLayerSecondPerson">
+        <button type="button" class="tel-arrow" id="fpPrev" aria-label="Previous planet">‹</button>
+        <div class="fp-wrap">
+          <svg id="fpSvg" viewBox="0 0 600 520" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Second person planet view">
+            <defs></defs>
+            <g id="fpGroup"></g>
+          </svg>
+        </div>
+        <button type="button" class="tel-arrow" id="fpNext" aria-label="Next planet">›</button>
+      </div>
     </div>
     <div class="ctrl-row">
       <button class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
-      <button class="ctrl-btn" id="btnSpeed">🚀 Speed: 1×</button>
-      <button class="ctrl-btn" id="btnZoomIn">🔍 Zoom +</button>
-      <button class="ctrl-btn" id="btnZoomOut">🔍 Zoom −</button>
-      <button class="ctrl-btn" id="btnRotL">↺ Rotate L</button>
-      <button class="ctrl-btn" id="btnRotR">↻ Rotate R</button>
+      <button class="ctrl-btn" id="btnSpeed">🚀 Speed: 0.5×</button>
+      <button class="ctrl-btn" id="btnViewMode">👁️ View: Orbit</button>
       <button class="ctrl-btn" id="btnReset">🔄 Reset</button>
     </div>
     <p class="scroll-cue">↓ Scroll for planet facts and the ordering game</p>
   </div>
 
   <div class="panel info-panel" id="infoPanel">
-    <h2>🚀 Close-Up Ship View</h2>
-    <p>Orbits are squeezed closer so every planet is easy to see and tap — real space is much emptier! Planets nearer the window look a little bigger.</p>
-    <p class="hint">💡 Drag to spin the view, or use Rotate / Zoom controls.</p>
+    <h2>🛰️ Orbit Map</h2>
+    <p>Full orbits around a centered Sun — every planet bright and easy to tap.</p>
+    <p class="hint">💡 Drag to spin · pinch to zoom · tap View to switch Orbit, Vertical, Telescope, Movie and Second Person.</p>
   </div>
 
   <div class="panel minigame-panel">
@@ -855,6 +1107,40 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   const SPEEDS = [0.5, 1, 2, 4];
   const PLANET_ORDER = ['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
 
+  const VIEW_MODES = [
+    { id:'orbit', layer:'orbit', label:'Orbit Map', short:'Orbit', zoomBoost:1, closeupBoost:1, cameraNear:1, cameraFar:1, orbitTilt:0.52, heroBoost:1, viewCy:300, sunRadius:36, innerOrbitMax:null, innerOrbitMin:null,
+      desc:'Full orbits around a centered Sun — every planet bright and easy to tap.' },
+    { id:'vertical', layer:'vertical', label:'Vertical Stack', short:'Vertical',
+      desc:'The whole solar family on one screen — half the Sun on top, eight planets in a straight line below.' },
+    { id:'telescope', layer:'telescope', label:'Telescope', short:'Telescope',
+      desc:'Study one world up close — use the arrows to browse, tap the planet for its story.' },
+    { id:'movie', layer:'movie', label:'Movie', short:'Movie',
+      desc:'Documentary lineup — a blazing half-Sun on the edge and every planet in a straight row.' },
+    { id:'secondperson', layer:'secondperson', label:'Second Person View', short:'2nd Person',
+      desc:'Over-the-shoulder view — you stand on a world and gaze up at a giant planet in the sky.' },
+  ];
+  const SUN_RADIUS_DEFAULT = 38;
+  const ORBIT_MAP_LAYOUT = {
+    orbitScale: 1.55,
+    sunOffsetX: 0,
+    sunRadius: 36,
+    tilt: 0.52,
+    planetSizeScale: 0.92,
+  };
+  const VERT_LINE = {
+    cx: 200,
+    sunY: -28,
+    sunR: 72,
+    topClipH: 108,
+    topY: 102,
+    bottomY: 572,
+    sizes: { mercury:14, venus:16, earth:18, mars:16, jupiter:30, saturn:28, uranus:22, neptune:21 },
+  };
+  const TELESCOPE_DRAW_R = 108;
+  const FP_SURFACE_IDX = 2;
+  const FP_SKY_IDX = 5;
+  const MOVIE_SIZES = { mercury:30, venus:32, earth:34, mars:30, jupiter:56, saturn:52, uranus:38, neptune:36 };
+
   const PLANETS = [
     { id:'mercury', name:'Mercury', emoji:'🪨', orbitR:45, size:14, baseSpeed:0.022,
       facts:'Mercury is the smallest planet and the closest to the Sun. A day there lasts 59 Earth days — but a year is only 88 days!' },
@@ -874,16 +1160,10 @@ body.big-game-page:has(.fire-btn) .game-wrap {
       facts:'Neptune is the windiest planet — gusts can hit 2,100 km/h! It\'s so far from the Sun that one year there lasts 165 Earth years.' }
   ];
 
-  const DEFAULT_SOLAR_ANGLES = {
-    mercury: 0.35,
-    venus: 1.05,
-    earth: 1.75,
-    mars: 2.45,
-    jupiter: 3.15,
-    saturn: 3.85,
-    uranus: 4.55,
-    neptune: 5.25,
-  };
+  const DEFAULT_SOLAR_ANGLES = {};
+  PLANETS.forEach((p, i) => {
+    DEFAULT_SOLAR_ANGLES[p.id] = (i / PLANETS.length) * Math.PI * 2 + 0.45;
+  });
 
   function seedDefaultSolarAngles() {
     const out = {};
@@ -894,9 +1174,10 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   /* ── SVG defs are inlined in HTML (innerHTML breaks gradients in iframes) ── */
 
   function findPlanetHit(node){
-    while (node && node !== Solar.svg){
+    while (node){
       if (node.classList && node.classList.contains('planet-hit')) return node;
       if (node.id === 'sunHit') return node;
+      if (node.tagName === 'svg') break;
       node = node.parentNode;
     }
     return null;
@@ -930,7 +1211,8 @@ const StylizedPlanet = {
     return e;
   },
   svgRoot(g) {
-    return g.ownerSVGElement || document.getElementById("planetSvg") || document.getElementById("solarSvg");
+    if (g && g.ownerSVGElement) return g.ownerSVGElement;
+    return document.getElementById("solarSvg");
   },
   ensureClip(svg, id, r) {
     if (svg.querySelector("#" + id)) return "url(#" + id + ")";
@@ -971,19 +1253,25 @@ const StylizedPlanet = {
     defs.appendChild(rg);
   },
   ensureSaturnRingClips(svg, r) {
-    if (svg.querySelector("#saturnRingBack")) return;
+    const key = Math.round(r * 10);
+    const backId = "satRingBack" + key;
+    const frontId = "satRingFront" + key;
+    if (svg.querySelector("#" + backId)) {
+      return { back: "url(#" + backId + ")", front: "url(#" + frontId + ")" };
+    }
     let defs = svg.querySelector("defs");
     if (!defs) {
       defs = this.el("defs", {});
       svg.insertBefore(defs, svg.firstChild);
     }
-    const pad = r * 3;
-    const back = this.el("clipPath", { id: "saturnRingBack" });
+    const pad = r * 3.2;
+    const back = this.el("clipPath", { id: backId });
     back.appendChild(this.el("rect", { x: String(-pad), y: String(-pad), width: String(pad * 2), height: String(pad) }));
     defs.appendChild(back);
-    const front = this.el("clipPath", { id: "saturnRingFront" });
+    const front = this.el("clipPath", { id: frontId });
     front.appendChild(this.el("rect", { x: String(-pad), y: "0", width: String(pad * 2), height: String(pad) }));
     defs.appendChild(front);
+    return { back: "url(#" + backId + ")", front: "url(#" + frontId + ")" };
   },
   ringEllipses(g, rx, ry, sw, tilt, clipUrl) {
     const S = this;
@@ -1017,37 +1305,35 @@ const StylizedPlanet = {
     }));
     g.appendChild(grp);
   },
-  texturedDisc(g, type, r, clip) {
+  texturedDisc(g, type, r, clip, useMask) {
     const S = this;
     const tex = S.TEXTURES[type];
     if (!tex) return false;
-    g.appendChild(S.el("image", {
+    const imgAttrs = {
       href: tex,
       x: String(-r),
       y: String(-r),
       width: String(r * 2),
       height: String(r * 2),
       preserveAspectRatio: "xMidYMid slice",
-      "clip-path": clip,
-    }));
+    };
+    if (useMask) imgAttrs.mask = clip;
+    else imgAttrs["clip-path"] = clip;
+    g.appendChild(S.el("image", imgAttrs));
     return true;
   },
-  drawSaturn(g, r, clip, svg) {
+  drawSaturn(g, r, clip, svg, soft) {
     const S = this;
     const tilt = -18;
     const rx = r * 2.15;
     const ry = r * 0.48;
     const sw = Math.max(1, r * 0.09);
-    if (svg) S.ensureSaturnRingClips(svg, r);
-    S.ringEllipses(g, rx, ry, sw, tilt, "url(#saturnRingBack)");
-    S.texturedDisc(g, "saturn", r, clip) || S.sphere(g, "saturn", r, clip);
-    S.ringEllipses(g, rx, ry, sw, tilt, "url(#saturnRingFront)");
-    g.appendChild(S.el("circle", {
-      r: String(r),
-      fill: "url(#sphereShade)",
-      "clip-path": clip,
-      "pointer-events": "none",
-    }));
+    const ringClips = svg ? S.ensureSaturnRingClips(svg, r) : { back: "", front: "" };
+    S.ringEllipses(g, rx, ry, sw, tilt, ringClips.back);
+    S.texturedDisc(g, "saturn", r, clip, false) || S.sphere(g, "saturn", r, clip, false);
+    S.ringEllipses(g, rx, ry, sw, tilt, ringClips.front);
+    const shadeAttrs = { r: String(r), fill: "url(#sphereShade)", "clip-path": clip, "pointer-events": "none" };
+    g.appendChild(S.el("circle", shadeAttrs));
     g.appendChild(S.el("circle", {
       r: String(r),
       fill: "rgba(0,0,0,0.001)",
@@ -1055,19 +1341,20 @@ const StylizedPlanet = {
       style: "cursor:pointer",
     }));
   },
-  sphere(g, type, r, clip) {
+  sphere(g, type, r, clip, soft) {
     const S = this;
     const svg = S.svgRoot(g);
     if (svg) S.ensureShading(svg);
-    if (S.texturedDisc(g, type, r, clip)) {
+    const hardClip = svg ? S.ensureClip(svg, r === 88 ? "globe" : "globe-r" + Math.round(r * 10), r) : clip;
+    if (S.texturedDisc(g, type, r, hardClip, false)) {
       g.appendChild(S.el("circle", {
         r: String(r),
         fill: "url(#sphereShade)",
-        "clip-path": clip,
+        "clip-path": hardClip,
         "pointer-events": "none",
       }));
     } else {
-      g.appendChild(S.el("circle", { r: String(r), fill: "#888", "clip-path": clip }));
+      g.appendChild(S.el("circle", { r: String(r), fill: "#888", "clip-path": hardClip }));
     }
     g.appendChild(S.el("circle", {
       r: String(r),
@@ -1083,15 +1370,20 @@ const StylizedPlanet = {
     g.appendChild(S.el("circle", { r: String(r * 1.2), fill: "rgba(255,193,7,0.18)", "pointer-events": "none" }));
     S.texturedDisc(g, "sun", r, clip) || S.sphere(g, "sun", r, clip);
   },
-  draw(g, type, r) {
+  draw(g, type, r, hostSvg, soft) {
     r = r || 88;
     const S = this;
-    const svg = S.svgRoot(g);
+    const svg = hostSvg || S.svgRoot(g);
     const clipId = r === 88 ? "globe" : "globe-r" + Math.round(r * 10);
-    const clip = svg ? S.ensureClip(svg, clipId, r) : "";
+    const softId = "soft-r" + Math.round(r * 10);
+    let clip = "";
+    if (soft && svg) clip = S.ensureSoftMask(svg, softId, r);
+    else if (svg) clip = S.ensureClip(svg, clipId, r);
     if (svg) S.ensureShading(svg);
+    if (soft && svg) S.ensureSoftBlur(svg);
     if (type === "saturn") {
-      S.drawSaturn(g, r, clip, svg);
+      const hardClip = svg ? S.ensureClip(svg, clipId, r) : "";
+      S.drawSaturn(g, r, hardClip, svg, soft);
       return;
     }
     if (type === "sun") {
@@ -1099,18 +1391,50 @@ const StylizedPlanet = {
       return;
     }
     if (S.TEXTURES[type]) {
-      S.sphere(g, type, r, clip);
+      S.sphere(g, type, r, clip, soft);
       return;
     }
     g.appendChild(S.el("circle", { r: String(r), fill: "#888" }));
+  },
+  ensureSoftBlur(svg) {
+    if (svg.querySelector("#softBlur")) return;
+    let defs = svg.querySelector("defs");
+    if (!defs) {
+      defs = this.el("defs", {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const f = this.el("filter", { id: "softBlur", x: "-30%", y: "-30%", width: "160%", height: "160%" });
+    f.appendChild(this.el("feGaussianBlur", { stdDeviation: "5", result: "b" }));
+    defs.appendChild(f);
+  },
+  ensureSoftMask(svg, id, r) {
+    if (svg.querySelector("#" + id)) return "url(#" + id + ")";
+    let defs = svg.querySelector("defs");
+    if (!defs) {
+      defs = this.el("defs", {});
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const gradId = id + "Grad";
+    const rg = this.el("radialGradient", { id: gradId, cx: "50%", cy: "50%", r: "50%" });
+    rg.appendChild(this.el("stop", { offset: "0%", "stop-color": "#ffffff" }));
+    rg.appendChild(this.el("stop", { offset: "68%", "stop-color": "#ffffff" }));
+    rg.appendChild(this.el("stop", { offset: "88%", "stop-color": "#bbbbbb" }));
+    rg.appendChild(this.el("stop", { offset: "100%", "stop-color": "#000000" }));
+    defs.appendChild(rg);
+    const mask = this.el("mask", { id: id });
+    mask.appendChild(this.el("circle", { r: String(r * 1.05), fill: "url(#" + gradId + ")" }));
+    defs.appendChild(mask);
+    return "url(#" + id + ")";
   },
 };
 
   /* ── Solar System Viewer ── */
   const Solar = {
-    svg: null, viewG: null, info: null,
-    playing: true, speedIdx: 1, zoom: 1.2, rot: 0, drag: 0,
+    svg: null, viewG: null, verticalG: null, info: null,
+    telescopeG: null, movieG: null, fpG: null,
+    playing: true, speedIdx: 0, viewModeIdx: 0, zoom: 1.2, rot: 0, drag: 0,
     angles: {}, spinAngles: {}, sunSpin: 0, selected: null,
+    telescopeIdx: 0, telescopeAccum: 0, fpSkyIdx: FP_SKY_IDX,
     ORBIT_TILT: 0.68,
     DEFAULT_ROT: 0,
     DEFAULT_ZOOM: 1.2,
@@ -1119,6 +1443,78 @@ const StylizedPlanet = {
     CAMERA_NEAR: 0.72,
     CAMERA_FAR: 1.18,
     CLOSEUP_BOOST: 1.12,
+    currentMode() {
+      return VIEW_MODES[this.viewModeIdx] || VIEW_MODES[0];
+    },
+    activeLayer() {
+      const mode = this.currentMode();
+      return mode.layer || 'orbit';
+    },
+    switchActiveLayer() {
+      const layer = this.activeLayer();
+      document.querySelectorAll('.view-layer').forEach(el => {
+        el.classList.toggle('active', el.dataset.layer === layer);
+      });
+      const label = document.getElementById('telescopeLabel');
+      if (label && layer === 'telescope') this.updateTelescopeLabel();
+      else if (layer === 'secondperson') this.updateFpSkyInfo();
+      else this.showModeInfo();
+    },
+    isLandscape() {
+      return window.matchMedia('(orientation: landscape) and (max-height: 520px)').matches;
+    },
+    applyViewBox() {
+      if (!this.svg) return;
+      if (this.isLandscape()) {
+        this.svg.setAttribute('viewBox', '30 20 540 540');
+      } else {
+        this.svg.setAttribute('viewBox', '0 0 600 600');
+      }
+    },
+    orbitLayout(mode) {
+      if (mode.id === 'orbit') {
+        return {
+          orbitScale: ORBIT_MAP_LAYOUT.orbitScale,
+          sunOffsetX: ORBIT_MAP_LAYOUT.sunOffsetX,
+          sunRadius: ORBIT_MAP_LAYOUT.sunRadius,
+          tilt: ORBIT_MAP_LAYOUT.tilt,
+          planetSizeScale: ORBIT_MAP_LAYOUT.planetSizeScale,
+          frontArcOnly: false,
+        };
+      }
+      return {
+        orbitScale: 1,
+        sunOffsetX: 0,
+        sunRadius: this.sunRadiusForMode(mode),
+        tilt: mode.orbitTilt != null ? mode.orbitTilt : this.ORBIT_TILT,
+        planetSizeScale: 1,
+        frontArcOnly: false,
+      };
+    },
+    displayOrbitR(planet, layout) {
+      return planet.orbitR * layout.orbitScale;
+    },
+    visiblePlanets(mode) {
+      return PLANETS.filter(p => {
+        if (mode.innerOrbitMax != null && p.orbitR > mode.innerOrbitMax) return false;
+        if (mode.innerOrbitMin != null && p.orbitR < mode.innerOrbitMin) return false;
+        return true;
+      });
+    },
+    getFrontPlanet() {
+      const tilt = this.ORBIT_TILT;
+      const mode = this.currentMode();
+      let best = null;
+      let bestPy = -Infinity;
+      this.visiblePlanets(mode).forEach(p => {
+        const pos = this.orbitPoint(this.angles[p.id], p.orbitR, tilt);
+        if (pos.py > bestPy) {
+          bestPy = pos.py;
+          best = { p, ang: this.angles[p.id], py: pos.py };
+        }
+      });
+      return best;
+    },
     orbitPoint(ang, orbitR, tilt) {
       const t = tilt || this.ORBIT_TILT;
       return {
@@ -1131,49 +1527,302 @@ const StylizedPlanet = {
       if (!span) return 0.5;
       return (py / span + 1) / 2;
     },
+    isBehindSun(depth) {
+      return depth < 0.48;
+    },
+    hiddenBySun(px, py, scale, planetSize, sunRadius) {
+      const dist = Math.hypot(px, py);
+      const occultR = sunRadius + planetSize * scale * 0.42;
+      return dist < occultR;
+    },
     windowScale(py, orbitR, tilt) {
+      const mode = this.currentMode();
+      if (mode.id === 'orbit') return 1;
       const near = this.windowDepth(py, orbitR, tilt);
+      if (mode.id === 'cockpit') {
+        return 0.72 + Math.pow(near, 1.6) * 0.55;
+      }
       return this.CAMERA_NEAR + near * (this.CAMERA_FAR - this.CAMERA_NEAR);
     },
-    windowOpacity(py, orbitR, tilt) {
-      const near = this.windowDepth(py, orbitR, tilt);
-      return 0.62 + near * 0.38;
+    windowOpacity() {
+      return 1;
+    },
+    orbitArcPath(orbitR, tilt, sunX, steps) {
+      const t = Math.abs(tilt || this.ORBIT_TILT);
+      const sx = sunX || 0;
+      const n = steps || 48;
+      let d = '';
+      for (let i = 0; i <= n; i++) {
+        const ang = Math.PI * (i / n);
+        const x = sx + Math.cos(ang) * orbitR;
+        const y = Math.sin(ang) * orbitR * t;
+        d += (i === 0 ? 'M' : 'L') + x.toFixed(2) + ',' + y.toFixed(2);
+      }
+      return d;
+    },
+    sunRadiusForMode(mode) {
+      return mode.sunRadius != null ? mode.sunRadius : SUN_RADIUS_DEFAULT;
+    },
+    buildPlanetDrawList(mode, front, tilt, layout) {
+      const sunX = layout ? layout.sunOffsetX : 0;
+      return this.visiblePlanets(mode).map(p => {
+        const ang = this.angles[p.id];
+        const orbitR = this.displayOrbitR(p, layout);
+        const pos = this.orbitPoint(ang, orbitR, tilt);
+        let scale = this.windowScale(pos.py, orbitR, tilt);
+        if (front && p.id === front.p.id) scale *= mode.heroBoost;
+        return {
+          p,
+          px: sunX + pos.px,
+          py: pos.py,
+          scale,
+          ang,
+          orbitR,
+        };
+      });
+    },
+    appendPlanetNode(parent, item, mode, hostSvg, layout) {
+      const drawSize = item.p.size * (layout ? layout.planetSizeScale : 1);
+      const spin = (this.spinAngles[item.p.id] || 0).toFixed(2);
+      const pg = el('g', {
+        class:'planet-hit',
+        transform:'translate(' + item.px.toFixed(2) + ',' + item.py.toFixed(2) + ') scale(' + item.scale.toFixed(3) + ') rotate(' + spin + ')',
+        'data-id': item.p.id,
+        style: 'cursor:pointer'
+      });
+      parent.appendChild(pg);
+      this.drawPlanetBody(pg, item.p, drawSize, hostSvg);
     },
     fitView(){
-      this.maxOrbitR = Math.max(...PLANETS.map(p => p.orbitR));
-      const largestPlanet = Math.max(...PLANETS.map(p => p.size));
-      const pad = 6;
-      const half = 300 - pad;
-      const planetPad = largestPlanet * this.CAMERA_FAR + 10;
-      const z = Math.min(1.75, half / (this.maxOrbitR + planetPad));
-      this.DEFAULT_ZOOM = Math.round(z * this.CLOSEUP_BOOST * 100) / 100;
+      if (this.activeLayer() !== 'orbit') return;
+      this.applyViewBox();
+      const mode = this.currentMode();
+      const layout = this.orbitLayout(mode);
+      this.CAMERA_NEAR = mode.cameraNear;
+      this.CAMERA_FAR = mode.cameraFar;
+      this.ORBIT_TILT = layout.tilt;
+      const visible = this.visiblePlanets(mode);
+      const maxOrbitR = visible.length
+        ? Math.max(...visible.map(p => this.displayOrbitR(p, layout)))
+        : Math.max(...PLANETS.map(p => this.displayOrbitR(p, layout)));
+      this.maxOrbitR = maxOrbitR;
+      const largestPlanet = Math.max(...visible.map(p => p.size)) * layout.planetSizeScale;
+      const sunR = layout.sunRadius;
+      const pad = this.isLandscape() ? 8 : 14;
+      const half = 270 - pad;
+      const rightReach = Math.abs(layout.sunOffsetX) + maxOrbitR + largestPlanet + 8;
+      const leftReach = Math.abs(layout.sunOffsetX) + maxOrbitR + sunR + 8;
+      const extent = Math.max(rightReach, leftReach);
+      const planetPad = largestPlanet * this.CAMERA_FAR + 12;
+      const z = Math.min(1.35, half / (extent + planetPad * 0.35));
+      const landscapeBoost = this.isLandscape() ? 1.45 : 1;
+      this.DEFAULT_ZOOM = Math.round(z * mode.closeupBoost * mode.zoomBoost * landscapeBoost * 100) / 100;
       if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
+    },
+    updateViewModeButton() {
+      const btn = document.getElementById('btnViewMode');
+      if (!btn) return;
+      const mode = this.currentMode();
+      btn.textContent = '👁️ View: ' + mode.short;
+      btn.classList.toggle('active', this.viewModeIdx !== 0);
+    },
+    modeIcon(mode) {
+      return { orbit:'🛰️', vertical:'📱', telescope:'🔭', movie:'🎬', secondperson:'🎮' }[mode.id] || '🛰️';
+    },
+    modeHint(mode) {
+      const layer = mode.layer || 'orbit';
+      if (layer === 'orbit') return '💡 Drag to spin · pinch to zoom · tap View to cycle all five modes.';
+      if (layer === 'vertical') return '💡 Tap any world for facts · everything fits on one screen.';
+      if (layer === 'telescope') return '💡 Use ‹ › arrows to browse worlds · tap the planet for facts.';
+      if (layer === 'movie') return '💡 Straight row from the Sun — tap any planet for facts.';
+      if (layer === 'secondperson') return '💡 Over-the-shoulder view — use ‹ › to change the sky planet · tap it for facts.';
+      return '💡 Tap View to explore another mode.';
+    },
+    showModeInfo() {
+      const mode = this.currentMode();
+      this.selected = null;
+      this.info.innerHTML = '<h2>' + this.modeIcon(mode) + ' ' + mode.label + '</h2><p>' + mode.desc + '</p><p class="hint">' + this.modeHint(mode) + '</p>';
+    },
+    shiftTelescope(delta) {
+      this.telescopeIdx = (this.telescopeIdx + delta + PLANETS.length) % PLANETS.length;
+      this.updateTelescopeLabel();
+    },
+    shiftFpSky(delta) {
+      this.fpSkyIdx = (this.fpSkyIdx + delta + PLANETS.length) % PLANETS.length;
+      this.updateFpSkyInfo();
+    },
+    updateTelescopeLabel() {
+      const label = document.getElementById('telescopeLabel');
+      const p = PLANETS[this.telescopeIdx];
+      if (label) label.textContent = '🔭 ' + p.emoji + ' ' + p.name;
+      if (this.activeLayer() === 'telescope') this.updateLayerInfo(p, 'telescope');
+    },
+    updateFpSkyInfo() {
+      if (this.activeLayer() === 'secondperson') {
+        const p = PLANETS[this.fpSkyIdx];
+        this.updateLayerInfo(p, 'secondperson');
+      }
+    },
+    updateLayerInfo(p, layer) {
+      const hint = layer === 'telescope'
+        ? '💡 Use ‹ › to browse worlds · tap the planet for more.'
+        : '💡 Use ‹ › to change the sky planet · tap it for facts.';
+      this.info.innerHTML = '<h2>' + p.emoji + ' ' + p.name + '</h2><p>' + p.facts + '</p><p class="hint">' + hint + '</p>';
+    },
+    makePlanetSvg(gId, type, r, vb, dataId) {
+      const svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('viewBox', '0 0 ' + vb + ' ' + vb);
+      if (!svg.querySelector('defs')) svg.appendChild(el('defs', {}));
+      const cx = vb / 2;
+      const g = el('g', {
+        id: gId,
+        class: 'planet-hit',
+        'data-id': dataId || type,
+        transform: 'translate(' + cx + ',' + cx + ')',
+        style: 'cursor:pointer'
+      });
+      svg.appendChild(g);
+      if (type === 'sun') this.drawSun(g, r, svg);
+      else {
+        const p = PLANETS.find(x => x.id === type);
+        if (p) this.drawPlanetBody(g, p, r, svg);
+      }
+      return svg;
+    },
+    ensureHalfSunClip(svg, id, side) {
+      if (svg.querySelector('#' + id)) return 'url(#' + id + ')';
+      let defs = svg.querySelector('defs');
+      if (!defs) {
+        defs = el('defs', {});
+        svg.insertBefore(defs, svg.firstChild);
+      }
+      const cp = el('clipPath', { id: id });
+      if (side === 'left') cp.appendChild(el('rect', { x: '0', y: '0', width: '420', height: '420' }));
+      else if (side === 'top') cp.appendChild(el('rect', { x: '0', y: '0', width: '400', height: String(VERT_LINE.topClipH || 58) }));
+      else cp.appendChild(el('rect', { x: '0', y: '0', width: '800', height: '420' }));
+      defs.appendChild(cp);
+      return 'url(#' + id + ')';
+    },
+    drawPlanetRealistic(g, p, r, svg) {
+      if (!svg) svg = g.ownerSVGElement;
+      if (svg) {
+        StylizedPlanet.ensureSoftBlur(svg);
+        StylizedPlanet.ensureShading(svg);
+      }
+      if (p.id === 'saturn') {
+        g.appendChild(el('ellipse', {
+          rx: String(r * 2.2), ry: String(r * 0.52),
+          fill: 'rgba(210,185,130,0.12)', filter: 'url(#softBlur)',
+          transform: 'rotate(-18)', 'pointer-events': 'none'
+        }));
+        this.drawPlanetBody(g, p, r, svg, false);
+        return;
+      }
+      g.appendChild(el('circle', {
+        r: String(r * 1.22),
+        fill: 'rgba(130,165,255,0.1)',
+        filter: 'url(#softBlur)',
+        'pointer-events': 'none'
+      }));
+      g.appendChild(el('circle', {
+        r: String(r * 1.1),
+        fill: 'rgba(255,255,255,0.05)',
+        'pointer-events': 'none'
+      }));
+      this.drawPlanetBody(g, p, r, svg, false);
+    },
+    drawPlanetSoft(g, p, r, svg) {
+      this.drawPlanetRealistic(g, p, r, svg);
+    },
+    drawSunBurning(g, r, svg, clip) {
+      if (svg) StylizedPlanet.ensureSunGlow(svg);
+      if (svg) StylizedPlanet.ensureSoftBlur(svg);
+      const wrap = clip ? el('g', { 'clip-path': clip }) : g;
+      if (clip) g.appendChild(wrap);
+      const target = clip ? wrap : g;
+      target.appendChild(el('circle', { r: String(r * 1.85), fill: 'rgba(255,120,0,0.22)', filter: 'url(#softBlur)', 'pointer-events': 'none' }));
+      target.appendChild(el('circle', { r: String(r * 1.55), fill: 'url(#sunCorona)', 'pointer-events': 'none' }));
+      target.appendChild(el('circle', { r: String(r * 1.25), fill: 'rgba(255,193,7,0.25)', 'pointer-events': 'none' }));
+      this.drawSun(target, r, svg);
+    },
+    ensureFpDefs(svg) {
+      if (!svg || svg.querySelector('#fpVignette')) return;
+      const defs = el('defs');
+      const skyG = el('linearGradient', { id: 'fpSkyGrad', x1: '0', y1: '0', x2: '0', y2: '1' });
+      skyG.appendChild(el('stop', { offset: '0%', 'stop-color': '#060818' }));
+      skyG.appendChild(el('stop', { offset: '55%', 'stop-color': '#101830' }));
+      skyG.appendChild(el('stop', { offset: '100%', 'stop-color': '#1a2848' }));
+      defs.appendChild(skyG);
+      const hazeG = el('linearGradient', { id: 'fpHorizonHaze', x1: '0', y1: '0', x2: '0', y2: '1' });
+      hazeG.appendChild(el('stop', { offset: '0%', 'stop-color': 'rgba(120,160,220,0)' }));
+      hazeG.appendChild(el('stop', { offset: '100%', 'stop-color': 'rgba(90,130,190,0.22)' }));
+      defs.appendChild(hazeG);
+      const grad = el('radialGradient', { id: 'fpVignette', cx: '50%', cy: '42%', r: '68%' });
+      grad.appendChild(el('stop', { offset: '55%', 'stop-color': 'rgba(0,0,0,0)' }));
+      grad.appendChild(el('stop', { offset: '100%', 'stop-color': 'rgba(0,0,0,0.72)' }));
+      defs.appendChild(grad);
+      svg.insertBefore(defs, svg.firstChild);
+    },
+    handlePlanetTap(hit) {
+      if (!hit) return false;
+      if (hit.dataset && hit.dataset.id && hit.dataset.id !== 'sun') {
+        const p = PLANETS.find(x => x.id === hit.dataset.id);
+        if (p) { this.showFact(p); return true; }
+      }
+      if ((hit.dataset && hit.dataset.id === 'sun') || hit.id === 'sunHit') {
+        this.info.innerHTML = '<h2>☀️ The Sun</h2><p>The Sun is a star at the center of our solar system. It\'s so big that 1.3 million Earths could fit inside it! All the planets orbit around it.</p><p class="hint">Tap a planet to learn more!</p>';
+        return true;
+      }
+      return false;
+    },
+    bindLayerClicks() {
+      const onClick = (e) => {
+        const hit = findPlanetHit(e.target);
+        this.handlePlanetTap(hit);
+      };
+      ['solarSvg', 'verticalSvg', 'telescopeSvg', 'movieSvg', 'fpSvg'].forEach(id => {
+        const svg = document.getElementById(id);
+        if (svg) svg.addEventListener('click', onClick);
+      });
+    },
+    bindTelescopeArrows() {
+      const prev = document.getElementById('telPrev');
+      const next = document.getElementById('telNext');
+      if (prev) prev.onclick = () => this.shiftTelescope(-1);
+      if (next) next.onclick = () => this.shiftTelescope(1);
+      const fpPrev = document.getElementById('fpPrev');
+      const fpNext = document.getElementById('fpNext');
+      if (fpPrev) fpPrev.onclick = () => this.shiftFpSky(-1);
+      if (fpNext) fpNext.onclick = () => this.shiftFpSky(1);
     },
     init(){
       this.svg = document.getElementById('solarSvg');
       this.viewG = document.getElementById('viewGroup');
+      this.verticalG = document.getElementById('verticalGroup');
+      this.telescopeG = document.getElementById('telescopeGroup');
+      this.movieG = document.getElementById('movieGroup');
+      this.fpG = document.getElementById('fpGroup');
       this.info = document.getElementById('infoPanel');
       if (!this.svg || !this.viewG) return;
       this._userZoomed = false;
+      this.viewModeIdx = 0;
+      this.telescopeIdx = 0;
+      this.telescopeAccum = 0;
+      this.fpSkyIdx = FP_SKY_IDX;
+      this.switchActiveLayer();
       this.fitView();
+      this.updateViewModeButton();
+      this.updateTelescopeLabel();
       const defaults = seedDefaultSolarAngles();
       PLANETS.forEach(p => { this.angles[p.id] = defaults[p.id]; this.spinAngles[p.id] = 0; });
       this.bindControls();
       this.bindDrag();
-      this.svg.addEventListener('click', e => {
-        const hit = findPlanetHit(e.target);
-        if (hit && hit.dataset && hit.dataset.id){
-          const p = PLANETS.find(x => x.id === hit.dataset.id);
-          if (p) this.showFact(p);
-          return;
-        }
-        if (hit && hit.id === 'sunHit') {
-          this.info.innerHTML = '<h2>☀️ The Sun</h2><p>The Sun is a star at the center of our solar system. It\'s so big that 1.3 million Earths could fit inside it! All the planets orbit around it.</p><p class="hint">Tap a planet to learn more!</p>';
-        }
-      });
-      this.draw();
+      this.bindLayerClicks();
+      this.bindTelescopeArrows();
+      this.drawOrbit();
       this.loop();
       window.addEventListener('resize', () => this.fitView());
+      this.showModeInfo();
     },
     bindControls(){
       document.getElementById('btnPlay').onclick = () => {
@@ -1184,94 +1833,431 @@ const StylizedPlanet = {
         this.speedIdx = (this.speedIdx + 1) % SPEEDS.length;
         document.getElementById('btnSpeed').textContent = '🚀 Speed: ' + SPEEDS[this.speedIdx] + '×';
       };
-      document.getElementById('btnZoomIn').onclick = () => { this._userZoomed = true; this.zoom = Math.min(2.8, this.zoom + 0.2); };
-      document.getElementById('btnZoomOut').onclick = () => { this._userZoomed = true; this.zoom = Math.max(0.5, this.zoom - 0.2); };
-      document.getElementById('btnRotL').onclick = () => { this.rot -= 20; };
-      document.getElementById('btnRotR').onclick = () => { this.rot += 20; };
+      document.getElementById('btnViewMode').onclick = () => {
+        this.viewModeIdx = (this.viewModeIdx + 1) % VIEW_MODES.length;
+        this._userZoomed = false;
+        this.switchActiveLayer();
+        this.updateViewModeButton();
+        this.fitView();
+      };
       document.getElementById('btnReset').onclick = () => {
         this._userZoomed = false;
+        this.viewModeIdx = 0;
+        this.telescopeIdx = 0;
+        this.telescopeAccum = 0;
+        this.fpSkyIdx = FP_SKY_IDX;
+        this.switchActiveLayer();
         this.fitView();
+        this.updateViewModeButton();
         this.rot = this.DEFAULT_ROT;
         this.drag = 0;
-        this.playing = true; this.speedIdx = 1;
+        this.playing = true; this.speedIdx = 0;
         document.getElementById('btnPlay').textContent = '⏸️ Pause';
-        document.getElementById('btnSpeed').textContent = '🚀 Speed: 1×';
+        document.getElementById('btnSpeed').textContent = '🚀 Speed: 0.5×';
         const defaults = seedDefaultSolarAngles();
         PLANETS.forEach(p => { this.angles[p.id] = defaults[p.id]; });
-        this.showDefaultInfo();
+        this.updateTelescopeLabel();
+        this.showModeInfo();
       };
     },
     bindDrag(){
       const wrap = document.getElementById('svgWrap');
-      let lx = 0, dragging = false;
-      const onDown = x => { dragging = true; lx = x; };
-      const onMove = x => { if (dragging) { this.drag += (x - lx) * 0.4; lx = x; } };
-      const onUp = () => { if (dragging) { this.rot += this.drag; this.drag = 0; dragging = false; } };
-      wrap.addEventListener('mousedown', e => { if (findPlanetHit(e.target)) return; onDown(e.clientX); });
-      window.addEventListener('mousemove', e => onMove(e.clientX));
-      window.addEventListener('mouseup', onUp);
-      wrap.addEventListener('touchstart', e => { if (findPlanetHit(e.target)) return; onDown(e.touches[0].clientX); }, {passive:true});
-      wrap.addEventListener('touchmove', e => { if (dragging) onMove(e.touches[0].clientX); }, {passive:true});
-      wrap.addEventListener('touchend', onUp);
+      let lx = 0, dragging = false, pinchDist = 0, pinchZoom = 1;
+
+      const touchDist = (t) => {
+        const dx = t[0].clientX - t[1].clientX;
+        const dy = t[0].clientY - t[1].clientY;
+        return Math.hypot(dx, dy);
+      };
+      const finishDrag = () => {
+        if (dragging) {
+          this.rot += this.drag;
+          this.drag = 0;
+          dragging = false;
+        }
+      };
+
+      wrap.addEventListener('mousedown', e => {
+        if (findPlanetHit(e.target)) return;
+        dragging = true;
+        lx = e.clientX;
+      });
+      window.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        this.drag += (e.clientX - lx) * 0.4;
+        lx = e.clientX;
+      });
+      window.addEventListener('mouseup', finishDrag);
+
+      wrap.addEventListener('touchstart', e => {
+        if (e.touches.length === 2) {
+          dragging = false;
+          this.drag = 0;
+          pinchDist = touchDist(e.touches);
+          pinchZoom = this.zoom;
+          e.preventDefault();
+          return;
+        }
+        if (findPlanetHit(e.target)) return;
+        dragging = true;
+        lx = e.touches[0].clientX;
+      }, { passive: false });
+
+      wrap.addEventListener('touchmove', e => {
+        if (e.touches.length === 2 && pinchDist) {
+          e.preventDefault();
+          this._userZoomed = true;
+          const d = touchDist(e.touches);
+          this.zoom = Math.min(3.4, Math.max(0.4, pinchZoom * (d / pinchDist)));
+          return;
+        }
+        if (!dragging || e.touches.length !== 1) return;
+        e.preventDefault();
+        this.drag += (e.touches[0].clientX - lx) * 0.4;
+        lx = e.touches[0].clientX;
+      }, { passive: false });
+
+      wrap.addEventListener('touchend', e => {
+        if (e.touches.length < 2) pinchDist = 0;
+        if (!e.touches.length) finishDrag();
+      });
+
+      wrap.addEventListener('wheel', e => {
+        e.preventDefault();
+        this._userZoomed = true;
+        this.zoom = Math.min(3.4, Math.max(0.4, this.zoom + (e.deltaY < 0 ? 0.1 : -0.1)));
+      }, { passive: false });
     },
     showFact(p){
       this.selected = p.id;
       this.info.innerHTML = '<h2>' + p.emoji + ' ' + p.name + '</h2><p>' + p.facts + '</p><p class="hint">Tap another planet to keep exploring!</p>';
     },
     showDefaultInfo(){
-      this.selected = null;
-      this.info.innerHTML = '<h2>🚀 Close-Up Ship View</h2><p>Orbits are squeezed closer so every planet is easy to see and tap — real space is much emptier! Planets nearer the window look a little bigger.</p><p class="hint">💡 Drag to spin the view, or use Rotate / Zoom controls.</p>';
+      this.showModeInfo();
     },
-    drawSun(g){
-      StylizedPlanet.draw(g, 'sun', 38);
+    drawSun(g, sunRadius, hostSvg){
+      StylizedPlanet.draw(g, 'sun', sunRadius || SUN_RADIUS_DEFAULT, hostSvg);
     },
-    drawPlanetBody(g, p, s){
-      StylizedPlanet.draw(g, p.id, s);
+    drawPlanetBody(g, p, s, hostSvg, soft){
+      StylizedPlanet.draw(g, p.id, s, hostSvg, soft);
     },
-    draw(){
+    drawOrbit(){
       while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
-      const cx = 300, cy = this.VIEW_CY || 300;
+      const mode = this.currentMode();
+      const layout = this.orbitLayout(mode);
+      const cx = 300;
+      const cy = mode.viewCy != null ? mode.viewCy : (this.VIEW_CY || 300);
       const rot = this.rot + this.drag;
-      const tilt = this.ORBIT_TILT || 0.72;
+      const tilt = layout.tilt;
+      const sunR = layout.sunRadius;
+      const sunX = layout.sunOffsetX;
+      const hostSvg = this.svg;
       this.viewG.setAttribute('transform', 'translate(' + cx + ',' + cy + ') rotate(' + rot + ') scale(' + this.zoom + ')');
 
-      PLANETS.forEach(p => {
+      this.visiblePlanets(mode).forEach(p => {
+        const orbitR = this.displayOrbitR(p, layout);
         this.viewG.appendChild(el('ellipse', {
-          cx:0, cy:0, rx:p.orbitR, ry:p.orbitR * Math.abs(tilt),
-          fill:'none', stroke:'rgba(255,255,255,0.22)', 'stroke-width':1.5
+          cx: sunX, cy: 0, rx: orbitR, ry: orbitR * Math.abs(tilt),
+          fill: 'none',
+          stroke: 'rgba(255,255,255,0.38)',
+          'stroke-width': '1.5'
         }));
       });
 
-      const sunG = el('g', {id:'sunHit', class:'planet-hit', style:'cursor:pointer'});
-      this.drawSun(sunG);
+      const drawList = this.buildPlanetDrawList(mode, null, tilt, layout).sort((a, b) => a.py - b.py);
+
+      const sunG = el('g', {
+        id:'sunHit',
+        class:'planet-hit',
+        'data-id':'sun',
+        transform: 'translate(' + sunX + ',0)',
+        style:'cursor:pointer'
+      });
       this.viewG.appendChild(sunG);
+      this.drawSun(sunG, sunR, hostSvg);
 
-      const drawList = PLANETS.map(p => {
-        const ang = this.angles[p.id];
-        const pos = this.orbitPoint(ang, p.orbitR, tilt);
-        const scale = this.windowScale(pos.py, p.orbitR, tilt);
-        const opacity = this.windowOpacity(pos.py, p.orbitR, tilt);
-        return { p, px: pos.px, py: pos.py, scale, opacity, ang };
-      }).sort((a, b) => a.py - b.py);
+      drawList.forEach(item => this.appendPlanetNode(this.viewG, item, mode, hostSvg, layout));
+    },
+    drawVertical() {
+      const g = this.verticalG;
+      const svg = document.getElementById('verticalSvg');
+      if (!g || !svg) return;
+      const L = VERT_LINE;
+      while (g.firstChild) g.removeChild(g.firstChild);
+      g.appendChild(el('rect', { x: '0', y: '0', width: '400', height: '580', fill: '#050510' }));
+      for (let i = 0; i < 40; i++) {
+        g.appendChild(el('circle', {
+          cx: String((i * 37.1 + 8) % 400),
+          cy: String((i * 53.3 + 12) % 580),
+          r: String(0.3 + (i % 3) * 0.2),
+          fill: 'rgba(255,255,255,' + (0.15 + (i % 5) * 0.1).toFixed(2) + ')'
+        }));
+      }
+      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top');
+      const sunWrap = el('g', { 'clip-path': topClip, class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
+      g.appendChild(sunWrap);
+      const sunInner = el('g', { transform: 'translate(' + L.cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
+      sunWrap.appendChild(sunInner);
+      this.drawSunBurning(sunInner, L.sunR, svg, null);
 
-      drawList.forEach(({ p, px, py, scale, opacity }) => {
+      const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
+      PLANETS.forEach((p, i) => {
+        const y = L.topY + step * (i + 1);
+        const r = L.sizes[p.id] || 8;
         const pg = el('g', {
-          class:'planet-hit',
-          transform:'translate(' + px + ',' + py + ') scale(' + scale.toFixed(3) + ') rotate(' + (this.spinAngles[p.id] || 0) + ')',
+          class: 'planet-hit',
           'data-id': p.id,
-          opacity: opacity.toFixed(3)
+          transform: 'translate(' + L.cx + ',' + y.toFixed(1) + ')',
+          style: 'cursor:pointer'
         });
-        this.drawPlanetBody(pg, p, p.size);
-        this.viewG.appendChild(pg);
+        g.appendChild(pg);
+        const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
+        pg.appendChild(spinG);
+        this.drawPlanetRealistic(spinG, p, r, svg);
+        pg.appendChild(el('text', {
+          x: '0',
+          y: String(r + 14),
+          fill: '#a78bfa',
+          'font-size': '11',
+          'text-anchor': 'middle',
+          'pointer-events': 'none'
+        })).textContent = p.name;
       });
     },
+    drawTelescope() {
+      const g = this.telescopeG;
+      const svg = document.getElementById('telescopeSvg');
+      if (!g || !svg) return;
+      while (g.firstChild) g.removeChild(g.firstChild);
+      g.appendChild(el('rect', { x: '0', y: '0', width: '400', height: '400', fill: '#030308' }));
+      for (let i = 0; i < 48; i++) {
+        g.appendChild(el('circle', {
+          cx: String((i * 53.7 + 12) % 400),
+          cy: String((i * 91.3 + 28) % 400),
+          r: String(0.35 + (i % 5) * 0.22),
+          fill: 'rgba(255,255,255,' + (0.2 + (i % 7) * 0.1).toFixed(2) + ')'
+        }));
+      }
+      if (!svg.querySelector('#telVignette')) {
+        let defs = svg.querySelector('defs');
+        const rg = el('radialGradient', { id: 'telVignette', cx: '50%', cy: '48%', r: '58%' });
+        rg.appendChild(el('stop', { offset: '50%', 'stop-color': 'rgba(0,0,0,0)' }));
+        rg.appendChild(el('stop', { offset: '100%', 'stop-color': 'rgba(0,0,0,0.75)' }));
+        defs.appendChild(rg);
+      }
+      const p = PLANETS[this.telescopeIdx];
+      const pg = el('g', {
+        class: 'planet-hit',
+        'data-id': p.id,
+        transform: 'translate(200,200)',
+        style: 'cursor:pointer'
+      });
+      g.appendChild(pg);
+      const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
+      pg.appendChild(spinG);
+      this.drawPlanetSoft(spinG, p, TELESCOPE_DRAW_R, svg);
+      g.appendChild(el('rect', {
+        x: '0', y: '0', width: '400', height: '400',
+        fill: 'url(#telVignette)', 'pointer-events': 'none', opacity: '0.45'
+      }));
+    },
+    drawMovie() {
+      const g = this.movieG;
+      const svg = document.getElementById('movieSvg');
+      if (!g || !svg) return;
+      while (g.firstChild) g.removeChild(g.firstChild);
+      g.appendChild(el('rect', { x: '0', y: '0', width: '800', height: '420', fill: '#04040e' }));
+      for (let i = 0; i < 65; i++) {
+        g.appendChild(el('circle', {
+          cx: String((i * 47.1 + 20) % 800),
+          cy: String((i * 29.3 + 10) % 420),
+          r: String(0.3 + (i % 4) * 0.25),
+          fill: 'rgba(255,255,255,' + (0.18 + (i % 6) * 0.1).toFixed(2) + ')'
+        }));
+      }
+      const sunR = 148;
+      const sunCX = -12;
+      const sunCY = 210;
+      const sunWrap = el('g', { 'clip-path': 'url(#movieSunLeftClip)' });
+      if (!svg.querySelector('#movieSunLeftClip')) {
+        let defs = svg.querySelector('defs');
+        const cp = el('clipPath', { id: 'movieSunLeftClip' });
+        cp.appendChild(el('rect', { x: '0', y: '0', width: '460', height: '420' }));
+        defs.appendChild(cp);
+      }
+      g.appendChild(sunWrap);
+      const sunG = el('g', {
+        transform: 'translate(' + sunCX + ',' + sunCY + ')',
+        class: 'planet-hit',
+        id: 'sunHit',
+        'data-id': 'sun',
+        style: 'cursor:pointer'
+      });
+      sunWrap.appendChild(sunG);
+      this.drawSunBurning(sunG, sunR, svg, null);
+
+      const lineY = 210;
+      const startX = 195;
+      const endX = 778;
+      const gap = (endX - startX) / (PLANETS.length - 1);
+      PLANETS.forEach((p, i) => {
+        const x = startX + gap * i;
+        const r = MOVIE_SIZES[p.id] || 24;
+        const pg = el('g', {
+          class: 'planet-hit',
+          'data-id': p.id,
+          transform: 'translate(' + x.toFixed(1) + ',' + lineY + ')',
+          style: 'cursor:pointer'
+        });
+        g.appendChild(pg);
+        const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
+        pg.appendChild(spinG);
+        this.drawPlanetRealistic(spinG, p, r, svg);
+      });
+    },
+    drawAstronautBack(g, x, y) {
+      const ag = el('g', { transform: 'translate(' + x + ',' + y + ')', 'pointer-events': 'none' });
+      ag.appendChild(el('ellipse', { cx: '0', cy: '12', rx: '42', ry: '11', fill: 'rgba(0,0,0,0.5)' }));
+      ag.appendChild(el('path', {
+        d: 'M-16,14 L-18,48 M16,14 L18,48',
+        stroke: '#bcc2d0', 'stroke-width': '11', 'stroke-linecap': 'round', fill: 'none'
+      }));
+      ag.appendChild(el('path', {
+        d: 'M-24,14 Q0,-2 24,14 L20,46 Q0,54 -20,46 Z',
+        fill: '#d8dce8', stroke: '#8a94a8', 'stroke-width': '1.5'
+      }));
+      ag.appendChild(el('rect', { x: '-14', y: '8', width: '28', height: '32', rx: '6', fill: '#6a7488', stroke: '#4a5468', 'stroke-width': '1.2' }));
+      ag.appendChild(el('rect', { x: '-9', y: '14', width: '18', height: '10', rx: '2', fill: '#ffc107', opacity: '0.9' }));
+      ag.appendChild(el('circle', { cx: '0', cy: '20', r: '3', fill: '#4caf50', opacity: '0.85' }));
+      ag.appendChild(el('path', {
+        d: 'M-24,14 Q-42,-12 -36,-48',
+        stroke: '#d8dce8', 'stroke-width': '10', 'stroke-linecap': 'round', fill: 'none'
+      }));
+      ag.appendChild(el('path', {
+        d: 'M24,14 Q42,-12 36,-48',
+        stroke: '#d8dce8', 'stroke-width': '10', 'stroke-linecap': 'round', fill: 'none'
+      }));
+      ag.appendChild(el('ellipse', { cx: '0', cy: '-18', rx: '22', ry: '20', fill: '#eef2fa', stroke: '#7888a0', 'stroke-width': '2.2' }));
+      ag.appendChild(el('ellipse', { cx: '0', cy: '-20', rx: '15', ry: '11', fill: 'rgba(50,80,130,0.28)' }));
+      ag.appendChild(el('ellipse', { cx: '0', cy: '2', rx: '11', ry: '5', fill: '#7888a0' }));
+      g.appendChild(ag);
+    },
+    drawSecondPerson() {
+      const g = this.fpG;
+      const svg = document.getElementById('fpSvg');
+      if (!g || !svg) return;
+      this.ensureFpDefs(svg);
+      StylizedPlanet.ensureSoftBlur(svg);
+      while (g.firstChild) g.removeChild(g.firstChild);
+
+      const surface = PLANETS[FP_SURFACE_IDX] || PLANETS[2];
+      const sky = PLANETS[this.fpSkyIdx] || PLANETS[FP_SKY_IDX];
+      const ground = {
+        earth: { skyTop: '#060818', skyBot: '#1a3050', haze: 'rgba(80,140,200,0.28)', far: '#1a3a5c', mid: '#2d5a3d', near: '#3d6848', rock: '#4a5840', rockDark: '#2a3828', dust: '#5a6848' },
+        mars: { skyTop: '#120608', skyBot: '#3a1810', haze: 'rgba(200,100,60,0.25)', far: '#5c2a1a', mid: '#7a3820', near: '#8b4528', rock: '#6a3020', rockDark: '#4a2010', dust: '#9a5030' },
+        moon: { skyTop: '#040408', skyBot: '#181820', haze: 'rgba(140,140,160,0.18)', far: '#3a3a42', mid: '#4a4a55', near: '#5a5a65', rock: '#6a6a75', rockDark: '#4a4a55', dust: '#7a7a85' }
+      };
+      const pal = ground[surface.id] || ground.moon;
+
+      g.appendChild(el('rect', { x: '0', y: '0', width: '600', height: '520', fill: 'url(#fpSkyGrad)' }));
+      g.appendChild(el('rect', { x: '0', y: '0', width: '600', height: '320', fill: pal.skyTop, opacity: '0.55', 'pointer-events': 'none' }));
+      for (let i = 0; i < 80; i++) {
+        const sx = (i * 41.7 + 5) % 600;
+        const sy = (i * 23.1 + 8) % 280;
+        const sr = 0.25 + (i % 5) * 0.18;
+        g.appendChild(el('circle', {
+          cx: String(sx), cy: String(sy), r: String(sr),
+          fill: 'rgba(255,255,255,' + (0.15 + (i % 6) * 0.1).toFixed(2) + ')',
+          'pointer-events': 'none'
+        }));
+      }
+
+      const skyPlanetR = 148;
+      const bob = Math.sin(this.angles[sky.id] * 0.4) * 5;
+      const skyG = el('g', {
+        class: 'planet-hit',
+        'data-id': sky.id,
+        transform: 'translate(300,' + (138 + bob).toFixed(1) + ')',
+        style: 'cursor:pointer'
+      });
+      g.appendChild(skyG);
+      const skySpin = el('g', { transform: 'rotate(' + (this.spinAngles[sky.id] || 0).toFixed(2) + ')' });
+      skyG.appendChild(skySpin);
+      this.drawPlanetSoft(skySpin, sky, skyPlanetR, svg);
+
+      g.appendChild(el('ellipse', {
+        cx: '300', cy: '358', rx: '340', ry: '42',
+        fill: pal.haze, 'pointer-events': 'none'
+      }));
+      g.appendChild(el('rect', {
+        x: '0', y: '300', width: '600', height: '80',
+        fill: 'url(#fpHorizonHaze)', 'pointer-events': 'none'
+      }));
+
+      g.appendChild(el('path', {
+        d: 'M0,318 Q80,288 160,302 T320,312 T480,322 T600,332 L600,520 L0,520 Z',
+        fill: pal.far, 'pointer-events': 'none'
+      }));
+      g.appendChild(el('path', {
+        d: 'M0,368 Q120,338 240,352 T480,372 T600,382 L600,520 L0,520 Z',
+        fill: pal.mid, 'pointer-events': 'none'
+      }));
+      g.appendChild(el('path', {
+        d: 'M0,418 Q150,398 300,408 T600,428 L600,520 L0,520 Z',
+        fill: pal.near, 'pointer-events': 'none'
+      }));
+      g.appendChild(el('path', {
+        d: 'M0,448 L600,448 L600,520 L0,520 Z',
+        fill: pal.dust, opacity: '0.85', 'pointer-events': 'none'
+      }));
+      for (let i = 0; i < 18; i++) {
+        const rx = 18 + i * 32 + (i % 4) * 6;
+        const ry = 412 + (i % 5) * 8;
+        const rw = 16 + (i % 6) * 6;
+        const rh = 6 + (i % 3) * 3;
+        g.appendChild(el('ellipse', {
+          cx: String(rx + 4), cy: String(ry + rh * 0.6),
+          rx: String(rw * 0.55), ry: String(rh * 0.45),
+          fill: 'rgba(0,0,0,0.35)', 'pointer-events': 'none'
+        }));
+        g.appendChild(el('ellipse', {
+          cx: String(rx), cy: String(ry),
+          rx: String(rw), ry: String(rh),
+          fill: i % 3 === 0 ? pal.rockDark : pal.rock, opacity: '0.95', 'pointer-events': 'none'
+        }));
+      }
+      for (let i = 0; i < 28; i++) {
+        g.appendChild(el('circle', {
+          cx: String(12 + (i * 21.3) % 576),
+          cy: String(452 + (i % 4) * 5),
+          r: String(1.2 + (i % 4) * 0.8),
+          fill: pal.rockDark, opacity: '0.5', 'pointer-events': 'none'
+        }));
+      }
+
+      this.drawAstronautBack(g, 300, 508);
+
+      g.appendChild(el('rect', {
+        x: '0', y: '0', width: '600', height: '520',
+        fill: 'url(#fpVignette)', 'pointer-events': 'none'
+      }));
+    },
     loop(){
+      const mode = this.currentMode();
+      const layer = this.activeLayer();
       if (this.playing){
         const mult = SPEEDS[this.speedIdx];
-        PLANETS.forEach(p => { this.angles[p.id] += p.baseSpeed * mult; this.spinAngles[p.id] = (this.spinAngles[p.id] || 0) + 2.5 * mult; });
-        this.sunSpin = (this.sunSpin || 0) + 1.2 * mult;
+        PLANETS.forEach(p => {
+          this.angles[p.id] += p.baseSpeed * mult;
+          this.spinAngles[p.id] = (this.spinAngles[p.id] || 0) + 0.5 * mult;
+        });
+        this.sunSpin = (this.sunSpin || 0) + 0.35 * mult;
       }
-      this.draw();
+      if (layer === 'orbit') this.drawOrbit();
+      else if (layer === 'vertical') this.drawVertical();
+      else if (layer === 'telescope') this.drawTelescope();
+      else if (layer === 'movie') this.drawMovie();
+      else if (layer === 'secondperson') this.drawSecondPerson();
       requestAnimationFrame(() => this.loop());
     }
   };
