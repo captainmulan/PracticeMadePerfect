@@ -1926,78 +1926,25 @@ const StylizedPlanet = {
         StylizedPlanet.sphere(g, 'sun', r, clip, false);
       }
     },
-    drawVerticalSky(g, M, svg, options) {
-      options = options || {};
-      const fg = !!options.foreground;
-      if (svg && !svg.querySelector('#vertSkyGrad')) {
-        let defs = svg.querySelector('defs');
-        if (!defs) {
-          defs = el('defs', {});
-          svg.insertBefore(defs, svg.firstChild);
-        }
-        const rg = el('radialGradient', { id: 'vertSkyGrad', cx: '50%', cy: '16%', r: '82%' });
-        rg.appendChild(el('stop', { offset: '0%', 'stop-color': '#14162e' }));
-        rg.appendChild(el('stop', { offset: '52%', 'stop-color': '#070818' }));
-        rg.appendChild(el('stop', { offset: '100%', 'stop-color': '#020208' }));
-        defs.appendChild(rg);
-      }
-      if (!fg) {
-        if (svg) StylizedPlanet.ensureSoftBlur(svg);
-        g.appendChild(el('rect', {
-          x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH),
-          fill: 'url(#vertSkyGrad)', 'pointer-events': 'none'
+    drawSubtleSky(g, M) {
+      const x0 = M.x0 != null ? M.x0 : 0;
+      const y0 = M.y0 != null ? M.y0 : 0;
+      g.appendChild(el('rect', {
+        x: String(x0), y: String(y0),
+        width: String(M.vbW), height: String(M.vbH),
+        fill: '#04040e', 'pointer-events': 'none'
+      }));
+      const areaFactor = Math.max(1, (M.vbW * M.vbH) / (800 * 420));
+      const count = Math.round(110 * Math.min(1.85, Math.sqrt(areaFactor)));
+      for (let i = 0; i < count; i++) {
+        g.appendChild(el('circle', {
+          cx: String(x0 + ((i * 47.1 + 20) % Math.max(1, M.vbW - 20)) + 10),
+          cy: String(y0 + ((i * 29.3 + 10) % Math.max(1, M.vbH - 10))),
+          r: String(0.3 + (i % 4) * 0.25),
+          fill: 'rgba(255,255,255,' + (0.18 + (i % 6) * 0.1).toFixed(2) + ')',
+          'pointer-events': 'none'
         }));
       }
-      const areaFactor = Math.max(1, (M.vbW * M.vbH) / (580 * 620));
-      const density = Math.min(2.15, Math.sqrt(areaFactor));
-      const starScale = Math.max(1.35, Math.min(3.4, Math.sqrt(areaFactor) * 1.75));
-      const avoidCx = options.avoidCx;
-      const avoidHalfW = options.avoidHalfW || 0;
-      const layers = fg ? [
-        { n: Math.round(110 * density), r0: 0.55, r1: 1.35, a0: 0.58, a1: 0.96, tint: 0.2, sparkle: true },
-        { n: Math.round(48 * density), r0: 0.85, r1: 1.75, a0: 0.68, a1: 1, tint: 0.35, sparkle: true },
-      ] : [
-        { n: Math.round(360 * density), r0: 0.22, r1: 0.58, a0: 0.38, a1: 0.78, tint: 0.08 },
-        { n: Math.round(260 * density), r0: 0.34, r1: 0.92, a0: 0.48, a1: 0.88, tint: 0.18 },
-        { n: Math.round(95 * density), r0: 0.62, r1: 1.35, a0: 0.58, a1: 0.96, tint: 0.32 },
-        { n: Math.round(24 * density), r0: 1.05, r1: 2.15, a0: 0.72, a1: 1, tint: 0.45, sparkle: true },
-      ];
-      layers.forEach(function(layer, li) {
-        for (let i = 0; i < layer.n; i++) {
-          const s = (i + 1) * 977 + li * 7919 + i * 13;
-          let px = M.x0 + 4 + ((s * 0.6180339887 + li * 47.11) % Math.max(1, M.vbW - 8));
-          const py = 4 + ((s * 1.3247179572 + li * 113 + i * 29) % Math.max(1, M.vbH - 8));
-          if (avoidHalfW > 0 && Math.abs(px - avoidCx) < avoidHalfW) continue;
-          const t = (s % 100) / 100;
-          const rad = (layer.r0 + (layer.r1 - layer.r0) * t) * starScale;
-          const alpha = Math.min(1, layer.a0 + (layer.a1 - layer.a0) * ((s % 47) / 47));
-          const cool = layer.tint * ((s % 3) / 2);
-          const red = Math.round(242 + cool * 13);
-          const green = Math.round(246 + cool * 9);
-          const blue = 255;
-          const attrs = {
-            cx: String(px),
-            cy: String(py),
-            r: String(rad),
-            fill: 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha.toFixed(2) + ')',
-            'pointer-events': 'none',
-          };
-          g.appendChild(el('circle', attrs));
-          if (layer.sparkle && i % 2 === 0) {
-            const sp = rad * 2.2;
-            const sg = el('g', { opacity: String(Math.min(1, alpha + 0.05)), 'pointer-events': 'none' });
-            sg.appendChild(el('line', {
-              x1: String(px - sp), y1: String(py), x2: String(px + sp), y2: String(py),
-              stroke: 'rgba(255,255,255,0.88)', 'stroke-width': String(0.45 + rad * 0.08), 'stroke-linecap': 'round'
-            }));
-            sg.appendChild(el('line', {
-              x1: String(px), y1: String(py - sp), x2: String(px), y2: String(py + sp),
-              stroke: 'rgba(255,255,255,0.88)', 'stroke-width': String(0.45 + rad * 0.08), 'stroke-linecap': 'round'
-            }));
-            g.appendChild(sg);
-          }
-        }
-      });
     },
     drawSunBurning(g, r, svg, clip) {
       if (svg) StylizedPlanet.ensureSunGlow(svg);
@@ -2270,7 +2217,7 @@ const StylizedPlanet = {
         this.svg.insertBefore(skyG, this.viewG);
       }
       while (skyG.firstChild) skyG.removeChild(skyG.firstChild);
-      this.drawVerticalSky(skyG, M, this.svg);
+      this.drawSubtleSky(skyG, M);
 
       while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
       const mode = this.currentMode();
@@ -2328,7 +2275,7 @@ const StylizedPlanet = {
       const scale = M.boost * (L.sizeScale || 1);
       const sunR = L.sunR * scale;
       while (g.firstChild) g.removeChild(g.firstChild);
-      this.drawVerticalSky(g, M, svg);
+      this.drawSubtleSky(g, M);
 
       const sunY = -sunR * 0.58;
       const sunG = el('g', { class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
@@ -2341,7 +2288,6 @@ const StylizedPlanet = {
         fill: 'rgba(0,0,0,0.001)',
         'pointer-events': 'all'
       }));
-      this.drawVerticalSky(g, M, svg, { foreground: true, avoidCx: cx, avoidHalfW: 105 });
 
       const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
       PLANETS.forEach((p, i) => {
@@ -2420,15 +2366,7 @@ const StylizedPlanet = {
       const M = this.syncStageViewBox('movieSvg', ML.contentW, ML.contentH, 'movie');
       if (!M) return;
       while (g.firstChild) g.removeChild(g.firstChild);
-      g.appendChild(el('rect', { x: String(M.x0), y: String(M.y0), width: String(M.vbW), height: String(M.vbH), fill: '#04040e' }));
-      for (let i = 0; i < 110; i++) {
-        g.appendChild(el('circle', {
-          cx: String(M.x0 + ((i * 47.1 + 20) % Math.max(1, M.vbW - 20)) + 10),
-          cy: String(M.y0 + ((i * 29.3 + 10) % Math.max(1, M.vbH - 10))),
-          r: String(0.3 + (i % 4) * 0.25),
-          fill: 'rgba(255,255,255,' + (0.18 + (i % 6) * 0.1).toFixed(2) + ')'
-        }));
-      }
+      this.drawSubtleSky(g, M);
       const contentG = el('g', {
         transform: 'translate(' + M.cx.toFixed(2) + ',' + M.cy.toFixed(2) + ') scale(' + M.boost.toFixed(4) + ') translate(' + (-ML.centerX) + ',' + (-ML.centerY) + ')'
       });
