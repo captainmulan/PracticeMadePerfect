@@ -1303,6 +1303,18 @@ function nextLevel() {
   spawnHazards();
 }
 
+function drawEmojiSprite(emoji, x, y, sizePx) {
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.font = sizePx + 'px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(emoji, x, y);
+  ctx.restore();
+}
+
 function gameLoop() {
   if (!isGameRunning) return;
   
@@ -1340,20 +1352,16 @@ function gameLoop() {
   
   const gx = offsetX + goal.x * cellSize + cellSize / 2;
   const gy = offsetY + goal.y * cellSize + cellSize / 2;
-  ctx.font = (cellSize * 0.92) + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🏁', gx, gy);
-  
+  drawEmojiSprite('🏁', gx, gy, cellSize * 0.92);
+
   const px = offsetX + player.x * cellSize + cellSize / 2;
   const py = offsetY + player.y * cellSize + cellSize / 2;
-  ctx.font = (cellSize * 0.95) + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
-  ctx.fillText('👩‍🚀', px, py);
-  
+  drawEmojiSprite('👩‍🚀', px, py, cellSize * 0.95);
+
   hazards.forEach(hazard => {
     const hx = offsetX + hazard.x * cellSize + cellSize / 2;
     const hy = offsetY + hazard.y * cellSize + cellSize / 2;
-    ctx.font = (cellSize * 0.82) + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
-    ctx.fillText('👽', hx, hy);
+    drawEmojiSprite('👽', hx, hy, cellSize * 0.82);
   });
   
   animationFrame = requestAnimationFrame(gameLoop);
