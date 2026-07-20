@@ -106,10 +106,8 @@ body[data-bookshelf-theme="space"] .home-categories::before {
   z-index: 0;
 }
 
-/* Flying rocket/planet decor — random paths via HomeSpaceDecor */
-body[data-bookshelf-theme="space"] .home-categories .home-space-decor,
-body[data-hero-theme="space"] .home-hero .home-space-decor,
-body[data-bookshelf-theme="space"] .home-hero .home-space-decor {
+/* Flying rocket/planet decor — bookshelf only */
+body[data-bookshelf-theme="space"] .home-categories .home-space-decor {
   position: absolute;
   top: 0;
   left: 0;
@@ -135,9 +133,7 @@ body[data-bookshelf-theme="space"] .home-hero .home-space-decor {
   will-change: left, top, transform;
 }
 
-body[data-bookshelf-theme="space"] .home-categories .home-space-decor .space-float,
-body[data-hero-theme="space"] .home-hero .home-space-decor .space-float,
-body[data-bookshelf-theme="space"] .home-hero .home-space-decor .space-float {
+body[data-bookshelf-theme="space"] .home-categories .home-space-decor .space-float {
   display: block;
 }
 
@@ -540,18 +536,6 @@ body[data-hero-theme="space"] .home-hero > * {
   z-index: 2;
 }
 
-/* Rocket and planet in hero section */
-body[data-hero-theme="space"] .home-hero .home-space-decor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
 /* Dinosaur hero theme */
 body[data-hero-theme="dinosaur"] .home-hero {
   background: linear-gradient(180deg, #2d2416 0%, #4a3c2e 50%, #3d3228 100%) !important;
@@ -637,18 +621,6 @@ body[data-bookshelf-theme="space"] .home-hero::after {
 body[data-bookshelf-theme="space"] .home-hero > * {
   position: relative;
   z-index: 2;
-}
-
-/* Rocket and planet in hero section for bookshelf theme fallback */
-body[data-bookshelf-theme="space"] .home-hero .home-space-decor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
 }
 
 /* Dinosaur Theme */

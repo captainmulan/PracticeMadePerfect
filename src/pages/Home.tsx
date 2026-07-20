@@ -64,7 +64,6 @@ export default function Home() {
             : (style?.hero?.backgroundColor ?? "#ffffff"),
         }}
       >
-        <HomeSpaceDecor region="hero" />
         <button
           type="button"
           className="home-hero-toggle"
@@ -116,7 +115,7 @@ export default function Home() {
           borderColor: style?.bookshelf?.borderColor ?? "#e2e8f0",
         }}
       >
-        <HomeSpaceDecor region="shelf" />
+        <HomeSpaceDecor />
         <div className="container">
           <nav className="home-tabs">
             {HOME_SHELF_TABS.map((tab) => (

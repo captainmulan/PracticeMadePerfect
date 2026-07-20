@@ -82,11 +82,11 @@ function buildFloat(
   };
 }
 
-function buildFloats(region: "hero" | "shelf", sessionSeed: number): FloatConfig[] {
-  const rng = mulberry32(hashSeed(`home-space-${region}`) ^ sessionSeed);
+function buildFloats(sessionSeed: number): FloatConfig[] {
+  const rng = mulberry32(hashSeed("home-space-shelf") ^ sessionSeed);
   return [
-    buildFloat(rng, "rocket", "🚀", region === "hero" ? "1.85rem" : "2rem"),
-    buildFloat(rng, "planet", "🪐", region === "hero" ? "2.1rem" : "2.45rem"),
+    buildFloat(rng, "rocket", "🚀", "2rem"),
+    buildFloat(rng, "planet", "🪐", "2.45rem"),
   ];
 }
 
@@ -107,21 +107,17 @@ function floatStyle(config: FloatConfig): CSSProperties {
   };
 }
 
-type HomeSpaceDecorProps = {
-  region: "hero" | "shelf";
-};
-
-export default function HomeSpaceDecor({ region }: HomeSpaceDecorProps) {
+export default function HomeSpaceDecor() {
   const floats = useMemo(() => {
     const sessionSeed = Math.floor(Math.random() * 0xffffffff);
-    return buildFloats(region, sessionSeed);
-  }, [region]);
+    return buildFloats(sessionSeed);
+  }, []);
 
   return (
     <div className="rocket-container home-space-decor" aria-hidden="true">
       {floats.map((item) => (
         <span
-          key={`${region}-${item.kind}`}
+          key={item.kind}
           className={`space-float space-float-${item.kind}`}
           style={floatStyle(item)}
         >
