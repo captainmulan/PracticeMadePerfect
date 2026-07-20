@@ -1127,10 +1127,11 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     contentW: 580,
     vbH: 620,
     cx: 290,
-    sunR: 118,
-    bottomPad: 22,
-    sunGap: 14,
-    sizes: { mercury:24, venus:28, earth:32, mars:28, jupiter:52, saturn:48, uranus:38, neptune:36 },
+    sunY: -46,
+    sunR: 148,
+    topClipH: 152,
+    topY: 118,
+    bottomY: 598,
   };
   const TELESCOPE_DRAW_R = 108;
   const SUN_FACTS = [
@@ -1536,15 +1537,14 @@ const StylizedPlanet = {
       if (!stage || !svg) return;
       const w = Math.max(1, stage.clientWidth);
       const h = Math.max(1, stage.clientHeight);
-      const vbW = VERT_LINE.contentW;
-      const vbH = vbW * (h / w);
+      const vbW = VERT_LINE.contentW || 580;
+      const vbH = VERT_LINE.vbH || 620;
       svg.setAttribute('viewBox', '0 0 ' + vbW + ' ' + vbH);
       svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       this._vertVbW = vbW;
       this._vertVbH = vbH;
       this._vertX0 = 0;
-      this._vertY0 = 0;
-      this._vertSizeScale = Math.min(2.35, Math.max(0.35, vbH / VERT_LINE.vbH));
+      this._vertSizeBoost = Math.min(1.35, Math.max(1, Math.sqrt((w * h) / (360 * 580))));
     },
     verticalMetrics() {
       const vbW = this._vertVbW || VERT_LINE.contentW || 580;
@@ -1553,56 +1553,9 @@ const StylizedPlanet = {
         vbW: vbW,
         vbH: vbH,
         x0: 0,
-        y0: 0,
-        cx: vbW / 2,
-        sizeScale: this._vertSizeScale || 1,
+        cx: VERT_LINE.cx || (vbW / 2),
+        boost: this._vertSizeBoost || 1,
       };
-    },
-    buildVerticalLayoutAtScale(L, vbH, s) {
-      const sizes = {};
-      PLANETS.forEach(function(p) {
-        sizes[p.id] = (L.sizes[p.id] || 8) * s;
-      });
-      const sunR = L.sunR * s;
-      const bottomPad = L.bottomPad * s;
-      const sunZone = Math.min(vbH * 0.24, sunR * 1.22);
-      const sunY = Math.max(sunR * 0.08, sunZone - sunR * 0.34);
-      const topClipH = sunY + sunR * 0.52;
-      const mercuryY = topClipH + sizes.mercury * 0.32 + L.sunGap * s;
-      const bottomY = vbH - bottomPad - sizes.neptune;
-      if (mercuryY >= bottomY) return null;
-      let minStep = 0;
-      for (let i = 0; i < PLANETS.length - 1; i++) {
-        const ri = sizes[PLANETS[i].id];
-        const rj = sizes[PLANETS[i + 1].id];
-        minStep = Math.max(minStep, (ri + rj) * 0.92 + 5 * s);
-      }
-      const stackSpan = bottomY - mercuryY;
-      const evenStep = stackSpan / (PLANETS.length - 1);
-      const step = Math.max(evenStep, minStep);
-      const neptuneY = mercuryY + step * (PLANETS.length - 1);
-      if (neptuneY > bottomY + 0.5) return null;
-      return {
-        scale: s,
-        topClipH: topClipH,
-        sunR: sunR,
-        sunY: sunY,
-        rayBottomY: mercuryY - sizes.mercury * 0.72 - 6 * s,
-        sizes: sizes,
-        mercuryY: mercuryY,
-        step: step,
-        bottomY: bottomY,
-        planetY: function(i) { return mercuryY + step * i; },
-      };
-    },
-    verticalPlanetLayout(L, vbH) {
-      let s = Math.min(2.35, vbH / L.vbH);
-      for (let i = 0; i < 18; i++) {
-        const layout = this.buildVerticalLayoutAtScale(L, vbH, s);
-        if (layout) return layout;
-        s *= 0.9;
-      }
-      return this.buildVerticalLayoutAtScale(L, vbH, 0.35) || this.buildVerticalLayoutAtScale(L, vbH, 0.3);
     },
     isLandscape() {
       return window.matchMedia('(orientation: landscape) and (max-height: 520px)').matches;
@@ -1896,75 +1849,24 @@ const StylizedPlanet = {
     drawPlanetSoft(g, p, r, svg) {
       this.drawPlanetRealistic(g, p, r, svg);
     },
-    drawVerticalSunBeams(g, cx, sunY, sunR, beamBottomY, vbW) {
-      const beamG = el('g', { opacity: '0.55', 'pointer-events': 'none' });
-      const startY = sunY + sunR * 0.55;
-      const endY = Math.max(startY + 12, beamBottomY);
-      const span = endY - startY;
-      if (span <= 0) return;
-      for (let i = 0; i < 9; i++) {
-        const t = (i - 4) / 4;
-        const x1 = cx + t * sunR * 0.35;
-        const x2 = cx + t * sunR * 1.05;
-        beamG.appendChild(el('line', {
-          x1: String(x1), y1: String(startY),
-          x2: String(x2), y2: String(endY),
-          stroke: 'rgba(255,190,70,0.22)',
-          'stroke-width': String(10 + Math.abs(t) * 6),
-          'stroke-linecap': 'round',
-          filter: 'url(#softBlur)',
-        }));
-      }
-      beamG.appendChild(el('ellipse', {
-        cx: String(cx), cy: String(startY + span * 0.35),
-        rx: String(vbW * 0.34), ry: String(span * 0.55),
-        fill: 'rgba(255,150,40,0.07)', filter: 'url(#softBlur)', 'pointer-events': 'none'
-      }));
-      g.appendChild(beamG);
-    },
-    drawVerticalSunRays(g, r) {
-      const spin = this.sunSpin || 0;
-      const rayG = el('g', { opacity: '0.95', 'pointer-events': 'none' });
-      const count = 28;
-      for (let i = 0; i < count; i++) {
-        const t = i / (count - 1);
-        const ang = -Math.PI + Math.PI * t * 0.94 - 0.03 + spin * 0.01;
-        if (Math.sin(ang) > 0.02) continue;
-        const inner = r * 0.82;
-        const outer = r * (1.18 + (i % 5) * 0.05);
-        rayG.appendChild(el('line', {
-          x1: String(Math.cos(ang) * inner),
-          y1: String(Math.sin(ang) * inner),
-          x2: String(Math.cos(ang) * outer),
-          y2: String(Math.sin(ang) * outer),
-          stroke: i % 2 ? 'rgba(255,230,120,0.72)' : 'rgba(255,155,45,0.55)',
-          'stroke-width': String(2.4 + (i % 4) * 0.5),
-          'stroke-linecap': 'round',
-        }));
-      }
-      g.appendChild(rayG);
-    },
-    drawVerticalSun(g, r, svg, glowClip, diskClip) {
+    drawVerticalSun(g, r, svg) {
       if (svg) StylizedPlanet.ensureSunGlow(svg);
       if (svg) StylizedPlanet.ensureSoftBlur(svg);
       if (svg) StylizedPlanet.ensureShading(svg);
-      const glowWrap = el('g', { 'clip-path': glowClip || '', 'pointer-events': 'none' });
+      const glowWrap = el('g', { 'pointer-events': 'none' });
       g.appendChild(glowWrap);
       glowWrap.appendChild(el('circle', {
-        r: String(r * 1.65), fill: 'rgba(255,110,0,0.22)', filter: 'url(#softBlur)', 'pointer-events': 'none'
+        r: String(r * 1.65), fill: 'rgba(255,110,0,0.2)', filter: 'url(#softBlur)', 'pointer-events': 'none'
       }));
       glowWrap.appendChild(el('circle', {
         r: String(r * 1.35), fill: 'url(#sunCorona)', 'pointer-events': 'none'
       }));
-      this.drawVerticalSunRays(glowWrap, r);
-      const diskWrap = diskClip ? el('g', { 'clip-path': diskClip }) : el('g', {});
-      g.appendChild(diskWrap);
-      diskWrap.appendChild(el('circle', {
-        r: String(r * 1.08), fill: 'rgba(255,193,7,0.24)', 'pointer-events': 'none'
+      glowWrap.appendChild(el('circle', {
+        r: String(r * 1.08), fill: 'rgba(255,193,7,0.22)', 'pointer-events': 'none'
       }));
       const clip = svg ? StylizedPlanet.ensureClip(svg, 'globe-r' + Math.round(r * 10), r) : '';
-      if (!StylizedPlanet.texturedDisc(diskWrap, 'sun', r, clip, false)) {
-        StylizedPlanet.sphere(diskWrap, 'sun', r, clip, false);
+      if (!StylizedPlanet.texturedDisc(g, 'sun', r, clip, false)) {
+        StylizedPlanet.sphere(g, 'sun', r, clip, false);
       }
     },
     drawSunBurning(g, r, svg, clip) {
@@ -2274,42 +2176,40 @@ const StylizedPlanet = {
       this.syncVerticalViewBox();
       const L = VERT_LINE;
       const M = this.verticalMetrics();
-      const layout = this.verticalPlanetLayout(L, M.vbH);
-      if (!layout) return;
       const cx = M.cx;
+      const sunR = L.sunR * M.boost;
       while (g.firstChild) g.removeChild(g.firstChild);
       g.appendChild(el('rect', { x: '0', y: '0', width: String(M.vbW), height: String(M.vbH), fill: '#050510' }));
-      for (let i = 0; i < 200; i++) {
+      for (let i = 0; i < 160; i++) {
         g.appendChild(el('circle', {
-          cx: String((i * 41.7 + 11) % Math.max(1, M.vbW - 8)),
+          cx: String(((i * 41.7 + 11) % Math.max(1, M.vbW - 8)) + 4),
           cy: String((i * 47.9 + 9) % Math.max(1, M.vbH - 8)),
-          r: String((0.3 + (i % 4) * 0.22) * Math.min(1.5, layout.scale * 0.7)),
-          fill: 'rgba(255,255,255,' + (0.14 + (i % 7) * 0.09).toFixed(2) + ')',
+          r: String(0.28 + (i % 4) * 0.2),
+          fill: 'rgba(255,255,255,' + (0.12 + (i % 7) * 0.08).toFixed(2) + ')',
           'pointer-events': 'none'
         }));
       }
-      const rayClip = this.ensureRectClip(svg, 'vertSunRayClip', M.vbW, layout.rayBottomY, 0);
-      this.drawVerticalSunBeams(g, cx, layout.sunY, layout.sunR, layout.rayBottomY, M.vbW);
-      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top', M.vbW, 0, layout.topClipH);
-      const sunHit = el('g', { class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
-      g.appendChild(sunHit);
-      const sunInner = el('g', { transform: 'translate(' + cx.toFixed(1) + ',' + layout.sunY.toFixed(1) + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
-      sunHit.appendChild(sunInner);
-      this.drawVerticalSun(sunInner, layout.sunR, svg, rayClip, topClip);
+      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top', M.vbW, 0);
+      const sunWrap = el('g', { 'clip-path': topClip, class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
+      g.appendChild(sunWrap);
+      const sunInner = el('g', { transform: 'translate(' + cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
+      sunWrap.appendChild(sunInner);
+      this.drawVerticalSun(sunInner, sunR, svg);
       sunInner.appendChild(el('circle', {
-        r: String(layout.sunR * 0.95),
+        r: String(sunR * 0.95),
         fill: 'rgba(0,0,0,0.001)',
         'pointer-events': 'all'
       }));
 
+      const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
       PLANETS.forEach((p, i) => {
-        const y = layout.planetY(i);
-        const r = layout.sizes[p.id] || 8;
-        const hitR = p.id === 'saturn' ? r * 1.35 : r + 10;
+        const y = L.topY + step * (i + 1);
+        const r = (MOVIE_SIZES[p.id] || 24) * M.boost;
+        const hitR = p.id === 'saturn' ? r * 1.35 : r + 8;
         const pg = el('g', {
           class: 'planet-hit',
           'data-id': p.id,
-          transform: 'translate(' + cx.toFixed(1) + ',' + y.toFixed(1) + ')',
+          transform: 'translate(' + cx + ',' + y.toFixed(1) + ')',
           style: 'cursor:pointer'
         });
         g.appendChild(pg);
