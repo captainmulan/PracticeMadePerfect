@@ -131,9 +131,12 @@ OceanAdventure/
 ```bash
 node book_html/OceanAdventure/_apply-ocean-fixes.cjs
 node book_html/OceanAdventure/_fix-ocean-game-visibility.cjs
+node book_html/OceanAdventure/_patch-ocean-facing.cjs
 ```
 
 `_apply-ocean-fixes.cjs` adds Solar System–style body classes (`reading-page`, `big-planet-page`, `big-game-page`), mobile audit CSS, `OceanPlayer` on every page, quiz DOM/player fixes, scroll cues, and intro/outro game polish.
+
+`_patch-ocean-facing.cjs` flips fish/animal emoji sprites to face their movement direction in canvas mini-games. Shared helper: `_ocean-draw.js` (`OceanDraw.drawEmoji`).
 
 ---
 

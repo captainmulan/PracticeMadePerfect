@@ -150,12 +150,14 @@
   const SWIMMERS = [
     { emoji: '🐠', zone: 0, x: 0.15, y: 0.12, sp: 0.0008 },
     { emoji: '🐟', zone: 0, x: 0.72, y: 0.18, sp: 0.0011 },
+    { emoji: '🐢', zone: 0, x: 0.48, y: 0.08, sp: 0.0007 },
     { emoji: '🦑', zone: 1, x: 0.35, y: 0.38, sp: 0.0009 },
     { emoji: '🐙', zone: 1, x: 0.68, y: 0.42, sp: 0.0012 },
     { emoji: '⭐', zone: 2, x: 0.22, y: 0.62, sp: 0.001 },
     { emoji: '🦈', zone: 2, x: 0.78, y: 0.68, sp: 0.0007 },
     { emoji: '🐟', zone: 3, x: 0.45, y: 0.86, sp: 0.0006 },
   ];
+  const FACE_RE = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐/;
 
   const Ocean = {
     playing: true,
@@ -165,8 +167,59 @@
     canvases: {},
     ctxs: {},
     info: null,
+    bubbles: [],
+    waves: [],
+    terrain: null,
     currentMode() { return VIEW_MODES[this.viewModeIdx] || VIEW_MODES[0]; },
     activeLayer() { return this.currentMode().layer; },
+    speedMult() { return SPEEDS[this.speedIdx] || 1; },
+    initEffects(w, h) {
+      if (this.bubbles.length && this._fxKey === w + 'x' + h) return;
+      this._fxKey = w + 'x' + h;
+      this.bubbles = [];
+      for (let i = 0; i < 42; i++) {
+        this.bubbles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: 1 + Math.random() * 3.5,
+          speed: 0.25 + Math.random() * 0.9,
+          wobble: Math.random() * Math.PI * 2,
+          wobbleSp: 0.004 + Math.random() * 0.008,
+          drift: (Math.random() - 0.5) * 0.35,
+        });
+      }
+      this.waves = [];
+      for (let i = 0; i < 7; i++) {
+        this.waves.push({
+          amp: 2 + Math.random() * 5,
+          freq: 0.012 + Math.random() * 0.018,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.0015 + Math.random() * 0.003,
+          yOff: i * 1.8,
+          alpha: 0.07 + Math.random() * 0.12,
+        });
+      }
+      this.terrain = {
+        rocks: Array.from({ length: 14 }, (_, i) => ({
+          x: (i / 14) * w + (Math.random() - 0.5) * 40,
+          y: h * (0.72 + (i % 4) * 0.06),
+          r: 10 + (i % 5) * 5,
+          shade: 0.25 + (i % 3) * 0.12,
+        })),
+        corals: Array.from({ length: 10 }, (_, i) => ({
+          x: w * (0.08 + (i / 10) * 0.84),
+          y: h * (0.78 + (i % 2) * 0.04),
+          h: 18 + (i % 4) * 10,
+          hue: i % 3,
+        })),
+        kelp: Array.from({ length: 8 }, (_, i) => ({
+          x: w * (0.06 + i * 0.11),
+          base: h * 0.55,
+          len: 40 + (i % 3) * 22,
+          phase: Math.random() * Math.PI * 2,
+        })),
+      };
+    },
     switchLayer() {
       const layer = this.activeLayer();
       document.querySelectorAll('.view-layer').forEach(el => {
@@ -187,22 +240,142 @@
       c.style.width = w + 'px';
       c.style.height = h + 'px';
       this.ctxs[id].setTransform(dpr, 0, 0, dpr, 0, 0);
+      this._fxKey = null;
     },
     resizeAll() {
       ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => this.resizeCanvas(id));
     },
-    drawEmoji(ctx, emoji, x, y, size) {
+    drawEmoji(ctx, emoji, x, y, size, flipX) {
       ctx.save();
       ctx.globalAlpha = 1;
       ctx.font = 'bold ' + size + 'px ' + FONT;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#fff';
-      ctx.fillText(emoji, x, y);
+      if (flipX && FACE_RE.test(emoji)) {
+        ctx.translate(x, y);
+        ctx.scale(-1, 1);
+        ctx.fillText(emoji, 0, 0);
+      } else {
+        ctx.fillText(emoji, x, y);
+      }
       ctx.restore();
+    },
+    drawBubbles(ctx, w, h, depthTop, depthBot) {
+      const mult = this.speedMult();
+      const top = depthTop != null ? depthTop : 0;
+      const bot = depthBot != null ? depthBot : h;
+      this.bubbles.forEach(b => {
+        b.y -= b.speed * mult;
+        b.x += b.drift + Math.sin(this.t * b.wobbleSp + b.wobble) * 0.35;
+        if (b.y < top - 10) {
+          b.y = bot + Math.random() * 30;
+          b.x = Math.random() * w;
+        }
+        if (b.x < -5) b.x = w + 5;
+        if (b.x > w + 5) b.x = -5;
+        if (b.y < top || b.y > bot) return;
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + b.r * 0.06) + ')';
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+      });
+    },
+    drawWaveLine(ctx, w, baseY, t, wave, mult) {
+      ctx.beginPath();
+      ctx.moveTo(0, baseY + 30);
+      for (let x = 0; x <= w; x += 3) {
+        const y = baseY + wave.yOff
+          + Math.sin(x * wave.freq + wave.phase + t * wave.speed * mult) * wave.amp
+          + Math.sin(x * wave.freq * 2.3 + wave.phase * 1.4 + t * wave.speed * mult * 1.3) * (wave.amp * 0.45);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.lineTo(w, baseY + 36);
+      ctx.lineTo(0, baseY + 36);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,' + wave.alpha + ')';
+      ctx.fill();
+    },
+    drawTerrainRocks(ctx, w, h, floorY, count) {
+      const floor = floorY != null ? floorY : h - 8;
+      for (let i = 0; i < count; i++) {
+        const x = (w / count) * i + ((i * 47) % 28);
+        const r = 8 + (i % 4) * 6;
+        ctx.fillStyle = 'rgba(45,35,30,' + (0.55 + (i % 3) * 0.12) + ')';
+        ctx.beginPath();
+        ctx.arc(x, floor - r * 0.35, r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(90,70,55,0.35)';
+        ctx.beginPath();
+        ctx.arc(x - r * 0.2, floor - r * 0.5, r * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    },
+    drawCoral(ctx, x, y, height, hue) {
+      const colors = ['#26a69a', '#ff6f61', '#ffb74d'];
+      ctx.fillStyle = colors[hue % colors.length];
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 7, y - height);
+      ctx.lineTo(x + 14, y);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 10, y);
+      ctx.lineTo(x + 16, y - height * 0.75);
+      ctx.lineTo(x + 22, y);
+      ctx.fill();
+    },
+    drawKelp(ctx, x, base, len, t, phase) {
+      ctx.strokeStyle = 'rgba(46,125,50,0.75)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(x, base);
+      for (let i = 1; i <= 6; i++) {
+        const py = base - (len / 6) * i;
+        const px = x + Math.sin(t * 0.0018 + phase + i * 0.5) * (6 + i);
+        ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    },
+    swimmerPos(s, i, w, h, mode) {
+      const mult = this.speedMult();
+      let x, y, vx;
+      if (mode === 'vertical') {
+        const z = ZONES[s.zone];
+        const zx = z.top * h;
+        const zh = z.h * h;
+        const phase = this.t * s.sp * mult + s.x * 10;
+        const dx = Math.sin(phase) * w * 0.08;
+        vx = Math.cos(phase) * s.sp * mult * w * 0.08;
+        x = s.x * w + dx;
+        y = zx + s.y * zh;
+      } else if (mode === 'surface') {
+        const horizon = h * 0.38;
+        const phase = this.t * 0.002 * mult + i;
+        x = (s.x * w + Math.sin(phase) * 40 + w) % w;
+        vx = Math.cos(phase) * 0.002 * mult * 40;
+        y = horizon + (h - horizon) * (0.28 + (i % 4) * 0.1);
+      } else if (mode === 'reef') {
+        const phase = this.t * 0.0015 * mult + i;
+        x = w * 0.2 + ((s.x * w * 0.6 + Math.sin(phase) * 30 + w) % (w * 0.6));
+        vx = Math.cos(phase) * 0.0015 * mult * 30;
+        y = h * (0.25 + (i % 4) * 0.12);
+      } else {
+        const phase = this.t * 0.0012 * mult + i;
+        const dx = Math.sin(phase) * 25;
+        vx = Math.cos(phase) * 0.0012 * mult * 25;
+        x = s.x * w + dx;
+        y = h * (0.35 + i * 0.14);
+      }
+      return { x, y, flip: vx < -0.02 };
     },
     drawVertical(w, h) {
       const ctx = this.ctxs.canvasVertical;
+      this.initEffects(w, h);
       ZONES.forEach(z => {
         const y0 = z.top * h;
         const zh = z.h * h;
@@ -211,23 +384,29 @@
         g.addColorStop(1, z.c2);
         ctx.fillStyle = g;
         ctx.fillRect(0, y0, w, zh);
-        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
         ctx.fillRect(8, y0 + zh - 2, w - 16, 2);
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 13px ' + FONT;
         ctx.textAlign = 'right';
         ctx.fillText(z.emoji + ' ' + z.name, w - 12, y0 + zh * 0.45);
+        if (z.id === 'sunlight') {
+          this.terrain.kelp.forEach(k => this.drawKelp(ctx, k.x, y0 + zh * 0.92, k.len * 0.5, this.t, k.phase));
+        }
+        if (z.id === 'abyss') {
+          this.drawTerrainRocks(ctx, w, y0 + zh, y0 + zh - 4, 8);
+        }
       });
-      SWIMMERS.forEach(s => {
-        const z = ZONES[s.zone];
-        const zx = z.top * h;
-        const zh = z.h * h;
-        const dx = Math.sin(this.t * s.sp * (SPEEDS[this.speedIdx] || 1) + s.x * 10) * w * 0.08;
-        this.drawEmoji(ctx, s.emoji, s.x * w + dx, zx + s.y * zh, Math.min(w, h) * 0.07);
+      this.drawBubbles(ctx, w, h);
+      SWIMMERS.forEach((s, i) => {
+        const p = this.swimmerPos(s, i, w, h, 'vertical');
+        this.drawEmoji(ctx, s.emoji, p.x, p.y, Math.min(w, h) * 0.07, p.flip);
       });
     },
     drawSurface(w, h) {
       const ctx = this.ctxs.canvasSurface;
+      this.initEffects(w, h);
+      const mult = this.speedMult();
       const horizon = h * 0.38;
       const sky = ctx.createLinearGradient(0, 0, 0, horizon);
       sky.addColorStop(0, '#64b5f6');
@@ -244,102 +423,102 @@
         ctx.ellipse(w * (0.25 + i * 0.18), h * 0.1, 36 + i * 8, 14, 0, 0, Math.PI * 2);
         ctx.fill();
       }
-      ctx.fillStyle = '#1565c0';
-      ctx.fillRect(0, horizon - 4, w, h - horizon + 4);
       const water = ctx.createLinearGradient(0, horizon, 0, h);
       water.addColorStop(0, '#0288d1');
-      water.addColorStop(0.5, '#01579b');
+      water.addColorStop(0.45, '#01579b');
       water.addColorStop(1, '#002171');
       ctx.fillStyle = water;
       ctx.fillRect(0, horizon, w, h - horizon);
-      for (let i = 0; i < 5; i++) {
-        const wx = (this.t * 0.04 * (SPEEDS[this.speedIdx] || 1) + i * 80) % (w + 60) - 30;
-        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(wx, horizon + 2);
-        ctx.quadraticCurveTo(wx + 20, horizon - 4, wx + 40, horizon + 2);
-        ctx.stroke();
+      this.waves.forEach(wv => this.drawWaveLine(ctx, w, horizon, this.t, wv, mult));
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 4) {
+        const y = horizon + Math.sin(x * 0.025 + this.t * 0.004 * mult) * 4
+          + Math.sin(x * 0.009 + this.t * 0.0025 * mult + 1) * 6;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       }
-      const fishY = horizon + (h - horizon) * 0.35;
-      SWIMMERS.slice(0, 4).forEach((s, i) => {
-        const fx = ((s.x * w + Math.sin(this.t * 0.002 + i) * 40) + w) % w;
-        this.drawEmoji(ctx, s.emoji, fx, fishY + i * 28, 26);
+      ctx.stroke();
+      this.terrain.kelp.forEach(k => this.drawKelp(ctx, k.x, h * 0.92, k.len, this.t, k.phase));
+      this.drawTerrainRocks(ctx, w, h, h - 6, 10);
+      this.drawBubbles(ctx, w, h, horizon, h);
+      SWIMMERS.slice(0, 5).forEach((s, i) => {
+        const p = this.swimmerPos(s, i, w, h, 'surface');
+        this.drawEmoji(ctx, s.emoji, p.x, p.y, 26, p.flip);
       });
     },
     drawReef(w, h) {
       const ctx = this.ctxs.canvasReef;
+      this.initEffects(w, h);
       ctx.fillStyle = '#021428';
       ctx.fillRect(0, 0, w, h);
       ctx.fillStyle = '#0a2038';
       ctx.beginPath();
-      ctx.moveTo(0, 0); ctx.lineTo(w * 0.22, 0); ctx.lineTo(w * 0.18, h); ctx.lineTo(0, h); ctx.fill();
+      ctx.moveTo(0, 0); ctx.lineTo(w * 0.22, 0); ctx.lineTo(w * 0.16, h); ctx.lineTo(0, h); ctx.fill();
       ctx.beginPath();
-      ctx.moveTo(w, 0); ctx.lineTo(w * 0.78, 0); ctx.lineTo(w * 0.82, h); ctx.lineTo(w, h); ctx.fill();
+      ctx.moveTo(w, 0); ctx.lineTo(w * 0.78, 0); ctx.lineTo(w * 0.84, h); ctx.lineTo(w, h); ctx.fill();
+      ctx.fillStyle = '#061828';
       ctx.beginPath();
-      ctx.moveTo(0, h); ctx.lineTo(w, h); ctx.lineTo(w, h * 0.88); ctx.lineTo(0, h * 0.92); ctx.fill();
+      ctx.moveTo(0, h); ctx.lineTo(w, h); ctx.lineTo(w, h * 0.86); ctx.lineTo(0, h * 0.9); ctx.fill();
       const rg = ctx.createRadialGradient(w * 0.5, h * 0.45, 20, w * 0.5, h * 0.45, w * 0.55);
       rg.addColorStop(0, '#0288d1');
       rg.addColorStop(1, '#004d73');
       ctx.fillStyle = rg;
       ctx.fillRect(w * 0.15, h * 0.08, w * 0.7, h * 0.84);
-      for (let i = 0; i < 6; i++) {
-        const cx = w * (0.22 + i * 0.11);
-        const cy = h * 0.78;
-        ctx.fillStyle = i % 2 ? '#26a69a' : '#ff6f61';
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + 8, cy - 22 - (i % 3) * 6);
-        ctx.lineTo(cx + 16, cy);
-        ctx.fill();
-      }
+      this.terrain.corals.forEach(c => this.drawCoral(ctx, c.x, c.y, c.h, c.hue));
+      this.drawTerrainRocks(ctx, w, h, h * 0.88, 12);
+      this.terrain.kelp.slice(0, 5).forEach(k => this.drawKelp(ctx, k.x * 0.85, h * 0.88, k.len * 0.7, this.t, k.phase));
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.fillRect(w * 0.15, h * 0.82, w * 0.7, h * 0.1);
+      this.drawBubbles(ctx, w, h, h * 0.1, h * 0.88);
       SWIMMERS.forEach((s, i) => {
-        const rx = w * 0.2 + ((s.x * w * 0.6 + Math.sin(this.t * 0.0015 + i) * 30 + w) % (w * 0.6));
-        const ry = h * (0.25 + (i % 4) * 0.12);
-        this.drawEmoji(ctx, s.emoji, rx, ry, 24 + (i % 2) * 6);
+        const p = this.swimmerPos(s, i, w, h, 'reef');
+        this.drawEmoji(ctx, s.emoji, p.x, p.y, 24 + (i % 2) * 6, p.flip);
       });
-      this.drawEmoji(ctx, '🪸', w * 0.5, h * 0.72, 34);
+      this.drawEmoji(ctx, '🪸', w * 0.5, h * 0.72, 34, false);
     },
     drawDeep(w, h) {
       const ctx = this.ctxs.canvasDeep;
+      this.initEffects(w, h);
       const bg = ctx.createLinearGradient(0, 0, 0, h);
       bg.addColorStop(0, '#01579b');
       bg.addColorStop(0.55, '#042a4a');
       bg.addColorStop(1, '#000810');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
-      for (let i = 0; i < 4; i++) {
-        const rx = w * (0.15 + i * 0.22);
+      for (let i = 0; i < 5; i++) {
+        const rx = w * (0.12 + i * 0.19);
         const rg = ctx.createLinearGradient(rx, 0, rx, h);
-        rg.addColorStop(0, 'rgba(255,255,255,0.18)');
-        rg.addColorStop(0.45, 'rgba(100,200,255,0.06)');
+        rg.addColorStop(0, 'rgba(255,255,255,0.2)');
+        rg.addColorStop(0.45, 'rgba(100,200,255,0.07)');
         rg.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = rg;
         ctx.beginPath();
-        ctx.moveTo(rx - 18, 0);
-        ctx.lineTo(rx + 18, 0);
-        ctx.lineTo(rx + 50, h);
-        ctx.lineTo(rx - 50, h);
+        ctx.moveTo(rx - 20, 0);
+        ctx.lineTo(rx + 20, 0);
+        ctx.lineTo(rx + 55, h);
+        ctx.lineTo(rx - 55, h);
         ctx.fill();
       }
       ctx.fillStyle = '#3e2723';
-      ctx.fillRect(0, h - 48, w, 48);
-      for (let x = 0; x < w; x += 34) {
-        ctx.fillStyle = '#5d4037';
-        ctx.beginPath();
-        ctx.arc(x + 12, h - 40, 14 + (x % 3) * 4, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.fillRect(0, h - 56, w, 56);
+      this.drawTerrainRocks(ctx, w, h, h - 20, 16);
+      ctx.fillStyle = 'rgba(80,60,40,0.5)';
+      ctx.font = '22px ' + FONT;
+      ctx.fillText('⚓', w * 0.12, h - 38);
+      ctx.strokeStyle = 'rgba(60,50,40,0.45)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(w * 0.12, h - 50);
+      ctx.lineTo(w * 0.12, h * 0.15);
+      ctx.stroke();
+      this.terrain.kelp.slice(0, 4).forEach(k => this.drawKelp(ctx, k.x, h - 56, k.len * 0.9, this.t, k.phase));
+      this.drawBubbles(ctx, w, h, 0, h - 56);
       SWIMMERS.slice(2).forEach((s, i) => {
-        const dx = Math.sin(this.t * 0.0012 + i) * 25;
-        this.drawEmoji(ctx, s.emoji, s.x * w + dx, h * (0.35 + i * 0.14), 22);
+        const p = this.swimmerPos(s, i + 2, w, h, 'deep');
+        this.drawEmoji(ctx, s.emoji, p.x, p.y, 22, p.flip);
       });
-      for (let i = 0; i < 12; i++) {
-        ctx.fillStyle = 'rgba(255,255,255,' + (0.08 + (i % 3) * 0.05) + ')';
-        ctx.beginPath();
-        ctx.arc((i * 97 + this.t * 0.02) % w, (i * 53) % (h - 50), 1.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
     },
     draw() {
       const stage = document.getElementById('viewStage');
@@ -443,11 +622,15 @@ function ogResize() {
   ogCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   if (ogPlayer) { ogPlayer.x = Math.min(Math.max(ogPlayer.x, 30), vs.w - 30); ogPlayer.y = vs.h - 36; }
 }
-function ogDrawIcon(x, y, icon, size, ring) {
+function ogDrawIcon(x, y, icon, size, ring, flipX) {
   ogCtx.beginPath(); ogCtx.arc(x, y, size * 0.52 + 5, 0, Math.PI * 2); ogCtx.fillStyle = ring || 'rgba(0,20,40,0.72)'; ogCtx.fill();
   ogCtx.strokeStyle = 'rgba(255,255,255,0.9)'; ogCtx.lineWidth = 2; ogCtx.stroke();
+  ogCtx.save();
   ogCtx.font = 'bold ' + size + 'px ' + OG_FONT; ogCtx.fillStyle = '#ffffff'; ogCtx.textAlign = 'center'; ogCtx.textBaseline = 'middle';
-  ogCtx.fillText(icon, x, y + 1);
+  const faceRe = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐|🤿/;
+  if (flipX && faceRe.test(icon)) { ogCtx.translate(x, y + 1); ogCtx.scale(-1, 1); ogCtx.fillText(icon, 0, 0); }
+  else ogCtx.fillText(icon, x, y + 1);
+  ogCtx.restore();
 }
 function ogDrawBg() {
   const vs = ogViewSize(); const g = ogCtx.createLinearGradient(0, 0, 0, vs.h);
@@ -490,7 +673,7 @@ function ogLoop() {
   });
   ogDrawBg(); ogCtx.textAlign = 'center'; ogCtx.textBaseline = 'middle';
   ogItems.forEach(it => ogDrawIcon(it.x, it.y, it.icon, 34, it.bad ? 'rgba(120,20,20,0.75)' : 'rgba(0,40,80,0.78)'));
-  if (ogPlayer) ogDrawIcon(ogPlayer.x, ogPlayer.y, ogPlayer.icon, 38, 'rgba(0,60,100,0.85)');
+  if (ogPlayer) ogDrawIcon(ogPlayer.x, ogPlayer.y, ogPlayer.icon, 38, 'rgba(0,60,100,0.85)', ogPlayer.vx < -0.4);
   ogAnimId = requestAnimationFrame(ogLoop);
 }
 function ogStartGame() {

@@ -511,7 +511,7 @@ function ogResize() {
     ogPlayer.y = vs.h - 36;
   }
 }
-function ogDrawIcon(x, y, icon, size, ring) {
+function ogDrawIcon(x, y, icon, size, ring, flipX) {
   const rad = size * 0.52;
   ogCtx.beginPath();
   ogCtx.arc(x, y, rad + 5, 0, Math.PI * 2);
@@ -520,9 +520,20 @@ function ogDrawIcon(x, y, icon, size, ring) {
   ogCtx.strokeStyle = 'rgba(255,255,255,0.9)';
   ogCtx.lineWidth = 2;
   ogCtx.stroke();
+  ogCtx.save();
   ogCtx.font = 'bold ' + size + 'px ' + OG_FONT;
   ogCtx.fillStyle = '#ffffff';
-  ogCtx.fillText(icon, x, y + 1);
+  ogCtx.textAlign = 'center';
+  ogCtx.textBaseline = 'middle';
+  const faceRe = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐|🤿/;
+  if (flipX && faceRe.test(icon)) {
+    ogCtx.translate(x, y + 1);
+    ogCtx.scale(-1, 1);
+    ogCtx.fillText(icon, 0, 0);
+  } else {
+    ogCtx.fillText(icon, x, y + 1);
+  }
+  ogCtx.restore();
 }
 function ogDrawBg() {
   const vs = ogViewSize();
@@ -611,7 +622,7 @@ function ogLoop() {
     ogDrawIcon(it.x, it.y, it.icon, 34, it.bad ? 'rgba(120,20,20,0.75)' : 'rgba(0,40,80,0.78)');
     ogCtx.globalAlpha = 1;
   });
-  if (ogPlayer && OG_CFG.mode !== 'tap') ogDrawIcon(ogPlayer.x, ogPlayer.y, ogPlayer.icon, 38, 'rgba(0,60,100,0.85)');
+  if (ogPlayer && OG_CFG.mode !== 'tap') ogDrawIcon(ogPlayer.x, ogPlayer.y, ogPlayer.icon, 38, 'rgba(0,60,100,0.85)', ogPlayer.vx < -0.4);
   ogAnimId = requestAnimationFrame(ogLoop);
 }
 function ogTapHit(x, y) {

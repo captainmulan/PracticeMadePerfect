@@ -139,14 +139,21 @@ function initBubbles(count) {
   }
 }
 
-function drawEmoji(emoji, x, y, size) {
+function drawEmoji(emoji, x, y, size, flipX) {
   ctx.save();
   ctx.globalAlpha = 1;
   ctx.font = 'bold ' + size + 'px ' + FONT;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(emoji, x, y);
+  const faceRe = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐/;
+  if (flipX && faceRe.test(emoji)) {
+    ctx.translate(x, y);
+    ctx.scale(-1, 1);
+    ctx.fillText(emoji, 0, 0);
+  } else {
+    ctx.fillText(emoji, x, y);
+  }
   ctx.restore();
 }
 
@@ -197,8 +204,14 @@ function loop(t) {
 
   decorations.forEach(d => {
     const bob = Math.sin(t * 0.002 + d.phase) * (d.kind === 'rock' || d.kind === 'coral' ? 1.5 : 5);
-    const drift = d.kind === 'fish' ? Math.sin(t * 0.001 + d.phase) * 8 : 0;
-    drawEmoji(d.emoji, d.x + drift, d.y + bob, d.size);
+    let drift = 0;
+    let flip = false;
+    if (d.kind === 'fish') {
+      const phase = t * 0.001 + d.phase;
+      drift = Math.sin(phase) * 8;
+      flip = Math.cos(phase) * 0.001 * 8 < 0;
+    }
+    drawEmoji(d.emoji, d.x + drift, d.y + bob, d.size, flip);
   });
 
   animId = requestAnimationFrame(loop);

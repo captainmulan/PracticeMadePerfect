@@ -187,24 +187,31 @@ function spawn() {
   if (Math.random() < 0.55) items.push({ x: 20 + Math.random() * (canvas.width - 40), y: -16, icon: Math.random() < 0.6 ? '🦪' : '💎', pts: Math.random() < 0.6 ? 8 : 15, speed: 1.6 + Math.random() });
   else hazards.push({ x: 20 + Math.random() * (canvas.width - 40), y: -16, icon: '🪼', speed: 1.8 + Math.random() * 0.8 });
 }
-function drawEmojiSprite(emoji, x, y, sizePx) {
+function drawEmojiSprite(emoji, x, y, sizePx, flipX) {
   ctx.save();
   ctx.globalAlpha = 1;
   ctx.font = 'bold ' + sizePx + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(emoji, x, y);
+  const faceRe = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐|🤿/;
+  if (flipX && faceRe.test(emoji)) {
+    ctx.translate(x, y);
+    ctx.scale(-1, 1);
+    ctx.fillText(emoji, 0, 0);
+  } else {
+    ctx.fillText(emoji, x, y);
+  }
   ctx.restore();
 }
 function draw() {
   const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
   g.addColorStop(0, '#0a3050'); g.addColorStop(1, '#041525');
   ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.font = '24px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  items.forEach(it => ctx.fillText(it.icon, it.x, it.y));
-  hazards.forEach(h => ctx.fillText(h.icon, h.x, h.y));
-  ctx.font = '28px serif'; ctx.fillText(OceanPlayer.getCharacter() || '🤿', player.x, player.y);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  items.forEach(it => drawEmojiSprite(it.icon, it.x, it.y, 24, false));
+  hazards.forEach(h => drawEmojiSprite(h.icon, h.x, h.y, 24, false));
+  drawEmojiSprite(OceanPlayer.getCharacter() || '🤿', player.x, player.y, 28, player.vx < -0.4);
 }
 function updateHud() {
   document.getElementById('hudScore').textContent = '⭐ ' + score;
