@@ -1638,6 +1638,19 @@ const StylizedPlanet = {
         frontArcOnly: false,
       };
     },
+    effectiveOrbitLayout(mode) {
+      const baseLayout = this.orbitLayout(mode);
+      const wide = this.orbitStageWide();
+      if (!wide) return baseLayout;
+      return {
+        orbitScale: baseLayout.orbitScale * 1.05,
+        sunOffsetX: baseLayout.sunOffsetX,
+        sunRadius: baseLayout.sunRadius * 1.12,
+        tilt: baseLayout.tilt,
+        planetSizeScale: baseLayout.planetSizeScale * 1.1,
+        frontArcOnly: baseLayout.frontArcOnly,
+      };
+    },
     displayOrbitR(planet, layout) {
       return planet.orbitR * layout.orbitScale;
     },
@@ -1747,9 +1760,9 @@ const StylizedPlanet = {
     },
     fitView(){
       if (this.activeLayer() !== 'orbit') return;
-      this.syncOrbitViewBox();
+      const M = this.syncOrbitViewBox() || { vbW: 600, vbH: 600, cx: 300, cy: 300 };
       const mode = this.currentMode();
-      const layout = this.orbitLayout(mode);
+      const layout = this.effectiveOrbitLayout(mode);
       this.CAMERA_NEAR = mode.cameraNear;
       this.CAMERA_FAR = mode.cameraFar;
       this.ORBIT_TILT = layout.tilt;
@@ -1760,20 +1773,18 @@ const StylizedPlanet = {
       this.maxOrbitR = maxOrbitR;
       const largestPlanet = Math.max(...visible.map(p => p.size)) * layout.planetSizeScale;
       const sunR = layout.sunRadius;
-      const wide = this.orbitStageWide();
-      const pad = wide ? 2 : 4;
-      const half = 296 - pad;
-      const horizHalf = Math.abs(layout.sunOffsetX) + maxOrbitR + largestPlanet + 4;
-      const vertHalf = maxOrbitR * Math.abs(layout.tilt) + Math.max(largestPlanet, sunR * 0.35) + 4;
-      const zFit = half / Math.min(horizHalf, vertHalf);
-      let z = Math.min(wide ? 2.05 : 1.62, zFit * (wide ? 1.14 : 1.06));
-      if (wide) {
-        const aspect = this._orbitAspect || 1.3;
-        z *= Math.min(1.45, 0.95 + aspect * 0.22);
-      }
-      z = Math.min(2.65, z);
-      const landscapeBoost = wide ? 1.12 : (this.isLandscape() ? 1.08 : 1);
-      this.DEFAULT_ZOOM = Math.round(z * mode.closeupBoost * mode.zoomBoost * landscapeBoost * 100) / 100;
+      const cx = M.cx != null ? M.cx : 300;
+      const cy = M.cy != null ? M.cy : 300;
+      const x0 = M.x0 != null ? M.x0 : 0;
+      const y0 = M.y0 != null ? M.y0 : 0;
+      const halfW = Math.min(cx - x0, x0 + M.vbW - cx);
+      const halfH = Math.min(cy - y0, y0 + M.vbH - cy);
+      const horizHalf = Math.abs(layout.sunOffsetX) + maxOrbitR + largestPlanet + 8;
+      const vertHalf = maxOrbitR * Math.abs(layout.tilt) + Math.max(largestPlanet, sunR * 0.45) + 8;
+      const pad = 0.92;
+      const zFit = Math.min(halfW / horizHalf, halfH / vertHalf) * pad;
+      const z = Math.min(2.65, Math.max(0.45, zFit));
+      this.DEFAULT_ZOOM = Math.round(z * mode.closeupBoost * mode.zoomBoost * 100) / 100;
       if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
     },
     updateViewModeButton() {
@@ -2221,16 +2232,8 @@ const StylizedPlanet = {
 
       while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
       const mode = this.currentMode();
-      const baseLayout = this.orbitLayout(mode);
+      const layout = this.effectiveOrbitLayout(mode);
       const wide = M.wide || this.orbitStageWide();
-      const layout = wide ? {
-        orbitScale: baseLayout.orbitScale * 1.05,
-        sunOffsetX: baseLayout.sunOffsetX,
-        sunRadius: baseLayout.sunRadius * 1.12,
-        tilt: baseLayout.tilt,
-        planetSizeScale: baseLayout.planetSizeScale * 1.1,
-        frontArcOnly: baseLayout.frontArcOnly,
-      } : baseLayout;
       const cx = 300;
       const cy = mode.viewCy != null ? mode.viewCy : (this.VIEW_CY || 300);
       const rot = this.rot + this.drag;
@@ -2251,6 +2254,10 @@ const StylizedPlanet = {
       });
 
       const drawList = this.buildPlanetDrawList(mode, null, tilt, layout).sort((a, b) => a.py - b.py);
+      const backPlanets = drawList.filter(item => item.py < 0);
+      const frontPlanets = drawList.filter(item => item.py >= 0);
+
+      backPlanets.forEach(item => this.appendPlanetNode(this.viewG, item, mode, hostSvg, layout));
 
       const sunG = el('g', {
         id:'sunHit',
@@ -2262,7 +2269,7 @@ const StylizedPlanet = {
       this.viewG.appendChild(sunG);
       this.drawSun(sunG, sunR, hostSvg);
 
-      drawList.forEach(item => this.appendPlanetNode(this.viewG, item, mode, hostSvg, layout));
+      frontPlanets.forEach(item => this.appendPlanetNode(this.viewG, item, mode, hostSvg, layout));
     },
     drawVertical() {
       const g = this.verticalG;
