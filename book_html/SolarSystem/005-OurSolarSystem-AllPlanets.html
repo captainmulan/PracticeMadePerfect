@@ -224,6 +224,7 @@
         linear-gradient(180deg, rgba(10,8,32,0.12) 0%, rgba(10,8,32,0) 35%, rgba(10,8,32,0.45) 100%);
     }
     #solarSvg{display:block;width:100%;height:100%;min-height:0;}
+    .planet-spin{will-change:transform;}
     .ctrl-row{
       display:flex;
       flex-wrap:nowrap;
@@ -1149,6 +1150,13 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   const NS = 'http://www.w3.org/2000/svg';
   const SPEEDS = [0.5, 1, 2, 4];
   const PLANET_ORDER = ['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
+  const LOW_GPU = (function() {
+    try {
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent || '')) return true;
+      if (navigator.maxTouchPoints > 1 && window.matchMedia('(hover: none)').matches) return true;
+    } catch (e) {}
+    return false;
+  })();
 
   const VIEW_MODES = [
     { id:'vertical', layer:'vertical', label:'Vertical Stack', short:'Vertical',
@@ -1509,6 +1517,24 @@ const StylizedPlanet = {
     playing: true, speedIdx: 0, viewModeIdx: 0, zoom: 1.2, rot: 0, drag: 0,
     angles: {}, spinAngles: {}, sunSpin: 0, selected: null,
     telescopeIdx: 0, telescopeAccum: 0,
+    _sceneCache: {},
+    invalidateScenes() {
+      this._sceneCache = {};
+    },
+    ensureActiveScene() {
+      const layer = this.activeLayer();
+      if (layer === 'vertical') this.ensureVerticalScene();
+      else if (layer === 'orbit') this.ensureOrbitScene();
+      else if (layer === 'telescope') this.ensureTelescopeScene();
+      else if (layer === 'movie') this.ensureMovieScene();
+    },
+    tickActiveView() {
+      const layer = this.activeLayer();
+      if (layer === 'vertical') this.updateVerticalAnim();
+      else if (layer === 'orbit') this.updateOrbitAnim();
+      else if (layer === 'telescope') this.updateTelescopeAnim();
+      else if (layer === 'movie') this.updateMovieAnim();
+    },
     ORBIT_TILT: 0.68,
     DEFAULT_ROT: 0,
     DEFAULT_ZOOM: 1.2,
@@ -1536,6 +1562,7 @@ const StylizedPlanet = {
         requestAnimationFrame(function() { Solar.fitView(); });
       }
       this.syncActiveStageViewBox();
+      this.ensureActiveScene();
     },
     syncStageViewBox(svgId, contentW, contentH, prefix) {
       const stage = document.getElementById('viewStage');
@@ -1909,6 +1936,8 @@ const StylizedPlanet = {
     },
     shiftTelescope(delta) {
       this.telescopeIdx = (this.telescopeIdx + delta + PLANETS.length) % PLANETS.length;
+      delete this._sceneCache.telescopeKey;
+      this.ensureTelescopeScene();
       this.updateTelescopeLabel();
     },
     updateTelescopeLabel() {
@@ -1984,25 +2013,29 @@ const StylizedPlanet = {
         StylizedPlanet.ensureShading(svg);
       }
       if (p.id === 'saturn') {
-        g.appendChild(el('ellipse', {
+        const satRing = {
           rx: String(r * 2.2), ry: String(r * 0.52),
-          fill: 'rgba(210,185,130,0.12)', filter: 'url(#softBlur)',
+          fill: 'rgba(210,185,130,0.12)',
           transform: 'rotate(-18)', 'pointer-events': 'none'
-        }));
+        };
+        if (!LOW_GPU) satRing.filter = 'url(#softBlur)';
+        g.appendChild(el('ellipse', satRing));
         this.drawPlanetBody(g, p, r, svg, false);
         return;
       }
-      g.appendChild(el('circle', {
-        r: String(r * 1.22),
-        fill: 'rgba(130,165,255,0.1)',
-        filter: 'url(#softBlur)',
-        'pointer-events': 'none'
-      }));
-      g.appendChild(el('circle', {
-        r: String(r * 1.1),
-        fill: 'rgba(255,255,255,0.05)',
-        'pointer-events': 'none'
-      }));
+      if (!LOW_GPU) {
+        g.appendChild(el('circle', {
+          r: String(r * 1.22),
+          fill: 'rgba(130,165,255,0.1)',
+          filter: 'url(#softBlur)',
+          'pointer-events': 'none'
+        }));
+        g.appendChild(el('circle', {
+          r: String(r * 1.1),
+          fill: 'rgba(255,255,255,0.05)',
+          'pointer-events': 'none'
+        }));
+      }
       this.drawPlanetBody(g, p, r, svg, false);
     },
     drawPlanetSoft(g, p, r, svg) {
@@ -2014,9 +2047,11 @@ const StylizedPlanet = {
       if (svg) StylizedPlanet.ensureShading(svg);
       const glowWrap = el('g', { 'pointer-events': 'none' });
       g.appendChild(glowWrap);
-      glowWrap.appendChild(el('circle', {
-        r: String(r * 1.52), fill: 'rgba(255,100,0,0.09)', filter: 'url(#softBlur)', 'pointer-events': 'none'
-      }));
+      glowWrap.appendChild(el('circle', (function() {
+        const a = { r: String(r * 1.52), fill: 'rgba(255,100,0,0.09)', 'pointer-events': 'none' };
+        if (!LOW_GPU) a.filter = 'url(#softBlur)';
+        return a;
+      })()));
       glowWrap.appendChild(el('circle', {
         r: String(r * 1.42), fill: 'url(#sunCorona)', opacity: '0.88', 'pointer-events': 'none'
       }));
@@ -2037,7 +2072,8 @@ const StylizedPlanet = {
         fill: '#04040e', 'pointer-events': 'none'
       }));
       const areaFactor = Math.max(1, (M.vbW * M.vbH) / (800 * 560));
-      const count = Math.round(110 * Math.min(1.85, Math.sqrt(areaFactor)));
+      const starBase = LOW_GPU ? 56 : 110;
+      const count = Math.round(starBase * Math.min(1.85, Math.sqrt(areaFactor)));
       for (let i = 0; i < count; i++) {
         g.appendChild(el('circle', {
           cx: String(x0 + ((i * 47.1 + 20) % Math.max(1, M.vbW - 20)) + 10),
@@ -2113,10 +2149,13 @@ const StylizedPlanet = {
       this.bindDrag();
       this.bindLayerClicks();
       this.bindTelescopeArrows();
+      this.ensureActiveScene();
       this.loop();
       window.addEventListener('resize', () => {
+        this.invalidateScenes();
         this.syncActiveStageViewBox();
         this.fitView();
+        this.ensureActiveScene();
       });
       this.initInfoPanel();
       this.showDefaultInfo();
@@ -2133,6 +2172,7 @@ const StylizedPlanet = {
       document.getElementById('btnViewMode').onclick = () => {
         this.viewModeIdx = (this.viewModeIdx + 1) % VIEW_MODES.length;
         this._userZoomed = false;
+        this.invalidateScenes();
         this.switchActiveLayer();
         this.updateViewModeButton();
         this.fitView();
@@ -2142,6 +2182,7 @@ const StylizedPlanet = {
         this.viewModeIdx = 0;
         this.telescopeIdx = 0;
         this.telescopeAccum = 0;
+        this.invalidateScenes();
         this.switchActiveLayer();
         this.fitView();
         this.updateViewModeButton();
@@ -2307,62 +2348,17 @@ const StylizedPlanet = {
       }));
       this.drawMovieSphereBody(g, p, r, svg);
     },
-    drawOrbit(){
-      const M = this.syncOrbitViewBox() || { vbW: 600, vbH: 600, x0: 0, y0: 0, cx: 300, cy: 300 };
-      let skyG = this.svg.querySelector('#orbitSkyGroup');
-      if (!skyG) {
-        skyG = el('g', { id: 'orbitSkyGroup' });
-        this.svg.insertBefore(skyG, this.viewG);
-      }
-      while (skyG.firstChild) skyG.removeChild(skyG.firstChild);
-      this.drawSubtleSky(skyG, M);
-
-      while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
-      const mode = this.currentMode();
-      const layout = this.effectiveOrbitLayout(mode);
-      const wide = M.wide || this.orbitStageWide();
-      const cx = 300;
-      const cy = mode.viewCy != null ? mode.viewCy : (this.VIEW_CY || 300);
-      const rot = this.rot + this.drag;
-      const tilt = layout.tilt;
-      const sunR = layout.sunRadius;
-      const sunX = layout.sunOffsetX;
-      const hostSvg = this.svg;
-      this.viewG.setAttribute('transform', 'translate(' + cx + ',' + cy + ') rotate(' + rot + ') scale(' + this.zoom + ')');
-
-      this.visiblePlanets(mode).forEach(p => {
-        const orbitR = this.displayOrbitR(p, layout);
-        this.viewG.appendChild(el('ellipse', {
-          cx: sunX, cy: 0, rx: orbitR, ry: orbitR * Math.abs(tilt),
-          fill: 'none',
-          stroke: 'rgba(255,255,255,0.42)',
-          'stroke-width': wide ? '1.8' : '1.5'
-        }));
-      });
-
-      const drawList = this.buildPlanetDrawList(mode, null, tilt, layout).sort((a, b) => a.py - b.py);
-      const backPlanets = drawList.filter(item => item.py < 0);
-      const frontPlanets = drawList.filter(item => item.py >= 0);
-
-      backPlanets.forEach(item => this.appendPlanetNode(this.viewG, item, mode, hostSvg, layout));
-
-      const sunG = el('g', {
-        id:'sunHit',
-        class:'planet-hit',
-        'data-id':'sun',
-        transform: 'translate(' + sunX + ',0)',
-        style:'cursor:pointer'
-      });
-      this.viewG.appendChild(sunG);
-      this.drawSun(sunG, sunR, hostSvg);
-
-      frontPlanets.forEach(item => this.appendPlanetNode(this.viewG, item, mode, hostSvg, layout));
+    _vertSceneKey() {
+      this.syncVerticalViewBox();
+      const M = this.verticalMetrics();
+      return [M.vbW, M.vbH, M.boost, M.cx].join('|');
     },
-    drawVertical() {
+    ensureVerticalScene() {
+      const key = this._vertSceneKey();
+      if (this._sceneCache.verticalKey === key && this._sceneCache.vertical) return;
       const g = this.verticalG;
       const svg = document.getElementById('verticalSvg');
       if (!g || !svg) return;
-      this.syncVerticalViewBox();
       const L = VERT_LINE;
       const M = this.verticalMetrics();
       const cx = M.cx;
@@ -2370,19 +2366,20 @@ const StylizedPlanet = {
       const sunR = L.sunR * scale;
       while (g.firstChild) g.removeChild(g.firstChild);
       this.drawSubtleSky(g, M);
-
+      const cache = { sunSpin: null, planetSpins: {} };
       const sunY = -sunR * 0.58;
       const sunG = el('g', { class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
       g.appendChild(sunG);
-      const sunInner = el('g', { transform: 'translate(' + cx + ',' + sunY.toFixed(1) + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
+      const sunInner = el('g', { class: 'planet-spin' });
       sunG.appendChild(sunInner);
+      cache.sunSpin = sunInner;
+      sunInner.setAttribute('transform', 'translate(' + cx + ',' + sunY.toFixed(1) + ')');
       this.drawVerticalSun(sunInner, sunR, svg);
       sunInner.appendChild(el('circle', {
         r: String(sunR * 0.95),
         fill: 'rgba(0,0,0,0.001)',
         'pointer-events': 'all'
       }));
-
       const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
       PLANETS.forEach((p, i) => {
         const y = L.topY + step * (i + 1);
@@ -2395,8 +2392,9 @@ const StylizedPlanet = {
           style: 'cursor:pointer'
         });
         g.appendChild(pg);
-        const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
+        const spinG = el('g', { class: 'planet-spin' });
         pg.appendChild(spinG);
+        cache.planetSpins[p.id] = spinG;
         this.drawPlanetRealistic(spinG, p, r, svg);
         pg.appendChild(el('circle', {
           r: String(hitR),
@@ -2404,8 +2402,127 @@ const StylizedPlanet = {
           'pointer-events': 'all'
         }));
       });
+      this._sceneCache.vertical = cache;
+      this._sceneCache.verticalKey = key;
+      this.updateVerticalAnim();
     },
-    drawTelescope() {
+    updateVerticalAnim() {
+      const cache = this._sceneCache.vertical;
+      if (!cache) return;
+      if (cache.sunSpin) {
+        const base = cache.sunSpin.getAttribute('data-base') || cache.sunSpin.getAttribute('transform') || '';
+        if (!cache.sunSpin.getAttribute('data-base')) cache.sunSpin.setAttribute('data-base', base);
+        const spin = (this.sunSpin || 0).toFixed(2);
+        cache.sunSpin.setAttribute('transform', base + ' rotate(' + spin + ')');
+      }
+      PLANETS.forEach(p => {
+        const spinG = cache.planetSpins[p.id];
+        if (spinG) {
+          spinG.setAttribute('transform', 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')');
+        }
+      });
+    },
+    _orbitSceneKey() {
+      const M = this.syncOrbitViewBox() || {};
+      const mode = this.currentMode();
+      const layout = this.effectiveOrbitLayout(mode);
+      return [
+        M.vbW, M.vbH, M.wide ? 1 : 0,
+        layout.tilt, layout.orbitScale, layout.sunRadius,
+        layout.sunOffsetX, layout.planetSizeScale, mode.id
+      ].join('|');
+    },
+    ensureOrbitScene() {
+      const key = this._orbitSceneKey();
+      if (this._sceneCache.orbitKey === key && this._sceneCache.orbit) return;
+      const M = this.syncOrbitViewBox() || { vbW: 600, vbH: 600, x0: 0, y0: 0, cx: 300, cy: 300 };
+      let skyG = this.svg.querySelector('#orbitSkyGroup');
+      if (!skyG) {
+        skyG = el('g', { id: 'orbitSkyGroup' });
+        this.svg.insertBefore(skyG, this.viewG);
+      }
+      while (skyG.firstChild) skyG.removeChild(skyG.firstChild);
+      this.drawSubtleSky(skyG, M);
+      while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
+      const mode = this.currentMode();
+      const layout = this.effectiveOrbitLayout(mode);
+      const wide = M.wide || this.orbitStageWide();
+      const sunR = layout.sunRadius;
+      const sunX = layout.sunOffsetX;
+      const hostSvg = this.svg;
+      const cache = {
+        backG: el('g', { id: 'orbitBackPlanets' }),
+        frontG: el('g', { id: 'orbitFrontPlanets' }),
+        planets: {},
+        sunG: null,
+      };
+      this.viewG.appendChild(el('g', { id: 'orbitEllipses' }));
+      this.viewG.appendChild(cache.backG);
+      const sunG = el('g', {
+        id: 'sunHit',
+        class: 'planet-hit',
+        'data-id': 'sun',
+        transform: 'translate(' + sunX + ',0)',
+        style: 'cursor:pointer'
+      });
+      this.viewG.appendChild(sunG);
+      cache.sunG = sunG;
+      this.drawSun(sunG, sunR, hostSvg);
+      this.viewG.appendChild(cache.frontG);
+      this.visiblePlanets(mode).forEach(p => {
+        const orbitR = this.displayOrbitR(p, layout);
+        this.viewG.firstChild.appendChild(el('ellipse', {
+          cx: sunX, cy: 0, rx: orbitR, ry: orbitR * Math.abs(layout.tilt),
+          fill: 'none',
+          stroke: 'rgba(255,255,255,0.42)',
+          'stroke-width': wide ? '1.8' : '1.5'
+        }));
+        const drawSize = p.size * layout.planetSizeScale;
+        const pg = el('g', {
+          class: 'planet-hit',
+          'data-id': p.id,
+          style: 'cursor:pointer'
+        });
+        const spinG = el('g', { class: 'planet-spin' });
+        pg.appendChild(spinG);
+        this.drawPlanetBody(spinG, p, drawSize, hostSvg);
+        cache.planets[p.id] = { pg: pg, spinG: spinG };
+      });
+      this._sceneCache.orbit = cache;
+      this._sceneCache.orbitKey = key;
+      this.updateOrbitAnim();
+    },
+    updateOrbitAnim() {
+      const cache = this._sceneCache.orbit;
+      if (!cache || !this.viewG) return;
+      const mode = this.currentMode();
+      const layout = this.effectiveOrbitLayout(mode);
+      const cx = 300;
+      const cy = mode.viewCy != null ? mode.viewCy : (this.VIEW_CY || 300);
+      const rot = this.rot + this.drag;
+      const tilt = layout.tilt;
+      const sunX = layout.sunOffsetX;
+      this.viewG.setAttribute('transform', 'translate(' + cx + ',' + cy + ') rotate(' + rot + ') scale(' + this.zoom + ')');
+      const drawList = this.buildPlanetDrawList(mode, null, tilt, layout).sort((a, b) => a.py - b.py);
+      drawList.forEach(item => {
+        const node = cache.planets[item.p.id];
+        if (!node) return;
+        const spin = (this.spinAngles[item.p.id] || 0).toFixed(2);
+        node.pg.setAttribute('transform', 'translate(' + item.px.toFixed(2) + ',' + item.py.toFixed(2) + ') scale(' + item.scale.toFixed(3) + ')');
+        node.spinG.setAttribute('transform', 'rotate(' + spin + ')');
+        const parent = item.py < 0 ? cache.backG : cache.frontG;
+        if (node.pg.parentNode !== parent) parent.appendChild(node.pg);
+      });
+      if (cache.sunG) {
+        cache.sunG.setAttribute('transform', 'translate(' + sunX + ',0)');
+      }
+    },
+    _telescopeSceneKey() {
+      return String(this.telescopeIdx);
+    },
+    ensureTelescopeScene() {
+      const key = this._telescopeSceneKey();
+      if (this._sceneCache.telescopeKey === key && this._sceneCache.telescope) return;
       const g = this.telescopeG;
       const svg = document.getElementById('telescopeSvg');
       if (!g || !svg) return;
@@ -2413,7 +2530,8 @@ const StylizedPlanet = {
       if (!M) return;
       while (g.firstChild) g.removeChild(g.firstChild);
       g.appendChild(el('rect', { x: String(M.x0), y: String(M.y0), width: String(M.vbW), height: String(M.vbH), fill: '#030308' }));
-      for (let i = 0; i < 72; i++) {
+      const starCount = LOW_GPU ? 36 : 72;
+      for (let i = 0; i < starCount; i++) {
         g.appendChild(el('circle', {
           cx: String(M.x0 + ((i * 53.7 + 12) % Math.max(1, M.vbW - 12))),
           cy: String(M.y0 + ((i * 91.3 + 28) % Math.max(1, M.vbH - 12))),
@@ -2444,15 +2562,31 @@ const StylizedPlanet = {
         style: 'cursor:pointer'
       });
       contentG.appendChild(pg);
-      const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
+      const spinG = el('g', { class: 'planet-spin' });
       pg.appendChild(spinG);
       this.drawPlanetSoft(spinG, p, TELESCOPE_DRAW_R, svg);
       g.appendChild(el('rect', {
         x: String(M.x0), y: String(M.y0), width: String(M.vbW), height: String(M.vbH),
         fill: 'url(#telVignette)', 'pointer-events': 'none', opacity: '0.45'
       }));
+      this._sceneCache.telescope = { spinG: spinG };
+      this._sceneCache.telescopeKey = key;
+      this.updateTelescopeAnim();
     },
-    drawMovie() {
+    updateTelescopeAnim() {
+      const cache = this._sceneCache.telescope;
+      if (!cache || !cache.spinG) return;
+      const p = PLANETS[this.telescopeIdx];
+      cache.spinG.setAttribute('transform', 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')');
+    },
+    _movieSceneKey() {
+      const M = this.syncMovieViewBox();
+      if (!M) return '';
+      return [M.vbW, M.vbH, M.wide ? 1 : 0, M.boost].join('|');
+    },
+    ensureMovieScene() {
+      const key = this._movieSceneKey();
+      if (this._sceneCache.movieKey === key && this._sceneCache.movie) return;
       const g = this.movieG;
       const svg = document.getElementById('movieSvg');
       if (!g || !svg) return;
@@ -2510,7 +2644,7 @@ const StylizedPlanet = {
       });
       sunWrap.appendChild(sunG);
       this.drawSunBurning(sunG, sunR, svg, null);
-
+      const cache = { planetSpins: {} };
       const lineY = ML.centerY;
       const gap = (endX - startX) / (PLANETS.length - 1);
       PLANETS.forEach((p, i) => {
@@ -2523,13 +2657,42 @@ const StylizedPlanet = {
           style: 'cursor:pointer'
         });
         contentG.appendChild(pg);
-        const spinG = el('g', { transform: 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')' });
+        const spinG = el('g', { class: 'planet-spin' });
         pg.appendChild(spinG);
+        cache.planetSpins[p.id] = spinG;
         this.drawMoviePlanet(spinG, p, r, svg);
       });
+      this._sceneCache.movie = cache;
+      this._sceneCache.movieKey = key;
+      this.updateMovieAnim();
+    },
+    updateMovieAnim() {
+      const cache = this._sceneCache.movie;
+      if (!cache) return;
+      PLANETS.forEach(p => {
+        const spinG = cache.planetSpins[p.id];
+        if (spinG) {
+          spinG.setAttribute('transform', 'rotate(' + (this.spinAngles[p.id] || 0).toFixed(2) + ')');
+        }
+      });
+    },
+    drawOrbit(){
+      this.ensureOrbitScene();
+      this.updateOrbitAnim();
+    },
+    drawVertical() {
+      this.ensureVerticalScene();
+      this.updateVerticalAnim();
+    },
+    drawTelescope() {
+      this.ensureTelescopeScene();
+      this.updateTelescopeAnim();
+    },
+    drawMovie() {
+      this.ensureMovieScene();
+      this.updateMovieAnim();
     },
     loop(){
-      const mode = this.currentMode();
       const layer = this.activeLayer();
       if (this.playing){
         const mult = SPEEDS[this.speedIdx];
@@ -2539,10 +2702,7 @@ const StylizedPlanet = {
         });
         this.sunSpin = (this.sunSpin || 0) + 0.35 * mult;
       }
-      if (layer === 'orbit') this.drawOrbit();
-      else if (layer === 'vertical') this.drawVertical();
-      else if (layer === 'telescope') this.drawTelescope();
-      else if (layer === 'movie') this.drawMovie();
+      this.tickActiveView();
       requestAnimationFrame(() => this.loop());
     }
   };
