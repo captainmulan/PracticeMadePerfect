@@ -2282,11 +2282,7 @@ const StylizedPlanet = {
         fill: 'rgba(255,255,255,0.05)',
         'pointer-events': 'none'
       }));
-      if (p.id === 'mercury' || p.id === 'mars' || p.id === 'neptune') {
-        this.drawMovieSphereBody(g, p, r, svg);
-      } else {
-        this.drawPlanetBody(g, p, r, svg, false);
-      }
+      this.drawMovieSphereBody(g, p, r, svg);
     },
     drawOrbit(){
       const M = this.syncOrbitViewBox() || { vbW: 600, vbH: 600, x0: 0, y0: 0, cx: 300, cy: 300 };
