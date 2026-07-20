@@ -164,7 +164,7 @@
     .planet-game .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:12px;line-height:1.5;padding:0 6px;}
     .game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
     .game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
-    .game-canvas{position:relative;height:50vh;min-height:280px;max-height:420px;background:#062035;border-radius:16px;overflow:hidden;border:2px solid rgba(100,255,218,0.35);touch-action:none;}
+    .game-canvas{position:relative;width:100%;height:280px;min-height:220px;max-height:280px;background:#062035;border-radius:16px;overflow:hidden;border:2px solid rgba(100,255,218,0.35);touch-action:none;}
     .game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
     .game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,0.92);text-align:center;padding:20px;z-index:5;}
     .game-overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}
@@ -172,9 +172,160 @@
     .overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
     .touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
     .touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+  
+/* ocean-ui-audit-overrides */
+body.reading-page,
+body.reading-page:has(.container),
+body.reading-page:has(.quiz-card),
+body.reading-page:has(.character-grid) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.reading-page:has(.character-grid) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+@media (max-width: 639px) {
+  body.big-planet-page .ocean-display {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(78vw, calc(100svh - 220px)) !important;
+    min-height: min(56vw, 220px) !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .container {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+  body.big-planet-page .planet-game .game-canvas,
+  body:has(.planet-game) .game-canvas {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+  .planet-game { padding: 10px !important; margin-top: 10px !important; }
+  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }
+  .touch-controls { margin-top: 6px; gap: 6px; }
+  .touch-btn { min-height: 48px; font-size: 18px; }
+}
+@media (min-width: 640px) {
+  body.big-planet-page .ocean-display {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+    min-height: min(56vw, calc(100svh - 200px)) !important;
+  }
+}
+body.big-planet-page .planet-game .game-canvas {
+  width: 100% !important;
+  height: min(50vh, 440px) !important;
+  min-height: min(42vh, 300px) !important;
+  max-height: min(56vh, 480px) !important;
+}
+body.big-planet-page .planet-game { margin-bottom: 8px !important; }
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+}
+html:has(body.big-game-page) {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+body.big-game-page:has(.game-shell) .game-shell {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.big-game-page:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+/* big-ocean-first-view */
+body.big-planet-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.big-planet-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+  padding: 8px 10px 32px;
+}
+body.big-planet-page .header { margin-bottom: 8px; }
+body.big-planet-page .header h1 { font-size: 24px; margin-bottom: 4px; }
+body.big-planet-page .ocean-display {
+  margin: 10px 0 8px;
+  height: min(72vw, calc(100svh - 220px));
+  min-height: min(56vw, 240px);
+  max-height: min(78vw, 320px);
+}
+body.big-planet-page .scroll-cue {
+  text-align: center;
+  color: #80deea;
+  font-size: 13px;
+  margin: 6px 0 10px;
+  opacity: 0.9;
+}
+body.big-planet-page .card { margin-bottom: 10px; }
+body.big-planet-page .nav-hint {
+  margin-top: 8px;
+  padding-bottom: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}
+    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}
+      .ocean-info-panel{display:none;margin:10px 0;padding:12px 14px;background:rgba(255,255,255,0.1);border-radius:12px;border-left:4px solid #64ffda;font-size:14px;line-height:1.55;}
+    .ocean-info-panel strong{color:#64ffda;font-size:15px;}
   </style>
+<script>
+(function (w) {
+  var BOOK = "oceanadventure";
+  function key(name) { return "book:" + BOOK + ":" + name; }
+  w.OceanPlayer = {
+    getUserName: function () { return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer"; },
+    getCharacter: function () { return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🤿"; },
+    getCharacterName: function () { return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Diver"; },
+    save: function (name, character, characterName) {
+      localStorage.setItem(key("userName"), name);
+      localStorage.setItem(key("userCharacter"), character);
+      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userCharacter", character);
+      if (characterName != null) localStorage.setItem("characterName", characterName);
+    }
+  };
+})(window);
+</script>
 </head>
-<body>
+<body class="big-planet-page">
 <div class="bubbles"></div>
 <div class="container">
   <div class="header">
@@ -185,7 +336,7 @@
   <div class="abyss-display">
     <div class="abyss-icon" onclick="showAbyssFact()"></div>
   </div>
-
+  <p class="scroll-cue">↓ Scroll for facts and the mini-game</p>
   <div class="card">
     <h2>🌟 What is the Abyss Zone?</h2>
     <p>
@@ -505,7 +656,7 @@ function ogBindControls() {
       if (!ogRunning) return;
       const r = c.getBoundingClientRect();
       const p = e.touches ? e.touches[0] : e;
-      ogTapHit(p.clientX - r.left, p.clientY - r.top);
+      ogTapHit((p.clientX - r.left) * (c.width / r.width), (p.clientY - r.top) * (c.height / r.height));
     };
     c.addEventListener('click', hit);
     c.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });

@@ -117,12 +117,34 @@ Also mirrored to global `userName` / `userCharacter` for quiz pages.
 
 ```
 OceanAdventure/
-  _ocean-player.js           # localStorage helper
-  _gen-index-grid.cjs        # Regenerate 002 index badges from chapter list
-  *.html                     # Chapters — no build step
+  _ocean-player.js              # OceanPlayer localStorage helper
+  _shared-ocean-ui-blocks.mjs   # Shared audit CSS / body-class helpers
+  _apply-ocean-fixes.cjs        # Align all chapters with Solar System UI structure
+  _apply-ocean-games.cjs        # Inject canvas minigames into activity pages
+  _fix-ocean-game-visibility.cjs # DPR canvas + emoji halos for minigames
+  _gen-index-grid.cjs           # Regenerate 002 index badges from chapter list
+  *.html                        # Chapters — no build step
 ```
 
-When extending zone activity pages, copy minigame patterns from Solar System (`game-overlay`, HUD, canvas loop) and theme with `drawBubbles` instead of `drawStarfield`.
+### Maintenance scripts
+
+```bash
+node book_html/OceanAdventure/_apply-ocean-fixes.cjs
+node book_html/OceanAdventure/_fix-ocean-game-visibility.cjs
+```
+
+`_apply-ocean-fixes.cjs` adds Solar System–style body classes (`reading-page`, `big-planet-page`, `big-game-page`), mobile audit CSS, `OceanPlayer` on every page, quiz DOM/player fixes, scroll cues, and intro/outro game polish.
+
+---
+
+## Page types (Solar System parity)
+
+| Type | Body class | Examples |
+|------|------------|----------|
+| Reading / explained / quiz | `reading-page` | 001, 006–007, 009–010, … |
+| Character select | `reading-page character-select-page` | 003 |
+| Activity + minigame | `big-planet-page` | 005, 008, 011, … |
+| Intro / outro arcade | `big-game-page` | 004, 031 |
 
 ---
 

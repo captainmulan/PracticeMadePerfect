@@ -24,6 +24,112 @@
     .preview-name{font-size:18px;color:#ffeb3b;font-weight:bold;}
     .nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,.1);padding:10px;border-radius:10px;}
     @media (max-width:480px){h1{font-size:22px}.character-option{font-size:28px;padding:8px 2px}}
+  
+/* ocean-ui-audit-overrides */
+body.reading-page,
+body.reading-page:has(.container),
+body.reading-page:has(.quiz-card),
+body.reading-page:has(.character-grid) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.reading-page:has(.character-grid) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+@media (max-width: 639px) {
+  body.big-planet-page .ocean-display {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(78vw, calc(100svh - 220px)) !important;
+    min-height: min(56vw, 220px) !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .container {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+  body.big-planet-page .planet-game .game-canvas,
+  body:has(.planet-game) .game-canvas {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+  .planet-game { padding: 10px !important; margin-top: 10px !important; }
+  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }
+  .touch-controls { margin-top: 6px; gap: 6px; }
+  .touch-btn { min-height: 48px; font-size: 18px; }
+}
+@media (min-width: 640px) {
+  body.big-planet-page .ocean-display {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+    min-height: min(56vw, calc(100svh - 200px)) !important;
+  }
+}
+body.big-planet-page .planet-game .game-canvas {
+  width: 100% !important;
+  height: min(50vh, 440px) !important;
+  min-height: min(42vh, 300px) !important;
+  max-height: min(56vh, 480px) !important;
+}
+body.big-planet-page .planet-game { margin-bottom: 8px !important; }
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+}
+html:has(body.big-game-page) {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+body.big-game-page:has(.game-shell) .game-shell {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.big-game-page:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+body.reading-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}
+    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}
   </style>
 <script>
 (function (w) {
@@ -45,7 +151,7 @@
 })(window);
 </script>
 </head>
-<body>
+<body class="reading-page character-select-page">
 <div class="bubbles"></div>
 <div class="container">
   <div class="header">

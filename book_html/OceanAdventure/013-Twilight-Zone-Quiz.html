@@ -226,19 +226,125 @@
 .card .scene,.scene{font-size:20px !important;}
 .explain,.explanation{font-size:18px !important;line-height:1.5 !important;}
 
+  
+/* ocean-ui-audit-overrides */
+body.reading-page,
+body.reading-page:has(.container),
+body.reading-page:has(.quiz-card),
+body.reading-page:has(.character-grid) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.reading-page:has(.character-grid) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+@media (max-width: 639px) {
+  body.big-planet-page .ocean-display {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(78vw, calc(100svh - 220px)) !important;
+    min-height: min(56vw, 220px) !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .container {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+  body.big-planet-page .planet-game .game-canvas,
+  body:has(.planet-game) .game-canvas {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+  .planet-game { padding: 10px !important; margin-top: 10px !important; }
+  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }
+  .touch-controls { margin-top: 6px; gap: 6px; }
+  .touch-btn { min-height: 48px; font-size: 18px; }
+}
+@media (min-width: 640px) {
+  body.big-planet-page .ocean-display {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+    min-height: min(56vw, calc(100svh - 200px)) !important;
+  }
+}
+body.big-planet-page .planet-game .game-canvas {
+  width: 100% !important;
+  height: min(50vh, 440px) !important;
+  min-height: min(42vh, 300px) !important;
+  max-height: min(56vh, 480px) !important;
+}
+body.big-planet-page .planet-game { margin-bottom: 8px !important; }
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+}
+html:has(body.big-game-page) {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+body.big-game-page:has(.game-shell) .game-shell {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.big-game-page:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+body.reading-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}
+    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}
   </style>
 </head>
-<body>
+<body class="reading-page">
 <div class="bubbles"></div>
 <div class="container">
   <div class="header">
     <h1>❓ Twilight Zone Quiz</h1>
     <div class="subtitle">Test what you learned about the Twilight Zone!</div>
-  
+  </div>
 
   <div class="competition-bar">
     <div class="competitor">
-      <div class="competitor-icon" id="playerIcon">🧑‍🚀</div>
+      <div class="competitor-icon" id="playerIcon">🤿</div>
       <div class="competitor-name" id="playerName2">Explorer</div>
       <div class="competitor-score" id="playerScore">0</div>
     </div>
@@ -247,9 +353,6 @@
       <div class="competitor-icon">🌅</div>
       <div class="competitor-name">Dusk Diver</div>
       <div class="competitor-score" id="computerScore">0</div>
-    </div>
-  </div>
-</div>
 
   <div class="quiz-card active" id="quizCard-1">
     <div class="question">1. How deep is the Twilight Zone?</div>
@@ -317,7 +420,7 @@
         <div class="podium-name" id="podium-name-2">Dusk Diver</div>
       </div>
       <div class="podium-place" id="podium-first">
-        <div class="podium-character" id="podium-char-1">🧑‍🚀</div>
+        <div class="podium-character" id="podium-char-1">🤿</div>
         <div class="podium-bar first"><span class="rank-badge">🥇</span></div>
         <div class="podium-score" id="podium-score-1">0</div>
         <div class="podium-name" id="podium-name-1">Explorer</div>
@@ -326,7 +429,6 @@
     <div class="message" id="scoreMessage"></div>
     <div class="button-group">
       <button class="retry-btn" onclick="retryQuiz()">🔄 Try Again</button>
-      <button class="continue-btn" onclick="continueToNext()">➡️ Continue</button>
     </div>
   </div>
 
@@ -377,8 +479,8 @@ function nextQuestion() {
 }
 
 function showScore() {
-  const userName = localStorage.getItem('userName') || 'Explorer';
-  const userCharacter = localStorage.getItem('userCharacter') || '🧑‍🚀';
+  const userName = OceanPlayer.getUserName() || 'Explorer';
+  const userCharacter = OceanPlayer.getCharacter() || '🤿';
   const competitors = [
     { name: userName, character: userCharacter, score: score, isPlayer: true },
     { name: 'Dusk Diver', character: '🌅', score: computerScore, isPlayer: false }
@@ -393,10 +495,6 @@ function showScore() {
   document.getElementById('scoreMessage').textContent = competitors[0].isPlayer
     ? '🎉 ' + userName + ' wins! Amazing job!' : competitors[0].name + ' won this time. Try again!';
   document.getElementById('scoreCard').classList.add('show');
-}
-
-function continueToNext() {
-  alert('Great job! Continue to the next chapter using the navigation arrows!');
 }
 
 function retryQuiz() {
@@ -415,13 +513,18 @@ function retryQuiz() {
   document.getElementById('computerScore').textContent = '0';
 }
 
-function loadPlayerInfo() {
-  const userName = localStorage.getItem('userName') || 'Explorer';
-  const userCharacter = localStorage.getItem('userCharacter') || '🧑‍🚀';
-  document.getElementById('playerName2').textContent = userName;
-  document.getElementById('playerIcon').textContent = userCharacter;
-}
-loadPlayerInfo();
+(function loadPlayerInfo() {
+  const userName = OceanPlayer.getUserName() || 'Explorer';
+  const userCharacter = OceanPlayer.getCharacter() || '🤿';
+  const playerName2 = document.getElementById('playerName2');
+  const playerIcon = document.getElementById('playerIcon');
+  const podiumChar = document.getElementById('podium-char-1');
+  const podiumName = document.getElementById('podium-name-1');
+  if (playerName2) playerName2.textContent = userName;
+  if (playerIcon) playerIcon.textContent = userCharacter;
+  if (podiumChar) podiumChar.textContent = userCharacter;
+  if (podiumName) podiumName.textContent = userName;
+})();
 
 </script>
 </body>
