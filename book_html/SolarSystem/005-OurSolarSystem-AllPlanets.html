@@ -1129,7 +1129,6 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     cx: 290,
     sunY: -52,
     sunR: 168,
-    topClipH: 166,
     topY: 112,
     bottomY: 608,
     sizeScale: 1.18,
@@ -1864,18 +1863,79 @@ const StylizedPlanet = {
       const glowWrap = el('g', { 'pointer-events': 'none' });
       g.appendChild(glowWrap);
       glowWrap.appendChild(el('circle', {
-        r: String(r * 1.65), fill: 'rgba(255,110,0,0.2)', filter: 'url(#softBlur)', 'pointer-events': 'none'
+        r: String(r * 1.75), fill: 'rgba(255,100,0,0.14)', filter: 'url(#softBlur)', 'pointer-events': 'none'
       }));
       glowWrap.appendChild(el('circle', {
-        r: String(r * 1.35), fill: 'url(#sunCorona)', 'pointer-events': 'none'
+        r: String(r * 1.42), fill: 'url(#sunCorona)', opacity: '0.88', 'pointer-events': 'none'
       }));
       glowWrap.appendChild(el('circle', {
-        r: String(r * 1.08), fill: 'rgba(255,193,7,0.22)', 'pointer-events': 'none'
+        r: String(r * 1.12), fill: 'rgba(255,193,7,0.18)', 'pointer-events': 'none'
       }));
       const clip = svg ? StylizedPlanet.ensureClip(svg, 'globe-r' + Math.round(r * 10), r) : '';
       if (!StylizedPlanet.texturedDisc(g, 'sun', r, clip, false)) {
         StylizedPlanet.sphere(g, 'sun', r, clip, false);
       }
+    },
+    drawVerticalSky(g, M, svg) {
+      if (svg && !svg.querySelector('#vertSkyGrad')) {
+        let defs = svg.querySelector('defs');
+        if (!defs) {
+          defs = el('defs', {});
+          svg.insertBefore(defs, svg.firstChild);
+        }
+        const rg = el('radialGradient', { id: 'vertSkyGrad', cx: '50%', cy: '16%', r: '82%' });
+        rg.appendChild(el('stop', { offset: '0%', 'stop-color': '#14162e' }));
+        rg.appendChild(el('stop', { offset: '52%', 'stop-color': '#070818' }));
+        rg.appendChild(el('stop', { offset: '100%', 'stop-color': '#020208' }));
+        defs.appendChild(rg);
+      }
+      if (svg) StylizedPlanet.ensureSoftBlur(svg);
+      g.appendChild(el('rect', {
+        x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH),
+        fill: 'url(#vertSkyGrad)', 'pointer-events': 'none'
+      }));
+      const layers = [
+        { n: 170, r0: 0.12, r1: 0.36, a0: 0.05, a1: 0.24, tint: 0.1 },
+        { n: 120, r0: 0.24, r1: 0.68, a0: 0.1, a1: 0.42, tint: 0.24 },
+        { n: 38, r0: 0.5, r1: 1.05, a0: 0.16, a1: 0.55, tint: 0.42, blur: true },
+        { n: 10, r0: 0.95, r1: 1.75, a0: 0.22, a1: 0.68, tint: 0.58, blur: true, sparkle: true },
+      ];
+      layers.forEach(function(layer, li) {
+        for (let i = 0; i < layer.n; i++) {
+          const s = (i + 1) * 977 + li * 7919;
+          const px = M.x0 + 6 + (s * 0.6180339887 % Math.max(1, M.vbW - 12));
+          const py = 6 + ((s * 1.3247179572 + li * 113) % Math.max(1, M.vbH - 12));
+          const t = (s % 100) / 100;
+          const rad = layer.r0 + (layer.r1 - layer.r0) * t;
+          const alpha = layer.a0 + (layer.a1 - layer.a0) * ((s % 47) / 47);
+          const cool = layer.tint * ((s % 3) / 2);
+          const red = Math.round(198 + cool * 42);
+          const green = Math.round(204 + cool * 38);
+          const blue = Math.round(218 + cool * 37);
+          const attrs = {
+            cx: String(px),
+            cy: String(py),
+            r: String(rad),
+            fill: 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha.toFixed(2) + ')',
+            'pointer-events': 'none',
+          };
+          if (layer.blur) attrs.filter = 'url(#softBlur)';
+          g.appendChild(el('circle', attrs));
+          if (layer.sparkle && i % 2 === 0) {
+            const sp = rad * 2.4;
+            const sg = el('g', { opacity: String(Math.min(0.5, alpha + 0.12)), 'pointer-events': 'none' });
+            sg.appendChild(el('line', {
+              x1: String(px - sp), y1: String(py), x2: String(px + sp), y2: String(py),
+              stroke: 'rgba(255,255,255,0.35)', 'stroke-width': '0.4', 'stroke-linecap': 'round'
+            }));
+            sg.appendChild(el('line', {
+              x1: String(px), y1: String(py - sp), x2: String(px), y2: String(py + sp),
+              stroke: 'rgba(255,255,255,0.35)', 'stroke-width': '0.4', 'stroke-linecap': 'round'
+            }));
+            g.appendChild(sg);
+          }
+        }
+      });
     },
     drawSunBurning(g, r, svg, clip) {
       if (svg) StylizedPlanet.ensureSunGlow(svg);
@@ -2188,32 +2248,13 @@ const StylizedPlanet = {
       const scale = M.boost * (L.sizeScale || 1);
       const sunR = L.sunR * scale;
       while (g.firstChild) g.removeChild(g.firstChild);
-      g.appendChild(el('rect', { x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH), fill: '#030308' }));
-      if (svg) StylizedPlanet.ensureSoftBlur(svg);
-      for (let i = 0; i < 320; i++) {
-        g.appendChild(el('circle', {
-          cx: String(M.x0 + ((i * 41.7 + 11) % Math.max(1, M.vbW - 8)) + 4),
-          cy: String((i * 47.9 + 17) % Math.max(1, M.vbH - 8)),
-          r: String(0.24 + (i % 5) * 0.18),
-          fill: 'rgba(255,255,255,' + (0.1 + (i % 9) * 0.07).toFixed(2) + ')',
-          'pointer-events': 'none'
-        }));
-      }
-      for (let i = 0; i < 26; i++) {
-        g.appendChild(el('circle', {
-          cx: String(M.x0 + ((i * 67.3 + 29) % Math.max(1, M.vbW - 16)) + 8),
-          cy: String((i * 83.1 + 41) % Math.max(1, M.vbH - 16)),
-          r: String(0.75 + (i % 4) * 0.35),
-          fill: 'rgba(220,230,255,' + (0.22 + (i % 5) * 0.08).toFixed(2) + ')',
-          filter: 'url(#softBlur)',
-          'pointer-events': 'none'
-        }));
-      }
-      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top', M.vbW);
-      const sunWrap = el('g', { 'clip-path': topClip, class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
-      g.appendChild(sunWrap);
-      const sunInner = el('g', { transform: 'translate(' + cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
-      sunWrap.appendChild(sunInner);
+      this.drawVerticalSky(g, M, svg);
+
+      const sunY = -sunR * 0.58;
+      const sunG = el('g', { class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
+      g.appendChild(sunG);
+      const sunInner = el('g', { transform: 'translate(' + cx + ',' + sunY.toFixed(1) + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
+      sunG.appendChild(sunInner);
       this.drawVerticalSun(sunInner, sunR, svg);
       sunInner.appendChild(el('circle', {
         r: String(sunR * 0.95),
