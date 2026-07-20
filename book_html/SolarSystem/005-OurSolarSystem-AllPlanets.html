@@ -412,7 +412,9 @@
     body.all-planets-page .view-layer-orbit,
     body.all-planets-page .view-layer-orbit .svg-wrap,
     body.all-planets-page .view-layer-vertical .vertical-fit,
-    body.all-planets-page .view-layer-telescope .telescope-wrap {
+    body.all-planets-page .view-layer-telescope .telescope-wrap,
+    body.all-planets-page .view-layer-movie.active,
+    body.all-planets-page .view-layer-movie .movie-wrap {
       width: 100% !important;
       height: 100% !important;
       max-height: none !important;
@@ -426,6 +428,8 @@
     }
     body.all-planets-page .view-layer-movie.active {
       display: block;
+      width: 100%;
+      height: 100%;
     }
     body.all-planets-page .view-layer-movie .movie-wrap {
       width: 100% !important;
@@ -527,6 +531,11 @@
       body.all-planets-page .ctrl-btn {
         padding: 5px 6px;
         font-size: 10px;
+      }
+    }
+    @media (orientation: landscape) and (min-width: 900px) {
+      body.all-planets-page {
+        --ap-frame-max-h: min(calc(100svh - 168px), 84vh);
       }
     }
   /* solar-desktop-fit */
@@ -1537,10 +1546,29 @@ const StylizedPlanet = {
       this['_' + prefix + 'Boost'] = boost;
       return { vbW: vbW, vbH: vbH, x0: x0, y0: y0, boost: boost, cx: x0 + vbW / 2, cy: y0 + vbH / 2 };
     },
+    syncMovieViewBox() {
+      const ML = MOVIE_LAYOUT;
+      const M = this.syncStageViewBox('movieSvg', ML.contentW, ML.contentH, 'movie');
+      if (!M) return null;
+      const fitW = M.vbW / ML.contentW;
+      const fitH = M.vbH / ML.contentH;
+      const isWide = fitW > fitH * 1.06;
+      M.wide = isWide;
+      if (isWide) {
+        M.wideSpread = Math.min(1.58, 0.84 + fitW * 0.16);
+        M.panX = -(M.vbW - ML.contentW) * 0.34;
+        M.sizeMul = Math.min(1.34, 1 + (M.wideSpread - 1) * 0.48);
+      } else {
+        M.wideSpread = 1;
+        M.panX = 0;
+        M.sizeMul = 1;
+      }
+      return M;
+    },
     syncActiveStageViewBox() {
       const layer = this.activeLayer();
       if (layer === 'vertical') this.syncVerticalViewBox();
-      else if (layer === 'movie') this.syncStageViewBox('movieSvg', MOVIE_LAYOUT.contentW, MOVIE_LAYOUT.contentH, 'movie');
+      else if (layer === 'movie') this.syncMovieViewBox();
       else if (layer === 'telescope') this.syncStageViewBox('telescopeSvg', 400, 400, 'tele');
       else if (layer === 'orbit') this.syncOrbitViewBox();
     },
@@ -2370,16 +2398,23 @@ const StylizedPlanet = {
       const svg = document.getElementById('movieSvg');
       if (!g || !svg) return;
       const ML = MOVIE_LAYOUT;
-      const M = this.syncStageViewBox('movieSvg', ML.contentW, ML.contentH, 'movie');
+      const M = this.syncMovieViewBox();
       if (!M) return;
       while (g.firstChild) g.removeChild(g.firstChild);
       this.drawSubtleSky(g, M);
+      const contentScale = M.boost * (M.sizeMul || 1);
+      const panX = M.panX || 0;
       const contentG = el('g', {
-        transform: 'translate(' + M.cx.toFixed(2) + ',' + M.cy.toFixed(2) + ') scale(' + M.boost.toFixed(4) + ') translate(' + (-ML.centerX) + ',' + (-ML.centerY) + ')'
+        transform: 'translate(' + (M.cx + panX).toFixed(2) + ',' + M.cy.toFixed(2) + ') scale(' + contentScale.toFixed(4) + ') translate(' + (-ML.centerX) + ',' + (-ML.centerY) + ')'
       });
       g.appendChild(contentG);
-      const sunR = ML.sunR;
+      const sunR = ML.sunR * (M.sizeMul || 1);
       const glowPad = Math.ceil(sunR * 0.22);
+      const spread = M.wideSpread || 1;
+      const rowMid = (ML.startX + ML.endX) / 2;
+      const rowHalf = ((ML.endX - ML.startX) / 2) * spread;
+      const startX = rowMid - rowHalf;
+      const endX = rowMid + rowHalf;
       const sunWrap = el('g', { 'clip-path': 'url(#movieSunLeftClip)' });
       let defs = svg.querySelector('defs');
       if (!defs) {
@@ -2410,12 +2445,10 @@ const StylizedPlanet = {
       this.drawSunBurning(sunG, sunR, svg, null);
 
       const lineY = ML.centerY;
-      const startX = ML.startX;
-      const endX = ML.endX;
       const gap = (endX - startX) / (PLANETS.length - 1);
       PLANETS.forEach((p, i) => {
         const x = startX + gap * i;
-        const r = MOVIE_SIZES[p.id] || 24;
+        const r = (MOVIE_SIZES[p.id] || 24) * (M.sizeMul || 1);
         const pg = el('g', {
           class: 'planet-hit',
           'data-id': p.id,
