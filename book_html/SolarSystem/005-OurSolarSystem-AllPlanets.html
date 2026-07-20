@@ -1162,8 +1162,8 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     'The solar system is mostly empty space. Even the planets are tiny compared with the distances between them.',
     'Gravity from the Sun keeps every planet in its orbit, like a cosmic tug-of-war in balance.',
   ];
-  const MOVIE_LAYOUT = { contentW: 800, contentH: 420, centerX: 400, centerY: 210, sunR: 178, sunCX: -12, startX: 188, endX: 782, sizeScale: 1.14 };
-  const MOVIE_SIZES = { mercury:37, venus:39, earth:42, mars:37, jupiter:68, saturn:64, uranus:46, neptune:44 };
+  const MOVIE_LAYOUT = { contentW: 800, contentH: 420, centerX: 400, centerY: 210, sunR: 148, sunCX: -12, startX: 195, endX: 778 };
+  const MOVIE_SIZES = { mercury:30, venus:32, earth:34, mars:30, jupiter:56, saturn:52, uranus:38, neptune:36 };
 
   function pickRandom(list) {
     return list[Math.floor(Math.random() * list.length)];
@@ -1937,15 +1937,6 @@ const StylizedPlanet = {
         StylizedPlanet.sphere(g, 'sun', r, clip, false);
       }
     },
-    movieContentScale(M, ML) {
-      const tallBoost = M.vbH > ML.contentH * 1.05
-        ? Math.min(1.48, 0.88 + (M.vbH / ML.contentH - 1) * 0.38)
-        : 1;
-      const wideBoost = M.vbW > ML.contentW * 1.05
-        ? Math.min(1.28, 0.94 + (M.vbW / ML.contentW - 1) * 0.14)
-        : 1;
-      return M.boost * tallBoost * wideBoost * (ML.sizeScale || 1);
-    },
     drawSubtleSky(g, M) {
       const x0 = M.x0 != null ? M.x0 : 0;
       const y0 = M.y0 != null ? M.y0 : 0;
@@ -2383,9 +2374,8 @@ const StylizedPlanet = {
       if (!M) return;
       while (g.firstChild) g.removeChild(g.firstChild);
       this.drawSubtleSky(g, M);
-      const contentScale = this.movieContentScale(M, ML);
       const contentG = el('g', {
-        transform: 'translate(' + M.cx.toFixed(2) + ',' + M.cy.toFixed(2) + ') scale(' + contentScale.toFixed(4) + ') translate(' + (-ML.centerX) + ',' + (-ML.centerY) + ')'
+        transform: 'translate(' + M.cx.toFixed(2) + ',' + M.cy.toFixed(2) + ') scale(' + M.boost.toFixed(4) + ') translate(' + (-ML.centerX) + ',' + (-ML.centerY) + ')'
       });
       g.appendChild(contentG);
       const sunR = ML.sunR;
