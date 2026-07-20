@@ -1538,23 +1538,30 @@ const StylizedPlanet = {
       if (!stage || !svg) return;
       const w = Math.max(1, stage.clientWidth);
       const h = Math.max(1, stage.clientHeight);
-      const vbW = VERT_LINE.contentW || 580;
+      const contentW = VERT_LINE.contentW || 580;
       const vbH = VERT_LINE.vbH || 620;
-      svg.setAttribute('viewBox', '0 0 ' + vbW + ' ' + vbH);
+      const aspect = w / h;
+      const isWide = aspect > 1.05;
+      const vbW = isWide ? Math.max(contentW, vbH * aspect) : contentW;
+      const x0 = (contentW - vbW) / 2;
+      svg.setAttribute('viewBox', x0 + ' 0 ' + vbW + ' ' + vbH);
       svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       this._vertVbW = vbW;
       this._vertVbH = vbH;
-      this._vertX0 = 0;
-      this._vertSizeBoost = Math.min(1.55, Math.max(1.08, Math.sqrt((w * h) / (320 * 520))));
+      this._vertX0 = x0;
+      const areaBoost = Math.sqrt((w * h) / (320 * 520));
+      const wideBoost = isWide ? Math.min(1.22, 1 + (aspect - 1) * 0.09) : 1;
+      this._vertSizeBoost = Math.min(1.65, Math.max(1.08, areaBoost * wideBoost));
     },
     verticalMetrics() {
       const vbW = this._vertVbW || VERT_LINE.contentW || 580;
       const vbH = this._vertVbH || VERT_LINE.vbH || 620;
+      const x0 = this._vertX0 != null ? this._vertX0 : 0;
       return {
         vbW: vbW,
         vbH: vbH,
-        x0: 0,
-        cx: VERT_LINE.cx || (vbW / 2),
+        x0: x0,
+        cx: VERT_LINE.cx || ((VERT_LINE.contentW || 580) / 2),
         boost: this._vertSizeBoost || 1,
       };
     },
@@ -2181,17 +2188,28 @@ const StylizedPlanet = {
       const scale = M.boost * (L.sizeScale || 1);
       const sunR = L.sunR * scale;
       while (g.firstChild) g.removeChild(g.firstChild);
-      g.appendChild(el('rect', { x: '0', y: '0', width: String(M.vbW), height: String(M.vbH), fill: '#050510' }));
-      for (let i = 0; i < 160; i++) {
+      g.appendChild(el('rect', { x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH), fill: '#030308' }));
+      if (svg) StylizedPlanet.ensureSoftBlur(svg);
+      for (let i = 0; i < 320; i++) {
         g.appendChild(el('circle', {
-          cx: String(((i * 41.7 + 11) % Math.max(1, M.vbW - 8)) + 4),
-          cy: String((i * 47.9 + 9) % Math.max(1, M.vbH - 8)),
-          r: String(0.28 + (i % 4) * 0.2),
-          fill: 'rgba(255,255,255,' + (0.12 + (i % 7) * 0.08).toFixed(2) + ')',
+          cx: String(M.x0 + ((i * 41.7 + 11) % Math.max(1, M.vbW - 8)) + 4),
+          cy: String((i * 47.9 + 17) % Math.max(1, M.vbH - 8)),
+          r: String(0.24 + (i % 5) * 0.18),
+          fill: 'rgba(255,255,255,' + (0.1 + (i % 9) * 0.07).toFixed(2) + ')',
           'pointer-events': 'none'
         }));
       }
-      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top', M.vbW, 0);
+      for (let i = 0; i < 26; i++) {
+        g.appendChild(el('circle', {
+          cx: String(M.x0 + ((i * 67.3 + 29) % Math.max(1, M.vbW - 16)) + 8),
+          cy: String((i * 83.1 + 41) % Math.max(1, M.vbH - 16)),
+          r: String(0.75 + (i % 4) * 0.35),
+          fill: 'rgba(220,230,255,' + (0.22 + (i % 5) * 0.08).toFixed(2) + ')',
+          filter: 'url(#softBlur)',
+          'pointer-events': 'none'
+        }));
+      }
+      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top', M.vbW);
       const sunWrap = el('g', { 'clip-path': topClip, class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
       g.appendChild(sunWrap);
       const sunInner = el('g', { transform: 'translate(' + cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
