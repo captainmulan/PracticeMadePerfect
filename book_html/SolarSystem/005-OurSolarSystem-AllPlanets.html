@@ -1894,17 +1894,19 @@ const StylizedPlanet = {
         x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH),
         fill: 'url(#vertSkyGrad)', 'pointer-events': 'none'
       }));
+      const areaFactor = Math.max(1, (M.vbW * M.vbH) / (580 * 620));
+      const density = Math.min(2.15, Math.sqrt(areaFactor));
       const layers = [
-        { n: 170, r0: 0.12, r1: 0.36, a0: 0.05, a1: 0.24, tint: 0.1 },
-        { n: 120, r0: 0.24, r1: 0.68, a0: 0.1, a1: 0.42, tint: 0.24 },
-        { n: 38, r0: 0.5, r1: 1.05, a0: 0.16, a1: 0.55, tint: 0.42, blur: true },
-        { n: 10, r0: 0.95, r1: 1.75, a0: 0.22, a1: 0.68, tint: 0.58, blur: true, sparkle: true },
+        { n: Math.round(360 * density), r0: 0.1, r1: 0.34, a0: 0.08, a1: 0.32, tint: 0.1 },
+        { n: Math.round(260 * density), r0: 0.18, r1: 0.58, a0: 0.12, a1: 0.46, tint: 0.22 },
+        { n: Math.round(95 * density), r0: 0.42, r1: 0.98, a0: 0.18, a1: 0.6, tint: 0.4, blur: true },
+        { n: Math.round(24 * density), r0: 0.82, r1: 1.7, a0: 0.28, a1: 0.75, tint: 0.55, blur: true, sparkle: true },
       ];
       layers.forEach(function(layer, li) {
         for (let i = 0; i < layer.n; i++) {
-          const s = (i + 1) * 977 + li * 7919;
-          const px = M.x0 + 6 + (s * 0.6180339887 % Math.max(1, M.vbW - 12));
-          const py = 6 + ((s * 1.3247179572 + li * 113) % Math.max(1, M.vbH - 12));
+          const s = (i + 1) * 977 + li * 7919 + i * 13;
+          const px = M.x0 + 4 + ((s * 0.6180339887 + li * 47.11) % Math.max(1, M.vbW - 8));
+          const py = 4 + ((s * 1.3247179572 + li * 113 + i * 29) % Math.max(1, M.vbH - 8));
           const t = (s % 100) / 100;
           const rad = layer.r0 + (layer.r1 - layer.r0) * t;
           const alpha = layer.a0 + (layer.a1 - layer.a0) * ((s % 47) / 47);
