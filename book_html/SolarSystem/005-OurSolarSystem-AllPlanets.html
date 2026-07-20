@@ -176,7 +176,7 @@
       height:100%;
     }
     .view-layer-movie .movie-wrap{
-      aspect-ratio:800 / 420;
+      aspect-ratio:800 / 560;
       height:auto;
       max-height:calc(100svh - 132px);
     }
@@ -1073,7 +1073,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
       </div>
       <div class="view-layer view-layer-movie" data-layer="movie" id="viewLayerMovie">
         <div class="movie-wrap">
-          <svg id="movieSvg" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Cinematic solar system view">
+          <svg id="movieSvg" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Cinematic solar system view">
             <defs></defs>
             <g id="movieGroup"></g>
           </svg>
@@ -1162,7 +1162,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     'The solar system is mostly empty space. Even the planets are tiny compared with the distances between them.',
     'Gravity from the Sun keeps every planet in its orbit, like a cosmic tug-of-war in balance.',
   ];
-  const MOVIE_LAYOUT = { contentW: 800, contentH: 420, centerX: 400, centerY: 210, sunR: 148, sunCX: -12, startX: 195, endX: 778 };
+  const MOVIE_LAYOUT = { contentW: 800, contentH: 560, centerX: 400, centerY: 280, sunR: 148, sunCX: -12, startX: 195, endX: 778 };
   const MOVIE_SIZES = { mercury:30, venus:32, earth:34, mars:30, jupiter:56, saturn:52, uranus:38, neptune:36 };
 
   function pickRandom(list) {
@@ -1945,7 +1945,7 @@ const StylizedPlanet = {
         width: String(M.vbW), height: String(M.vbH),
         fill: '#04040e', 'pointer-events': 'none'
       }));
-      const areaFactor = Math.max(1, (M.vbW * M.vbH) / (800 * 420));
+      const areaFactor = Math.max(1, (M.vbW * M.vbH) / (800 * 560));
       const count = Math.round(110 * Math.min(1.85, Math.sqrt(areaFactor)));
       for (let i = 0; i < count; i++) {
         g.appendChild(el('circle', {
@@ -2379,17 +2379,25 @@ const StylizedPlanet = {
       });
       g.appendChild(contentG);
       const sunR = ML.sunR;
+      const glowPad = Math.ceil(sunR * 0.22);
       const sunWrap = el('g', { 'clip-path': 'url(#movieSunLeftClip)' });
-      if (!svg.querySelector('#movieSunLeftClip')) {
-        let defs = svg.querySelector('defs');
-        if (!defs) {
-          defs = el('defs', {});
-          svg.insertBefore(defs, svg.firstChild);
-        }
-        const cp = el('clipPath', { id: 'movieSunLeftClip' });
-        cp.appendChild(el('rect', { x: '0', y: '0', width: '460', height: '420' }));
+      let defs = svg.querySelector('defs');
+      if (!defs) {
+        defs = el('defs', {});
+        svg.insertBefore(defs, svg.firstChild);
+      }
+      let cp = svg.querySelector('#movieSunLeftClip');
+      if (!cp) {
+        cp = el('clipPath', { id: 'movieSunLeftClip' });
         defs.appendChild(cp);
       }
+      while (cp.firstChild) cp.removeChild(cp.firstChild);
+      cp.appendChild(el('rect', {
+        x: '0',
+        y: String(-glowPad),
+        width: '460',
+        height: String(ML.contentH + glowPad * 2)
+      }));
       contentG.appendChild(sunWrap);
       const sunG = el('g', {
         transform: 'translate(' + ML.sunCX + ',' + ML.centerY + ')',
