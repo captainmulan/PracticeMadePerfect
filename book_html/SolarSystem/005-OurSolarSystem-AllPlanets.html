@@ -1127,11 +1127,12 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     contentW: 580,
     vbH: 620,
     cx: 290,
-    sunY: -46,
-    sunR: 148,
-    topClipH: 152,
-    topY: 118,
-    bottomY: 598,
+    sunY: -52,
+    sunR: 168,
+    topClipH: 166,
+    topY: 112,
+    bottomY: 608,
+    sizeScale: 1.18,
   };
   const TELESCOPE_DRAW_R = 108;
   const SUN_FACTS = [
@@ -1544,7 +1545,7 @@ const StylizedPlanet = {
       this._vertVbW = vbW;
       this._vertVbH = vbH;
       this._vertX0 = 0;
-      this._vertSizeBoost = Math.min(1.35, Math.max(1, Math.sqrt((w * h) / (360 * 580))));
+      this._vertSizeBoost = Math.min(1.55, Math.max(1.08, Math.sqrt((w * h) / (320 * 520))));
     },
     verticalMetrics() {
       const vbW = this._vertVbW || VERT_LINE.contentW || 580;
@@ -2177,7 +2178,8 @@ const StylizedPlanet = {
       const L = VERT_LINE;
       const M = this.verticalMetrics();
       const cx = M.cx;
-      const sunR = L.sunR * M.boost;
+      const scale = M.boost * (L.sizeScale || 1);
+      const sunR = L.sunR * scale;
       while (g.firstChild) g.removeChild(g.firstChild);
       g.appendChild(el('rect', { x: '0', y: '0', width: String(M.vbW), height: String(M.vbH), fill: '#050510' }));
       for (let i = 0; i < 160; i++) {
@@ -2204,7 +2206,7 @@ const StylizedPlanet = {
       const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
       PLANETS.forEach((p, i) => {
         const y = L.topY + step * (i + 1);
-        const r = (MOVIE_SIZES[p.id] || 24) * M.boost;
+        const r = (MOVIE_SIZES[p.id] || 24) * scale;
         const hitR = p.id === 'saturn' ? r * 1.35 : r + 8;
         const pg = el('g', {
           class: 'planet-hit',
