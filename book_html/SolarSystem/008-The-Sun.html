@@ -931,7 +931,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
   <div class="sun-game">
     <h2>☀️ Climb to the Sun!</h2>
-    <p class="game-desc">Jump on solar platforms! Drag inside the game to move — tap or flick up to jump. You must reach the Sun itself to win!</p>
+    <p class="game-desc">Jump on solar platforms! Drag inside the game to move — tap or flick up to jump. Touch the Sun or its rays to win!</p>
     <div class="game-canvas-wrap" id="sunGameWrap">
       <div class="game-hud-float">
         <span id="sunGameTimer">⏱ 90s | ❤️❤️❤️</span>
@@ -979,6 +979,8 @@ let sunKeys = {}, sunDragMove = 0, sunJumpReq = false;
 let sunDragPointerId = null, sunDragStartX = 0, sunDragStartY = 0, sunDragStartTime = 0;
 let sunPhys = { grav: 0.58, jumpV: -10.2, speed: 4.8, maxJumpH: 76, maxJumpX: 130 };
 const SUN_BODY_RADIUS = 45;
+const SUN_RAY_LEN = 34;
+const SUN_CENTER_Y = 72;
 
 function sunPhysicsFor(w, h) {
   const scale = Math.max(1, Math.min(w, h) / 380);
@@ -1031,25 +1033,47 @@ function startSunClimb() {
 
 function buildSunPlatforms(w, h, phys) {
   phys = phys || sunPhysicsFor(w, h);
-  const plats = [{ x: w / 2 - 52, y: 0, width: 104, h: 14, isSun: true, sunR: SUN_BODY_RADIUS }];
+  const sunCx = w / 2;
+  const sunW = Math.max(104, 108);
+  const plats = [{
+    x: sunCx - sunW / 2,
+    y: SUN_CENTER_Y,
+    width: sunW,
+    h: 14,
+    isSun: true,
+    sunR: SUN_BODY_RADIUS,
+    sunCx: sunCx,
+    sunCy: SUN_CENTER_Y
+  }];
   const gapMin = Math.max(22, phys.maxJumpH * 0.36);
   const gapMax = Math.max(gapMin + 8, phys.maxJumpH * 0.5);
   const maxDx = Math.min(phys.maxJumpX, w * 0.34);
+  const sunBottom = SUN_CENTER_Y + SUN_BODY_RADIUS;
+  const minPlatY = sunBottom + gapMin * 0.82;
   const steps = Math.max(28, Math.round(h * 2.6 / gapMin));
   let y = h - 20;
   const startW = Math.max(88, Math.min(w - 24, 124));
-  let prevCx = w * 0.5;
+  let prevCx = sunCx;
   plats.push({ x: prevCx - startW / 2, y: y, width: startW, h: 14, isStart: true });
   for (let i = 0; i < steps; i++) {
+    const nextY = y - (gapMin + Math.random() * (gapMax - gapMin));
+    if (nextY < minPlatY) break;
+    y = nextY;
     const pw = Math.max(72, Math.min(w * 0.3, 78 + Math.random() * 36));
-    y -= gapMin + Math.random() * (gapMax - gapMin);
     const dx = (Math.random() * 2 - 1) * maxDx;
     let cx = prevCx + dx;
     cx = Math.max(pw / 2 + 10, Math.min(w - pw / 2 - 10, cx));
     plats.push({ x: cx - pw / 2, y: y, width: pw, h: 14 });
     prevCx = cx;
   }
-  return plats;
+  const regular = plats.filter(p => !p.isSun);
+  const closest = regular.reduce((a, b) => (a.y < b.y ? a : b), regular[0]);
+  const approachTop = sunBottom + gapMin * 0.78;
+  if (!closest || closest.y > approachTop + gapMax * 0.55) {
+    const pw = Math.max(84, Math.min(w * 0.34, 102));
+    plats.push({ x: sunCx - pw / 2, y: approachTop, width: pw, h: 14, isApproach: true });
+  }
+  return plats.filter(p => p.isSun || p.y >= minPlatY - 4);
 }
 
 function resetSunDrag() {
@@ -1137,13 +1161,17 @@ function sunBottomCamY(plat, canvasH) {
 function playerTouchesSun(p) {
   const sun = sunPlatforms.find(pl => pl.isSun);
   if (!sun) return false;
-  const cx = sun.x + sun.width / 2;
-  const cy = sun.y;
+  const cx = sun.sunCx || (sun.x + sun.width / 2);
+  const cy = sun.sunCy || sun.y;
   const sunR = sun.sunR || SUN_BODY_RADIUS;
+  const hitR = sunR + SUN_RAY_LEN + 12;
   const dx = p.x - cx;
   const dy = p.y - cy;
-  const dist = Math.hypot(dx, dy);
-  return dist <= sunR - 12;
+  if (Math.hypot(dx, dy) <= hitR) return true;
+  const pad = 16;
+  return p.y <= cy + sunR + pad &&
+    p.y >= cy - sunR - SUN_RAY_LEN &&
+    Math.abs(p.x - cx) <= sunR + SUN_RAY_LEN + pad;
 }
 
 function endSunClimb(won) {
@@ -1203,9 +1231,21 @@ function sunLoop() {
     sunCamY = sunBottomCamY(sp, sunCanvas.height);
   }
   const bottomCam = sunBottomCamY(sunStartPlat, sunCanvas.height);
+  const sunPlat = sunPlatforms.find(pl => pl.isSun);
+  const sunCy = sunPlat ? (sunPlat.sunCy || sunPlat.y) : SUN_CENTER_Y;
+  const maxCamY = Math.max(0, sunCy + SUN_BODY_RADIUS + SUN_RAY_LEN + 56 - sunCanvas.height);
   const followCam = Math.max(0, p.y - sunCanvas.height * 0.52);
   const stillNearStart = p.y > sunCanvas.height * 0.62;
-  const targetCam = stillNearStart ? bottomCam : Math.max(bottomCam, followCam);
+  const nearSun = p.y < sunCy + SUN_BODY_RADIUS + 100;
+  let targetCam;
+  if (stillNearStart) {
+    targetCam = bottomCam;
+  } else if (nearSun) {
+    targetCam = Math.max(bottomCam, Math.min(maxCamY, p.y - sunCanvas.height * 0.58));
+  } else {
+    targetCam = Math.max(bottomCam, followCam);
+  }
+  targetCam = Math.min(targetCam, maxCamY);
   sunCamY += (targetCam - sunCamY) * 0.15;
   sunHeight = Math.max(sunHeight, Math.floor(-sunCamY / 8));
   if (Math.random() < 0.007) sunFlares.push({ x: Math.random() * sunCanvas.width, y: sunCamY + 60 + Math.random() * 120, w: 32, h: 10, vx: (Math.random() - 0.5) * 4 });
@@ -1236,12 +1276,23 @@ function drawSunClimb() {
     const py = pl.y - sunCamY;
     if (py < -30 || py > H + 30) return;
     if (pl.isSun) {
+      const cx = pl.sunCx || (pl.x + pl.width / 2);
       const sunR = pl.sunR || SUN_BODY_RADIUS;
-      const grd = c.createRadialGradient(pl.x + pl.width / 2, py, 5, pl.x + pl.width / 2, py, sunR + 5);
+      const grd = c.createRadialGradient(cx, py, 5, cx, py, sunR + 5);
       grd.addColorStop(0, '#fff176'); grd.addColorStop(1, '#ff8c00');
       c.fillStyle = grd;
-      c.beginPath(); c.arc(pl.x + pl.width / 2, py, sunR, 0, Math.PI * 2); c.fill();
-      c.font = '36px serif'; c.textAlign = 'center'; c.fillText('☀️', pl.x + pl.width / 2, py + 12);
+      c.beginPath(); c.arc(cx, py, sunR, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = 'rgba(255,230,120,0.9)';
+      c.lineWidth = 4;
+      c.lineCap = 'round';
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2 - Math.PI / 2;
+        c.beginPath();
+        c.moveTo(cx + Math.cos(a) * (sunR - 2), py + Math.sin(a) * (sunR - 2));
+        c.lineTo(cx + Math.cos(a) * (sunR + SUN_RAY_LEN), py + Math.sin(a) * (sunR + SUN_RAY_LEN));
+        c.stroke();
+      }
+      c.font = '36px serif'; c.textAlign = 'center'; c.fillText('☀️', cx, py + 12);
     } else {
       c.fillStyle = '#ff9800';
       c.fillRect(pl.x, py, pl.width, pl.h);
