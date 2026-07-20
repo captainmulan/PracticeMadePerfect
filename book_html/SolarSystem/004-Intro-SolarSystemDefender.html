@@ -112,6 +112,50 @@
             z-index: 100;
             box-sizing: border-box;
         }
+        .game-complete-screen {
+            border-color: rgba(74, 222, 128, 0.75);
+            background: rgba(0, 20, 10, 0.92);
+        }
+        .game-complete-screen h1 {
+            color: #4ade80;
+        }
+        .level-clear-toast {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.92);
+            z-index: 90;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s;
+            min-width: min(88%, 320px);
+            max-width: calc(100% - 24px);
+            padding: 16px 18px;
+            border-radius: 14px;
+            text-align: center;
+            background: rgba(8, 12, 32, 0.92);
+            border: 2px solid rgba(255, 215, 0, 0.75);
+            box-shadow: 0 0 28px rgba(255, 200, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-sizing: border-box;
+        }
+        .level-clear-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .level-clear-toast .toast-title {
+            color: #ffd700;
+            font-size: clamp(18px, 4.5vw, 26px);
+            font-weight: bold;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+        .level-clear-toast .toast-sub {
+            color: #c4b5fd;
+            font-size: clamp(12px, 3vw, 15px);
+            line-height: 1.35;
+        }
         /* game-stage-overlay-v2 */
         .start-screen h1, .game-over-screen h1 {
             color: #ffd700;
@@ -809,9 +853,14 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     <div class="game-stage">
     <canvas id="gameCanvas" width="700" height="600"></canvas>
 
+    <div class="level-clear-toast" id="levelClearToast" aria-live="polite">
+        <div class="toast-title" id="levelClearTitle">Level 1 Cleared!</div>
+        <div class="toast-sub" id="levelClearSub">Great job defending the Sun!</div>
+    </div>
+
     <div class="start-screen" id="startScreen">
         <h1>🌞 Solar System Defender</h1>
-        <p>Protect the Sun! Drag on the game to aim the cannon.<br>Auto-fire every 250ms! Destroy asteroids before they hit!</p>
+        <p>Protect the Sun! Drag on the game to aim the cannon.<br>Auto-fire every 250ms! Destroy asteroids before they hit!<br><strong>Clear 5 levels to win!</strong></p>
         <button class="btn" onclick="startGame()">▶️ Start Game</button>
     </div>
 
@@ -819,6 +868,13 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         <h1>💥 Game Over</h1>
         <p id="finalStats">Final Score: 0 | Level: 1</p>
         <button class="btn" onclick="restartGame()">🔄 Restart</button>
+    </div>
+
+    <div class="game-over-screen game-complete-screen" id="gameCompleteScreen" style="display: none;">
+        <h1>🎉 Game Completed!</h1>
+        <p>You defended the Sun through all 5 levels!</p>
+        <p id="completeStats">Final Score: 0</p>
+        <button class="btn" onclick="restartGame()">🔄 Play Again</button>
     </div>
     </div>
     </div>
@@ -834,12 +890,17 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         const centerY = height / 2;
         const GAME_SCALE = 1;
         const sunRadius = 50 * GAME_SCALE;
+        const MAX_LEVEL = 5;
+        const SCORE_PER_LEVEL = 200;
 
         // Game state
         let gameRunning = false;
         let score = 0;
         let lives = 5;
         let level = 1;
+        let levelClearTimeout = null;
+        let completeGameTimeout = null;
+        let gameFinished = false;
         let cannonAngle = -Math.PI / 2; // Start pointing up
         let lastFireTime = 0;
         const fireInterval = 250; // ms
@@ -963,7 +1024,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             const angle = Math.random() * Math.PI * 2;
             const distance = Math.max(width, height) / 2 + 50;
             const size = (20 + Math.random() * 30) * GAME_SCALE;
-            const speed = (1 + Math.random() * 1.5) + (level - 1) * 0.3;
+            const speed = (1 + Math.random() * 1.5) + (Math.min(level, MAX_LEVEL) - 1) * 0.3;
             
             asteroids.push({
                 x: centerX + Math.cos(angle) * distance,
@@ -1006,6 +1067,73 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             }
         }
 
+        function clearPendingTimers() {
+            if (levelClearTimeout) {
+                clearTimeout(levelClearTimeout);
+                levelClearTimeout = null;
+            }
+            if (completeGameTimeout) {
+                clearTimeout(completeGameTimeout);
+                completeGameTimeout = null;
+            }
+        }
+
+        function hideLevelClearToast() {
+            const toast = document.getElementById('levelClearToast');
+            if (!toast) return;
+            toast.classList.remove('show');
+        }
+
+        function showLevelClearToast(clearedLevel) {
+            const toast = document.getElementById('levelClearToast');
+            const title = document.getElementById('levelClearTitle');
+            const sub = document.getElementById('levelClearSub');
+            if (!toast || !title || !sub) return;
+
+            clearPendingTimers();
+            hideLevelClearToast();
+
+            title.textContent = `Level ${clearedLevel} Cleared!`;
+            if (clearedLevel >= MAX_LEVEL) {
+                sub.textContent = 'All levels complete — amazing work!';
+            } else {
+                sub.textContent = `Level ${clearedLevel + 1} incoming — keep defending the Sun!`;
+            }
+
+            requestAnimationFrame(() => toast.classList.add('show'));
+
+            levelClearTimeout = setTimeout(() => {
+                hideLevelClearToast();
+                levelClearTimeout = null;
+            }, 1600);
+        }
+
+        function scoreNeededForLevel(lvl) {
+            return lvl * SCORE_PER_LEVEL;
+        }
+
+        function checkLevelProgress() {
+            if (gameFinished || level > MAX_LEVEL) return;
+
+            const threshold = scoreNeededForLevel(level);
+            if (score < threshold) return;
+
+            const clearedLevel = level;
+            showLevelClearToast(clearedLevel);
+
+            if (clearedLevel >= MAX_LEVEL) {
+                gameRunning = false;
+                completeGameTimeout = setTimeout(() => {
+                    completeGame();
+                    completeGameTimeout = null;
+                }, 1700);
+                return;
+            }
+
+            level = Math.min(clearedLevel + 1, MAX_LEVEL);
+            document.getElementById('levelDisplay').textContent = level;
+        }
+
         // Check collisions
         function checkCollisions() {
             // Bullet vs Asteroid
@@ -1023,13 +1151,8 @@ body.big-game-page:has(.fire-btn) .game-wrap {
                         bullets.splice(i, 1);
                         asteroids.splice(j, 1);
                         
-                        // Level up check
-                        if (score >= level * 200) {
-                            level++;
-                            document.getElementById('levelDisplay').textContent = level;
-                        }
-                        
                         document.getElementById('scoreDisplay').textContent = score;
+                        checkLevelProgress();
                         break;
                     }
                 }
@@ -1058,6 +1181,8 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
         // Update game objects
         function update() {
+            if (gameFinished) return;
+
             if (keys['ArrowLeft'] || keys['a']) cannonAngle -= 0.08;
             if (keys['ArrowRight'] || keys['d']) cannonAngle += 0.08;
             
@@ -1147,7 +1272,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             if (!gameRunning) return;
             
             // Spawn asteroids
-            const spawnInterval = Math.max(1400 - level * 100, 500);
+            const spawnInterval = Math.max(1400 - Math.min(level, MAX_LEVEL) * 100, 500);
             if (timestamp - lastSpawn > spawnInterval) {
                 spawnAsteroid();
                 lastSpawn = timestamp;
@@ -1161,6 +1286,9 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
         // Start game
         function startGame() {
+            clearPendingTimers();
+            hideLevelClearToast();
+            gameFinished = false;
             score = 0;
             lives = 5;
             level = 1;
@@ -1175,16 +1303,29 @@ body.big-game-page:has(.fire-btn) .game-wrap {
             document.getElementById('levelDisplay').textContent = level;
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('gameCompleteScreen').style.display = 'none';
             
             gameRunning = true;
             requestAnimationFrame(gameLoop);
         }
 
-        // End game
+        // End game (lives lost)
         function endGame() {
+            clearPendingTimers();
+            hideLevelClearToast();
+            gameFinished = true;
             gameRunning = false;
             document.getElementById('finalStats').textContent = `Final Score: ${score} | Level: ${level}`;
             document.getElementById('gameOverScreen').style.display = 'block';
+        }
+
+        function completeGame() {
+            clearPendingTimers();
+            hideLevelClearToast();
+            gameFinished = true;
+            gameRunning = false;
+            document.getElementById('completeStats').textContent = `Final Score: ${score} | All ${MAX_LEVEL} levels cleared!`;
+            document.getElementById('gameCompleteScreen').style.display = 'block';
         }
 
         // Restart game
