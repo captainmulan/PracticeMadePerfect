@@ -3,116 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ocean Adventure - Reef Defender</title>
+  <title>Ocean Adventure - My Aquarium</title>
   <style>
-    .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,.3),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,.2),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;}
-    @keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+    .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,.18),transparent);background-size:900px 150px;animation:rise 9s ease-in-out infinite;}
+    @keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628,#1a365d,#0f4c75);color:#e0f4ff;min-height:100vh;}
-    .game-shell{max-width:700px;margin:0 auto;padding:10px;}
-    .title{text-align:center;font-size:24px;color:#64ffda;margin:8px 0 4px;}
-    .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:10px;line-height:1.5;padding:0 8px;}
-    .hud{display:flex;justify-content:space-between;gap:8px;background:rgba(0,0,0,.35);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-weight:bold;}
-    .game-stage{position:relative;width:100%;aspect-ratio:7/6;max-height:min(52vh,420px);border:2px solid rgba(100,255,218,.45);border-radius:14px;overflow:hidden;background:#062035;touch-action:none;}
-    canvas{display:block;width:100%;height:100%;cursor:crosshair;}
-    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,.92);text-align:center;padding:18px;z-index:5;}
+    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+    .title{text-align:center;font-size:24px;color:#64ffda;margin:6px 0 4px;}
+    .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:8px;line-height:1.5;padding:0 8px;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;padding:8px;background:rgba(0,0,0,.28);border-radius:14px;border:1px solid rgba(100,255,218,.25);}
+    .stamp-btn{width:52px;height:52px;border:2px solid rgba(100,255,218,.35);border-radius:14px;background:rgba(100,255,218,.08);font-size:28px;cursor:pointer;touch-action:manipulation;transition:.15s;}
+    .stamp-btn.selected{border-color:#ffeb3b;background:rgba(255,235,59,.18);box-shadow:0 0 16px rgba(255,235,59,.35);transform:scale(1.06);}
+    .stamp-btn:active{transform:scale(.96);}
+    .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+    .tool-btn{padding:8px 14px;border:none;border-radius:10px;background:rgba(255,255,255,.1);color:#cce7ff;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid rgba(100,255,218,.3);}
+    .tool-btn:active{transform:scale(.97);}
+    .stage-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;}
+    .game-stage{position:relative;flex:1 1 auto;min-height:min(52vh,420px);border:2px solid rgba(100,255,218,.45);border-radius:16px;overflow:hidden;background:#062035;touch-action:none;cursor:crosshair;}
+    canvas{display:block;width:100%;height:100%;}
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,.9);text-align:center;padding:18px;z-index:5;}
     .overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}
-    .overlay p{color:#cce7ff;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:300px;}
+    .overlay p{color:#cce7ff;font-size:14px;line-height:1.55;margin-bottom:14px;max-width:320px;}
     .btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
-    .nav-hint{margin-top:14px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,.1);padding:10px;border-radius:10px;}
-  
-/* ocean-ui-audit-overrides */
-body.reading-page,
-body.reading-page:has(.container),
-body.reading-page:has(.quiz-card),
-body.reading-page:has(.character-grid) {
-  overflow-y: auto !important;
-  height: auto !important;
-}
-body.reading-page .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  display: block;
-}
-body.reading-page:has(.character-grid) .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  justify-content: flex-start;
-}
-@media (max-width: 639px) {
-  body.big-planet-page .ocean-display {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: min(78vw, calc(100svh - 220px)) !important;
-    min-height: min(56vw, 220px) !important;
-    box-sizing: border-box !important;
-  }
-  body.big-planet-page .container {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-  }
-  body.big-planet-page .planet-game .game-canvas,
-  body:has(.planet-game) .game-canvas {
-    height: min(48vh, 400px) !important;
-    min-height: min(40vh, 280px) !important;
-    max-height: min(52vh, 420px) !important;
-  }
-  .planet-game { padding: 10px !important; margin-top: 10px !important; }
-  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }
-  .touch-controls { margin-top: 6px; gap: 6px; }
-  .touch-btn { min-height: 48px; font-size: 18px; }
-}
-@media (min-width: 640px) {
-  body.big-planet-page .ocean-display {
-    max-height: min(92vw, calc(100svh - 156px)) !important;
-    min-height: min(56vw, calc(100svh - 200px)) !important;
-  }
-}
-body.big-planet-page .planet-game .game-canvas {
-  width: 100% !important;
-  height: min(50vh, 440px) !important;
-  min-height: min(42vh, 300px) !important;
-  max-height: min(56vh, 480px) !important;
-}
-body.big-planet-page .planet-game { margin-bottom: 8px !important; }
-body.big-game-page:has(.game-shell) {
-  overflow: hidden !important;
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: 100% !important;
-}
-html:has(body.big-game-page) {
-  height: 100% !important;
-  min-height: 100% !important;
-  overflow: hidden !important;
-}
-body.big-game-page:has(.game-shell) .game-shell {
-  min-height: 100% !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-body.big-game-page:has(.game-shell) .stage-wrap {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-body.big-game-page:has(.game-shell) .game-stage {
-  flex: 1 1 auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: none !important;
-  aspect-ratio: unset !important;
-  margin: 0 !important;
-}
-      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}
-    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}
+    .nav-hint{margin-top:10px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,.1);padding:10px;border-radius:10px;flex-shrink:0;}
+    body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}
+    html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}
+    body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
+    body.big-game-page:has(.game-shell) .stage-wrap{flex:1 1 auto!important;min-height:0!important;}
+    body.big-game-page:has(.game-shell) .game-stage{flex:1 1 auto!important;min-height:0!important;max-height:none!important;aspect-ratio:unset!important;}
   </style>
 <script>
 (function (w) {
@@ -137,31 +56,61 @@ body.big-game-page:has(.game-shell) .game-stage {
 <body class="big-game-page">
 <div class="bubbles"></div>
 <div class="game-shell">
-  <h1 class="title">🪸 Reef Defender</h1>
-  <p class="game-desc">Tap trash and pollution before they hit the coral reef! Protect the ocean home.</p>
-  <div class="hud"><span id="hudScore">⭐ 0</span><span id="hudTime">⏱ 45s</span><span id="hudLives">❤️❤️❤️</span></div>
-  <div class="game-stage" id="stage">
-    <canvas id="gameCanvas"></canvas>
-    <div class="overlay" id="startScreen">
-      <h3>🌊 Defend the Reef!</h3>
-      <p>Tap 🥤 🛢️ 🧴 items falling toward the coral. Don't let 3 pieces hit the reef!</p>
-      <button class="btn" type="button" onclick="startGame()">▶️ Start</button>
-    </div>
-    <div class="overlay" id="endScreen" style="display:none;">
-      <h3 id="endTitle">🎉 Reef Saved!</h3>
-      <p id="endStats">Score: 0</p>
-      <button class="btn" type="button" onclick="startGame()">🔄 Play Again</button>
+  <h1 class="title">🐠 My Relaxing Aquarium</h1>
+  <p class="game-desc">Pick fish, coral, or rocks — tap the tank to paint your underwater world. No timer, just calm ocean vibes.</p>
+
+  <div class="stamp-row" id="stampRow">
+    <button type="button" class="stamp-btn selected" data-emoji="🐠" title="Clownfish">🐠</button>
+    <button type="button" class="stamp-btn" data-emoji="🐟" title="Fish">🐟</button>
+    <button type="button" class="stamp-btn" data-emoji="🐡" title="Pufferfish">🐡</button>
+    <button type="button" class="stamp-btn" data-emoji="🦈" title="Shark">🦈</button>
+    <button type="button" class="stamp-btn" data-emoji="🐙" title="Octopus">🐙</button>
+    <button type="button" class="stamp-btn" data-emoji="🐢" title="Turtle">🐢</button>
+    <button type="button" class="stamp-btn" data-emoji="🪸" title="Coral">🪸</button>
+    <button type="button" class="stamp-btn" data-emoji="🪨" title="Rock">🪨</button>
+    <button type="button" class="stamp-btn" data-emoji="🐚" title="Shell">🐚</button>
+    <button type="button" class="stamp-btn" data-emoji="🌿" title="Seaweed">🌿</button>
+  </div>
+  <div class="tool-row">
+    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnClear">🧹 Clear Tank</button>
+    <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="game-stage" id="stage">
+      <canvas id="gameCanvas"></canvas>
+      <div class="overlay" id="startScreen">
+        <h3>🌊 Welcome to Your Tank!</h3>
+        <p>Choose a stamp above, then tap anywhere in the water to place it. Build a peaceful reef — take your time!</p>
+        <button class="btn" type="button" id="btnStart">▶️ Start Decorating</button>
+      </div>
     </div>
   </div>
+
   <div class="nav-hint">
     <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
     <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
   </div>
 </div>
 <script>
-let canvas, ctx, running = false, score = 0, timeLeft = 45, lives = 3, timerId, animId;
-let trash = [], reefY, spawnTimer = 0;
-const icons = ['🥤', '🛢️', '🧴', '🚬', '⚙️'];
+const STORAGE_KEY = 'book:oceanadventure:intro-aquarium';
+const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+let canvas, ctx, running = false, animId;
+let selectedEmoji = '🐠';
+let decorations = [];
+let bubbles = [];
+
+function loadTank() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) decorations = JSON.parse(raw);
+  } catch (e) { decorations = []; }
+}
+
+function saveTank() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(decorations)); } catch (e) {}
+}
 
 function resize() {
   const stage = document.getElementById('stage');
@@ -175,128 +124,160 @@ function resize() {
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  reefY = h - 36;
 }
-function drawBg() {
-  const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  g.addColorStop(0, '#0a2a4a'); g.addColorStop(1, '#041525');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < 18; i++) {
-    ctx.fillStyle = 'rgba(255,255,255,' + (0.08 + (i % 3) * 0.05) + ')';
-    ctx.beginPath(); ctx.arc((i * 73) % canvas.width, (i * 41 + Date.now() * 0.02) % canvas.height, 1.2 + (i % 2), 0, Math.PI * 2); ctx.fill();
-  }
-  ctx.fillStyle = '#ff6f61';
-  ctx.fillRect(0, reefY, canvas.width, 10);
-  ctx.fillStyle = '#26a69a';
-  for (let x = 10; x < canvas.width; x += 28) {
-    ctx.beginPath(); ctx.moveTo(x, reefY); ctx.lineTo(x + 8, reefY - 18 - (x % 3) * 6); ctx.lineTo(x + 16, reefY); ctx.fill();
+
+function initBubbles(count) {
+  bubbles = [];
+  for (let i = 0; i < count; i++) {
+    bubbles.push({
+      x: Math.random() * 400,
+      y: Math.random() * 400,
+      r: 1.5 + Math.random() * 3,
+      speed: 0.3 + Math.random() * 0.8,
+      wobble: Math.random() * Math.PI * 2,
+    });
   }
 }
-function spawnTrash() {
-  trash.push({ x: 20 + Math.random() * (canvas.width - 40), y: -20, r: 18 + Math.random() * 8, icon: icons[Math.floor(Math.random() * icons.length)], speed: 1.2 + Math.random() * 1.4 });
-}
-function drawEmojiSprite(emoji, x, y, sizePx) {
+
+function drawEmoji(emoji, x, y, size) {
   ctx.save();
   ctx.globalAlpha = 1;
-  ctx.font = 'bold ' + sizePx + 'px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+  ctx.font = 'bold ' + size + 'px ' + FONT;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
   ctx.fillText(emoji, x, y);
   ctx.restore();
 }
-function drawTrash() {
-  trash.forEach(t => drawEmojiSprite(t.icon, t.x, t.y, 26));
-}
-function updateHud() {
-  document.getElementById('hudScore').textContent = '⭐ ' + score;
-  document.getElementById('hudTime').textContent = '⏱ ' + timeLeft + 's';
-  document.getElementById('hudLives').textContent = '❤️'.repeat(Math.max(0, lives));
-}
-function endGame(won) {
-  running = false;
-  clearInterval(timerId);
-  cancelAnimationFrame(animId);
-  document.getElementById('endTitle').textContent = won ? '🎉 Reef Saved!' : '💔 Reef Damaged!';
-  document.getElementById('endStats').textContent = 'Score: ' + score + ' | Time left: ' + timeLeft + 's';
-  document.getElementById('endScreen').style.display = 'flex';
-}
-function loop() {
-  if (!running) return;
-  spawnTimer++;
-  if (spawnTimer > 38) { spawnTimer = 0; spawnTrash(); }
-  trash.forEach((t, i) => {
-    t.y += t.speed;
-    if (t.y + t.r >= reefY) {
-      trash.splice(i, 1);
-      lives--;
-      updateHud();
-      if (lives <= 0) { endGame(false); return; }
-    }
+
+function drawTankBg(w, h, t) {
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, '#4fc3f7');
+  g.addColorStop(0.35, '#0288d1');
+  g.addColorStop(0.72, '#01579b');
+  g.addColorStop(1, '#002171');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.07)';
+  for (let i = 0; i < 5; i++) {
+    const rx = (w * 0.15) + i * 18;
+    const ry = h * 0.08 + Math.sin(t * 0.001 + i) * 6;
+    ctx.beginPath();
+    ctx.ellipse(w * 0.5 + (i - 2) * 40, ry, rx, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const sand = h - 42;
+  ctx.fillStyle = '#c2a878';
+  ctx.fillRect(0, sand, w, h - sand);
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
+  ctx.fillRect(0, sand, w, 6);
+
+  bubbles.forEach(b => {
+    b.y -= b.speed;
+    b.x += Math.sin(t * 0.002 + b.wobble) * 0.4;
+    if (b.y < -8) { b.y = h + 8; b.x = Math.random() * w; }
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.beginPath();
+    ctx.arc(b.x % w, b.y, b.r, 0, Math.PI * 2);
+    ctx.fill();
   });
-  drawBg();
-  drawTrash();
+}
+
+function updateCount() {
+  document.getElementById('countLabel').textContent = '🎨 ' + decorations.length + ' item' + (decorations.length === 1 ? '' : 's');
+}
+
+function loop(t) {
+  if (!running) return;
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  drawTankBg(w, h, t);
+
+  decorations.forEach(d => {
+    const bob = Math.sin(t * 0.002 + d.phase) * (d.kind === 'rock' || d.kind === 'coral' ? 1.5 : 5);
+    const drift = d.kind === 'fish' ? Math.sin(t * 0.001 + d.phase) * 8 : 0;
+    drawEmoji(d.emoji, d.x + drift, d.y + bob, d.size);
+  });
+
   animId = requestAnimationFrame(loop);
 }
-function hitTest(x, y) {
-  for (let i = trash.length - 1; i >= 0; i--) {
-    const t = trash[i];
-    if (Math.hypot(x - t.x, y - t.y) < t.r + 8) {
-      trash.splice(i, 1);
-      score += 10;
-      updateHud();
-      return;
-    }
-  }
-}
-function startGame() {
-  resize();
-  running = true; score = 0; timeLeft = 45; lives = 3; trash = []; spawnTimer = 0;
-  document.getElementById('startScreen').style.display = 'none';
-  document.getElementById('endScreen').style.display = 'none';
-  updateHud();
-  clearInterval(timerId);
-  timerId = setInterval(function () {
-    if (!running) return;
-    timeLeft--;
-    updateHud();
-    if (timeLeft <= 0) endGame(true);
-  }, 1000);
-  loop();
-}
-canvas = document.getElementById('gameCanvas');
-canvas.addEventListener('click', e => {
-  if (!running) return;
+
+function placeAt(clientX, clientY) {
   const r = canvas.getBoundingClientRect();
-  hitTest((e.clientX - r.left) * (canvas.width / r.width), (e.clientY - r.top) * (canvas.height / r.height));
+  const x = clientX - r.left;
+  const y = clientY - r.top;
+  if (y > r.height - 36) return;
+  const rockish = selectedEmoji === '🪨' || selectedEmoji === '🪸' || selectedEmoji === '🐚' || selectedEmoji === '🌿';
+  decorations.push({
+    emoji: selectedEmoji,
+    x: x,
+    y: y,
+    size: rockish ? 26 + Math.random() * 10 : 28 + Math.random() * 14,
+    phase: Math.random() * Math.PI * 2,
+    kind: rockish ? (selectedEmoji === '🪨' ? 'rock' : 'coral') : 'fish',
+  });
+  saveTank();
+  updateCount();
+}
+
+function startDecorating() {
+  document.getElementById('startScreen').style.display = 'none';
+  running = true;
+  loop(0);
+}
+
+document.getElementById('btnStart').onclick = startDecorating;
+
+document.querySelectorAll('.stamp-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedEmoji = btn.dataset.emoji;
+  });
 });
-canvas.addEventListener('touchstart', e => {
-  if (!running) return;
-  e.preventDefault();
-  const t = e.touches[0], r = canvas.getBoundingClientRect();
-  hitTest((t.clientX - r.left) * (canvas.width / r.width), (t.clientY - r.top) * (canvas.height / r.height));
-}, { passive: false });
-window.addEventListener('resize', () => { if (running) resize(); });
+
+document.getElementById('btnUndo').onclick = () => {
+  if (!decorations.length) return;
+  decorations.pop();
+  saveTank();
+  updateCount();
+};
+
+document.getElementById('btnClear').onclick = () => {
+  decorations = [];
+  saveTank();
+  updateCount();
+};
+
+function bindTap() {
+  const hit = e => {
+    if (document.getElementById('startScreen').style.display !== 'none') return;
+    const p = e.touches ? e.touches[0] : e;
+    placeAt(p.clientX, p.clientY);
+  };
+  canvas.addEventListener('click', hit);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+}
+
+loadTank();
 resize();
-</script>
-<script>
-/* ocean-ui-fit-frame */
-(function () {
-  function fitGameFrame() {
-    if (!document.body.classList.contains("big-game-page")) return;
-    const h = window.innerHeight + "px";
+initBubbles(24);
+updateCount();
+bindTap();
+window.addEventListener('resize', resize);
+
+(function fitGameFrame() {
+  function fit() {
+    const h = window.innerHeight + 'px';
     document.documentElement.style.height = h;
-    document.documentElement.style.minHeight = h;
     document.body.style.height = h;
-    document.body.style.minHeight = h;
-    const shell = document.querySelector(".game-shell");
-    if (shell) { shell.style.height = h; shell.style.minHeight = h; }
+    const shell = document.querySelector('.game-shell');
+    if (shell) shell.style.minHeight = h;
   }
-  fitGameFrame();
-  window.addEventListener("resize", fitGameFrame);
-  if (typeof ResizeObserver !== "undefined") {
-    new ResizeObserver(fitGameFrame).observe(document.documentElement);
-  }
+  fit();
+  window.addEventListener('resize', fit);
 })();
 </script>
 </body>

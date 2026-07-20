@@ -5,174 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ocean Adventure - Ocean Overview</title>
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-    body{
-      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
-      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
-      color:#e0f4ff;
-      min-height:100vh;
-      position:relative;
-      overflow-x:hidden;
-    }
-    .bubbles{
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      pointer-events:none;
-      background-image:
-        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
-      background-size:900px 150px;
-      animation:rise 8s ease-in-out infinite;
-      z-index:0;
-    }
-    @keyframes rise{
-      0%,100%{transform:translateY(0);}
-      50%{transform:translateY(-20px);}
-    }
-    .container{
-      max-width:640px;
-      margin:auto;
-      padding:24px 16px 40px;
-      position:relative;
-      z-index:1;
-    }
-    .header{
-      text-align:center;
-      margin-bottom:20px;
-    }
-    h1{
-      font-size:32px;
-      color:#64ffda;
-      margin-bottom:8px;
-    }
-    .subtitle{
-      color:#80deea;
-      font-size:16px;
-    }
-    .ocean-display{
-      position:relative;
-      height:300px;
-      margin:20px 0;
-      border-radius:20px;
-      overflow:hidden;
-      background:linear-gradient(180deg,#4fc3f7 0%,#0288d1 30%,#01579b 60%,#002171 100%);
-    }
-    .zone{
-      position:absolute;
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:14px;
-      font-weight:bold;
-      color:#fff;
-      text-shadow:0 0 10px rgba(0,0,0,0.5);
-      cursor:pointer;
-      transition:transform 0.3s;
-    }
-    .zone:hover{
-      transform:scale(1.02);
-    }
-    .sunlight{
-      top:0;
-      height:25%;
-      background:linear-gradient(180deg,#81d4fa,#4fc3f7);
-    }
-    .twilight{
-      top:25%;
-      height:25%;
-      background:linear-gradient(180deg,#4fc3f7,#0288d1);
-    }
-    .midnight{
-      top:50%;
-      height:25%;
-      background:linear-gradient(180deg,#0288d1,#01579b);
-    }
-    .abyss{
-      top:75%;
-      height:25%;
-      background:linear-gradient(180deg,#01579b,#002171);
-    }
-    .creature{
-      position:absolute;
-      font-size:24px;
-      animation:swim 4s ease-in-out infinite;
-    }
-    @keyframes swim{
-      0%,100%{transform:translateX(0) translateY(0);}
-      50%{transform:translateX(20px) translateY(-10px);}
-    }
-    .card{
-      background:rgba(255,255,255,0.1);
-      backdrop-filter:blur(10px);
-      border-radius:20px;
-      padding:20px;
-      margin-bottom:16px;
-      border:1px solid rgba(255,255,255,0.1);
-    }
-    .card h2{
-      color:#64ffda;
-      margin-bottom:12px;
-      font-size:20px;
-    }
-    .card p{
-      font-size:16px;
-      line-height:1.7;
-      margin-bottom:10px;
-    }
-    .controls{
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      margin-top:16px;
-    }
-    .control-btn{
-      padding:10px 20px;
-      background:rgba(100,255,218,0.2);
-      border:2px solid #64ffda;
-      border-radius:12px;
-      color:#64ffda;
-      font-size:14px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.2s;
-    }
-    .control-btn:hover{
-      background:rgba(100,255,218,0.3);
-    }
-    .nav-hint{
-      margin-top:20px;
-      text-align:center;
-      font-size:13px;
-      color:#80deea;
-      background:rgba(128,222,234,0.1);
-      padding:10px;
-      border-radius:10px;
-    }
-  
-    .planet-game{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:20px;padding:20px;margin:20px 0;border:1px solid rgba(100,255,218,0.35);}
-    .planet-game h2{color:#64ffda;margin-bottom:8px;font-size:20px;text-align:center;}
-    .planet-game .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:12px;line-height:1.5;padding:0 6px;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);color:#e0f4ff;min-height:100vh;position:relative;overflow-x:hidden;}
+    .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.18),transparent),radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.25),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;z-index:0;}
+    @keyframes rise{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+    .container{max-width:640px;margin:auto;padding:12px 14px 24px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:12px;}
+    h1{font-size:28px;color:#64ffda;margin-bottom:6px;}
+    .subtitle{color:#80deea;font-size:16px;line-height:1.5;}
+    .panel{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;margin-bottom:16px;border:1px solid rgba(100,255,218,0.25);}
+    .ocean-panel{padding:12px;}
+    .view-stage{position:relative;width:100%;height:min(98vw,calc(100svh - 118px));max-height:min(98vw,calc(100svh - 118px));aspect-ratio:1;margin:0 auto;border-radius:16px;overflow:hidden;background:#041525;box-shadow:inset 0 0 40px rgba(0,0,0,0.45);}
+    .view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
+    .view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
+    .view-layer canvas{display:block;width:100%;height:100%;}
+    .ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
+    .ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#0288d1,#01579b);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
+    .ctrl-btn:active{transform:scale(.96);}
+    .ctrl-btn.active{background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;}
+    .info-panel{margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.28);border-radius:14px;border-left:4px solid #64ffda;}
+    .info-panel h2{color:#64ffda;font-size:18px;margin-bottom:8px;}
+    .info-panel p{font-size:15px;line-height:1.65;color:#e0f4ff;}
+    .scroll-cue{text-align:center;color:#80deea;font-size:13px;margin:10px 0;opacity:.9;}
+    .minigame-panel h2{color:#64ffda;font-size:20px;text-align:center;margin-bottom:8px;}
+    .minigame-panel .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:12px;line-height:1.5;}
     .game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
     .game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
     .game-canvas{position:relative;width:100%;height:280px;min-height:220px;max-height:280px;background:#062035;border-radius:16px;overflow:hidden;border:2px solid rgba(100,255,218,0.35);touch-action:none;}
@@ -183,138 +39,18 @@
     .overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
     .touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
     .touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
-  
-/* ocean-ui-audit-overrides */
-body.reading-page,
-body.reading-page:has(.container),
-body.reading-page:has(.quiz-card),
-body.reading-page:has(.character-grid) {
-  overflow-y: auto !important;
-  height: auto !important;
-}
-body.reading-page .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  display: block;
-}
-body.reading-page:has(.character-grid) .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  justify-content: flex-start;
-}
-@media (max-width: 639px) {
-  body.big-planet-page .ocean-display {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: min(78vw, calc(100svh - 220px)) !important;
-    min-height: min(56vw, 220px) !important;
-    box-sizing: border-box !important;
-  }
-  body.big-planet-page .container {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-  }
-  body.big-planet-page .planet-game .game-canvas,
-  body:has(.planet-game) .game-canvas {
-    height: min(48vh, 400px) !important;
-    min-height: min(40vh, 280px) !important;
-    max-height: min(52vh, 420px) !important;
-  }
-  .planet-game { padding: 10px !important; margin-top: 10px !important; }
-  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }
-  .touch-controls { margin-top: 6px; gap: 6px; }
-  .touch-btn { min-height: 48px; font-size: 18px; }
-}
-@media (min-width: 640px) {
-  body.big-planet-page .ocean-display {
-    max-height: min(92vw, calc(100svh - 156px)) !important;
-    min-height: min(56vw, calc(100svh - 200px)) !important;
-  }
-}
-body.big-planet-page .planet-game .game-canvas {
-  width: 100% !important;
-  height: min(50vh, 440px) !important;
-  min-height: min(42vh, 300px) !important;
-  max-height: min(56vh, 480px) !important;
-}
-body.big-planet-page .planet-game { margin-bottom: 8px !important; }
-body.big-game-page:has(.game-shell) {
-  overflow: hidden !important;
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: 100% !important;
-}
-html:has(body.big-game-page) {
-  height: 100% !important;
-  min-height: 100% !important;
-  overflow: hidden !important;
-}
-body.big-game-page:has(.game-shell) .game-shell {
-  min-height: 100% !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-body.big-game-page:has(.game-shell) .stage-wrap {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-body.big-game-page:has(.game-shell) .game-stage {
-  flex: 1 1 auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: none !important;
-  aspect-ratio: unset !important;
-  margin: 0 !important;
-}
-/* big-ocean-first-view */
-body.big-planet-page {
-  overflow-x: hidden;
-  overflow-y: auto !important;
-  height: auto !important;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-}
-body.big-planet-page .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  display: block;
-  padding: 8px 10px 32px;
-}
-body.big-planet-page .header { margin-bottom: 8px; }
-body.big-planet-page .header h1 { font-size: 24px; margin-bottom: 4px; }
-body.big-planet-page .ocean-display {
-  margin: 10px 0 8px;
-  height: min(72vw, calc(100svh - 220px));
-  min-height: min(56vw, 240px);
-  max-height: min(78vw, 320px);
-}
-body.big-planet-page .scroll-cue {
-  text-align: center;
-  color: #80deea;
-  font-size: 13px;
-  margin: 6px 0 10px;
-  opacity: 0.9;
-}
-body.big-planet-page .card { margin-bottom: 10px; }
-body.big-planet-page .nav-hint {
-  margin-top: 8px;
-  padding-bottom: 8px;
-  font-size: 12px;
-  line-height: 1.45;
-}
-      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}
-    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}
-      .ocean-info-panel{display:none;margin:10px 0;padding:12px 14px;background:rgba(255,255,255,0.1);border-radius:12px;border-left:4px solid #64ffda;font-size:14px;line-height:1.55;}
-    .ocean-info-panel strong{color:#64ffda;font-size:15px;}
+    .nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,0.1);padding:10px;border-radius:10px;}
+    body.all-zones-page{overflow-x:hidden;overflow-y:auto!important;height:auto!important;min-height:100%;-webkit-overflow-scrolling:touch;}
+    body.all-zones-page .container{height:auto!important;max-height:none!important;overflow:visible!important;display:block;}
+    body.all-zones-page .header{margin-bottom:8px;}
+    body.all-zones-page .header h1{font-size:24px;}
+    body.all-zones-page .ocean-panel{margin-bottom:10px;padding:10px;}
+    body.all-zones-page .info-panel,.body.all-zones-page .minigame-panel{margin-top:8px;}
+    @media(max-width:639px){
+      body.all-zones-page .view-stage{height:min(78vw,calc(100svh - 220px));max-height:min(78vw,calc(100svh - 220px));}
+      body.all-zones-page .game-canvas{height:min(48vh,400px)!important;min-height:min(40vh,280px)!important;max-height:min(52vh,420px)!important;}
+      .ctrl-btn{font-size:11px;padding:8px 6px;}
+    }
   </style>
 <script>
 (function (w) {
@@ -336,141 +72,361 @@ body.big-planet-page .nav-hint {
 })(window);
 </script>
 </head>
-<body class="big-planet-page">
+<body class="all-zones-page">
 <div class="bubbles"></div>
 <div class="container">
   <div class="header">
-    <h1>🌊 Ocean Overview</h1>
-    <div class="subtitle">Explore the different ocean zones!</div>
+    <h1>🌊 Our Ocean</h1>
+    <div class="subtitle">Explore the zones from sunlight to the abyss!</div>
   </div>
 
-  <div class="ocean-display" id="oceanDisplay">
-    <div class="zone sunlight" onclick="showZoneInfo('sunlight')">☀️ Sunlight Zone (0-200m)</div>
-    <div class="zone twilight" onclick="showZoneInfo('twilight')">🌅 Twilight Zone (200-1000m)</div>
-    <div class="zone midnight" onclick="showZoneInfo('midnight')">🌙 Midnight Zone (1000-4000m)</div>
-    <div class="zone abyss" onclick="showZoneInfo('abyss')">🕳️ Abyss Zone (4000m+)</div>
-    
-    <div class="creature" style="top:10%;left:10%;">🐠</div>
-    <div class="creature" style="top:15%;left:70%;animation-delay:1s;">🐟</div>
-    <div class="creature" style="top:35%;left:30%;animation-delay:0.5s;">🦑</div>
-    <div class="creature" style="top:60%;left:60%;animation-delay:1.5s;">🐙</div>
-    <div class="creature" style="top:85%;left:20%;animation-delay:2s;">🦈</div>
-  </div>
-  <p class="scroll-cue">↓ Scroll for facts and the mini-game</p>
-  <div class="controls">
-    <button class="control-btn" onclick="toggleAnimation()">⏯️ Pause/Play</button>
-    <button class="control-btn" onclick="resetView()">🔄 Reset</button>
-  </div>
-
-  <div class="card">
-    <h2>🌟 The Ocean Zones</h2>
-    <p>
-      The ocean is divided into different zones based on how deep they are. Each zone has different light, temperature, and amazing creatures that live there!
-    </p>
-    <p>
-      Click on each zone in the ocean display above to learn more about it!
-    </p>
-  </div>
-
-  <div class="card">
-    <h2>☀️ Sunlight Zone</h2>
-    <p>
-      The top layer of the ocean where sunlight reaches. This is where most sea life lives! You'll find colorful fish, coral reefs, and sea turtles here.
-    </p>
-    <p>
-      Depth: 0 to 200 meters
-    </p>
+  <div class="panel ocean-panel">
+    <div class="view-stage" id="viewStage">
+      <div class="view-layer view-layer-vertical active" data-layer="vertical">
+        <canvas id="canvasVertical" aria-label="Vertical ocean zones cross-section"></canvas>
+      </div>
+      <div class="view-layer view-layer-surface" data-layer="surface">
+        <canvas id="canvasSurface" aria-label="Ocean surface split view"></canvas>
+      </div>
+      <div class="view-layer view-layer-reef" data-layer="reef">
+        <canvas id="canvasReef" aria-label="Coral reef window view"></canvas>
+      </div>
+      <div class="view-layer view-layer-deep" data-layer="deep">
+        <canvas id="canvasDeep" aria-label="Deep ocean light rays"></canvas>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <button type="button" class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
+      <button type="button" class="ctrl-btn" id="btnSpeed">🐠 1×</button>
+      <button type="button" class="ctrl-btn" id="btnViewMode">👁️ View1</button>
+      <button type="button" class="ctrl-btn" id="btnReset">🔄 Reset</button>
+    </div>
+    <div class="info-panel" id="infoPanel">
+      <h2>🌊 Our Ocean</h2>
+      <p>The ocean covers more than 70% of Earth! It is split into zones by depth and sunlight — tap a zone in View1 to learn more.</p>
+    </div>
   </div>
 
-  <div class="card">
-    <h2>🌅 Twilight Zone</h2>
-    <p>
-      Also called the mesopelagic zone. Very little sunlight reaches here, so it's always dim. Creatures here have big eyes to see in the dark!
-    </p>
-    <p>
-      Depth: 200 to 1,000 meters
-    </p>
-  </div>
+  <p class="scroll-cue">↓ Scroll for the zone collector mini-game</p>
 
-  <div class="card">
-    <h2>🌙 Midnight Zone</h2>
-    <p>
-      No sunlight reaches this zone at all! It's completely dark. Creatures here make their own light (bioluminescence) to see and communicate.
-    </p>
-    <p>
-      Depth: 1,000 to 4,000 meters
-    </p>
-  </div>
-
-  <div class="card">
-    <h2>🕳️ Abyss Zone</h2>
-    <p>
-      The deepest part of the ocean! It's extremely cold and the pressure is very high. Strange and amazing creatures live here that we're still discovering!
-    </p>
-    <p>
-      Depth: 4,000 meters and deeper
-    </p>
-  </div>
-
-
-  <div class="planet-game">
+  <div class="panel minigame-panel">
     <h2>🌊 Zone Collector</h2>
     <p class="game-desc">Move ← → to catch zone icons ☀️🌅🌙🕳️. Avoid trash! Reach 60 points.</p>
     <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
     <div class="game-canvas" id="ogCanvasBox">
       <canvas id="ogCanvas"></canvas>
-      <div class="game-overlay" id="ogStart"><h3>🌊 Zone Collector</h3><p>Move ← → to catch zone icons ☀️🌅🌙🕳️. Avoid trash! Reach 60 points.</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
+      <div class="game-overlay" id="ogStart"><h3>🌊 Zone Collector</h3><p>Move ← → to catch zone icons. Avoid trash!</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
       <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
     </div>
     <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
   </div>
 
-<div class="nav-hint">
-  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
-  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
-</div>
-
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
 </div>
 
 <script>
-let animationPaused = false;
+(function () {
+  const SPEEDS = [0.5, 1, 2];
+  const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+  const ZONES = [
+    { id: 'sunlight', name: 'Sunlight Zone', emoji: '☀️', top: 0, h: 0.25, c1: '#81d4fa', c2: '#4fc3f7',
+      fact: 'Sunlight reaches all the way down! Coral reefs, turtles, and colorful fish live here (0–200 m).' },
+    { id: 'twilight', name: 'Twilight Zone', emoji: '🌅', top: 0.25, h: 0.25, c1: '#4fc3f7', c2: '#0288d1',
+      fact: 'Dim blue light — creatures here have big eyes and many glow with bioluminescence (200–1,000 m).' },
+    { id: 'midnight', name: 'Midnight Zone', emoji: '🌙', top: 0.5, h: 0.25, c1: '#0288d1', c2: '#01579b',
+      fact: 'No sunlight at all! Anglerfish, giant squid, and glowing jellies rule the dark (1,000–4,000 m).' },
+    { id: 'abyss', name: 'Abyss Zone', emoji: '🕳️', top: 0.75, h: 0.25, c1: '#01579b', c2: '#002171',
+      fact: 'Freezing, crushing pressure — strange deep-sea creatures are still being discovered (4,000 m+).' },
+  ];
+  const VIEW_MODES = [
+    { id: 'vertical', layer: 'vertical', label: 'Zone Stack', desc: 'All four ocean zones stacked — like diving deeper and deeper!' },
+    { id: 'surface', layer: 'surface', label: 'Surface', desc: 'Half sky, half sea — see the waves and the world below the surface.' },
+    { id: 'reef', layer: 'reef', label: 'Reef Window', desc: 'Peek through a rocky cave at a bustling coral reef full of life.' },
+    { id: 'deep', layer: 'deep', label: 'Deep Rays', desc: 'Sunbeams pierce the deep blue — fish silhouettes drift through the light.' },
+  ];
+  const SWIMMERS = [
+    { emoji: '🐠', zone: 0, x: 0.15, y: 0.12, sp: 0.0008 },
+    { emoji: '🐟', zone: 0, x: 0.72, y: 0.18, sp: 0.0011 },
+    { emoji: '🦑', zone: 1, x: 0.35, y: 0.38, sp: 0.0009 },
+    { emoji: '🐙', zone: 1, x: 0.68, y: 0.42, sp: 0.0012 },
+    { emoji: '⭐', zone: 2, x: 0.22, y: 0.62, sp: 0.001 },
+    { emoji: '🦈', zone: 2, x: 0.78, y: 0.68, sp: 0.0007 },
+    { emoji: '🐟', zone: 3, x: 0.45, y: 0.86, sp: 0.0006 },
+  ];
 
-const zoneFacts = {
-  sunlight: { title: '☀️ Sunlight Zone', fact: 'The top layer where sunlight reaches — home to coral reefs and most ocean life!' },
-  twilight: { title: '🌅 Twilight Zone', fact: 'Dim blue light — many creatures glow with bioluminescence here!' },
-  midnight: { title: '🌙 Midnight Zone', fact: 'No sunlight at all — amazing deep-sea animals create their own light!' },
-  abyss: { title: '🕳️ Abyss Zone', fact: 'Extreme cold and pressure — mysterious creatures still being discovered!' }
-};
+  const Ocean = {
+    playing: true,
+    speedIdx: 1,
+    viewModeIdx: 0,
+    t: 0,
+    canvases: {},
+    ctxs: {},
+    info: null,
+    currentMode() { return VIEW_MODES[this.viewModeIdx] || VIEW_MODES[0]; },
+    activeLayer() { return this.currentMode().layer; },
+    switchLayer() {
+      const layer = this.activeLayer();
+      document.querySelectorAll('.view-layer').forEach(el => {
+        el.classList.toggle('active', el.dataset.layer === layer);
+      });
+      this.showDefaultInfo();
+      this.resizeAll();
+    },
+    resizeCanvas(id) {
+      const c = this.canvases[id];
+      const stage = document.getElementById('viewStage');
+      if (!c || !stage) return;
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      c.width = Math.floor(w * dpr);
+      c.height = Math.floor(h * dpr);
+      c.style.width = w + 'px';
+      c.style.height = h + 'px';
+      this.ctxs[id].setTransform(dpr, 0, 0, dpr, 0, 0);
+    },
+    resizeAll() {
+      ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => this.resizeCanvas(id));
+    },
+    drawEmoji(ctx, emoji, x, y, size) {
+      ctx.save();
+      ctx.globalAlpha = 1;
+      ctx.font = 'bold ' + size + 'px ' + FONT;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(emoji, x, y);
+      ctx.restore();
+    },
+    drawVertical(w, h) {
+      const ctx = this.ctxs.canvasVertical;
+      ZONES.forEach(z => {
+        const y0 = z.top * h;
+        const zh = z.h * h;
+        const g = ctx.createLinearGradient(0, y0, 0, y0 + zh);
+        g.addColorStop(0, z.c1);
+        g.addColorStop(1, z.c2);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, y0, w, zh);
+        ctx.fillStyle = 'rgba(255,255,255,0.12)';
+        ctx.fillRect(8, y0 + zh - 2, w - 16, 2);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 13px ' + FONT;
+        ctx.textAlign = 'right';
+        ctx.fillText(z.emoji + ' ' + z.name, w - 12, y0 + zh * 0.45);
+      });
+      SWIMMERS.forEach(s => {
+        const z = ZONES[s.zone];
+        const zx = z.top * h;
+        const zh = z.h * h;
+        const dx = Math.sin(this.t * s.sp * (SPEEDS[this.speedIdx] || 1) + s.x * 10) * w * 0.08;
+        this.drawEmoji(ctx, s.emoji, s.x * w + dx, zx + s.y * zh, Math.min(w, h) * 0.07);
+      });
+    },
+    drawSurface(w, h) {
+      const ctx = this.ctxs.canvasSurface;
+      const horizon = h * 0.38;
+      const sky = ctx.createLinearGradient(0, 0, 0, horizon);
+      sky.addColorStop(0, '#64b5f6');
+      sky.addColorStop(1, '#bbdefb');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, horizon);
+      ctx.fillStyle = '#ffeb3b';
+      ctx.beginPath();
+      ctx.arc(w * 0.18, h * 0.14, Math.min(w, h) * 0.06, 0, Math.PI * 2);
+      ctx.fill();
+      for (let i = 0; i < 4; i++) {
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.beginPath();
+        ctx.ellipse(w * (0.25 + i * 0.18), h * 0.1, 36 + i * 8, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = '#1565c0';
+      ctx.fillRect(0, horizon - 4, w, h - horizon + 4);
+      const water = ctx.createLinearGradient(0, horizon, 0, h);
+      water.addColorStop(0, '#0288d1');
+      water.addColorStop(0.5, '#01579b');
+      water.addColorStop(1, '#002171');
+      ctx.fillStyle = water;
+      ctx.fillRect(0, horizon, w, h - horizon);
+      for (let i = 0; i < 5; i++) {
+        const wx = (this.t * 0.04 * (SPEEDS[this.speedIdx] || 1) + i * 80) % (w + 60) - 30;
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(wx, horizon + 2);
+        ctx.quadraticCurveTo(wx + 20, horizon - 4, wx + 40, horizon + 2);
+        ctx.stroke();
+      }
+      const fishY = horizon + (h - horizon) * 0.35;
+      SWIMMERS.slice(0, 4).forEach((s, i) => {
+        const fx = ((s.x * w + Math.sin(this.t * 0.002 + i) * 40) + w) % w;
+        this.drawEmoji(ctx, s.emoji, fx, fishY + i * 28, 26);
+      });
+    },
+    drawReef(w, h) {
+      const ctx = this.ctxs.canvasReef;
+      ctx.fillStyle = '#021428';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#0a2038';
+      ctx.beginPath();
+      ctx.moveTo(0, 0); ctx.lineTo(w * 0.22, 0); ctx.lineTo(w * 0.18, h); ctx.lineTo(0, h); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(w, 0); ctx.lineTo(w * 0.78, 0); ctx.lineTo(w * 0.82, h); ctx.lineTo(w, h); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, h); ctx.lineTo(w, h); ctx.lineTo(w, h * 0.88); ctx.lineTo(0, h * 0.92); ctx.fill();
+      const rg = ctx.createRadialGradient(w * 0.5, h * 0.45, 20, w * 0.5, h * 0.45, w * 0.55);
+      rg.addColorStop(0, '#0288d1');
+      rg.addColorStop(1, '#004d73');
+      ctx.fillStyle = rg;
+      ctx.fillRect(w * 0.15, h * 0.08, w * 0.7, h * 0.84);
+      for (let i = 0; i < 6; i++) {
+        const cx = w * (0.22 + i * 0.11);
+        const cy = h * 0.78;
+        ctx.fillStyle = i % 2 ? '#26a69a' : '#ff6f61';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + 8, cy - 22 - (i % 3) * 6);
+        ctx.lineTo(cx + 16, cy);
+        ctx.fill();
+      }
+      SWIMMERS.forEach((s, i) => {
+        const rx = w * 0.2 + ((s.x * w * 0.6 + Math.sin(this.t * 0.0015 + i) * 30 + w) % (w * 0.6));
+        const ry = h * (0.25 + (i % 4) * 0.12);
+        this.drawEmoji(ctx, s.emoji, rx, ry, 24 + (i % 2) * 6);
+      });
+      this.drawEmoji(ctx, '🪸', w * 0.5, h * 0.72, 34);
+    },
+    drawDeep(w, h) {
+      const ctx = this.ctxs.canvasDeep;
+      const bg = ctx.createLinearGradient(0, 0, 0, h);
+      bg.addColorStop(0, '#01579b');
+      bg.addColorStop(0.55, '#042a4a');
+      bg.addColorStop(1, '#000810');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+      for (let i = 0; i < 4; i++) {
+        const rx = w * (0.15 + i * 0.22);
+        const rg = ctx.createLinearGradient(rx, 0, rx, h);
+        rg.addColorStop(0, 'rgba(255,255,255,0.18)');
+        rg.addColorStop(0.45, 'rgba(100,200,255,0.06)');
+        rg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = rg;
+        ctx.beginPath();
+        ctx.moveTo(rx - 18, 0);
+        ctx.lineTo(rx + 18, 0);
+        ctx.lineTo(rx + 50, h);
+        ctx.lineTo(rx - 50, h);
+        ctx.fill();
+      }
+      ctx.fillStyle = '#3e2723';
+      ctx.fillRect(0, h - 48, w, 48);
+      for (let x = 0; x < w; x += 34) {
+        ctx.fillStyle = '#5d4037';
+        ctx.beginPath();
+        ctx.arc(x + 12, h - 40, 14 + (x % 3) * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      SWIMMERS.slice(2).forEach((s, i) => {
+        const dx = Math.sin(this.t * 0.0012 + i) * 25;
+        this.drawEmoji(ctx, s.emoji, s.x * w + dx, h * (0.35 + i * 0.14), 22);
+      });
+      for (let i = 0; i < 12; i++) {
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.08 + (i % 3) * 0.05) + ')';
+        ctx.beginPath();
+        ctx.arc((i * 97 + this.t * 0.02) % w, (i * 53) % (h - 50), 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    },
+    draw() {
+      const stage = document.getElementById('viewStage');
+      if (!stage) return;
+      const w = stage.clientWidth;
+      const h = stage.clientHeight;
+      const layer = this.activeLayer();
+      if (layer === 'vertical') this.drawVertical(w, h);
+      else if (layer === 'surface') this.drawSurface(w, h);
+      else if (layer === 'reef') this.drawReef(w, h);
+      else if (layer === 'deep') this.drawDeep(w, h);
+    },
+    tick() {
+      if (this.playing) this.t += 16 * (SPEEDS[this.speedIdx] || 1);
+      this.draw();
+      requestAnimationFrame(() => this.tick());
+    },
+    showDefaultInfo() {
+      const m = this.currentMode();
+      this.info.innerHTML = '<h2>🌊 ' + m.label + '</h2><p>' + m.desc + '</p>';
+    },
+    showZone(z) {
+      this.info.innerHTML = '<h2>' + z.emoji + ' ' + z.name + '</h2><p>' + z.fact + '</p>';
+    },
+    hitVerticalZone(x, y) {
+      const stage = document.getElementById('viewStage');
+      const h = stage.clientHeight;
+      const ratio = y / h;
+      for (let i = ZONES.length - 1; i >= 0; i--) {
+        if (ratio >= ZONES[i].top) { this.showZone(ZONES[i]); return; }
+      }
+    },
+    bindTap() {
+      const c = this.canvases.canvasVertical;
+      if (!c) return;
+      const hit = e => {
+        if (this.activeLayer() !== 'vertical') return;
+        const r = c.getBoundingClientRect();
+        const p = e.touches ? e.touches[0] : e;
+        this.hitVerticalZone(p.clientX - r.left, p.clientY - r.top);
+      };
+      c.addEventListener('click', hit);
+      c.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+    },
+    init() {
+      ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => {
+        this.canvases[id] = document.getElementById(id);
+        this.ctxs[id] = this.canvases[id].getContext('2d');
+      });
+      this.info = document.getElementById('infoPanel');
+      this.resizeAll();
+      this.bindTap();
+      window.addEventListener('resize', () => this.resizeAll());
 
-function showZoneInfo(zone) {
-  const info = zoneFacts[zone];
-  if (!info) return;
-  let panel = document.getElementById('oceanInfoPanel');
-  if (!panel) {
-    panel = document.createElement('div');
-    panel.id = 'oceanInfoPanel';
-    panel.className = 'ocean-info-panel';
-    document.querySelector('.container').appendChild(panel);
-  }
-  panel.innerHTML = '<strong>' + info.title + '</strong><br>' + info.fact;
-  panel.style.display = 'block';
-}
+      document.getElementById('btnPlay').onclick = () => {
+        this.playing = !this.playing;
+        document.getElementById('btnPlay').textContent = this.playing ? '⏸️ Pause' : '▶️ Play';
+      };
+      document.getElementById('btnSpeed').onclick = () => {
+        this.speedIdx = (this.speedIdx + 1) % SPEEDS.length;
+        document.getElementById('btnSpeed').textContent = '🐠 ' + SPEEDS[this.speedIdx] + '×';
+      };
+      document.getElementById('btnViewMode').onclick = () => {
+        this.viewModeIdx = (this.viewModeIdx + 1) % VIEW_MODES.length;
+        document.getElementById('btnViewMode').textContent = '👁️ View' + (this.viewModeIdx + 1);
+        document.getElementById('btnViewMode').classList.toggle('active', this.viewModeIdx !== 0);
+        this.switchLayer();
+      };
+      document.getElementById('btnReset').onclick = () => {
+        this.t = 0;
+        this.playing = true;
+        this.speedIdx = 1;
+        this.viewModeIdx = 0;
+        document.getElementById('btnPlay').textContent = '⏸️ Pause';
+        document.getElementById('btnSpeed').textContent = '🐠 1×';
+        document.getElementById('btnViewMode').textContent = '👁️ View1';
+        document.getElementById('btnViewMode').classList.remove('active');
+        this.switchLayer();
+      };
 
-function toggleAnimation() {
-  const creatures = document.querySelectorAll('.creature');
-  animationPaused = !animationPaused;
-  creatures.forEach(creature => {
-    creature.style.animationPlayState = animationPaused ? 'paused' : 'running';
-  });
-}
+      this.showDefaultInfo();
+      this.tick();
+    },
+  };
 
-function resetView() {
-  const creatures = document.querySelectorAll('.creature');
-  creatures.forEach(creature => {
-    creature.style.animationPlayState = 'running';
-  });
-  animationPaused = false;
-}
+  Ocean.init();
+})();
 </script>
 
 <script>
@@ -478,57 +434,27 @@ const OG_CFG = {"mode":"collect","goal":60,"time":60,"lives":3,"good":["☀️",
 const OG_FONT = '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
 let ogCanvas, ogCtx, ogRunning = false, ogScore = 0, ogTime = OG_CFG.time, ogLives = OG_CFG.lives;
 let ogTimerId, ogAnimId, ogPlayer, ogItems = [], ogMoveL = false, ogMoveR = false, ogSpawn = 0;
-
-function ogViewSize() {
-  const r = document.getElementById('ogCanvasBox').getBoundingClientRect();
-  return { w: Math.max(280, r.width), h: Math.max(220, r.height) };
-}
+function ogViewSize() { const r = document.getElementById('ogCanvasBox').getBoundingClientRect(); return { w: Math.max(280, r.width), h: Math.max(220, r.height) }; }
 function ogResize() {
-  const box = document.getElementById('ogCanvasBox');
-  ogCanvas = document.getElementById('ogCanvas');
-  ogCtx = ogCanvas.getContext('2d');
-  const vs = ogViewSize();
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  ogCanvas.width = Math.floor(vs.w * dpr);
-  ogCanvas.height = Math.floor(vs.h * dpr);
-  ogCanvas.style.width = vs.w + 'px';
-  ogCanvas.style.height = vs.h + 'px';
+  const box = document.getElementById('ogCanvasBox'); ogCanvas = document.getElementById('ogCanvas'); ogCtx = ogCanvas.getContext('2d');
+  const vs = ogViewSize(); const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  ogCanvas.width = Math.floor(vs.w * dpr); ogCanvas.height = Math.floor(vs.h * dpr);
+  ogCanvas.style.width = vs.w + 'px'; ogCanvas.style.height = vs.h + 'px';
   ogCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  if (ogPlayer) {
-    ogPlayer.x = Math.min(Math.max(ogPlayer.x, 30), vs.w - 30);
-    ogPlayer.y = vs.h - 36;
-  }
+  if (ogPlayer) { ogPlayer.x = Math.min(Math.max(ogPlayer.x, 30), vs.w - 30); ogPlayer.y = vs.h - 36; }
 }
 function ogDrawIcon(x, y, icon, size, ring) {
-  const rad = size * 0.52;
-  ogCtx.beginPath();
-  ogCtx.arc(x, y, rad + 5, 0, Math.PI * 2);
-  ogCtx.fillStyle = ring || 'rgba(0,20,40,0.72)';
-  ogCtx.fill();
-  ogCtx.strokeStyle = 'rgba(255,255,255,0.9)';
-  ogCtx.lineWidth = 2;
-  ogCtx.stroke();
-  ogCtx.font = 'bold ' + size + 'px ' + OG_FONT;
-  ogCtx.fillStyle = '#ffffff';
+  ogCtx.beginPath(); ogCtx.arc(x, y, size * 0.52 + 5, 0, Math.PI * 2); ogCtx.fillStyle = ring || 'rgba(0,20,40,0.72)'; ogCtx.fill();
+  ogCtx.strokeStyle = 'rgba(255,255,255,0.9)'; ogCtx.lineWidth = 2; ogCtx.stroke();
+  ogCtx.font = 'bold ' + size + 'px ' + OG_FONT; ogCtx.fillStyle = '#ffffff'; ogCtx.textAlign = 'center'; ogCtx.textBaseline = 'middle';
   ogCtx.fillText(icon, x, y + 1);
 }
 function ogDrawBg() {
-  const vs = ogViewSize();
-  const g = ogCtx.createLinearGradient(0, 0, 0, vs.h);
-  g.addColorStop(0, OG_CFG.bgTop || '#0a3050');
-  g.addColorStop(1, OG_CFG.bgBot || '#041525');
-  ogCtx.fillStyle = g;
-  ogCtx.fillRect(0, 0, vs.w, vs.h);
-  ogCtx.fillStyle = 'rgba(0,0,0,0.35)';
-  ogCtx.fillRect(0, vs.h - 32, vs.w, 32);
-  ogCtx.fillStyle = 'rgba(100,255,218,0.35)';
-  ogCtx.fillRect(0, vs.h - 32, vs.w, 3);
-  for (let i = 0; i < 14; i++) {
-    ogCtx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 3) * 0.08) + ')';
-    ogCtx.beginPath();
-    ogCtx.arc((i * 83) % vs.w, (i * 53 + Date.now() * 0.02) % vs.h, 1.4 + (i % 2), 0, Math.PI * 2);
-    ogCtx.fill();
-  }
+  const vs = ogViewSize(); const g = ogCtx.createLinearGradient(0, 0, 0, vs.h);
+  g.addColorStop(0, OG_CFG.bgTop); g.addColorStop(1, OG_CFG.bgBot); ogCtx.fillStyle = g; ogCtx.fillRect(0, 0, vs.w, vs.h);
+  ogCtx.fillStyle = 'rgba(0,0,0,0.35)'; ogCtx.fillRect(0, vs.h - 32, vs.w, 32);
+  ogCtx.fillStyle = 'rgba(100,255,218,0.35)'; ogCtx.fillRect(0, vs.h - 32, vs.w, 3);
+  for (let i = 0; i < 14; i++) { ogCtx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 3) * 0.08) + ')'; ogCtx.beginPath(); ogCtx.arc((i * 83) % vs.w, (i * 53 + Date.now() * 0.02) % vs.h, 1.4 + (i % 2), 0, Math.PI * 2); ogCtx.fill(); }
 }
 function ogHud() {
   document.getElementById('ogScore').textContent = '⭐ ' + ogScore;
@@ -536,135 +462,54 @@ function ogHud() {
   document.getElementById('ogLives').textContent = '❤️'.repeat(Math.max(0, ogLives));
 }
 function ogEnd(won) {
-  ogRunning = false;
-  clearInterval(ogTimerId);
-  cancelAnimationFrame(ogAnimId);
+  ogRunning = false; clearInterval(ogTimerId); cancelAnimationFrame(ogAnimId);
   document.getElementById('ogEndTitle').textContent = won ? '🎉 Great job!' : '💫 Try again!';
-  const goalTxt = OG_CFG.mode === 'survive' ? 'You survived!' : 'Goal: ' + OG_CFG.goal;
-  document.getElementById('ogEndStats').textContent = 'Score: ' + ogScore + ' | ' + goalTxt + ' | Time left: ' + ogTime + 's';
+  document.getElementById('ogEndStats').textContent = 'Score: ' + ogScore + ' | Goal: ' + OG_CFG.goal + ' | Time left: ' + ogTime + 's';
   document.getElementById('ogEnd').style.display = 'flex';
 }
 function ogSpawnItem() {
-  const vs = ogViewSize();
-  if (OG_CFG.mode === 'tap') {
-    const bad = Math.random() < 0.22 && OG_CFG.bad.length;
-    const pool = bad ? OG_CFG.bad : OG_CFG.good;
-    const icon = pool[Math.floor(Math.random() * pool.length)];
-    ogItems.push({ x: 36 + Math.random() * (vs.w - 72), y: 36 + Math.random() * (vs.h - 90), icon: icon, bad: bad, life: 100 + Math.random() * 50, r: 24 });
-    return;
-  }
-  const bad = OG_CFG.mode === 'survive' || (Math.random() < 0.34 && OG_CFG.bad.length);
+  const vs = ogViewSize(); const bad = Math.random() < 0.34 && OG_CFG.bad.length;
   const pool = bad ? OG_CFG.bad : OG_CFG.good;
-  if (!pool.length) return;
-  ogItems.push({
-    x: 28 + Math.random() * (vs.w - 56),
-    y: -28,
-    icon: pool[Math.floor(Math.random() * pool.length)],
-    bad: bad,
-    speed: 1.8 + Math.random() * 1.8,
-    r: 22
-  });
+  ogItems.push({ x: 28 + Math.random() * (vs.w - 56), y: -28, icon: pool[Math.floor(Math.random() * pool.length)], bad: bad, speed: 1.8 + Math.random() * 1.8, r: 22 });
 }
 function ogLoop() {
-  if (!ogRunning) return;
-  ogSpawn++;
-  if (ogSpawn > (OG_CFG.mode === 'tap' ? 38 : 24)) { ogSpawn = 0; ogSpawnItem(); }
+  if (!ogRunning) return; ogSpawn++; if (ogSpawn > 24) { ogSpawn = 0; ogSpawnItem(); }
   const vs = ogViewSize();
-  if (OG_CFG.mode !== 'tap' && ogPlayer) {
-    if (ogMoveL) ogPlayer.vx = -6;
-    else if (ogMoveR) ogPlayer.vx = 6;
-    else ogPlayer.vx *= 0.72;
-    ogPlayer.x = Math.max(30, Math.min(vs.w - 30, ogPlayer.x + ogPlayer.vx));
-    ogPlayer.y = vs.h - 36;
+  if (ogPlayer) {
+    if (ogMoveL) ogPlayer.vx = -6; else if (ogMoveR) ogPlayer.vx = 6; else ogPlayer.vx *= 0.72;
+    ogPlayer.x = Math.max(30, Math.min(vs.w - 30, ogPlayer.x + ogPlayer.vx)); ogPlayer.y = vs.h - 36;
   }
   ogItems.forEach((it, i) => {
-    if (OG_CFG.mode === 'tap') {
-      it.life--;
-      if (it.life <= 0) ogItems.splice(i, 1);
-    } else {
-      it.y += it.speed;
-      if (ogPlayer && Math.hypot(ogPlayer.x - it.x, ogPlayer.y - it.y) < it.r + 18) {
-        ogItems.splice(i, 1);
-        if (it.bad) { ogLives--; if (ogLives <= 0) { ogEnd(false); return; } }
-        else { ogScore += 10; if (OG_CFG.goal && ogScore >= OG_CFG.goal) { ogEnd(true); return; } }
-        ogHud();
-      } else if (it.y > vs.h + 30) ogItems.splice(i, 1);
-    }
-  });
-  ogDrawBg();
-  ogCtx.textAlign = 'center';
-  ogCtx.textBaseline = 'middle';
-  ogItems.forEach(it => {
-    if (OG_CFG.mode === 'tap' && it.life < 30) ogCtx.globalAlpha = Math.max(0.35, it.life / 30);
-    ogDrawIcon(it.x, it.y, it.icon, 34, it.bad ? 'rgba(120,20,20,0.75)' : 'rgba(0,40,80,0.78)');
-    ogCtx.globalAlpha = 1;
-  });
-  if (ogPlayer && OG_CFG.mode !== 'tap') ogDrawIcon(ogPlayer.x, ogPlayer.y, ogPlayer.icon, 38, 'rgba(0,60,100,0.85)');
-  ogAnimId = requestAnimationFrame(ogLoop);
-}
-function ogTapHit(x, y) {
-  for (let i = ogItems.length - 1; i >= 0; i--) {
-    const it = ogItems[i];
-    if (Math.hypot(x - it.x, y - it.y) < it.r + 8) {
+    it.y += it.speed;
+    if (ogPlayer && Math.hypot(ogPlayer.x - it.x, ogPlayer.y - it.y) < it.r + 18) {
       ogItems.splice(i, 1);
       if (it.bad) { ogLives--; if (ogLives <= 0) { ogEnd(false); return; } }
       else { ogScore += 10; if (ogScore >= OG_CFG.goal) { ogEnd(true); return; } }
       ogHud();
-      return;
-    }
-  }
+    } else if (it.y > vs.h + 30) ogItems.splice(i, 1);
+  });
+  ogDrawBg(); ogCtx.textAlign = 'center'; ogCtx.textBaseline = 'middle';
+  ogItems.forEach(it => ogDrawIcon(it.x, it.y, it.icon, 34, it.bad ? 'rgba(120,20,20,0.75)' : 'rgba(0,40,80,0.78)'));
+  if (ogPlayer) ogDrawIcon(ogPlayer.x, ogPlayer.y, ogPlayer.icon, 38, 'rgba(0,60,100,0.85)');
+  ogAnimId = requestAnimationFrame(ogLoop);
 }
 function ogStartGame() {
-  ogResize();
-  ogRunning = true;
-  ogScore = 0;
-  ogTime = OG_CFG.time;
-  ogLives = OG_CFG.lives;
-  ogItems = [];
-  ogSpawn = 20;
-  const vs = ogViewSize();
-  ogPlayer = { x: vs.w / 2, y: vs.h - 36, vx: 0, icon: OG_CFG.player || '🤿' };
-  document.getElementById('ogStart').style.display = 'none';
-  document.getElementById('ogEnd').style.display = 'none';
-  ogHud();
-  if (OG_CFG.mode !== 'tap') { ogSpawnItem(); ogSpawnItem(); }
+  ogResize(); ogRunning = true; ogScore = 0; ogTime = OG_CFG.time; ogLives = OG_CFG.lives; ogItems = []; ogSpawn = 20;
+  const vs = ogViewSize(); ogPlayer = { x: vs.w / 2, y: vs.h - 36, vx: 0, icon: OG_CFG.player || '🤿' };
+  document.getElementById('ogStart').style.display = 'none'; document.getElementById('ogEnd').style.display = 'none';
+  ogHud(); ogSpawnItem(); ogSpawnItem();
   clearInterval(ogTimerId);
-  ogTimerId = setInterval(function () {
-    if (!ogRunning) return;
-    ogTime--;
-    ogHud();
-    if (ogTime <= 0) {
-      if (OG_CFG.mode === 'survive') ogEnd(true);
-      else ogEnd(ogScore >= OG_CFG.goal);
-    }
-  }, 1000);
+  ogTimerId = setInterval(function () { if (!ogRunning) return; ogTime--; ogHud(); if (ogTime <= 0) ogEnd(ogScore >= OG_CFG.goal); }, 1000);
   ogLoop();
 }
 function ogBindControls() {
-  const L = document.getElementById('ogLeftBtn');
-  const R = document.getElementById('ogRightBtn');
+  const L = document.getElementById('ogLeftBtn'), R = document.getElementById('ogRightBtn');
   if (L && R && !L._og) {
     L._og = R._og = true;
-    L.addEventListener('touchstart', e => { e.preventDefault(); ogMoveL = true; });
-    L.addEventListener('touchend', () => { ogMoveL = false; });
-    R.addEventListener('touchstart', e => { e.preventDefault(); ogMoveR = true; });
-    R.addEventListener('touchend', () => { ogMoveR = false; });
-    L.addEventListener('mousedown', () => { ogMoveL = true; });
-    L.addEventListener('mouseup', () => { ogMoveL = false; });
-    R.addEventListener('mousedown', () => { ogMoveR = true; });
-    R.addEventListener('mouseup', () => { ogMoveR = false; });
-  }
-  const c = document.getElementById('ogCanvas');
-  if (c && !c._ogTap && OG_CFG.mode === 'tap') {
-    c._ogTap = true;
-    const hit = e => {
-      if (!ogRunning) return;
-      const r = c.getBoundingClientRect();
-      const p = e.touches ? e.touches[0] : e;
-      ogTapHit((p.clientX - r.left) * (c.width / r.width), (p.clientY - r.top) * (c.height / r.height));
-    };
-    c.addEventListener('click', hit);
-    c.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+    L.addEventListener('touchstart', e => { e.preventDefault(); ogMoveL = true; }); L.addEventListener('touchend', () => { ogMoveL = false; });
+    R.addEventListener('touchstart', e => { e.preventDefault(); ogMoveR = true; }); R.addEventListener('touchend', () => { ogMoveR = false; });
+    L.addEventListener('mousedown', () => { ogMoveL = true; }); L.addEventListener('mouseup', () => { ogMoveL = false; });
+    R.addEventListener('mousedown', () => { ogMoveR = true; }); R.addEventListener('mouseup', () => { ogMoveR = false; });
   }
   document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') ogMoveL = true; if (e.key === 'ArrowRight') ogMoveR = true; });
   document.addEventListener('keyup', e => { if (e.key === 'ArrowLeft') ogMoveL = false; if (e.key === 'ArrowRight') ogMoveR = false; });

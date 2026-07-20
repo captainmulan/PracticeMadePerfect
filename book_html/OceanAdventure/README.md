@@ -17,8 +17,8 @@ Master template: [../README.md](../README.md)
 | 01 | `001-Book-Briefing.html` | Briefing + Jimmy Cooper author speech |
 | 02 | `002-Index.html` | Table of contents |
 | 03 | `003-Character-Selection.html` | Choose diver name + avatar |
-| 04 | `004-Intro-OceanReefDefender.html` | **Intro game** — tap trash to save the reef |
-| 05 | `005-Ocean-Overview.html` | Overview **activity** |
+| 04 | `004-Intro-OceanReefDefender.html` | **Intro game** — relaxing aquarium sandbox (paint fish, coral & rocks) |
+| 05 | `005-Ocean-Overview.html` | Overview **activity** — multi-view zone explorer + Zone Collector game |
 | 06 | `006-Ocean-Explained.html` | Overview **explained** |
 | 07 | `007-Ocean-Quiz.html` | Overview **quiz** |
 | 08–10 | Sunlight Zone | Activity → Explained → Quiz |
@@ -143,7 +143,7 @@ node book_html/OceanAdventure/_fix-ocean-game-visibility.cjs
 |------|------------|----------|
 | Reading / explained / quiz | `reading-page` | 001, 006–007, 009–010, … |
 | Character select | `reading-page character-select-page` | 003 |
-| Activity + minigame | `big-planet-page` | 005, 008, 011, … |
+| Activity + minigame | `big-planet-page` or `all-zones-page` | 005 (multi-view), 008, 011, … |
 | Intro / outro arcade | `big-game-page` | 004, 031 |
 
 ---
