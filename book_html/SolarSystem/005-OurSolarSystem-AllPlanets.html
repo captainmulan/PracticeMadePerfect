@@ -416,8 +416,13 @@
       width: 100% !important;
       height: 100% !important;
       max-height: none !important;
+      max-width: none !important;
       min-height: 0 !important;
       aspect-ratio: unset !important;
+      margin: 0 !important;
+    }
+    body.all-planets-page .view-layer-orbit .svg-wrap::after {
+      display: none;
     }
     body.all-planets-page .view-layer-movie.active {
       display: block;
@@ -844,10 +849,13 @@ body.all-planets-page:has(#solarSvg) .solar-panel {
 body.all-planets-page:has(#solarSvg) .svg-wrap {
   flex: none !important;
   max-height: none !important;
-  min-height: 0 !important;
-  width: 100% !important;
   height: 100% !important;
+  max-width: none !important;
   aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+body.all-planets-page:has(#solarSvg) .svg-wrap::after {
+  display: none;
 }
 body.all-planets-page:has(#solarSvg) .info-panel,
 body.all-planets-page:has(#solarSvg) .nav-hint {
@@ -1546,15 +1554,21 @@ const StylizedPlanet = {
       const contentH = 600;
       const aspect = w / h;
       const isWide = aspect > 1.05;
-      svg.setAttribute('viewBox', '0 0 ' + contentW + ' ' + contentH);
-      svg.setAttribute('preserveAspectRatio', isWide ? 'xMidYMid slice' : 'xMidYMid meet');
-      this._orbitVbW = contentW;
+      let vbW = contentW;
+      let x0 = 0;
+      if (isWide) {
+        vbW = Math.max(contentW, contentH * aspect);
+        x0 = (contentW - vbW) / 2;
+      }
+      svg.setAttribute('viewBox', x0 + ' 0 ' + vbW + ' ' + contentH);
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      this._orbitVbW = vbW;
       this._orbitVbH = contentH;
-      this._orbitX0 = 0;
+      this._orbitX0 = x0;
       this._orbitY0 = 0;
       this._orbitWide = isWide;
       this._orbitAspect = aspect;
-      return { vbW: contentW, vbH: contentH, x0: 0, y0: 0, wide: isWide, cx: 300, cy: 300 };
+      return { vbW: vbW, vbH: contentH, x0: x0, y0: 0, wide: isWide, cx: 300, cy: 300 };
     },
     syncVerticalViewBox() {
       const stage = document.getElementById('viewStage');
@@ -1755,9 +1769,9 @@ const StylizedPlanet = {
       let z = Math.min(wide ? 2.05 : 1.62, zFit * (wide ? 1.14 : 1.06));
       if (wide) {
         const aspect = this._orbitAspect || 1.3;
-        z *= Math.min(1.32, 0.9 + aspect * 0.18);
+        z *= Math.min(1.45, 0.95 + aspect * 0.22);
       }
-      z = Math.min(2.4, z);
+      z = Math.min(2.65, z);
       const landscapeBoost = wide ? 1.12 : (this.isLandscape() ? 1.08 : 1);
       this.DEFAULT_ZOOM = Math.round(z * mode.closeupBoost * mode.zoomBoost * landscapeBoost * 100) / 100;
       if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
@@ -1899,7 +1913,7 @@ const StylizedPlanet = {
       const glowWrap = el('g', { 'pointer-events': 'none' });
       g.appendChild(glowWrap);
       glowWrap.appendChild(el('circle', {
-        r: String(r * 1.75), fill: 'rgba(255,100,0,0.14)', filter: 'url(#softBlur)', 'pointer-events': 'none'
+        r: String(r * 1.52), fill: 'rgba(255,100,0,0.09)', filter: 'url(#softBlur)', 'pointer-events': 'none'
       }));
       glowWrap.appendChild(el('circle', {
         r: String(r * 1.42), fill: 'url(#sunCorona)', opacity: '0.88', 'pointer-events': 'none'
@@ -1912,7 +1926,9 @@ const StylizedPlanet = {
         StylizedPlanet.sphere(g, 'sun', r, clip, false);
       }
     },
-    drawVerticalSky(g, M, svg) {
+    drawVerticalSky(g, M, svg, options) {
+      options = options || {};
+      const fg = !!options.foreground;
       if (svg && !svg.querySelector('#vertSkyGrad')) {
         let defs = svg.querySelector('defs');
         if (!defs) {
@@ -1925,30 +1941,39 @@ const StylizedPlanet = {
         rg.appendChild(el('stop', { offset: '100%', 'stop-color': '#020208' }));
         defs.appendChild(rg);
       }
-      if (svg) StylizedPlanet.ensureSoftBlur(svg);
-      g.appendChild(el('rect', {
-        x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH),
-        fill: 'url(#vertSkyGrad)', 'pointer-events': 'none'
-      }));
+      if (!fg) {
+        if (svg) StylizedPlanet.ensureSoftBlur(svg);
+        g.appendChild(el('rect', {
+          x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH),
+          fill: 'url(#vertSkyGrad)', 'pointer-events': 'none'
+        }));
+      }
       const areaFactor = Math.max(1, (M.vbW * M.vbH) / (580 * 620));
       const density = Math.min(2.15, Math.sqrt(areaFactor));
-      const layers = [
-        { n: Math.round(360 * density), r0: 0.18, r1: 0.48, a0: 0.32, a1: 0.68, tint: 0.08 },
-        { n: Math.round(260 * density), r0: 0.28, r1: 0.78, a0: 0.42, a1: 0.82, tint: 0.18 },
-        { n: Math.round(95 * density), r0: 0.55, r1: 1.15, a0: 0.52, a1: 0.92, tint: 0.32 },
-        { n: Math.round(24 * density), r0: 0.95, r1: 1.95, a0: 0.62, a1: 0.98, tint: 0.45, blur: true, sparkle: true },
+      const starScale = Math.max(1.35, Math.min(3.4, Math.sqrt(areaFactor) * 1.75));
+      const avoidCx = options.avoidCx;
+      const avoidHalfW = options.avoidHalfW || 0;
+      const layers = fg ? [
+        { n: Math.round(110 * density), r0: 0.55, r1: 1.35, a0: 0.58, a1: 0.96, tint: 0.2, sparkle: true },
+        { n: Math.round(48 * density), r0: 0.85, r1: 1.75, a0: 0.68, a1: 1, tint: 0.35, sparkle: true },
+      ] : [
+        { n: Math.round(360 * density), r0: 0.22, r1: 0.58, a0: 0.38, a1: 0.78, tint: 0.08 },
+        { n: Math.round(260 * density), r0: 0.34, r1: 0.92, a0: 0.48, a1: 0.88, tint: 0.18 },
+        { n: Math.round(95 * density), r0: 0.62, r1: 1.35, a0: 0.58, a1: 0.96, tint: 0.32 },
+        { n: Math.round(24 * density), r0: 1.05, r1: 2.15, a0: 0.72, a1: 1, tint: 0.45, sparkle: true },
       ];
       layers.forEach(function(layer, li) {
         for (let i = 0; i < layer.n; i++) {
           const s = (i + 1) * 977 + li * 7919 + i * 13;
-          const px = M.x0 + 4 + ((s * 0.6180339887 + li * 47.11) % Math.max(1, M.vbW - 8));
+          let px = M.x0 + 4 + ((s * 0.6180339887 + li * 47.11) % Math.max(1, M.vbW - 8));
           const py = 4 + ((s * 1.3247179572 + li * 113 + i * 29) % Math.max(1, M.vbH - 8));
+          if (avoidHalfW > 0 && Math.abs(px - avoidCx) < avoidHalfW) continue;
           const t = (s % 100) / 100;
-          const rad = layer.r0 + (layer.r1 - layer.r0) * t;
-          const alpha = Math.min(0.98, layer.a0 + (layer.a1 - layer.a0) * ((s % 47) / 47));
+          const rad = (layer.r0 + (layer.r1 - layer.r0) * t) * starScale;
+          const alpha = Math.min(1, layer.a0 + (layer.a1 - layer.a0) * ((s % 47) / 47));
           const cool = layer.tint * ((s % 3) / 2);
-          const red = Math.round(236 + cool * 19);
-          const green = Math.round(240 + cool * 15);
+          const red = Math.round(242 + cool * 13);
+          const green = Math.round(246 + cool * 9);
           const blue = 255;
           const attrs = {
             cx: String(px),
@@ -1957,18 +1982,17 @@ const StylizedPlanet = {
             fill: 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha.toFixed(2) + ')',
             'pointer-events': 'none',
           };
-          if (layer.blur) attrs.filter = 'url(#softBlur)';
           g.appendChild(el('circle', attrs));
           if (layer.sparkle && i % 2 === 0) {
-            const sp = rad * 2.4;
-            const sg = el('g', { opacity: String(Math.min(0.95, alpha + 0.08)), 'pointer-events': 'none' });
+            const sp = rad * 2.2;
+            const sg = el('g', { opacity: String(Math.min(1, alpha + 0.05)), 'pointer-events': 'none' });
             sg.appendChild(el('line', {
               x1: String(px - sp), y1: String(py), x2: String(px + sp), y2: String(py),
-              stroke: 'rgba(255,255,255,0.78)', 'stroke-width': '0.55', 'stroke-linecap': 'round'
+              stroke: 'rgba(255,255,255,0.88)', 'stroke-width': String(0.45 + rad * 0.08), 'stroke-linecap': 'round'
             }));
             sg.appendChild(el('line', {
               x1: String(px), y1: String(py - sp), x2: String(px), y2: String(py + sp),
-              stroke: 'rgba(255,255,255,0.78)', 'stroke-width': '0.55', 'stroke-linecap': 'round'
+              stroke: 'rgba(255,255,255,0.88)', 'stroke-width': String(0.45 + rad * 0.08), 'stroke-linecap': 'round'
             }));
             g.appendChild(sg);
           }
@@ -2317,6 +2341,7 @@ const StylizedPlanet = {
         fill: 'rgba(0,0,0,0.001)',
         'pointer-events': 'all'
       }));
+      this.drawVerticalSky(g, M, svg, { foreground: true, avoidCx: cx, avoidHalfW: 105 });
 
       const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
       PLANETS.forEach((p, i) => {
