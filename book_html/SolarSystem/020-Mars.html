@@ -325,14 +325,18 @@ body.big-planet-page .header .subtitle {
 body.big-planet-page .planet-svg-panel {
   margin: 0 0 10px;
   padding: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 body.big-planet-page .svg-viewport {
-  width: min(96vw, 720px);
-  max-width: none;
-  height: min(96vw, calc(100svh - 168px));
-  max-height: min(96vw, calc(100svh - 168px));
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: min(calc(100svh - 168px), 100%);
   aspect-ratio: 1;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 body.big-planet-page .planet-info-panel {
   margin-top: 8px;
@@ -373,7 +377,6 @@ body.big-planet-page:has(.planet-svg-panel) .container {
 }
 body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
   flex: none !important;
-  max-height: min(96vw, calc(100svh - 168px)) !important;
 }
 body.big-planet-page:has(.planet-game) .container,
 body.big-planet-page:has(.sun-game) .container {
@@ -718,10 +721,43 @@ body.reading-page:has(.character-grid) .container {
   overflow: visible !important;
   justify-content: flex-start;
 }
-body.big-planet-page:has(.planet-svg-panel) .svg-viewport,
-body.big-planet-page .svg-viewport {
-  max-height: min(96vw, calc(100svh - 168px)) !important;
-  min-height: min(72vw, calc(100svh - 200px)) !important;
+@media (max-width: 639px) {
+  body.big-planet-page .planet-svg-panel {
+    padding: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .svg-viewport,
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(78vw, calc(100svh - 220px)) !important;
+    min-height: 0 !important;
+    aspect-ratio: 1 !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .container {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+  body.big-planet-page .sun-game .game-canvas-wrap,
+  body.big-planet-page .planet-game .game-canvas,
+  body.big-planet-page .planet-game .game-canvas-wrap {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+}
+@media (min-width: 640px) {
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport,
+  body.big-planet-page .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+    min-height: min(56vw, calc(100svh - 200px)) !important;
+  }
 }
 body.big-planet-page .sun-game .game-canvas-wrap,
 body.big-planet-page .planet-game .game-canvas,
@@ -740,20 +776,6 @@ body.big-planet-page .nav-hint {
   padding-bottom: 8px !important;
   font-size: 12px !important;
   line-height: 1.45 !important;
-}
-@media (max-width: 639px) {
-  body.big-planet-page .sun-game .game-canvas-wrap,
-  body.big-planet-page .planet-game .game-canvas,
-  body.big-planet-page .planet-game .game-canvas-wrap {
-    height: min(48vh, 400px) !important;
-    min-height: min(40vh, 280px) !important;
-    max-height: min(52vh, 420px) !important;
-  }
-}
-@media (min-width: 640px) {
-  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
-    max-height: min(92vw, calc(100svh - 156px)) !important;
-  }
 }
 body.all-planets-page:has(#solarSvg) .svg-wrap {
   max-height: min(96vw, calc(100svh - 162px)) !important;
@@ -780,8 +802,8 @@ body.big-game-page:has(.game-shell) .game-shell {
 body.big-game-page:has(.game-shell) .stage-wrap {
   flex: 1 1 auto !important;
   min-height: 0 !important;
-  align-items: stretch !important;
-  justify-content: stretch !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 body.big-game-page:has(.game-shell) .game-stage {
   flex: 1 1 auto !important;
@@ -794,8 +816,8 @@ body.big-game-page:has(.game-shell) .game-stage {
 }
 @media (min-width: 768px) {
   body.big-game-page:has(.game-shell) .stage-wrap {
-    align-items: stretch !important;
-    justify-content: stretch !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   body.big-game-page:has(.game-shell) .game-stage {
     flex: 1 1 auto !important;

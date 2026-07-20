@@ -35,14 +35,18 @@ body.big-planet-page .header .subtitle {
 body.big-planet-page .planet-svg-panel {
   margin: 0 0 10px;
   padding: 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 body.big-planet-page .svg-viewport {
-  width: min(96vw, 720px);
-  max-width: none;
-  height: min(96vw, calc(100svh - 168px));
-  max-height: min(96vw, calc(100svh - 168px));
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: min(calc(100svh - 168px), 100%);
   aspect-ratio: 1;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 body.big-planet-page .planet-info-panel {
   margin-top: 8px;
@@ -83,7 +87,6 @@ body.big-planet-page:has(.planet-svg-panel) .container {
 }
 body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
   flex: none !important;
-  max-height: min(96vw, calc(100svh - 168px)) !important;
 }
 body.big-planet-page:has(.planet-game) .container,
 body.big-planet-page:has(.sun-game) .container {
@@ -148,6 +151,11 @@ function patchPlanetPage(html, file) {
 
   if (!next.includes(MARKER)) {
     next = next.replace(/(\/\* solar-desktop-fit \*\/)/, `${BIG_PLANET_CSS}\n$1`);
+  } else {
+    next = next.replace(
+      /\/\* big-planet-first-view \*\/[\s\S]*?(?=\/\* solar-desktop-fit \*\/)/,
+      `${BIG_PLANET_CSS}\n`,
+    );
   }
 
   if (!next.includes('class="big-planet-page"')) {
