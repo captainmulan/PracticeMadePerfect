@@ -362,7 +362,7 @@
     .planet-hit:hover circle,.planet-hit:hover ellipse{filter:brightness(1.2);}
     /* All Planets page: big rocket window first, scroll for the rest */
     body.all-planets-page {
-      --ap-frame-max-h: min(calc(100svh - 265px), calc(100vw * 580 / 360));
+      --ap-frame-max-h: min(calc(100svh - 240px), 68vh);
       overflow-x: hidden;
       overflow-y: auto !important;
       height: auto !important;
@@ -372,7 +372,7 @@
     body.all-planets-page .container {
       height: auto !important;
       max-height: none !important;
-      max-width: min(960px, 100%);
+      max-width: min(1100px, 100%);
       overflow: visible !important;
       display: block;
       padding: 8px 10px 32px;
@@ -393,12 +393,12 @@
       padding: 8px;
     }
     body.all-planets-page .view-stage {
-      width: min(100%, calc(var(--ap-frame-max-h) * 360 / 580));
+      width: 100%;
       max-width: 100%;
-      aspect-ratio: 360 / 580;
+      height: var(--ap-frame-max-h);
       max-height: var(--ap-frame-max-h);
-      min-height: 0;
-      height: auto;
+      min-height: min(52vh, 420px);
+      aspect-ratio: unset;
       margin: 0 auto;
       overflow: hidden;
       border-radius: 16px;
@@ -445,10 +445,16 @@
       border-radius: 20px;
     }
     body.all-planets-page .movie-wrap svg,
-    body.all-planets-page .vertical-fit svg,
     body.all-planets-page #solarSvg {
       width: 100%;
       height: 100%;
+      display: block;
+    }
+    body.all-planets-page .vertical-fit svg,
+    body.all-planets-page #verticalSvg {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
       display: block;
     }
     body.all-planets-page .ctrl-row {
@@ -486,12 +492,12 @@
     }
     @media (min-width: 640px) {
       body.all-planets-page {
-        --ap-frame-max-h: min(calc(100svh - 255px), calc(94vw * 580 / 360));
+        --ap-frame-max-h: min(calc(100svh - 220px), 72vh);
       }
     }
     @media (min-width: 900px) {
       body.all-planets-page {
-        --ap-frame-max-h: min(calc(100svh - 280px), calc(90vw * 580 / 360));
+        --ap-frame-max-h: min(calc(100svh - 200px), 78vh);
       }
     }
     @media (orientation: landscape) and (max-height: 520px) {
@@ -1031,7 +1037,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
       </div>
       <div class="view-layer view-layer-vertical active" data-layer="vertical" id="viewLayerVertical">
         <div class="vertical-fit">
-          <svg id="verticalSvg" viewBox="0 0 400 580" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Vertical solar system stack">
+          <svg id="verticalSvg" viewBox="0 0 580 620" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-label="Vertical solar system stack">
             <defs></defs>
             <g id="verticalGroup"></g>
           </svg>
@@ -1119,13 +1125,15 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     planetSizeScale: 0.92,
   };
   const VERT_LINE = {
-    cx: 200,
-    sunY: -30,
-    sunR: 88,
-    topClipH: 72,
-    topY: 96,
-    bottomY: 572,
-    sizes: { mercury:18, venus:21, earth:24, mars:21, jupiter:40, saturn:37, uranus:29, neptune:27 },
+    contentW: 580,
+    vbH: 620,
+    cx: 290,
+    sunY: -46,
+    sunR: 108,
+    topClipH: 82,
+    topY: 118,
+    bottomY: 598,
+    sizes: { mercury:24, venus:28, earth:32, mars:28, jupiter:52, saturn:48, uranus:38, neptune:36 },
   };
   const TELESCOPE_DRAW_R = 108;
   const SUN_FACTS = [
@@ -1482,7 +1490,38 @@ const StylizedPlanet = {
       else this.showDefaultInfo();
       if (layer === 'orbit') {
         requestAnimationFrame(function() { Solar.fitView(); });
+      } else if (layer === 'vertical') {
+        this.syncVerticalViewBox();
       }
+    },
+    syncVerticalViewBox() {
+      const stage = document.getElementById('viewStage');
+      const svg = document.getElementById('verticalSvg');
+      if (!stage || !svg) return;
+      const w = Math.max(1, stage.clientWidth);
+      const h = Math.max(1, stage.clientHeight);
+      const vbH = VERT_LINE.vbH || 620;
+      const contentW = VERT_LINE.contentW || 580;
+      const vbW = Math.max(contentW, vbH * (w / h));
+      const x0 = (contentW - vbW) / 2;
+      svg.setAttribute('viewBox', x0 + ' 0 ' + vbW + ' ' + vbH);
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      this._vertVbW = vbW;
+      this._vertVbH = vbH;
+      this._vertX0 = x0;
+      this._vertSizeBoost = Math.min(1.45, Math.max(1, Math.sqrt((w * h) / (360 * 580))));
+    },
+    verticalMetrics() {
+      const vbW = this._vertVbW || VERT_LINE.contentW || 580;
+      const vbH = this._vertVbH || VERT_LINE.vbH || 620;
+      const x0 = this._vertX0 != null ? this._vertX0 : (VERT_LINE.contentW - vbW) / 2;
+      return {
+        vbW: vbW,
+        vbH: vbH,
+        x0: x0,
+        cx: VERT_LINE.cx,
+        boost: this._vertSizeBoost || 1,
+      };
     },
     isLandscape() {
       return window.matchMedia('(orientation: landscape) and (max-height: 520px)').matches;
@@ -1700,18 +1739,42 @@ const StylizedPlanet = {
       }
       return svg;
     },
-    ensureHalfSunClip(svg, id, side) {
-      if (svg.querySelector('#' + id)) return 'url(#' + id + ')';
+    ensureHalfSunClip(svg, id, side, clipW) {
+      const w = clipW || VERT_LINE.contentW || 580;
       let defs = svg.querySelector('defs');
       if (!defs) {
         defs = el('defs', {});
         svg.insertBefore(defs, svg.firstChild);
       }
-      const cp = el('clipPath', { id: id });
+      let cp = svg.querySelector('#' + id);
+      if (!cp) {
+        cp = el('clipPath', { id: id });
+        defs.appendChild(cp);
+      }
+      while (cp.firstChild) cp.removeChild(cp.firstChild);
       if (side === 'left') cp.appendChild(el('rect', { x: '0', y: '0', width: '420', height: '420' }));
-      else if (side === 'top') cp.appendChild(el('rect', { x: '0', y: '0', width: '400', height: String(VERT_LINE.topClipH || 58) }));
+      else if (side === 'top') cp.appendChild(el('rect', { x: String(this._vertX0 != null ? this._vertX0 : 0), y: '0', width: String(w), height: String(VERT_LINE.topClipH || 82) }));
       else cp.appendChild(el('rect', { x: '0', y: '0', width: '800', height: '420' }));
-      defs.appendChild(cp);
+      return 'url(#' + id + ')';
+    },
+    ensureRectClip(svg, id, width, height) {
+      let defs = svg.querySelector('defs');
+      if (!defs) {
+        defs = el('defs', {});
+        svg.insertBefore(defs, svg.firstChild);
+      }
+      let cp = svg.querySelector('#' + id);
+      if (!cp) {
+        cp = el('clipPath', { id: id });
+        defs.appendChild(cp);
+      }
+      while (cp.firstChild) cp.removeChild(cp.firstChild);
+      cp.appendChild(el('rect', {
+        x: String(this._vertX0 != null ? this._vertX0 : 0),
+        y: '0',
+        width: String(width),
+        height: String(height),
+      }));
       return 'url(#' + id + ')';
     },
     drawPlanetRealistic(g, p, r, svg) {
@@ -1745,18 +1808,43 @@ const StylizedPlanet = {
     drawPlanetSoft(g, p, r, svg) {
       this.drawPlanetRealistic(g, p, r, svg);
     },
-    drawVerticalSun(g, r, svg) {
+    drawVerticalSunRays(g, r) {
+      const spin = this.sunSpin || 0;
+      const rayG = el('g', { opacity: '0.78', 'pointer-events': 'none' });
+      const count = 20;
+      for (let i = 0; i < count; i++) {
+        const t = i / (count - 1);
+        const ang = -Math.PI + Math.PI * t * 0.9 - 0.05 + spin * 0.012;
+        if (Math.sin(ang) > -0.04) continue;
+        const inner = r * 0.9;
+        const outer = r * (1.06 + (i % 4) * 0.05);
+        rayG.appendChild(el('line', {
+          x1: String(Math.cos(ang) * inner),
+          y1: String(Math.sin(ang) * inner),
+          x2: String(Math.cos(ang) * outer),
+          y2: String(Math.sin(ang) * outer),
+          stroke: i % 2 ? 'rgba(255,215,95,0.45)' : 'rgba(255,155,45,0.34)',
+          'stroke-width': String(1.6 + (i % 3) * 0.35),
+          'stroke-linecap': 'round',
+        }));
+      }
+      g.appendChild(rayG);
+    },
+    drawVerticalSun(g, r, svg, glowClip) {
       if (svg) StylizedPlanet.ensureSunGlow(svg);
       if (svg) StylizedPlanet.ensureSoftBlur(svg);
       if (svg) StylizedPlanet.ensureShading(svg);
-      g.appendChild(el('circle', {
-        r: String(r * 0.72), fill: 'rgba(255,140,40,0.12)', filter: 'url(#softBlur)', 'pointer-events': 'none'
+      const glowWrap = glowClip ? el('g', { 'clip-path': glowClip, 'pointer-events': 'none' }) : el('g', { 'pointer-events': 'none' });
+      g.appendChild(glowWrap);
+      glowWrap.appendChild(el('circle', {
+        r: String(r * 0.76), fill: 'rgba(255,140,40,0.11)', filter: 'url(#softBlur)', 'pointer-events': 'none'
       }));
-      g.appendChild(el('circle', {
-        r: String(r * 0.88), fill: 'url(#sunCorona)', 'pointer-events': 'none'
+      glowWrap.appendChild(el('circle', {
+        r: String(r * 0.9), fill: 'url(#sunCorona)', 'pointer-events': 'none'
       }));
+      this.drawVerticalSunRays(glowWrap, r);
       g.appendChild(el('circle', {
-        r: String(r * 0.82), fill: 'rgba(255,193,7,0.16)', 'pointer-events': 'none'
+        r: String(r * 0.84), fill: 'rgba(255,193,7,0.15)', 'pointer-events': 'none'
       }));
       const clip = svg ? StylizedPlanet.ensureClip(svg, 'globe-r' + Math.round(r * 10), r) : '';
       if (!StylizedPlanet.texturedDisc(g, 'sun', r, clip, false)) {
@@ -1818,6 +1906,7 @@ const StylizedPlanet = {
       this.telescopeIdx = 0;
       this.telescopeAccum = 0;
       this.switchActiveLayer();
+      this.syncVerticalViewBox();
       this.fitView();
       this.updateViewModeButton();
       this.updateTelescopeLabel();
@@ -1828,7 +1917,10 @@ const StylizedPlanet = {
       this.bindLayerClicks();
       this.bindTelescopeArrows();
       this.loop();
-      window.addEventListener('resize', () => this.fitView());
+      window.addEventListener('resize', () => {
+        this.syncVerticalViewBox();
+        this.fitView();
+      });
       this.initInfoPanel();
       this.showDefaultInfo();
     },
@@ -2063,39 +2155,45 @@ const StylizedPlanet = {
       const g = this.verticalG;
       const svg = document.getElementById('verticalSvg');
       if (!g || !svg) return;
+      this.syncVerticalViewBox();
       const L = VERT_LINE;
+      const M = this.verticalMetrics();
+      const sunR = L.sunR * M.boost;
       while (g.firstChild) g.removeChild(g.firstChild);
-      g.appendChild(el('rect', { x: '0', y: '0', width: '400', height: '580', fill: '#050510' }));
-      for (let i = 0; i < 120; i++) {
+      g.appendChild(el('rect', { x: String(M.x0), y: '0', width: String(M.vbW), height: String(M.vbH), fill: '#050510' }));
+      for (let i = 0; i < 160; i++) {
         g.appendChild(el('circle', {
-          cx: String((i * 37.1 + 8) % 400),
-          cy: String((i * 53.3 + 12) % 580),
-          r: String(0.25 + (i % 4) * 0.18),
+          cx: String(M.x0 + ((i * 41.7 + 11) % Math.max(1, M.vbW - 8)) + 4),
+          cy: String((i * 47.9 + 9) % Math.max(1, M.vbH - 8)),
+          r: String(0.28 + (i % 4) * 0.2),
           fill: 'rgba(255,255,255,' + (0.12 + (i % 7) * 0.08).toFixed(2) + ')',
           'pointer-events': 'none'
         }));
       }
-      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top');
+      const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
+      const mercuryY = L.topY + step;
+      const rayBottomY = mercuryY - (L.sizes.mercury * M.boost) - 14;
+      const rayClip = this.ensureRectClip(svg, 'vertSunRayClip', M.vbW, rayBottomY);
+      const topClip = this.ensureHalfSunClip(svg, 'vertSunTop', 'top', M.vbW);
       const sunWrap = el('g', { 'clip-path': topClip, class: 'planet-hit', 'data-id': 'sun', style: 'cursor:pointer' });
       g.appendChild(sunWrap);
-      const sunInner = el('g', { transform: 'translate(' + L.cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
+      const sunInner = el('g', { transform: 'translate(' + M.cx + ',' + L.sunY + ') rotate(' + (this.sunSpin || 0).toFixed(2) + ')' });
       sunWrap.appendChild(sunInner);
-      this.drawVerticalSun(sunInner, L.sunR, svg);
+      this.drawVerticalSun(sunInner, sunR, svg, rayClip);
       sunInner.appendChild(el('circle', {
-        r: String(L.sunR * 0.95),
+        r: String(sunR * 0.95),
         fill: 'rgba(0,0,0,0.001)',
         'pointer-events': 'all'
       }));
 
-      const step = (L.bottomY - L.topY) / (PLANETS.length + 1);
       PLANETS.forEach((p, i) => {
         const y = L.topY + step * (i + 1);
-        const r = L.sizes[p.id] || 8;
-        const hitR = p.id === 'saturn' ? r * 1.35 : r + 6;
+        const r = (L.sizes[p.id] || 8) * M.boost;
+        const hitR = p.id === 'saturn' ? r * 1.35 : r + 8;
         const pg = el('g', {
           class: 'planet-hit',
           'data-id': p.id,
-          transform: 'translate(' + L.cx + ',' + y.toFixed(1) + ')',
+          transform: 'translate(' + M.cx + ',' + y.toFixed(1) + ')',
           style: 'cursor:pointer'
         });
         g.appendChild(pg);
