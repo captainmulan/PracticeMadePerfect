@@ -1025,14 +1025,14 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   </div>
 
   <div class="planet-game">
-    <h2>💍 Ring Gap Snap!</h2>
-    <p class="game-desc">Saturn's rings are spinning! Tap when the golden gap reaches the top to launch your probe through the rings.</p>
+    <h2>🌙 Moon Catch!</h2>
+    <p class="game-desc">Saturn's moons and ring ice are raining down! Drag your ship to catch treasures — dodge the space rocks!</p>
     <div class="game-canvas" id="gameCanvas">
       <div class="game-hud-float"><span id="gameScore">Score: 0</span><span id="gameTimer">⏱ 60s | ❤️❤️❤️</span></div>
       <canvas id="gameCanvasElement"></canvas>
       <div class="game-overlay" id="startScreen">
-        <h3>💍 Ring Gap Snap!</h3>
-        <p>Watch the gap in Saturn's rings. Press TAP (or Space) when the gap is at the top!</p>
+        <h3>🌙 Moon Catch!</h3>
+        <p>Drag left or right to fly your ship. Catch 🌕 moons (+20) and 💎 ice (+8). Avoid ☄️ rocks! Reach 120 points to win.</p>
         <button class="overlay-btn" type="button" onclick="startGame()">▶️ Start</button>
       </div>
       <div class="game-overlay" id="endScreen" style="display:none;">
@@ -1041,7 +1041,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         <button class="overlay-btn" type="button" onclick="startGame()">🔄 Play Again</button>
       </div>
     </div>
-    <button type="button" id="tapBtn" style="display:block;width:100%;max-width:280px;margin:14px auto;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a0800;font-size:18px;font-weight:bold;cursor:pointer;">🎯 TAP / SPACE</button>
+    <p style="text-align:center;color:#c4b5fd;font-size:13px;margin-top:10px;">👆 Drag inside the game to move · ← → keys on keyboard</p>
   </div>
 <div class="nav-hint">
   <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
@@ -1080,19 +1080,14 @@ function checkFact(btn, isCorrect) {
 }
 
 
-// Ring Gap Snap — timing game (tap when gap aligns)
+// Moon Catch — dodge rocks, collect moons & ice from Saturn
 let gameScore = 0, gameLives = 3, gameTime = 60, hudTimer;
 let isGameRunning = false, canvas, ctx, animationFrame;
-let ringAngle = 0, ringSpeed = 0.012, hits = 0;
-let scorePopups = [], screenFlash = 0;
-const RING_GAP_CENTER = -Math.PI / 2;
-const RING_GAP_WIDTH = 0.42;
-
-function gapAtTopDiff() {
-  let a = ringAngle % (Math.PI * 2);
-  if (a < 0) a += Math.PI * 2;
-  return Math.min(a, Math.PI * 2 - a);
-}
+let player = { x: 0, y: 0, w: 44 };
+let items = [], spawnTimer = 0, spawnEvery = 40;
+let scorePopups = [], screenFlash = 0, collected = 0;
+let dragPointerId = null, keys = {};
+const WIN_SCORE = 120;
 
 function formatHudTimeLives() {
   return '⏱ ' + gameTime + 's | ' + '❤️'.repeat(Math.max(0, gameLives)) + '🖤'.repeat(Math.max(0, 3 - gameLives));
@@ -1103,17 +1098,123 @@ function startHudTimer() {
     if (!isGameRunning) return;
     gameTime--;
     document.getElementById('gameTimer').textContent = formatHudTimeLives();
-    if (gameTime <= 0) endGame();
+    if (gameTime <= 0) endGame(gameScore >= WIN_SCORE);
   }, 1000);
 }
 function drawStarfield() {
   const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
   g.addColorStop(0, '#050414'); g.addColorStop(1, '#12102a');
   ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < 35; i++) {
-    ctx.fillStyle = 'rgba(255,255,255,' + (0.1 + (i % 4) * 0.1) + ')';
+  for (let i = 0; i < 40; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 4) * 0.08) + ')';
     ctx.beginPath(); ctx.arc((i * 131) % canvas.width, (i * 73) % canvas.height, 1, 0, Math.PI * 2); ctx.fill();
   }
+}
+function bindSaturnDrag() {
+  const box = document.getElementById('gameCanvas');
+  if (!box || box._saturnDrag) return;
+  box._saturnDrag = true;
+  function moveTo(clientX) {
+    if (!isGameRunning || !canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width) return;
+    player.x = ((clientX - rect.left) / rect.width) * canvas.width;
+    player.x = Math.max(28, Math.min(canvas.width - 28, player.x));
+  }
+  box.addEventListener('pointerdown', function(e) {
+    if (!isGameRunning || e.target.closest('.game-overlay')) return;
+    e.preventDefault();
+    dragPointerId = e.pointerId;
+    box.setPointerCapture(e.pointerId);
+    moveTo(e.clientX);
+  });
+  box.addEventListener('pointermove', function(e) {
+    if (dragPointerId !== e.pointerId || !isGameRunning) return;
+    e.preventDefault();
+    moveTo(e.clientX);
+  });
+  function release(e) {
+    if (dragPointerId !== e.pointerId) return;
+    dragPointerId = null;
+  }
+  box.addEventListener('pointerup', release);
+  box.addEventListener('pointercancel', release);
+}
+function spawnItem() {
+  const roll = Math.random();
+  let type, emoji, score, bad, r;
+  if (roll < 0.14) {
+    type = 'moon'; emoji = '🌕'; score = 20; bad = false; r = 18;
+  } else if (roll < 0.48) {
+    type = 'ice'; emoji = '💎'; score = 8; bad = false; r = 14;
+  } else {
+    type = 'rock'; emoji = '☄️'; score = 0; bad = true; r = 16;
+  }
+  items.push({
+    x: 24 + Math.random() * (canvas.width - 48),
+    y: -24,
+    vy: 2.1 + Math.random() * 1.6 + (60 - gameTime) * 0.018,
+    r: r,
+    emoji: emoji,
+    score: score,
+    bad: bad,
+    spin: Math.random() * Math.PI * 2
+  });
+}
+function updateGame() {
+  if (keys.left) player.x -= 5.5;
+  if (keys.right) player.x += 5.5;
+  player.x = Math.max(28, Math.min(canvas.width - 28, player.x));
+
+  spawnTimer++;
+  spawnEvery = Math.max(20, 40 - Math.floor((60 - gameTime) / 6));
+  if (spawnTimer >= spawnEvery) {
+    spawnTimer = 0;
+    spawnItem();
+  }
+
+  items.forEach(function(it) {
+    it.y += it.vy;
+    it.spin += 0.04;
+  });
+  items = items.filter(function(it) { return it.y < canvas.height + 36; });
+
+  for (let i = items.length - 1; i >= 0; i--) {
+    const it = items[i];
+    if (Math.hypot(it.x - player.x, it.y - player.y) < it.r + 22) {
+      if (it.bad) {
+        gameLives--;
+        screenFlash = -16;
+        document.getElementById('gameTimer').textContent = formatHudTimeLives();
+        if (gameLives <= 0) { endGame(false); return; }
+      } else {
+        gameScore += it.score;
+        collected++;
+        document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
+        scorePopups.push({ x: it.x, y: it.y, t: 40, text: '+' + it.score });
+        screenFlash = 12;
+        if (gameScore >= WIN_SCORE) { endGame(true); return; }
+      }
+      items.splice(i, 1);
+    }
+  }
+}
+function drawSaturnBanner() {
+  const cx = canvas.width / 2, cy = 52;
+  const pr = Math.min(canvas.width * 0.09, 30);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(1, 0.32);
+  ctx.strokeStyle = 'rgba(210,180,120,0.5)';
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.arc(0, 0, pr * 2.4, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,220,140,0.35)';
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0, 0, pr * 1.85, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+  ctx.font = (pr * 1.9) + 'px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🪐', cx, cy);
 }
 function startGame() {
   if (isGameRunning) return;
@@ -1123,106 +1224,81 @@ function startGame() {
   ctx = canvas.getContext('2d');
   const box = document.getElementById('gameCanvas');
   canvas.width = box.clientWidth; canvas.height = box.clientHeight;
-  isGameRunning = true; gameScore = 0; gameLives = 3; gameTime = 60;
-  ringAngle = 0; ringSpeed = 0.012; hits = 0; scorePopups = []; screenFlash = 0;
+  isGameRunning = true;
+  gameScore = 0; gameLives = 3; gameTime = 60;
+  items = []; spawnTimer = 0; spawnEvery = 40;
+  scorePopups = []; screenFlash = 0; collected = 0;
+  keys = {}; dragPointerId = null;
+  player.x = canvas.width / 2;
+  player.y = canvas.height - 46;
   document.getElementById('gameScore').textContent = 'Score: 0';
   document.getElementById('gameTimer').textContent = formatHudTimeLives();
+  bindSaturnDrag();
   startHudTimer();
-  document.addEventListener('keydown', onKey);
-  document.getElementById('tapBtn').onclick = trySnap;
+  document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
   gameLoop();
 }
-function onKey(e) {
+function onKeyDown(e) {
   if (!isGameRunning) return;
-  if (e.code === 'Space') { e.preventDefault(); trySnap(); }
+  if (e.key === 'ArrowLeft' || e.key === 'a') { keys.left = true; e.preventDefault(); }
+  if (e.key === 'ArrowRight' || e.key === 'd') { keys.right = true; e.preventDefault(); }
 }
-function trySnap() {
-  if (!isGameRunning) return;
-  if (gapAtTopDiff() < 0.32) {
-    gameScore += 10; hits++;
-    ringSpeed = Math.min(0.028, ringSpeed + 0.001);
-    document.getElementById('gameScore').textContent = 'Score: ' + gameScore;
-    scorePopups.push({ x: canvas.width / 2, y: canvas.height * 0.28, t: 45, text: '+10 ✨' });
-    screenFlash = 14;
-    if (hits >= 10) endGame(true);
-  } else {
-    gameLives--;
-    document.getElementById('gameTimer').textContent = formatHudTimeLives();
-    if (gameLives <= 0) endGame(false);
-  }
-}
-function drawSaturnRings(rr) {
-  const N = 24;
-  const slice = (Math.PI * 2) / N;
-  for (let i = 0; i < N; i++) {
-    const mid = RING_GAP_CENTER + RING_GAP_WIDTH / 2 + i * slice;
-    const segLen = slice * 0.62;
-    const a0 = mid - segLen / 2;
-    const a1 = mid + segLen / 2;
-    ctx.strokeStyle = 'rgba(200,170,120,0.65)';
-    ctx.lineWidth = 7;
-    ctx.beginPath();
-    ctx.arc(0, 0, rr, a0, a1);
-    ctx.stroke();
-  }
-  const ga0 = RING_GAP_CENTER - RING_GAP_WIDTH / 2;
-  const ga1 = RING_GAP_CENTER + RING_GAP_WIDTH / 2;
-  ctx.strokeStyle = '#ffd700';
-  ctx.lineWidth = 12;
-  ctx.beginPath();
-  ctx.arc(0, 0, rr, ga0, ga1);
-  ctx.stroke();
+function onKeyUp(e) {
+  if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
+  if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
 }
 function gameLoop() {
   if (!isGameRunning) return;
-  ringAngle += ringSpeed;
   drawStarfield();
-  const cx = canvas.width / 2, cy = canvas.height / 2;
-  const pr = Math.min(canvas.width, canvas.height) * 0.14;
-  const rr = pr * 2.1;
-  const grd = ctx.createRadialGradient(cx - 10, cy - 10, pr * 0.2, cx, cy, pr);
-  grd.addColorStop(0, '#f4d59e'); grd.addColorStop(1, '#c9a846');
-  ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx, cy, pr, 0, Math.PI * 2); ctx.fill();
-  ctx.font = pr + 'px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🪐', cx, cy + 4);
-  ctx.save(); ctx.translate(cx, cy); ctx.rotate(ringAngle);
-  drawSaturnRings(rr);
-  ctx.restore();
-  ctx.fillStyle = '#ffd700';
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - pr - rr - 6);
-  ctx.lineTo(cx - 10, cy - pr - rr + 8);
-  ctx.lineTo(cx + 10, cy - pr - rr + 8);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = '#667eea'; ctx.beginPath();
-  ctx.moveTo(cx, cy + pr + 20); ctx.lineTo(cx - 8, cy + pr + 38); ctx.lineTo(cx + 8, cy + pr + 38); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '13px Comic Sans MS'; ctx.textAlign = 'center';
-  ctx.fillText('Tap when gap is at top!', cx, canvas.height - 16);
-  if (screenFlash > 0) {
-    ctx.fillStyle = 'rgba(74,222,128,' + (screenFlash / 40) + ')';
+  drawSaturnBanner();
+
+  items.forEach(function(it) {
+    ctx.font = (it.r * 1.5) + 'px serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(it.emoji, it.x, it.y);
+  });
+
+  ctx.font = '32px serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🛸', player.x, player.y);
+
+  ctx.fillStyle = 'rgba(244,213,158,0.75)';
+  ctx.font = '12px Comic Sans MS, Comic Neue, sans-serif';
+  ctx.fillText('Goal: ' + WIN_SCORE + ' pts', canvas.width / 2, canvas.height - 12);
+
+  if (screenFlash !== 0) {
+    ctx.fillStyle = screenFlash > 0
+      ? 'rgba(74,222,128,' + (screenFlash / 36) + ')'
+      : 'rgba(248,113,113,' + (-screenFlash / 36) + ')';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    screenFlash--;
+    screenFlash += screenFlash > 0 ? -1 : 1;
+    if (Math.abs(screenFlash) <= 0) screenFlash = 0;
   }
-  scorePopups.forEach(p => {
+
+  scorePopups.forEach(function(p) {
     p.t--;
-    ctx.globalAlpha = Math.max(0, p.t / 45);
-    ctx.font = 'bold ' + (18 + (45 - p.t) * 0.3) + 'px Comic Sans MS';
+    ctx.globalAlpha = Math.max(0, p.t / 40);
+    ctx.font = 'bold ' + (16 + (40 - p.t) * 0.25) + 'px Comic Sans MS, Comic Neue, sans-serif';
     ctx.fillStyle = '#ffd700';
     ctx.textAlign = 'center';
-    ctx.fillText(p.text, p.x, p.y - (45 - p.t));
+    ctx.fillText(p.text, p.x, p.y - (40 - p.t));
     ctx.globalAlpha = 1;
   });
-  scorePopups = scorePopups.filter(p => p.t > 0);
+  scorePopups = scorePopups.filter(function(p) { return p.t > 0; });
+
+  updateGame();
   animationFrame = requestAnimationFrame(gameLoop);
 }
 function endGame(won) {
   isGameRunning = false;
   clearInterval(hudTimer);
   cancelAnimationFrame(animationFrame);
-  document.removeEventListener('keydown', onKey);
-  document.getElementById('endTitle').textContent = won ? '🏆 Ring Master!' : '💫 Try Again!';
-  document.getElementById('endStats').textContent = 'Score: ' + gameScore + ' | Hits: ' + hits;
+  document.removeEventListener('keydown', onKeyDown);
+  document.removeEventListener('keyup', onKeyUp);
+  dragPointerId = null;
+  document.getElementById('endTitle').textContent = won ? '🏆 Saturn Explorer!' : '💫 Try Again!';
+  document.getElementById('endStats').textContent = 'Score: ' + gameScore + ' | Caught: ' + collected + ' · Goal: ' + WIN_SCORE;
   document.getElementById('endScreen').style.display = 'flex';
 }
 
