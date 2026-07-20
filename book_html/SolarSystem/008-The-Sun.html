@@ -172,9 +172,28 @@
     }
     .sun-game h2{color:#ffd700;margin-bottom:8px;font-size:20px;text-align:center;}
     .sun-game .game-desc{text-align:center;color:#c4b5fd;font-size:14px;margin-bottom:14px;line-height:1.55;}
-    .game-canvas-wrap{position:relative;height:min(50vh,440px);min-height:min(42vh,300px);max-height:min(56vh,480px);background:#12102a;border-radius:16px;overflow:hidden;touch-action:none;}
+    .game-canvas-wrap{position:relative;height:min(50vh,440px);min-height:min(42vh,300px);max-height:min(56vh,480px);background:#12102a;border-radius:16px;overflow:hidden;touch-action:none;cursor:grab;}
+    .game-canvas-wrap:active{cursor:grabbing;}
     .game-hud-float{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:6px;z-index:6;pointer-events:none;}
     .game-hud-float span{background:rgba(0,0,0,0.65);padding:5px 10px;border-radius:8px;font-size:12px;font-weight:bold;color:#ffd700;border:1px solid rgba(255,215,0,0.35);}
+    .game-drag-hint{
+      position:absolute;
+      bottom:8px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:6;
+      pointer-events:none;
+      max-width:calc(100% - 16px);
+      padding:5px 10px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.62);
+      border:1px solid rgba(167,139,250,0.35);
+      color:#c4b5fd;
+      font-size:11px;
+      font-weight:bold;
+      text-align:center;
+      white-space:nowrap;
+    }
     #sunGameCanvas{display:block;width:100%;height:100%;}
     .game-canvas-wrap .game-overlay{
       position:absolute;
@@ -232,66 +251,7 @@
     }
     .game-hud{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;}
     .game-hud-item{background:#1a1735;padding:8px 14px;border-radius:8px;font-size:15px;font-weight:bold;color:#ffd700;border:1px solid rgba(255,215,0,0.45);}
-    .mobile-controls{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:16px;
-      margin-top:12px;
-      padding:0 10px;
-      touch-action:none;
-      user-select:none;
-    }
-    .joystick-zone{
-      flex:0 0 auto;
-      width:112px;
-      height:112px;
-      touch-action:none;
-    }
-    .joystick-base{
-      width:100%;
-      height:100%;
-      border-radius:50%;
-      background:rgba(255,255,255,0.07);
-      border:2px solid rgba(255,215,0,0.38);
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:inset 0 0 18px rgba(0,0,0,0.35);
-    }
-    .joystick-knob{
-      width:48px;
-      height:48px;
-      border-radius:50%;
-      background:linear-gradient(135deg,#667eea,#764ba2);
-      border:2px solid rgba(255,255,255,0.5);
-      box-shadow:0 4px 14px rgba(0,0,0,0.4);
-      transform:translate(0,0);
-      pointer-events:none;
-      transition:transform 0.04s linear;
-    }
-    .action-btn.jump{
-      flex:0 0 auto;
-      width:74px;
-      height:74px;
-      border-radius:50%;
-      border:2px solid rgba(255,140,0,0.55);
-      background:linear-gradient(135deg,rgba(255,160,0,0.45),rgba(255,100,0,0.35));
-      color:#fff;
-      font-size:15px;
-      font-weight:bold;
-      cursor:pointer;
-      touch-action:manipulation;
-      box-shadow:0 4px 14px rgba(0,0,0,0.35);
-    }
-    .action-btn.jump:active{transform:scale(0.94);}
     .touch-controls{display:none;}
-    @media (min-width: 768px) {
-      .joystick-zone{width:128px;height:128px;}
-      .joystick-knob{width:54px;height:54px;}
-      .action-btn.jump{width:84px;height:84px;font-size:16px;}
-    }
   
     .planet-svg-panel{background:#12102a;border-radius:20px;border:1px solid rgba(255,215,0,0.45);padding:12px;margin:20px 0;}
     .svg-viewport{width:100%;aspect-ratio:1;max-height:min(72vw,260px);border-radius:14px;overflow:hidden;background:#0a0820;touch-action:none;}
@@ -971,15 +931,16 @@ body.big-game-page:has(.fire-btn) .game-wrap {
 
   <div class="sun-game">
     <h2>☀️ Climb to the Sun!</h2>
-    <p class="game-desc">Jump on solar platforms! Use the move stick and Jump button. Touch the Sun to win!</p>
+    <p class="game-desc">Jump on solar platforms! Drag inside the game to move — tap or flick up to jump. You must reach the Sun itself to win!</p>
     <div class="game-canvas-wrap" id="sunGameWrap">
       <div class="game-hud-float">
         <span id="sunGameTimer">⏱ 90s | ❤️❤️❤️</span>
       </div>
+      <div class="game-drag-hint" id="sunDragHint" style="display:none;">👆 Drag to move · Tap or flick up to jump</div>
       <canvas id="sunGameCanvas"></canvas>
       <div class="game-overlay" id="sunStartScreen">
         <h3>☀️ Solar Climb!</h3>
-        <p>Use the move stick to walk and tap Jump to climb. Touch the Sun to win!</p>
+        <p>Drag anywhere in the game to walk left or right. Tap or swipe up to jump between platforms. Land on the Sun to win!</p>
         <button class="overlay-btn" type="button" onclick="startSunClimb()">▶️ Start</button>
       </div>
       <div class="game-overlay" id="sunEndScreen" style="display:none;">
@@ -987,14 +948,6 @@ body.big-game-page:has(.fire-btn) .game-wrap {
         <p id="sunEndStats">Score: 0</p>
         <button class="overlay-btn" type="button" onclick="startSunClimb()">🔄 Play Again</button>
       </div>
-    </div>
-    <div class="mobile-controls" id="sunMobileControls">
-      <div class="joystick-zone" id="sunJoystickZone" aria-label="Move stick">
-        <div class="joystick-base">
-          <div class="joystick-knob" id="sunJoystickKnob"></div>
-        </div>
-      </div>
-      <button class="action-btn jump" id="sunJumpBtn" type="button" aria-label="Jump">Jump</button>
     </div>
   </div>
 
@@ -1022,8 +975,10 @@ let sunCanvas, sunCtx, sunRunning = false;
 let sunPlayer, sunPlatforms = [], sunFlares = [], sunCamY = 0;
 let sunStartPlat = null;
 let sunTime = 90, sunLives = 3, sunHeight = 0, sunAnimId, sunTimerId;
-let sunKeys = {}, sunStickX = 0, sunStickY = 0, sunJumpReq = false;
-let sunJoyPointerId = null, sunPhys = { grav: 0.58, jumpV: -10.2, speed: 4.8, maxJumpH: 76, maxJumpX: 130 };
+let sunKeys = {}, sunDragMove = 0, sunJumpReq = false;
+let sunDragPointerId = null, sunDragStartX = 0, sunDragStartY = 0, sunDragStartTime = 0;
+let sunPhys = { grav: 0.58, jumpV: -10.2, speed: 4.8, maxJumpH: 76, maxJumpX: 130 };
+const SUN_BODY_RADIUS = 45;
 
 function sunPhysicsFor(w, h) {
   const scale = Math.max(1, Math.min(w, h) / 380);
@@ -1044,10 +999,12 @@ function startSunClimb() {
   sunCanvas.height = wrap.clientHeight;
   document.getElementById('sunStartScreen').style.display = 'none';
   document.getElementById('sunEndScreen').style.display = 'none';
+  const dragHint = document.getElementById('sunDragHint');
+  if (dragHint) dragHint.style.display = 'block';
   sunRunning = true;
   sunTime = 90; sunLives = 3; sunHeight = 0; sunCamY = 0;
   sunFlares = [];
-  sunKeys = {}; sunStickX = 0; sunStickY = 0; sunJumpReq = false; sunJoyPointerId = null;
+  sunKeys = {}; sunDragMove = 0; sunJumpReq = false; sunDragPointerId = null;
   sunPhys = sunPhysicsFor(sunCanvas.width, sunCanvas.height);
   sunPlatforms = buildSunPlatforms(sunCanvas.width, sunCanvas.height, sunPhys);
   const startPlat = sunPlatforms.find(p => p.isStart) || sunPlatforms.filter(p => !p.isSun).reduce((a, b) => (a.y > b.y ? a : b));
@@ -1061,7 +1018,7 @@ function startSunClimb() {
   updateSunHud();
   document.addEventListener('keydown', sunKeyDown);
   document.addEventListener('keyup', sunKeyUp);
-  bindSunControls();
+  bindSunDragControls();
   if (sunTimerId) clearInterval(sunTimerId);
   sunTimerId = setInterval(function() {
     if (!sunRunning) return;
@@ -1074,7 +1031,7 @@ function startSunClimb() {
 
 function buildSunPlatforms(w, h, phys) {
   phys = phys || sunPhysicsFor(w, h);
-  const plats = [{ x: w / 2 - 52, y: 0, width: 104, h: 14, isSun: true }];
+  const plats = [{ x: w / 2 - 52, y: 0, width: 104, h: 14, isSun: true, sunR: SUN_BODY_RADIUS }];
   const gapMin = Math.max(22, phys.maxJumpH * 0.36);
   const gapMax = Math.max(gapMin + 8, phys.maxJumpH * 0.5);
   const maxDx = Math.min(phys.maxJumpX, w * 0.34);
@@ -1095,63 +1052,64 @@ function buildSunPlatforms(w, h, phys) {
   return plats;
 }
 
-function resetSunJoystick() {
-  sunStickX = 0;
-  sunStickY = 0;
-  sunJoyPointerId = null;
-  const knob = document.getElementById('sunJoystickKnob');
-  if (knob) knob.style.transform = 'translate(0px,0px)';
+function resetSunDrag() {
+  sunDragMove = 0;
+  sunDragPointerId = null;
 }
 
-function bindSunControls() {
-  const zone = document.getElementById('sunJoystickZone');
-  const knob = document.getElementById('sunJoystickKnob');
-  const jumpBtn = document.getElementById('sunJumpBtn');
-  if (!zone || !knob || !jumpBtn || zone._bound) return;
-  zone._bound = true;
-  const base = zone.querySelector('.joystick-base');
-  const radius = 40;
+function bindSunDragControls() {
+  const wrap = document.getElementById('sunGameWrap');
+  if (!wrap || wrap._dragBound) return;
+  wrap._dragBound = true;
+  const DRAG_DEAD = 10;
+  const MOVE_SCALE = 72;
+  const FLICK_UP = -32;
+  const TAP_MAX_DIST = 18;
+  const TAP_MAX_MS = 280;
 
-  function setStick(clientX, clientY) {
-    const rect = base.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    let dx = clientX - cx;
-    let dy = clientY - cy;
-    const dist = Math.hypot(dx, dy);
-    if (dist > radius) {
-      dx = dx / dist * radius;
-      dy = dy / dist * radius;
+  function onDown(e) {
+    if (!sunRunning || e.target.closest('.game-overlay') || e.target.closest('.overlay-btn')) return;
+    e.preventDefault();
+    sunDragPointerId = e.pointerId;
+    sunDragStartX = e.clientX;
+    sunDragStartY = e.clientY;
+    sunDragStartTime = Date.now();
+    sunDragMove = 0;
+    wrap.setPointerCapture(e.pointerId);
+  }
+
+  function onMove(e) {
+    if (sunDragPointerId !== e.pointerId || !sunRunning) return;
+    e.preventDefault();
+    const dx = e.clientX - sunDragStartX;
+    const dy = e.clientY - sunDragStartY;
+    if (Math.abs(dx) > DRAG_DEAD) {
+      sunDragMove = Math.max(-1, Math.min(1, dx / MOVE_SCALE));
+    } else {
+      sunDragMove = 0;
     }
-    knob.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px)';
-    sunStickX = dx / radius;
-    sunStickY = dy / radius;
+    if (dy < FLICK_UP && sunPlayer && sunPlayer.onGround) {
+      sunJumpReq = true;
+      sunDragStartY = e.clientY;
+    }
   }
 
-  zone.addEventListener('pointerdown', function(e) {
-    e.preventDefault();
-    sunJoyPointerId = e.pointerId;
-    zone.setPointerCapture(e.pointerId);
-    setStick(e.clientX, e.clientY);
-  });
-  zone.addEventListener('pointermove', function(e) {
-    if (sunJoyPointerId !== e.pointerId) return;
-    e.preventDefault();
-    setStick(e.clientX, e.clientY);
-  });
-  function releaseStick(e) {
-    if (sunJoyPointerId !== e.pointerId) return;
-    resetSunJoystick();
+  function onUp(e) {
+    if (sunDragPointerId !== e.pointerId) return;
+    const dx = e.clientX - sunDragStartX;
+    const dy = e.clientY - sunDragStartY;
+    const elapsed = Date.now() - sunDragStartTime;
+    const dist = Math.hypot(dx, dy);
+    if ((dist < TAP_MAX_DIST && elapsed < TAP_MAX_MS) || dy < FLICK_UP) {
+      sunJumpReq = true;
+    }
+    resetSunDrag();
   }
-  zone.addEventListener('pointerup', releaseStick);
-  zone.addEventListener('pointercancel', releaseStick);
 
-  function requestJump(e) {
-    e.preventDefault();
-    sunJumpReq = true;
-  }
-  jumpBtn.addEventListener('pointerdown', requestJump);
-  jumpBtn.addEventListener('mousedown', requestJump);
+  wrap.addEventListener('pointerdown', onDown);
+  wrap.addEventListener('pointermove', onMove);
+  wrap.addEventListener('pointerup', onUp);
+  wrap.addEventListener('pointercancel', onUp);
 }
 
 function sunKeyDown(e) {
@@ -1181,16 +1139,19 @@ function playerTouchesSun(p) {
   if (!sun) return false;
   const cx = sun.x + sun.width / 2;
   const cy = sun.y;
-  const hitR = 72;
+  const sunR = sun.sunR || SUN_BODY_RADIUS;
   const dx = p.x - cx;
   const dy = p.y - cy;
-  return dx * dx + dy * dy <= hitR * hitR;
+  const dist = Math.hypot(dx, dy);
+  return dist <= sunR - 12;
 }
 
 function endSunClimb(won) {
   sunRunning = false;
-  sunKeys = {}; sunStickX = 0; sunStickY = 0; sunJumpReq = false;
-  resetSunJoystick();
+  sunKeys = {}; sunDragMove = 0; sunJumpReq = false;
+  resetSunDrag();
+  const dragHint = document.getElementById('sunDragHint');
+  if (dragHint) dragHint.style.display = 'none';
   cancelAnimationFrame(sunAnimId);
   clearInterval(sunTimerId);
   document.removeEventListener('keydown', sunKeyDown);
@@ -1209,7 +1170,7 @@ function sunLoop() {
   let move = 0;
   if (sunKeys.left) move = -1;
   else if (sunKeys.right) move = 1;
-  else if (Math.abs(sunStickX) > 0.1) move = sunStickX;
+  else if (Math.abs(sunDragMove) > 0.08) move = sunDragMove;
   if (move !== 0) p.vx = move * speed;
   else p.vx *= 0.75;
   if (sunJumpReq && p.onGround) { p.vy = jumpV; p.onGround = false; }
@@ -1275,10 +1236,11 @@ function drawSunClimb() {
     const py = pl.y - sunCamY;
     if (py < -30 || py > H + 30) return;
     if (pl.isSun) {
-      const grd = c.createRadialGradient(pl.x + pl.width / 2, py, 5, pl.x + pl.width / 2, py, 50);
+      const sunR = pl.sunR || SUN_BODY_RADIUS;
+      const grd = c.createRadialGradient(pl.x + pl.width / 2, py, 5, pl.x + pl.width / 2, py, sunR + 5);
       grd.addColorStop(0, '#fff176'); grd.addColorStop(1, '#ff8c00');
       c.fillStyle = grd;
-      c.beginPath(); c.arc(pl.x + pl.width / 2, py, 45, 0, Math.PI * 2); c.fill();
+      c.beginPath(); c.arc(pl.x + pl.width / 2, py, sunR, 0, Math.PI * 2); c.fill();
       c.font = '36px serif'; c.textAlign = 'center'; c.fillText('☀️', pl.x + pl.width / 2, py + 12);
     } else {
       c.fillStyle = '#ff9800';
