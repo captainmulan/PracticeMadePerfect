@@ -1102,6 +1102,7 @@ function startHudTimer() {
   }, 1000);
 }
 function drawStarfield() {
+  ctx.save();
   const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
   g.addColorStop(0, '#050414'); g.addColorStop(1, '#12102a');
   ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1109,6 +1110,28 @@ function drawStarfield() {
     ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + (i % 4) * 0.08) + ')';
     ctx.beginPath(); ctx.arc((i * 131) % canvas.width, (i * 73) % canvas.height, 1, 0, Math.PI * 2); ctx.fill();
   }
+  ctx.restore();
+}
+function drawEmojiSprite(emoji, x, y, sizePx) {
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.font = sizePx + 'px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(emoji, x, y);
+  ctx.restore();
+}
+function drawHitFlash() {
+  if (screenFlash === 0) return;
+  ctx.save();
+  ctx.globalAlpha = screenFlash > 0 ? screenFlash / 36 : (-screenFlash / 36);
+  ctx.fillStyle = screenFlash > 0 ? '#4ade80' : '#f87171';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
+  screenFlash += screenFlash > 0 ? -1 : 1;
+  if (Math.abs(screenFlash) <= 0) screenFlash = 0;
 }
 function bindSaturnDrag() {
   const box = document.getElementById('gameCanvas');
@@ -1200,9 +1223,9 @@ function updateGame() {
   }
 }
 function drawSaturnBanner() {
+  ctx.save();
   const cx = canvas.width / 2, cy = 52;
   const pr = Math.min(canvas.width * 0.09, 30);
-  ctx.save();
   ctx.translate(cx, cy);
   ctx.scale(1, 0.32);
   ctx.strokeStyle = 'rgba(210,180,120,0.5)';
@@ -1212,9 +1235,7 @@ function drawSaturnBanner() {
   ctx.lineWidth = 3;
   ctx.beginPath(); ctx.arc(0, 0, pr * 1.85, 0, Math.PI * 2); ctx.stroke();
   ctx.restore();
-  ctx.font = (pr * 1.9) + 'px serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🪐', cx, cy);
+  drawEmojiSprite('🪐', cx, cy, pr * 1.9);
 }
 function startGame() {
   if (isGameRunning) return;
@@ -1251,39 +1272,34 @@ function onKeyUp(e) {
 function gameLoop() {
   if (!isGameRunning) return;
   drawStarfield();
+  drawHitFlash();
   drawSaturnBanner();
 
   items.forEach(function(it) {
-    ctx.font = (it.r * 1.5) + 'px serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(it.emoji, it.x, it.y);
+    drawEmojiSprite(it.emoji, it.x, it.y, it.r * 1.55);
   });
 
-  ctx.font = '32px serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🛸', player.x, player.y);
+  drawEmojiSprite('🛸', player.x, player.y, 34);
 
-  ctx.fillStyle = 'rgba(244,213,158,0.75)';
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#f4d59e';
   ctx.font = '12px Comic Sans MS, Comic Neue, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
   ctx.fillText('Goal: ' + WIN_SCORE + ' pts', canvas.width / 2, canvas.height - 12);
-
-  if (screenFlash !== 0) {
-    ctx.fillStyle = screenFlash > 0
-      ? 'rgba(74,222,128,' + (screenFlash / 36) + ')'
-      : 'rgba(248,113,113,' + (-screenFlash / 36) + ')';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    screenFlash += screenFlash > 0 ? -1 : 1;
-    if (Math.abs(screenFlash) <= 0) screenFlash = 0;
-  }
+  ctx.restore();
 
   scorePopups.forEach(function(p) {
     p.t--;
+    ctx.save();
     ctx.globalAlpha = Math.max(0, p.t / 40);
     ctx.font = 'bold ' + (16 + (40 - p.t) * 0.25) + 'px Comic Sans MS, Comic Neue, sans-serif';
     ctx.fillStyle = '#ffd700';
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText(p.text, p.x, p.y - (40 - p.t));
-    ctx.globalAlpha = 1;
+    ctx.restore();
   });
   scorePopups = scorePopups.filter(function(p) { return p.t > 0; });
 
