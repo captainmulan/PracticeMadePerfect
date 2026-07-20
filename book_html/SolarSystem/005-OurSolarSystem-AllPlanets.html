@@ -404,6 +404,11 @@
       border-radius: 16px;
       background: #050510;
     }
+    body.all-planets-page .view-layer-orbit.active {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
     body.all-planets-page .view-layer-orbit,
     body.all-planets-page .view-layer-orbit .svg-wrap,
     body.all-planets-page .view-layer-vertical .vertical-fit,
@@ -1117,11 +1122,11 @@ body.big-game-page:has(.fire-btn) .game-wrap {
   ];
   const SUN_RADIUS_DEFAULT = 38;
   const ORBIT_MAP_LAYOUT = {
-    orbitScale: 1.55,
+    orbitScale: 1.62,
     sunOffsetX: 0,
-    sunRadius: 36,
+    sunRadius: 42,
     tilt: 0.58,
-    planetSizeScale: 0.92,
+    planetSizeScale: 1.02,
   };
   const VERT_LINE = {
     contentW: 580,
@@ -1529,7 +1534,27 @@ const StylizedPlanet = {
       if (layer === 'vertical') this.syncVerticalViewBox();
       else if (layer === 'movie') this.syncStageViewBox('movieSvg', MOVIE_LAYOUT.contentW, MOVIE_LAYOUT.contentH, 'movie');
       else if (layer === 'telescope') this.syncStageViewBox('telescopeSvg', 400, 400, 'tele');
-      else if (layer === 'orbit') this.syncStageViewBox('solarSvg', 600, 600, 'orbit');
+      else if (layer === 'orbit') this.syncOrbitViewBox();
+    },
+    syncOrbitViewBox() {
+      const stage = document.getElementById('viewStage');
+      const svg = document.getElementById('solarSvg');
+      if (!stage || !svg) return null;
+      const w = Math.max(1, stage.clientWidth);
+      const h = Math.max(1, stage.clientHeight);
+      const contentW = 600;
+      const contentH = 600;
+      const aspect = w / h;
+      const isWide = aspect > 1.05;
+      svg.setAttribute('viewBox', '0 0 ' + contentW + ' ' + contentH);
+      svg.setAttribute('preserveAspectRatio', isWide ? 'xMidYMid slice' : 'xMidYMid meet');
+      this._orbitVbW = contentW;
+      this._orbitVbH = contentH;
+      this._orbitX0 = 0;
+      this._orbitY0 = 0;
+      this._orbitWide = isWide;
+      this._orbitAspect = aspect;
+      return { vbW: contentW, vbH: contentH, x0: 0, y0: 0, wide: isWide, cx: 300, cy: 300 };
     },
     syncVerticalViewBox() {
       const stage = document.getElementById('viewStage');
@@ -1570,7 +1595,7 @@ const StylizedPlanet = {
     applyViewBox() {
       if (!this.svg) return;
       if (document.body.classList.contains('all-planets-page')) {
-        this.syncStageViewBox('solarSvg', 600, 600, 'orbit');
+        this.syncOrbitViewBox();
         return;
       }
       if (this.isLandscape()) {
@@ -1701,9 +1726,14 @@ const StylizedPlanet = {
       parent.appendChild(pg);
       this.drawPlanetBody(pg, item.p, drawSize, hostSvg);
     },
+    orbitStageWide() {
+      const stage = document.getElementById('viewStage');
+      if (!stage) return !!this._orbitWide;
+      return stage.clientWidth / Math.max(1, stage.clientHeight) > 1.05;
+    },
     fitView(){
       if (this.activeLayer() !== 'orbit') return;
-      this.applyViewBox();
+      this.syncOrbitViewBox();
       const mode = this.currentMode();
       const layout = this.orbitLayout(mode);
       this.CAMERA_NEAR = mode.cameraNear;
@@ -1716,13 +1746,19 @@ const StylizedPlanet = {
       this.maxOrbitR = maxOrbitR;
       const largestPlanet = Math.max(...visible.map(p => p.size)) * layout.planetSizeScale;
       const sunR = layout.sunRadius;
-      const pad = this.isLandscape() ? 3 : 4;
+      const wide = this.orbitStageWide();
+      const pad = wide ? 2 : 4;
       const half = 296 - pad;
       const horizHalf = Math.abs(layout.sunOffsetX) + maxOrbitR + largestPlanet + 4;
       const vertHalf = maxOrbitR * Math.abs(layout.tilt) + Math.max(largestPlanet, sunR * 0.35) + 4;
       const zFit = half / Math.min(horizHalf, vertHalf);
-      const z = Math.min(1.58, zFit * 1.06);
-      const landscapeBoost = this.isLandscape() ? 1.08 : 1;
+      let z = Math.min(wide ? 2.05 : 1.62, zFit * (wide ? 1.14 : 1.06));
+      if (wide) {
+        const aspect = this._orbitAspect || 1.3;
+        z *= Math.min(1.32, 0.9 + aspect * 0.18);
+      }
+      z = Math.min(2.4, z);
+      const landscapeBoost = wide ? 1.12 : (this.isLandscape() ? 1.08 : 1);
       this.DEFAULT_ZOOM = Math.round(z * mode.closeupBoost * mode.zoomBoost * landscapeBoost * 100) / 100;
       if (!this._userZoomed) this.zoom = this.DEFAULT_ZOOM;
     },
@@ -2203,9 +2239,27 @@ const StylizedPlanet = {
       }
     },
     drawOrbit(){
+      const M = this.syncOrbitViewBox() || { vbW: 600, vbH: 600, x0: 0, y0: 0, cx: 300, cy: 300 };
+      let skyG = this.svg.querySelector('#orbitSkyGroup');
+      if (!skyG) {
+        skyG = el('g', { id: 'orbitSkyGroup' });
+        this.svg.insertBefore(skyG, this.viewG);
+      }
+      while (skyG.firstChild) skyG.removeChild(skyG.firstChild);
+      this.drawVerticalSky(skyG, M, this.svg);
+
       while (this.viewG.firstChild) this.viewG.removeChild(this.viewG.firstChild);
       const mode = this.currentMode();
-      const layout = this.orbitLayout(mode);
+      const baseLayout = this.orbitLayout(mode);
+      const wide = M.wide || this.orbitStageWide();
+      const layout = wide ? {
+        orbitScale: baseLayout.orbitScale * 1.05,
+        sunOffsetX: baseLayout.sunOffsetX,
+        sunRadius: baseLayout.sunRadius * 1.12,
+        tilt: baseLayout.tilt,
+        planetSizeScale: baseLayout.planetSizeScale * 1.1,
+        frontArcOnly: baseLayout.frontArcOnly,
+      } : baseLayout;
       const cx = 300;
       const cy = mode.viewCy != null ? mode.viewCy : (this.VIEW_CY || 300);
       const rot = this.rot + this.drag;
@@ -2220,8 +2274,8 @@ const StylizedPlanet = {
         this.viewG.appendChild(el('ellipse', {
           cx: sunX, cy: 0, rx: orbitR, ry: orbitR * Math.abs(tilt),
           fill: 'none',
-          stroke: 'rgba(255,255,255,0.38)',
-          'stroke-width': '1.5'
+          stroke: 'rgba(255,255,255,0.42)',
+          'stroke-width': wide ? '1.8' : '1.5'
         }));
       });
 
