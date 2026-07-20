@@ -5,6 +5,7 @@ import { useCourseCatalog } from "../utils/useCourseCatalog";
 import { createShelfItemFromCourse, getCourseShelfRowForCategory, getHomeCourseShelfRows, type CourseShelfRow } from "../utils/courseShelf";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import HomeLoginPanel from "../components/HomeLoginPanel";
+import HomeSpaceDecor from "../components/HomeSpaceDecor";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
 
 const HOME_SHELF_TABS = [
@@ -63,7 +64,7 @@ export default function Home() {
             : (style?.hero?.backgroundColor ?? "#ffffff"),
         }}
       >
-        <div className="rocket-container"></div>
+        <HomeSpaceDecor region="hero" />
         <button
           type="button"
           className="home-hero-toggle"
@@ -115,7 +116,7 @@ export default function Home() {
           borderColor: style?.bookshelf?.borderColor ?? "#e2e8f0",
         }}
       >
-        <div className="rocket-container"></div>
+        <HomeSpaceDecor region="shelf" />
         <div className="container">
           <nav className="home-tabs">
             {HOME_SHELF_TABS.map((tab) => (

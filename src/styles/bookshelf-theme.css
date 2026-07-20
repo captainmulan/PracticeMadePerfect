@@ -106,8 +106,10 @@ body[data-bookshelf-theme="space"] .home-categories::before {
   z-index: 0;
 }
 
-/* Flying rocket in bookshelf - use a wrapper approach */
-body[data-bookshelf-theme="space"] .home-categories .rocket-container {
+/* Flying rocket/planet decor — random paths via HomeSpaceDecor */
+body[data-bookshelf-theme="space"] .home-categories .home-space-decor,
+body[data-hero-theme="space"] .home-hero .home-space-decor,
+body[data-bookshelf-theme="space"] .home-hero .home-space-decor {
   position: absolute;
   top: 0;
   left: 0;
@@ -118,34 +120,50 @@ body[data-bookshelf-theme="space"] .home-categories .rocket-container {
   overflow: hidden;
 }
 
-body[data-bookshelf-theme="space"] .home-categories .rocket-container::before {
-  content: '🚀';
+.home-space-decor .space-float {
+  display: none;
   position: absolute;
-  font-size: 2rem;
-  animation: flyRocket 35s linear infinite;
-  opacity: 0.8;
-  filter: drop-shadow(0 0 10px rgba(255,200,100,0.8));
+  font-size: var(--size, 2rem);
+  line-height: 1;
+  opacity: 0.88;
+  pointer-events: none;
+  left: var(--sx);
+  top: var(--sy);
+  transform: var(--sr);
+  animation: spaceDrift var(--dur, 35s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: left, top, transform;
 }
 
-@keyframes flyRocket {
+body[data-bookshelf-theme="space"] .home-categories .home-space-decor .space-float,
+body[data-hero-theme="space"] .home-hero .home-space-decor .space-float,
+body[data-bookshelf-theme="space"] .home-hero .home-space-decor .space-float {
+  display: block;
+}
+
+.home-space-decor .space-float-rocket {
+  filter: drop-shadow(0 0 10px rgba(255, 200, 100, 0.8));
+}
+
+.home-space-decor .space-float-planet {
+  filter: drop-shadow(0 0 10px rgba(100, 200, 255, 0.8));
+  opacity: 0.92;
+}
+
+@keyframes spaceDrift {
   0% {
-    left: -50px;
-    top: 80%;
-    transform: rotate(-45deg);
+    left: var(--sx);
+    top: var(--sy);
+    transform: var(--sr);
   }
-  25% {
-    top: 20%;
-  }
-  50% {
-    top: 60%;
-  }
-  75% {
-    top: 30%;
+  45% {
+    left: var(--mx);
+    top: var(--my);
   }
   100% {
-    left: calc(100% + 50px);
-    top: 70%;
-    transform: rotate(-45deg);
+    left: var(--ex);
+    top: var(--ey);
+    transform: var(--er);
   }
 }
 
@@ -522,8 +540,8 @@ body[data-hero-theme="space"] .home-hero > * {
   z-index: 2;
 }
 
-/* Rocket and Superman in hero section */
-body[data-hero-theme="space"] .home-hero .rocket-container {
+/* Rocket and planet in hero section */
+body[data-hero-theme="space"] .home-hero .home-space-decor {
   position: absolute;
   top: 0;
   left: 0;
@@ -532,56 +550,6 @@ body[data-hero-theme="space"] .home-hero .rocket-container {
   pointer-events: none;
   z-index: 1;
   overflow: hidden;
-}
-
-body[data-hero-theme="space"] .home-hero .rocket-container::before {
-  content: '🚀';
-  position: absolute;
-  font-size: 2rem;
-  animation: flyRocket 35s linear infinite;
-  opacity: 0.8;
-  filter: drop-shadow(0 0 10px rgba(255,200,100,0.8));
-}
-
-/* Astronaut animation */
-body[data-hero-theme="space"] .home-hero .rocket-container::after {
-  content: '🪐';
-  position: absolute;
-  font-size: 2.5rem;
-  animation: flyAstronaut 35s linear infinite;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 10px rgba(100,200,255,0.8));
-}
-
-body[data-bookshelf-theme="space"] .home-categories .rocket-container::after {
-  content: '🪐';
-  position: absolute;
-  font-size: 2.5rem;
-  animation: flyAstronaut 35s linear infinite;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 10px rgba(100,200,255,0.8));
-}
-
-@keyframes flyAstronaut {
-  0% {
-    right: -50px;
-    top: 30%;
-    transform: scaleX(-1) rotate(-15deg);
-  }
-  25% {
-    top: 60%;
-  }
-  50% {
-    top: 20%;
-  }
-  75% {
-    top: 50%;
-  }
-  100% {
-    right: calc(100% + 50px);
-    top: 40%;
-    transform: scaleX(-1) rotate(-15deg);
-  }
 }
 
 /* Dinosaur hero theme */
@@ -671,8 +639,8 @@ body[data-bookshelf-theme="space"] .home-hero > * {
   z-index: 2;
 }
 
-/* Rocket and Superman in hero section for bookshelf theme fallback */
-body[data-bookshelf-theme="space"] .home-hero .rocket-container {
+/* Rocket and planet in hero section for bookshelf theme fallback */
+body[data-bookshelf-theme="space"] .home-hero .home-space-decor {
   position: absolute;
   top: 0;
   left: 0;
@@ -681,24 +649,6 @@ body[data-bookshelf-theme="space"] .home-hero .rocket-container {
   pointer-events: none;
   z-index: 1;
   overflow: hidden;
-}
-
-body[data-bookshelf-theme="space"] .home-hero .rocket-container::before {
-  content: '🚀';
-  position: absolute;
-  font-size: 2rem;
-  animation: flyRocket 35s linear infinite;
-  opacity: 0.8;
-  filter: drop-shadow(0 0 10px rgba(255,200,100,0.8));
-}
-
-body[data-bookshelf-theme="space"] .home-hero .rocket-container::after {
-  content: '🪐';
-  position: absolute;
-  font-size: 2.5rem;
-  animation: flyAstronaut 35s linear infinite;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 10px rgba(100,200,255,0.8));
 }
 
 /* Dinosaur Theme */
