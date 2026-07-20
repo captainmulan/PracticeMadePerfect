@@ -1114,7 +1114,7 @@ body.big-game-page:has(.fire-btn) .game-wrap {
     </div>
     <div class="ctrl-row">
       <button class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
-      <button class="ctrl-btn" id="btnSpeed">🚀 Speed: 0.5×</button>
+      <button class="ctrl-btn" id="btnSpeed">🚀 0.5×</button>
       <button class="ctrl-btn" id="btnViewMode">👁️ View1</button>
       <button class="ctrl-btn" id="btnReset">🔄 Reset</button>
     </div>
@@ -2128,7 +2128,7 @@ const StylizedPlanet = {
       };
       document.getElementById('btnSpeed').onclick = () => {
         this.speedIdx = (this.speedIdx + 1) % SPEEDS.length;
-        document.getElementById('btnSpeed').textContent = '🚀 Speed: ' + SPEEDS[this.speedIdx] + '×';
+        document.getElementById('btnSpeed').textContent = '🚀 ' + SPEEDS[this.speedIdx] + '×';
       };
       document.getElementById('btnViewMode').onclick = () => {
         this.viewModeIdx = (this.viewModeIdx + 1) % VIEW_MODES.length;
@@ -2149,7 +2149,7 @@ const StylizedPlanet = {
         this.drag = 0;
         this.playing = true; this.speedIdx = 0;
         document.getElementById('btnPlay').textContent = '⏸️ Pause';
-        document.getElementById('btnSpeed').textContent = '🚀 Speed: 0.5×';
+        document.getElementById('btnSpeed').textContent = '🚀 0.5×';
         const defaults = seedDefaultSolarAngles();
         PLANETS.forEach(p => { this.angles[p.id] = defaults[p.id]; });
         this.updateTelescopeLabel();
