@@ -1897,10 +1897,10 @@ const StylizedPlanet = {
       const areaFactor = Math.max(1, (M.vbW * M.vbH) / (580 * 620));
       const density = Math.min(2.15, Math.sqrt(areaFactor));
       const layers = [
-        { n: Math.round(360 * density), r0: 0.1, r1: 0.34, a0: 0.08, a1: 0.32, tint: 0.1 },
-        { n: Math.round(260 * density), r0: 0.18, r1: 0.58, a0: 0.12, a1: 0.46, tint: 0.22 },
-        { n: Math.round(95 * density), r0: 0.42, r1: 0.98, a0: 0.18, a1: 0.6, tint: 0.4, blur: true },
-        { n: Math.round(24 * density), r0: 0.82, r1: 1.7, a0: 0.28, a1: 0.75, tint: 0.55, blur: true, sparkle: true },
+        { n: Math.round(360 * density), r0: 0.18, r1: 0.48, a0: 0.32, a1: 0.68, tint: 0.08 },
+        { n: Math.round(260 * density), r0: 0.28, r1: 0.78, a0: 0.42, a1: 0.82, tint: 0.18 },
+        { n: Math.round(95 * density), r0: 0.55, r1: 1.15, a0: 0.52, a1: 0.92, tint: 0.32 },
+        { n: Math.round(24 * density), r0: 0.95, r1: 1.95, a0: 0.62, a1: 0.98, tint: 0.45, blur: true, sparkle: true },
       ];
       layers.forEach(function(layer, li) {
         for (let i = 0; i < layer.n; i++) {
@@ -1909,11 +1909,11 @@ const StylizedPlanet = {
           const py = 4 + ((s * 1.3247179572 + li * 113 + i * 29) % Math.max(1, M.vbH - 8));
           const t = (s % 100) / 100;
           const rad = layer.r0 + (layer.r1 - layer.r0) * t;
-          const alpha = layer.a0 + (layer.a1 - layer.a0) * ((s % 47) / 47);
+          const alpha = Math.min(0.98, layer.a0 + (layer.a1 - layer.a0) * ((s % 47) / 47));
           const cool = layer.tint * ((s % 3) / 2);
-          const red = Math.round(198 + cool * 42);
-          const green = Math.round(204 + cool * 38);
-          const blue = Math.round(218 + cool * 37);
+          const red = Math.round(236 + cool * 19);
+          const green = Math.round(240 + cool * 15);
+          const blue = 255;
           const attrs = {
             cx: String(px),
             cy: String(py),
@@ -1925,14 +1925,14 @@ const StylizedPlanet = {
           g.appendChild(el('circle', attrs));
           if (layer.sparkle && i % 2 === 0) {
             const sp = rad * 2.4;
-            const sg = el('g', { opacity: String(Math.min(0.5, alpha + 0.12)), 'pointer-events': 'none' });
+            const sg = el('g', { opacity: String(Math.min(0.95, alpha + 0.08)), 'pointer-events': 'none' });
             sg.appendChild(el('line', {
               x1: String(px - sp), y1: String(py), x2: String(px + sp), y2: String(py),
-              stroke: 'rgba(255,255,255,0.35)', 'stroke-width': '0.4', 'stroke-linecap': 'round'
+              stroke: 'rgba(255,255,255,0.78)', 'stroke-width': '0.55', 'stroke-linecap': 'round'
             }));
             sg.appendChild(el('line', {
               x1: String(px), y1: String(py - sp), x2: String(px), y2: String(py + sp),
-              stroke: 'rgba(255,255,255,0.35)', 'stroke-width': '0.4', 'stroke-linecap': 'round'
+              stroke: 'rgba(255,255,255,0.78)', 'stroke-width': '0.55', 'stroke-linecap': 'round'
             }));
             g.appendChild(sg);
           }
