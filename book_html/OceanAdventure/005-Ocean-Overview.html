@@ -83,16 +83,16 @@
   <div class="panel ocean-panel">
     <div class="view-stage" id="viewStage">
       <div class="view-layer view-layer-vertical active" data-layer="vertical">
-        <canvas id="canvasVertical" aria-label="Vertical ocean zones cross-section"></canvas>
+        <canvas id="canvasVertical" aria-label="Submarine dive profile cross-section"></canvas>
       </div>
       <div class="view-layer view-layer-surface" data-layer="surface">
         <canvas id="canvasSurface" aria-label="Ocean surface split view"></canvas>
       </div>
       <div class="view-layer view-layer-reef" data-layer="reef">
-        <canvas id="canvasReef" aria-label="Coral reef window view"></canvas>
+        <canvas id="canvasReef" aria-label="Ocean sonar depth map"></canvas>
       </div>
       <div class="view-layer view-layer-deep" data-layer="deep">
-        <canvas id="canvasDeep" aria-label="Deep ocean light rays"></canvas>
+        <canvas id="canvasDeep" aria-label="Submarine porthole zone view"></canvas>
       </div>
     </div>
     <div class="ctrl-row">
@@ -103,7 +103,7 @@
     </div>
     <div class="info-panel" id="infoPanel">
       <h2>🌊 Our Ocean</h2>
-      <p>The ocean covers more than 70% of Earth! It is split into zones by depth and sunlight — tap a zone in View1 to learn more.</p>
+      <p>The ocean has four depth zones — like the solar system has planets! Switch views: dive profile, surface, sonar map, or sub porthole. Tap to learn.</p>
     </div>
   </div>
 
@@ -132,31 +132,28 @@
 (function () {
   const SPEEDS = [0.5, 1, 2];
   const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+  const LABEL_FONT = 'system-ui, "Segoe UI", Roboto, sans-serif';
   const ZONES = [
-    { id: 'sunlight', name: 'Sunlight Zone', emoji: '☀️', top: 0, h: 0.25, c1: '#81d4fa', c2: '#4fc3f7',
+    { id: 'sunlight', name: 'Sunlight Zone', emoji: '☀️', top: 0, h: 0.25, c1: '#0c7a94', c2: '#065a72',
       fact: 'Sunlight reaches all the way down! Coral reefs, turtles, and colorful fish live here (0–200 m).' },
-    { id: 'twilight', name: 'Twilight Zone', emoji: '🌅', top: 0.25, h: 0.25, c1: '#4fc3f7', c2: '#0288d1',
+    { id: 'twilight', name: 'Twilight Zone', emoji: '🌅', top: 0.25, h: 0.25, c1: '#064a66', c2: '#042f45',
       fact: 'Dim blue light — creatures here have big eyes and many glow with bioluminescence (200–1,000 m).' },
-    { id: 'midnight', name: 'Midnight Zone', emoji: '🌙', top: 0.5, h: 0.25, c1: '#0288d1', c2: '#01579b',
+    { id: 'midnight', name: 'Midnight Zone', emoji: '🌙', top: 0.5, h: 0.25, c1: '#031f32', c2: '#021422',
       fact: 'No sunlight at all! Anglerfish, giant squid, and glowing jellies rule the dark (1,000–4,000 m).' },
-    { id: 'abyss', name: 'Abyss Zone', emoji: '🕳️', top: 0.75, h: 0.25, c1: '#01579b', c2: '#002171',
+    { id: 'abyss', name: 'Abyss Zone', emoji: '🕳️', top: 0.75, h: 0.25, c1: '#020c14', c2: '#010508',
       fact: 'Freezing, crushing pressure — strange deep-sea creatures are still being discovered (4,000 m+).' },
   ];
   const VIEW_MODES = [
-    { id: 'vertical', layer: 'vertical', label: 'Zone Stack', desc: 'All four ocean zones stacked — like diving deeper and deeper!' },
-    { id: 'surface', layer: 'surface', label: 'Surface', desc: 'Half sky, half sea — see the waves and the world below the surface.' },
-    { id: 'reef', layer: 'reef', label: 'Reef Window', desc: 'Peek through a rocky cave at a bustling coral reef full of life.' },
-    { id: 'deep', layer: 'deep', label: 'Deep Rays', desc: 'Sunbeams pierce the deep blue — fish silhouettes drift through the light.' },
+    { id: 'vertical', layer: 'vertical', label: 'Dive Profile', desc: 'Descend with the submarine — depth gauge on the left, four zones stacked as you go deeper.' },
+    { id: 'surface', layer: 'surface', label: 'Surface & Depth', desc: 'Ships sail, seagulls fly, and waves roll — with all four ocean zones below the surface.' },
+    { id: 'reef', layer: 'reef', label: 'Sonar Map', desc: 'Top-down sonar scan — concentric depth rings from surface to abyss. Tap a ring to learn that zone.' },
+    { id: 'deep', layer: 'deep', label: 'Sub Porthole', desc: 'Look through a submarine window — one zone at a time, close up. Tap to peek at the next depth.' },
   ];
-  const SWIMMERS = [
-    { emoji: '🐠', zone: 0, x: 0.15, y: 0.12, sp: 0.0008 },
-    { emoji: '🐟', zone: 0, x: 0.72, y: 0.18, sp: 0.0011 },
-    { emoji: '🐢', zone: 0, x: 0.48, y: 0.08, sp: 0.0007 },
-    { emoji: '🦑', zone: 1, x: 0.35, y: 0.38, sp: 0.0009 },
-    { emoji: '🐙', zone: 1, x: 0.68, y: 0.42, sp: 0.0012 },
-    { emoji: '⭐', zone: 2, x: 0.22, y: 0.62, sp: 0.001 },
-    { emoji: '🦈', zone: 2, x: 0.78, y: 0.68, sp: 0.0007 },
-    { emoji: '🐟', zone: 3, x: 0.45, y: 0.86, sp: 0.0006 },
+  const FLEET_TEMPLATE = [
+    { emoji: '🐠', zone: 0 }, { emoji: '🐟', zone: 0 }, { emoji: '🐢', zone: 0 }, { emoji: '🐡', zone: 0 },
+    { emoji: '🦑', zone: 1 }, { emoji: '🐙', zone: 1 }, { emoji: '🦐', zone: 1 },
+    { emoji: '🦈', zone: 2 }, { emoji: '⭐', zone: 2 }, { emoji: '✨', zone: 2 },
+    { emoji: '🐟', zone: 3 }, { emoji: '🦑', zone: 3 },
   ];
   const FACE_RE = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐/;
 
@@ -171,6 +168,12 @@
     bubbles: [],
     waves: [],
     terrain: null,
+    fleet: null,
+    _fleetKey: null,
+    surfaceScene: null,
+    portholeIdx: 0,
+    portholeAccum: 0,
+    subDivePhase: 0,
     currentMode() { return VIEW_MODES[this.viewModeIdx] || VIEW_MODES[0]; },
     activeLayer() { return this.currentMode().layer; },
     speedMult() { return SPEEDS[this.speedIdx] || 1; },
@@ -201,24 +204,47 @@
         });
       }
       this.terrain = {
-        rocks: Array.from({ length: 14 }, (_, i) => ({
-          x: (i / 14) * w + (Math.random() - 0.5) * 40,
-          y: h * (0.72 + (i % 4) * 0.06),
-          r: 10 + (i % 5) * 5,
-          shade: 0.25 + (i % 3) * 0.12,
+        rocks: Array.from({ length: 18 }, (_, i) => ({
+          x: (i / 18) * w + (Math.random() - 0.5) * 35,
+          r: 12 + (i % 5) * 8,
+          seed: i * 17 + 3,
+          layers: 2 + (i % 3),
         })),
-        corals: Array.from({ length: 10 }, (_, i) => ({
-          x: w * (0.08 + (i / 10) * 0.84),
-          y: h * (0.78 + (i % 2) * 0.04),
-          h: 18 + (i % 4) * 10,
-          hue: i % 3,
+        corals: Array.from({ length: 12 }, (_, i) => ({
+          x: w * (0.05 + (i / 12) * 0.9),
+          h: 22 + (i % 5) * 14,
+          type: i % 4,
+          hue: i % 5,
         })),
-        kelp: Array.from({ length: 8 }, (_, i) => ({
-          x: w * (0.06 + i * 0.11),
-          base: h * 0.55,
-          len: 40 + (i % 3) * 22,
+        kelp: Array.from({ length: 11 }, (_, i) => ({
+          x: w * (0.04 + i * 0.088),
+          len: 48 + (i % 4) * 28,
           phase: Math.random() * Math.PI * 2,
+          strands: 2 + (i % 3),
         })),
+        seamounts: [
+          { xR: 0.14, wR: 0.11, hR: 0.38 },
+          { xR: 0.82, wR: 0.08, hR: 0.22 },
+        ],
+      };
+      this.surfaceScene = {
+        ship: { x: -50, dir: 1, speed: 0.42 },
+        seagulls: [
+          { xR: 0.18, yR: 0.13, dir: 1, speed: 0.48, wingPh: 0, size: 1 },
+          { xR: 0.52, yR: 0.08, dir: -1, speed: 0.4, wingPh: 1.4, size: 0.88 },
+          { xR: 0.74, yR: 0.15, dir: 1, speed: 0.34, wingPh: 2.6, size: 0.92 },
+        ],
+        clouds: [
+          { xR: 0.04, yR: 0.1, scale: 1.05, speed: 0.013, layer: 0 },
+          { xR: 0.28, yR: 0.05, scale: 1.28, speed: 0.008, layer: 1 },
+          { xR: 0.46, yR: 0.12, scale: 0.92, speed: 0.01, layer: 0 },
+        ],
+      };
+      this.backdrop = {
+        volcanoX: 0.1,
+        whaleTwilightX: 0.68,
+        whaleMidnightX: 0.22,
+        shipWreckX: 0.62,
       };
     },
     switchLayer() {
@@ -242,6 +268,127 @@
       c.style.height = h + 'px';
       this.ctxs[id].setTransform(dpr, 0, 0, dpr, 0, 0);
       this._fxKey = null;
+      this._fleetKey = null;
+    },
+    initFleet(w) {
+      if (this.fleet && this._fleetKey === w) return;
+      this._fleetKey = w;
+      this.fleet = FLEET_TEMPLATE.map(function (t) {
+        return {
+          emoji: t.emoji,
+          zone: t.zone,
+          x: Math.random() * w,
+          dir: Math.random() < 0.5 ? 1 : -1,
+          speed: 0.45 + Math.random() * 1.25,
+          size: 0.88 + Math.random() * 0.38,
+          wobblePh: Math.random() * Math.PI * 2,
+          wobbleSp: 0.0007 + Math.random() * 0.0014,
+          yJitter: (Math.random() - 0.5) * 0.14,
+        };
+      });
+    },
+    updateFleet(w, mult) {
+      if (!this.fleet) this.initFleet(w);
+      var self = this;
+      this.fleet.forEach(function (f) {
+        f.x += f.dir * f.speed * mult;
+        if (f.x < -55) {
+          f.x = w + 35 + Math.random() * 50;
+          f.dir = Math.random() < 0.55 ? 1 : -1;
+          f.speed = 0.45 + Math.random() * 1.25;
+        } else if (f.x > w + 55) {
+          f.x = -35 - Math.random() * 50;
+          f.dir = Math.random() < 0.55 ? -1 : 1;
+          f.speed = 0.45 + Math.random() * 1.25;
+        }
+      });
+    },
+    zoneRect(zIdx, top, height) {
+      var z = ZONES[zIdx];
+      var y0 = top + z.top * height;
+      var zh = z.h * height;
+      return { y0: y0, zh: zh, cy: y0 + zh * 0.5 };
+    },
+    swimmerY(f, rect) {
+      var wob = Math.sin(this.t * f.wobbleSp + f.wobblePh) * 6;
+      return rect.cy + f.yJitter * rect.zh + wob;
+    },
+    shouldFlip(f) {
+      return FACE_RE.test(f.emoji) && f.dir > 0;
+    },
+    drawFleetInZones(ctx, w, h, top, height, baseSize, xOff, bandW) {
+      var self = this;
+      xOff = xOff || 0;
+      bandW = bandW || w;
+      if (this.playing) this.updateFleet(w, this.speedMult());
+      else if (!this.fleet) this.initFleet(w);
+      this.fleet.forEach(function (f) {
+        var rect = self.zoneRect(f.zone, top, height);
+        var y = self.swimmerY(f, rect);
+        var fx = xOff + (f.x / w) * bandW;
+        var sz = (baseSize || Math.min(w, h) * 0.062) * f.size;
+        self.drawEmoji(ctx, f.emoji, fx, y, sz, self.shouldFlip(f));
+      });
+    },
+    drawZoneBands(ctx, w, top, height, opts) {
+      opts = opts || {};
+      var self = this;
+      var left = opts.left != null ? opts.left : 0;
+      var bandW = opts.bandW != null ? opts.bandW : w;
+      ZONES.forEach(function (z) {
+        var y0 = top + z.top * height;
+        var zh = z.h * height;
+        var g = ctx.createLinearGradient(0, y0, 0, y0 + zh);
+        g.addColorStop(0, z.c1);
+        g.addColorStop(0.55, z.c2);
+        g.addColorStop(1, z.c2);
+        ctx.fillStyle = g;
+        ctx.fillRect(left, y0, bandW, zh);
+        self.drawZoneAtmosphere(ctx, bandW, y0, zh, z.id, self.t, left);
+        if (opts.divider !== false) {
+          ctx.fillStyle = 'rgba(120,160,180,0.08)';
+          ctx.fillRect(left, y0 + zh - 1, bandW, 1);
+        }
+        if (opts.labels) {
+          ctx.fillStyle = 'rgba(210,230,240,0.88)';
+          ctx.font = '600 ' + (opts.labelSize || 11) + 'px ' + LABEL_FONT;
+          ctx.textAlign = opts.labelAlign || 'right';
+          ctx.fillText(z.name, opts.labelX != null ? opts.labelX : left + bandW - 10, y0 + zh * 0.42);
+          ctx.fillStyle = 'rgba(160,190,210,0.45)';
+          ctx.font = '500 ' + (Math.max(9, (opts.labelSize || 11) - 2)) + 'px ' + LABEL_FONT;
+          var depths = ['0–200 m', '200–1,000 m', '1,000–4,000 m', '4,000 m+'];
+          ctx.fillText(depths[ZONES.indexOf(z)], opts.labelX != null ? opts.labelX : left + bandW - 10, y0 + zh * 0.58);
+        }
+      });
+    },
+    drawZoneAtmosphere(ctx, w, y0, zh, zoneId, t, offsetX) {
+      offsetX = offsetX || 0;
+      if (zoneId === 'sunlight') {
+        ctx.save();
+        ctx.globalCompositeOperation = 'soft-light';
+        ctx.globalAlpha = 0.14;
+        for (var i = 0; i < 6; i++) {
+          var cx = offsetX + (w / 6) * i + Math.sin(t * 0.0009 + i * 1.7) * 28;
+          var cy = y0 + zh * (0.15 + (i % 3) * 0.28);
+          var rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 55 + i * 8);
+          rg.addColorStop(0, 'rgba(180,230,245,0.9)');
+          rg.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = rg;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, 55 + i * 8, 28, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      } else if (zoneId === 'twilight') {
+        ctx.fillStyle = 'rgba(0,20,40,0.12)';
+        ctx.fillRect(offsetX, y0, w, zh);
+      } else if (zoneId === 'midnight' || zoneId === 'abyss') {
+        var vg = ctx.createLinearGradient(0, y0, 0, y0 + zh);
+        vg.addColorStop(0, 'rgba(0,0,0,0)');
+        vg.addColorStop(1, 'rgba(0,0,0,0.35)');
+        ctx.fillStyle = vg;
+        ctx.fillRect(offsetX, y0, w, zh);
+      }
     },
     resizeAll() {
       ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => this.resizeCanvas(id));
@@ -268,7 +415,7 @@
       const bot = depthBot != null ? depthBot : h;
       this.bubbles.forEach(b => {
         b.y -= b.speed * mult;
-        b.x += b.drift + Math.sin(this.t * b.wobbleSp + b.wobble) * 0.35;
+        b.x += b.drift + Math.sin(this.t * b.wobbleSp + b.wobble) * 0.25;
         if (b.y < top - 10) {
           b.y = bot + Math.random() * 30;
           b.x = Math.random() * w;
@@ -276,18 +423,20 @@
         if (b.x < -5) b.x = w + 5;
         if (b.x > w + 5) b.x = -5;
         if (b.y < top || b.y > bot) return;
-        ctx.fillStyle = 'rgba(255,255,255,' + (0.12 + b.r * 0.06) + ')';
+        var a = 0.06 + b.r * 0.03;
+        ctx.fillStyle = 'rgba(220,240,255,' + a + ')';
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-        ctx.lineWidth = 0.6;
-        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,' + (a * 1.4) + ')';
+        ctx.beginPath();
+        ctx.arc(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.22, 0, Math.PI * 2);
+        ctx.fill();
       });
     },
     drawWaveLine(ctx, w, baseY, t, wave, mult) {
       ctx.beginPath();
-      ctx.moveTo(0, baseY + 30);
+      ctx.moveTo(0, baseY + 24);
       for (let x = 0; x <= w; x += 3) {
         const y = baseY + wave.yOff
           + Math.sin(x * wave.freq + wave.phase + t * wave.speed * mult) * wave.amp
@@ -295,231 +444,839 @@
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      ctx.lineTo(w, baseY + 36);
-      ctx.lineTo(0, baseY + 36);
+      ctx.lineTo(w, baseY + 28);
+      ctx.lineTo(0, baseY + 28);
       ctx.closePath();
-      ctx.fillStyle = 'rgba(255,255,255,' + wave.alpha + ')';
+      var wg = ctx.createLinearGradient(0, baseY - 4, 0, baseY + 20);
+      wg.addColorStop(0, 'rgba(180,220,235,' + (wave.alpha * 1.8) + ')');
+      wg.addColorStop(1, 'rgba(80,130,160,' + (wave.alpha * 0.6) + ')');
+      ctx.fillStyle = wg;
       ctx.fill();
+    },
+    drawSeafloor(ctx, w, floorY, depth) {
+      depth = depth || 42;
+      var g = ctx.createLinearGradient(0, floorY - depth, 0, floorY);
+      g.addColorStop(0, 'rgba(8,14,18,0)');
+      g.addColorStop(0.35, 'rgba(28,32,30,0.7)');
+      g.addColorStop(0.75, 'rgba(18,16,14,0.92)');
+      g.addColorStop(1, 'rgba(10,8,7,1)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, floorY - depth, w, depth);
+      ctx.strokeStyle = 'rgba(50,45,40,0.25)';
+      ctx.lineWidth = 1;
+      for (var i = 0; i < 7; i++) {
+        ctx.beginPath();
+        var sy = floorY - 8 - i * 5;
+        for (var x = 0; x <= w; x += 12) {
+          var y = sy + Math.sin(x * 0.04 + i * 1.3) * 2;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    },
+    drawRockFormation(ctx, cx, floorY, scale, seed) {
+      ctx.save();
+      var pts = [];
+      var n = 6 + (seed % 3);
+      for (var i = 0; i < n; i++) {
+        var ang = (i / n) * Math.PI * 2;
+        var rad = scale * (0.55 + ((seed * 13 + i * 7) % 40) / 100);
+        pts.push({ x: cx + Math.cos(ang) * rad, y: floorY - 2 - Math.abs(Math.sin(ang)) * scale * 0.55 });
+      }
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (var j = 1; j < pts.length; j++) ctx.lineTo(pts[j].x, pts[j].y);
+      ctx.closePath();
+      var rg = ctx.createLinearGradient(cx, floorY - scale, cx, floorY);
+      rg.addColorStop(0, 'rgba(70,65,58,0.85)');
+      rg.addColorStop(1, 'rgba(30,26,22,0.95)');
+      ctx.fillStyle = rg;
+      ctx.fill();
+      ctx.fillStyle = 'rgba(100,90,78,0.22)';
+      ctx.beginPath();
+      ctx.ellipse(cx - scale * 0.15, floorY - scale * 0.45, scale * 0.35, scale * 0.18, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     },
     drawTerrainRocks(ctx, w, h, floorY, count) {
       const floor = floorY != null ? floorY : h - 8;
+      if (!this.terrain || !this.terrain.rocks) return;
+      var rocks = this.terrain.rocks;
       for (let i = 0; i < count; i++) {
-        const x = (w / count) * i + ((i * 47) % 28);
-        const r = 8 + (i % 4) * 6;
-        ctx.fillStyle = 'rgba(45,35,30,' + (0.55 + (i % 3) * 0.12) + ')';
-        ctx.beginPath();
-        ctx.arc(x, floor - r * 0.35, r, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'rgba(90,70,55,0.35)';
-        ctx.beginPath();
-        ctx.arc(x - r * 0.2, floor - r * 0.5, r * 0.55, 0, Math.PI * 2);
-        ctx.fill();
+        var r = rocks[i % rocks.length];
+        var x = (w / count) * i + ((r.seed * 3) % 24) + 10;
+        this.drawRockFormation(ctx, x, floor, r.r, r.seed + i);
       }
     },
-    drawCoral(ctx, x, y, height, hue) {
-      const colors = ['#26a69a', '#ff6f61', '#ffb74d'];
-      ctx.fillStyle = colors[hue % colors.length];
+    drawCoralBranch(ctx, x, y, len, angle, depth, hue) {
+      if (depth > 4) return;
+      var colors = ['rgba(72,110,102,0.75)', 'rgba(88,98,108,0.7)', 'rgba(76,92,86,0.72)', 'rgba(94,82,74,0.68)', 'rgba(68,88,96,0.74)'];
+      ctx.strokeStyle = colors[hue % colors.length];
+      ctx.lineWidth = Math.max(1.2, 3.2 - depth * 0.5);
+      ctx.lineCap = 'round';
+      var ex = x + Math.cos(angle) * len;
+      var ey = y + Math.sin(angle) * len;
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.lineTo(x + 7, y - height);
-      ctx.lineTo(x + 14, y);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(x + 10, y);
-      ctx.lineTo(x + 16, y - height * 0.75);
-      ctx.lineTo(x + 22, y);
-      ctx.fill();
-    },
-    drawKelp(ctx, x, base, len, t, phase) {
-      ctx.strokeStyle = 'rgba(46,125,50,0.75)';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(x, base);
-      for (let i = 1; i <= 6; i++) {
-        const py = base - (len / 6) * i;
-        const px = x + Math.sin(t * 0.0018 + phase + i * 0.5) * (6 + i);
-        ctx.lineTo(px, py);
-      }
+      ctx.lineTo(ex, ey);
       ctx.stroke();
+      this.drawCoralBranch(ctx, ex, ey, len * 0.68, angle - 0.45, depth + 1, hue);
+      this.drawCoralBranch(ctx, ex, ey, len * 0.62, angle + 0.52, depth + 1, hue + 1);
     },
-    swimmerPos(s, i, w, h, mode) {
-      const mult = this.speedMult();
-      let x, y, vx;
-      if (mode === 'vertical') {
-        const z = ZONES[s.zone];
-        const zx = z.top * h;
-        const zh = z.h * h;
-        const phase = this.t * s.sp * mult + s.x * 10;
-        const dx = Math.sin(phase) * w * 0.08;
-        vx = Math.cos(phase) * s.sp * mult * w * 0.08;
-        x = s.x * w + dx;
-        y = zx + s.y * zh;
-      } else if (mode === 'surface') {
-        const horizon = h * 0.38;
-        const phase = this.t * 0.002 * mult + i;
-        x = (s.x * w + Math.sin(phase) * 40 + w) % w;
-        vx = Math.cos(phase) * 0.002 * mult * 40;
-        y = horizon + (h - horizon) * (0.28 + (i % 4) * 0.1);
-      } else if (mode === 'reef') {
-        const phase = this.t * 0.0015 * mult + i;
-        x = w * 0.2 + ((s.x * w * 0.6 + Math.sin(phase) * 30 + w) % (w * 0.6));
-        vx = Math.cos(phase) * 0.0015 * mult * 30;
-        y = h * (0.25 + (i % 4) * 0.12);
+    drawCoral(ctx, x, y, height, type) {
+      if (type === 0 || type === 2) {
+        this.drawCoralBranch(ctx, x, y, height * 0.45, -Math.PI / 2, 0, type);
+      } else if (type === 1) {
+        ctx.fillStyle = 'rgba(62,88,82,0.7)';
+        for (var i = 0; i < 5; i++) {
+          ctx.beginPath();
+          ctx.ellipse(x + i * 5 - 10, y - height * 0.35, 4, height * 0.28, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
       } else {
-        const phase = this.t * 0.0012 * mult + i;
-        const dx = Math.sin(phase) * 25;
-        vx = Math.cos(phase) * 0.0012 * mult * 25;
-        x = s.x * w + dx;
-        y = h * (0.35 + i * 0.14);
-      }
-      return { x, y, flip: vx < -0.02 };
-    },
-    drawVertical(w, h) {
-      const ctx = this.ctxs.canvasVertical;
-      this.initEffects(w, h);
-      ZONES.forEach(z => {
-        const y0 = z.top * h;
-        const zh = z.h * h;
-        const g = ctx.createLinearGradient(0, y0, 0, y0 + zh);
-        g.addColorStop(0, z.c1);
-        g.addColorStop(1, z.c2);
-        ctx.fillStyle = g;
-        ctx.fillRect(0, y0, w, zh);
-        ctx.fillStyle = 'rgba(255,255,255,0.1)';
-        ctx.fillRect(8, y0 + zh - 2, w - 16, 2);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 13px ' + FONT;
-        ctx.textAlign = 'right';
-        ctx.fillText(z.emoji + ' ' + z.name, w - 12, y0 + zh * 0.45);
-        if (z.id === 'sunlight') {
-          this.terrain.kelp.forEach(k => this.drawKelp(ctx, k.x, y0 + zh * 0.92, k.len * 0.5, this.t, k.phase));
-        }
-        if (z.id === 'abyss') {
-          this.drawTerrainRocks(ctx, w, y0 + zh, y0 + zh - 4, 8);
-        }
-      });
-      this.drawBubbles(ctx, w, h);
-      SWIMMERS.forEach((s, i) => {
-        const p = this.swimmerPos(s, i, w, h, 'vertical');
-        this.drawEmoji(ctx, s.emoji, p.x, p.y, Math.min(w, h) * 0.07, p.flip);
-      });
-    },
-    drawSurface(w, h) {
-      const ctx = this.ctxs.canvasSurface;
-      this.initEffects(w, h);
-      const mult = this.speedMult();
-      const horizon = h * 0.38;
-      const sky = ctx.createLinearGradient(0, 0, 0, horizon);
-      sky.addColorStop(0, '#64b5f6');
-      sky.addColorStop(1, '#bbdefb');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, horizon);
-      ctx.fillStyle = '#ffeb3b';
-      ctx.beginPath();
-      ctx.arc(w * 0.18, h * 0.14, Math.min(w, h) * 0.06, 0, Math.PI * 2);
-      ctx.fill();
-      for (let i = 0; i < 4; i++) {
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.strokeStyle = 'rgba(58,78,72,0.65)';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.ellipse(w * (0.25 + i * 0.18), h * 0.1, 36 + i * 8, 14, 0, 0, Math.PI * 2);
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(x + 8, y - height * 0.7, x + 2, y - height);
+        ctx.stroke();
+      }
+    },
+    drawKelp(ctx, x, base, len, t, phase, strands) {
+      strands = strands || 1;
+      for (var s = 0; s < strands; s++) {
+        var ox = (s - (strands - 1) / 2) * 5;
+        ctx.strokeStyle = 'rgba(28,58,42,0.72)';
+        ctx.lineWidth = 2.2 - s * 0.3;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x + ox, base);
+        for (let i = 1; i <= 8; i++) {
+          const py = base - (len / 8) * i;
+          const px = x + ox + Math.sin(t * 0.0014 + phase + i * 0.55 + s) * (4 + i * 0.8);
+          ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(38,72,52,0.35)';
+        ctx.lineWidth = 1;
+        for (let i = 2; i <= 7; i += 2) {
+          const py = base - (len / 8) * i;
+          const px = x + ox + Math.sin(t * 0.0014 + phase + i * 0.55 + s) * (4 + i * 0.8);
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(px + 7, py - 4);
+          ctx.stroke();
+        }
+      }
+    },
+    drawRealisticCloud(ctx, cx, cy, scale, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha != null ? alpha : 0.88;
+      var puffs = [
+        { dx: 0, dy: 0, r: 26, shade: 0 }, { dx: -24, dy: 6, r: 18, shade: 1 }, { dx: 24, dy: 8, r: 20, shade: 1 },
+        { dx: 46, dy: 4, r: 16, shade: 2 }, { dx: -42, dy: 10, r: 14, shade: 2 }, { dx: 14, dy: -8, r: 15, shade: 0 },
+      ];
+      puffs.forEach(function (p) {
+        var px = cx + p.dx * scale;
+        var py = cy + p.dy * scale;
+        var pr = p.r * scale;
+        var g = ctx.createRadialGradient(px, py - pr * 0.15, 0, px, py, pr);
+        g.addColorStop(0, 'rgba(248,250,255,0.96)');
+        g.addColorStop(0.5, 'rgba(220,228,238,0.82)');
+        g.addColorStop(1, 'rgba(180,190,205,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(px, py, pr, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.fillStyle = 'rgba(140,155,175,0.18)';
+      ctx.beginPath();
+      ctx.ellipse(cx, cy + 8 * scale, 52 * scale, 10 * scale, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    },
+    drawSun(ctx, x, y, r) {
+      var glow = ctx.createRadialGradient(x, y, r * 0.15, x, y, r * 3.5);
+      glow.addColorStop(0, 'rgba(255,248,220,0.75)');
+      glow.addColorStop(0.25, 'rgba(255,230,160,0.28)');
+      glow.addColorStop(1, 'rgba(255,200,100,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      var disc = ctx.createRadialGradient(x - r * 0.15, y - r * 0.15, 0, x, y, r);
+      disc.addColorStop(0, 'rgba(255,252,240,0.98)');
+      disc.addColorStop(0.7, 'rgba(255,236,180,0.92)');
+      disc.addColorStop(1, 'rgba(255,210,120,0.85)');
+      ctx.fillStyle = disc;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    },
+    drawSeagull(ctx, x, y, wingT, dir, size) {
+      size = size || 1;
+      ctx.save();
+      ctx.translate(x, y);
+      if (dir < 0) ctx.scale(-1, 1);
+      ctx.scale(size, size);
+      var flap = Math.sin(wingT) * 5;
+      ctx.strokeStyle = 'rgba(40,45,52,0.82)';
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-10, flap * 0.2);
+      ctx.quadraticCurveTo(-5, -7 - flap, 0, 0);
+      ctx.quadraticCurveTo(5, -7 - flap, 10, flap * 0.2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(55,58,62,0.75)';
+      ctx.beginPath();
+      ctx.ellipse(0, 1, 2.2, 1.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    },
+    drawSurfaceShip(ctx, x, y, dir) {
+      ctx.save();
+      ctx.translate(x, y);
+      if (dir < 0) ctx.scale(-1, 1);
+      ctx.fillStyle = 'rgba(28,32,38,0.92)';
+      ctx.beginPath();
+      ctx.moveTo(-34, 0);
+      ctx.lineTo(-30, 8);
+      ctx.lineTo(32, 8);
+      ctx.lineTo(36, 0);
+      ctx.lineTo(28, -2);
+      ctx.lineTo(-28, -2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = 'rgba(42,48,54,0.88)';
+      ctx.fillRect(-18, -12, 28, 10);
+      ctx.fillRect(4, -16, 14, 14);
+      ctx.fillStyle = 'rgba(18,22,28,0.5)';
+      ctx.fillRect(-14, -10, 8, 6);
+      ctx.fillRect(8, -14, 6, 8);
+      ctx.strokeStyle = 'rgba(12,14,18,0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(10, -16);
+      ctx.lineTo(10, -26);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(55,60,68,0.35)';
+      ctx.fillRect(10, -26, 1, 8);
+      ctx.restore();
+    },
+    drawVolcano(ctx, x, baseY, peakH, t, underwater) {
+      ctx.save();
+      var strata = underwater
+        ? ['rgba(18,16,14,0.55)', 'rgba(28,24,20,0.5)', 'rgba(22,20,18,0.52)']
+        : ['rgba(42,36,32,0.88)', 'rgba(58,48,42,0.85)', 'rgba(48,40,36,0.86)', 'rgba(36,30,26,0.9)'];
+      strata.forEach(function (col, i) {
+        var lift = i * peakH * 0.14;
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.moveTo(x - 58 + i * 4, baseY);
+        ctx.lineTo(x - 12 + i * 2, baseY - peakH * 0.48 - lift);
+        ctx.lineTo(x + 2, baseY - peakH - lift * 0.5);
+        ctx.lineTo(x + 14 - i, baseY - peakH * 0.46 - lift);
+        ctx.lineTo(x + 54 - i * 4, baseY);
+        ctx.closePath();
+        ctx.fill();
+      });
+      if (!underwater) {
+        var smokeA = 0.14 + Math.sin(t * 0.0018) * 0.05;
+        ctx.fillStyle = 'rgba(160,168,178,' + smokeA + ')';
+        ctx.beginPath();
+        ctx.ellipse(x - 2, baseY - peakH - 14, 18 + Math.sin(t * 0.0025) * 4, 11, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(x + 8, baseY - peakH - 26, 22, 13, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(90,48,32,0.25)';
+        ctx.beginPath();
+        ctx.ellipse(x, baseY - peakH + 2, 7, 3, 0, 0, Math.PI * 2);
         ctx.fill();
       }
-      const water = ctx.createLinearGradient(0, horizon, 0, h);
-      water.addColorStop(0, '#0288d1');
-      water.addColorStop(0.45, '#01579b');
-      water.addColorStop(1, '#002171');
-      ctx.fillStyle = water;
-      ctx.fillRect(0, horizon, w, h - horizon);
-      this.waves.forEach(wv => this.drawWaveLine(ctx, w, horizon, this.t, wv, mult));
-      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-      ctx.lineWidth = 2;
+      ctx.restore();
+    },
+    drawSunkenShip(ctx, x, y, size) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-0.28);
+      ctx.globalAlpha = 0.82;
+      var hull = ctx.createLinearGradient(-size * 0.5, 0, size * 0.5, 0);
+      hull.addColorStop(0, 'rgba(22,18,16,0.95)');
+      hull.addColorStop(0.5, 'rgba(38,32,28,0.9)');
+      hull.addColorStop(1, 'rgba(18,14,12,0.95)');
+      ctx.fillStyle = hull;
       ctx.beginPath();
-      for (let x = 0; x <= w; x += 4) {
-        const y = horizon + Math.sin(x * 0.025 + this.t * 0.004 * mult) * 4
+      ctx.moveTo(-size * 0.52, size * 0.02);
+      ctx.lineTo(-size * 0.42, size * 0.18);
+      ctx.lineTo(size * 0.4, size * 0.16);
+      ctx.lineTo(size * 0.48, size * 0.02);
+      ctx.lineTo(size * 0.2, -size * 0.04);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(12,10,8,0.7)';
+      ctx.lineWidth = 1.2;
+      for (var i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.35 + i * size * 0.18, size * 0.02);
+        ctx.lineTo(-size * 0.32 + i * size * 0.18, -size * 0.12);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.moveTo(-size * 0.08, -size * 0.06);
+      ctx.lineTo(-size * 0.04, -size * 0.58);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(48,52,46,0.45)';
+      ctx.beginPath();
+      ctx.arc(size * 0.12, size * 0.06, size * 0.06, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    },
+    drawWhaleSilhouette(ctx, x, y, len, flip) {
+      ctx.save();
+      ctx.translate(x, y);
+      if (flip) ctx.scale(-1, 1);
+      ctx.fillStyle = 'rgba(6,14,22,0.48)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, len * 0.42, len * 0.1, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(-len * 0.38, 0);
+      ctx.lineTo(-len * 0.52, -len * 0.09);
+      ctx.lineTo(-len * 0.48, 0);
+      ctx.lineTo(-len * 0.52, len * 0.09);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = 'rgba(8,18,28,0.35)';
+      ctx.beginPath();
+      ctx.ellipse(len * 0.12, -len * 0.04, len * 0.08, len * 0.05, 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    },
+    drawAnchorSilhouette(ctx, x, floorY, size) {
+      ctx.save();
+      ctx.translate(x, floorY);
+      ctx.strokeStyle = 'rgba(42,38,34,0.65)';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(0, -size * 0.85);
+      ctx.lineTo(0, -size * 0.15);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, -size * 0.08, size * 0.12, Math.PI, 0);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-size * 0.22, -size * 0.02);
+      ctx.lineTo(-size * 0.14, size * 0.08);
+      ctx.lineTo(0, -size * 0.02);
+      ctx.lineTo(size * 0.14, size * 0.08);
+      ctx.lineTo(size * 0.22, -size * 0.02);
+      ctx.stroke();
+      ctx.restore();
+    },
+    drawCutawayWall(ctx, x, top, height, side) {
+      var layers = [
+        'rgba(32,28,24,0.92)', 'rgba(42,36,30,0.88)', 'rgba(28,24,20,0.9)',
+        'rgba(38,32,28,0.86)', 'rgba(24,20,18,0.94)',
+      ];
+      var bandH = height / layers.length;
+      layers.forEach(function (col, i) {
+        ctx.fillStyle = col;
+        var y0 = top + i * bandH;
+        ctx.beginPath();
+        if (side === 'left') {
+          ctx.moveTo(0, y0);
+          ctx.lineTo(x + 10, y0 + bandH * 0.08);
+          ctx.lineTo(x, y0 + bandH);
+          ctx.lineTo(0, y0 + bandH);
+        } else {
+          ctx.moveTo(x, y0 + bandH * 0.08);
+          ctx.lineTo(x + 10, y0);
+          ctx.lineTo(x + 10, y0 + bandH);
+          ctx.lineTo(x, y0 + bandH);
+        }
+        ctx.closePath();
+        ctx.fill();
+      });
+    },
+    drawWhaleBackdrop(ctx, x, y, size, dir) {
+      this.drawWhaleSilhouette(ctx, x, y, size * 3.2, dir > 0);
+    },
+    updateSurfaceScene(w, horizon, mult) {
+      if (!this.surfaceScene) return;
+      var sc = this.surfaceScene;
+      if (!this.playing) return;
+      sc.ship.x += sc.ship.dir * sc.ship.speed * mult;
+      if (sc.ship.x > w + 70) {
+        sc.ship.x = -70;
+        sc.ship.dir = Math.random() < 0.7 ? 1 : -1;
+        sc.ship.speed = 0.32 + Math.random() * 0.28;
+      } else if (sc.ship.x < -70) {
+        sc.ship.x = w + 70;
+        sc.ship.dir = Math.random() < 0.7 ? -1 : 1;
+        sc.ship.speed = 0.32 + Math.random() * 0.28;
+      }
+      sc.seagulls.forEach(function (g) {
+        g.xR += (g.dir * g.speed * mult) / w;
+        if (g.xR > 1.12) g.xR = -0.08;
+        if (g.xR < -0.1) g.xR = 1.08;
+      });
+      sc.clouds.forEach(function (c) {
+        c.xR += (c.speed * mult) / w;
+        if (c.xR > 1.15) c.xR = -0.3;
+      });
+    },
+    drawZoneBackdrops(ctx, w, top, height, opts) {
+      opts = opts || {};
+      var self = this;
+      var bd = this.backdrop || { volcanoX: 0.1, whaleTwilightX: 0.68, whaleMidnightX: 0.22, shipWreckX: 0.62 };
+      ZONES.forEach(function (z) {
+        var y0 = top + z.top * height;
+        var zh = z.h * height;
+        if (z.id === 'sunlight' && opts.volcano !== false) {
+          self.drawVolcano(ctx, w * bd.volcanoX, y0 + zh * 0.94, zh * 0.62, self.t, true);
+        }
+        if (z.id === 'twilight') {
+          self.drawWhaleSilhouette(ctx, w * bd.whaleTwilightX, y0 + zh * 0.52, Math.min(w, height) * 0.42, false);
+          if (self.terrain && self.terrain.seamounts[1]) {
+            var sm = self.terrain.seamounts[1];
+            self.drawVolcano(ctx, w * sm.xR, y0 + zh * 0.96, zh * sm.hR, self.t, true);
+          }
+        }
+        if (z.id === 'midnight') {
+          self.drawWhaleSilhouette(ctx, w * bd.whaleMidnightX, y0 + zh * 0.5, Math.min(w, height) * 0.48, true);
+        }
+        if (z.id === 'abyss') {
+          self.drawSunkenShip(ctx, w * bd.shipWreckX, y0 + zh * 0.68, Math.min(w, height) * 0.24);
+        }
+      });
+    },
+    drawSurfaceSky(ctx, w, horizon, mult) {
+      var self = this;
+      var sky = ctx.createLinearGradient(0, 0, 0, horizon);
+      sky.addColorStop(0, '#1a4a72');
+      sky.addColorStop(0.45, '#3a7198');
+      sky.addColorStop(0.82, '#7aa8c4');
+      sky.addColorStop(1, '#b8ced8');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, horizon);
+      var haze = ctx.createLinearGradient(0, horizon * 0.5, 0, horizon);
+      haze.addColorStop(0, 'rgba(255,255,255,0)');
+      haze.addColorStop(1, 'rgba(220,230,238,0.35)');
+      ctx.fillStyle = haze;
+      ctx.fillRect(0, 0, w, horizon);
+      var sunX = w * 0.86;
+      var sunY = horizon * 0.32;
+      var sunR = Math.min(w, horizon) * 0.065;
+      this.drawSun(ctx, sunX, sunY, sunR);
+      if (this.surfaceScene) {
+        this.updateSurfaceScene(w, horizon, mult);
+        this.surfaceScene.clouds.forEach(function (c) {
+          var cx = c.xR * w;
+          if (cx > w * 0.72) return;
+          var cy = c.yR * horizon;
+          var alpha = c.layer ? 0.72 : 0.86;
+          self.drawRealisticCloud(ctx, cx, cy, c.scale, alpha);
+        });
+        this.surfaceScene.seagulls.forEach(function (g) {
+          var gx = g.xR * w;
+          var gy = g.yR * horizon;
+          if (gx > sunX - sunR * 2.5) return;
+          self.drawSeagull(ctx, gx, gy, self.t * 0.012 + g.wingPh, g.dir, g.size);
+        });
+      }
+      var volX = w * (this.backdrop ? this.backdrop.volcanoX : 0.1);
+      this.drawVolcano(ctx, volX, horizon + 2, horizon * 0.72, this.t, false);
+    },
+    zoneLayout(w, h) {
+      var layer = this.activeLayer();
+      if (layer === 'surface') {
+        var horizon = h * 0.28;
+        return { top: horizon, height: h - horizon, labelX: w - 10, labelSize: 11, left: 0, width: w };
+      }
+      if (layer === 'vertical') {
+        var gaugeW = Math.max(52, w * 0.17);
+        return { top: 0, height: h, labelX: w - 10, labelSize: 11, left: gaugeW + 6, width: w - gaugeW - 6, gaugeW: gaugeW };
+      }
+      return { top: 0, height: h, labelX: w - 10, labelSize: 13, left: 0, width: w };
+    },
+    drawSubmarineSilhouette(ctx, x, y, scale, facing) {
+      scale = scale || 1;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+      if (facing < 0) ctx.scale(-1, 1);
+      ctx.fillStyle = 'rgba(18,24,30,0.92)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 22, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(28,36,44,0.88)';
+      ctx.fillRect(-8, -14, 16, 8);
+      ctx.fillStyle = 'rgba(120,180,210,0.35)';
+      ctx.beginPath();
+      ctx.arc(10, -2, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(8,12,16,0.8)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-18, 4);
+      ctx.lineTo(-24, 8);
+      ctx.moveTo(18, 4);
+      ctx.lineTo(24, 8);
+      ctx.stroke();
+      ctx.restore();
+    },
+    drawDepthGauge(ctx, x, w, h, t) {
+      ctx.fillStyle = 'rgba(4,10,16,0.88)';
+      ctx.fillRect(x, 0, w, h);
+      ctx.strokeStyle = 'rgba(80,120,140,0.45)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 4, 8, w - 8, h - 16);
+      var depths = [
+        { m: '0 m', r: 0 }, { m: '200 m', r: 0.25 }, { m: '1 km', r: 0.5 }, { m: '4 km', r: 0.75 }, { m: '∞', r: 1 },
+      ];
+      ctx.font = '500 9px ' + LABEL_FONT;
+      ctx.fillStyle = 'rgba(160,200,220,0.75)';
+      ctx.textAlign = 'left';
+      depths.forEach(function (d) {
+        var gy = 12 + d.r * (h - 24);
+        ctx.fillRect(x + 8, gy, w - 22, 1);
+        ctx.fillText(d.m, x + 10, gy - 3);
+      });
+      var subMarker = 12 + (0.5 + 0.46 * Math.sin(this.subDivePhase)) * (h - 24);
+      ctx.fillStyle = 'rgba(100,255,218,0.9)';
+      ctx.beginPath();
+      ctx.moveTo(x + w - 10, subMarker);
+      ctx.lineTo(x + w - 18, subMarker - 5);
+      ctx.lineTo(x + w - 18, subMarker + 5);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(100,255,218,0.55)';
+      ctx.font = '600 8px ' + LABEL_FONT;
+      ctx.fillText('SUB', x + 8, subMarker + 3);
+    },
+    sonarZoneFromDist(dist, maxR) {
+      var rel = Math.min(1, Math.max(0, dist / maxR));
+      for (var i = ZONES.length - 1; i >= 0; i--) {
+        if (rel >= ZONES[i].top) return i;
+      }
+      return 0;
+    },
+    drawSonarGrid(ctx, cx, cy, maxR) {
+      ctx.strokeStyle = 'rgba(40,90,70,0.22)';
+      ctx.lineWidth = 1;
+      for (var i = 1; i <= 4; i++) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, maxR * (i / 4), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.moveTo(cx - maxR, cy);
+      ctx.lineTo(cx + maxR, cy);
+      ctx.moveTo(cx, cy - maxR);
+      ctx.lineTo(cx, cy + maxR);
+      ctx.stroke();
+    },
+    drawPortholeFrame(ctx, cx, cy, R) {
+      ctx.fillStyle = 'rgba(2,6,10,0.96)';
+      ctx.fillRect(0, 0, cx * 2, cy * 2);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(55,62,68,0.95)';
+      ctx.lineWidth = R * 0.11;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R + R * 0.04, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(90,98,105,0.7)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.stroke();
+      for (var b = 0; b < 8; b++) {
+        var ba = (b / 8) * Math.PI * 2;
+        var bx = cx + Math.cos(ba) * (R + R * 0.08);
+        var by = cy + Math.sin(ba) * (R + R * 0.08);
+        ctx.fillStyle = 'rgba(70,76,82,0.9)';
+        ctx.beginPath();
+        ctx.arc(bx, by, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    },
+    drawVertical(w, h) {
+      var ctx = this.ctxs.canvasVertical;
+      var layout = this.zoneLayout(w, h);
+      var self = this;
+      this.initEffects(w, h);
+      if (this.playing) this.subDivePhase += 0.0012 * this.speedMult();
+      ctx.fillStyle = '#010810';
+      ctx.fillRect(0, 0, w, h);
+      this.drawDepthGauge(ctx, 0, layout.gaugeW, h, this.t);
+      var oL = layout.left;
+      var oW = layout.width;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(oL, 0, oW, h);
+      ctx.clip();
+      this.drawZoneBands(ctx, w, layout.top, layout.height, {
+        labels: true, labelX: w - 10, labelSize: 11, left: oL, bandW: oW,
+      });
+      this.drawZoneBackdrops(ctx, w, layout.top, layout.height);
+      ZONES.forEach(function (z) {
+        var y0 = layout.top + z.top * layout.height;
+        var zh = z.h * layout.height;
+        if (z.id === 'sunlight') {
+          self.terrain.kelp.forEach(function (k) {
+            var kx = oL + (k.x / w) * oW;
+            self.drawKelp(ctx, kx, y0 + zh * 0.92, k.len * 0.5, self.t, k.phase, k.strands);
+          });
+        }
+        if (z.id === 'abyss') {
+          ctx.save();
+          ctx.translate(oL, 0);
+          self.drawSeafloor(ctx, oW, y0 + zh, zh * 0.35);
+          self.drawTerrainRocks(ctx, oW, y0 + zh, y0 + zh, 8);
+          ctx.restore();
+        }
+      });
+      this.drawBubbles(ctx, w, h, layout.top, layout.top + layout.height);
+      this.drawFleetInZones(ctx, w, h, layout.top, layout.height, Math.min(w, h) * 0.065, oL, oW);
+      var subY = layout.top + (0.5 + 0.44 * Math.sin(this.subDivePhase)) * layout.height;
+      this.drawSubmarineSilhouette(ctx, oL + oW * 0.22, subY, 1.15, 1);
+      ctx.strokeStyle = 'rgba(100,255,218,0.25)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 6]);
+      ctx.beginPath();
+      ctx.moveTo(oL + oW * 0.22, layout.top + 8);
+      ctx.lineTo(oL + oW * 0.22, h - 8);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    },
+    drawSurface(w, h) {
+      var ctx = this.ctxs.canvasSurface;
+      var mult = this.speedMult();
+      var layout = this.zoneLayout(w, h);
+      var horizon = layout.top;
+      var self = this;
+      this.initEffects(w, h);
+      this.drawSurfaceSky(ctx, w, horizon, mult);
+      this.drawZoneBands(ctx, w, layout.top, layout.height, { labels: true, labelX: layout.labelX, labelSize: layout.labelSize });
+      this.drawZoneBackdrops(ctx, w, layout.top, layout.height);
+      this.waves.forEach(function (wv) { self.drawWaveLine(ctx, w, horizon, self.t, wv, mult); });
+      ctx.strokeStyle = 'rgba(180,210,225,0.22)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (var x = 0; x <= w; x += 4) {
+        var y = horizon + Math.sin(x * 0.025 + this.t * 0.004 * mult) * 4
           + Math.sin(x * 0.009 + this.t * 0.0025 * mult + 1) * 6;
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
       ctx.stroke();
-      this.terrain.kelp.forEach(k => this.drawKelp(ctx, k.x, h * 0.92, k.len, this.t, k.phase));
-      this.drawTerrainRocks(ctx, w, h, h - 6, 10);
-      this.drawBubbles(ctx, w, h, horizon, h);
-      SWIMMERS.slice(0, 5).forEach((s, i) => {
-        const p = this.swimmerPos(s, i, w, h, 'surface');
-        this.drawEmoji(ctx, s.emoji, p.x, p.y, 26, p.flip);
+      var surfaceShine = ctx.createLinearGradient(0, horizon, 0, horizon + 18);
+      surfaceShine.addColorStop(0, 'rgba(160,200,220,0.18)');
+      surfaceShine.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = surfaceShine;
+      ctx.fillRect(0, horizon, w, 18);
+      if (this.surfaceScene) {
+        var ship = this.surfaceScene.ship;
+        var shipBob = Math.sin(this.t * 0.0035) * 3;
+        var shipY = horizon + shipBob - 2;
+        this.drawSurfaceShip(ctx, ship.x, shipY, ship.dir);
+      }
+      this.terrain.kelp.forEach(function (k) { self.drawKelp(ctx, k.x, layout.top + layout.height * 0.96, k.len * 0.85, self.t, k.phase, k.strands); });
+      this.drawSeafloor(ctx, w, layout.top + layout.height, 38);
+      this.drawTerrainRocks(ctx, w, layout.top + layout.height, layout.top + layout.height, 10);
+      this.terrain.corals.slice(0, 8).forEach(function (c) {
+        self.drawCoral(ctx, c.x, layout.top + layout.height * 0.88, c.h * 0.75, c.type);
       });
+      this.drawBubbles(ctx, w, h, layout.top, layout.top + layout.height);
+      this.drawFleetInZones(ctx, w, h, layout.top, layout.height, 26);
     },
-    drawReef(w, h) {
-      const ctx = this.ctxs.canvasReef;
+    drawSonar(w, h) {
+      var ctx = this.ctxs.canvasSonar || this.ctxs.canvasReef;
+      var cx = w * 0.5;
+      var cy = h * 0.52;
+      var maxR = Math.min(w, h) * 0.44;
+      var self = this;
       this.initEffects(w, h);
-      ctx.fillStyle = '#021428';
+      ctx.fillStyle = '#010a08';
       ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = '#0a2038';
-      ctx.beginPath();
-      ctx.moveTo(0, 0); ctx.lineTo(w * 0.22, 0); ctx.lineTo(w * 0.16, h); ctx.lineTo(0, h); ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(w, 0); ctx.lineTo(w * 0.78, 0); ctx.lineTo(w * 0.84, h); ctx.lineTo(w, h); ctx.fill();
-      ctx.fillStyle = '#061828';
-      ctx.beginPath();
-      ctx.moveTo(0, h); ctx.lineTo(w, h); ctx.lineTo(w, h * 0.86); ctx.lineTo(0, h * 0.9); ctx.fill();
-      const rg = ctx.createRadialGradient(w * 0.5, h * 0.45, 20, w * 0.5, h * 0.45, w * 0.55);
-      rg.addColorStop(0, '#0288d1');
-      rg.addColorStop(1, '#004d73');
-      ctx.fillStyle = rg;
-      ctx.fillRect(w * 0.15, h * 0.08, w * 0.7, h * 0.84);
-      this.terrain.corals.forEach(c => this.drawCoral(ctx, c.x, c.y, c.h, c.hue));
-      this.drawTerrainRocks(ctx, w, h, h * 0.88, 12);
-      this.terrain.kelp.slice(0, 5).forEach(k => this.drawKelp(ctx, k.x * 0.85, h * 0.88, k.len * 0.7, this.t, k.phase));
-      ctx.fillStyle = 'rgba(0,0,0,0.25)';
-      ctx.fillRect(w * 0.15, h * 0.82, w * 0.7, h * 0.1);
-      this.drawBubbles(ctx, w, h, h * 0.1, h * 0.88);
-      SWIMMERS.forEach((s, i) => {
-        const p = this.swimmerPos(s, i, w, h, 'reef');
-        this.drawEmoji(ctx, s.emoji, p.x, p.y, 24 + (i % 2) * 6, p.flip);
-      });
-      this.drawEmoji(ctx, '🪸', w * 0.5, h * 0.72, 34, false);
-    },
-    drawDeep(w, h) {
-      const ctx = this.ctxs.canvasDeep;
-      this.initEffects(w, h);
-      const bg = ctx.createLinearGradient(0, 0, 0, h);
-      bg.addColorStop(0, '#01579b');
-      bg.addColorStop(0.55, '#042a4a');
-      bg.addColorStop(1, '#000810');
+      var bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 1.1);
+      bg.addColorStop(0, 'rgba(8,28,22,0.95)');
+      bg.addColorStop(1, 'rgba(2,8,6,1)');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
-      for (let i = 0; i < 5; i++) {
-        const rx = w * (0.12 + i * 0.19);
-        const rg = ctx.createLinearGradient(rx, 0, rx, h);
-        rg.addColorStop(0, 'rgba(255,255,255,0.2)');
-        rg.addColorStop(0.45, 'rgba(100,200,255,0.07)');
-        rg.addColorStop(1, 'rgba(0,0,0,0)');
+      this.drawSonarGrid(ctx, cx, cy, maxR);
+      ZONES.forEach(function (z, i) {
+        var rOut = maxR * (z.top + z.h);
+        var rIn = maxR * z.top;
+        var rg = ctx.createRadialGradient(cx, cy, rIn, cx, cy, rOut);
+        rg.addColorStop(0, z.c1 + '55');
+        rg.addColorStop(1, z.c2 + '88');
         ctx.fillStyle = rg;
         ctx.beginPath();
-        ctx.moveTo(rx - 20, 0);
-        ctx.lineTo(rx + 20, 0);
-        ctx.lineTo(rx + 55, h);
-        ctx.lineTo(rx - 55, h);
+        ctx.arc(cx, cy, rOut, 0, Math.PI * 2);
+        ctx.arc(cx, cy, rIn, 0, Math.PI * 2, true);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(60,180,120,0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOut, 0, Math.PI * 2);
+        ctx.stroke();
+        var midR = (rIn + rOut) * 0.5;
+        var la = -Math.PI / 2 + i * 0.4;
+        var lx = cx + Math.cos(la) * midR;
+        var ly = cy + Math.sin(la) * midR;
+        ctx.fillStyle = 'rgba(180,230,200,0.82)';
+        ctx.font = '600 9px ' + LABEL_FONT;
+        ctx.textAlign = 'center';
+        ctx.fillText(z.name.split(' ')[0], lx, ly);
+      });
+      if (this.playing) this.updateFleet(w, this.speedMult());
+      else if (!this.fleet) this.initFleet(w);
+      this.fleet.forEach(function (f, i) {
+        var z = ZONES[f.zone];
+        var rIn = maxR * z.top;
+        var rOut = maxR * (z.top + z.h);
+        var midR = (rIn + rOut) * 0.5;
+        var ang = (f.x / w) * Math.PI * 2 + f.wobblePh;
+        var bx = cx + Math.cos(ang) * midR;
+        var by = cy + Math.sin(ang) * midR;
+        var ping = 0.5 + 0.5 * Math.sin(self.t * 0.008 + i);
+        ctx.fillStyle = 'rgba(100,255,160,' + (0.35 + ping * 0.45) + ')';
+        ctx.beginPath();
+        ctx.arc(bx, by, 3 + ping * 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      var sweep = this.t * 0.0018 * this.speedMult();
+      var sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
+      sg.addColorStop(0, 'rgba(80,255,140,0.08)');
+      sg.addColorStop(0.85, 'rgba(80,255,140,0.02)');
+      sg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(sweep);
+      ctx.fillStyle = sg;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, maxR, -0.35, 0.35);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(120,255,180,0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(maxR, 0);
+      ctx.stroke();
+      ctx.restore();
+      this.drawSubmarineSilhouette(ctx, cx, cy, 0.85, 1);
+      ctx.fillStyle = 'rgba(100,255,180,0.7)';
+      ctx.font = '600 10px ' + LABEL_FONT;
+      ctx.textAlign = 'center';
+      ctx.fillText('SONAR — depth rings', cx, h - 14);
+    },
+    drawPorthole(w, h) {
+      var ctx = this.ctxs.canvasDeep;
+      var cx = w * 0.5;
+      var cy = h * 0.48;
+      var R = Math.min(w, h) * 0.36;
+      var self = this;
+      this.initEffects(w, h);
+      if (this.playing) {
+        this.portholeAccum += 16 * this.speedMult();
+        if (this.portholeAccum > 7000) {
+          this.portholeIdx = (this.portholeIdx + 1) % ZONES.length;
+          this.portholeAccum = 0;
+        }
+      }
+      var zi = this.portholeIdx;
+      var z = ZONES[zi];
+      ctx.fillStyle = '#010508';
+      ctx.fillRect(0, 0, w, h);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.clip();
+      var g = ctx.createLinearGradient(0, cy - R, 0, cy + R);
+      g.addColorStop(0, z.c1);
+      g.addColorStop(1, z.c2);
+      ctx.fillStyle = g;
+      ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+      self.drawZoneAtmosphere(ctx, R * 2, cy - R, R * 2, z.id, self.t, cx - R);
+      if (z.id === 'sunlight') {
+        self.terrain.corals.slice(0, 6).forEach(function (c) {
+          self.drawCoral(ctx, cx - R + (c.x / w) * R * 2, cy + R * 0.55, c.h * 0.9, c.type);
+        });
+        self.terrain.kelp.slice(0, 5).forEach(function (k) {
+          self.drawKelp(ctx, cx - R + (k.x / w) * R * 2, cy + R * 0.82, k.len * 0.7, self.t, k.phase, k.strands);
+        });
+      }
+      if (z.id === 'twilight' || z.id === 'midnight') {
+        self.drawWhaleSilhouette(ctx, cx + R * 0.15, cy, R * 0.55, false);
+      }
+      if (z.id === 'abyss') {
+        self.drawSeafloor(ctx, R * 2, cy + R * 0.88, R * 0.35);
+        self.drawSunkenShip(ctx, cx + R * 0.2, cy + R * 0.35, R * 0.55);
+      }
+      if (z.id === 'midnight') {
+        for (var bi = 0; bi < 12; bi++) {
+          var bx = cx - R + ((bi * 47) % (R * 2));
+          var by = cy - R * 0.5 + ((bi * 31) % (R * 1.2));
+          ctx.fillStyle = 'rgba(120,200,255,' + (0.15 + (bi % 3) * 0.12) + ')';
+          ctx.beginPath();
+          ctx.arc(bx, by, 1.5 + (bi % 2), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      if (this.playing) this.updateFleet(w, this.speedMult());
+      else if (!this.fleet) this.initFleet(w);
+      this.fleet.filter(function (f) { return f.zone === zi; }).forEach(function (f) {
+        var fy = cy + Math.sin(self.t * f.wobbleSp + f.wobblePh) * 12;
+        var fx = cx - R + (f.x / w) * R * 2;
+        self.drawEmoji(ctx, f.emoji, fx, fy, Math.min(w, h) * 0.09 * f.size, self.shouldFlip(f));
+      });
+      self.drawBubbles(ctx, w, h, cy - R, cy + R);
+      ctx.restore();
+      ctx.fillStyle = 'rgba(2,6,10,0.97)';
+      ctx.beginPath();
+      ctx.rect(0, 0, w, h);
+      ctx.arc(cx, cy, R, 0, Math.PI * 2, true);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(55,62,68,0.95)';
+      ctx.lineWidth = R * 0.1;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R + R * 0.03, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(90,98,105,0.65)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.stroke();
+      for (var b = 0; b < 8; b++) {
+        var ba = (b / 8) * Math.PI * 2;
+        ctx.fillStyle = 'rgba(70,76,82,0.9)';
+        ctx.beginPath();
+        ctx.arc(cx + Math.cos(ba) * (R + R * 0.07), cy + Math.sin(ba) * (R + R * 0.07), 3, 0, Math.PI * 2);
         ctx.fill();
       }
-      ctx.fillStyle = '#3e2723';
-      ctx.fillRect(0, h - 56, w, 56);
-      this.drawTerrainRocks(ctx, w, h, h - 20, 16);
-      ctx.fillStyle = 'rgba(80,60,40,0.5)';
-      ctx.font = '22px ' + FONT;
-      ctx.fillText('⚓', w * 0.12, h - 38);
-      ctx.strokeStyle = 'rgba(60,50,40,0.45)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(w * 0.12, h - 50);
-      ctx.lineTo(w * 0.12, h * 0.15);
-      ctx.stroke();
-      this.terrain.kelp.slice(0, 4).forEach(k => this.drawKelp(ctx, k.x, h - 56, k.len * 0.9, this.t, k.phase));
-      this.drawBubbles(ctx, w, h, 0, h - 56);
-      SWIMMERS.slice(2).forEach((s, i) => {
-        const p = this.swimmerPos(s, i + 2, w, h, 'deep');
-        this.drawEmoji(ctx, s.emoji, p.x, p.y, 22, p.flip);
-      });
+      var depths = ['0–200 m', '200–1,000 m', '1,000–4,000 m', '4,000 m+'];
+      ctx.fillStyle = 'rgba(100,255,218,0.88)';
+      ctx.font = '600 13px ' + LABEL_FONT;
+      ctx.textAlign = 'center';
+      ctx.fillText(z.name, cx, cy + R + R * 0.22);
+      ctx.fillStyle = 'rgba(160,190,210,0.65)';
+      ctx.font = '500 11px ' + LABEL_FONT;
+      ctx.fillText(depths[zi] + '  ·  tap for next zone', cx, cy + R + R * 0.34);
+      ctx.fillStyle = 'rgba(100,255,180,0.5)';
+      ctx.font = '500 9px ' + LABEL_FONT;
+      ctx.fillText('◉ PORTHOLE VIEW', cx, 16);
     },
     draw() {
       const stage = document.getElementById('viewStage');
@@ -529,8 +1286,8 @@
       const layer = this.activeLayer();
       if (layer === 'vertical') this.drawVertical(w, h);
       else if (layer === 'surface') this.drawSurface(w, h);
-      else if (layer === 'reef') this.drawReef(w, h);
-      else if (layer === 'deep') this.drawDeep(w, h);
+      else if (layer === 'reef') this.drawSonar(w, h);
+      else if (layer === 'deep') this.drawPorthole(w, h);
     },
     tick() {
       if (this.playing) this.t += 16 * (SPEEDS[this.speedIdx] || 1);
@@ -544,25 +1301,49 @@
     showZone(z) {
       this.info.innerHTML = '<h2>' + z.emoji + ' ' + z.name + '</h2><p>' + z.fact + '</p>';
     },
-    hitVerticalZone(x, y) {
-      const stage = document.getElementById('viewStage');
-      const h = stage.clientHeight;
-      const ratio = y / h;
-      for (let i = ZONES.length - 1; i >= 0; i--) {
-        if (ratio >= ZONES[i].top) { this.showZone(ZONES[i]); return; }
+    hitZoneAt(x, y, w, h) {
+      var layer = this.activeLayer();
+      if (layer === 'reef') {
+        var cx = w * 0.5;
+        var cy = h * 0.52;
+        var maxR = Math.min(w, h) * 0.44;
+        var dx = x - cx;
+        var dy = y - cy;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > maxR) return;
+        var zi = this.sonarZoneFromDist(dist, maxR);
+        this.showZone(ZONES[zi]);
+        return;
+      }
+      if (layer === 'deep') {
+        this.portholeIdx = (this.portholeIdx + 1) % ZONES.length;
+        this.portholeAccum = 0;
+        this.showZone(ZONES[this.portholeIdx]);
+        return;
+      }
+      var layout = this.zoneLayout(w, h);
+      var rel = (y - layout.top) / layout.height;
+      if (rel < 0 || rel > 1) return;
+      if (layer === 'vertical' && x < layout.left) return;
+      for (var i = ZONES.length - 1; i >= 0; i--) {
+        if (rel >= ZONES[i].top) { this.showZone(ZONES[i]); return; }
       }
     },
     bindTap() {
-      const c = this.canvases.canvasVertical;
-      if (!c) return;
-      const hit = e => {
-        if (this.activeLayer() !== 'vertical') return;
-        const r = c.getBoundingClientRect();
-        const p = e.touches ? e.touches[0] : e;
-        this.hitVerticalZone(p.clientX - r.left, p.clientY - r.top);
-      };
-      c.addEventListener('click', hit);
-      c.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+      var self = this;
+      var canvasIds = ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'];
+      canvasIds.forEach(function (id) {
+        var c = self.canvases[id];
+        if (!c || c._zoneTap) return;
+        c._zoneTap = true;
+        var hit = function (e) {
+          var r = c.getBoundingClientRect();
+          var p = e.touches ? e.touches[0] : e;
+          self.hitZoneAt(p.clientX - r.left, p.clientY - r.top, r.width, r.height);
+        };
+        c.addEventListener('click', hit);
+        c.addEventListener('touchstart', function (e) { e.preventDefault(); hit(e); }, { passive: false });
+      });
     },
     init() {
       ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => {
@@ -593,6 +1374,12 @@
         this.playing = true;
         this.speedIdx = 1;
         this.viewModeIdx = 0;
+        this.fleet = null;
+        this._fleetKey = null;
+        this._fxKey = null;
+        this.portholeIdx = 0;
+        this.portholeAccum = 0;
+        this.subDivePhase = 0;
         document.getElementById('btnPlay').textContent = '⏸️ Pause';
         document.getElementById('btnSpeed').textContent = '🐠 1×';
         document.getElementById('btnViewMode').textContent = '👁️ View1';

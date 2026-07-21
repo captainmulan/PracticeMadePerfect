@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue #01 — Corporate AI & Dynamic Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Myanmar Text", "Pyidaungsu", "Padauk", sans-serif;
+      background: #faf9f6;
+      color: #1a1a1a;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+    .masthead {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 20px 16px;
+      border-bottom: 4px double #c9a227;
+    }
+    .masthead-inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .back {
+      color: #94a3b8;
+      font-size: 13px;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .back:hover { color: #fbbf24; }
+    .issue-no {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: #fbbf24;
+      font-weight: 700;
+    }
+    .masthead h1 {
+      font-size: clamp(22px, 5vw, 32px);
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+    .byline {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px 16px 56px;
+    }
+    .lead {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1e3a5f;
+      border-left: 4px solid #c9a227;
+      padding: 12px 16px;
+      background: #fff;
+      margin-bottom: 28px;
+    }
+    h2 {
+      font-size: 20px;
+      color: #0f172a;
+      margin: 36px 0 14px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    h3 {
+      font-size: 16px;
+      color: #334155;
+      margin: 22px 0 10px;
+    }
+    p { margin-bottom: 14px; }
+    ul, ol { margin: 0 0 16px 22px; }
+    li { margin-bottom: 8px; }
+    .flow {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 16px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .flow-title {
+      text-align: center;
+      font-size: 13px;
+      color: #fbbf24;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 280px;
+    }
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      position: relative;
+    }
+    .flow-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background: #6366f1;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flow-body {
+      flex: 1;
+      padding-bottom: 16px;
+    }
+    .flow-body strong {
+      display: block;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .flow-body span {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .flow-step:not(:last-child) .flow-body::after {
+      content: "";
+      position: absolute;
+      left: 13px;
+      top: 30px;
+      bottom: 0;
+      width: 2px;
+      background: #334155;
+    }
+    .flow-step { position: relative; padding-left: 0; }
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin: 16px 0;
+    }
+    .card.warn {
+      border-left: 4px solid #f59e0b;
+      background: #fffbeb;
+    }
+    .card.tip {
+      border-left: 4px solid #10b981;
+      background: #ecfdf5;
+    }
+    .card h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    pre, code {
+      font-family: "Cascadia Code", "Consolas", monospace;
+      font-size: 13px;
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 14px 0;
+      line-height: 1.5;
+    }
+    code {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .diagram-box {
+      background: #fff;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+      font-size: 14px;
+      color: #475569;
+    }
+    .diagram-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .diagram-node {
+      background: #6366f1;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .diagram-node.green { background: #059669; }
+    .diagram-node.orange { background: #d97706; }
+    .diagram-node.dark { background: #334155; }
+    .diagram-arrow { color: #94a3b8; font-size: 18px; }
+    footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #64748b;
+      text-align: center;
+    }
+    @media (max-width: 480px) {
+      body { font-size: 14px; }
+      .diagram-row { flex-direction: column; }
+      .diagram-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="back" href="001-Index.html">← မာတိကာသို့</a>
+    <div class="issue-no">ISSUE #01 · AI AUTOMATION</div>
+    <h1>Corporate AI Automation<br>နဲ့ Dynamic Dashboard Project</h1>
+    <div class="byline">IT Newspaper · July 2026 · Myanmar Edition</div>
+  </div>
+</header>
+
+<article class="container">
+
+  <p class="lead">
+    ဒီ issue မှာ ကုမ္ပဏီကြီးတွေက AI ကို automation အတွက် ဘယ်လို သုံးနေလဲ,
+    "Dynamic Dashboard" project တခုရဲ့ အဆင့်ဆင့် pipeline — prompt ကနေ chart ထွက်တာအထိ —
+    Local Llama, Hugging Face, MCP နဲ့ SQL ကို ရိုးရှင်းအောင် ရှင်းပြပါမယ်။
+  </p>
+
+  <h2>၁. Corporate world မှာ AI automation</h2>
+  <p>
+    ကမ္ဘာ့ကုမ္ပဏီကြီးတွေ (bank, retail, manufacturing, tech) မှာ AI ကို "ဉာဏ်ရှိတဲ့ automation"
+    အဖြစ် သုံးနေပါပြီ။ လူအကုန် လုပ်နေရတဲ့ repeated work တွေကို AI/agent က လုပ်ပေးတယ် —
+  </p>
+  <ul>
+    <li><strong>Customer support</strong> — chatbot, ticket ခွဲခြင်း, FAQ</li>
+    <li><strong>Document processing</strong> — invoice, contract, email summarization</li>
+    <li><strong>Data & reporting</strong> — SQL ရေး၊ dashboard၊ anomaly detection</li>
+    <li><strong>Internal tools</strong> — HR onboarding, code review assist, meeting notes</li>
+  </ul>
+  <p>
+    Myanmar မှာလည်း SME/corporate တချို့က Excel/report manual လုပ်နေတုန်းပါ။
+    Dynamic Dashboard လို system က "စာသား prompt တခု" → "chart/dashboard"
+    အထိ automatic လုပ်ပေးနိုင်ရင် analyst/dev workload လျော့ပြီး decision faster ဖြစ်ပါတယ်။
+  </p>
+
+  <div class="card tip">
+    <h4>💡 Automation vs Chatbot</h4>
+    <p style="margin:0;">
+      ChatGPT လို chat တခုပဲ မဟုတ်ပါ — corporate automation က <strong>fixed pipeline + tools (MCP, SQL, API)</strong>
+      နဲ့ ချိတ်ပြီး repeatable, auditable ဖြစ်အောင် design လုပ်ရတယ်။
+    </p>
+  </div>
+
+  <h2>၂. Dynamic Dashboard — Project overview</h2>
+  <p>
+    <strong>Dynamic Dashboard</strong> ဆိုတာ user က Myanmar/English prompt ရိုက်တယ် —
+    ဥပမာ — "လွန်ခဲ့တဲ့ ၃ လ sales trend ပြပါ"、 "region အလိုက် top 10 customer" —
+    system က database က data ဆွဲပြီး chart/table ပြန်ပြပေးတဲ့ flow ပါ။
+  </p>
+  <p>
+    Cloud API (OpenAI, Claude) မသုံးချင်ရင် <strong>local Llama</strong> + <strong>Hugging Face model</strong>
+    + <strong>SQL MCP</strong> နဲ့ privacy-preserving, on-premise setup လုပ်နိုင်ပါတယ်။
+  </p>
+
+  <div class="diagram-box">
+    <strong>Dynamic Dashboard — အကျဉ်းချုပ်</strong>
+    <div class="diagram-row" style="margin-top:14px;">
+      <span class="diagram-node">👤 User Prompt</span>
+      <span class="diagram-arrow">→</span>
+      <span class="diagram-node green">🦙 Local Llama</span>
+      <span class="diagram-arrow">→</span>
+      <span class="diagram-node orange">🗄️ SQL MCP</span>
+      <span class="diagram-arrow">→</span>
+      <span class="diagram-node green">🦙 AI (SQL fix + Chart)</span>
+      <span class="diagram-arrow">→</span>
+      <span class="diagram-node dark">📊 Dashboard</span>
+    </div>
+  </div>
+
+  <h2>၃. Pipeline — အဆင့်ဆင့် (အသေးစိတ်)</h2>
+
+  <div class="flow">
+    <div class="flow-title">DYNAMIC DASHBOARD PIPELINE</div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <span class="flow-num">1</span>
+        <div class="flow-body">
+          <strong>User Prompt</strong>
+          <span>"Q3 revenue by product line" လို natural language မေးခွန်း</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">2</span>
+        <div class="flow-body">
+          <strong>Local Llama (1st call) — SQL Draft</strong>
+          <span>Prompt → AI က SQL statement အကြမ်း ရေးပေးတယ် (schema မသိသေးဘူး)</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">3</span>
+        <div class="flow-body">
+          <strong>SQL MCP — Schema ရယူ</strong>
+          <span>Database table/column/list, types, relationships ကို MCP tool ကနေ ယူ</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">4</span>
+        <div class="flow-body">
+          <strong>Local Llama (2nd call) — SQL Fix</strong>
+          <span>Draft SQL + schema ပေးပြီး column name မှန်၊ JOIN မှန် SQL ပြန်ရေးခိုင်းတယ်</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">5</span>
+        <div class="flow-body">
+          <strong>SQL MCP — Query Run</strong>
+          <span>Final SQL execute → rows/json result</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">6</span>
+        <div class="flow-body">
+          <strong>Local Llama (3rd call) — Chart Spec</strong>
+          <span>Data + user intent → bar/line/pie, axis, title — chart config JSON</span>
+        </div>
+      </div>
+      <div class="flow-step">
+        <span class="flow-num">7</span>
+        <div class="flow-body">
+          <strong>Dashboard Render</strong>
+          <span>Chart.js / ECharts / React — UI မှာ graph ပြခြင်း</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    အဓိက point — <strong>AI ကို တခါတည်း မယုံ</strong>။ Schema မသိဘဲ SQL ရေးရင် hallucinate (မရှိတဲ့ column) ဖြစ်တတ်တယ်။
+    Schema MCP ကနေ ယူ → SQL ပြန်ပြင်ခိုင်း → MCP run — ဒီ loop က corporate မှာ standard pattern ပါ။
+  </p>
+
+  <h2>၄. Local Llama — ဘာလဲ? ဘယ်လို download/run လဲ?</h2>
+  <p>
+    <strong>Llama</strong> (Meta) က open-weight language model family ပါ — Llama 3, 3.1, 3.2 စသည်။
+    <strong>Local Llama</strong> ဆိုတာ internet/cloud မလို၊ ကိုယ့် PC/server မှာ model run ပြီး prompt respond လုပ်တာပါ။
+  </p>
+  <h3>ဘာကြောင့် local?</h3>
+  <ul>
+    <li>Company data DB အပြင်ဘက် မထွက်ဘူး — privacy/compliance</li>
+    <li>API cost မရှိ</li>
+    <li>Offline/air-gapped environment</li>
+  </ul>
+  <h3>Download & run — Ollama (အလွယ်ဆုံး)</h3>
+  <p>Windows/Mac/Linux အတွက် <strong>Ollama</strong> သုံးရင် Llama family ကို one-command နဲ့ run လို့ရပါတယ်။</p>
+  <ol>
+    <li><a href="https://ollama.com/download" target="_blank" rel="noopener">ollama.com/download</a> — installer download</li>
+    <li>Install ပြီး terminal ဖွင့်</li>
+    <li>Model pull:</li>
+  </ol>
+  <pre><code>ollama pull llama3.2
+ollama run llama3.2</code></pre>
+  <p>
+    SQL/task အတွက် coder/sql specialist model လိုရင်:
+  </p>
+  <pre><code>ollama pull codellama
+ollama pull sqlcoder   # Hugging Face based, Ollama library မှာ ရှိရင်</code></pre>
+  <div class="card warn">
+    <h4>⚠️ Hardware</h4>
+    <p style="margin:0;">
+      7B model — RAM 8GB+ (16GB recommended)။ 13B+ — GPU VRAM 8GB+ ကောင်းတယ်။
+      Corporate server မှာ GPU instance ထားပြီး run တဲ့ typical setup ပါ။
+    </p>
+  </div>
+
+  <h2>၅. Hugging Face — Model ရွေးချယ်ခြင်း</h2>
+  <p>
+    <a href="https://huggingface.co" target="_blank" rel="noopener">Hugging Face</a> မှာ model ထောင်ပေါင်းများစွာ — general chat, code, SQL, vision။
+    Dynamic Dashboard အတွက် <strong>model နှစ်မျိုး</strong> စဉ်းစားပါ:
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>အမျိုးအစား</th>
+        <th>သုံးရမည့် job</th>
+        <th>ဥပမာ model</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>SQL / Code expert</strong></td>
+        <td>SQL draft, schema-aware fix</td>
+        <td>defog/sqlcoder-7b, NumbersStation/nsql, codellama</td>
+      </tr>
+      <tr>
+        <td><strong>General intelligence</strong></td>
+        <td>Prompt နားလည်ခြင်း, chart type ရွေး, summary</td>
+        <td>Llama 3.2, Mistral, Qwen2.5</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    <strong>ရွေးနည်း:</strong> SQL step → SQL-specialized model (accuracy ↑)။
+    Chart/title/UX text → general model (flexibility ↑)။
+    Pipeline တခုမှာ model နှစ်ခု switch လုပ်လို့ရပါတယ် — Ollama မှာ model name ပြောင်းခေါ်ရုံ။
+  </p>
+  <pre><code># Hugging Face က model files directly (advanced)
+pip install huggingface_hub transformers
+huggingface-cli download meta-llama/Llama-3.2-3B</code></pre>
+  <p>
+    Corporate မှာ Hugging Face <strong>private/gated model</strong>, license, air-gap mirror သုံးတတ်ပါတယ်။
+  </p>
+
+  <h2>၆. MCP — Model Context Protocol (ဘာလဲ?)</h2>
+  <p>
+    <strong>MCP (Model Context Protocol)</strong> က Anthropic-led open standard — AI model/agent က
+    <strong>external tools</strong> (database, files, APIs) ကို standard interface နဲ့ ခေါ်နိုင်အောင် လုပ်ထားတာ။
+  </p>
+  <p>ရိုးရှင်းပြောရင်:</p>
+  <ul>
+    <li>AI = "ဉာဏ်ရှိတဲ့ manager"</li>
+    <li>MCP server = "လက်တွေ့ tools ပေးတဲ့ worker" — SQL run, schema read, file read</li>
+    <li>Client (Cursor, Claude Desktop, custom app) = manager နဲ့ worker ကြား bridge</li>
+  </ul>
+  <h3>SQL MCP ဘာလုပ်လဲ?</h3>
+  <ul>
+    <li><code>list_tables</code> — database မှာ table များ</li>
+    <li><code>describe_schema</code> — column, type, PK/FK</li>
+    <li><code>execute_query</code> — SELECT run (read-only recommend)</li>
+  </ul>
+  <p>
+    Dynamic Dashboard မှာ step 3 (schema) နဲ့ step 5 (run query) က SQL MCP tools ခေါ်တယ်။
+  </p>
+
+  <h3>MCP server — ဘယ်လို create/start လဲ?</h3>
+  <p>Community SQL MCP (ဥပမာ PostgreSQL/MySQL/SQLite) — config file ထဲ connection string ထည့်:</p>
+  <pre><code>// ~/.cursor/mcp.json (Cursor example)
+{
+  "mcpServers": {
+    "sql": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sqlite", "path/to/db.sqlite"]
+    }
+  }
+}</code></pre>
+  <p>Custom MCP Python (concept):</p>
+  <pre><code># mcp_sql_server.py — simplified idea
+# 1. MCP SDK install: pip install mcp
+# 2. Tools register: list_schema, run_sql
+# 3. stdio/SSE transport — client connects
+
+from mcp.server import Server
+server = Server("company-sql")
+
+@server.tool()
+async def get_schema(table: str) -> str:
+    # return CREATE TABLE / INFORMATION_SCHEMA
+    ...
+
+@server.tool()
+async def run_query(sql: str) -> str:
+    # validate read-only, execute, return JSON rows
+    ...</code></pre>
+  <div class="card tip">
+    <h4>🔒 Corporate security</h4>
+    <p style="margin:0;">
+      Production မှာ MCP query က <strong>read-only DB user</strong>, row limit, allowed tables whitelist ထားပါ။
+      AI ရေးထားတဲ့ SQL ကို blind execute မလုပ်ပါနဲ့ — validate/sandbox အရင်။
+    </p>
+  </div>
+
+  <h2>၇. Dynamic Dashboard — Code flow (logic)</h2>
+  <pre><code>async function dynamicDashboard(userPrompt) {
+  // Step 1: Draft SQL (no schema)
+  const draftSql = await llama.chat({
+    model: "sqlcoder",
+    prompt: `Write SQL for: ${userPrompt}. Database is sales DB. SQL only.`
+  });
+
+  // Step 2: Get schema via MCP
+  const schema = await mcp.call("describe_schema", { tables: ["orders","products","customers"] });
+
+  // Step 3: Fix SQL with schema
+  const finalSql = await llama.chat({
+    model: "sqlcoder",
+    prompt: `Fix this SQL using schema:\n${schema}\n\nSQL:\n${draftSql}`
+  });
+
+  // Step 4: Execute via MCP
+  const rows = await mcp.call("execute_query", { sql: finalSql });
+
+  // Step 5: Chart spec
+  const chartSpec = await llama.chat({
+    model: "llama3.2",
+    prompt: `User asked: ${userPrompt}\nData sample: ${JSON.stringify(rows.slice(0,5))}\nReturn JSON: { type, xKey, yKey, title }`
+  });
+
+  return renderChart(JSON.parse(chartSpec), rows);
+}</code></pre>
+
+  <h2>၈. Corporate deployment — အကြံပြုချက်များ</h2>
+  <ul>
+    <li><strong>On-prem stack:</strong> Ollama + Hugging Face models (cached) + MCP SQL server + React dashboard</li>
+    <li><strong>Logging:</strong> prompt, SQL, row count — audit trail (PII mask)</li>
+    <li><strong>Human review:</strong> sensitive reports — approval step ထည့်</li>
+    <li><strong>Fallback:</strong> SQL error → AI retry or user message Myanmar မှာ</li>
+  </ul>
+
+  <h2>၉. နိဂုံး & နောက်အပတ်</h2>
+  <p>
+    Corporate AI automation က chatbot တခုမဟုတ်ပါ — <strong>prompt → tools → verify → output</strong>
+    pipeline ဖြစ်ပါတယ်။ Dynamic Dashboard က local Llama + Hugging Face model choice + SQL MCP
+    သုံးပြီး privacy-friendly analytics automation ရဲ့ example ပါ။
+  </p>
+  <p>
+    <strong>Issue #02</strong> မှာ agent workflow (n8n, LangGraph) နဲ့ production monitoring ကို ဆက်ရေးပါမယ်။
+  </p>
+
+  <footer>
+    <a href="001-Index.html">← IT Newspaper Index</a><br><br>
+    Practice Made Perfect · IT Newspaper · Issue #01
+  </footer>
+
+</article>
+</body>
+</html>
