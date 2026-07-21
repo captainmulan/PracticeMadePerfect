@@ -129,7 +129,7 @@
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   /* ── Game: zone-sort (005) — catch zones in depth order ── */
-  var ZONE_ORDER = ['☀️', '🌅', '🌙', '🕳️'];
+  var ZONE_ORDER = ['☀️', '🌅', '🌙', '🕳️', '⛰️'];
 
   function initZoneSort(vs) {
     S.state = {
