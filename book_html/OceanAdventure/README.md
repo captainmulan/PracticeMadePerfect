@@ -37,18 +37,20 @@ Each **topic triplet** = brief activity page (with **canvas minigame**) → deta
 
 ### Chapter minigames (activity pages)
 
-| File | Game |
-|------|------|
-| `005-Ocean-Overview.html` | Zone Collector — catch ☀️🌅🌙🕳️, dodge trash |
-| `008-Sunlight-Zone.html` | Sunshine Catch — catch 🐠🦀, dodge pollution |
-| `011-Twilight-Zone.html` | Glow Hunt — tap ✨🦑 before they fade |
-| `014-Midnight-Zone.html` | Biolume Blink — tap stars in the dark |
-| `017-Abyss-Zone.html` | Abyss Dodge — survive 45s dodging debris |
-| `020-Coral-Reefs.html` | Reef Rescue — tap 🪸, avoid 🗑️ |
-| `023-Marine-Mammals.html` | Dolphin Dash — catch 🐟, avoid 🪼 |
-| `026-Fish.html` | Plankton Feast — catch 🫧🦐, dodge 🦈 |
+Each chapter has a **unique** game mechanic via `_ocean-games.js`:
 
-Regenerate with: `node _apply-ocean-games.cjs` (skips files that already have `.planet-game`).
+| File | Game | Mechanic |
+|------|------|----------|
+| `005-Ocean-Overview.html` | Zone Sort | Catch ☀️→🌅→🌙→🕳️ in order |
+| `008-Sunlight-Zone.html` | Sunbeam Snap | Tap fish only in the sunbeam |
+| `011-Twilight-Zone.html` | Glow Rhythm | Tap on pulse beat |
+| `014-Midnight-Zone.html` | Sonar Ping | Tap when sonar reveals creatures |
+| `017-Abyss-Zone.html` | Trench Pilot | ⬆️⬇️ steer through gaps |
+| `020-Coral-Reefs.html` | Reef Match | Memory card pairs |
+| `023-Marine-Mammals.html` | Breath Dive | O₂ bar + surface to breathe |
+| `026-Fish.html` | School Run | 3-lane dodge runner |
+
+Install / refresh: `node _replace-ocean-minigames.cjs`
 
 ---
 
