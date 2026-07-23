@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Word Catch Finale</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#FFF8E7 0%,#FFE4B5 40%,#FFDAB9 100%);color:#3d2914;min-height:100vh;}
+.container{max-width:640px;margin:auto;padding:16px 14px 32px;}
+.header{text-align:center;margin-bottom:14px;}
+h1{font-size:26px;color:#C41E3A;}
+.game-section{margin-top:14px;padding:12px;background:rgba(255,255,255,.6);border-radius:16px;border:2px dashed #C41E3A;}
+.game-canvas{width:100%;height:min(50vh,320px);border-radius:16px;border:3px solid #FFD700;background:#fff;display:block;touch-action:none;}
+.game-start-btn{display:inline-block;margin:8px 0 10px;padding:10px 18px;border:none;border-radius:14px;background:#C41E3A;color:#fff;font-size:15px;font-weight:bold;cursor:pointer;font-family:inherit;}
+.game-win-banner{display:none;margin-top:10px;padding:14px;background:#FFD700;border-radius:14px;text-align:center;border:2px solid #C41E3A;}
+.game-win-banner h3{color:#C41E3A;margin-bottom:6px;}
+.game-win-banner .dismiss-btn{padding:8px 20px;border:none;border-radius:12px;background:#C41E3A;color:#fff;font-weight:bold;cursor:pointer;font-family:inherit;}
+.nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#8B4513;background:rgba(255,215,0,.25);padding:10px;border-radius:10px;}
+</style>
+<script src="_mmwords-player.js"></script>
+<script src="_mmwords-data.js"></script>
+<script src="_mmwords-games.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎮 Word Catch Finale</h1>
+    <p style="color:#8B4513;">Catch words from every chapter! Score: <span id="catch-score">0</span></p>
+  </div>
+  <div class="game-section">
+    <button type="button" class="game-start-btn">▶ Start catch game</button>
+    <canvas id="catch-canvas" class="game-canvas"></canvas>
+  </div>
+  <div class="nav-hint">Move the basket with mouse or finger. Catch 12 words to finish!</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var all = [];
+  MM_CHAPTERS.forEach(function(ch){ all = all.concat(ch.words); });
+  MMGame.bootCatch({
+    canvasId: 'catch-canvas',
+    scoreId: 'catch-score',
+    words: all,
+    badge: 'Myanmar Word Hero',
+    chapterId: 'finale',
+    target: 12
+  });
+});
+</script>
+</body>
+</html>

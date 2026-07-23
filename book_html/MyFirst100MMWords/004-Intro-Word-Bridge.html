@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Word Bridge Intro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#FFF8E7 0%,#FFE4B5 40%,#FFDAB9 100%);color:#3d2914;min-height:100vh;}
+.pattern{position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:radial-gradient(circle at 80% 70%,#FFD700 2px,transparent 2px);background-size:48px 48px;}
+.container{max-width:640px;margin:auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header{text-align:center;margin-bottom:14px;}
+h1{font-size:26px;color:#C41E3A;margin-bottom:6px;}
+.subtitle{color:#8B4513;font-size:15px;}
+.card{background:rgba(255,255,255,.78);border-radius:18px;padding:16px;margin-bottom:12px;border:2px solid rgba(196,30,58,.12);}
+.card h2{font-size:18px;color:#C41E3A;margin-bottom:10px;}
+.card p{font-size:15px;line-height:1.65;}
+.demo-canvas{width:100%;height:240px;border-radius:16px;border:2px solid #FFD700;background:#fff;display:block;cursor:pointer;touch-action:manipulation;}
+.steps{margin:12px 0;}
+.step{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed rgba(196,30,58,.15);font-size:15px;}
+.step-emoji{font-size:24px;min-width:32px;}
+.nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#8B4513;background:rgba(255,215,0,.25);padding:10px;border-radius:10px;}
+</style>
+<script src="_mmwords-player.js"></script>
+<script src="_mmwords-games.js"></script>
+</head>
+<body>
+<div class="pattern"></div>
+<div class="container">
+  <div class="header">
+    <h1>🌉 English → Myanmar Bridge</h1>
+    <div class="subtitle">Intro game — tap the apple!</div>
+  </div>
+  <div class="card">
+    <h2>🍎 Try It Now</h2>
+    <canvas id="bridge-canvas" class="demo-canvas"></canvas>
+    <div class="steps">
+      <div class="step"><span class="step-emoji">🍎</span><span>Child sees <strong>Apple</strong></span></div>
+      <div class="step"><span class="step-emoji">👉</span><span>Taps → <strong style="font-family:'Myanmar Text',Padauk;color:#C41E3A;">ပန်းသီး</strong></span></div>
+      <div class="step"><span class="step-emoji">🔊</span><span>Hears native pronunciation</span></div>
+      <div class="step"><span class="step-emoji">🎮</span><span>Plays a catch game in each chapter</span></div>
+      <div class="step"><span class="step-emoji">🏆</span><span>Earns badges like <strong>Fruit Master</strong></span></div>
+    </div>
+  </div>
+  <div class="nav-hint">This is more memorable than a traditional picture dictionary!</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){ MMGame.bootBridgeIntro('bridge-canvas'); });
+</script>
+</body>
+</html>

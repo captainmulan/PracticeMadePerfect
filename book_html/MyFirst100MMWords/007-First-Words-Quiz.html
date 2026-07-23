@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - First Words Quiz</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#FFF8E7 0%,#FFE4B5 40%,#FFDAB9 100%);color:#3d2914;min-height:100vh;}
+.pattern{position:fixed;inset:0;pointer-events:none;opacity:.08;}
+.container{max-width:640px;margin:auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header{text-align:center;margin-bottom:14px;}
+h1{font-size:26px;color:#C41E3A;margin-bottom:6px;}
+.subtitle{color:#8B4513;font-size:15px;}
+.quiz-card{background:rgba(255,255,255,.85);border-radius:16px;padding:16px;margin-bottom:12px;border:2px solid rgba(196,30,58,.2);}
+.question{font-size:17px;font-weight:bold;margin-bottom:12px;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{padding:12px 14px;background:#fff;border:2px solid #ddd;border-radius:12px;cursor:pointer;font-size:16px;transition:.15s;}
+.option.correct{background:#d4edda;border-color:#28a745;}
+.option.wrong{background:#f8d7da;border-color:#dc3545;}
+.score-bar{text-align:center;font-size:18px;color:#C41E3A;font-weight:bold;margin:12px 0;}
+.nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#8B4513;background:rgba(255,215,0,.25);padding:10px;border-radius:10px;}
+</style>
+<script src="_mmwords-player.js"></script>
+</head>
+<body>
+<div class="pattern"></div>
+<div class="container">
+  <div class="header"><h1>❓ First Words Quiz</h1><div class="subtitle">Quick check before Chapter 1!</div></div>
+  <div class="score-bar">Score: <span id="score">0</span> / 4</div>
+  <div id="quiz"></div>
+  <div class="nav-hint">Perfect score? You're ready for Family words!</div>
+</div>
+<script>
+(function(){
+  var qs = [
+    { q: "What should children learn FIRST?", opts: ["Write letters", "Hear & speak words", "Grammar rules", "Dictionary order"], a: 1 },
+    { q: "🍎 Apple in Myanmar is...", opts: ["ထမင်း", "ပန်းသီး", "ရေ", "ဆင်"], a: 1, mm: "ပန်းသီး" },
+    { q: "Who is this book mainly for?", opts: ["Kids in Myanmar only", "Overseas Myanmar families", "University students", "Tourists"], a: 1 },
+    { q: "How many word chapters are in this book?", opts: ["5", "10", "50", "100"], a: 1 }
+  ];
+  var score = 0, done = 0;
+  var area = document.getElementById('quiz');
+  qs.forEach(function(item, i){
+    var card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.innerHTML = '<div class="question">Q'+(i+1)+'. '+item.q+'</div><div class="options"></div>';
+    var opts = card.querySelector('.options');
+    item.opts.forEach(function(text, oi){
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'option'; btn.textContent = text;
+      btn.onclick = function(){
+        if (opts.dataset.done) return;
+        opts.dataset.done = '1'; done++;
+        if (oi === item.a) { btn.classList.add('correct'); score++; if(item.mm && window.MMAudio) MMAudio.speak(item.mm,'my-MM'); }
+        else { btn.classList.add('wrong'); opts.children[item.a].classList.add('correct'); }
+        document.getElementById('score').textContent = score;
+      };
+      opts.appendChild(btn);
+    });
+    area.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>

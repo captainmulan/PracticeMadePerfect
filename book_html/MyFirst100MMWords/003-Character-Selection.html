@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Character Selection</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#FFF8E7 0%,#FFE4B5 40%,#FFDAB9 100%);color:#3d2914;min-height:100vh;}
+.pattern{position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:radial-gradient(circle at 20% 30%,#C41E3A 2px,transparent 2px);background-size:48px 48px;}
+.container{max-width:640px;margin:auto;padding:16px 14px 24px;position:relative;z-index:1;}
+.header{text-align:center;margin-bottom:14px;}
+h1{font-size:26px;color:#C41E3A;margin-bottom:8px;}
+.subtitle{color:#8B4513;font-size:15px;}
+input[type="text"]{width:100%;padding:10px 12px;border:2px solid #FFD700;border-radius:16px;background:#fff;color:#3d2914;font-size:16px;font-family:inherit;margin-bottom:14px;outline:none;}
+input[type="text"]:focus{border-color:#C41E3A;}
+.character-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.character-option{background:#fff;border:3px solid transparent;border-radius:18px;padding:10px 4px;cursor:pointer;text-align:center;font-size:34px;transition:.2s;}
+.character-option.selected{border-color:#C41E3A;background:rgba(196,30,58,.08);box-shadow:0 0 20px rgba(196,30,58,.2);}
+.character-name{font-size:12px;margin-top:6px;color:#8B4513;}
+.preview-section{background:rgba(255,255,255,.8);border-radius:20px;padding:14px;text-align:center;margin-bottom:12px;border:2px solid rgba(255,215,0,.5);}
+.preview-character{font-size:56px;margin-bottom:8px;}
+.preview-name{font-size:18px;color:#C41E3A;font-weight:bold;}
+.btn-start{width:100%;padding:14px;border:none;border-radius:16px;background:#C41E3A;color:#fff;font-size:18px;font-weight:bold;cursor:pointer;font-family:inherit;}
+.btn-start:active{transform:scale(.98);}
+.nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#8B4513;background:rgba(255,215,0,.25);padding:10px;border-radius:10px;}
+</style>
+<script src="_mmwords-player.js"></script>
+</head>
+<body>
+<div class="pattern"></div>
+<div class="container">
+  <div class="header">
+    <h1>🧒 Choose Your Learner</h1>
+    <div class="subtitle">Pick a character and enter your name!</div>
+  </div>
+  <input type="text" id="userName" placeholder="Your name..." maxlength="20">
+  <div class="character-grid" id="charGrid">
+    <div class="character-option selected" data-char="🧒" data-name="Learner"><div>🧒</div><div class="character-name">Learner</div></div>
+    <div class="character-option" data-char="👧" data-name="Aye"><div>👧</div><div class="character-name">Aye</div></div>
+    <div class="character-option" data-char="👦" data-name="Min"><div>👦</div><div class="character-name">Min</div></div>
+    <div class="character-option" data-char="🧒🏽" data-name="Sunny"><div>🧒🏽</div><div class="character-name">Sunny</div></div>
+    <div class="character-option" data-char="👧🏻" data-name="May"><div>👧🏻</div><div class="character-name">May</div></div>
+    <div class="character-option" data-char="🧑" data-name="Star"><div>🧑</div><div class="character-name">Star</div></div>
+  </div>
+  <div class="preview-section">
+    <div class="preview-character" id="previewChar">🧒</div>
+    <div class="preview-name" id="previewLabel">Learner</div>
+  </div>
+  <button type="button" class="btn-start" id="saveBtn">Start Learning! 🇲🇲</button>
+  <div class="nav-hint">Your name and character are saved for badges and games.</div>
+</div>
+<script>
+(function(){
+  var selected = { char: '🧒', name: 'Learner' };
+  document.querySelectorAll('.character-option').forEach(function(el){
+    el.addEventListener('click', function(){
+      document.querySelectorAll('.character-option').forEach(function(c){ c.classList.remove('selected'); });
+      el.classList.add('selected');
+      selected.char = el.getAttribute('data-char');
+      selected.name = el.getAttribute('data-name');
+      document.getElementById('previewChar').textContent = selected.char;
+      document.getElementById('previewLabel').textContent = selected.name;
+    });
+  });
+  document.getElementById('saveBtn').addEventListener('click', function(){
+    var name = document.getElementById('userName').value.trim() || 'Friend';
+    MMPlayer.save(name, selected.char, selected.name);
+    alert('Welcome, ' + name + '! Use ← → to continue.');
+  });
+})();
+</script>
+</body>
+</html>

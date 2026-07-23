@@ -1,531 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ocean Adventure - Sunlight Zone Quiz</title>
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-    body{
-      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
-      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);
-      color:#e0f4ff;
-      min-height:100vh;
-      position:relative;
-      overflow-x:hidden;
-    }
-    .bubbles{
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      pointer-events:none;
-      background-image:
-        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
-        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
-        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
-      background-size:900px 150px;
-      animation:rise 8s ease-in-out infinite;
-      z-index:0;
-    }
-    @keyframes rise{
-      0%,100%{transform:translateY(0);}
-      50%{transform:translateY(-20px);}
-    }
-    .container{
-      max-width:640px;
-      margin:auto;
-      padding:24px 16px 40px;
-      position:relative;
-      z-index:1;
-    }
-    .header{
-      text-align:center;
-      margin-bottom:20px;
-    }
-    h1{
-      font-size:28px;
-      color:#ffeb3b;
-      margin-bottom:8px;
-    }
-    .subtitle{
-      color:#80deea;
-      font-size:16px;
-    }
-    .quiz-card{
-      background:rgba(255,255,255,0.1);
-      backdrop-filter:blur(10px);
-      border-radius:20px;
-      padding:20px;
-      margin-bottom:16px;
-      border:1px solid rgba(255,255,255,0.1);
-    }
-    .question{
-      font-size:18px;
-      font-weight:bold;
-      margin-bottom:16px;
-      color:#fff;
-    }
-    .options{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .option{
-      padding:14px 18px;
-      background:rgba(255,255,255,0.05);
-      border:2px solid rgba(255,255,255,0.2);
-      border-radius:12px;
-      cursor:pointer;
-      font-size:16px;
-      transition:0.2s;
-    }
-    .option:hover{
-      background:rgba(255,255,255,0.1);
-      border-color:#ffeb3b;
-    }
-    .option.correct{
-      background:rgba(76,175,80,0.3);
-      border-color:#4caf50;
-    }
-    .option.wrong{
-      background:rgba(244,67,54,0.3);
-      border-color:#f44336;
-    }
-    .feedback{
-      margin-top:12px;
-      padding:12px;
-      border-radius:10px;
-      font-size:15px;
-      display:none;
-    }
-    .feedback.show{
-      display:block;
-    }
-    .feedback.correct{
-      background:rgba(76,175,80,0.2);
-      color:#81c784;
-    }
-    .feedback.wrong{
-      background:rgba(244,67,54,0.2);
-      color:#e57373;
-    }
-    .score-card{
-      background:linear-gradient(135deg,#ffeb3b,#ffc107);
-      border-radius:20px;
-      padding:24px;
-      text-align:center;
-      margin-top:20px;
-      display:none;
-    }
-    .score-card.show{
-      display:block;
-    }
-    .score-card h2{
-      font-size:24px;
-      margin-bottom:12px;
-      color:#0a1628;
-    }
-    .score-card .score{
-      font-size:48px;
-      font-weight:bold;
-      margin-bottom:12px;
-      color:#0a1628;
-    }
-    .score-card .message{
-      font-size:16px;
-      margin-bottom:16px;
-      color:#0a1628;
-    }
-    .retry-btn{
-      padding:14px 28px;
-      border:none;
-      border-radius:12px;
-      background:#0a1628;
-      color:#ffeb3b;
-      font-size:18px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.2s;
-    }
-    .retry-btn:hover{
-      transform:scale(1.05);
-    }
-    .nav-hint{
-      margin-top:20px;
-      text-align:center;
-      font-size:13px;
-      color:#80deea;
-      background:rgba(128,222,234,0.1);
-      padding:10px;
-      border-radius:10px;
-    }
-  
-    .player-info{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;font-size:16px;color:#64ffda;font-weight:bold;}
-    .competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:12px;padding:10px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.1);}
-    .competitor{display:flex;flex-direction:column;align-items:center;gap:4px;}
-    .competitor-icon{font-size:28px;}
-    .competitor-name{font-size:12px;color:#80deea;}
-    .competitor-score{font-size:18px;font-weight:bold;color:#ffeb3b;}
-    .vs-divider{font-size:18px;color:#64ffda;font-weight:bold;}
-    .quiz-card{display:none;}
-    .quiz-card.active{display:block;}
-    .score-card{background:linear-gradient(135deg,rgba(100,255,218,0.95),rgba(0,188,212,0.95));border-radius:24px;padding:10px 20px 60px;text-align:center;margin-top:20px;display:none;box-shadow:0 16px 48px rgba(0,188,212,0.35);border:4px solid #80deea;position:relative;}
-    .score-card.show{display:block;}
-    .score-card h2{font-size:26px;margin-bottom:30px;color:#0a1628;}
-    .podium{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin-top:120px;height:140px;padding:6px;}
-    .podium-place{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
-    .podium-character{font-size:42px;margin-bottom:4px;}
-    .podium-bar{width:80px;border-radius:12px 12px 0 0;position:relative;display:flex;align-items:flex-start;justify-content:center;padding-top:8px;}
-    .podium-bar.first{height:100px;background:linear-gradient(180deg,#ffd700,#daa520);}
-    .podium-bar.second{height:75px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);}
-    .rank-badge{font-size:26px;}
-    .podium-name{font-size:13px;color:#0a1628;font-weight:bold;background:rgba(255,255,255,0.6);padding:5px 9px;border-radius:8px;}
-    .podium-score{font-size:15px;color:#fff;font-weight:bold;background:#0a1628;padding:3px 7px;border-radius:6px;}
-    .score-card .message{font-size:17px;margin-top:10px;margin-bottom:16px;color:#0a1628;font-weight:bold;padding:10px;background:rgba(255,255,255,0.5);border-radius:12px;}
-    .button-group{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
-    .continue-btn{padding:14px 28px;border:none;border-radius:14px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
-/* quiz-readability-boost */
-.quiz-card{padding:16px !important;}
-.question{font-size:20px !important;line-height:1.45 !important;}
-.quiz-card .option,.options .option{font-size:18px !important;line-height:1.4 !important;padding:12px 16px !important;}
-.feedback{font-size:17px !important;line-height:1.45 !important;}
-.competitor-name{font-size:16px !important;}
-.competitor-score{font-size:22px !important;}
-.vs-divider{font-size:22px !important;}
-.competitor-icon{font-size:34px !important;}
-.player-info{font-size:18px !important;}
-.container > .header .subtitle,.header .subtitle,.subtitle{font-size:18px !important;}
-.container > .header h1,.header h1{font-size:28px !important;}
-.podium-name{font-size:16px !important;}
-.podium-score{font-size:18px !important;}
-.score-label{font-size:16px !important;}
-.score-card .message{font-size:20px !important;}
-.retry-btn{font-size:18px !important;}
-.quiz-card .options,.options{gap:10px !important;}
-.q-label{font-size:17px !important;}
-.q-text{font-size:22px !important;line-height:1.6 !important;}
-.card .option,.option{font-size:20px !important;line-height:1.45 !important;padding:14px 18px !important;}
-.card .scene,.scene{font-size:20px !important;}
-.explain,.explanation{font-size:18px !important;line-height:1.5 !important;}
-
-  
-/* ocean-ui-audit-overrides */
-body.reading-page,
-body.reading-page:has(.container),
-body.reading-page:has(.quiz-card),
-body.reading-page:has(.character-grid) {
-  overflow-y: auto !important;
-  height: auto !important;
-}
-body.reading-page .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  display: block;
-}
-body.reading-page:has(.character-grid) .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  justify-content: flex-start;
-}
-@media (max-width: 639px) {
-  body.big-planet-page .ocean-display {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: min(78vw, calc(100svh - 220px)) !important;
-    min-height: min(56vw, 220px) !important;
-    box-sizing: border-box !important;
-  }
-  body.big-planet-page .container {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-  }
-  body.big-planet-page .planet-game .game-canvas,
-  body:has(.planet-game) .game-canvas {
-    height: min(48vh, 400px) !important;
-    min-height: min(40vh, 280px) !important;
-    max-height: min(52vh, 420px) !important;
-  }
-  .planet-game { padding: 10px !important; margin-top: 10px !important; }
-  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }
-  .touch-controls { margin-top: 6px; gap: 6px; }
-  .touch-btn { min-height: 48px; font-size: 18px; }
-}
-@media (min-width: 640px) {
-  body.big-planet-page .ocean-display {
-    max-height: min(92vw, calc(100svh - 156px)) !important;
-    min-height: min(56vw, calc(100svh - 200px)) !important;
-  }
-}
-body.big-planet-page .planet-game .game-canvas {
-  width: 100% !important;
-  height: min(50vh, 440px) !important;
-  min-height: min(42vh, 300px) !important;
-  max-height: min(56vh, 480px) !important;
-}
-body.big-planet-page .planet-game { margin-bottom: 8px !important; }
-body.big-game-page:has(.game-shell) {
-  overflow: hidden !important;
-  height: 100% !important;
-  min-height: 100% !important;
-  max-height: 100% !important;
-}
-html:has(body.big-game-page) {
-  height: 100% !important;
-  min-height: 100% !important;
-  overflow: hidden !important;
-}
-body.big-game-page:has(.game-shell) .game-shell {
-  min-height: 100% !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-body.big-game-page:has(.game-shell) .stage-wrap {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-body.big-game-page:has(.game-shell) .game-stage {
-  flex: 1 1 auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-height: none !important;
-  aspect-ratio: unset !important;
-  margin: 0 !important;
-}
-body.reading-page {
-  overflow-x: hidden;
-  overflow-y: auto !important;
-  height: auto !important;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-}
-body.reading-page .container {
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  display: block;
-}
-      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}
-    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Adventure - Sunlight Zone Quiz</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);color:#e0f4ff;min-height:100vh;position:relative;overflow-x:hidden;}
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.18),transparent),radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.25),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;}
+@keyframes rise{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+.container{max-width:680px;margin:0 auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header,.top-bar{text-align:center;margin-bottom:16px;}
+h1{font-size:clamp(22px,5vw,30px);color:#64ffda;margin-bottom:6px;}
+.subtitle{color:#80deea;font-size:15px;line-height:1.45;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.pill{background:rgba(100,255,218,0.12);color:#80deea;font-size:11px;font-weight:bold;padding:5px 12px;border-radius:999px;border:1px solid rgba(100,255,218,0.35);}
+.segment,.block{margin-bottom:24px;}
+.segment-label,.block-label{font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;color:#80deea;margin-bottom:8px;}
+.scene-wrap{margin-bottom:10px;}
+.scene-card{position:relative;width:100%;border-radius:16px;border:2px solid rgba(100,255,218,0.35);background:#041525;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,0.35);}
+.scene-card-hero.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 160px),420px);}
+.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-placeholder{width:100%;height:100%;min-height:200px;display:flex;align-items:center;justify-content:center;color:#80deea;font-size:14px;padding:20px;text-align:center;}
+.card{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(100,255,218,0.25);}
+.card h2{color:#64ffda;font-size:18px;margin-bottom:10px;}
+.story-box{background:rgba(0,40,60,0.35);border-left:4px solid #64ffda;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.75;color:#e0f4ff;}
+.explain-box{background:rgba(100,255,218,0.08);border-left:4px solid #00bcd4;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.7;color:#cce7ff;margin-top:10px;}
+.hear-row{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(100,255,218,0.25);}
+.hear-label{display:block;font-size:12px;font-weight:bold;color:#80deea;margin-bottom:8px;}
+.speak-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.speak-chip{padding:8px 14px;border:2px solid rgba(100,255,218,0.45);border-radius:999px;background:rgba(100,255,218,0.1);color:#e0f4ff;font-family:inherit;font-size:13px;font-weight:bold;cursor:pointer;touch-action:manipulation;}
+.speak-chip:active,.speak-chip.pressed{background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;border-color:#64ffda;}
+.scroll-cue{text-align:center;color:#80deea;font-size:13px;margin:8px 0 12px;}
+.planet-game,.game-section{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:20px;padding:18px;margin:16px 0;border:1px solid rgba(100,255,218,0.35);}
+.planet-game h2,.game-section h2{color:#64ffda;font-size:19px;text-align:center;margin-bottom:8px;}
+.planet-game .game-desc,.game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:12px;line-height:1.5;}
+.game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
+.game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
+.game-canvas{position:relative;width:100%;height:min(48vh,320px);min-height:220px;background:#062035;border-radius:16px;overflow:hidden;border:2px solid rgba(100,255,218,0.35);touch-action:none;}
+.game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+.game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,0.92);text-align:center;padding:20px;z-index:5;}
+.game-overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}
+.game-overlay p{color:#cce7ff;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+.overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
+.touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
+.touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+.nav-hint{margin-top:16px;text-align:center;font-size:12px;color:#80deea;background:rgba(128,222,234,0.1);padding:12px;border-radius:10px;line-height:1.5;}
+.competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:14px;padding:12px;margin-bottom:14px;border:1px solid rgba(100,255,218,0.25);}
+.competitor{text-align:center;flex:1;}
+.competitor-icon{font-size:36px;}
+.competitor-name{font-size:12px;color:#80deea;margin-top:4px;}
+.competitor-score{font-size:22px;font-weight:bold;color:#64ffda;}
+.vs-divider{font-size:20px;font-weight:bold;color:#ffeb3b;margin:0 8px;}
+.quiz-card{background:rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.1);display:none;}
+.quiz-card.active{display:block;}
+.question{font-size:17px;font-weight:bold;margin-bottom:14px;color:#fff;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{padding:12px 16px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.2);border-radius:12px;cursor:pointer;font-size:15px;transition:.15s;}
+.option:hover{background:rgba(255,255,255,0.1);border-color:#64ffda;}
+.option.correct{background:rgba(76,175,80,0.3);border-color:#4caf50;}
+.option.wrong{background:rgba(244,67,54,0.3);border-color:#f44336;}
+.feedback{margin-top:12px;padding:10px;border-radius:10px;font-size:14px;display:none;}
+.feedback.show{display:block;}
+.feedback.correct{background:rgba(76,175,80,0.2);color:#81c784;}
+.feedback.wrong{background:rgba(244,67,54,0.2);color:#e57373;}
+.score-card{display:none;background:linear-gradient(135deg,rgba(100,255,218,0.95),rgba(0,188,212,0.95));border-radius:24px;padding:20px;text-align:center;margin-top:16px;border:4px solid #80deea;}
+.score-card.show{display:block;}
+.score-card h2{color:#0a1628;font-size:22px;margin-bottom:12px;}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin:16px 0;}
+.podium-place{text-align:center;flex:1;max-width:110px;}
+.podium-character{font-size:32px;margin-bottom:6px;}
+.podium-bar{height:60px;border-radius:8px 8px 0 0;width:72px;margin:0 auto;background:rgba(10,22,40,0.35);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-size:13px;font-weight:bold;color:#0a1628;}
+.podium-bar.first{height:90px;background:linear-gradient(180deg,#ffd700,#daa520);}
+.podium-bar.second{height:70px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);}
+.podium-score{font-size:18px;font-weight:bold;color:#0a1628;margin-top:6px;}
+.podium-name{font-size:11px;color:#0a1628;}
+.message{margin:10px 0;font-size:15px;color:#0a1628;font-weight:bold;}
+.retry-btn,.continue-btn{padding:12px 22px;border:none;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;margin:4px;}
+.retry-btn{background:#0a1628;color:#64ffda;}
+.continue-btn{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+.panel{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;margin-bottom:16px;border:1px solid rgba(100,255,218,0.25);}
+.view-stage{position:relative;width:100%;height:min(98vw,calc(100svh - 118px));max-height:min(98vw,calc(100svh - 118px));aspect-ratio:1;margin:0 auto;border-radius:16px;overflow:hidden;background:#041525;box-shadow:inset 0 0 40px rgba(0,0,0,0.45);}
+.view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
+.view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
+.view-photo{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;}
+.view-tap-overlay{position:absolute;inset:0;cursor:pointer;}
+.ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
+.ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#0288d1,#01579b);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
+.ctrl-btn.active{background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;}
+.info-panel{margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.28);border-radius:14px;border-left:4px solid #64ffda;}
+.info-panel h2{color:#64ffda;font-size:18px;margin-bottom:8px;}
+.info-panel p{font-size:15px;line-height:1.65;color:#e0f4ff;}
+body.all-zones-page{overflow-y:auto!important;height:auto!important;}
+body.reading-page .container{height:auto!important;max-height:none!important;}
+@media(max-width:639px){.game-canvas{height:min(44vh,300px)!important;}}
+</style>
+<script src="_ocean-player.js"></script>
+<script src="_ocean-data.js"></script>
+<script src="_ocean-chapter-images.js"></script>
+<script src="_ocean-scenes.js"></script>
+<script src="_ocean-speak.js"></script>
 </head>
 <body class="reading-page">
 <div class="bubbles"></div>
 <div class="container">
   <div class="header">
     <h1>❓ Sunlight Zone Quiz</h1>
-    <div class="subtitle">Test what you learned about the Sunlight Zone!</div>
+    <div class="subtitle">Beat Sunny Ray!</div>
   </div>
-
-  <div class="competition-bar">
+  <div class="competition-bar" id="liveScoreBar">
     <div class="competitor">
       <div class="competitor-icon" id="playerIcon">🤿</div>
-      <div class="competitor-name" id="playerName2">Explorer</div>
+      <div class="competitor-name" id="playerName">Explorer</div>
       <div class="competitor-score" id="playerScore">0</div>
     </div>
     <div class="vs-divider">VS</div>
     <div class="competitor">
-      <div class="competitor-icon">☀️</div>
+      <div class="competitor-icon">🐠</div>
       <div class="competitor-name">Sunny Ray</div>
-      <div class="competitor-score" id="computerScore">0</div>
-
+      <div class="competitor-score" id="opponentScore">0</div>
+    </div>
+  </div>
+  <div id="quizArea">
   <div class="quiz-card active" id="quizCard-1">
-    <div class="question">1. How deep is the Sunlight Zone?</div>
+    <div class="question">1. How deep does the Sunlight Zone go (about)?</div>
     <div class="options">
-      <div class="option" onclick="checkAnswer(this, 1, false)">100 meters</div>
-      <div class="option" onclick="checkAnswer(this, 1, true)">About 200 meters</div>
-      <div class="option" onclick="checkAnswer(this, 1, false)">500 meters</div>
-      <div class="option" onclick="checkAnswer(this, 1, false)">1,000 meters</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">20 meters</div>
+      <div class="option" onclick="checkAnswer(this, 1, true)">200 meters</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">2,000 meters</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">20,000 meters</div>
     </div>
     <div class="feedback" id="feedback-1"></div>
   </div>
 
   <div class="quiz-card" id="quizCard-2">
-    <div class="question">2. What makes the Sunlight Zone special?</div>
+    <div class="question">2. Phytoplankton are…</div>
     <div class="options">
-      <div class="option" onclick="checkAnswer(this, 2, false)">It's the deepest zone</div>
-      <div class="option" onclick="checkAnswer(this, 2, false)">It's the coldest zone</div>
-      <div class="option" onclick="checkAnswer(this, 2, true)">Sunlight reaches the bottom</div>
-      <div class="option" onclick="checkAnswer(this, 2, false)">It has no life</div>
+      <div class="option" onclick="checkAnswer(this, 2, true)">Tiny ocean plants</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">Large sharks</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">Deep-sea crabs</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">Volcanic rocks</div>
     </div>
     <div class="feedback" id="feedback-2"></div>
   </div>
 
   <div class="quiz-card" id="quizCard-3">
-    <div class="question">3. What are phytoplankton?</div>
+    <div class="question">3. Coral reefs are found mainly in the…</div>
     <div class="options">
-      <div class="option" onclick="checkAnswer(this, 3, false)">Tiny fish</div>
-      <div class="option" onclick="checkAnswer(this, 3, false)">Big whales</div>
-      <div class="option" onclick="checkAnswer(this, 3, false)">Sea turtles</div>
-      <div class="option" onclick="checkAnswer(this, 3, true)">Tiny ocean plants</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Hadal Zone</div>
+      <div class="option" onclick="checkAnswer(this, 3, true)">Sunlight Zone</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Abyss with no light</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Underground caves only</div>
     </div>
     <div class="feedback" id="feedback-3"></div>
   </div>
 
   <div class="quiz-card" id="quizCard-4">
-    <div class="question">4. How much oxygen do phytoplankton produce?</div>
+    <div class="question">4. What do phytoplankton need to grow?</div>
     <div class="options">
-      <div class="option" onclick="checkAnswer(this, 4, false)">10%</div>
-      <div class="option" onclick="checkAnswer(this, 4, false)">25%</div>
-      <div class="option" onclick="checkAnswer(this, 4, true)">50-80%</div>
-      <div class="option" onclick="checkAnswer(this, 4, false)">100%</div>
+      <div class="option" onclick="checkAnswer(this, 4, true)">Sunlight</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Total darkness</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Ice only</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Desert sand</div>
     </div>
     <div class="feedback" id="feedback-4"></div>
   </div>
 
   <div class="quiz-card" id="quizCard-5">
-    <div class="question">5. Where are coral reefs found?</div>
+    <div class="question">5. Coral bleaching means corals…</div>
     <div class="options">
-      <div class="option" onclick="checkAnswer(this, 5, false)">Deep ocean</div>
-      <div class="option" onclick="checkAnswer(this, 5, true)">Sunlight Zone</div>
-      <div class="option" onclick="checkAnswer(this, 5, false)">Midnight Zone</div>
-      <div class="option" onclick="checkAnswer(this, 5, false)">Abyss Zone</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Turn bright pink forever</div>
+      <div class="option" onclick="checkAnswer(this, 5, true)">Lose their color and stress partners</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Grow on land</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Become metal</div>
     </div>
     <div class="feedback" id="feedback-5"></div>
-  </div>
-
-  
+  </div></div>
   <div class="score-card" id="scoreCard">
     <h2>🎉 Quiz Complete!</h2>
-    <div class="podium" id="podium">
-      <div class="podium-place" id="podium-second">
-        <div class="podium-character" id="podium-char-2">☀️</div>
-        <div class="podium-bar second"><span class="rank-badge">🥈</span></div>
-        <div class="podium-score" id="podium-score-2">0</div>
-        <div class="podium-name" id="podium-name-2">Sunny Ray</div>
-      </div>
-      <div class="podium-place" id="podium-first">
-        <div class="podium-character" id="podium-char-1">🤿</div>
-        <div class="podium-bar first"><span class="rank-badge">🥇</span></div>
-        <div class="podium-score" id="podium-score-1">0</div>
-        <div class="podium-name" id="podium-name-1">Explorer</div>
-      </div>
-    </div>
-    <div class="message" id="scoreMessage"></div>
-    <div class="button-group">
-      <button class="retry-btn" onclick="retryQuiz()">🔄 Try Again</button>
-    </div>
+    <div class="podium" id="podium"></div>
+    <p class="message" id="scoreMessage"></p>
+    <button class="retry-btn" type="button" onclick="location.reload()">🔄 Try Again</button>
   </div>
-
-<div class="nav-hint">
-  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
-  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
 </div>
-
-</div>
-
 <script>
-let score = 0;
-let currentQuestion = 1;
-const totalQuestions = 5;
-let computerScore = 0;
+var playerScore = 0, opponentScore = 0, currentQ = 1, totalQ = 5, answered = false;
+var playerName = "Explorer", playerIcon = "🤿", opponentName = "Sunny Ray", opponentIcon = "🐠";
 
-function checkAnswer(element, questionNum, isCorrect) {
-  const parent = element.parentElement;
-  const options = parent.querySelectorAll('.option');
-  const feedback = document.getElementById('feedback-' + questionNum);
-  options.forEach(opt => { opt.style.pointerEvents = 'none'; });
-  if (Math.random() < 0.7) {
-    computerScore++;
-    document.getElementById('computerScore').textContent = computerScore;
+function loadPlayerInfo() {
+  if (window.OceanPlayer) {
+    playerName = OceanPlayer.getUserName();
+    playerIcon = OceanPlayer.getCharacter();
   }
-  if (isCorrect) {
-    element.classList.add('correct');
-    feedback.textContent = '✅ Correct! Great job!';
-    feedback.className = 'feedback show correct';
-    score++;
-    document.getElementById('playerScore').textContent = score;
+  document.getElementById("playerName").textContent = playerName;
+  document.getElementById("playerIcon").textContent = playerIcon;
+}
+
+function checkAnswer(el, qNum, correct) {
+  if (answered) return;
+  answered = true;
+  var fb = document.getElementById("feedback-" + qNum);
+  var opts = el.parentElement.querySelectorAll(".option");
+  opts.forEach(function(o) { o.style.pointerEvents = "none"; });
+  if (correct) {
+    el.classList.add("correct");
+    playerScore++;
+    fb.textContent = "✅ Correct!";
+    fb.className = "feedback show correct";
   } else {
-    element.classList.add('wrong');
-    feedback.textContent = '❌ Not quite. Try again next time!';
-    feedback.className = 'feedback show wrong';
+    el.classList.add("wrong");
+    if (Math.random() < 0.65) opponentScore++;
+    fb.textContent = "❌ " + opponentName + " gets a point!";
+    fb.className = "feedback show wrong";
   }
-  setTimeout(nextQuestion, 1500);
+  document.getElementById("playerScore").textContent = playerScore;
+  document.getElementById("opponentScore").textContent = opponentScore;
+  setTimeout(function() {
+    answered = false;
+    if (qNum >= totalQ) showResults();
+    else {
+      document.getElementById("quizCard-" + qNum).classList.remove("active");
+      currentQ = qNum + 1;
+      document.getElementById("quizCard-" + currentQ).classList.add("active");
+    }
+  }, 1400);
 }
 
-function nextQuestion() {
-  document.getElementById('quizCard-' + currentQuestion).classList.remove('active');
-  currentQuestion++;
-  if (currentQuestion <= totalQuestions) {
-    document.getElementById('quizCard-' + currentQuestion).classList.add('active');
-  } else {
-    showScore();
-  }
-}
-
-function showScore() {
-  const userName = OceanPlayer.getUserName() || 'Explorer';
-  const userCharacter = OceanPlayer.getCharacter() || '🤿';
-  const competitors = [
-    { name: userName, character: userCharacter, score: score, isPlayer: true },
-    { name: 'Sunny Ray', character: '☀️', score: computerScore, isPlayer: false }
-  ];
-  competitors.sort((a, b) => b.score - a.score);
-  document.getElementById('podium-char-1').textContent = competitors[0].character;
-  document.getElementById('podium-name-1').textContent = competitors[0].name;
-  document.getElementById('podium-score-1').textContent = competitors[0].score;
-  document.getElementById('podium-char-2').textContent = competitors[1].character;
-  document.getElementById('podium-name-2').textContent = competitors[1].name;
-  document.getElementById('podium-score-2').textContent = competitors[1].score;
-  document.getElementById('scoreMessage').textContent = competitors[0].isPlayer
-    ? '🎉 ' + userName + ' wins! Amazing job!' : competitors[0].name + ' won this time. Try again!';
-  document.getElementById('scoreCard').classList.add('show');
-}
-
-function retryQuiz() {
-  score = 0; currentQuestion = 1; computerScore = 0;
-  document.querySelectorAll('.quiz-card').forEach((card, i) => {
-    card.classList.remove('active');
-    if (i === 0) card.classList.add('active');
+function showResults() {
+  document.getElementById("quizArea").style.display = "none";
+  document.getElementById("liveScoreBar").style.display = "none";
+  var competitors = [
+    { name: playerName, icon: playerIcon, score: playerScore },
+    { name: opponentName, icon: opponentIcon, score: opponentScore }
+  ].sort(function(a, b) { return b.score - a.score; });
+  var podium = document.getElementById("podium");
+  podium.innerHTML = "";
+  var order = competitors.length > 1 ? [1, 0] : [0];
+  order.forEach(function(idx, pi) {
+    var c = competitors[idx];
+    var place = document.createElement("div");
+    place.className = "podium-place " + (pi === 1 ? "first" : "second");
+    place.innerHTML = '<div class="podium-character">' + c.icon + '</div><div class="podium-bar ' + (pi === 1 ? "first" : "second") + '">' + c.score + '</div><div class="podium-name">' + c.name + '</div>';
+    podium.appendChild(place);
   });
-  document.querySelectorAll('.option').forEach(opt => {
-    opt.classList.remove('correct', 'wrong');
-    opt.style.pointerEvents = 'auto';
-  });
-  document.querySelectorAll('.feedback').forEach(fb => fb.classList.remove('show', 'correct', 'wrong'));
-  document.getElementById('scoreCard').classList.remove('show');
-  document.getElementById('playerScore').textContent = '0';
-  document.getElementById('computerScore').textContent = '0';
+  document.getElementById("scoreMessage").textContent = playerScore >= opponentScore
+    ? "Amazing! You know " + "Sunlight Zone" + "!"
+    : "Keep exploring — read the chapter again!";
+  document.getElementById("scoreCard").classList.add("show");
 }
 
-(function loadPlayerInfo() {
-  const userName = OceanPlayer.getUserName() || 'Explorer';
-  const userCharacter = OceanPlayer.getCharacter() || '🤿';
-  const playerName2 = document.getElementById('playerName2');
-  const playerIcon = document.getElementById('playerIcon');
-  const podiumChar = document.getElementById('podium-char-1');
-  const podiumName = document.getElementById('podium-name-1');
-  if (playerName2) playerName2.textContent = userName;
-  if (playerIcon) playerIcon.textContent = userCharacter;
-  if (podiumChar) podiumChar.textContent = userCharacter;
-  if (podiumName) podiumName.textContent = userName;
-})();
-
+loadPlayerInfo();
 </script>
-</body>
-</html>
+</body></html>

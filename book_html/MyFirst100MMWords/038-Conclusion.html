@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Conclusion</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#FFF8E7 0%,#FFE4B5 40%,#FFDAB9 100%);color:#3d2914;min-height:100vh;}
+.pattern{position:fixed;inset:0;pointer-events:none;opacity:.08;}
+.container{max-width:640px;margin:auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header{text-align:center;margin-bottom:14px;}
+h1{font-size:26px;color:#C41E3A;margin-bottom:6px;}
+.card{background:rgba(255,255,255,.78);border-radius:18px;padding:16px;margin-bottom:12px;border:2px solid rgba(196,30,58,.12);}
+.card h2{font-size:18px;color:#C41E3A;margin-bottom:10px;}
+.card p,.card li{font-size:15px;line-height:1.7;}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.badge-pill{background:#FFD700;color:#3d2914;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:bold;}
+.nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#8B4513;background:rgba(255,215,0,.25);padding:10px;border-radius:10px;}
+</style>
+<script src="_mmwords-player.js"></script>
+</head>
+<body>
+<div class="pattern"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 You Learned 100 Words!</h1>
+    <div class="subtitle">Summary of your journey</div>
+  </div>
+  <div class="card">
+    <h2>🎓 What You Covered</h2>
+    <ul style="margin-left:20px;">
+      <li style="margin-bottom:6px;">👨‍👩‍👧 Family — mother, father, grandparents</li>
+      <li style="margin-bottom:6px;">🍚 Food — rice, apple, tea, and more</li>
+      <li style="margin-bottom:6px;">🐘 Animals — elephant, cat, dog, bird</li>
+      <li style="margin-bottom:6px;">🎨 Colors · 🔢 Numbers · 👂 Body · 🏠 Home · 🎒 School</li>
+      <li style="margin-bottom:6px;">😊 Feelings · 🎆 Myanmar Festivals</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>🏆 Your Badges</h2>
+    <p>Earned badges are saved on this device:</p>
+    <div class="badge-row" id="badgeList"><span class="badge-pill">Loading...</span></div>
+  </div>
+  <div class="card">
+    <h2>💬 Keep Going at Home</h2>
+    <p>Say one Myanmar word at every meal. Call grandparents and use three new words. Connection beats perfection — you're keeping Myanmar alive in your family.</p>
+  </div>
+  <div class="nav-hint">Next: Overall Quiz, then the Word Catch finale!</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var badges = MMPlayer.getBadges();
+  var el = document.getElementById('badgeList');
+  if (!badges.length) el.innerHTML = '<span class="badge-pill">Play chapter games to earn badges!</span>';
+  else el.innerHTML = badges.map(function(b){ return '<span class="badge-pill">🏆 '+b+'</span>'; }).join('');
+});
+</script>
+</body>
+</html>

@@ -4,23 +4,62 @@
 **Target age:** 7–8  
 **Chapters:** 32 standalone HTML files  
 
-Follows the same flow as **Solar System Adventure** (reference: [../SolarSystem/README.md](../SolarSystem/README.md)).
+Follows the same flow as **Solar System Adventure** (reference: [../SolarSystem/README.md](../SolarSystem/README.md)), with **Dinosaur Discovery**–style painted PNG scenes embedded in each HTML file (Solar System data-URI pattern — no external image fetch).
 
 Master template: [../README.md](../README.md)
 
 ---
 
-## Chapter flow (aligned with Solar System)
+## Page structure (2026 refresh)
+
+### Activity pages (`008`, `011`, … + overview `005`)
+
+Each topic activity follows:
+
+**picture → story → explanation → press words to hear** (×3) → **mini-game**
+
+| Block | What it shows |
+|-------|----------------|
+| **Picture** | 16:9 painted PNG scene (`<img class="chapter-hero-img">` from embedded data URI) |
+| **Story** | Kai + guide narrative in `.story-box` |
+| **Explanation** | Factual summary in `.explain-box` |
+| **Press words to hear** | `.speak-chip` buttons → `OceanSpeak.chip()` (Web Speech API) |
+| **Mini-game** | Canvas game via `OceanGame.boot()` at bottom |
+
+### Explained pages (`006`, `009`, …)
+
+**picture → story → explanation** (×3) — deeper content, no vocabulary chips, no game.
+
+### Quiz pages (`007`, `010`, …)
+
+Solar System VS bar + 5 questions + podium finish. Uses `OceanPlayer` for name/avatar.
+
+### Overview (`005-Ocean-Overview.html`)
+
+**Four painted views** (embedded PNG, no canvas/SVG heroes):
+
+| View | Image slot | Concept |
+|------|------------|---------|
+| View1 | `overview-view-1` | Depth chart — five ocean zones |
+| View2 | `overview-view-2` | Surface & depth split |
+| View3 | `overview-view-3` | Sonar depth rings |
+| View4 | `overview-view-4` | Submarine porthole |
+
+Tap the view to learn zone facts. Scroll down for **Zone Sort** mini-game.
+
+---
+
+## Chapter flow
 
 | # | File | Type |
 |---|------|------|
-| 01 | `001-Book-Briefing.html` | Briefing + Jimmy Cooper author speech |
+| 01 | `001-Book-Briefing.html` | Briefing + author speech |
 | 02 | `002-Index.html` | Table of contents |
 | 03 | `003-Character-Selection.html` | Choose diver name + avatar |
-| 04 | `004-Intro-OceanReefDefender.html` | **Intro game** — relaxing aquarium sandbox (paint fish, coral & rocks) |
-| 05 | `005-Ocean-Overview.html` | Overview **activity** — multi-view zone explorer + Zone Collector game |
-| 06 | `006-Ocean-Explained.html` | Overview **explained** |
-| 07 | `007-Ocean-Quiz.html` | Overview **quiz** |
+| 04 | `004-Intro-OceanReefDefender.html` | Intro game — reef sandbox |
+| 05 | `005-Ocean-Overview.html` | Overview — 4 PNG views + Zone Sort |
+| 06 | `006-Ocean-Explained.html` | Overview explained (×3 scenes) |
+| 07 | `007-Ocean-Quiz.html` | Overview quiz |
 | 08–10 | Sunlight Zone | Activity → Explained → Quiz |
 | 11–13 | Twilight Zone | Activity → Explained → Quiz |
 | 14–16 | Midnight Zone | Activity → Explained → Quiz |
@@ -29,28 +68,24 @@ Master template: [../README.md](../README.md)
 | 23–25 | Marine Mammals | Activity → Explained → Quiz |
 | 26–28 | Fish | Activity → Explained → Quiz |
 | 29 | `029-Conclusion.html` | Conclusion |
-| 30 | `030-Ocean-Overall-Quiz.html` | **Overall quiz** (whole book) |
-| 31 | `031-Outro-OceanTreasureRush.html` | **Outro game** — collect treasures, dodge jellyfish |
+| 30 | `030-Ocean-Overall-Quiz.html` | Overall quiz |
+| 31 | `031-Outro-OceanTreasureRush.html` | Outro game |
 | 32 | `032-Congratulations.html` | Congratulations |
 
-Each **topic triplet** = brief activity page (with **canvas minigame**) → detailed explained page → competitive quiz.
+---
 
-### Chapter minigames (activity pages)
-
-Each chapter has a **unique** game mechanic via `_ocean-games.js`:
+## Chapter minigames
 
 | File | Game | Mechanic |
 |------|------|----------|
-| `005-Ocean-Overview.html` | Zone Sort | Catch ☀️→🌅→🌙→🕳️ in order |
-| `008-Sunlight-Zone.html` | Sunbeam Snap | Tap fish only in the sunbeam |
+| `005-Ocean-Overview.html` | Zone Sort | Catch ☀️→🌅→🌙→🕳️→⛰️ in order |
+| `008-Sunlight-Zone.html` | Sunbeam Snap | Tap fish in the sunbeam |
 | `011-Twilight-Zone.html` | Glow Rhythm | Tap on pulse beat |
 | `014-Midnight-Zone.html` | Sonar Ping | Tap when sonar reveals creatures |
 | `017-Abyss-Zone.html` | Trench Pilot | ⬆️⬇️ steer through gaps |
 | `020-Coral-Reefs.html` | Reef Match | Memory card pairs |
 | `023-Marine-Mammals.html` | Breath Dive | O₂ bar + surface to breathe |
 | `026-Fish.html` | School Run | 3-lane dodge runner |
-
-Install / refresh: `node _replace-ocean-minigames.cjs`
 
 ---
 
@@ -60,42 +95,46 @@ Install / refresh: `node _replace-ocean-minigames.cjs`
 |-----------|----------------|
 | Theme | Deep ocean gradient, `.bubbles` animated background |
 | Accents | Teal `#64ffda`, yellow `#ffeb3b`, light blue `#80deea` |
+| Illustrations | **Painted PNG** embedded as base64 in `_ocean-chapter-images.js` |
+| Vocabulary | **Press words to hear** via `_ocean-speak.js` |
 | Structure | One standalone HTML file per chapter |
-| Learning loop | Activity → Explained → Quiz (×9 topics including overview) |
-| Bookends | Intro Reef Defender (004) + Outro Treasure Rush (031) |
+| Learning loop | Activity → Explained → Quiz (×8 topics including overview) |
 
 ---
 
-## Filename convention
+## Shared files
 
 ```
-NNN-Slug.html
+OceanAdventure/
+  _ocean-data.js                # Chapter stories, words, quiz Q&A, game configs
+  _ocean-chapter-images.js      # ~52 embedded PNG scenes (generated)
+  _ocean-scenes.js              # OceanScene.boot() — injects <img> into scene slots
+  _ocean-speak.js               # OceanSpeak — press words to hear (TTS)
+  _ocean-player.js              # OceanPlayer localStorage helper
+  _ocean-games.js               # Shared minigame engine (8 game types)
+  _ocean-draw.js                # Canvas emoji helpers (minigames only)
+  _generate-book.cjs            # Regenerate activity / explained / quiz HTML
+  scripts/
+    gen_ocean_art.py            # Generate source PNGs (PIL)
+    gen_chapter_images.cjs      # PNG → _ocean-chapter-images.js
+  assets/                       # Source PNGs ({chapter}-{slot}.png)
+  *.html                        # Standalone chapters
 ```
 
-Same rules as Solar System: zero-padded `NNN`, Pascal-Case slug, suffixes `-Explained`, `-Quiz`.
+### Build pipeline
 
----
+```bash
+# 1. Generate / refresh source PNG illustrations
+python book_html/OceanAdventure/scripts/gen_ocean_art.py
 
-## Page anatomy
+# 2. Embed all PNGs as data URIs (single-file, no fetch)
+node book_html/OceanAdventure/scripts/gen_chapter_images.cjs
 
-- `.bubbles` background (not `.stars`)
-- `.container` → `.header` → content → `.nav-hint`
-- Quiz pages: VS bar, `quizCard-N` + `.active`, podium finish
-- Games: overlay start/end, score + time + lives HUD
+# 3. Regenerate activity, explained, and quiz HTML from _ocean-data.js
+node book_html/OceanAdventure/_generate-book.cjs
+```
 
----
-
-## Character / progress
-
-Uses `OceanPlayer` in `003-Character-Selection.html` and `_ocean-player.js`:
-
-| Key | Example |
-|-----|---------|
-| `userName` | Explorer |
-| `userCharacter` | 🤿 |
-| `characterName` | Diver |
-
-Also mirrored to global `userName` / `userCharacter` for quiz pages.
+Replace a hero illustration: edit PNG in `assets/`, re-run steps 2–3.
 
 ---
 
@@ -109,60 +148,14 @@ Also mirrored to global `userName` / `userCharacter` for quiz pages.
 | Midnight | Midnight Molly |
 | Abyss | Abyss Ace |
 | Coral | Reef Rex |
-| Marine Mammals | Whale Wilma |
+| Marine Mammals | Whale Wilma 🐋 |
 | Fish | Finn Fish |
 | Overall (030) | Professor Pearl 🐚 |
-
----
-
-## Shared files
-
-```
-OceanAdventure/
-  _ocean-player.js              # OceanPlayer localStorage helper
-  _shared-ocean-ui-blocks.mjs   # Shared audit CSS / body-class helpers
-  _apply-ocean-fixes.cjs        # Align all chapters with Solar System UI structure
-  _apply-ocean-games.cjs        # Inject canvas minigames into activity pages
-  _fix-ocean-game-visibility.cjs # DPR canvas + emoji halos for minigames
-  _gen-index-grid.cjs           # Regenerate 002 index badges from chapter list
-  *.html                        # Chapters — no build step
-```
-
-### Maintenance scripts
-
-```bash
-node book_html/OceanAdventure/_apply-ocean-fixes.cjs
-node book_html/OceanAdventure/_fix-ocean-game-visibility.cjs
-node book_html/OceanAdventure/_patch-ocean-facing.cjs
-```
-
-`_apply-ocean-fixes.cjs` adds Solar System–style body classes (`reading-page`, `big-planet-page`, `big-game-page`), mobile audit CSS, `OceanPlayer` on every page, quiz DOM/player fixes, scroll cues, and intro/outro game polish.
-
-`_patch-ocean-facing.cjs` flips fish/animal emoji sprites to face their movement direction in canvas mini-games. Shared helper: `_ocean-draw.js` (`OceanDraw.drawEmoji`).
-
----
-
-## Page types (Solar System parity)
-
-| Type | Body class | Examples |
-|------|------------|----------|
-| Reading / explained / quiz | `reading-page` | 001, 006–007, 009–010, … |
-| Character select | `reading-page character-select-page` | 003 |
-| Activity + minigame | `big-planet-page` or `all-zones-page` | 005 (multi-view), 008, 011, … |
-| Intro / outro arcade | `big-game-page` | 004, 031 |
-
----
-
-## Adding a new topic
-
-1. Insert three files at the next free `NNN` block (Activity → Explained → Quiz)
-2. Shift Conclusion / Overall / Outro / Congratulations numbers if needed
-3. Update `002-Index.html` (run `_gen-index-grid.cjs` after editing chapter list)
-4. Update this README chapter table
 
 ---
 
 ## Related
 
 - Reference structure: [../SolarSystem/README.md](../SolarSystem/README.md)
+- Scene pattern: [../Dinosaur Discovery/README.md](../Dinosaur%20Discovery/README.md)
 - Master guide: [../README.md](../README.md)

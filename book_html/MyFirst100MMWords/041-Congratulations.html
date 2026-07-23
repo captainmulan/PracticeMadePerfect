@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Congratulations</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#C41E3A 0%,#8B0000 50%,#FFD700 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;}
+.card{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:24px;padding:32px 24px;max-width:480px;border:3px solid #FFD700;}
+.trophy{font-size:72px;margin-bottom:12px;animation:bounce 1s ease infinite alternate;}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+h1{font-size:32px;margin-bottom:10px;}
+p{font-size:17px;line-height:1.6;margin-bottom:8px;}
+.name{color:#FFD700;font-weight:bold;font-size:22px;margin:12px 0;}
+.mm{font-family:'Myanmar Text',Padauk;font-size:24px;margin-top:16px;}
+.nav-hint{margin-top:20px;font-size:13px;opacity:.9;}
+</style>
+<script src="_mmwords-player.js"></script>
+</head>
+<body>
+<div class="card">
+  <div class="trophy">🎉</div>
+  <h1>Congratulations!</h1>
+  <p>You finished <strong>My First 100 Myanmar Words</strong>!</p>
+  <div class="name" id="userName">Friend</div>
+  <p>You kept Myanmar alive — one word, one game, one smile at a time.</p>
+  <div class="mm">ကျေးဇူးတင်ပါတယ်!</div>
+  <p style="font-size:14px;margin-top:8px;opacity:.85;">Thank you!</p>
+  <div class="nav-hint">🇲🇲 Share your badges with family. Stage 2 storybooks coming soon!</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var n = MMPlayer.getUserName();
+  var c = MMPlayer.getCharacter();
+  document.getElementById('userName').textContent = c + ' ' + n;
+  if (window.MMAudio) MMAudio.speak('ကျေးဇူးတင်ပါတယ်','my-MM');
+});
+</script>
+</body>
+</html>

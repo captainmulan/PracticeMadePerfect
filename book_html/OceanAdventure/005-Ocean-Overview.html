@@ -1,1990 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ocean Adventure - Ocean Overview</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);color:#e0f4ff;min-height:100vh;position:relative;overflow-x:hidden;}
-    .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.18),transparent),radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.25),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;z-index:0;}
-    @keyframes rise{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
-    .container{max-width:640px;margin:auto;padding:12px 14px 24px;position:relative;z-index:1;}
-    .header{text-align:center;margin-bottom:12px;}
-    h1{font-size:28px;color:#64ffda;margin-bottom:6px;}
-    .subtitle{color:#80deea;font-size:16px;line-height:1.5;}
-    .panel{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;margin-bottom:16px;border:1px solid rgba(100,255,218,0.25);}
-    .ocean-panel{padding:12px;}
-    .view-stage{position:relative;width:100%;height:min(98vw,calc(100svh - 118px));max-height:min(98vw,calc(100svh - 118px));aspect-ratio:1;margin:0 auto;border-radius:16px;overflow:hidden;background:#041525;box-shadow:inset 0 0 40px rgba(0,0,0,0.45);}
-    .view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
-    .view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
-    .view-layer canvas{display:block;width:100%;height:100%;}
-    .ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
-    .ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#0288d1,#01579b);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
-    .ctrl-btn:active{transform:scale(.96);}
-    .ctrl-btn.active{background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;}
-    .info-panel{margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.28);border-radius:14px;border-left:4px solid #64ffda;}
-    .info-panel h2{color:#64ffda;font-size:18px;margin-bottom:8px;}
-    .info-panel p{font-size:15px;line-height:1.65;color:#e0f4ff;}
-    .scroll-cue{text-align:center;color:#80deea;font-size:13px;margin:10px 0;opacity:.9;}
-    .minigame-panel h2{color:#64ffda;font-size:20px;text-align:center;margin-bottom:8px;}
-    .minigame-panel .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:12px;line-height:1.5;}
-    .game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
-    .game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
-    .game-canvas{position:relative;width:100%;height:280px;min-height:220px;max-height:280px;background:#062035;border-radius:16px;overflow:hidden;border:2px solid rgba(100,255,218,0.35);touch-action:none;}
-    .game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
-    .game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,0.92);text-align:center;padding:20px;z-index:5;}
-    .game-overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}
-    .game-overlay p{color:#cce7ff;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
-    .overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
-    .touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
-    .touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
-    .nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,0.1);padding:10px;border-radius:10px;}
-    body.all-zones-page{overflow-x:hidden;overflow-y:auto!important;height:auto!important;min-height:100%;-webkit-overflow-scrolling:touch;}
-    body.all-zones-page .container{height:auto!important;max-height:none!important;overflow:visible!important;display:block;}
-    body.all-zones-page .header{margin-bottom:8px;}
-    body.all-zones-page .header h1{font-size:24px;}
-    body.all-zones-page .ocean-panel{margin-bottom:10px;padding:10px;}
-    body.all-zones-page .info-panel,.body.all-zones-page .minigame-panel{margin-top:8px;}
-    @media(max-width:639px){
-      body.all-zones-page .view-stage{height:min(78vw,calc(100svh - 220px));max-height:min(78vw,calc(100svh - 220px));}
-      body.all-zones-page .game-canvas{height:min(48vh,400px)!important;min-height:min(40vh,280px)!important;max-height:min(52vh,420px)!important;}
-      .ctrl-btn{font-size:11px;padding:8px 6px;}
-    }
-  </style>
-<script>
-(function (w) {
-  var BOOK = "oceanadventure";
-  function key(name) { return "book:" + BOOK + ":" + name; }
-  w.OceanPlayer = {
-    getUserName: function () { return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer"; },
-    getCharacter: function () { return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🤿"; },
-    getCharacterName: function () { return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Diver"; },
-    save: function (name, character, characterName) {
-      localStorage.setItem(key("userName"), name);
-      localStorage.setItem(key("userCharacter"), character);
-      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
-      localStorage.setItem("userName", name);
-      localStorage.setItem("userCharacter", character);
-      if (characterName != null) localStorage.setItem("characterName", characterName);
-    }
-  };
-})(window);
-</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Adventure - Ocean Overview</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);color:#e0f4ff;min-height:100vh;position:relative;overflow-x:hidden;}
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.18),transparent),radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.25),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;}
+@keyframes rise{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+.container{max-width:680px;margin:0 auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header,.top-bar{text-align:center;margin-bottom:16px;}
+h1{font-size:clamp(22px,5vw,30px);color:#64ffda;margin-bottom:6px;}
+.subtitle{color:#80deea;font-size:15px;line-height:1.45;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.pill{background:rgba(100,255,218,0.12);color:#80deea;font-size:11px;font-weight:bold;padding:5px 12px;border-radius:999px;border:1px solid rgba(100,255,218,0.35);}
+.segment,.block{margin-bottom:24px;}
+.segment-label,.block-label{font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;color:#80deea;margin-bottom:8px;}
+.scene-wrap{margin-bottom:10px;}
+.scene-card{position:relative;width:100%;border-radius:16px;border:2px solid rgba(100,255,218,0.35);background:#041525;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,0.35);}
+.scene-card-hero.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 160px),420px);}
+.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-placeholder{width:100%;height:100%;min-height:200px;display:flex;align-items:center;justify-content:center;color:#80deea;font-size:14px;padding:20px;text-align:center;}
+.card{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(100,255,218,0.25);}
+.card h2{color:#64ffda;font-size:18px;margin-bottom:10px;}
+.story-box{background:rgba(0,40,60,0.35);border-left:4px solid #64ffda;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.75;color:#e0f4ff;}
+.explain-box{background:rgba(100,255,218,0.08);border-left:4px solid #00bcd4;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.7;color:#cce7ff;margin-top:10px;}
+.hear-row{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(100,255,218,0.25);}
+.hear-label{display:block;font-size:12px;font-weight:bold;color:#80deea;margin-bottom:8px;}
+.speak-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.speak-chip{padding:8px 14px;border:2px solid rgba(100,255,218,0.45);border-radius:999px;background:rgba(100,255,218,0.1);color:#e0f4ff;font-family:inherit;font-size:13px;font-weight:bold;cursor:pointer;touch-action:manipulation;}
+.speak-chip:active,.speak-chip.pressed{background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;border-color:#64ffda;}
+.scroll-cue{text-align:center;color:#80deea;font-size:13px;margin:8px 0 12px;}
+.planet-game,.game-section{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:20px;padding:18px;margin:16px 0;border:1px solid rgba(100,255,218,0.35);}
+.planet-game h2,.game-section h2{color:#64ffda;font-size:19px;text-align:center;margin-bottom:8px;}
+.planet-game .game-desc,.game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:12px;line-height:1.5;}
+.game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
+.game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
+.game-canvas{position:relative;width:100%;height:min(48vh,320px);min-height:220px;background:#062035;border-radius:16px;overflow:hidden;border:2px solid rgba(100,255,218,0.35);touch-action:none;}
+.game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+.game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,0.92);text-align:center;padding:20px;z-index:5;}
+.game-overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}
+.game-overlay p{color:#cce7ff;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+.overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}
+.touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
+.touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(100,255,218,0.4);background:rgba(100,255,218,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+.nav-hint{margin-top:16px;text-align:center;font-size:12px;color:#80deea;background:rgba(128,222,234,0.1);padding:12px;border-radius:10px;line-height:1.5;}
+.competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:14px;padding:12px;margin-bottom:14px;border:1px solid rgba(100,255,218,0.25);}
+.competitor{text-align:center;flex:1;}
+.competitor-icon{font-size:36px;}
+.competitor-name{font-size:12px;color:#80deea;margin-top:4px;}
+.competitor-score{font-size:22px;font-weight:bold;color:#64ffda;}
+.vs-divider{font-size:20px;font-weight:bold;color:#ffeb3b;margin:0 8px;}
+.quiz-card{background:rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.1);display:none;}
+.quiz-card.active{display:block;}
+.question{font-size:17px;font-weight:bold;margin-bottom:14px;color:#fff;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{padding:12px 16px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.2);border-radius:12px;cursor:pointer;font-size:15px;transition:.15s;}
+.option:hover{background:rgba(255,255,255,0.1);border-color:#64ffda;}
+.option.correct{background:rgba(76,175,80,0.3);border-color:#4caf50;}
+.option.wrong{background:rgba(244,67,54,0.3);border-color:#f44336;}
+.feedback{margin-top:12px;padding:10px;border-radius:10px;font-size:14px;display:none;}
+.feedback.show{display:block;}
+.feedback.correct{background:rgba(76,175,80,0.2);color:#81c784;}
+.feedback.wrong{background:rgba(244,67,54,0.2);color:#e57373;}
+.score-card{display:none;background:linear-gradient(135deg,rgba(100,255,218,0.95),rgba(0,188,212,0.95));border-radius:24px;padding:20px;text-align:center;margin-top:16px;border:4px solid #80deea;}
+.score-card.show{display:block;}
+.score-card h2{color:#0a1628;font-size:22px;margin-bottom:12px;}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin:16px 0;}
+.podium-place{text-align:center;flex:1;max-width:110px;}
+.podium-character{font-size:32px;margin-bottom:6px;}
+.podium-bar{height:60px;border-radius:8px 8px 0 0;width:72px;margin:0 auto;background:rgba(10,22,40,0.35);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-size:13px;font-weight:bold;color:#0a1628;}
+.podium-bar.first{height:90px;background:linear-gradient(180deg,#ffd700,#daa520);}
+.podium-bar.second{height:70px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);}
+.podium-score{font-size:18px;font-weight:bold;color:#0a1628;margin-top:6px;}
+.podium-name{font-size:11px;color:#0a1628;}
+.message{margin:10px 0;font-size:15px;color:#0a1628;font-weight:bold;}
+.retry-btn,.continue-btn{padding:12px 22px;border:none;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;margin:4px;}
+.retry-btn{background:#0a1628;color:#64ffda;}
+.continue-btn{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+.panel{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;margin-bottom:16px;border:1px solid rgba(100,255,218,0.25);}
+.view-stage{position:relative;width:100%;height:min(98vw,calc(100svh - 118px));max-height:min(98vw,calc(100svh - 118px));aspect-ratio:1;margin:0 auto;border-radius:16px;overflow:hidden;background:#041525;box-shadow:inset 0 0 40px rgba(0,0,0,0.45);}
+.view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
+.view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
+.view-photo{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;}
+.view-tap-overlay{position:absolute;inset:0;cursor:pointer;}
+.ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
+.ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#0288d1,#01579b);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
+.ctrl-btn.active{background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;}
+.info-panel{margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.28);border-radius:14px;border-left:4px solid #64ffda;}
+.info-panel h2{color:#64ffda;font-size:18px;margin-bottom:8px;}
+.info-panel p{font-size:15px;line-height:1.65;color:#e0f4ff;}
+body.all-zones-page{overflow-y:auto!important;height:auto!important;}
+body.reading-page .container{height:auto!important;max-height:none!important;}
+@media(max-width:639px){.game-canvas{height:min(44vh,300px)!important;}}
+</style>
+<script src="_ocean-player.js"></script>
+<script src="_ocean-data.js"></script>
+<script src="_ocean-chapter-images.js"></script>
+<script src="_ocean-scenes.js"></script>
+<script src="_ocean-speak.js"></script>
 </head>
-<body class="all-zones-page">
+<body class="all-zones-page big-planet-page">
 <div class="bubbles"></div>
 <div class="container">
   <div class="header">
     <h1>🌊 Our Ocean</h1>
-    <div class="subtitle">Explore five ocean zones — from sunlit reefs to the hadal trenches!</div>
+    <div class="subtitle">Four painted views — depth chart, surface, sonar map, and sub porthole</div>
   </div>
-
   <div class="panel ocean-panel">
     <div class="view-stage" id="viewStage">
-      <div class="view-layer view-layer-vertical active" data-layer="vertical">
-        <canvas id="canvasVertical" aria-label="First-person view looking up from the seafloor to the surface"></canvas>
+      <div class="view-layer view-layer-vertical active" data-layer="vertical" data-slot="view-1">
+        <img class="view-photo" id="viewImg-vertical" alt="Depth Chart" decoding="async">
+        <div class="view-tap-overlay" data-view="vertical" aria-label="Tap to learn about ocean zones"></div>
       </div>
-      <div class="view-layer view-layer-surface" data-layer="surface">
-        <canvas id="canvasSurface" aria-label="Ocean surface split view"></canvas>
+      <div class="view-layer view-layer-surface" data-layer="surface" data-slot="view-2">
+        <img class="view-photo" id="viewImg-surface" alt="Surface & Depth" decoding="async">
+        <div class="view-tap-overlay" data-view="surface" aria-label="Tap to learn about ocean zones"></div>
       </div>
-      <div class="view-layer view-layer-reef" data-layer="reef">
-        <canvas id="canvasReef" aria-label="Ocean sonar depth map"></canvas>
+      <div class="view-layer view-layer-reef" data-layer="reef" data-slot="view-3">
+        <img class="view-photo" id="viewImg-reef" alt="Sonar Map" decoding="async">
+        <div class="view-tap-overlay" data-view="reef" aria-label="Tap to learn about ocean zones"></div>
       </div>
-      <div class="view-layer view-layer-deep" data-layer="deep">
-        <canvas id="canvasDeep" aria-label="Submarine porthole zone view"></canvas>
+      <div class="view-layer view-layer-deep" data-layer="deep" data-slot="view-4">
+        <img class="view-photo" id="viewImg-deep" alt="Sub Porthole" decoding="async">
+        <div class="view-tap-overlay" data-view="deep" aria-label="Tap to learn about ocean zones"></div>
       </div>
     </div>
     <div class="ctrl-row">
-      <button type="button" class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
-      <button type="button" class="ctrl-btn" id="btnSpeed">🐠 0.5×</button>
       <button type="button" class="ctrl-btn" id="btnViewMode">👁️ View1</button>
       <button type="button" class="ctrl-btn" id="btnReset">🔄 Reset</button>
     </div>
     <div class="info-panel" id="infoPanel">
-      <h2>🌊 Our Ocean</h2>
-      <p>Five depth zones from sunlight to the hadal trenches! Switch views: zone gallery, surface, sonar map, or sub porthole. Tap to learn.</p>
+      <h2>🌊 Depth Chart</h2>
+      <p>Painted ocean cross-section — five zones from sunlit reef to the hadal trench. Tap each band to learn its creatures and depth.</p>
     </div>
   </div>
-
   <p class="scroll-cue">↓ Scroll for the Zone Sort mini-game</p>
-
-  <div class="panel minigame-panel">
+  
+  <div class="planet-game">
     <h2>🌊 Zone Sort</h2>
-    <p class="game-desc">Catch zones in order ☀️ → 🌅 → 🌙 → 🕳️ → ⛰️. Golden rings = correct next zone!</p>
+    <p class="game-desc">Move ← → to catch zone icons in order ☀️ → 🌅 → 🌙 → 🕳️ → ⛰️. Avoid trash! Reach 60 points.</p>
     <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
-    <p id="ogHint" style="text-align:center;color:#80deea;font-size:12px;margin:0 0 8px;min-height:18px;line-height:1.4;"></p>
+    <p id="ogHint" style="text-align:center;color:#80deea;font-size:12px;margin:0 0 8px;min-height:18px;"></p>
     <div class="game-canvas" id="ogCanvasBox">
       <canvas id="ogCanvas"></canvas>
-      <div class="game-overlay" id="ogStart"><h3>🌊 Zone Sort</h3><p>Catch zones in order ☀️ → 🌅 → 🌙 → 🕳️ → ⛰️. Golden rings = correct next zone!</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
+      <div class="game-overlay" id="ogStart"><h3>🌊 Zone Sort</h3><p>Move ← → to catch zone icons in order ☀️ → 🌅 → 🌙 → 🕳️ → ⛰️. Avoid trash! Reach 60 points.</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
       <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
     </div>
     <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
   </div>
-
-  <div class="nav-hint">
-    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
-    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
-  </div>
-</div>
-
-<script>
-(function () {
-  const SPEEDS = [0.5, 1, 2];
-  const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
-  const LABEL_FONT = 'system-ui, "Segoe UI", Roboto, sans-serif';
-  const ZONES = [
-    { id: 'sunlight', name: 'Sunlight Zone', emoji: '☀️', top: 0, h: 0.2, c1: '#0c7a94', c2: '#065a72',
-      fact: 'Sunlight reaches all the way down! Coral reefs, dolphins, and sea turtles live here (0–200 m).' },
-    { id: 'twilight', name: 'Twilight Zone', emoji: '🌅', top: 0.2, h: 0.2, c1: '#064a66', c2: '#042f45',
-      fact: 'Dim blue light — squid, octopus, and jellyfish with big eyes hunt here (200–1,000 m).' },
-    { id: 'midnight', name: 'Midnight Zone', emoji: '🌙', top: 0.4, h: 0.2, c1: '#031f32', c2: '#021422',
-      fact: 'No sunlight! Anglerfish, sharks, and bioluminescent jellies rule the dark (1,000–4,000 m).' },
-    { id: 'abyss', name: 'Abyss Zone', emoji: '🕳️', top: 0.6, h: 0.2, c1: '#020c14', c2: '#010508',
-      fact: 'Cold abyssal plains and hydrothermal vents — strange life at 4,000–6,000 m.' },
-    { id: 'hadal', name: 'Hadal Zone', emoji: '⛰️', top: 0.8, h: 0.2, c1: '#010306', c2: '#000204',
-      fact: 'The deepest trenches on Earth — below 6,000 m. Challenger Deep in the Mariana Trench reaches ~11 km!' },
-  ];
-  const ZONE_DEPTHS = ['0–200 m', '200–1,000 m', '1,000–4,000 m', '4,000–6,000 m', '6,000 m+'];
-  const VIEW_MODES = [
-    { id: 'vertical', layer: 'vertical', label: 'Seafloor Look-Up', desc: 'First-person view from the ocean floor — lie back and watch sunlight, god rays, and sea life pass overhead. Tap the water above to learn each zone.' },
-    { id: 'surface', layer: 'surface', label: 'Surface & Depth', desc: 'Ships sail, seagulls fly, and waves roll — with all five ocean zones below the surface.' },
-    { id: 'reef', layer: 'reef', label: 'Sonar Map', desc: 'Top-down sonar scan — concentric depth rings from surface to hadal trenches. Tap a ring to learn.' },
-    { id: 'deep', layer: 'deep', label: 'Sub Porthole', desc: 'Look through a submarine window — one zone at a time, close up. Tap to peek at the next depth.' },
-  ];
-  const FLEET_TEMPLATE = [
-    { emoji: '🐠', zone: 0 }, { emoji: '🐟', zone: 0 }, { emoji: '🐢', zone: 0 }, { emoji: '🐡', zone: 0 },
-    { emoji: '🐬', zone: 0 }, { emoji: '🦭', zone: 0 }, { emoji: '🦀', zone: 0 },
-    { emoji: '🦑', zone: 1 }, { emoji: '🐙', zone: 1 }, { emoji: '🦐', zone: 1 }, { emoji: '🪼', zone: 1 },
-    { emoji: '🦈', zone: 2 }, { emoji: '🪼', zone: 2 }, { emoji: '✨', zone: 2 },
-    { emoji: '🦑', zone: 3 }, { emoji: '🐡', zone: 3 },
-    { emoji: '🐟', zone: 4 }, { emoji: '🦐', zone: 4 },
-  ];
-  const FACE_RE = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐|🦀|🪼|🧜/;
-
-  const Ocean = {
-    playing: true,
-    speedIdx: 0,
-    viewModeIdx: 0,
-    t: 0,
-    canvases: {},
-    ctxs: {},
-    info: null,
-    bubbles: [],
-    waves: [],
-    terrain: null,
-    fleet: null,
-    schools: null,
-    _fleetKey: null,
-    _schoolKey: null,
-    lookUpPhase: 0,
-    surfaceScene: null,
-    portholeIdx: 0,
-    portholeAccum: 0,
-    currentMode() { return VIEW_MODES[this.viewModeIdx] || VIEW_MODES[0]; },
-    activeLayer() { return this.currentMode().layer; },
-    speedMult() { return SPEEDS[this.speedIdx] || 1; },
-    initEffects(w, h) {
-      if (this.bubbles.length && this._fxKey === w + 'x' + h) return;
-      this._fxKey = w + 'x' + h;
-      this.bubbles = [];
-      for (let i = 0; i < 42; i++) {
-        this.bubbles.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: 1 + Math.random() * 3.5,
-          speed: 0.25 + Math.random() * 0.9,
-          wobble: Math.random() * Math.PI * 2,
-          wobbleSp: 0.004 + Math.random() * 0.008,
-          drift: (Math.random() - 0.5) * 0.35,
-        });
-      }
-      this.waves = [];
-      for (let i = 0; i < 7; i++) {
-        this.waves.push({
-          amp: 2 + Math.random() * 5,
-          freq: 0.012 + Math.random() * 0.018,
-          phase: Math.random() * Math.PI * 2,
-          speed: 0.0015 + Math.random() * 0.003,
-          yOff: i * 1.8,
-          alpha: 0.07 + Math.random() * 0.12,
-        });
-      }
-      this.terrain = {
-        rocks: Array.from({ length: 24 }, (_, i) => ({
-          x: (i / 24) * w + (Math.random() - 0.5) * 42,
-          r: 10 + (i % 6) * 9,
-          seed: i * 17 + 3,
-          moss: (i % 3) === 0,
-        })),
-        boulders: Array.from({ length: 10 }, (_, i) => ({
-          xR: 0.04 + (i / 10) * 0.92,
-          scale: 16 + (i % 5) * 11,
-          seed: i * 23 + 11,
-        })),
-        corals: Array.from({ length: 16 }, (_, i) => ({
-          x: w * (0.03 + (i / 16) * 0.94),
-          h: 18 + (i % 6) * 12,
-          type: i % 5,
-          hue: i % 6,
-        })),
-        seaFans: Array.from({ length: 10 }, (_, i) => ({
-          x: w * (0.08 + (i / 10) * 0.84),
-          h: 16 + (i % 4) * 12,
-          hue: i % 4,
-          phase: Math.random() * Math.PI * 2,
-        })),
-        kelp: Array.from({ length: 14 }, (_, i) => ({
-          x: w * (0.03 + i * 0.068),
-          len: 52 + (i % 5) * 32,
-          phase: Math.random() * Math.PI * 2,
-          strands: 2 + (i % 4),
-          bladders: i % 2 === 0,
-        })),
-        pebbles: Array.from({ length: 90 }, (_, i) => ({
-          xR: Math.random(),
-          yR: Math.random() * 0.85,
-          r: 0.8 + Math.random() * 2.8,
-          shade: Math.random(),
-        })),
-        seamounts: [
-          { xR: 0.14, wR: 0.11, hR: 0.38 },
-          { xR: 0.82, wR: 0.08, hR: 0.22 },
-        ],
-      };
-      this.surfaceScene = {
-        ship: { x: -50, dir: 1, speed: 0.42 },
-        seagulls: [
-          { xR: 0.18, yR: 0.13, dir: 1, speed: 0.48, wingPh: 0, size: 1 },
-          { xR: 0.52, yR: 0.08, dir: -1, speed: 0.4, wingPh: 1.4, size: 0.88 },
-          { xR: 0.74, yR: 0.15, dir: 1, speed: 0.34, wingPh: 2.6, size: 0.92 },
-        ],
-        clouds: [
-          { xR: 0.04, yR: 0.1, scale: 1.05, speed: 0.013, layer: 0 },
-          { xR: 0.28, yR: 0.05, scale: 1.28, speed: 0.008, layer: 1 },
-          { xR: 0.46, yR: 0.12, scale: 0.92, speed: 0.01, layer: 0 },
-        ],
-      };
-      this.backdrop = {
-        volcanoX: 0.1,
-        mermaidX: 0.74,
-        whaleTwilightX: 0.68,
-        whaleMidnightX: 0.22,
-        shipWreckX: 0.62,
-      };
-    },
-    switchLayer() {
-      const layer = this.activeLayer();
-      document.querySelectorAll('.view-layer').forEach(el => {
-        el.classList.toggle('active', el.dataset.layer === layer);
-      });
-      this.showDefaultInfo();
-      this.resizeAll();
-    },
-    resizeCanvas(id) {
-      const c = this.canvases[id];
-      const stage = document.getElementById('viewStage');
-      if (!c || !stage) return;
-      const w = stage.clientWidth;
-      const h = stage.clientHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      c.width = Math.floor(w * dpr);
-      c.height = Math.floor(h * dpr);
-      c.style.width = w + 'px';
-      c.style.height = h + 'px';
-      this.ctxs[id].setTransform(dpr, 0, 0, dpr, 0, 0);
-      this._fxKey = null;
-      this._fleetKey = null;
-      this._schoolKey = null;
-    },
-    initFleet(w) {
-      if (this.fleet && this._fleetKey === w) return;
-      this._fleetKey = w;
-      this.fleet = FLEET_TEMPLATE.map(function (t) {
-        return {
-          emoji: t.emoji,
-          zone: t.zone,
-          x: Math.random(),
-          dir: Math.random() < 0.5 ? 1 : -1,
-          speed: 0.00035 + Math.random() * 0.00055,
-          size: 0.88 + Math.random() * 0.38,
-          wobblePh: Math.random() * Math.PI * 2,
-          wobbleSp: 0.0007 + Math.random() * 0.0014,
-          yJitter: (Math.random() - 0.5) * 0.14,
-        };
-      });
-    },
-    initSchools(w) {
-      if (this.schools && this._schoolKey === w) return;
-      this._schoolKey = w;
-      this.schools = [
-        { zone: 0, count: 9, x: 0.25, yR: 0.42, dir: 1, speed: 0.00042, phase: 0, spread: 0.07 },
-        { zone: 0, count: 7, x: 0.62, yR: 0.58, dir: -1, speed: 0.00036, phase: 1.4, spread: 0.06 },
-        { zone: 1, count: 6, x: 0.48, yR: 0.5, dir: 1, speed: 0.00028, phase: 0.8, spread: 0.05 },
-      ];
-    },
-    updateFleet(w, mult) {
-      if (!this.fleet) this.initFleet(w);
-      this.fleet.forEach(function (f) {
-        f.x += f.dir * f.speed * mult;
-        if (f.x < -0.06) {
-          f.x = 1.06;
-          f.dir = Math.random() < 0.55 ? 1 : -1;
-          f.speed = 0.00035 + Math.random() * 0.00055;
-        } else if (f.x > 1.06) {
-          f.x = -0.06;
-          f.dir = Math.random() < 0.55 ? -1 : 1;
-          f.speed = 0.00035 + Math.random() * 0.00055;
-        }
-      });
-    },
-    updateSchools(mult) {
-      if (!this.schools) return;
-      var self = this;
-      this.schools.forEach(function (s) {
-        s.x += s.dir * s.speed * mult;
-        if (s.x < -0.08) { s.x = 1.08; s.dir = Math.random() < 0.6 ? 1 : -1; }
-        else if (s.x > 1.08) { s.x = -0.08; s.dir = Math.random() < 0.6 ? -1 : 1; }
-      });
-    },
-    zoneRect(zIdx, top, height) {
-      var z = ZONES[zIdx];
-      var y0 = top + z.top * height;
-      var zh = z.h * height;
-      return { y0: y0, zh: zh, cy: y0 + zh * 0.5 };
-    },
-    swimmerY(f, rect) {
-      var wob = Math.sin(this.t * f.wobbleSp + f.wobblePh) * 6;
-      return rect.cy + f.yJitter * rect.zh + wob;
-    },
-    shouldFlip(f) {
-      return FACE_RE.test(f.emoji) && f.dir > 0;
-    },
-    drawFleetInZones(ctx, w, h, top, height, baseSize, xOff, bandW) {
-      var self = this;
-      xOff = xOff || 0;
-      bandW = bandW || w;
-      if (this.playing) this.updateFleet(w, this.speedMult());
-      else if (!this.fleet) this.initFleet(w);
-      this.fleet.forEach(function (f) {
-        var rect = self.zoneRect(f.zone, top, height);
-        var wob = Math.sin(self.t * f.wobbleSp + f.wobblePh) * 6;
-        var fx = xOff + f.x * bandW;
-        var y = rect.cy + f.yJitter * rect.zh + wob;
-        var sz = (baseSize || Math.min(w, h) * 0.062) * f.size;
-        self.drawEmoji(ctx, f.emoji, fx, y, sz, self.shouldFlip(f));
-      });
-    },
-    drawEmojiFloat(ctx, emoji, x, y, size, dir, t, phase) {
-      var bob = Math.sin(t * 0.002 + (phase || 0)) * (size * 0.08);
-      var drift = Math.sin(t * 0.0012 + (phase || 0) * 2) * (size * 0.06);
-      this.drawEmoji(ctx, emoji, x + drift, y + bob, size, dir > 0 && FACE_RE.test(emoji));
-    },
-    drawSchools(ctx, w, top, height, xOff, bandW) {
-      if (!this.schools) this.initSchools(w);
-      if (this.playing) this.updateSchools(this.speedMult());
-      var self = this;
-      xOff = xOff || 0;
-      bandW = bandW || w;
-      this.schools.forEach(function (s) {
-        var rect = self.zoneRect(s.zone, top, height);
-        var baseX = xOff + s.x * bandW;
-        var baseY = rect.y0 + rect.zh * s.yR;
-        for (var i = 0; i < s.count; i++) {
-          var ox = (i - (s.count - 1) / 2) * s.spread * bandW;
-          var oy = Math.sin(self.t * 0.002 + s.phase + i * 0.7) * 5 + (i % 2) * 3;
-          var fi = i % 3;
-          var emoji = fi === 0 ? '🐟' : (fi === 1 ? '🐠' : '🐟');
-          var sz = 13 + (i % 2) * 2;
-          self.drawEmoji(ctx, emoji, baseX + ox, baseY + oy, sz, s.dir > 0);
-        }
-      });
-    },
-    drawZoneBands(ctx, w, top, height, opts) {
-      opts = opts || {};
-      var self = this;
-      var left = opts.left != null ? opts.left : 0;
-      var bandW = opts.bandW != null ? opts.bandW : w;
-      ZONES.forEach(function (z) {
-        var y0 = top + z.top * height;
-        var zh = z.h * height;
-        var g = ctx.createLinearGradient(0, y0, 0, y0 + zh);
-        g.addColorStop(0, z.c1);
-        g.addColorStop(0.55, z.c2);
-        g.addColorStop(1, z.c2);
-        ctx.fillStyle = g;
-        ctx.fillRect(left, y0, bandW, zh);
-        self.drawZoneAtmosphere(ctx, bandW, y0, zh, z.id, self.t, left);
-        if (opts.divider !== false) {
-          ctx.fillStyle = 'rgba(120,160,180,0.08)';
-          ctx.fillRect(left, y0 + zh - 1, bandW, 1);
-        }
-        if (opts.labels) {
-          ctx.fillStyle = 'rgba(210,230,240,0.88)';
-          ctx.font = '600 ' + (opts.labelSize || 11) + 'px ' + LABEL_FONT;
-          ctx.textAlign = opts.labelAlign || 'right';
-          ctx.fillText(z.name, opts.labelX != null ? opts.labelX : left + bandW - 10, y0 + zh * 0.42);
-          ctx.fillStyle = 'rgba(160,190,210,0.45)';
-          ctx.font = '500 ' + (Math.max(9, (opts.labelSize || 11) - 2)) + 'px ' + LABEL_FONT;
-          var depths = ZONE_DEPTHS;
-          ctx.fillText(depths[ZONES.indexOf(z)], opts.labelX != null ? opts.labelX : left + bandW - 10, y0 + zh * 0.58);
-        }
-      });
-    },
-    drawZoneAtmosphere(ctx, w, y0, zh, zoneId, t, offsetX) {
-      offsetX = offsetX || 0;
-      if (zoneId === 'sunlight') {
-        ctx.save();
-        ctx.globalCompositeOperation = 'soft-light';
-        ctx.globalAlpha = 0.14;
-        for (var i = 0; i < 6; i++) {
-          var cx = offsetX + (w / 6) * i + Math.sin(t * 0.0009 + i * 1.7) * 28;
-          var cy = y0 + zh * (0.15 + (i % 3) * 0.28);
-          var rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, 55 + i * 8);
-          rg.addColorStop(0, 'rgba(180,230,245,0.9)');
-          rg.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.fillStyle = rg;
-          ctx.beginPath();
-          ctx.ellipse(cx, cy, 55 + i * 8, 28, 0, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      } else if (zoneId === 'twilight') {
-        ctx.fillStyle = 'rgba(0,20,40,0.12)';
-        ctx.fillRect(offsetX, y0, w, zh);
-      } else if (zoneId === 'midnight' || zoneId === 'abyss' || zoneId === 'hadal') {
-        var vg = ctx.createLinearGradient(0, y0, 0, y0 + zh);
-        vg.addColorStop(0, 'rgba(0,0,0,0)');
-        vg.addColorStop(1, 'rgba(0,0,0,0.35)');
-        ctx.fillStyle = vg;
-        ctx.fillRect(offsetX, y0, w, zh);
-      }
-    },
-    resizeAll() {
-      ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => this.resizeCanvas(id));
-    },
-    drawEmoji(ctx, emoji, x, y, size, flipX) {
-      ctx.save();
-      ctx.globalAlpha = 1;
-      ctx.font = 'bold ' + size + 'px ' + FONT;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#fff';
-      if (flipX && FACE_RE.test(emoji)) {
-        ctx.translate(x, y);
-        ctx.scale(-1, 1);
-        ctx.fillText(emoji, 0, 0);
-      } else {
-        ctx.fillText(emoji, x, y);
-      }
-      ctx.restore();
-    },
-    drawBubbles(ctx, w, h, depthTop, depthBot) {
-      const mult = this.speedMult();
-      const top = depthTop != null ? depthTop : 0;
-      const bot = depthBot != null ? depthBot : h;
-      this.bubbles.forEach(b => {
-        b.y -= b.speed * mult;
-        b.x += b.drift + Math.sin(this.t * b.wobbleSp + b.wobble) * 0.25;
-        if (b.y < top - 10) {
-          b.y = bot + Math.random() * 30;
-          b.x = Math.random() * w;
-        }
-        if (b.x < -5) b.x = w + 5;
-        if (b.x > w + 5) b.x = -5;
-        if (b.y < top || b.y > bot) return;
-        var a = 0.06 + b.r * 0.03;
-        ctx.fillStyle = 'rgba(220,240,255,' + a + ')';
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'rgba(255,255,255,' + (a * 1.4) + ')';
-        ctx.beginPath();
-        ctx.arc(b.x - b.r * 0.25, b.y - b.r * 0.25, b.r * 0.22, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    },
-    drawWaveLine(ctx, w, baseY, t, wave, mult) {
-      ctx.beginPath();
-      ctx.moveTo(0, baseY + 24);
-      for (let x = 0; x <= w; x += 3) {
-        const y = baseY + wave.yOff
-          + Math.sin(x * wave.freq + wave.phase + t * wave.speed * mult) * wave.amp
-          + Math.sin(x * wave.freq * 2.3 + wave.phase * 1.4 + t * wave.speed * mult * 1.3) * (wave.amp * 0.45);
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.lineTo(w, baseY + 28);
-      ctx.lineTo(0, baseY + 28);
-      ctx.closePath();
-      var wg = ctx.createLinearGradient(0, baseY - 4, 0, baseY + 20);
-      wg.addColorStop(0, 'rgba(180,220,235,' + (wave.alpha * 1.8) + ')');
-      wg.addColorStop(1, 'rgba(80,130,160,' + (wave.alpha * 0.6) + ')');
-      ctx.fillStyle = wg;
-      ctx.fill();
-    },
-    drawCaustics(ctx, w, y0, zh, t, offsetX) {
-      offsetX = offsetX || 0;
-      ctx.save();
-      ctx.globalCompositeOperation = 'overlay';
-      ctx.globalAlpha = 0.22;
-      for (var ci = 0; ci < 14; ci++) {
-        var cx = offsetX + (w / 14) * ci + Math.sin(t * 0.0014 + ci * 2.1) * 18;
-        var cy = y0 + zh * (0.12 + (ci % 4) * 0.18) + Math.cos(t * 0.0011 + ci) * 8;
-        var cw = 28 + (ci % 5) * 10;
-        ctx.strokeStyle = 'rgba(180,230,255,0.55)';
-        ctx.lineWidth = 1.2;
-        ctx.beginPath();
-        for (var px = 0; px <= cw; px += 4) {
-          var py = cy + Math.sin(px * 0.22 + t * 0.002 + ci) * 5;
-          if (px === 0) ctx.moveTo(cx + px - cw * 0.5, py);
-          else ctx.lineTo(cx + px - cw * 0.5, py);
-        }
-        ctx.stroke();
-      }
-      ctx.restore();
-    },
-    drawSeamount(ctx, cx, floorY, w, h) {
-      ctx.save();
-      var g = ctx.createLinearGradient(cx, floorY - h, cx, floorY);
-      g.addColorStop(0, 'rgba(18,22,28,0.55)');
-      g.addColorStop(0.55, 'rgba(32,38,48,0.78)');
-      g.addColorStop(1, 'rgba(48,52,58,0.92)');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.moveTo(cx - w * 0.5, floorY);
-      ctx.quadraticCurveTo(cx - w * 0.38, floorY - h * 0.42, cx - w * 0.12, floorY - h * 0.88);
-      ctx.quadraticCurveTo(cx, floorY - h, cx + w * 0.14, floorY - h * 0.82);
-      ctx.quadraticCurveTo(cx + w * 0.42, floorY - h * 0.38, cx + w * 0.52, floorY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(8,10,14,0.35)';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-      ctx.restore();
-    },
-    drawMarineSnow(ctx, w, y0, zh, t, count) {
-      count = count || 18;
-      for (var i = 0; i < count; i++) {
-        var sx = (i * 73 + Math.floor(t * 0.015 + i * 11) % w) % w;
-        var sy = y0 + ((i * 41 + Math.floor(t * 0.008 + i * 7)) % (zh * 0.95));
-        ctx.fillStyle = 'rgba(200,220,235,' + (0.06 + (i % 4) * 0.04) + ')';
-        ctx.beginPath();
-        ctx.arc(sx, sy, 0.8 + (i % 3) * 0.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    },
-    drawSandBed(ctx, w, floorY, depth, zoneId) {
-      depth = depth || 48;
-      var sandTop = ['sunlight', 'twilight', 'midnight', 'abyss', 'hadal'].indexOf(zoneId || 'sunlight');
-      var sandColors = [
-        ['rgba(194,168,130,0.55)', 'rgba(142,118,88,0.88)', 'rgba(98,82,62,1)'],
-        ['rgba(120,108,92,0.4)', 'rgba(72,64,54,0.82)', 'rgba(42,38,32,1)'],
-        ['rgba(48,44,40,0.35)', 'rgba(28,26,24,0.85)', 'rgba(14,12,11,1)'],
-        ['rgba(32,28,26,0.3)', 'rgba(18,16,14,0.9)', 'rgba(8,7,6,1)'],
-        ['rgba(22,18,16,0.28)', 'rgba(10,8,7,0.92)', 'rgba(4,3,3,1)'],
-      ];
-      var pal = sandColors[Math.max(0, sandTop)] || sandColors[0];
-      var g = ctx.createLinearGradient(0, floorY - depth, 0, floorY);
-      g.addColorStop(0, 'rgba(8,14,18,0)');
-      g.addColorStop(0.25, pal[0]);
-      g.addColorStop(0.65, pal[1]);
-      g.addColorStop(1, pal[2]);
-      ctx.fillStyle = g;
-      ctx.fillRect(0, floorY - depth, w, depth);
-      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-      ctx.lineWidth = 0.8;
-      for (var ri = 0; ri < 9; ri++) {
-        ctx.beginPath();
-        var sy = floorY - 6 - ri * (depth / 10);
-        for (var x = 0; x <= w; x += 8) {
-          var y = sy + Math.sin(x * 0.028 + ri * 1.7) * (1.5 + ri * 0.3);
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      }
-      if (this.terrain && this.terrain.pebbles) {
-        this.terrain.pebbles.forEach(function (p) {
-          var px = p.xR * w;
-          var py = floorY - 4 - p.yR * depth * 0.85;
-          var sh = 0.35 + p.shade * 0.45;
-          ctx.fillStyle = 'rgba(' + Math.floor(90 + p.shade * 40) + ',' + Math.floor(80 + p.shade * 30) + ',' + Math.floor(65 + p.shade * 25) + ',' + sh + ')';
-          ctx.beginPath();
-          ctx.ellipse(px, py, p.r * 1.2, p.r * 0.75, p.shade * 2, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
-    },
-    drawSeafloor(ctx, w, floorY, depth, zoneId) {
-      this.drawSandBed(ctx, w, floorY, depth, zoneId || 'abyss');
-    },
-    drawRockFormation(ctx, cx, floorY, scale, seed, moss) {
-      ctx.save();
-      var pts = [];
-      var n = 7 + (seed % 4);
-      for (var i = 0; i < n; i++) {
-        var ang = (i / n) * Math.PI * 2 - Math.PI / 2;
-        var rad = scale * (0.5 + ((seed * 13 + i * 7) % 45) / 100);
-        pts.push({ x: cx + Math.cos(ang) * rad, y: floorY - 1 - Math.max(0, Math.sin(ang + 1)) * scale * 0.62 });
-      }
-      ctx.beginPath();
-      ctx.moveTo(pts[0].x, pts[0].y);
-      for (var j = 1; j < pts.length; j++) ctx.lineTo(pts[j].x, pts[j].y);
-      ctx.closePath();
-      var rg = ctx.createLinearGradient(cx - scale * 0.3, floorY - scale, cx + scale * 0.2, floorY);
-      rg.addColorStop(0, 'rgba(88,78,68,0.92)');
-      rg.addColorStop(0.45, 'rgba(58,50,44,0.95)');
-      rg.addColorStop(1, 'rgba(32,28,24,1)');
-      ctx.fillStyle = rg;
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(20,16,14,0.35)';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(110,98,85,0.28)';
-      ctx.beginPath();
-      ctx.ellipse(cx - scale * 0.18, floorY - scale * 0.48, scale * 0.38, scale * 0.16, -0.35, 0, Math.PI * 2);
-      ctx.fill();
-      if (moss) {
-        ctx.fillStyle = 'rgba(38,62,48,0.35)';
-        ctx.beginPath();
-        ctx.ellipse(cx + scale * 0.1, floorY - scale * 0.35, scale * 0.42, scale * 0.14, 0.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      var s2 = scale * (0.35 + (seed % 5) * 0.06);
-      ctx.fillStyle = 'rgba(48,42,38,0.85)';
-      ctx.beginPath();
-      ctx.ellipse(cx + scale * 0.55, floorY - s2 * 0.25, s2 * 0.55, s2 * 0.32, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    },
-    drawBoulderCluster(ctx, cx, floorY, scale, seed) {
-      for (var b = 0; b < 3; b++) {
-        var bx = cx + (b - 1) * scale * 0.55;
-        this.drawRockFormation(ctx, bx, floorY, scale * (0.65 + b * 0.15), seed + b * 9, b === 0);
-      }
-    },
-    drawTerrainRocks(ctx, w, h, floorY, count) {
-      const floor = floorY != null ? floorY : h - 8;
-      if (!this.terrain || !this.terrain.rocks) return;
-      var rocks = this.terrain.rocks;
-      for (let i = 0; i < count; i++) {
-        var r = rocks[i % rocks.length];
-        var x = (w / count) * i + ((r.seed * 3) % 28) + 8;
-        this.drawRockFormation(ctx, x, floor, r.r, r.seed + i, r.moss);
-      }
-      if (this.terrain.boulders) {
-        var self = this;
-        this.terrain.boulders.slice(0, Math.ceil(count / 3)).forEach(function (b, i) {
-          self.drawBoulderCluster(ctx, b.xR * w + (i % 2) * 12, floor, b.scale, b.seed);
-        });
-      }
-    },
-    drawSeaFan(ctx, x, y, h, hue, t, phase) {
-      var colors = ['rgba(148,98,112,0.7)', 'rgba(118,102,128,0.65)', 'rgba(168,118,98,0.68)', 'rgba(102,118,108,0.62)'];
-      ctx.strokeStyle = colors[hue % colors.length];
-      ctx.lineCap = 'round';
-      for (var i = -4; i <= 4; i++) {
-        var sway = Math.sin(t * 0.0011 + phase + i * 0.4) * 4;
-        ctx.lineWidth = 1.1 + Math.abs(i) * 0.08;
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.quadraticCurveTo(x + i * 3.5 + sway, y - h * 0.55, x + i * 6.5 + sway * 1.3, y - h);
-        ctx.stroke();
-      }
-    },
-    drawBrainCoral(ctx, x, y, r, hue) {
-      var cols = ['rgba(168,112,98,0.72)', 'rgba(142,128,108,0.68)', 'rgba(128,108,118,0.65)'];
-      ctx.fillStyle = cols[hue % cols.length];
-      for (var i = 0; i < 6; i++) {
-        var a = (i / 6) * Math.PI * 2;
-        ctx.beginPath();
-        ctx.arc(x + Math.cos(a) * r * 0.35, y - r * 0.2 + Math.sin(a) * r * 0.2, r * 0.28, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.beginPath();
-      ctx.arc(x, y - r * 0.15, r * 0.45, 0, Math.PI * 2);
-      ctx.fill();
-    },
-    drawTableCoral(ctx, x, y, cw, ch, hue) {
-      var cols = ['rgba(138,108,92,0.75)', 'rgba(108,128,118,0.7)', 'rgba(158,118,102,0.72)'];
-      ctx.fillStyle = cols[hue % cols.length];
-      ctx.beginPath();
-      ctx.ellipse(x, y - ch * 0.15, cw, ch * 0.35, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(80,68,58,0.5)';
-      ctx.fillRect(x - 2, y - 2, 4, ch * 0.2);
-    },
-    drawCoralBranch(ctx, x, y, len, angle, depth, hue) {
-      if (depth > 5) return;
-      var colors = ['rgba(138,108,92,0.78)', 'rgba(108,128,118,0.74)', 'rgba(158,118,102,0.76)', 'rgba(118,98,108,0.72)', 'rgba(128,118,98,0.73)'];
-      ctx.strokeStyle = colors[hue % colors.length];
-      ctx.lineWidth = Math.max(1, 3.4 - depth * 0.55);
-      ctx.lineCap = 'round';
-      var ex = x + Math.cos(angle) * len;
-      var ey = y + Math.sin(angle) * len;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(ex, ey);
-      ctx.stroke();
-      this.drawCoralBranch(ctx, ex, ey, len * 0.67, angle - 0.42, depth + 1, hue);
-      this.drawCoralBranch(ctx, ex, ey, len * 0.61, angle + 0.48, depth + 1, hue + 1);
-    },
-    drawCoral(ctx, x, y, height, type, hue) {
-      hue = hue != null ? hue : type;
-      if (type === 0 || type === 2) {
-        this.drawCoralBranch(ctx, x, y, height * 0.48, -Math.PI / 2, 0, hue);
-      } else if (type === 1) {
-        this.drawTableCoral(ctx, x, y, height * 0.35, height * 0.55, hue);
-      } else if (type === 3) {
-        this.drawBrainCoral(ctx, x, y - height * 0.15, height * 0.22, hue);
-      } else {
-        this.drawSeaFan(ctx, x, y, height * 0.85, hue, this.t, 0);
-      }
-    },
-    drawKelp(ctx, x, base, len, t, phase, strands, bladders) {
-      strands = strands || 1;
-      for (var s = 0; s < strands; s++) {
-        var ox = (s - (strands - 1) / 2) * 6;
-        var taper = 2.4 - s * 0.25;
-        ctx.strokeStyle = 'rgba(22,48,36,0.78)';
-        ctx.lineWidth = taper;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(x + ox, base);
-        for (let i = 1; i <= 10; i++) {
-          const py = base - (len / 10) * i;
-          const px = x + ox + Math.sin(t * 0.0012 + phase + i * 0.5 + s) * (3 + i * 0.9);
-          ctx.lineTo(px, py);
-          if (bladders && i % 3 === 0 && i < 9) {
-            ctx.stroke();
-            ctx.fillStyle = 'rgba(48,72,52,0.45)';
-            ctx.beginPath();
-            ctx.ellipse(px, py, 3.5, 2, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.moveTo(px, py);
-          }
-        }
-        ctx.stroke();
-        ctx.strokeStyle = 'rgba(52,88,62,0.32)';
-        ctx.lineWidth = 0.9;
-        for (let i = 2; i <= 8; i += 2) {
-          const py = base - (len / 10) * i;
-          const px = x + ox + Math.sin(t * 0.0012 + phase + i * 0.5 + s) * (3 + i * 0.9);
-          ctx.beginPath();
-          ctx.moveTo(px, py);
-          ctx.lineTo(px + 8, py - 5);
-          ctx.stroke();
-        }
-      }
-    },
-    drawHydrothermalVent(ctx, x, floorY, t) {
-      ctx.fillStyle = 'rgba(38,32,28,0.9)';
-      ctx.beginPath();
-      ctx.moveTo(x - 8, floorY);
-      ctx.lineTo(x - 4, floorY - 22);
-      ctx.lineTo(x + 4, floorY - 22);
-      ctx.lineTo(x + 8, floorY);
-      ctx.fill();
-      var plume = 0.12 + Math.sin(t * 0.0025) * 0.06;
-      var pg = ctx.createLinearGradient(x, floorY - 24, x, floorY - 55);
-      pg.addColorStop(0, 'rgba(180,200,210,' + plume + ')');
-      pg.addColorStop(1, 'rgba(80,120,140,0)');
-      ctx.fillStyle = pg;
-      ctx.beginPath();
-      ctx.moveTo(x - 6, floorY - 22);
-      ctx.quadraticCurveTo(x - 10 + Math.sin(t * 0.003) * 4, floorY - 40, x - 2, floorY - 58);
-      ctx.quadraticCurveTo(x + 4, floorY - 42, x + 6, floorY - 22);
-      ctx.fill();
-    },
-    drawZoneTerrain(ctx, w, top, height, xOff, bandW) {
-      if (!this.terrain) return;
-      var self = this;
-      xOff = xOff != null ? xOff : 0;
-      bandW = bandW != null ? bandW : w;
-      var mapX = function (xr) { return xOff + (xr / w) * bandW; };
-      ZONES.forEach(function (z) {
-        var y0 = top + z.top * height;
-        var zh = z.h * height;
-        var floorY = y0 + zh;
-        var sandH = zh * (z.id === 'sunlight' ? 0.38 : z.id === 'twilight' ? 0.28 : 0.32);
-        ctx.save();
-        ctx.translate(xOff, 0);
-        self.drawSandBed(ctx, bandW, floorY, sandH, z.id);
-        if (z.id === 'sunlight') {
-          self.drawTerrainRocks(ctx, bandW, floorY, floorY, 16);
-          self.drawCaustics(ctx, bandW, y0, zh, self.t, 0);
-          self.terrain.corals.forEach(function (c) {
-            self.drawCoral(ctx, mapX(c.x), floorY - 3, c.h, c.type, c.hue);
-          });
-          self.terrain.seaFans.forEach(function (f) {
-            self.drawSeaFan(ctx, mapX(f.x), floorY - 2, f.h, f.hue, self.t, f.phase);
-          });
-          self.terrain.kelp.forEach(function (k) {
-            self.drawKelp(ctx, mapX(k.x), floorY - 2, k.len * 0.82, self.t, k.phase, k.strands, k.bladders);
-          });
-        } else if (z.id === 'twilight') {
-          self.drawTerrainRocks(ctx, bandW, floorY, floorY, 10);
-          if (self.terrain.seamounts[1]) {
-            var sm1 = self.terrain.seamounts[1];
-            self.drawSeamount(ctx, sm1.xR * bandW, floorY, bandW * sm1.wR, zh * sm1.hR);
-          }
-          self.terrain.corals.slice(0, 6).forEach(function (c) {
-            self.drawCoral(ctx, mapX(c.x), floorY - 2, c.h * 0.65, c.type, c.hue);
-          });
-          self.terrain.seaFans.slice(0, 4).forEach(function (f) {
-            self.drawSeaFan(ctx, mapX(f.x), floorY - 1, f.h * 0.7, f.hue, self.t, f.phase);
-          });
-        } else if (z.id === 'midnight') {
-          self.drawTerrainRocks(ctx, bandW, floorY, floorY, 7);
-          self.drawMarineSnow(ctx, bandW, y0, zh, self.t, 14);
-          self.terrain.boulders.slice(0, 3).forEach(function (b, i) {
-            self.drawBoulderCluster(ctx, b.xR * bandW, floorY, b.scale * 0.75, b.seed + i);
-          });
-        } else if (z.id === 'abyss') {
-          self.drawTerrainRocks(ctx, bandW, floorY, floorY, 12);
-          self.drawMarineSnow(ctx, bandW, y0, zh, self.t, 22);
-          self.terrain.boulders.slice(0, 5).forEach(function (b, i) {
-            self.drawBoulderCluster(ctx, b.xR * bandW + i * 5, floorY, b.scale * 0.9, b.seed);
-          });
-          self.drawHydrothermalVent(ctx, bandW * 0.22, floorY, self.t);
-        } else if (z.id === 'hadal') {
-          self.drawHadalTrench(ctx, bandW * 0.5, floorY, bandW * 0.58, zh * 0.52);
-          self.drawMarineSnow(ctx, bandW, y0, zh, self.t, 16);
-          self.drawTerrainRocks(ctx, bandW, floorY, floorY, 5);
-        }
-        ctx.restore();
-      });
-    },
-    drawRealisticCloud(ctx, cx, cy, scale, alpha) {
-      ctx.save();
-      ctx.globalAlpha = alpha != null ? alpha : 0.88;
-      var puffs = [
-        { dx: 0, dy: 0, r: 26, shade: 0 }, { dx: -24, dy: 6, r: 18, shade: 1 }, { dx: 24, dy: 8, r: 20, shade: 1 },
-        { dx: 46, dy: 4, r: 16, shade: 2 }, { dx: -42, dy: 10, r: 14, shade: 2 }, { dx: 14, dy: -8, r: 15, shade: 0 },
-      ];
-      puffs.forEach(function (p) {
-        var px = cx + p.dx * scale;
-        var py = cy + p.dy * scale;
-        var pr = p.r * scale;
-        var g = ctx.createRadialGradient(px, py - pr * 0.15, 0, px, py, pr);
-        g.addColorStop(0, 'rgba(248,250,255,0.96)');
-        g.addColorStop(0.5, 'rgba(220,228,238,0.82)');
-        g.addColorStop(1, 'rgba(180,190,205,0)');
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(px, py, pr, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      ctx.fillStyle = 'rgba(140,155,175,0.18)';
-      ctx.beginPath();
-      ctx.ellipse(cx, cy + 8 * scale, 52 * scale, 10 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    },
-    drawSun(ctx, x, y, r) {
-      var glow = ctx.createRadialGradient(x, y, r * 0.15, x, y, r * 3.5);
-      glow.addColorStop(0, 'rgba(255,248,220,0.75)');
-      glow.addColorStop(0.25, 'rgba(255,230,160,0.28)');
-      glow.addColorStop(1, 'rgba(255,200,100,0)');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(x, y, r * 3.5, 0, Math.PI * 2);
-      ctx.fill();
-      var disc = ctx.createRadialGradient(x - r * 0.15, y - r * 0.15, 0, x, y, r);
-      disc.addColorStop(0, 'rgba(255,252,240,0.98)');
-      disc.addColorStop(0.7, 'rgba(255,236,180,0.92)');
-      disc.addColorStop(1, 'rgba(255,210,120,0.85)');
-      ctx.fillStyle = disc;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-    },
-    drawSeagull(ctx, x, y, wingT, dir, size) {
-      size = size || 1;
-      ctx.save();
-      ctx.translate(x, y);
-      if (dir < 0) ctx.scale(-1, 1);
-      ctx.scale(size, size);
-      var flap = Math.sin(wingT) * 5;
-      ctx.strokeStyle = 'rgba(40,45,52,0.82)';
-      ctx.lineWidth = 1.6;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(-10, flap * 0.2);
-      ctx.quadraticCurveTo(-5, -7 - flap, 0, 0);
-      ctx.quadraticCurveTo(5, -7 - flap, 10, flap * 0.2);
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(55,58,62,0.75)';
-      ctx.beginPath();
-      ctx.ellipse(0, 1, 2.2, 1.2, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    },
-    drawSurfaceShip(ctx, x, y, dir) {
-      ctx.save();
-      ctx.translate(x, y);
-      if (dir < 0) ctx.scale(-1, 1);
-      ctx.fillStyle = 'rgba(28,32,38,0.92)';
-      ctx.beginPath();
-      ctx.moveTo(-34, 0);
-      ctx.lineTo(-30, 8);
-      ctx.lineTo(32, 8);
-      ctx.lineTo(36, 0);
-      ctx.lineTo(28, -2);
-      ctx.lineTo(-28, -2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = 'rgba(42,48,54,0.88)';
-      ctx.fillRect(-18, -12, 28, 10);
-      ctx.fillRect(4, -16, 14, 14);
-      ctx.fillStyle = 'rgba(18,22,28,0.5)';
-      ctx.fillRect(-14, -10, 8, 6);
-      ctx.fillRect(8, -14, 6, 8);
-      ctx.strokeStyle = 'rgba(12,14,18,0.6)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(10, -16);
-      ctx.lineTo(10, -26);
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(55,60,68,0.35)';
-      ctx.fillRect(10, -26, 1, 8);
-      ctx.restore();
-    },
-    drawVolcano(ctx, x, baseY, peakH, t, underwater) {
-      ctx.save();
-      var strata = underwater
-        ? ['rgba(18,16,14,0.55)', 'rgba(28,24,20,0.5)', 'rgba(22,20,18,0.52)']
-        : ['rgba(42,36,32,0.88)', 'rgba(58,48,42,0.85)', 'rgba(48,40,36,0.86)', 'rgba(36,30,26,0.9)'];
-      strata.forEach(function (col, i) {
-        var lift = i * peakH * 0.14;
-        ctx.fillStyle = col;
-        ctx.beginPath();
-        ctx.moveTo(x - 58 + i * 4, baseY);
-        ctx.lineTo(x - 12 + i * 2, baseY - peakH * 0.48 - lift);
-        ctx.lineTo(x + 2, baseY - peakH - lift * 0.5);
-        ctx.lineTo(x + 14 - i, baseY - peakH * 0.46 - lift);
-        ctx.lineTo(x + 54 - i * 4, baseY);
-        ctx.closePath();
-        ctx.fill();
-      });
-      if (!underwater) {
-        var smokeA = 0.14 + Math.sin(t * 0.0018) * 0.05;
-        ctx.fillStyle = 'rgba(160,168,178,' + smokeA + ')';
-        ctx.beginPath();
-        ctx.ellipse(x - 2, baseY - peakH - 14, 18 + Math.sin(t * 0.0025) * 4, 11, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(x + 8, baseY - peakH - 26, 22, 13, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'rgba(90,48,32,0.25)';
-        ctx.beginPath();
-        ctx.ellipse(x, baseY - peakH + 2, 7, 3, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    },
-    drawSunkenShip(ctx, x, y, size) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(-0.32);
-      ctx.globalAlpha = 0.9;
-      var hull = ctx.createLinearGradient(-size * 0.5, 0, size * 0.5, 0);
-      hull.addColorStop(0, 'rgba(18,14,12,0.96)');
-      hull.addColorStop(0.45, 'rgba(42,34,28,0.92)');
-      hull.addColorStop(1, 'rgba(14,10,8,0.96)');
-      ctx.fillStyle = hull;
-      ctx.beginPath();
-      ctx.moveTo(-size * 0.55, size * 0.04);
-      ctx.lineTo(-size * 0.44, size * 0.2);
-      ctx.lineTo(size * 0.42, size * 0.18);
-      ctx.lineTo(size * 0.52, size * 0.02);
-      ctx.lineTo(size * 0.18, -size * 0.06);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(8,6,4,0.75)';
-      ctx.lineWidth = 1.1;
-      for (var i = 0; i < 4; i++) {
-        ctx.beginPath();
-        ctx.moveTo(-size * 0.36 + i * size * 0.17, size * 0.02);
-        ctx.lineTo(-size * 0.33 + i * size * 0.17, -size * 0.14);
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.moveTo(-size * 0.06, -size * 0.08);
-      ctx.lineTo(-size * 0.02, -size * 0.62);
-      ctx.lineTo(size * 0.04, -size * 0.58);
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(28,32,24,0.55)';
-      ctx.fillRect(size * 0.08, -size * 0.52, size * 0.04, size * 0.28);
-      ctx.fillStyle = 'rgba(52,68,42,0.42)';
-      ctx.beginPath();
-      ctx.ellipse(-size * 0.18, size * 0.1, size * 0.12, size * 0.05, -0.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.ellipse(size * 0.22, size * 0.08, size * 0.08, size * 0.04, 0.3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(38,44,36,0.35)';
-      ctx.beginPath();
-      ctx.arc(size * 0.14, size * 0.08, size * 0.07, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    },
-    drawHadalTrench(ctx, cx, floorY, w, h) {
-      ctx.save();
-      var g = ctx.createLinearGradient(cx - w * 0.5, floorY - h, cx + w * 0.5, floorY);
-      g.addColorStop(0, 'rgba(2,4,8,0.95)');
-      g.addColorStop(0.4, 'rgba(6,8,12,0.88)');
-      g.addColorStop(1, 'rgba(12,14,18,0.92)');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.moveTo(cx - w * 0.52, floorY);
-      ctx.lineTo(cx - w * 0.18, floorY - h * 0.92);
-      ctx.lineTo(cx, floorY - h);
-      ctx.lineTo(cx + w * 0.18, floorY - h * 0.92);
-      ctx.lineTo(cx + w * 0.52, floorY);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(20,24,30,0.45)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.restore();
-    },
-    drawSnailfish(ctx, x, y, size, t) {
-      ctx.save();
-      ctx.translate(x, y);
-      var wob = Math.sin(t * 0.0025) * 2;
-      ctx.fillStyle = 'rgba(198,168,178,0.72)';
-      ctx.beginPath();
-      ctx.ellipse(wob, 0, size * 0.55, size * 0.28, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(168,138,148,0.55)';
-      ctx.beginPath();
-      ctx.moveTo(-size * 0.5 + wob, 0);
-      ctx.lineTo(-size * 0.62 + wob, -size * 0.08);
-      ctx.lineTo(-size * 0.58 + wob, size * 0.08);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = 'rgba(220,200,210,0.45)';
-      ctx.beginPath();
-      ctx.arc(-size * 0.15 + wob, -size * 0.06, size * 0.06, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    },
-    drawAnchorSilhouette(ctx, x, floorY, size) {
-      ctx.save();
-      ctx.translate(x, floorY);
-      ctx.strokeStyle = 'rgba(42,38,34,0.65)';
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(0, -size * 0.85);
-      ctx.lineTo(0, -size * 0.15);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(0, -size * 0.08, size * 0.12, Math.PI, 0);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(-size * 0.22, -size * 0.02);
-      ctx.lineTo(-size * 0.14, size * 0.08);
-      ctx.lineTo(0, -size * 0.02);
-      ctx.lineTo(size * 0.14, size * 0.08);
-      ctx.lineTo(size * 0.22, -size * 0.02);
-      ctx.stroke();
-      ctx.restore();
-    },
-    drawCutawayWall(ctx, x, top, height, side) {
-      var layers = [
-        'rgba(32,28,24,0.92)', 'rgba(42,36,30,0.88)', 'rgba(28,24,20,0.9)',
-        'rgba(38,32,28,0.86)', 'rgba(24,20,18,0.94)',
-      ];
-      var bandH = height / layers.length;
-      layers.forEach(function (col, i) {
-        ctx.fillStyle = col;
-        var y0 = top + i * bandH;
-        ctx.beginPath();
-        if (side === 'left') {
-          ctx.moveTo(0, y0);
-          ctx.lineTo(x + 10, y0 + bandH * 0.08);
-          ctx.lineTo(x, y0 + bandH);
-          ctx.lineTo(0, y0 + bandH);
-        } else {
-          ctx.moveTo(x, y0 + bandH * 0.08);
-          ctx.lineTo(x + 10, y0);
-          ctx.lineTo(x + 10, y0 + bandH);
-          ctx.lineTo(x, y0 + bandH);
-        }
-        ctx.closePath();
-        ctx.fill();
-      });
-    },
-    updateSurfaceScene(w, horizon, mult) {
-      if (!this.surfaceScene) return;
-      var sc = this.surfaceScene;
-      if (!this.playing) return;
-      sc.ship.x += sc.ship.dir * sc.ship.speed * mult;
-      if (sc.ship.x > w + 70) {
-        sc.ship.x = -70;
-        sc.ship.dir = Math.random() < 0.7 ? 1 : -1;
-        sc.ship.speed = 0.32 + Math.random() * 0.28;
-      } else if (sc.ship.x < -70) {
-        sc.ship.x = w + 70;
-        sc.ship.dir = Math.random() < 0.7 ? -1 : 1;
-        sc.ship.speed = 0.32 + Math.random() * 0.28;
-      }
-      sc.seagulls.forEach(function (g) {
-        g.xR += (g.dir * g.speed * mult) / w;
-        if (g.xR > 1.12) g.xR = -0.08;
-        if (g.xR < -0.1) g.xR = 1.08;
-      });
-      sc.clouds.forEach(function (c) {
-        c.xR += (c.speed * mult) / w;
-        if (c.xR > 1.15) c.xR = -0.3;
-      });
-    },
-    drawZoneBackdrops(ctx, w, top, height, opts) {
-      opts = opts || {};
-      var self = this;
-      var left = opts.left != null ? opts.left : 0;
-      var bandW = opts.bandW != null ? opts.bandW : w;
-      var bd = this.backdrop || { volcanoX: 0.1, mermaidX: 0.74, whaleTwilightX: 0.68, whaleMidnightX: 0.22, shipWreckX: 0.62 };
-      ZONES.forEach(function (z) {
-        var y0 = top + z.top * height;
-        var zh = z.h * height;
-        if (z.id === 'sunlight' && opts.volcano !== false) {
-          self.drawVolcano(ctx, left + bandW * bd.volcanoX, y0 + zh * 0.94, zh * 0.62, self.t, true);
-          self.drawEmojiFloat(ctx, '🧜‍♀️', left + bandW * bd.mermaidX, y0 + zh * 0.52, Math.min(bandW, height) * 0.11, 1, self.t, 0);
-        }
-        if (z.id === 'twilight') {
-          self.drawEmojiFloat(ctx, '🐋', left + bandW * bd.whaleTwilightX, y0 + zh * 0.52, Math.min(bandW, height) * 0.13, -1, self.t, 1);
-        }
-        if (z.id === 'midnight') {
-          self.drawEmojiFloat(ctx, '🐋', left + bandW * bd.whaleMidnightX, y0 + zh * 0.5, Math.min(bandW, height) * 0.14, 1, self.t, 2);
-        }
-        if (z.id === 'abyss') {
-          self.drawSunkenShip(ctx, left + bandW * bd.shipWreckX, y0 + zh * 0.68, Math.min(bandW, height) * 0.24);
-        }
-        if (z.id === 'hadal') {
-          self.drawHadalTrench(ctx, left + bandW * 0.5, y0 + zh, bandW * 0.55, zh * 0.48);
-          self.drawSnailfish(ctx, left + bandW * 0.38, y0 + zh * 0.55, Math.min(bandW, height) * 0.028, self.t);
-        }
-      });
-    },
-    drawSurfaceSky(ctx, w, horizon, mult) {
-      var self = this;
-      var sky = ctx.createLinearGradient(0, 0, 0, horizon);
-      sky.addColorStop(0, '#1a4a72');
-      sky.addColorStop(0.45, '#3a7198');
-      sky.addColorStop(0.82, '#7aa8c4');
-      sky.addColorStop(1, '#b8ced8');
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, w, horizon);
-      var haze = ctx.createLinearGradient(0, horizon * 0.5, 0, horizon);
-      haze.addColorStop(0, 'rgba(255,255,255,0)');
-      haze.addColorStop(1, 'rgba(220,230,238,0.35)');
-      ctx.fillStyle = haze;
-      ctx.fillRect(0, 0, w, horizon);
-      var sunX = w * 0.86;
-      var sunY = horizon * 0.32;
-      var sunR = Math.min(w, horizon) * 0.065;
-      this.drawSun(ctx, sunX, sunY, sunR);
-      if (this.surfaceScene) {
-        this.updateSurfaceScene(w, horizon, mult);
-        this.surfaceScene.clouds.forEach(function (c) {
-          var cx = c.xR * w;
-          if (cx > w * 0.72) return;
-          var cy = c.yR * horizon;
-          var alpha = c.layer ? 0.72 : 0.86;
-          self.drawRealisticCloud(ctx, cx, cy, c.scale, alpha);
-        });
-        this.surfaceScene.seagulls.forEach(function (g) {
-          var gx = g.xR * w;
-          var gy = g.yR * horizon;
-          if (gx > sunX - sunR * 2.5) return;
-          self.drawSeagull(ctx, gx, gy, self.t * 0.012 + g.wingPh, g.dir, g.size);
-        });
-      }
-      var volX = w * (this.backdrop ? this.backdrop.volcanoX : 0.1);
-      this.drawVolcano(ctx, volX, horizon + 2, horizon * 0.72, this.t, false);
-    },
-    zoneLayout(w, h) {
-      var layer = this.activeLayer();
-      if (layer === 'surface') {
-        var horizon = h * 0.28;
-        return { top: horizon, height: h - horizon, labelX: w - 10, labelSize: 11, left: 0, width: w };
-      }
-      if (layer === 'vertical') {
-        return { top: 0, height: h, left: 0, width: w, labelX: w - 10, labelSize: 10 };
-      }
-      return { top: 0, height: h, labelX: w - 10, labelSize: 13, left: 0, width: w };
-    },
-    drawSubmarine(ctx, x, y, scale, facing) {
-      scale = scale || 1;
-      var t = this.t;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(scale, scale);
-      if (facing < 0) ctx.scale(-1, 1);
-      var hullG = ctx.createLinearGradient(0, -14, 0, 14);
-      hullG.addColorStop(0, 'rgba(58,68,78,0.98)');
-      hullG.addColorStop(0.35, 'rgba(88,98,108,0.96)');
-      hullG.addColorStop(0.65, 'rgba(72,82,92,0.96)');
-      hullG.addColorStop(1, 'rgba(38,44,52,0.98)');
-      ctx.fillStyle = hullG;
-      ctx.beginPath();
-      ctx.moveTo(-28, 0);
-      ctx.quadraticCurveTo(-26, -12, -8, -12);
-      ctx.lineTo(18, -12);
-      ctx.quadraticCurveTo(28, -10, 28, 0);
-      ctx.quadraticCurveTo(28, 10, 18, 12);
-      ctx.lineTo(-8, 12);
-      ctx.quadraticCurveTo(-26, 12, -28, 0);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(18,22,28,0.55)';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(120,130,140,0.18)';
-      ctx.lineWidth = 0.5;
-      for (var pl = 0; pl < 4; pl++) {
-        var py = -8 + pl * 5;
-        ctx.beginPath();
-        ctx.moveTo(-18, py);
-        ctx.lineTo(20, py);
-        ctx.stroke();
-      }
-      var sailG = ctx.createLinearGradient(-10, -28, 10, -14);
-      sailG.addColorStop(0, 'rgba(48,56,64,0.96)');
-      sailG.addColorStop(1, 'rgba(68,78,88,0.94)');
-      ctx.fillStyle = sailG;
-      ctx.beginPath();
-      ctx.moveTo(-10, -14);
-      ctx.lineTo(-8, -28);
-      ctx.lineTo(8, -28);
-      ctx.lineTo(10, -14);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(20,24,30,0.6)';
-      ctx.lineWidth = 0.7;
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(140,200,230,0.42)';
-      ctx.fillRect(-5, -24, 10, 5);
-      ctx.strokeStyle = 'rgba(80,120,150,0.55)';
-      ctx.strokeRect(-5, -24, 10, 5);
-      ctx.fillStyle = 'rgba(100,180,220,0.28)';
-      ctx.fillRect(-4, -23, 3, 3);
-      for (var pi = 0; pi < 4; pi++) {
-        var px = -12 + pi * 8;
-        ctx.fillStyle = 'rgba(28,36,44,0.85)';
-        ctx.beginPath();
-        ctx.arc(px, 1, 3.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'rgba(120,190,220,0.38)';
-        ctx.beginPath();
-        ctx.arc(px - 0.8, 0.2, 1.8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(60,90,110,0.5)';
-        ctx.lineWidth = 0.6;
-        ctx.stroke();
-      }
-      ctx.fillStyle = 'rgba(255,240,200,0.92)';
-      ctx.beginPath();
-      ctx.arc(24, -2, 2.8, 0, Math.PI * 2);
-      ctx.fill();
-      var cone = ctx.createRadialGradient(26, -2, 0, 40, -2, 18);
-      cone.addColorStop(0, 'rgba(255,250,220,0.35)');
-      cone.addColorStop(1, 'rgba(255,250,220,0)');
-      ctx.fillStyle = cone;
-      ctx.beginPath();
-      ctx.moveTo(26, -2);
-      ctx.lineTo(48, -10);
-      ctx.lineTo(48, 6);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = 'rgba(52,60,68,0.9)';
-      ctx.beginPath();
-      ctx.moveTo(16, -12);
-      ctx.lineTo(22, -16);
-      ctx.lineTo(22, 16);
-      ctx.lineTo(16, 12);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(18,22,28,0.85)';
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(-22, 8);
-      ctx.lineTo(-32, 14);
-      ctx.moveTo(14, 10);
-      ctx.lineTo(24, 16);
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(42,48,56,0.88)';
-      ctx.beginPath();
-      ctx.moveTo(20, 10);
-      ctx.lineTo(26, 14);
-      ctx.lineTo(20, 12);
-      ctx.closePath();
-      ctx.fill();
-      var propA = t * 0.022;
-      ctx.strokeStyle = 'rgba(70,78,86,0.85)';
-      ctx.lineWidth = 1.4;
-      ctx.lineCap = 'round';
-      for (var bl = 0; bl < 4; bl++) {
-        var ba = propA + (bl / 4) * Math.PI * 2;
-        ctx.beginPath();
-        ctx.moveTo(-30, 0);
-        ctx.lineTo(-30 + Math.cos(ba) * 8, Math.sin(ba) * 8);
-        ctx.stroke();
-      }
-      ctx.fillStyle = 'rgba(55,62,70,0.9)';
-      ctx.beginPath();
-      ctx.arc(-30, 0, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(100,255,218,0.15)';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 26, 13, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    },
-    drawSubmarineSilhouette(ctx, x, y, scale, facing) {
-      this.drawSubmarine(ctx, x, y, scale, facing);
-    },
-    drawDepthGauge(ctx, x, w, h, t) {
-      ctx.fillStyle = 'rgba(4,10,16,0.88)';
-      ctx.fillRect(x, 0, w, h);
-      ctx.strokeStyle = 'rgba(80,120,140,0.45)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x + 4, 8, w - 8, h - 16);
-      var depths = [
-        { m: '0 m', r: 0 }, { m: '200 m', r: 0.25 }, { m: '1 km', r: 0.5 }, { m: '4 km', r: 0.75 }, { m: '∞', r: 1 },
-      ];
-      ctx.font = '500 9px ' + LABEL_FONT;
-      ctx.fillStyle = 'rgba(160,200,220,0.75)';
-      ctx.textAlign = 'left';
-      depths.forEach(function (d) {
-        var gy = 12 + d.r * (h - 24);
-        ctx.fillRect(x + 8, gy, w - 22, 1);
-        ctx.fillText(d.m, x + 10, gy - 3);
-      });
-      var subMarker = 12 + (0.5 + 0.46 * Math.sin(this.lookUpPhase * 2)) * (h - 24);
-      ctx.fillStyle = 'rgba(100,255,218,0.9)';
-      ctx.beginPath();
-      ctx.moveTo(x + w - 10, subMarker);
-      ctx.lineTo(x + w - 18, subMarker - 5);
-      ctx.lineTo(x + w - 18, subMarker + 5);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(100,255,218,0.55)';
-      ctx.font = '600 8px ' + LABEL_FONT;
-      ctx.fillText('SUB', x + 8, subMarker + 3);
-    },
-    sonarZoneFromDist(dist, maxR) {
-      var rel = Math.min(1, Math.max(0, dist / maxR));
-      for (var i = ZONES.length - 1; i >= 0; i--) {
-        if (rel >= ZONES[i].top) return i;
-      }
-      return 0;
-    },
-    drawSonarGrid(ctx, cx, cy, maxR) {
-      ctx.strokeStyle = 'rgba(40,90,70,0.22)';
-      ctx.lineWidth = 1;
-      for (var i = 1; i <= ZONES.length; i++) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, maxR * (i / ZONES.length), 0, Math.PI * 2);
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.moveTo(cx - maxR, cy);
-      ctx.lineTo(cx + maxR, cy);
-      ctx.moveTo(cx, cy - maxR);
-      ctx.lineTo(cx, cy + maxR);
-      ctx.stroke();
-    },
-    drawPortholeFrame(ctx, cx, cy, R) {
-      ctx.fillStyle = 'rgba(2,6,10,0.96)';
-      ctx.fillRect(0, 0, cx * 2, cy * 2);
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.restore();
-      ctx.strokeStyle = 'rgba(55,62,68,0.95)';
-      ctx.lineWidth = R * 0.11;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R + R * 0.04, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(90,98,105,0.7)';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.stroke();
-      for (var b = 0; b < 8; b++) {
-        var ba = (b / 8) * Math.PI * 2;
-        var bx = cx + Math.cos(ba) * (R + R * 0.08);
-        var by = cy + Math.sin(ba) * (R + R * 0.08);
-        ctx.fillStyle = 'rgba(70,76,82,0.9)';
-        ctx.beginPath();
-        ctx.arc(bx, by, 3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    },
-    drawLookUpSurface(ctx, w, h, t, mult) {
-      var sg = ctx.createLinearGradient(0, 0, 0, h * 0.32);
-      sg.addColorStop(0, 'rgba(235,250,255,0.98)');
-      sg.addColorStop(0.08, 'rgba(160,220,245,0.55)');
-      sg.addColorStop(0.22, 'rgba(80,160,200,0.12)');
-      sg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = sg;
-      ctx.fillRect(0, 0, w, h * 0.34);
-      ctx.strokeStyle = 'rgba(255,255,255,0.22)';
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      for (var sx = 0; sx <= w; sx += 5) {
-        var sy = h * 0.055 + Math.sin(sx * 0.035 + t * 0.003 * mult) * 3
-          + Math.sin(sx * 0.012 + t * 0.002 * mult + 1) * 5;
-        if (sx === 0) ctx.moveTo(sx, sy);
-        else ctx.lineTo(sx, sy);
-      }
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.14)';
-      ctx.fillRect(0, 0, w, h * 0.04);
-    },
-    drawLookUpGodRays(ctx, w, h, t) {
-      ctx.save();
-      ctx.globalCompositeOperation = 'screen';
-      for (var ri = -3; ri <= 3; ri++) {
-        var cx = w * 0.5 + ri * w * 0.11 + Math.sin(t * 0.0008 + ri * 1.3) * 22;
-        var spread = 38 + Math.abs(ri) * 14;
-        var rg = ctx.createLinearGradient(cx, 0, cx, h * 0.92);
-        rg.addColorStop(0, 'rgba(210,245,255,0.42)');
-        rg.addColorStop(0.35, 'rgba(120,200,230,0.1)');
-        rg.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = rg;
-        ctx.beginPath();
-        ctx.moveTo(cx - spread * 0.35, 0);
-        ctx.lineTo(cx + spread * 0.35, 0);
-        ctx.lineTo(cx + spread * 1.1 + ri * 18, h);
-        ctx.lineTo(cx - spread * 1.1 - ri * 18, h);
-        ctx.closePath();
-        ctx.fill();
-      }
-      ctx.restore();
-    },
-    drawLookUpForeground(ctx, w, h) {
-      var vg = ctx.createRadialGradient(w * 0.5, h, w * 0.55, w * 0.5, h * 0.55, w * 0.9);
-      vg.addColorStop(0, 'rgba(0,0,0,0)');
-      vg.addColorStop(0.55, 'rgba(0,0,0,0.35)');
-      vg.addColorStop(1, 'rgba(0,0,0,0.82)');
-      ctx.fillStyle = vg;
-      ctx.fillRect(0, h * 0.5, w, h * 0.5);
-      ctx.fillStyle = '#060a0e';
-      ctx.beginPath();
-      ctx.moveTo(0, h);
-      ctx.lineTo(0, h * 0.74);
-      ctx.bezierCurveTo(w * 0.06, h * 0.78, w * 0.14, h * 0.82, w * 0.26, h * 0.9);
-      ctx.lineTo(w * 0.2, h);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = '#080c10';
-      ctx.beginPath();
-      ctx.moveTo(w, h);
-      ctx.lineTo(w, h * 0.76);
-      ctx.bezierCurveTo(w * 0.94, h * 0.8, w * 0.86, h * 0.84, w * 0.74, h * 0.91);
-      ctx.lineTo(w * 0.8, h);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = 'rgba(18,24,28,0.65)';
-      ctx.beginPath();
-      ctx.moveTo(w * 0.02, h);
-      ctx.lineTo(w * 0.08, h * 0.88);
-      ctx.lineTo(w * 0.16, h);
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(w * 0.84, h);
-      ctx.lineTo(w * 0.9, h * 0.87);
-      ctx.lineTo(w * 0.97, h);
-      ctx.closePath();
-      ctx.fill();
-    },
-    drawLookUpCreature(ctx, emoji, x, y, size, dir, t, phase, depthRel) {
-      var bob = Math.sin(t * 0.002 + (phase || 0)) * (size * 0.07);
-      var drift = Math.sin(t * 0.0011 + (phase || 0) * 2) * (size * 0.06);
-      var px = x + drift;
-      var py = y + bob;
-      ctx.save();
-      if (depthRel < 0.32) {
-        ctx.globalAlpha = 0.5 + depthRel * 0.8;
-        ctx.fillStyle = 'rgba(2,8,14,0.88)';
-        ctx.beginPath();
-        ctx.ellipse(px, py, size * 0.52, size * 0.26, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 0.28;
-        this.drawEmoji(ctx, emoji, px, py, size * 0.85, dir > 0 && FACE_RE.test(emoji));
-      } else {
-        ctx.globalAlpha = 0.7 + (1 - depthRel) * 0.3;
-        this.drawEmoji(ctx, emoji, px, py, size, dir > 0 && FACE_RE.test(emoji));
-      }
-      ctx.restore();
-    },
-    drawVertical(w, h) {
-      var ctx = this.ctxs.canvasVertical;
-      var self = this;
-      var mult = this.speedMult();
-      var bd = this.backdrop || { mermaidX: 0.62, whaleTwilightX: 0.55, whaleMidnightX: 0.38, shipWreckX: 0.48 };
-      this.initEffects(w, h);
-      this.initSchools(w);
-      if (this.playing) this.lookUpPhase += 0.001 * mult;
-      ctx.fillStyle = '#010810';
-      ctx.fillRect(0, 0, w, h);
-      this.drawZoneBands(ctx, w, 0, h, { labels: false, divider: false });
-      ZONES.forEach(function (z) {
-        var y0 = z.top * h;
-        var zh = z.h * h;
-        self.drawZoneAtmosphere(ctx, w, y0, zh, z.id, self.t, 0);
-      });
-      this.drawLookUpGodRays(ctx, w, h, this.t);
-      this.drawLookUpSurface(ctx, w, h, this.t, mult);
-      this.drawCaustics(ctx, w, 0, h * 0.28, this.t, 0);
-      var scroll = this.lookUpPhase * w * 0.4;
-      var driftX = function (xR, zone, spd) {
-        spd = spd != null ? spd : (0.15 + zone * 0.08);
-        return (xR * w + scroll * spd) % (w + 40);
-      };
-      self.drawEmojiFloat(ctx, '🦈', driftX(0.72, 0, 0.22), h * 0.1, Math.min(w, h) * 0.09, -1, self.t, 0);
-      self.drawLookUpCreature(ctx, '🧜‍♀️', driftX(bd.mermaidX, 0), h * 0.14, Math.min(w, h) * 0.1, 1, self.t, 0, 0.12);
-      self.drawLookUpCreature(ctx, '🐋', driftX(bd.whaleTwilightX, 1), h * 0.32, Math.min(w, h) * 0.12, -1, self.t, 1, 0.32);
-      self.drawLookUpCreature(ctx, '🐋', driftX(bd.whaleMidnightX, 2), h * 0.52, Math.min(w, h) * 0.13, 1, self.t, 2, 0.52);
-      self.drawEmojiFloat(ctx, '🐟', driftX(0.28, 3), h * 0.72, Math.min(w, h) * 0.055, 1, self.t, 3);
-      if (this.playing) this.updateFleet(w, mult);
-      else if (!this.fleet) this.initFleet(w);
-      this.fleet.forEach(function (f) {
-        var rect = self.zoneRect(f.zone, 0, h);
-        var depthRel = (rect.cy / h);
-        var parallax = 0.12 + f.zone * 0.07;
-        var fx = (f.x * w + self.lookUpPhase * w * parallax) % w;
-        var fy = rect.cy + f.yJitter * rect.zh * 0.4 + Math.sin(self.t * f.wobbleSp + f.wobblePh) * 5;
-        var sz = Math.min(w, h) * (0.055 + (1 - depthRel) * 0.04) * f.size;
-        self.drawLookUpCreature(ctx, f.emoji, fx, fy, sz, f.dir, self.t, f.wobblePh, depthRel);
-      });
-      if (this.playing) this.updateSchools(mult);
-      this.schools.forEach(function (s) {
-        var rect = self.zoneRect(s.zone, 0, h);
-        var parallax = 0.14 + s.zone * 0.06;
-        var baseX = (s.x * w + self.lookUpPhase * w * parallax) % w;
-        var baseY = rect.y0 + rect.zh * s.yR;
-        var depthRel = baseY / h;
-        for (var si = 0; si < s.count; si++) {
-          var ox = (si - (s.count - 1) / 2) * s.spread * w * 0.45;
-          var oy = Math.sin(self.t * 0.002 + s.phase + si * 0.7) * 4;
-          var emoji = si % 2 ? '🐠' : '🐟';
-          self.drawLookUpCreature(ctx, emoji, baseX + ox, baseY + oy, 12 + (si % 2) * 2, s.dir, self.t, s.phase + si, depthRel);
-        }
-      });
-      this.drawBubbles(ctx, w, h, 0, h);
-      for (var pi = 0; pi < 28; pi++) {
-        var ppx = (pi * 47 + self.t * 0.04) % w;
-        var ppy = h * 0.15 + (pi * 29) % (h * 0.75);
-        ctx.fillStyle = 'rgba(200,225,240,' + (0.04 + (pi % 3) * 0.03) + ')';
-        ctx.beginPath();
-        ctx.arc(ppx, ppy, 0.8 + (pi % 2), 0, Math.PI * 2);
-        ctx.fill();
-      }
-      this.drawLookUpForeground(ctx, w, h);
-      ZONES.forEach(function (z, i) {
-        var y0 = z.top * h + z.h * h * 0.42;
-        ctx.fillStyle = 'rgba(200,230,240,0.28)';
-        ctx.font = '500 8px ' + LABEL_FONT;
-        ctx.textAlign = 'right';
-        ctx.fillText(z.emoji + ' ' + ZONE_DEPTHS[i], w - 8, y0);
-      });
-      ctx.fillStyle = 'rgba(180,210,225,0.35)';
-      ctx.font = '500 9px ' + LABEL_FONT;
-      ctx.textAlign = 'center';
-      ctx.fillText('tap the water above', w * 0.5, h - 10);
-    },
-    drawSurface(w, h) {
-      var ctx = this.ctxs.canvasSurface;
-      var mult = this.speedMult();
-      var layout = this.zoneLayout(w, h);
-      var horizon = layout.top;
-      var self = this;
-      this.initEffects(w, h);
-      this.drawSurfaceSky(ctx, w, horizon, mult);
-      this.drawZoneBands(ctx, w, layout.top, layout.height, { labels: true, labelX: layout.labelX, labelSize: layout.labelSize });
-      this.drawZoneBackdrops(ctx, w, layout.top, layout.height);
-      this.drawZoneTerrain(ctx, w, layout.top, layout.height);
-      this.initSchools(w);
-      this.drawSchools(ctx, w, layout.top, layout.height, 0, w);
-      this.waves.forEach(function (wv) { self.drawWaveLine(ctx, w, horizon, self.t, wv, mult); });
-      ctx.strokeStyle = 'rgba(180,210,225,0.22)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      for (var x = 0; x <= w; x += 4) {
-        var y = horizon + Math.sin(x * 0.025 + this.t * 0.004 * mult) * 4
-          + Math.sin(x * 0.009 + this.t * 0.0025 * mult + 1) * 6;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-      var surfaceShine = ctx.createLinearGradient(0, horizon, 0, horizon + 18);
-      surfaceShine.addColorStop(0, 'rgba(160,200,220,0.18)');
-      surfaceShine.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = surfaceShine;
-      ctx.fillRect(0, horizon, w, 18);
-      if (this.surfaceScene) {
-        var ship = this.surfaceScene.ship;
-        var shipBob = Math.sin(this.t * 0.0035) * 3;
-        var shipY = horizon + shipBob - 2;
-        this.drawSurfaceShip(ctx, ship.x, shipY, ship.dir);
-      }
-      this.drawBubbles(ctx, w, h, layout.top, layout.top + layout.height);
-      this.drawFleetInZones(ctx, w, h, layout.top, layout.height, 26);
-    },
-    drawSonar(w, h) {
-      var ctx = this.ctxs.canvasSonar || this.ctxs.canvasReef;
-      var cx = w * 0.5;
-      var cy = h * 0.52;
-      var maxR = Math.min(w, h) * 0.44;
-      var self = this;
-      this.initEffects(w, h);
-      ctx.fillStyle = '#010a08';
-      ctx.fillRect(0, 0, w, h);
-      var bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 1.1);
-      bg.addColorStop(0, 'rgba(8,28,22,0.95)');
-      bg.addColorStop(1, 'rgba(2,8,6,1)');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, w, h);
-      this.drawSonarGrid(ctx, cx, cy, maxR);
-      ZONES.forEach(function (z, i) {
-        var rOut = maxR * (z.top + z.h);
-        var rIn = maxR * z.top;
-        var rg = ctx.createRadialGradient(cx, cy, rIn, cx, cy, rOut);
-        rg.addColorStop(0, z.c1 + '55');
-        rg.addColorStop(1, z.c2 + '88');
-        ctx.fillStyle = rg;
-        ctx.beginPath();
-        ctx.arc(cx, cy, rOut, 0, Math.PI * 2);
-        ctx.arc(cx, cy, rIn, 0, Math.PI * 2, true);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(60,180,120,0.35)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(cx, cy, rOut, 0, Math.PI * 2);
-        ctx.stroke();
-        var midR = (rIn + rOut) * 0.5;
-        var la = -Math.PI / 2 + i * 0.4;
-        var lx = cx + Math.cos(la) * midR;
-        var ly = cy + Math.sin(la) * midR;
-        ctx.fillStyle = 'rgba(180,230,200,0.82)';
-        ctx.font = '600 9px ' + LABEL_FONT;
-        ctx.textAlign = 'center';
-        ctx.fillText(z.name.split(' ')[0], lx, ly);
-      });
-      if (this.playing) this.updateFleet(w, this.speedMult());
-      else if (!this.fleet) this.initFleet(w);
-      this.fleet.forEach(function (f, i) {
-        var z = ZONES[f.zone];
-        var rIn = maxR * z.top;
-        var rOut = maxR * (z.top + z.h);
-        var midR = (rIn + rOut) * 0.5;
-        var ang = (f.x / w) * Math.PI * 2 + f.wobblePh;
-        var bx = cx + Math.cos(ang) * midR;
-        var by = cy + Math.sin(ang) * midR;
-        var ping = 0.5 + 0.5 * Math.sin(self.t * 0.008 + i);
-        ctx.fillStyle = 'rgba(100,255,160,' + (0.35 + ping * 0.45) + ')';
-        ctx.beginPath();
-        ctx.arc(bx, by, 3 + ping * 2, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      var sweep = this.t * 0.0018 * this.speedMult();
-      var sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
-      sg.addColorStop(0, 'rgba(80,255,140,0.08)');
-      sg.addColorStop(0.85, 'rgba(80,255,140,0.02)');
-      sg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(sweep);
-      ctx.fillStyle = sg;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.arc(0, 0, maxR, -0.35, 0.35);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(120,255,180,0.55)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(maxR, 0);
-      ctx.stroke();
-      ctx.restore();
-      this.drawSubmarineSilhouette(ctx, cx, cy, 0.85, 1);
-      ctx.fillStyle = 'rgba(100,255,180,0.7)';
-      ctx.font = '600 10px ' + LABEL_FONT;
-      ctx.textAlign = 'center';
-      ctx.fillText('SONAR — depth rings', cx, h - 14);
-    },
-    drawPorthole(w, h) {
-      var ctx = this.ctxs.canvasDeep;
-      var cx = w * 0.5;
-      var cy = h * 0.48;
-      var R = Math.min(w, h) * 0.36;
-      var self = this;
-      this.initEffects(w, h);
-      if (this.playing) {
-        this.portholeAccum += 16 * this.speedMult();
-        if (this.portholeAccum > 7000) {
-          this.portholeIdx = (this.portholeIdx + 1) % ZONES.length;
-          this.portholeAccum = 0;
-        }
-      }
-      var zi = this.portholeIdx;
-      var z = ZONES[zi];
-      ctx.fillStyle = '#010508';
-      ctx.fillRect(0, 0, w, h);
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.clip();
-      var g = ctx.createLinearGradient(0, cy - R, 0, cy + R);
-      g.addColorStop(0, z.c1);
-      g.addColorStop(1, z.c2);
-      ctx.fillStyle = g;
-      ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
-      self.drawZoneAtmosphere(ctx, R * 2, cy - R, R * 2, z.id, self.t, cx - R);
-      var floorInView = cy + R * 0.88;
-      if (z.id === 'sunlight') {
-        self.drawSandBed(ctx, R * 2, floorInView, R * 0.38, z.id);
-        self.drawCaustics(ctx, R * 2, cy - R, R * 2, self.t, cx - R);
-        self.drawEmojiFloat(ctx, '🧜‍♀️', cx + R * 0.28, cy + R * 0.2, R * 0.14, 1, self.t, 0);
-        self.terrain.corals.slice(0, 8).forEach(function (c) {
-          self.drawCoral(ctx, cx - R + (c.x / w) * R * 2, floorInView - 4, c.h * 0.95, c.type, c.hue);
-        });
-        self.terrain.seaFans.slice(0, 5).forEach(function (f) {
-          self.drawSeaFan(ctx, cx - R + (f.x / w) * R * 2, floorInView - 2, f.h * 0.85, f.hue, self.t, f.phase);
-        });
-        self.terrain.kelp.slice(0, 7).forEach(function (k) {
-          self.drawKelp(ctx, cx - R + (k.x / w) * R * 2, floorInView - 2, k.len * 0.72, self.t, k.phase, k.strands, k.bladders);
-        });
-        ctx.save();
-        ctx.translate(cx - R, 0);
-        self.drawTerrainRocks(ctx, R * 2, floorInView, floorInView, 8);
-        ctx.restore();
-      }
-      if (z.id === 'twilight') {
-        self.drawSandBed(ctx, R * 2, floorInView, R * 0.25, z.id);
-        self.drawEmojiFloat(ctx, '🐋', cx + R * 0.12, cy, R * 0.16, -1, self.t, 1);
-        self.terrain.seaFans.slice(0, 3).forEach(function (f) {
-          self.drawSeaFan(ctx, cx - R + (f.x / w) * R * 2, floorInView - 1, f.h * 0.6, f.hue, self.t, f.phase);
-        });
-      }
-      if (z.id === 'midnight') {
-        self.drawSandBed(ctx, R * 2, floorInView, R * 0.2, z.id);
-        self.drawEmojiFloat(ctx, '🐋', cx - R * 0.1, cy, R * 0.17, 1, self.t, 2);
-        for (var bi = 0; bi < 14; bi++) {
-          var bx = cx - R + ((bi * 47) % (R * 2));
-          var by = cy - R * 0.45 + ((bi * 31) % (R * 1.1));
-          ctx.fillStyle = 'rgba(100,180,220,' + (0.12 + (bi % 3) * 0.1) + ')';
-          ctx.beginPath();
-          ctx.arc(bx, by, 1.2 + (bi % 2), 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      if (z.id === 'abyss') {
-        self.drawSandBed(ctx, R * 2, floorInView, R * 0.32, z.id);
-        ctx.save();
-        ctx.translate(cx - R, 0);
-        self.drawTerrainRocks(ctx, R * 2, floorInView, floorInView, 6);
-        ctx.restore();
-        self.drawSunkenShip(ctx, cx + R * 0.15, cy + R * 0.32, R * 0.58);
-        self.drawHydrothermalVent(ctx, cx - R * 0.35, floorInView, self.t);
-      }
-      if (z.id === 'hadal') {
-        self.drawSandBed(ctx, R * 2, floorInView, R * 0.22, z.id);
-        self.drawHadalTrench(ctx, cx, floorInView, R * 1.1, R * 0.55);
-        self.drawSnailfish(ctx, cx - R * 0.15, cy + R * 0.15, R * 0.07, self.t);
-        self.drawSnailfish(ctx, cx + R * 0.2, cy + R * 0.28, R * 0.055, self.t);
-        for (var hi = 0; hi < 10; hi++) {
-          var hx = cx - R + ((hi * 53) % (R * 2));
-          var hy = cy - R * 0.3 + ((hi * 37) % (R * 0.9));
-          ctx.fillStyle = 'rgba(180,200,220,' + (0.08 + (hi % 3) * 0.06) + ')';
-          ctx.beginPath();
-          ctx.arc(hx, hy, 1, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      if (this.playing) this.updateFleet(w, this.speedMult());
-      else if (!this.fleet) this.initFleet(w);
-      this.fleet.filter(function (f) { return f.zone === zi; }).forEach(function (f) {
-        var fy = cy + Math.sin(self.t * f.wobbleSp + f.wobblePh) * 12;
-        var fx = cx - R + (f.x / w) * R * 2;
-        self.drawEmoji(ctx, f.emoji, fx, fy, Math.min(w, h) * 0.09 * f.size, self.shouldFlip(f));
-      });
-      self.drawBubbles(ctx, w, h, cy - R, cy + R);
-      ctx.restore();
-      ctx.fillStyle = 'rgba(2,6,10,0.97)';
-      ctx.beginPath();
-      ctx.rect(0, 0, w, h);
-      ctx.arc(cx, cy, R, 0, Math.PI * 2, true);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(55,62,68,0.95)';
-      ctx.lineWidth = R * 0.1;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R + R * 0.03, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(90,98,105,0.65)';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.stroke();
-      for (var b = 0; b < 8; b++) {
-        var ba = (b / 8) * Math.PI * 2;
-        ctx.fillStyle = 'rgba(70,76,82,0.9)';
-        ctx.beginPath();
-        ctx.arc(cx + Math.cos(ba) * (R + R * 0.07), cy + Math.sin(ba) * (R + R * 0.07), 3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      var depths = ZONE_DEPTHS;
-      ctx.fillStyle = 'rgba(100,255,218,0.88)';
-      ctx.font = '600 13px ' + LABEL_FONT;
-      ctx.textAlign = 'center';
-      ctx.fillText(z.name, cx, cy + R + R * 0.22);
-      ctx.fillStyle = 'rgba(160,190,210,0.65)';
-      ctx.font = '500 11px ' + LABEL_FONT;
-      ctx.fillText(depths[zi] + '  ·  tap for next zone', cx, cy + R + R * 0.34);
-      ctx.fillStyle = 'rgba(100,255,180,0.5)';
-      ctx.font = '500 9px ' + LABEL_FONT;
-      ctx.fillText('◉ PORTHOLE VIEW', cx, 16);
-    },
-    draw() {
-      const stage = document.getElementById('viewStage');
-      if (!stage) return;
-      const w = stage.clientWidth;
-      const h = stage.clientHeight;
-      const layer = this.activeLayer();
-      if (layer === 'vertical') this.drawVertical(w, h);
-      else if (layer === 'surface') this.drawSurface(w, h);
-      else if (layer === 'reef') this.drawSonar(w, h);
-      else if (layer === 'deep') this.drawPorthole(w, h);
-    },
-    tick() {
-      if (this.playing) this.t += 16 * (SPEEDS[this.speedIdx] || 1);
-      this.draw();
-      requestAnimationFrame(() => this.tick());
-    },
-    showDefaultInfo() {
-      const m = this.currentMode();
-      this.info.innerHTML = '<h2>🌊 ' + m.label + '</h2><p>' + m.desc + '</p>';
-    },
-    showZone(z) {
-      this.info.innerHTML = '<h2>' + z.emoji + ' ' + z.name + '</h2><p>' + z.fact + '</p>';
-    },
-    hitZoneAt(x, y, w, h) {
-      var layer = this.activeLayer();
-      if (layer === 'vertical') {
-        var rel = y / h;
-        for (var vi = ZONES.length - 1; vi >= 0; vi--) {
-          if (rel >= ZONES[vi].top) { this.showZone(ZONES[vi]); return; }
-        }
-        return;
-      }
-      if (layer === 'reef') {
-        var cx = w * 0.5;
-        var cy = h * 0.52;
-        var maxR = Math.min(w, h) * 0.44;
-        var dx = x - cx;
-        var dy = y - cy;
-        var dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist > maxR) return;
-        var zi = this.sonarZoneFromDist(dist, maxR);
-        this.showZone(ZONES[zi]);
-        return;
-      }
-      if (layer === 'deep') {
-        this.portholeIdx = (this.portholeIdx + 1) % ZONES.length;
-        this.portholeAccum = 0;
-        this.showZone(ZONES[this.portholeIdx]);
-        return;
-      }
-      var layout = this.zoneLayout(w, h);
-      var rel = (y - layout.top) / layout.height;
-      if (rel < 0 || rel > 1) return;
-      for (var i = ZONES.length - 1; i >= 0; i--) {
-        if (rel >= ZONES[i].top) { this.showZone(ZONES[i]); return; }
-      }
-    },
-    bindTap() {
-      var self = this;
-      var canvasIds = ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'];
-      canvasIds.forEach(function (id) {
-        var c = self.canvases[id];
-        if (!c || c._zoneTap) return;
-        c._zoneTap = true;
-        var hit = function (e) {
-          var r = c.getBoundingClientRect();
-          var p = e.touches ? e.touches[0] : e;
-          self.hitZoneAt(p.clientX - r.left, p.clientY - r.top, r.width, r.height);
-        };
-        c.addEventListener('click', hit);
-        c.addEventListener('touchstart', function (e) { e.preventDefault(); hit(e); }, { passive: false });
-      });
-    },
-    init() {
-      ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => {
-        this.canvases[id] = document.getElementById(id);
-        this.ctxs[id] = this.canvases[id].getContext('2d');
-      });
-      this.info = document.getElementById('infoPanel');
-      this.resizeAll();
-      this.bindTap();
-      window.addEventListener('resize', () => this.resizeAll());
-
-      document.getElementById('btnPlay').onclick = () => {
-        this.playing = !this.playing;
-        document.getElementById('btnPlay').textContent = this.playing ? '⏸️ Pause' : '▶️ Play';
-      };
-      document.getElementById('btnSpeed').onclick = () => {
-        this.speedIdx = (this.speedIdx + 1) % SPEEDS.length;
-        document.getElementById('btnSpeed').textContent = '🐠 ' + SPEEDS[this.speedIdx] + '×';
-      };
-      document.getElementById('btnViewMode').onclick = () => {
-        this.viewModeIdx = (this.viewModeIdx + 1) % VIEW_MODES.length;
-        document.getElementById('btnViewMode').textContent = '👁️ View' + (this.viewModeIdx + 1);
-        document.getElementById('btnViewMode').classList.toggle('active', this.viewModeIdx !== 0);
-        this.switchLayer();
-      };
-      document.getElementById('btnReset').onclick = () => {
-        this.t = 0;
-        this.playing = true;
-        this.speedIdx = 0;
-        this.viewModeIdx = 0;
-        this.fleet = null;
-        this.schools = null;
-        this._fleetKey = null;
-        this._schoolKey = null;
-        this._fxKey = null;
-        this.portholeIdx = 0;
-        this.portholeAccum = 0;
-        this.lookUpPhase = 0;
-        document.getElementById('btnPlay').textContent = '⏸️ Pause';
-        document.getElementById('btnSpeed').textContent = '🐠 0.5×';
-        document.getElementById('btnViewMode').textContent = '👁️ View1';
-        document.getElementById('btnViewMode').classList.remove('active');
-        this.switchLayer();
-      };
-
-      this.showDefaultInfo();
-      this.tick();
-    },
-  };
-
-  Ocean.init();
-})();
-</script>
-
-
-<script src="_ocean-games.js"></script>
-<script>
-OceanGame.boot({
+  <script src="_ocean-games.js"></script>
+  <script>OceanGame.boot({
   "game": "zone-sort",
   "goal": 60,
   "time": 60,
@@ -2003,7 +170,62 @@ OceanGame.boot({
   "player": "🤿",
   "bgTop": "#1565c0",
   "bgBot": "#002171"
-});
+});</script>
+  <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
+</div>
+<script>
+(function() {
+  var VIEW_MODES = [{"id":"vertical","slot":"view-1","label":"Depth Chart","desc":"Painted ocean cross-section — five zones from sunlit reef to the hadal trench. Tap each band to learn its creatures and depth."},{"id":"surface","slot":"view-2","label":"Surface & Depth","desc":"Ships sail, seagulls fly, and waves roll — with all five ocean zones stacked below the surface."},{"id":"reef","slot":"view-3","label":"Sonar Map","desc":"Top-down sonar scan — concentric depth rings from the surface to hadal trenches. Tap a ring to learn."},{"id":"deep","slot":"view-4","label":"Sub Porthole","desc":"Look through a submarine window — one zone at a time, close up. Tap to peek at the next depth."}];
+  var ZONES = [{"emoji":"☀️","name":"Sunlight Zone","fact":"Sunlight reaches all the way down! Coral reefs, dolphins, and sea turtles live here (0–200 m)."},{"emoji":"🌅","name":"Twilight Zone","fact":"Dim blue light — squid, octopus, and jellyfish with big eyes hunt here (200–1,000 m)."},{"emoji":"🌙","name":"Midnight Zone","fact":"No sunlight! Anglerfish, sharks, and bioluminescent jellies rule the dark (1,000–4,000 m)."},{"emoji":"🕳️","name":"Abyss Zone","fact":"Cold abyssal plains and hydrothermal vents — strange life at 4,000–6,000 m."},{"emoji":"⛰️","name":"Hadal Zone","fact":"The deepest trenches on Earth — below 6,000 m. Challenger Deep reaches ~11 km!"}];
+  var viewIdx = 0;
+  var zoneIdx = 0;
+
+  function loadViewImages() {
+    VIEW_MODES.forEach(function(m) {
+      var img = document.getElementById("viewImg-" + m.id);
+      if (!img || !window.OceanChapterImage) return;
+      var uri = OceanChapterImage.getUri("overview", m.slot);
+      if (uri) img.src = uri;
+    });
+  }
+
+  function showView() {
+    var m = VIEW_MODES[viewIdx];
+    document.querySelectorAll(".view-layer").forEach(function(el) {
+      el.classList.toggle("active", el.dataset.layer === m.id);
+    });
+    document.getElementById("btnViewMode").textContent = "👁️ View" + (viewIdx + 1);
+    document.getElementById("infoPanel").innerHTML = "<h2>🌊 " + m.label + "</h2><p>" + m.desc + "</p>";
+  }
+
+  function showZone(z) {
+    document.getElementById("infoPanel").innerHTML = "<h2>" + z.emoji + " " + z.name + "</h2><p>" + z.fact + "</p>";
+  }
+
+  document.getElementById("btnViewMode").onclick = function() {
+    viewIdx = (viewIdx + 1) % VIEW_MODES.length;
+    showView();
+  };
+  document.getElementById("btnReset").onclick = function() {
+    viewIdx = 0; zoneIdx = 0;
+    showView();
+  };
+
+  document.querySelectorAll(".view-tap-overlay").forEach(function(ov) {
+    ov.addEventListener("click", function(e) {
+      var rect = ov.getBoundingClientRect();
+      var rel = (e.clientY - rect.top) / rect.height;
+      var zi = Math.min(ZONES.length - 1, Math.max(0, Math.floor(rel * ZONES.length)));
+      zoneIdx = (zoneIdx + 1) % ZONES.length;
+      if (ov.dataset.view === "deep") zoneIdx = zi;
+      else if (rel >= 0 && rel <= 1) zi = Math.min(ZONES.length - 1, Math.max(0, Math.floor(rel * ZONES.length)));
+      showZone(ZONES[zi]);
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", loadViewImages);
+  if (document.readyState !== "loading") loadViewImages();
+  showView();
+})();
 </script>
-</body>
-</html>
+</body></html>

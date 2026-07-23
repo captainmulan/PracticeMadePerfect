@@ -130,6 +130,7 @@ Books may also namespace keys as `book:oceanadventure:userName` (see `_ocean-pla
 | Folder | Chapters | Author | Notes |
 |--------|----------|--------|-------|
 | [SolarSystem/](SolarSystem/) | 43 | Jimmy Cooper | Planets, meteors, black holes; intro + outro games |
+| [MyFirst100MMWords/](MyFirst100MMWords/) | 41 | Jimmy Cooper | First 100 Myanmar words for diaspora kids; 10 topic chapters |
 | [OceanAdventure/](OceanAdventure/) | 32 | Jimmy Cooper | Zones, reefs, mammals, fish; aligned to standard flow |
 | DinosaurDiscovery/ | TBD | Jimmy Cooper | In development |
 
