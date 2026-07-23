@@ -8,13 +8,85 @@
       title: "Family",
       badge: "Family Star",
       gameTitle: "Catch the Family",
-      story: "Aye lives in Singapore with her family. Every evening, Grandma calls from Yangon. Aye learns to say each family word — so she can tell Grandma about everyone at home.",
-      parentPhrase: { en: "This is my mother.", mm: "ဒီအူမေမာပါ။" },
-      didYouKnow: "In Myanmar, children often live with grandparents. Learning family words helps kids talk to relatives on video calls!",
+      storyTitle: "The House Full of Names",
+      heritage: {
+        title: "Respecting elders first",
+        text: "In Myanmar tradition, children greet grandparents and elders before anyone else. At Thadingyut, the Festival of Lights, families visit parents and grandparents with gifts and candles. Knowing family words is how children show love and respect across generations."
+      },
+      story: "Long ago in a teak village near the Irrawaddy River, a girl named Su lived in a house where cousins slept on woven mats and uncles told jokes by the kitchen fire. Every evening her grandmother lit an oil lamp and asked, \"Who did you meet today?\" Su would answer with names — mother, father, aunt, uncle, cousin — because in Myanmar a family is not a small tree but a wide forest of relatives.\n\nOne Thadingyut night, the whole family gathered under strings of paper lanterns. Su carried a tray of candles to her grandparents first, bowing gently as her mother had taught her. \"Grandmother,\" she said, \"thank you for teaching me.\" The old woman smiled and replied, \"When you know a person's name in our language, you carry them in your heart, even when rivers and mountains lie between you.\"\n\nFrom that night on, Su never rushed past an elder. She learned that mother and father feed the body, but aunts and uncles feed the stories — and cousins are the friends the gods place beside you at birth.",
+      explainedStory: "There is an old village tale about a boy who forgot his uncle's name during a feast and felt ashamed before the whole table. His grandfather did not scold him. Instead he brought out a long scroll painted with faces — generations of mothers, fathers, sisters, brothers, and babies.\n\n\"Each name is a branch,\" the grandfather said. \"Cut one and the tree still stands, but the shade grows thinner.\" The boy practiced every day until he could name thirty relatives without pause. When strangers visited the village, he became the one who introduced everyone properly, and guests said the house felt warm because the children had been taught well.\n\nMyanmar families grow wide, not only tall. Learning aunt, uncle, and cousin is not just vocabulary — it is remembering who you belong to.",
+      tip: "Point at a family photo and say each English name aloud, then tap the Myanmar button on the word cards so your child hears the sound. Start with grandmother and grandfather — elders first, as Myanmar custom teaches.",
+      explainedTip: "Tell your child one family story each week — how an aunt made mohinga, or how an uncle fixed a bicycle. Link each story to one new family word so the name carries a memory.",
+      explainedSentences: [
+        { en: "This is my mother.", mm: "ဒီအမေပါ။" },
+        { en: "This is my father.", mm: "ဒီအဖေပါ။" },
+        { en: "Grandma lives in Myanmar.", mm: "အဘွားက မြန်မာနိုင်ငံမှာ နေတယ်။" },
+        { en: "My aunt lives in Yangon.", mm: "အဒေါ်က ရန်ကုန်မှာ နေတယ်။" },
+        { en: "Uncle is funny!", mm: "ဦးလေးက ရယ်စရာကောင်းတယ်!" },
+        { en: "I play with my cousin.", mm: "ဝမ်းကွဲနဲ့ ကစားတယ်။" },
+        { en: "My sister is kind.", mm: "ညီမက ကောင်းတယ်။" },
+        { en: "The baby is sleeping.", mm: "ကလေးက အိပ်နေတယ်။" },
+        { en: "I love my family.", mm: "မိသားစုကို ချစ်တယ်။" },
+        { en: "Grandma, hello!", mm: "အဘွား၊ မင်္ဂလာပါ!" }
+      ],
+      parentPhrase: { en: "This is my mother.", mm: "ဒီအမေပါ။" },
+      didYouKnow: "In Myanmar villages, children often grow up surrounded by grandparents, aunts, and cousins in the same compound.",
       practiceSentences: [
         { en: "This is my mother.", mm: "ဒီအမေပါ။" },
         { en: "I love my family.", mm: "မိသားစုကို ချစ်တယ်။" },
         { en: "Grandma, hello!", mm: "အဘွား၊ မင်္ဂလာပါ!" }
+      ],
+      quizQuestions: [
+            {
+                  "q": "Where did Su live in the family tale?",
+                  "options": [
+                        "A teak village near the Irrawaddy River",
+                        "A desert oasis",
+                        "An ice castle",
+                        "Under the sea"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "Which festival did Su celebrate with candles for her grandparents?",
+                  "options": [
+                        "Thadingyut",
+                        "Thingyan only",
+                        "Christmas",
+                        "Harvest moon in Norway"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "Who should Myanmar children greet first, according to the story?",
+                  "options": [
+                        "Grandparents and elders",
+                        "The youngest cousin",
+                        "Strangers at the market",
+                        "Pets only"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Grandmother say happens when you know a person's name in Myanmar?",
+                  "options": [
+                        "You carry them in your heart across distance",
+                        "You forget English",
+                        "You must write it fifty times",
+                        "You cannot travel"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "How is a Myanmar family described in the tale?",
+                  "options": [
+                        "A wide forest of relatives",
+                        "Only two people",
+                        "A single branch",
+                        "A competition"
+                  ],
+                  "correct": 0
+            }
       ],
       words: [
         { en: "Mother", mm: "မေမာ", emoji: "👩", hint: "ma-ma", useEn: "This is my mother.", useMm: "ဒီအမေပါ။" },
@@ -38,8 +110,80 @@
       title: "Food",
       badge: "Food Master",
       gameTitle: "Catch the Food",
-      story: "At dinner, Aye's mum cooks Myanmar food. The kitchen smells like home. Aye taps each dish and learns the Myanmar names before the first bite.",
+      storyTitle: "The Monk's Morning Rice",
+      heritage: {
+        title: "Sharing food with gratitude",
+        text: "Each morning in Myanmar, families cook rice and place the first spoonful aside with gratitude before eating. Tea shops gather neighbors over sweet milk tea. Mohinga — fish noodle soup — is the breakfast of kings and farmers alike. Food words carry the taste of home."
+      },
+      story: "Before dawn in a riverside town, a boy named Kyaw watched his mother steam rice in a clay pot while the roosters still slept. \"We always cook a little extra,\" she said, \"because kindness should not be measured cup by cup.\" When the monks walked barefoot down the lane, Kyaw filled their alms bowls with rice, water, and a banana — quietly, without showing off.\n\nAt the tea shop later, old men laughed over strong sweet tea and lahpet thoke, the famous tea-leaf salad that makes strangers into friends. Kyaw's uncle taught him the names of what they ate: fish from the river, egg from the hen, mango sweet as sunshine. \"Learn what feeds you,\" his uncle said, \"and you will never forget where you come from.\"\n\nThat evening Kyaw shared his snack with a hungry dog at the gate. His mother nodded with pride. \"Hungry bellies make selfish hearts,\" she said. \"Full bellies can choose to be generous.\"",
+      explainedStory: "There is a folk tale about a greedy merchant who hoarded rice while villagers went hungry. One night he dreamed of golden grains turning to sand. When he woke, he opened his storehouse and called the whole village to eat.\n\nFrom that day he kept only what he needed and gave the rest away. People said the merchant grew richer anyway — not in silver, but in friends who brought him fish, eggs, tea, and fruit from every corner of the valley. The moral is simple: rice shared fills more stomachs than rice hidden.\n\nMyanmar kitchens teach children that water, bread, and soup are not just words on a card. They are promises that no guest should leave an empty house.",
+      tip: "At one meal this week, name three foods in English, then tap the Myanmar button so your child hears each word. Rice and water are gentle starting points every child knows.",
+      explainedTip: "Cook or share one Myanmar dish together — even simple rice and tea. Say the food words before eating, the way village families bless a meal with names before the first bite.",
+      explainedSentences: [
+        { en: "We eat rice every day.", mm: "နေ့တိုင်း ထမင်းစားတယ်။" },
+        { en: "Please give me water.", mm: "ရေ ပေးပါ။" },
+        { en: "The mango is sweet.", mm: "သရက်သီး ချိုတယ်။" },
+        { en: "Fish comes from the river.", mm: "ငါးက မြစ်ကနေ ရတယ်။" },
+        { en: "Mother cooks soup.", mm: "အမေ ဟင်းရည် ချက်တယ်။" },
+        { en: "I like tea.", mm: "လက်ဖက်ရည် ကြိုက်တယ်။" },
+        { en: "The egg is warm.", mm: "ဥ ပူတယ်။" },
+        { en: "Bread for breakfast.", mm: "မနက်စာ ပေါင်မုန့်။" },
+        { en: "Not too much sugar.", mm: "သကြားမများနဲ့။" },
+        { en: "Thank you for the meal.", mm: "ကျေးဇူးတင်ပါတယ်။" }
+      ],
       parentPhrase: { en: "I am hungry.", mm: "ဗိုက်ဆာပါတယ်။" },
+      quizQuestions: [
+            {
+                  "q": "What did Kyaw's mother cook before dawn?",
+                  "options": [
+                        "Rice in a clay pot",
+                        "Pizza",
+                        "Ice cream",
+                        "Sandwiches only"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "Who walked barefoot down the lane each morning?",
+                  "options": [
+                        "Monks receiving alms",
+                        "Knights on horses",
+                        "Snow skiers",
+                        "Robot chefs"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What salad did old men share at the tea shop?",
+                  "options": [
+                        "Lahpet thoke (tea-leaf salad)",
+                        "Caesar salad only",
+                        "No food at all",
+                        "Candy floss"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Kyaw share with the hungry dog?",
+                  "options": [
+                        "His snack",
+                        "A gold coin",
+                        "A bicycle",
+                        "Nothing — he ran away"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What moral did Kyaw's mother teach about full bellies?",
+                  "options": [
+                        "Full bellies can choose to be generous",
+                        "Never share food",
+                        "Eat as fast as possible",
+                        "Hide all rice"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "Rice", mm: "ထမင်း", emoji: "🍚", hint: "hta-min" },
         { en: "Water", mm: "ရေ", emoji: "💧", hint: "yay" },
@@ -64,8 +208,80 @@
       title: "Animals",
       badge: "Animal Friend",
       gameTitle: "Catch the Animals",
-      story: "Aye visits the zoo with Dad. Elephants, cats, and birds — each animal has a Myanmar name. Can you catch them all before the zoo closes?",
-      parentPhrase: { en: "Look at the elephant!", mm: "ဆင်ကို ကြည့်ပါ!"},
+      storyTitle: "The Four Friends in the Forest",
+      heritage: {
+        title: "The sacred elephant",
+        text: "In ancient Burma, white elephants were royal treasures and symbols of a just kingdom. Elephants, tigers, peacocks, and birds fill Myanmar forests and folktales. The elephant is often the first animal every Myanmar child learns — strong, gentle, and wise."
+      },
+      story: "Deep in a green forest where the Irrawaddy mist hangs on leaves, four friends lived together: Elephant, Monkey, Rabbit, and Peacock. They were different in size and habit, yet they shared one home beneath a great banyan tree.\n\nOne year the river flooded early. Rabbit's burrow filled with water. Without a word, Elephant carried Rabbit on his trunk, Monkey cleared fallen branches, and Peacock flew ahead to find dry ground. When the storm passed, the friends discovered a fruit tree heavy with food. Peacock fanned the fruit down, Monkey caught it, Rabbit sorted the small pieces, and Elephant carried the rest to old Tortoise who could not climb.\n\nVillagers who saw them said, \"Strength without kindness is noise. Kindness without friends is lonely.\" The four friends became a lesson told around every fire: help one another, and the forest itself will protect you.",
+      explainedStory: "Long before cities of glass and steel, kings of Burma kept white elephants as signs of a righteous reign. A cruel king, people said, could never keep such an animal — it would walk away into the hills.\n\nOne legend tells of a young prince who found a wounded elephant calf and nursed it with banana leaves and river water. Years later, when enemies surrounded the palace, the grown elephant appeared at dawn and led the prince through hidden paths. The prince remembered the calf and whispered, \"You saved me because I saved you.\" That is why Myanmar children learn the elephant first — not only as an animal, but as a reminder that gentleness and strength can live in the same heart.\n\nFrom tigers in the tall grass to ducks on the village pond, every creature has a place in Myanmar stories.",
+      tip: "Walk outside or look at picture books and name animals in English first. Then tap the Myanmar button on each card — animal sounds are fun to repeat together.",
+      explainedTip: "Tell the Four Friends tale at bedtime and ask your child which animal they would be. Link each answer to a new animal word from this chapter.",
+      explainedSentences: [
+        { en: "Look at the elephant!", mm: "ဆင်ကို ကြည့်ပါ!" },
+        { en: "The cat sleeps in the sun.", mm: "ကြောင်က နေရောင်မှာ အိပ်တယ်။" },
+        { en: "The dog guards the house.", mm: "ခွေးက အိမ်ကို စောင့်တယ်။" },
+        { en: "Birds sing at dawn.", mm: "ငှက်တွေ အရုဏ်ဦး သီချင်းဆိုတယ်။" },
+        { en: "Fish swim in the river.", mm: "ငါးတွေ မြစ်မှာ ရေကူးတယ်။" },
+        { en: "The cow gives milk.", mm: "နွားက နို့ပေးတယ်။" },
+        { en: "The chicken wakes early.", mm: "ကြက် စောစောထတယ်။" },
+        { en: "The tiger stays in the forest.", mm: "ကျားက တောထဲမှာ နေတယ်။" },
+        { en: "The monkey climbs fast.", mm: "မျောက် မြန်မြန် တက်တယ်။" },
+        { en: "A butterfly is pretty.", mm: "လိပ်ပြာလေး လှတယ်!" }
+      ],
+      parentPhrase: { en: "Look at the elephant!", mm: "ဆင်ကို ကြည့်ပါ!" },
+      quizQuestions: [
+            {
+                  "q": "Name one of the Four Friends in the forest tale.",
+                  "options": [
+                        "Elephant",
+                        "Dragon king",
+                        "Unicorn",
+                        "Penguin emperor"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Elephant carry during the flood?",
+                  "options": [
+                        "Rabbit",
+                        "A mountain",
+                        "A boat made of gold",
+                        "Nothing"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did villagers say about strength without kindness?",
+                  "options": [
+                        "It is only noise",
+                        "It is always best",
+                        "It wins every race",
+                        "It replaces food"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "In the white elephant legend, who nursed the wounded calf?",
+                  "options": [
+                        "A young prince",
+                        "A merchant who hoarded rice",
+                        "A snow leopard",
+                        "Nobody"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "Why do Myanmar children often learn the elephant first?",
+                  "options": [
+                        "Gentleness and strength can share one heart",
+                        "Elephants cannot swim",
+                        "Tigers are illegal",
+                        "Birds are too small"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "Elephant", mm: "ဆင်", emoji: "🐘", hint: "sin" },
         { en: "Cat", mm: "ကြောင်", emoji: "🐱", hint: "kyaung" },
@@ -90,8 +306,80 @@
       title: "Colors",
       badge: "Color Artist",
       gameTitle: "Catch the Colors",
-      story: "Aye paints a picture for Grandma. Red like a rose, gold like a pagoda. Each color has a beautiful Myanmar word.",
+      storyTitle: "The Pagoda of Gold",
+      heritage: {
+        title: "Gold of Shwedagon",
+        text: "Shwedagon Pagoda in Yangon shines with real gold leaf — a color every Myanmar heart knows. Monks wear saffron robes at dawn. Thingyan brings bright splashes of festival color. In Myanmar, gold is not only pretty — it means sacred and worthy of respect."
+      },
+      story: "In old Yangon, a girl named May walked with her father before sunrise to Shwedagon Pagoda. The hill was quiet except for barefoot pilgrims and the soft sweep of brooms on stone. \"Why is it gold?\" May asked. Her father pointed to the spire glowing in the first light. \"People donate gold leaf to show gratitude,\" he said. \"A little from many hands becomes something the whole city can see.\"\n\nOn the way home they passed monks in saffron robes carrying black alms bowls. May noticed how the orange cloth looked like fire that did not burn — calm, steady, bright. At the market she saw red tomatoes, green bananas, white jasmine garlands, and blue umbrellas against the monsoon sky.\n\nThat afternoon May painted a picture for her grandmother using every color she had learned. Her grandmother said, \"Colors are words for feelings we cannot speak. Gold is thankfulness. Green is hope after rain.\" May kept the painting for years.",
+      explainedStory: "There is a temple tale about a poor girl who wanted to offer something beautiful to the pagoda but owned only white flowers from the roadside. She stayed all night arranging them while richer visitors placed gold and jewels.\n\nAt dawn the flowers shimmered like gold in the sun, and the head monk said, \"The gift is not measured by weight but by sincerity.\" The girl learned that white can be pure and gold can live in a humble heart.\n\nMyanmar festivals paint the world in every hue — red lanterns at Thadingyut, yellow robes at ordination, pink blossoms in the hot season. Learning colors is learning to see the country the way poets and painters have seen it for centuries.",
+      tip: "Pick one color each day from clothes, toys, or fruit. Say the English name, then tap Myanmar on the card. Gold and green connect easily to pagodas and forests.",
+      explainedTip: "Draw a pagoda together and talk about gold, red, and white — the colors children see in Myanmar art. Let your child name each part aloud before coloring.",
+      explainedSentences: [
+        { en: "The pagoda is gold.", mm: "ဘုရားက ရွှေရောင်ပါ။" },
+        { en: "Monks wear orange robes.", mm: "ရဟန်းတွေ လိမ္မော်ရောင် ဝတ်တယ်။" },
+        { en: "The sky is blue.", mm: "ကောင်းကင် အပြာပါ။" },
+        { en: "Grass is green.", mm: "မြက်က အစိမ်းပါ။" },
+        { en: "The flower is red.", mm: "ပန်း အနီပါ။" },
+        { en: "Clouds are white.", mm: "တိမ်တွေ အဖြူပါ။" },
+        { en: "Night is black.", mm: "ညက အနက်ပါ။" },
+        { en: "The sun is yellow.", mm: "နေက အဝါပါ။" },
+        { en: "I like pink flowers.", mm: "ပန်းရောင် ပန်းလေး ကြိုက်တယ်။" },
+        { en: "Brown is the color of earth.", mm: "အညိုရောင် မြေကြီးရဲ့ အရောင်ပါ။" }
+      ],
       parentPhrase: { en: "What color is this?", mm: "ဒါ ဘာအရောင်လဲ?" },
+      quizQuestions: [
+            {
+                  "q": "Which pagoda did May visit with her father at dawn?",
+                  "options": [
+                        "Shwedagon Pagoda",
+                        "A pagoda on the moon",
+                        "A glass tower in space",
+                        "No pagoda at all"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "Why is Shwedagon gold in the story?",
+                  "options": [
+                        "People donate gold leaf in gratitude",
+                        "Paint from a factory",
+                        "It is made of paper",
+                        "Magic rain only"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What color were the monks' robes that May noticed?",
+                  "options": [
+                        "Saffron orange",
+                        "Bright blue",
+                        "Neon pink",
+                        "Invisible"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "In the temple tale, what did the poor girl offer?",
+                  "options": [
+                        "White roadside flowers arranged with sincerity",
+                        "A diamond crown",
+                        "A spaceship",
+                        "Nothing — she left"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Grandmother say gold means as a feeling?",
+                  "options": [
+                        "Thankfulness",
+                        "Anger",
+                        "Sleepiness",
+                        "Fear"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "Red", mm: "အနီ", emoji: "🔴", hint: "a-ni" },
         { en: "Blue", mm: "အပြာ", emoji: "🔵", hint: "a-pya" },
@@ -113,8 +401,80 @@
       title: "Numbers",
       badge: "Number Ninja",
       gameTitle: "Catch the Numbers",
-      story: "Aye counts mangoes at the market with Mum. One, two, three — in English at school, in Myanmar at home.",
+      storyTitle: "The Merchant Who Counted Wrong",
+      heritage: {
+        title: "Counting at Bagan",
+        text: "Ancient Bagan once held thousands of brick temples — builders counted bricks, donors counted offerings, monks counted prayer beads. At village markets, sellers still count mangoes and eggs aloud in Myanmar. Numbers rhythm through daily life like footsteps on temple stairs."
+      },
+      story: "In a market town near Bagan, a young seller named Hnin laid out mangoes in neat rows. An old traveler stopped and asked, \"Child, how many?\" Hnin counted quickly — one, two, three, up to ten — but she rushed and gave the traveler eleven by mistake.\n\nThe traveler did not scold her. He placed ten coins on the mat and said, \"Count again with your eyes and your voice together. Numbers are honest when we are patient.\" Hnin counted slowly, touching each mango. She laughed when she saw her error and returned the extra fruit.\n\nFrom that day, merchants trusted her. She taught her little brother the same lesson: count fingers, count steps to the pagoda, count candles on Thadingyut night — and never hurry past the truth.",
+      explainedStory: "Legend says the first king of Bagan asked his builders how many temples would stand on the plain. One wise monk answered with a handful of sand. \"As many as grains you cannot hold,\" he said, \"for merit has no final number.\"\n\nStill, children learned to count — one lamp, two bowls, three birds on the wall, four oxen in the field, five monks at dawn. Numbers ordered the world: seasons, festivals, ages, and gifts for elders.\n\nWhen you learn one through ten in Myanmar, you join a chain of market sellers, temple caretakers, and mothers measuring rice that stretches back longer than memory.",
+      tip: "Count everyday objects aloud — fingers, stairs, spoons. Say the English number first, then tap Myanmar on the card. Keep it playful, never a test.",
+      explainedTip: "Use snack time: count five grapes or ten raisins in English, then hear the Myanmar number on each card. Slow counting builds confidence.",
+      explainedSentences: [
+        { en: "One mango on the plate.", mm: "ပန်းပွဲပေါ်မှာ သရက်သီး တစ်လုံး။" },
+        { en: "Two cups of tea.", mm: "လက်ဖက်ရည် နှစ်ခွက်။" },
+        { en: "Three monks walk by.", mm: "ရဟန်း သုံးပါး လျှောက်သွားတယ်။" },
+        { en: "Four friends share fruit.", mm: "သူငယ်ချင်း လေးယောက် သစ်သီး မျှတယ်။" },
+        { en: "Five candles for Grandma.", mm: "အဘွားအတွက် ဖယောင်းတိုင်ငါးတိုင်း။" },
+        { en: "Six eggs in the basket.", mm: "ခြင်းထဲမှာ ဥ ခြောက်လုံး။" },
+        { en: "Seven days in a week.", mm: "တစ်ပတ်မှာ ခုနစ်ရက်။" },
+        { en: "Eight birds on the roof.", mm: "အမိုးပေါ်မှာ ငှက် ရှစ်ကောင်။" },
+        { en: "Nine flowers for the pagoda.", mm: "ဘုရားအတွက် ပန်း ကိုးပွင့်။" },
+        { en: "Ten fingers to count with.", mm: "လက်ချောင်းဆယ်ချောင်းနဲ့ ရေတွက်မယ်။" }
+      ],
       parentPhrase: { en: "How many?", mm: "ဘယ်နှစ်ခုလဲ?" },
+      quizQuestions: [
+            {
+                  "q": "Where did Hnin sell mangoes in the story?",
+                  "options": [
+                        "A market town near Bagan",
+                        "At the North Pole",
+                        "On the moon",
+                        "Underwater"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did the old traveler place on the mat?",
+                  "options": [
+                        "Ten coins",
+                        "One hundred mangoes",
+                        "A magic wand",
+                        "A fish"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What lesson did Hnin learn about counting?",
+                  "options": [
+                        "Count with eyes and voice together — do not rush",
+                        "Never count aloud",
+                        "Always guess",
+                        "Numbers do not matter"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did the wise monk compare to grains of sand at Bagan?",
+                  "options": [
+                        "Merit and temples — too many to hold",
+                        "Fish in the sea only",
+                        "Snowflakes",
+                        "Stars you can eat"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Hnin teach her little brother to count?",
+                  "options": [
+                        "Fingers, steps to the pagoda, and festival candles",
+                        "Only zero",
+                        "Alien planets",
+                        "Secret passwords"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "One", mm: "တစ်", emoji: "1️⃣", hint: "tit" },
         { en: "Two", mm: "နှစ်", emoji: "2️⃣", hint: "hni" },
@@ -137,8 +497,80 @@
       title: "Body Parts",
       badge: "Body Explorer",
       gameTitle: "Catch the Body Parts",
-      story: "After playing outside, Aye washes her hands and learns body words. Point to your nose — နှာခေါင်း!",
+      storyTitle: "The Dancer's Hands",
+      heritage: {
+        title: "Body and respect",
+        text: "Classical Burmese dance tells stories with every movement — curved fingers like flower petals, feet stepping in careful patterns. In Myanmar culture, pointing feet at a person or sacred image is impolite. Learning body words helps children speak clearly and move respectfully."
+      },
+      story: "In Mandalay, a dance teacher named Daw Khin gathered children in a teak hall open to the garden. \"Your hands speak before your mouth,\" she told them. She lifted her arms slowly, wrists soft, fingers bent like temple roof corners.\n\nA shy boy named Zaw watched his feet nervously. \"Feet carry you to elders,\" Daw Khin said gently. \"Do not turn your soles toward the Buddha image or toward your teacher. Turn your heart instead.\" Zaw practiced bowing, placing his hands together, washing his face and ears each morning as his mother instructed.\n\nOn performance day, the audience saw not only red costumes and gold belts but children who understood that head, eye, ear, and heart belong to a body that should show kindness. Afterward, Daw Khin said, \"A dancer with clean hands and a calm heart honors the story.\"",
+      explainedStory: "There is an old tale about a giant who had strong arms and legs but never listened. Birds spoke into his ears; he ignored them. Friends looked into his eyes; he turned away. When he fell ill, only small hands — a child's hands — could feed him spoon by spoon until he learned to care.\n\nThe giant wept and said, \"I used my mouth too much and my heart too little.\" From then on he washed his hands before meals and touched his chest when he apologized.\n\nMyanmar parents teach children that the body is a guesthouse for the soul. Wash it, rest it, and use it to help — not to frighten or shame others.",
+      tip: "Play Simon Says with body parts in English, then tap the Myanmar button on each card. Include wash your hands — a daily habit with a clear word.",
+      explainedTip: "Before bedtime, name three body parts you used today — hands that drew, feet that ran, eyes that read. Hear the Myanmar word for each one together.",
+      explainedSentences: [
+        { en: "Wash your hands.", mm: "လက်ကို ဆေးပါ။" },
+        { en: "Open your eyes wide.", mm: "မျက်လုံး ချွင့်ပါ။" },
+        { en: "Listen with your ears.", mm: "နားနဲ့ နားထောင်ပါ။" },
+        { en: "Smell the flowers with your nose.", mm: "နှာခေါင်းနဲ့ ပန်းကို ရနံ့ကြည့်ပါ။" },
+        { en: "Speak kind words with your mouth.", mm: "ပါးစပ်နဲ့ ကောင်းကောင်း ပြောပါ။" },
+        { en: "My head bows to Grandma.", mm: "ခေါင်းက အဘွားကို ညွတ်တယ်။" },
+        { en: "My feet walk slowly in the temple.", mm: "ခြေထောက်က ဘုရားမှာ ဖြည်းဖြည်းလျှောက်တယ်။" },
+        { en: "My heart feels happy.", mm: "နှလုံးက ပျော်တယ်။" },
+        { en: "Brush your hair.", mm: "ဆံပင်ကို စီပါ။" },
+        { en: "Clean your teeth.", mm: "သွားကို သန့်ရှင်းပါ။" }
+      ],
       parentPhrase: { en: "Wash your hands.", mm: "လက်ကို ဆေးပါ။" },
+      quizQuestions: [
+            {
+                  "q": "Where did Daw Khin teach dance in Mandalay?",
+                  "options": [
+                        "A teak hall open to the garden",
+                        "A submarine",
+                        "A roller coaster",
+                        "A snow cave"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What should you not turn toward a Buddha image or teacher?",
+                  "options": [
+                        "The soles of your feet",
+                        "Your smile",
+                        "Your hands when bowing",
+                        "Your ears when listening"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Daw Khin say hands do before the mouth?",
+                  "options": [
+                        "Speak first through movement and respect",
+                        "Stay hidden always",
+                        "Make loud noises",
+                        "Hold toys only"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "In the giant's tale, what small hands fed him?",
+                  "options": [
+                        "A child's hands, spoon by spoon",
+                        "Robot arms",
+                        "Wings of a peacock",
+                        "Nobody helped"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "How is the body described in Myanmar teaching?",
+                  "options": [
+                        "A guesthouse for the soul — wash it and use it to help",
+                        "A machine to ignore",
+                        "Only for running races",
+                        "Something to fear"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "Head", mm: "ခေါင်း", emoji: "🙂", hint: "kaung" },
         { en: "Eye", mm: "မျက်လုံး", emoji: "👁️", hint: "myet-lone" },
@@ -160,8 +592,80 @@
       title: "Home",
       badge: "Home Helper",
       gameTitle: "Catch Home Items",
-      story: "Aye helps tidy the house before Grandma's video call. Bed, door, lamp — every room has words to learn.",
+      storyTitle: "The House on Stilts",
+      heritage: {
+        title: "Teak houses and open windows",
+        text: "Traditional Myanmar homes are built from teak, raised on stilts so rain flows beneath and cool air passes through. The kitchen smells of garlic and tea. The bed waits after long days. These home words hold the shape of memory for families near and far."
+      },
+      story: "When the monsoon came to a delta village, water rose around the houses but never entered Nwe's home, because the floor stood on strong teak stilts. She opened the window and smelled rain on banana leaves while her mother cooked in the kitchen below.\n\n\"Every room has a duty,\" her father said, carrying a chair to the porch. \"The door welcomes guests. The lamp welcomes sight. The bed welcomes rest after honest work.\" Nwe swept the floor, folded blankets, and placed slippers neatly by the door — small tasks that kept the house peaceful.\n\nOne evening travelers knocked, wet and tired. Nwe's family lit the lamp, boiled water, and offered rice. Later her grandmother said, \"A house is not only wood and nails. It is the way people inside treat those who arrive.\" Nwe never forgot that the home begins at the door.",
+      explainedStory: "Folk wisdom says a house with a clean kitchen feeds the spirit, a house with a bright window feeds the mind, and a house with a soft bed feeds the body. A lazy son in an old tale left his room messy and his lamp unlit. Guests thought the family had moved away.\n\nWhen his sister returned from the convent, she cleaned each room in silence. The neighbors said the house looked alive again, as if light had remembered where to sit. The brother learned to care for table, chair, and window — not for praise, but because a neglected house forgets its own name.\n\nLearning words like room, door, and kitchen is learning the grammar of hospitality Myanmar families have practiced for generations.",
+      tip: "Walk through your home naming one object per room in English, then tap Myanmar on the matching card. Start with bed, door, and kitchen — words children use every day.",
+      explainedTip: "Give your child one small home task — closing a window, placing a chair back, switching on a lamp — and say the word together before and after doing it.",
+      explainedSentences: [
+        { en: "Welcome to our house.", mm: "ကျွန်တော်တို့ အိမ်ကို ကြိုဆိုပါတယ်။" },
+        { en: "Close the door, please.", mm: "တံခါးပိတ်ပေးပါ။" },
+        { en: "Open the window for air.", mm: "လေဝင်ဖို့ ပြတင်းပေါက် ဖွင့်ပါ။" },
+        { en: "My bed is soft.", mm: "ငါ့အိပ်ရာ နူးညံ့တယ်။" },
+        { en: "Sit on the chair.", mm: "ထိုင်ခုံမှာ ထိုင်ပါ။" },
+        { en: "The table is for eating.", mm: "စားပွဲက စားဖို့ပါ။" },
+        { en: "Turn on the lamp.", mm: "မီးဖွင့်ပါ။" },
+        { en: "Mother is in the kitchen.", mm: "အမေ မီးဖိုချောင်မှာ ရှိတယ်။" },
+        { en: "Wash in the bathroom.", mm: "ရေချိုးခန်းမှာ ရေချိုးပါ။" },
+        { en: "This is my room.", mm: "ဒါ ငါ့အခန်းပါ။" }
+      ],
       parentPhrase: { en: "Go to your room.", mm: "မင်းအခန်းကို သွားပါ။" },
+      quizQuestions: [
+            {
+                  "q": "Why did water not enter Nwe's house during the monsoon?",
+                  "options": [
+                        "The floor stood on strong teak stilts",
+                        "The house could fly",
+                        "It was made of ice",
+                        "There was no rain"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What welcomes guests according to Nwe's father?",
+                  "options": [
+                        "The door",
+                        "The television",
+                        "The closet",
+                        "The roof only"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Nwe's family offer wet travelers?",
+                  "options": [
+                        "Lamp light, boiled water, and rice",
+                        "Nothing — they locked the door",
+                        "Only jokes",
+                        "A map to Mars"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "In folk wisdom, a house with a clean kitchen feeds what?",
+                  "options": [
+                        "The spirit",
+                        "Only insects",
+                        "Nothing at all",
+                        "The moon"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What is a house beyond wood and nails?",
+                  "options": [
+                        "How people inside treat those who arrive",
+                        "Only the color of paint",
+                        "The number of windows",
+                        "A shopping list"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "House", mm: "အိမ်", emoji: "🏠", hint: "ain" },
         { en: "Room", mm: "အခန်း", emoji: "🚪", hint: "a-khan" },
@@ -183,8 +687,80 @@
       title: "School",
       badge: "School Star",
       gameTitle: "Catch School Items",
-      story: "At school Aye speaks English. At home she learns Myanmar words for pencil, book, and teacher — so both worlds connect.",
-        parentPhrase: { en: "Do you have homework?", mm: "အိမ်စာ ရှိလား?" },
+      storyTitle: "The Monastery School",
+      heritage: {
+        title: "Learning under the saya",
+        text: "For centuries, monastery schools called kyaung taught reading, writing, and gentle ethics across Myanmar. Teachers — saya for men, sayama for women — are deeply respected. Students bow and say thank you with both hands. Learning is a gift, not a race."
+      },
+      story: "Before sunrise, boys in white shirts walked barefoot to the monastery school, slates and pencils wrapped in cloth. The oldest monk — everyone called him Saya — rang a small bell, and the courtyard grew quiet except for birds.\n\nA new student named Paing could not yet write his name. He hid his blank slate, ashamed. Saya knelt beside him and drew one line, then another. \"Every book begins with a single mark,\" he said. \"Your pencil is small, but your patience can be large.\" Paing copied the letters until the sun touched the pagoda spire.\n\nAt term's end, Paing read aloud to the village. His mother cried with joy. Saya only nodded, but his eyes shone. \"Knowledge kept in one pocket disappears,\" he told the class. \"Knowledge shared becomes a lantern for others.\"",
+      explainedStory: "There is a story about a lazy pupil who copied his friend's homework with a stolen pen. The ink faded overnight, leaving empty pages. The friend, kinder than the thief deserved, shared his own book and stayed late teaching letters by lamplight.\n\nThe lazy pupil wept and returned the pen. From that day he carried his own bag, sharpened his own pencil, and erased mistakes without shame. The teacher said, \"A true student fails aloud and tries again.\"\n\nWhether lessons happen in a monastery courtyard or a modern classroom, Myanmar tradition honors the teacher, the book, and the friend who helps you when a word is hard.",
+      tip: "Pack a bag together and name each school item in English, then tap Myanmar on the card. Thank the teacher out loud — gratitude is part of Myanmar school culture.",
+      explainedTip: "After homework, read one sentence from the explained page together. Praise effort, not speed — the monastery teachers did the same for centuries.",
+      explainedSentences: [
+        { en: "I go to school.", mm: "ကျောင်းသွားတယ်။" },
+        { en: "The teacher is kind.", mm: "ဆရာ ကောင်းတယ်။" },
+        { en: "Open your book.", mm: "စာအုပ်ဖွင့်ပါ။" },
+        { en: "Write with a pencil.", mm: "ခဲတံနဲ့ ရေးပါ။" },
+        { en: "My bag is heavy.", mm: "အိတ်က လေးတယ်။" },
+        { en: "My friend helps me.", mm: "သူငယ်ချင်း ကူညီပေးတယ်။" },
+        { en: "We sit in class.", mm: "စာသင်ခန်းမှာ ထိုင်ကြတယ်။" },
+        { en: "I have homework.", mm: "အိမ်စာ ရှိတယ်။" },
+        { en: "Use the eraser gently.", mm: "ခဲဖျက် နူးညံ့စွာ သုံးပါ။" },
+        { en: "Today's lesson is good.", mm: "ဒီနေ့ သင်ခန်းစာ ကောင်းတယ်။" }
+      ],
+      parentPhrase: { en: "Do you have homework?", mm: "အိမ်စာ ရှိလား?" },
+      quizQuestions: [
+            {
+                  "q": "Where did Paing learn before sunrise?",
+                  "options": [
+                        "A monastery school courtyard",
+                        "A shopping mall",
+                        "A submarine classroom",
+                        "Nowhere — he never went"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Saya ring to begin lessons?",
+                  "options": [
+                        "A small bell",
+                        "A fire alarm for fun",
+                        "A drum made of chocolate",
+                        "Nothing"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Saya draw for Paing on the blank slate?",
+                  "options": [
+                        "One line, then another — the start of his name",
+                        "A rocket ship only",
+                        "An empty page forever",
+                        "A secret code in English only"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "In the lazy pupil tale, what happened to copied ink overnight?",
+                  "options": [
+                        "It faded, leaving empty pages",
+                        "It turned to gold",
+                        "It became a butterfly",
+                        "It sang a song"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Saya say knowledge shared becomes?",
+                  "options": [
+                        "A lantern for others",
+                        "A locked box",
+                        "A forgotten dream",
+                        "A punishment"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "School", mm: "ကျောင်း", emoji: "🏫", hint: "kyaung" },
         { en: "Teacher", mm: "ဆရာ", emoji: "👩‍🏫", hint: "saya" },
@@ -206,8 +782,80 @@
       title: "Feelings",
       badge: "Feelings Friend",
       gameTitle: "Catch the Feelings",
-      story: "Sometimes Aye feels happy, sometimes tired. Learning feeling words in Myanmar helps her tell parents how she really feels.",
+      storyTitle: "The Heart That Said Thank You",
+      heritage: {
+        title: "Gentle speech",
+        text: "Burmese has soft ways to say thank you and please. Feelings live in the heart — sate — in Myanmar thought. Folk tales teach that anger burns quickly but kindness lasts like lamp oil through the night."
+      },
+      story: "Under a full moon, a girl named Thiri helped her aunt prepare offerings for the pagoda. When a tray slipped, rice scattered on the floor. Thiri felt anger rise hot in her chest, and sharp words flew toward her little cousin.\n\nHer aunt did not punish her. She placed a hand on Thiri's heart and said, \"Feelings are visitors. You may greet them, but you need not let them sit forever.\" Together they cleaned the floor. Thiri whispered sorry. Her cousin hugged her, and the anger melted like sugar in tea.\n\nWalking home, Thiri saw lanterns glowing along the road. She felt happy, tired, and grateful all at once. \"Thank you,\" she told her aunt — not only for the lesson, but for patience when her own heart had been stormy.",
+      explainedStory: "There is a tale about a prince who owned every toy yet always felt sad. A wandering monk asked to share his meal. The prince refused at first, then watched the monk thank the cook, the farmer, and the rain with equal warmth.\n\nThe prince tried the same words — please, thank you, sorry — and discovered his chest felt lighter. He learned that love and gratitude are feelings you can practice like a dance step until they become natural.\n\nMyanmar children are taught to name what they feel instead of hiding it. Hungry, scared, excited, tired — each word is a bridge between the heart and the people who care.",
+      tip: "At day’s end, ask your child to name one feeling in English. Tap the Myanmar button together. Model saying thank you and sorry when feelings run strong.",
+      explainedTip: "When your child is upset, name the feeling calmly — angry, sad, tired — then breathe once before speaking. This mirrors how elders teach emotional patience.",
+      explainedSentences: [
+        { en: "I am happy today.", mm: "ဒီနေ့ ပျော်ရွှင်တယ်။" },
+        { en: "I feel sad.", mm: "ဝမ်းနည်းတယ်။" },
+        { en: "Please help me.", mm: "ကျေးဇူးပြုပြီး ကူညီပေးပါ။" },
+        { en: "Thank you very much.", mm: "ကျေးဇူးအများကြီးတင်ပါတယ်။" },
+        { en: "Sorry, I was wrong.", mm: "ဆောရီး မှားသွားတယ်။" },
+        { en: "I am tired.", mm: "ပင်ပန်းတယ်။" },
+        { en: "I am hungry.", mm: "ဗိုက်ဆာတယ်။" },
+        { en: "I love you, Grandma.", mm: "အဘွား ချစ်တယ်။" },
+        { en: "I am a little scared.", mm: "နည်းနည်း ကြောက်တယ်။" },
+        { en: "I am excited!", mm: "စိတ်လှုပ်ရှားလိုက်တာ!" }
+      ],
       parentPhrase: { en: "Are you happy?", mm: "ပျော်ရွှင်လား?" },
+      quizQuestions: [
+            {
+                  "q": "What festival preparations was Thiri helping with?",
+                  "options": [
+                        "Pagoda offerings under a full moon",
+                        "A snowball fight",
+                        "A car race",
+                        "Nothing — she slept all day"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What did Thiri's aunt compare feelings to?",
+                  "options": [
+                        "Visitors you greet but need not keep forever",
+                        "Stones you must swallow",
+                        "Birds that never land",
+                        "Ghosts that own you"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What melted like sugar in tea after Thiri apologized?",
+                  "options": [
+                        "Her anger",
+                        "The pagoda",
+                        "The moon",
+                        "Her shoes"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "In the prince's tale, what words made his chest feel lighter?",
+                  "options": [
+                        "Please, thank you, and sorry",
+                        "Shout louder",
+                        "Buy more toys",
+                        "Never speak"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "Why should children name their feelings?",
+                  "options": [
+                        "It builds a bridge to people who care",
+                        "To win arguments only",
+                        "To hide from family",
+                        "Feelings should stay secret forever"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "Happy", mm: "ပျော်ရွှင်", emoji: "😊", hint: "pyaw-shwin" },
         { en: "Sad", mm: "ဝမ်းနည်း", emoji: "😢", hint: "wun-nay" },
@@ -229,8 +877,80 @@
       title: "Myanmar Festivals",
       badge: "Festival Fan",
       gameTitle: "Catch Festival Fun",
-      story: "Thingyan water festival, lights at Thadingyut, hot air balloons at Tazaungdaing — Myanmar festivals are full of joy and special words.",
+      storyTitle: "Three Lights in One Year",
+      heritage: {
+        title: "Thingyan, Thadingyut, Tazaungdaing",
+        text: "Thingyan washes the old year away with water and laughter. Thadingyut honors parents and grandparents with candles and gifts. At Tazaungdaing, giant hot-air balloons rise over Taunggyi like stars you can touch. These festivals hold some of Myanmar's brightest memories."
+      },
+      story: "In one turning year, a village celebrated three great festivals, and a boy named Lin tried to remember them all.\n\nAt Thingyan, elders poured scented water over his hands and said, \"Let anger flow away like mud in the street.\" Children danced while drums shook the air, and everyone laughed when Lin's shirt soaked through.\n\nMonths later, Thadingyut lit the hills with candles. Lin carried gifts to his grandparents and bowed low. \"Light for those who lighted your path,\" his father said.\n\nWhen Tazaungdaing arrived, paper balloons filled with flame rose into the night above Taunggyi. Lin whispered a wish as his village balloon climbed — not for toys, but for health for his family and peace for the land. He understood then that festivals are not only fun. They are promises renewed each year.",
+      explainedStory: "An old monk once told travelers that Myanmar festivals follow the heart's seasons. Thingyan cleans. Thadingyut thanks. Tazaungdaing hopes.\n\nHe said a child who only wants candy at a festival learns sugar, but a child who watches monks receive offerings learns gratitude. A child who runs from water learns fear, but a child who shares a cup learns courage.\n\nPagoda visits, dancing, gifts, and lights — each word in this chapter names a piece of joy Myanmar people have guarded through war, rain, and time. To speak these words is to carry the festival forward.",
+      tip: "Show photos or videos of Myanmar festivals if you have them. Name Thingyan, lights, and pagoda in English, then tap Myanmar on each card. Connect words to memories, not dates.",
+      explainedTip: "Pick one festival tradition to act out at home — a small water blessing, lighting a safe candle, or making a paper balloon drawing — and say the festival words while you play.",
+      explainedSentences: [
+        { en: "Happy Thingyan!", mm: "သင်္ကြန်ပျော်ရွှင်ပါ!" },
+        { en: "We pour water with joy.", mm: "ရေလောင်းကြတယ် ပျော်ရွှင်စွာ။" },
+        { en: "We visit the pagoda.", mm: "ဘုရားကို သွားကြတယ်။" },
+        { en: "Candles shine at Thadingyut.", mm: "တန်ဆောင်တိုင်မှာ ဖယောင်းတိုင်လင်းတယ်။" },
+        { en: "I give a gift to Grandma.", mm: "အဘွားကို လက်ဆောင်ပေးတယ်။" },
+        { en: "Balloons rise at night.", mm: "ညမှာ မီးပုံးပျံ လွှတ်တယ်။" },
+        { en: "We dance together.", mm: "အတူတူ ကပြတယ်။" },
+        { en: "Monks bless our family.", mm: "ရဟန်းက ကျွန်တော်တို့ မိသားစုကို ကျေးဇူးပြုတယ်။" },
+        { en: "Happy New Year!", mm: "နှစ်သစ်မှ ပျော်ရွှင်ပါ!" },
+        { en: "Let's celebrate!", mm: "ပျော်မွေ့ကြရအောင်!" }
+      ],
       parentPhrase: { en: "Happy Thingyan!", mm: "သင်္ကြန်ပျော်ရွှင်ပါ!" },
+      quizQuestions: [
+            {
+                  "q": "What does Thingyan water symbolize in Lin's year?",
+                  "options": [
+                        "Letting anger flow away like mud in the street",
+                        "Winning a swimming race only",
+                        "Cleaning robots",
+                        "Making rice disappear"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "During Thadingyut, whom did Lin carry gifts to?",
+                  "options": [
+                        "His grandparents",
+                        "Only strangers",
+                        "The moon",
+                        "Nobody"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "Where did paper balloons rise on Tazaungdaing?",
+                  "options": [
+                        "Above Taunggyi at night",
+                        "Under the ocean",
+                        "Inside a cave only",
+                        "On Mars"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What wish did Lin whisper as the balloon climbed?",
+                  "options": [
+                        "Health for family and peace for the land",
+                        "A thousand toys",
+                        "To forget Myanmar",
+                        "Endless candy"
+                  ],
+                  "correct": 0
+            },
+            {
+                  "q": "What three seasons of the heart did the old monk describe?",
+                  "options": [
+                        "Thingyan cleans, Thadingyut thanks, Tazaungdaing hopes",
+                        "Eat, sleep, run",
+                        "Winter, summer, fall only",
+                        "None — festivals have no meaning"
+                  ],
+                  "correct": 0
+            }
+      ],
       words: [
         { en: "Thingyan", mm: "သင်္ကြန်", emoji: "💦", hint: "thin-jan" },
         { en: "Water", mm: "ရေ", emoji: "💧", hint: "yay" },
@@ -247,12 +967,10 @@
     }
   ];
 
-  /* Remove obsolete patch */
-
   w.MM_CHAPTERS = CHAPTERS;
   w.MM_BOOK = {
     title: "My First 100 Myanmar Words",
     author: "Jimmy Cooper",
-    tagline: "Keep your child connected to Myanmar — even while growing up overseas."
+    tagline: "Ancient stories, gentle morals, and your first Myanmar words — for English-reading children everywhere."
   };
 })(window);

@@ -1,244 +1,275 @@
 #!/usr/bin/env node
-/* Generate chapter HTML files for My First 100 Myanmar Words */
+/* Generate chapter HTML — 3× (picture · story · explanation · words) + game; Solar-style quiz */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 
 const DIR = __dirname;
-
+const ASSETS = path.join(DIR, "assets");
 const sandbox = { window: {}, console };
 vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-data.js"), "utf8"), sandbox);
 const CHAPTERS = sandbox.window.MM_CHAPTERS;
 
+const LEGACY_IMG = { family: { seg1: "family-photo.png" } };
+const imgCache = {};
+
+function loadImageUri(chapterId, slot) {
+  const key = chapterId + ":" + slot;
+  if (imgCache[key] !== undefined) return imgCache[key];
+  const names = [`${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.png`];
+  if (LEGACY_IMG[chapterId] && LEGACY_IMG[chapterId][slot]) names.unshift(LEGACY_IMG[chapterId][slot]);
+  const fallbacks = { seg2: ["seg1"], seg3: ["seg1"], exp1: ["seg1"], exp2: ["seg2", "seg1"], exp3: ["seg3", "seg1"] };
+  for (const fb of fallbacks[slot] || []) names.push(`${chapterId}-${fb}.jpg`, `${chapterId}-${fb}.png`);
+  for (const name of names) {
+    const p = path.join(ASSETS, name);
+    if (fs.existsSync(p)) {
+      const ext = path.extname(p).toLowerCase();
+      const mime = ext === ".png" ? "image/png" : "image/jpeg";
+      imgCache[key] = `data:${mime};base64,${fs.readFileSync(p).toString("base64")}`;
+      return imgCache[key];
+    }
+  }
+  imgCache[key] = null;
+  return null;
+}
+
+function imgHtml(chapterId, slot, alt) {
+  const uri = loadImageUri(chapterId, slot);
+  if (!uri) {
+    return `<div class="scene-placeholder">Add assets/${chapterId}-${slot}.jpg</div>`;
+  }
+  return `<img class="chapter-hero-img" src="${uri}" alt="${esc(alt)}" decoding="async">`;
+}
+
 const CSS = `
-:root{--bg:#F0F4F8;--surface:#FFFFFF;--primary:#1865F2;--primary-dark:#0B4ECC;--accent:#14BF96;--accent-soft:#D1FAE5;--text:#1B2838;--text-muted:#5F6B7A;--border:#E2E8F0;--mm:#0D47A1;--shadow:0 2px 8px rgba(27,40,56,.08);--shadow-lg:0 8px 24px rgba(27,40,56,.12);--radius:16px;--radius-sm:12px;}
+:root{--palm:#E6D5B8;--palm-dark:#C4A574;--ink:#2C1810;--lacquer:#6B1A1A;--lacquer-deep:#4A0E0E;--gold:#C9A227;--gold-light:#E8C547;--saffron:#D97706;--surface:#FDF8F0;--text:#2C1810;--text-muted:#5C4033;--border:rgba(107,26,26,.18);--shadow:0 2px 10px rgba(44,24,16,.1);--shadow-lg:0 8px 28px rgba(44,24,16,.16);--radius:14px;--radius-sm:10px;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Myanmar Text',Padauk,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.5;-webkit-font-smoothing:antialiased;}
-.container{max-width:680px;margin:0 auto;padding:0 0 40px;}
-.top-bar{background:var(--surface);padding:20px 20px 16px;border-bottom:1px solid var(--border);box-shadow:var(--shadow);}
-.top-bar h1{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.02em;}
-.top-bar .subtitle{font-size:14px;color:var(--text-muted);}
-.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
-.pill{display:inline-flex;align-items:center;gap:4px;background:#EEF2FF;color:var(--primary);font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;}
-.section{padding:20px;}
-.section-head{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:12px;}
-.card{background:var(--surface);border-radius:var(--radius);padding:18px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow);}
-.card h2{font-size:17px;font-weight:700;color:var(--text);margin-bottom:10px;}
-.card p,.card li{font-size:15px;line-height:1.6;color:var(--text-muted);}
-.story-box{background:#F8FAFC;border-radius:var(--radius-sm);padding:14px 16px;font-size:15px;line-height:1.65;color:var(--text);border-left:3px solid var(--primary);}
-.did-you-know{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius-sm);padding:14px;margin-top:12px;font-size:14px;color:#166534;line-height:1.55;}
-.scene-wrap{padding:0 16px 8px;}
-.scene-card{position:relative;width:100%;min-height:min(72vw,340px);border-radius:20px;border:1px solid var(--border);box-shadow:var(--shadow-lg);overflow:hidden;margin-bottom:8px;}
-.scene-bg-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:min(28vw,120px);opacity:.12;pointer-events:none;}
-.scene-title{position:absolute;top:12px;left:0;right:0;text-align:center;font-size:13px;font-weight:600;color:var(--text-muted);z-index:1;pointer-events:none;}
-.scene-hotspot{position:absolute;transform:translate(-50%,-50%);border:none;background:var(--surface);border-radius:50%;width:64px;height:64px;cursor:pointer;box-shadow:0 4px 14px rgba(24,101,242,.2);border:3px solid var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s;font-family:inherit;padding:0;}
-.scene-hotspot:hover,.scene-hotspot.active{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 6px 20px rgba(24,101,242,.35);border-color:var(--accent);}
-.hotspot-emoji{font-size:26px;line-height:1;}
-.hotspot-label{font-size:8px;font-weight:700;color:var(--primary);margin-top:1px;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.scene-bubble{position:absolute;transform:translate(-50%,-100%);background:var(--surface);border:2px solid var(--primary);border-radius:12px;padding:8px 14px;text-align:center;box-shadow:var(--shadow-lg);z-index:20;animation:popIn .25s ease;pointer-events:none;white-space:nowrap;}
-.scene-bubble strong{display:block;font-size:13px;color:var(--text);}
-.bubble-mm{font-family:'Myanmar Text',Padauk,sans-serif;font-size:16px;color:var(--mm);font-weight:600;}
-@keyframes popIn{from{opacity:0;transform:translate(-50%,-90%) scale(.9)}to{opacity:1;transform:translate(-50%,-100%) scale(1)}}
-.scroll-cue{text-align:center;font-size:13px;color:var(--primary);font-weight:600;padding:8px 0 4px;animation:bob 2s ease infinite;}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-.word-list{display:flex;flex-direction:column;gap:10px;}
-.word-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s;scroll-margin-top:80px;}
-.word-row.highlight{border-color:var(--primary);box-shadow:0 0 0 3px rgba(24,101,242,.15);}
-.word-row-icon{font-size:36px;text-align:center;}
-.word-row-body{min-width:0;}
-.word-row-en{font-size:16px;font-weight:700;color:var(--text);}
-.word-row-mm{font-family:'Myanmar Text',Padauk,sans-serif;font-size:18px;font-weight:600;color:var(--mm);margin-top:2px;}
-.word-row-use{font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.4;}
-.word-row-actions{display:flex;flex-direction:column;gap:6px;}
-.btn-speak{border:none;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:transform .1s,opacity .1s;white-space:nowrap;}
-.btn-speak:active,.btn-speak.pressed{transform:scale(.96);opacity:.9;}
-.btn-en{background:#EEF2FF;color:var(--primary);}
-.btn-mm{background:#ECFDF5;color:#047857;}
-.phrase-card{background:linear-gradient(135deg,#1865F2,#0B4ECC);color:#fff;border:none;}
-.phrase-card h2{color:#fff;}
-.phrase-card p{color:rgba(255,255,255,.85);}
-.phrase-btns{display:flex;gap:10px;margin-top:12px;}
-.phrase-btns .btn-speak{flex:1;justify-content:center;padding:12px;font-size:13px;}
-.phrase-btns .btn-en{background:rgba(255,255,255,.95);color:var(--primary);}
-.phrase-btns .btn-mm{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.35);}
-.game-section{margin:0 16px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
-.game-section h2{font-size:17px;font-weight:700;margin-bottom:8px;}
-.game-canvas{width:100%;height:min(42vh,280px);border-radius:var(--radius-sm);background:#F8FAFC;display:block;touch-action:none;border:1px solid var(--border);}
-.game-start-btn{display:inline-flex;align-items:center;gap:6px;margin:10px 0;padding:11px 20px;border:none;border-radius:999px;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(24,101,242,.3);}
-.game-start-btn:active{transform:scale(.98);}
-.nav-hint{margin:0 16px;padding:14px;text-align:center;font-size:12px;color:var(--text-muted);background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);}
-.learn-grid,.practice-lab{display:flex;flex-direction:column;gap:10px;}
-.learn-card,.practice-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);}
-.learn-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-.learn-emoji{font-size:32px;}
-.learn-head-text strong{display:block;font-size:15px;font-weight:700;}
-.learn-head-text .learn-mm{font-family:'Myanmar Text',Padauk,sans-serif;font-size:17px;color:var(--mm);font-weight:600;}
-.learn-sentence{background:#F8FAFC;border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:10px;font-size:14px;}
-.use-mm{font-family:'Myanmar Text',Padauk,sans-serif;color:var(--mm);font-weight:600;margin-top:4px;}
-.learn-actions,.practice-actions{display:flex;gap:8px;}
-.homework-list{list-style:none;margin-top:10px;}
-.homework-list li{padding:8px 0 8px 24px;position:relative;font-size:14px;color:rgba(255,255,255,.9);border-bottom:1px solid rgba(255,255,255,.15);}
-.homework-list li:before{content:'✓';position:absolute;left:0;font-weight:700;}
-.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
-.question{font-size:16px;font-weight:700;margin-bottom:12px;}
-.options{display:flex;flex-direction:column;gap:8px;}
-.option{padding:12px 14px;background:#F8FAFC;border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-family:'Myanmar Text',Padauk,sans-serif;font-size:16px;text-align:left;transition:border-color .15s;}
-.option.correct{background:#ECFDF5;border-color:#14BF96;}
-.option.wrong{background:#FEF2F2;border-color:#EF4444;}
-.score-bar{text-align:center;font-size:17px;font-weight:700;color:var(--primary);padding:12px;}
-.challenge-box{background:#EEF2FF;border-radius:var(--radius-sm);padding:12px;margin-top:12px;text-align:center;font-size:14px;color:var(--primary);}
-@media(max-width:480px){.word-row{grid-template-columns:44px 1fr;}.word-row-actions{grid-column:1/-1;flex-direction:row;}.scene-hotspot{width:56px;height:56px;}.hotspot-emoji{font-size:22px;}}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--lacquer-deep);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;padding:10px;}
+.manuscript-bg{min-height:calc(100vh - 20px);background:linear-gradient(180deg,rgba(0,0,0,.04),transparent 12%,transparent 88%,rgba(0,0,0,.06)),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(44,24,16,.03) 3px,rgba(44,24,16,.03) 4px),linear-gradient(165deg,#EDE0C4 0%,var(--palm) 35%,#D9C49A 70%,#C9B082 100%);border:3px solid var(--gold);outline:5px solid var(--lacquer);outline-offset:-8px;box-shadow:inset 0 0 80px rgba(44,24,16,.1),0 8px 32px rgba(0,0,0,.4);position:relative;overflow:hidden;}
+.manuscript-bg::before,.manuscript-bg::after{content:'';position:absolute;width:56px;height:56px;border:2px solid var(--gold);opacity:.45;pointer-events:none;}
+.manuscript-bg::before{top:12px;left:12px;border-right:none;border-bottom:none;}
+.manuscript-bg::after{bottom:12px;right:12px;border-left:none;border-top:none;}
+.container{max-width:680px;margin:0 auto;padding:22px 18px 36px;position:relative;z-index:1;}
+.top-bar{text-align:center;padding-bottom:18px;border-bottom:2px double var(--lacquer);margin-bottom:18px;}
+.top-bar h1{font-size:clamp(20px,5vw,26px);font-weight:700;color:var(--lacquer-deep);margin-bottom:6px;}
+.top-bar .subtitle{font-size:14px;color:var(--text-muted);font-style:italic;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
+.pill{display:inline-flex;align-items:center;gap:4px;background:rgba(201,162,39,.2);color:var(--lacquer-deep);font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;border:1px solid rgba(201,162,39,.45);}
+.story-chapter{margin-bottom:28px;}
+.chapter-label{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.chapter-label span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--lacquer);white-space:nowrap;}
+.chapter-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+.scene-wrap{margin-bottom:10px;}
+.scene-card{position:relative;width:100%;border-radius:var(--radius);border:2px solid var(--gold);background:var(--surface);box-shadow:var(--shadow-lg);overflow:hidden;}
+.scene-card-hero{aspect-ratio:16/9;max-height:min(56vw,420px);background:#1a1008;}
+.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 140px),480px);}
+.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-static{pointer-events:none;}
+.scene-placeholder{display:flex;align-items:center;justify-content:center;min-height:180px;padding:20px;text-align:center;font-size:13px;color:var(--text-muted);font-style:italic;}
+.card{background:rgba(253,248,240,.92);border-radius:var(--radius);padding:18px;margin-bottom:14px;border:1px solid var(--border);box-shadow:var(--shadow);}
+.card h2{font-size:17px;font-weight:700;color:var(--lacquer-deep);margin-bottom:10px;}
+.card p{font-size:15px;line-height:1.7;color:var(--text-muted);}
+.story-box{font-size:15px;line-height:1.75;color:var(--ink);white-space:pre-line;}
+.tip-card{background:rgba(201,162,39,.14);border:1px solid rgba(201,162,39,.4);}
+.tip-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--saffron);margin-bottom:8px;}
+.section-head{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--lacquer);margin:16px 0 12px;display:flex;align-items:center;gap:8px;}
+.section-head::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+.legend{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:10px;font-style:italic;}
+.word-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.word-card-item{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:rgba(253,248,240,.95);box-shadow:var(--shadow);}
+.word-card-label{padding:14px 10px 10px;text-align:center;font-size:16px;font-weight:700;color:var(--lacquer-deep);background:rgba(255,255,255,.5);border-bottom:1px solid var(--border);}
+.word-bridge{display:flex;align-items:stretch;}
+.speak-btn{flex:1;border:none;padding:12px 8px;cursor:pointer;font-family:inherit;transition:transform .1s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:64px;}
+.speak-btn:active,.speak-btn.pressed{transform:scale(.96);}
+.speak-btn-en{background:rgba(107,26,26,.08);color:var(--lacquer-deep);border-right:1px solid var(--border);}
+.speak-btn-mm{background:rgba(201,162,39,.15);color:var(--lacquer);}
+.speak-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.75;}
+.speak-icon{font-size:13px;font-weight:700;}
+.game-section{margin-top:8px;background:rgba(253,248,240,.92);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+.game-section h2{font-size:17px;font-weight:700;color:var(--lacquer-deep);margin-bottom:8px;}
+.game-canvas{width:100%;height:min(42vh,280px);border-radius:var(--radius-sm);background:rgba(255,255,255,.45);display:block;touch-action:none;border:1px solid var(--border);}
+.game-start-btn{display:inline-flex;align-items:center;gap:6px;margin:10px 0;padding:11px 20px;border:none;border-radius:999px;background:var(--lacquer);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.challenge-box{background:rgba(201,162,39,.15);border-radius:var(--radius-sm);padding:12px;margin-top:12px;text-align:center;font-size:14px;color:var(--lacquer-deep);border:1px solid rgba(201,162,39,.35);}
+.nav-hint{padding:14px;text-align:center;font-size:12px;color:var(--text-muted);background:rgba(253,248,240,.85);border-radius:var(--radius-sm);border:1px solid var(--border);margin-top:16px;}
+.quiz-card{display:none;background:rgba(253,248,240,.95);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;box-shadow:var(--shadow);}
+.quiz-card.active{display:block;}
+.question{font-size:18px;font-weight:700;color:var(--lacquer-deep);margin-bottom:14px;line-height:1.45;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{padding:12px 16px;background:rgba(255,255,255,.55);border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-family:Georgia,serif;font-size:16px;text-align:left;line-height:1.4;transition:border-color .15s;}
+.option.correct{background:rgba(201,162,39,.25);border-color:var(--gold);}
+.option.wrong{background:rgba(107,26,26,.08);border-color:var(--lacquer);}
+.feedback{margin-top:12px;font-size:15px;font-weight:700;min-height:24px;}
+.feedback.correct{color:#166534;}
+.feedback.wrong{color:var(--lacquer);}
+.score-bar{text-align:center;font-size:17px;font-weight:700;color:var(--lacquer);padding:12px;margin-bottom:8px;}
+.score-card{display:none;text-align:center;padding:24px;background:rgba(201,162,39,.15);border-radius:var(--radius);border:2px solid var(--gold);margin-top:16px;}
+.score-card.show{display:block;}
+@media(max-width:480px){.word-grid{gap:8px;}.speak-btn{min-height:58px;padding:10px 6px;}}
+@media(max-width:360px){.word-grid{grid-template-columns:1fr;}}
 `;
 
-function pad(n){ return String(n).padStart(3,"0"); }
-function slug(title){ return title.replace(/\s+/g,"-"); }
+function pad(n) { return String(n).padStart(3, "0"); }
+function slug(title) { return title.replace(/\s+/g, "-"); }
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
 
-function head(title, extraScript) {
+function chapterHead(title) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My First 100 Myanmar Words - ${title}</title>
+<title>My First 100 Myanmar Words - ${esc(title)}</title>
 <style>${CSS}</style>
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
-<script src="_mmwords-scenes.js"></script>
-${extraScript || ""}
 </head>`;
 }
 
 function navHint() {
-  return `<div class="nav-hint"><div>💡 Use ← → in the top bar for next chapter.</div><div>🏠 Home button returns to the library.</div></div>`;
+  return `<div class="nav-hint"><div>Use ← → in the top bar for the next chapter.</div><div>Home button returns to the library.</div></div>`;
 }
 
-function learnCardsHtml(words, chapterId) {
-  return words.map(w => {
-    const useEn = w.useEn || ("Look — a " + w.en.toLowerCase() + "!");
-    const useMm = w.useMm || w.mm;
-    return `
-    <div class="learn-card word-card" data-en="${w.en}" data-mm="${w.mm}" data-hint="${w.hint || w.en}">
-      <div class="learn-head">
-        <span class="learn-emoji">${w.emoji}</span>
-        <div class="learn-head-text"><strong>${w.en}</strong><span class="learn-mm">${w.mm}</span></div>
-      </div>
-      <div class="learn-sentence"><p class="use-en">${useEn}</p><p class="use-mm">${useMm}</p></div>
-      <div class="learn-actions">
-        <button type="button" class="btn-speak btn-en" onclick="tapEn(this,'${chapterId}')">🇬🇧 English</button>
-        <button type="button" class="btn-speak btn-mm" onclick="tapMm(this,'${chapterId}')">🇲🇲 Myanmar</button>
-      </div>
-    </div>`;
-  }).join("");
+function splitThree(text) {
+  const parts = String(text || "").split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  while (parts.length < 3) parts.push(parts[parts.length - 1] || "");
+  return parts.slice(0, 3);
 }
 
-function practiceLabHtml(sentences) {
-  const list = sentences || [];
-  return list.map(s => `
-    <div class="practice-row phrase-card" data-en="${s.en.replace(/"/g, '&quot;')}" data-mm="${s.mm}" data-hint="">
-      <p>🗣 ${s.en}</p>
-      <p class="practice-mm">${s.mm}</p>
-      <div class="practice-actions">
-        <button type="button" class="btn-speak btn-en" onclick="tapPhrase(this,'en')">🇬🇧 English</button>
-        <button type="button" class="btn-speak btn-mm" onclick="tapPhrase(this,'mm')">🇲🇲 Myanmar</button>
-      </div>
-    </div>`).join("");
+function splitWords(words) {
+  const n = words.length;
+  const a = Math.ceil(n / 3);
+  const b = Math.ceil((n - a) / 2);
+  return [words.slice(0, a), words.slice(a, a + b), words.slice(a + b)];
 }
 
-function defaultPractice(ch) {
+function mainExplanations(ch) {
+  if (ch.segmentExplanations && ch.segmentExplanations.length >= 3) return ch.segmentExplanations.slice(0, 3);
   return [
-    { en: ch.parentPhrase.en, mm: ch.parentPhrase.mm },
-    { en: "Say it again!", mm: "ထပ်ပြောကြည့်ပါ!" },
-    { en: "I can say it!", mm: "ငါ ပြောတတ်ပြီ!" }
+    ch.heritage ? `${ch.heritage.title} — ${ch.heritage.text}` : (ch.tip || "Every Myanmar tale carries a lesson for home and heart."),
+    ch.tip || "Practice the words below by tapping Hear — your child listens first, reads English second.",
+    ch.didYouKnow || "Stories passed under banyan trees taught children morals long before classrooms existed."
   ];
 }
 
-function defaultDidYouKnow(ch) {
-  return "Overseas kids learn faster when they hear words at home AND see them in pictures. Practice " + ch.words.length + " words from this chapter every day!";
+function explainedExplanations(ch) {
+  if (ch.explainedExplanations && ch.explainedExplanations.length >= 3) return ch.explainedExplanations.slice(0, 3);
+  return [
+    ch.explainedTip || explainedTip(ch),
+    ch.heritage ? ch.heritage.text : (ch.tip || ""),
+    "Keep telling these tales — children remember words that arrive inside a story, not on a list."
+  ];
 }
 
-function wordId(en) { return en.toLowerCase().replace(/\s+/g, "-"); }
-
-function wordRowsHtml(words, chapterId) {
-  return words.map(w => {
-    const useEn = w.useEn || ("Look — a " + w.en.toLowerCase() + "!");
-    const useMm = w.useMm || w.mm;
-    const id = wordId(w.en);
-    return `
-    <article class="word-row word-card" id="word-${id}" data-en="${w.en}" data-mm="${w.mm}" data-hint="${w.hint || w.en}">
-      <div class="word-row-icon">${w.emoji}</div>
-      <div class="word-row-body">
-        <div class="word-row-en">${w.en}</div>
-        <div class="word-row-mm">${w.mm}</div>
-        <div class="word-row-use">${useEn}</div>
-      </div>
-      <div class="word-row-actions">
-        <button type="button" class="btn-speak btn-en" onclick="tapEn(this,'${chapterId}')">🇬🇧 English</button>
-        <button type="button" class="btn-speak btn-mm" onclick="tapMm(this,'${chapterId}')">🇲🇲 Myanmar</button>
-      </div>
-    </article>`;
-  }).join("");
+function explainedTip(ch) {
+  if (ch.explainedTip) return ch.explainedTip;
+  if (ch.heritage) return ch.heritage.title + " — " + ch.heritage.text;
+  return ch.tip || "";
 }
 
-function wordCardsHtml(words, chapterId) {
-  return wordRowsHtml(words, chapterId);
+function segmentTitles(ch, kind) {
+  const key = kind === "explained" ? "explainedSegmentTitles" : "segmentTitles";
+  if (ch[key] && ch[key].length >= 3) return ch[key].slice(0, 3);
+  const base = kind === "explained" ? "Another tale" : (ch.storyTitle || ch.title + " tale");
+  return [`Part one · ${base}`, "Part two · The lesson deepens", "Part three · The moral"];
+}
+
+function wordGridHtml(words, chapterId) {
+  return words
+    .map((w) => {
+      const id = w.en.toLowerCase().replace(/\s+/g, "-");
+      return `
+    <div class="word-card-item word-card" id="word-${id}" data-en="${esc(w.en)}" data-mm="${esc(w.mm)}" data-hint="${esc(w.hint || w.en)}">
+      <div class="word-card-label">${esc(w.en)}</div>
+      <div class="word-bridge">
+        <button type="button" class="speak-btn speak-btn-en" onclick="tapEn(this,'${chapterId}')">
+          <span class="speak-label">English</span>
+          <span class="speak-icon">🔊 Hear</span>
+        </button>
+        <button type="button" class="speak-btn speak-btn-mm" onclick="tapMm(this,'${chapterId}')">
+          <span class="speak-label">Myanmar</span>
+          <span class="speak-icon">🔊 Hear</span>
+        </button>
+      </div>
+    </div>`;
+    })
+    .join("");
+}
+
+function mainSegmentHtml(ch, idx, story, explanation, words, titles) {
+  const slot = "seg" + (idx + 1);
+  const pic = imgHtml(ch.id, slot, ch.title + " — part " + (idx + 1));
+  return `
+  <section class="story-chapter">
+    <div class="chapter-label"><span>Part ${idx + 1} of 3</span></div>
+    <div class="scene-wrap"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
+    <div class="card">
+      <h2>${esc(titles[idx])}</h2>
+      <div class="story-box">${esc(story)}</div>
+    </div>
+    <div class="card tip-card">
+      <span class="tip-tag">What this teaches</span>
+      <p>${esc(explanation)}</p>
+    </div>
+    <div class="section-head">Press words to hear</div>
+    <p class="legend">English labels only — tap 🔊 Hear for spoken Myanmar (no script shown)</p>
+    <div class="word-grid">${wordGridHtml(words, ch.id)}</div>
+  </section>`;
+}
+
+function explainedSegmentHtml(ch, idx, story, explanation, titles) {
+  const slot = "exp" + (idx + 1);
+  const pic = imgHtml(ch.id, slot, ch.title + " explained — part " + (idx + 1));
+  return `
+  <section class="story-chapter">
+    <div class="chapter-label"><span>Deeper tale · Part ${idx + 1}</span></div>
+    <div class="scene-wrap"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
+    <div class="card">
+      <h2>${esc(titles[idx])}</h2>
+      <div class="story-box">${esc(story)}</div>
+    </div>
+    <div class="card tip-card">
+      <span class="tip-tag">What this teaches</span>
+      <p>${esc(explanation)}</p>
+    </div>
+  </section>`;
 }
 
 function genActivity(ch) {
+  const stories = splitThree(ch.story);
+  const explanations = mainExplanations(ch);
+  const titles = segmentTitles(ch, "main");
+  const wordGroups = splitWords(ch.words);
+  const segments = [0, 1, 2]
+    .map((i) => mainSegmentHtml(ch, i, stories[i], explanations[i], wordGroups[i], titles))
+    .join("");
+
   const fname = `${pad(ch.num)}-${slug(ch.title)}.html`;
-  const html = `${head(ch.title + " — Learn")}
-<body>
+  const html = `${chapterHead(ch.title + " — Learn")}
+<body class="big-chapter-page">
+<div class="manuscript-bg">
 <div class="container">
   <div class="top-bar">
-    <h1>${ch.emoji} ${ch.title}</h1>
-    <div class="subtitle">Explore the scene · then learn each word</div>
+    <h1>${ch.title}</h1>
+    <div class="subtitle">Three ancient tales · ${ch.words.length} words · tap to hear Myanmar</div>
     <div class="pill-row">
-      <span class="pill">📚 ${ch.words.length} words</span>
-      <span class="pill">👆 Tap picture first</span>
+      <span class="pill">${ch.words.length} words</span>
+      <span class="pill">English stories · hear-only Myanmar</span>
     </div>
   </div>
-
-  <div class="scene-wrap">
-    <div class="section-head">${ch.title} scene — tap to explore</div>
-    <div id="chapter-scene" class="scene-card"></div>
-    <p class="scroll-cue">↓ Scroll down to learn each word</p>
-  </div>
-
-  <div class="section">
-    <div class="card">
-      <h2>📖 Story</h2>
-      <div class="story-box">${ch.story}</div>
-      <div class="did-you-know">💡 ${ch.didYouKnow || defaultDidYouKnow(ch)}</div>
-    </div>
-
-    <div class="section-head" style="margin-top:8px;">Learn each word</div>
-    <div class="word-list">${wordRowsHtml(ch.words, ch.id)}</div>
-  </div>
-
-  <div class="section">
-    <div class="card phrase-card" data-en="${ch.parentPhrase.en.replace(/"/g, '&quot;')}" data-mm="${ch.parentPhrase.mm}" data-hint="">
-      <h2>👨‍👩‍👧 Say together at home</h2>
-      <p>${ch.parentPhrase.en}</p>
-      <p style="font-family:'Myanmar Text',Padauk,sans-serif;font-size:18px;margin-top:6px;">${ch.parentPhrase.mm}</p>
-      <div class="phrase-btns">
-        <button type="button" class="btn-speak btn-en" onclick="tapPhrase(this,'en')">🇬🇧 English</button>
-        <button type="button" class="btn-speak btn-mm" onclick="tapPhrase(this,'mm')">🇲🇲 Myanmar</button>
-      </div>
-    </div>
-  </div>
-
+  ${segments}
   <div class="game-section">
-    <h2>🎮 ${ch.gameTitle}</h2>
+    <h2>${ch.gameTitle}</h2>
     <p style="font-size:14px;color:var(--text-muted);margin-bottom:4px;">Catch ${ch.words.length} words · Score: <strong id="catch-score">0</strong></p>
     <button type="button" class="game-start-btn">▶ Start game</button>
     <canvas id="catch-canvas" class="game-canvas"></canvas>
-    <div class="challenge-box">🏆 Earn badge: <strong>${ch.badge}</strong></div>
+    <div class="challenge-box">Earn badge: <strong>${esc(ch.badge)}</strong></div>
   </div>
   ${navHint()}
 </div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  MMScene.boot({ containerId: 'chapter-scene', chapterId: ${JSON.stringify(ch.id)}, words: ${JSON.stringify(ch.words)} });
   MMGame.bootCatch({
     canvasId: 'catch-canvas',
     scoreId: 'catch-score',
@@ -253,96 +284,174 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 function genExplained(ch) {
-  const fname = `${pad(ch.num+1)}-${slug(ch.title)}-Explained.html`;
-  const practice = ch.practiceSentences || defaultPractice(ch);
-  const html = `${head(ch.title + " — Deep Dive")}
-<body>
+  const stories = splitThree(ch.explainedStory || ch.story);
+  const explanations = explainedExplanations(ch);
+  const titles = segmentTitles(ch, "explained");
+  const segments = [0, 1, 2]
+    .map((i) => explainedSegmentHtml(ch, i, stories[i], explanations[i], titles))
+    .join("");
+
+  const fname = `${pad(ch.num + 1)}-${slug(ch.title)}-Explained.html`;
+  const html = `${chapterHead(ch.title + " — Explained")}
+<body class="big-chapter-page">
+<div class="manuscript-bg">
 <div class="container">
   <div class="top-bar">
-    <h1>${ch.emoji} ${ch.title} Deep Dive</h1>
-    <div class="subtitle">${ch.words.length} words · sentences · speaking</div>
+    <h1>${ch.title} — Explained</h1>
+    <div class="subtitle">Three deeper tales · tradition &amp; moral · English only</div>
   </div>
-  <div class="section">
-    <div class="card">
-    <h2>📖 Story & Context</h2>
-    <div class="story-box">${ch.story}</div>
-    <div class="did-you-know">💡 ${ch.didYouKnow || defaultDidYouKnow(ch)}</div>
-  </div>
-  <div class="card">
-    <h2>🎓 Word Lab</h2>
-    <div class="learn-grid">${learnCardsHtml(ch.words, ch.id)}</div>
-  </div>
-  <div class="card">
-    <h2>🗣 Speaking Practice</h2>
-    <div class="practice-lab">${practiceLabHtml(practice)}</div>
-  </div>
-  <div class="card">
-    <h2>🏠 Tonight's Homework</h2>
-    <ul class="homework-list" style="color:var(--text-muted);">
-      <li style="border-bottom:1px solid var(--border);padding-left:24px;">Point to 3 people/things and say the Myanmar word</li>
-      <li style="border-bottom:1px solid var(--border);padding-left:24px;">Practice: "${ch.parentPhrase.en}"</li>
-      <li style="border-bottom:1px solid var(--border);padding-left:24px;">Say 5 words from memory before bed</li>
-      <li style="padding-left:24px;">Call a relative and use 1 new word</li>
-    </ul>
-    <div class="phrase-btns phrase-card" style="margin-top:14px;" data-en="${ch.parentPhrase.en.replace(/"/g, '&quot;')}" data-mm="${ch.parentPhrase.mm}">
-      <button type="button" class="btn-speak btn-en" onclick="tapPhrase(this,'en')">🇬🇧 English</button>
-      <button type="button" class="btn-speak btn-mm" onclick="tapPhrase(this,'mm')">🇲🇲 Myanmar</button>
-    </div>
-  </div>
-  </div>
+  ${segments}
   ${navHint()}
+</div>
 </div>
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
 
+function defaultQuizQuestions(ch) {
+  const h = ch.heritage && ch.heritage.title ? ch.heritage.title : ch.title;
+  return [
+    {
+      q: `What tradition does the ${ch.title} chapter teach about?`,
+      options: [h, "Space travel", "Modern video games", "Ice fishing"],
+      correct: 0
+    },
+    {
+      q: "How should children learn Myanmar words in this book?",
+      options: [
+        "Read Myanmar script first",
+        "Hear words inside stories — English tales, tap to hear Myanmar",
+        "Memorize lists without stories",
+        "Skip the pictures"
+      ],
+      correct: 1
+    },
+    {
+      q: "What kind of stories appear in this book?",
+      options: ["Ancient moral tales", "Science fiction only", "Sports news", "Cooking shows"],
+      correct: 0
+    },
+    {
+      q: `What do you tap on word cards to hear Myanmar speech?`,
+      options: ["The English label", "The 🔊 Hear button on Myanmar", "The page title", "Nothing — it auto-plays"],
+      correct: 1
+    },
+    {
+      q: "Why do Myanmar folktales often use animals?",
+      options: [
+        "To teach morals and friendship",
+        "Because animals cannot talk",
+        "To scare children",
+        "To avoid mentioning people"
+      ],
+      correct: 0
+    }
+  ];
+}
+
 function genQuiz(ch) {
-  const fname = `${pad(ch.num+2)}-${slug(ch.title)}-Quiz.html`;
-  const html = `${head(ch.title + " — Quiz")}
+  const questions = (ch.quizQuestions && ch.quizQuestions.length >= 5)
+    ? ch.quizQuestions.slice(0, 8)
+    : defaultQuizQuestions(ch);
+
+  const cards = questions
+    .map((q, i) => {
+      const opts = q.options
+        .map(
+          (opt, oi) =>
+            `<div class="option" data-correct="${oi === q.correct ? "1" : "0"}" onclick="checkAnswer(this, ${i + 1}, ${oi === q.correct})">${esc(opt)}</div>`
+        )
+        .join("");
+      return `
+  <div class="quiz-card${i === 0 ? " active" : ""}" id="quizCard-${i + 1}">
+    <div class="question">${i + 1}. ${esc(q.q)}</div>
+    <div class="options">${opts}</div>
+    <div class="feedback" id="feedback-${i + 1}"></div>
+  </div>`;
+    })
+    .join("");
+
+  const fname = `${pad(ch.num + 2)}-${slug(ch.title)}-Quiz.html`;
+  const html = `${chapterHead(ch.title + " — Quiz")}
 <body>
+<div class="manuscript-bg">
 <div class="container">
-  <div class="top-bar"><h1>${ch.emoji} ${ch.title} Quiz</h1><div class="subtitle">Match English to Myanmar</div></div>
-  <div class="section">
-  <div class="score-bar">Score: <span id="quiz-score">0</span> / <span id="quiz-total">0</span></div>
-  <div id="quiz-area"></div>
+  <div class="top-bar">
+    <h1>${ch.title} Quiz</h1>
+    <div class="subtitle">Story &amp; tradition — all questions in English</div>
+  </div>
+  <div class="score-bar">Score: <span id="quiz-score">0</span> / ${questions.length}</div>
+  ${cards}
+  <div class="score-card" id="scoreCard">
+    <h2 id="scoreMessage">Well done!</h2>
+    <p id="scoreDetail"></p>
   </div>
   ${navHint()}
 </div>
+</div>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var words = ${JSON.stringify(ch.words)};
-  var questions = MMGame.buildQuiz(words, 8);
-  var area = document.getElementById('quiz-area');
-  var score = 0, answered = 0;
-  document.getElementById('quiz-total').textContent = questions.length;
-  questions.forEach(function(q, qi) {
-    var card = document.createElement('div');
-    card.className = 'quiz-card';
-    card.innerHTML = '<div class="question">Q' + (qi+1) + '. ' + q.prompt + '</div><div class="options"></div>';
-    var opts = card.querySelector('.options');
-    q.options.forEach(function(opt) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'option';
-      btn.textContent = opt;
-      btn.onclick = function() {
-        if (btn.parentElement.dataset.done) return;
-        btn.parentElement.dataset.done = '1';
-        answered++;
-        if (opt === q.correct) { btn.classList.add('correct'); score++; MMAudio.speak(opt,'my-MM'); }
-        else { btn.classList.add('wrong'); Array.from(opts.children).forEach(function(b){ if(b.textContent===q.correct) b.classList.add('correct'); }); }
-        document.getElementById('quiz-score').textContent = score;
-        if (answered === questions.length && score === questions.length) MMPlayer.earnBadge(${JSON.stringify(ch.badge + " Quiz")});
-      };
-      opts.appendChild(btn);
+var currentQuestion = 1;
+var totalQuestions = ${questions.length};
+var score = 0;
+
+function checkAnswer(element, questionNum, isCorrect) {
+  var parent = element.parentElement;
+  var options = parent.querySelectorAll('.option');
+  var feedback = document.getElementById('feedback-' + questionNum);
+  options.forEach(function(opt) { opt.style.pointerEvents = 'none'; });
+  if (isCorrect) {
+    element.classList.add('correct');
+    feedback.textContent = 'Correct! Great job!';
+    feedback.className = 'feedback correct';
+    score++;
+    document.getElementById('quiz-score').textContent = score;
+  } else {
+    element.classList.add('wrong');
+    feedback.textContent = 'Not quite — read the story again!';
+    feedback.className = 'feedback wrong';
+    options.forEach(function(opt) {
+      if (opt.dataset.correct === '1') opt.classList.add('correct');
     });
-    area.appendChild(card);
-  });
-});
+  }
+  setTimeout(nextQuestion, 1400);
+}
+
+function nextQuestion() {
+  var current = document.getElementById('quizCard-' + currentQuestion);
+  if (current) current.classList.remove('active');
+  currentQuestion++;
+  if (currentQuestion <= totalQuestions) {
+    document.getElementById('quizCard-' + currentQuestion).classList.add('active');
+  } else {
+    showScore();
+  }
+}
+
+function showScore() {
+  var card = document.getElementById('scoreCard');
+  var msg = document.getElementById('scoreMessage');
+  var detail = document.getElementById('scoreDetail');
+  card.classList.add('show');
+  if (score === totalQuestions) {
+    msg.textContent = 'Perfect score!';
+    detail.textContent = 'You understood the tales and traditions.';
+    if (window.MMPlayer) MMPlayer.earnBadge(${JSON.stringify(ch.badge + " Quiz")});
+  } else if (score >= totalQuestions - 1) {
+    msg.textContent = 'Almost perfect!';
+    detail.textContent = 'Score: ' + score + ' / ' + totalQuestions;
+  } else {
+    msg.textContent = 'Keep reading the stories!';
+    detail.textContent = 'Score: ' + score + ' / ' + totalQuestions + ' — try the chapter again.';
+  }
+}
 </script>
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
 
-CHAPTERS.forEach(ch => { genActivity(ch); genExplained(ch); genQuiz(ch); });
-console.log("Generated", CHAPTERS.length * 3, "chapter files.");
+CHAPTERS.forEach((ch) => {
+  genActivity(ch);
+  genExplained(ch);
+  genQuiz(ch);
+});
+console.log("Generated", CHAPTERS.length * 3, "chapter files (3-segment layout).");

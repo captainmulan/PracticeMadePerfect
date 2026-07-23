@@ -5,76 +5,284 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My First 100 Myanmar Words - Index</title>
 <style>
+:root{
+  --palm:#E6D5B8;
+  --palm-dark:#C4A574;
+  --ink:#2C1810;
+  --lacquer:#6B1A1A;
+  --lacquer-deep:#4A0E0E;
+  --gold:#C9A227;
+  --gold-light:#E8C547;
+  --saffron:#D97706;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#FFF8E7 0%,#FFE4B5 40%,#FFDAB9 100%);color:#3d2914;min-height:100vh;}
-.pattern{position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:radial-gradient(circle at 20% 30%,#C41E3A 2px,transparent 2px);background-size:48px 48px;}
-.container{max-width:640px;margin:auto;padding:16px 14px 32px;position:relative;z-index:1;}
-.header{text-align:center;margin-bottom:14px;}
-h1{font-size:26px;color:#C41E3A;margin-bottom:6px;}
-.subtitle{color:#8B4513;font-size:15px;}
-.chapter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.chapter-card{background:rgba(255,255,255,.82);border-radius:14px;padding:12px 8px;text-align:center;border:2px solid rgba(255,215,0,.4);transition:.15s;}
-.chapter-number{font-size:11px;color:#888;}
-.chapter-emoji{font-size:28px;margin:4px 0;}
-.chapter-title{font-size:13px;font-weight:bold;color:#3d2914;}
-.chapter-concept{font-size:11px;color:#8B4513;margin-top:2px;}
-.nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#8B4513;background:rgba(255,215,0,.25);padding:10px;border-radius:10px;}
+body{
+  font-family:'Myanmar Text',Padauk,Georgia,'Times New Roman',serif;
+  background:var(--lacquer-deep);
+  color:var(--ink);
+  min-height:100vh;
+  padding:12px;
+}
+.manuscript-bg{
+  min-height:calc(100vh - 24px);
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.04),transparent 12%,transparent 88%,rgba(0,0,0,.06)),
+    repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(44,24,16,.03) 3px,rgba(44,24,16,.03) 4px),
+    linear-gradient(165deg,#EDE0C4 0%,var(--palm) 35%,#D9C49A 70%,#C9B082 100%);
+  border:3px solid var(--gold);
+  outline:6px solid var(--lacquer);
+  outline-offset:-9px;
+  box-shadow:inset 0 0 80px rgba(44,24,16,.12),0 8px 32px rgba(0,0,0,.45);
+  position:relative;
+  overflow:hidden;
+}
+.manuscript-bg::before,.manuscript-bg::after{
+  content:'';
+  position:absolute;
+  width:72px;height:72px;
+  border:2px solid var(--gold);
+  opacity:.55;
+  pointer-events:none;
+}
+.manuscript-bg::before{top:16px;left:16px;border-right:none;border-bottom:none;}
+.manuscript-bg::after{bottom:16px;right:16px;border-left:none;border-top:none;}
+.scroll-wrap{
+  max-width:680px;
+  margin:0 auto;
+  padding:28px 22px 36px;
+  position:relative;
+  z-index:1;
+}
+.header{
+  text-align:center;
+  padding-bottom:20px;
+  border-bottom:2px double var(--lacquer);
+  margin-bottom:22px;
+}
+.ornament-top{
+  font-size:28px;
+  color:var(--gold);
+  letter-spacing:.35em;
+  margin-bottom:8px;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+}
+.title-mm{
+  font-family:'Myanmar Text',Padauk,sans-serif;
+  font-size:clamp(22px,5vw,28px);
+  font-weight:700;
+  color:var(--lacquer-deep);
+  line-height:1.45;
+  margin-bottom:6px;
+}
+.title-en{
+  font-family:Georgia,serif;
+  font-size:15px;
+  font-style:italic;
+  color:#5C4033;
+  letter-spacing:.04em;
+}
+.subtitle-mm{
+  font-family:'Myanmar Text',Padauk,sans-serif;
+  font-size:14px;
+  color:var(--saffron);
+  margin-top:10px;
+}
+.section-block{margin-bottom:22px;}
+.section-label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.section-label span{
+  font-family:'Myanmar Text',Padauk,sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:var(--lacquer);
+  white-space:nowrap;
+}
+.section-label::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+}
+.toc-list{list-style:none;}
+.toc-row{
+  display:grid;
+  grid-template-columns:42px 1fr auto;
+  gap:8px;
+  align-items:baseline;
+  padding:9px 10px;
+  border-bottom:1px dotted rgba(44,24,16,.22);
+  transition:background .15s;
+}
+.toc-row:hover{background:rgba(201,162,39,.12);}
+.toc-num{
+  font-family:Georgia,serif;
+  font-size:12px;
+  font-weight:700;
+  color:var(--gold);
+  text-shadow:0 0 1px var(--lacquer-deep);
+}
+.toc-body{min-width:0;}
+.toc-title{
+  font-size:14px;
+  font-weight:700;
+  color:var(--ink);
+  line-height:1.35;
+}
+.toc-mm{
+  font-family:'Myanmar Text',Padauk,sans-serif;
+  font-size:12px;
+  color:#5C4033;
+  margin-top:2px;
+  opacity:.9;
+}
+.toc-type{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--lacquer);
+  opacity:.75;
+  white-space:nowrap;
+  align-self:center;
+}
+.toc-emoji{font-size:16px;margin-right:4px;vertical-align:middle;}
+.topic-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 14px;
+}
+.topic-grid .toc-row{
+  grid-template-columns:36px 1fr;
+  padding:8px;
+  border:1px solid rgba(107,26,26,.15);
+  border-radius:4px;
+  background:rgba(255,252,245,.45);
+  border-bottom:1px solid rgba(107,26,26,.15);
+}
+.topic-grid .toc-type{display:none;}
+.footer-scroll{
+  margin-top:24px;
+  text-align:center;
+  padding:14px 12px;
+  border-top:2px double var(--lacquer);
+}
+.footer-scroll p{
+  font-family:'Myanmar Text',Padauk,sans-serif;
+  font-size:13px;
+  color:#5C4033;
+  line-height:1.65;
+}
+.footer-scroll .hint-en{
+  font-family:Georgia,serif;
+  font-size:12px;
+  font-style:italic;
+  color:#7A5C44;
+  margin-top:6px;
+}
+.pagoda-deco{
+  display:block;
+  margin:0 auto 12px;
+  opacity:.85;
+}
+@media(max-width:520px){
+  .topic-grid{grid-template-columns:1fr;}
+  .scroll-wrap{padding:20px 14px 28px;}
+}
 </style>
 </head>
 <body>
-<div class="pattern"></div>
-<div class="container">
+<div class="manuscript-bg">
+<div class="scroll-wrap">
+
   <div class="header">
-    <h1>📚 Chapter Index</h1>
-    <div class="subtitle">My First 100 Myanmar Words</div>
+    <svg class="pagoda-deco" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#C9A227" d="M24 4 L32 14 H16 Z"/>
+      <path fill="#6B1A1A" d="M24 14 L34 26 H14 Z"/>
+      <rect x="18" y="26" width="12" height="14" fill="#C9A227"/>
+      <circle cx="24" cy="3" r="2" fill="#E8C547"/>
+    </svg>
+    <div class="ornament-top">✦ ✦ ✦</div>
+    <h1 class="title-mm">Table of Contents</h1>
+    <p class="title-en">Parabaik Index · Ancient manuscript style</p>
+    <p class="subtitle-mm">Stories, morals, and your first Myanmar words</p>
   </div>
-  <div class="chapter-grid">
-    <div class="chapter-card"><div class="chapter-number">001</div><div class="chapter-emoji">📖</div><div class="chapter-title">Book Briefing</div><div class="chapter-concept">Welcome</div></div>
-    <div class="chapter-card"><div class="chapter-number">002</div><div class="chapter-emoji">📑</div><div class="chapter-title">Index</div><div class="chapter-concept">Chapter List</div></div>
-    <div class="chapter-card"><div class="chapter-number">003</div><div class="chapter-emoji">🧒</div><div class="chapter-title">Character Selection</div><div class="chapter-concept">Choose Learner</div></div>
-    <div class="chapter-card"><div class="chapter-number">004</div><div class="chapter-emoji">🌉</div><div class="chapter-title">Word Bridge Intro</div><div class="chapter-concept">Intro Game</div></div>
-    <div class="chapter-card"><div class="chapter-number">005</div><div class="chapter-emoji">🍎</div><div class="chapter-title">First Words Overview</div><div class="chapter-concept">Activity</div></div>
-    <div class="chapter-card"><div class="chapter-number">006</div><div class="chapter-emoji">📖</div><div class="chapter-title">First Words Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">007</div><div class="chapter-emoji">❓</div><div class="chapter-title">First Words Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">008</div><div class="chapter-emoji">👨‍👩‍👧</div><div class="chapter-title">Family</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">009</div><div class="chapter-emoji">📖</div><div class="chapter-title">Family Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">010</div><div class="chapter-emoji">❓</div><div class="chapter-title">Family Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">011</div><div class="chapter-emoji">🍚</div><div class="chapter-title">Food</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">012</div><div class="chapter-emoji">📖</div><div class="chapter-title">Food Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">013</div><div class="chapter-emoji">❓</div><div class="chapter-title">Food Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">014</div><div class="chapter-emoji">🐘</div><div class="chapter-title">Animals</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">015</div><div class="chapter-emoji">📖</div><div class="chapter-title">Animals Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">016</div><div class="chapter-emoji">❓</div><div class="chapter-title">Animals Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">017</div><div class="chapter-emoji">🎨</div><div class="chapter-title">Colors</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">018</div><div class="chapter-emoji">📖</div><div class="chapter-title">Colors Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">019</div><div class="chapter-emoji">❓</div><div class="chapter-title">Colors Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">020</div><div class="chapter-emoji">🔢</div><div class="chapter-title">Numbers</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">021</div><div class="chapter-emoji">📖</div><div class="chapter-title">Numbers Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">022</div><div class="chapter-emoji">❓</div><div class="chapter-title">Numbers Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">023</div><div class="chapter-emoji">👂</div><div class="chapter-title">Body Parts</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">024</div><div class="chapter-emoji">📖</div><div class="chapter-title">Body Parts Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">025</div><div class="chapter-emoji">❓</div><div class="chapter-title">Body Parts Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">026</div><div class="chapter-emoji">🏠</div><div class="chapter-title">Home</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">027</div><div class="chapter-emoji">📖</div><div class="chapter-title">Home Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">028</div><div class="chapter-emoji">❓</div><div class="chapter-title">Home Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">029</div><div class="chapter-emoji">🎒</div><div class="chapter-title">School</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">030</div><div class="chapter-emoji">📖</div><div class="chapter-title">School Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">031</div><div class="chapter-emoji">❓</div><div class="chapter-title">School Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">032</div><div class="chapter-emoji">😊</div><div class="chapter-title">Feelings</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">033</div><div class="chapter-emoji">📖</div><div class="chapter-title">Feelings Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">034</div><div class="chapter-emoji">❓</div><div class="chapter-title">Feelings Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">035</div><div class="chapter-emoji">🎆</div><div class="chapter-title">Myanmar Festivals</div><div class="chapter-concept">Words</div></div>
-    <div class="chapter-card"><div class="chapter-number">036</div><div class="chapter-emoji">📖</div><div class="chapter-title">Festivals Explained</div><div class="chapter-concept">Reading</div></div>
-    <div class="chapter-card"><div class="chapter-number">037</div><div class="chapter-emoji">❓</div><div class="chapter-title">Festivals Quiz</div><div class="chapter-concept">Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">038</div><div class="chapter-emoji">📚</div><div class="chapter-title">Conclusion</div><div class="chapter-concept">Summary</div></div>
-    <div class="chapter-card"><div class="chapter-number">039</div><div class="chapter-emoji">🏆</div><div class="chapter-title">Overall Quiz</div><div class="chapter-concept">Final Quiz</div></div>
-    <div class="chapter-card"><div class="chapter-number">040</div><div class="chapter-emoji">🎮</div><div class="chapter-title">Word Catch Finale</div><div class="chapter-concept">Outro Game</div></div>
-    <div class="chapter-card"><div class="chapter-number">041</div><div class="chapter-emoji">🎉</div><div class="chapter-title">Congratulations</div><div class="chapter-concept">You Did It!</div></div>
+
+  <div class="section-block">
+    <div class="section-label"><span>Introduction</span></div>
+    <ul class="toc-list">
+      <li class="toc-row"><span class="toc-num">၀၀၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📖</span>Book Briefing</div><div class="toc-mm">Get started</div></div><span class="toc-type">Welcome</span></li>
+      <li class="toc-row"><span class="toc-num">၀၀၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📑</span>Index</div><div class="toc-mm">Chapter list</div></div><span class="toc-type">You are here</span></li>
+      <li class="toc-row"><span class="toc-num">၀၀၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🧒</span>Character Selection</div><div class="toc-mm">Pick your learner</div></div><span class="toc-type">Start</span></li>
+      <li class="toc-row"><span class="toc-num">၀၀၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🌉</span>Word Bridge Intro</div><div class="toc-mm">How words connect</div></div><span class="toc-type">Intro</span></li>
+      <li class="toc-row"><span class="toc-num">၀၀၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🍎</span>First Words Overview</div><div class="toc-mm">Three tales to begin</div></div><span class="toc-type">Overview</span></li>
+      <li class="toc-row"><span class="toc-num">၀၀၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>First Words Explained</div><div class="toc-mm">Deep dive</div></div><span class="toc-type">Explained</span></li>
+      <li class="toc-row"><span class="toc-num">၀၀၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>First Words Quiz</div><div class="toc-mm">Quiz</div></div><span class="toc-type">Quiz</span></li>
+    </ul>
   </div>
-  <div class="nav-hint">
-    <div>💡 Use ← → in the top navigation bar to move between chapters.</div>
-    <div>💡 Use 🏠 to return to the Home page.</div>
+
+  <div class="section-block">
+    <div class="section-label"><span>Ten Chapters</span></div>
+    <div class="topic-grid">
+      <div class="toc-row"><span class="toc-num">၀၀၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">👨‍👩‍👧</span>Family</div><div class="toc-mm">Family words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၀၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Family Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၁၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Family Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၁၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🍚</span>Food</div><div class="toc-mm">Food words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၁၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Food Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၁၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Food Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၁၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🐘</span>Animals</div><div class="toc-mm">Animal words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၁၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Animals Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၁၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Animals Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၁၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎨</span>Colors</div><div class="toc-mm">Color words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၁၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Colors Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၁၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Colors Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၂၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🔢</span>Numbers</div><div class="toc-mm">Number words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၂၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Numbers Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၂၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Numbers Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၂၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">👂</span>Body Parts</div><div class="toc-mm">Body words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၂၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Body Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၂၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Body Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၂၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🏠</span>Home</div><div class="toc-mm">Home words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၂၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Home Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၂၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Home Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၂၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎒</span>School</div><div class="toc-mm">School words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၃၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>School Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၃၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>School Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၃၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">😊</span>Feelings</div><div class="toc-mm">Feeling words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၃၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Feelings Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၃၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Feelings Quiz</div><div class="toc-mm">Quiz</div></div></div>
+
+      <div class="toc-row"><span class="toc-num">၀၃၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎆</span>Myanmar Festivals</div><div class="toc-mm">Festival words</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၃၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Festivals Explained</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">၀၃၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Festivals Quiz</div><div class="toc-mm">Quiz</div></div></div>
+    </div>
   </div>
+
+  <div class="section-block">
+    <div class="section-label"><span>Conclusion</span></div>
+    <ul class="toc-list">
+      <li class="toc-row"><span class="toc-num">၀၃၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📚</span>Conclusion</div><div class="toc-mm">Wrap-up</div></div><span class="toc-type">End</span></li>
+      <li class="toc-row"><span class="toc-num">၀၃၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🏆</span>Overall Quiz</div><div class="toc-mm">Final quiz</div></div><span class="toc-type">Final</span></li>
+      <li class="toc-row"><span class="toc-num">၀၄၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎮</span>Word Catch Finale</div><div class="toc-mm">Final game</div></div><span class="toc-type">Game</span></li>
+      <li class="toc-row"><span class="toc-num">၀၄၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎉</span>Congratulations</div><div class="toc-mm">You did it!</div></div><span class="toc-type">Done</span></li>
+    </ul>
+  </div>
+
+  <div class="footer-scroll">
+    <p class="hint-en">Use ← → in the top bar to turn each leaf · 🏠 for home</p>
+  </div>
+
+</div>
 </div>
 </body>
 </html>

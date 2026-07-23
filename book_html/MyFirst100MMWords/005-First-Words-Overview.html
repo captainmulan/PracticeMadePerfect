@@ -5,85 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My First 100 Myanmar Words - First Words Overview</title>
 <style>
+:root{--palm:#E6D5B8;--ink:#2C1810;--lacquer:#6B1A1A;--lacquer-deep:#4A0E0E;--gold:#C9A227;--saffron:#D97706;--text-muted:#5C4033;--border:rgba(107,26,26,.18);--radius:14px;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Comic Sans MS','Comic Neue','Myanmar Text',Padauk,system-ui,sans-serif;background:linear-gradient(165deg,#FFF8E7 0%,#FFE4B5 40%,#FFDAB9 100%);color:#3d2914;min-height:100vh;}
-.pattern{position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:radial-gradient(circle at 20% 30%,#C41E3A 2px,transparent 2px);background-size:48px 48px;}
-.container{max-width:640px;margin:auto;padding:16px 14px 32px;position:relative;z-index:1;}
-.header{text-align:center;margin-bottom:14px;}
-h1{font-size:26px;color:#C41E3A;margin-bottom:6px;}
-.subtitle{color:#8B4513;font-size:15px;}
-.card{background:rgba(255,255,255,.78);border-radius:18px;padding:16px;margin-bottom:12px;border:2px solid rgba(196,30,58,.12);}
-.card h2{font-size:18px;color:#C41E3A;margin-bottom:10px;}
-.card p{font-size:15px;line-height:1.65;}
-.hero-word-card{max-width:320px;margin:12px auto;border-radius:24px;overflow:hidden;box-shadow:0 10px 28px rgba(196,30,58,.15);border:3px solid #FFD700;background:#fff;}
-.word-card-top{background:linear-gradient(180deg,#FFF8E7 0%,#fff 100%);padding:14px 10px 10px;text-align:center;}
-.word-emoji{font-size:56px;line-height:1.1;}
-.word-bridge{display:flex;align-items:stretch;}
-.speak-btn{flex:1;border:none;padding:12px 8px 14px;cursor:pointer;font-family:inherit;transition:transform .12s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:88px;}
-.speak-btn:active,.speak-btn.pressed{transform:scale(.96);}
-.speak-btn-en{background:linear-gradient(165deg,#e8f4fd 0%,#cce5ff 100%);color:#1a4480;border-right:1px solid rgba(255,215,0,.35);}
-.speak-btn-mm{background:linear-gradient(165deg,#fff5f5 0%,#ffe8e8 100%);color:#8B0000;}
-.speak-flag{font-size:20px;}
-.speak-label{font-size:10px;font-weight:bold;letter-spacing:.04em;text-transform:uppercase;opacity:.75;}
-.speak-text-en{font-size:15px;font-weight:bold;color:#1a4480;}
-.speak-text-mm{font-size:18px;font-weight:bold;font-family:'Myanmar Text',Padauk,sans-serif;color:#C41E3A;}
-.speak-icon{font-size:14px;opacity:.85;}
-.legend{display:flex;justify-content:center;gap:16px;margin-bottom:10px;font-size:13px;color:#8B4513;}
-.topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;}
-.topic-pill{background:rgba(255,215,0,.25);padding:10px;border-radius:12px;text-align:center;font-size:14px;font-weight:bold;}
-.nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#8B4513;background:rgba(255,215,0,.25);padding:10px;border-radius:10px;}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--lacquer-deep);color:var(--ink);min-height:100vh;padding:10px;}
+.manuscript-bg{min-height:calc(100vh - 20px);background:linear-gradient(180deg,rgba(0,0,0,.04),transparent 12%,transparent 88%,rgba(0,0,0,.06)),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(44,24,16,.03) 3px,rgba(44,24,16,.03) 4px),linear-gradient(165deg,#EDE0C4 0%,var(--palm) 35%,#D9C49A 70%,#C9B082 100%);border:3px solid var(--gold);outline:5px solid var(--lacquer);outline-offset:-8px;box-shadow:inset 0 0 80px rgba(44,24,16,.1),0 8px 32px rgba(0,0,0,.4);position:relative;}
+.container{max-width:680px;margin:0 auto;padding:24px 18px 40px;}
+.header{text-align:center;padding-bottom:20px;border-bottom:2px double var(--lacquer);margin-bottom:24px;}
+.ornament{font-size:26px;color:var(--gold);letter-spacing:.3em;margin-bottom:8px;}
+.header h1{font-size:clamp(22px,5vw,28px);color:var(--lacquer-deep);margin-bottom:6px;}
+.header p{font-size:15px;color:var(--text-muted);font-style:italic;line-height:1.55;}
+.story-chapter{margin-bottom:32px;}
+.chapter-label{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.chapter-label span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--lacquer);white-space:nowrap;}
+.chapter-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
+.picture-frame{border:2px solid var(--gold);border-radius:var(--radius);overflow:hidden;box-shadow:0 8px 24px rgba(44,24,16,.18);margin-bottom:14px;background:#1a1008;}
+.overview-hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
+.story-card{background:rgba(253,248,240,.92);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:0 2px 10px rgba(44,24,16,.08);}
+.story-card h2{font-size:18px;color:var(--lacquer-deep);margin-bottom:12px;}
+.story-box{font-size:15px;line-height:1.75;color:var(--ink);white-space:pre-line;}
+.how-card{background:rgba(201,162,39,.14);border:1px solid rgba(201,162,39,.4);border-radius:var(--radius);padding:18px;margin-top:8px;}
+.how-card h2{font-size:17px;color:var(--lacquer);margin-bottom:10px;}
+.how-card p,.how-card li{font-size:15px;line-height:1.65;color:var(--text-muted);}
+.how-card ul{margin:10px 0 0 18px;}
+.footer-note{text-align:center;font-size:13px;color:var(--text-muted);font-style:italic;margin-top:28px;padding-top:16px;border-top:1px dotted var(--border);}
 </style>
-<script src="_mmwords-player.js"></script>
+<script src="_mmwords-overview-art.js"></script>
 </head>
 <body>
-<div class="pattern"></div>
+<div class="manuscript-bg">
 <div class="container">
-  <div class="header">
-    <h1>🍎 Your First 100 Words</h1>
-    <div class="subtitle">Two buttons on every card — English & Myanmar</div>
-  </div>
-  <div class="card">
-    <h2>🌉 Example Word Card</h2>
-    <div class="legend"><span>🇬🇧 Hear English</span><span>🇲🇲 Hear Myanmar</span></div>
-    <div class="hero-word-card word-card" data-en="Apple" data-mm="ပန်းသီး" data-hint="pan-thee">
-      <div class="word-card-top"><div class="word-emoji">🍎</div></div>
-      <div class="word-bridge">
-        <button type="button" class="speak-btn speak-btn-en" onclick="tapEn(this,'demo')">
-          <span class="speak-flag">🇬🇧</span>
-          <span class="speak-label">English</span>
-          <span class="speak-text-en">Apple</span>
-          <span class="speak-icon">🔊</span>
-        </button>
-        <button type="button" class="speak-btn speak-btn-mm" onclick="tapMm(this,'demo')">
-          <span class="speak-flag">🇲🇲</span>
-          <span class="speak-label">Myanmar</span>
-          <span class="speak-text-mm">ပန်းသီး</span>
-          <span class="speak-icon">🔊</span>
-        </button>
-      </div>
+  <header class="header">
+    <div class="ornament">✦ ✦ ✦</div>
+    <h1>Welcome to Your First Myanmar Words</h1>
+    <p>Ancient stories, gentle morals, and tap-to-hear words — written for English-reading children.</p>
+  </header>
+
+  <section class="story-chapter">
+    <div class="chapter-label"><span>Chapter one · The beginning</span></div>
+    <div class="picture-frame" id="overview-img-1"></div>
+    <div class="story-card">
+      <h2>The Girl Who Listened at Dawn</h2>
+      <div class="story-box">In a teak village where mist rose from the Irrawaddy each morning, a girl named May sat on her grandmother's porch with a parabaik scroll spread between them. The scroll showed pictures — rice, elephants, pagodas, and smiling faces — but no English letters, because long ago Myanmar children learned with eyes and ears before they learned with books.
+
+Grandmother pointed to each picture and spoke a word. May repeated the sound, not worrying yet about the curved script she could not read. "You are learning the way river children always learned," Grandmother said. "Hear the word, hold the meaning, and let the writing come later like footprints after rain."
+
+When the sun touched the golden spire of the distant pagoda, May could name ten things in the language of her ancestors. She did not feel like a student in a hurry. She felt like a child keeping a lamp alive — one word at a time, one story at a time. That is how this book works for you too: read the English story, look at the picture, then tap the word cards to hear Myanmar spoken aloud. You never need to read Myanmar script in the stories. Your ears will do the first work, and your heart will remember.</div>
     </div>
-    <p style="text-align:center;font-size:13px;color:#888;margin-top:12px;">🎮 Catch game in Food chapter · 🏆 Fruit Master badge</p>
-  </div>
-  <div class="card">
-    <h2>📂 10 Chapters</h2>
-    <div class="topic-grid">
-      <div class="topic-pill">👨‍👩‍👧 Family</div>
-      <div class="topic-pill">🍚 Food</div>
-      <div class="topic-pill">🐘 Animals</div>
-      <div class="topic-pill">🎨 Colors</div>
-      <div class="topic-pill">🔢 Numbers</div>
-      <div class="topic-pill">👂 Body</div>
-      <div class="topic-pill">🏠 Home</div>
-      <div class="topic-pill">🎒 School</div>
-      <div class="topic-pill">😊 Feelings</div>
-      <div class="topic-pill">🎆 Festivals</div>
+  </section>
+
+  <section class="story-chapter">
+    <div class="chapter-label"><span>Chapter two · The storyteller</span></div>
+    <div class="picture-frame" id="overview-img-2"></div>
+    <div class="story-card">
+      <h2>The Teacher Under the Banyan Tree</h2>
+      <div class="story-box">Before schools of brick and chalk, Myanmar villages kept their wisdom under banyan trees. An old storyteller named U Ba would ring a small bell, and children would gather with palm-leaf fans and quiet feet. He never began with grammar. He began with a moral tale — about a generous merchant, a proud tiger, or a monk who shared his last bowl of rice.
+
+"Language lives inside stories," U Ba told them. "A word you steal from a list may vanish by evening. A word you meet in a story may stay for life." He taught family words when he told of Thadingyut candles carried to grandparents. He taught animal words when he sang of the Four Friends who saved one another in a flood. He taught festival words when he described Thingyan water blessing the year clean again.
+
+Parents who use this book carry on U Ba's method. Read the English tale aloud at bedtime. Let your child tap the Myanmar button on each word card once — not fifty times in a panic, but once with care, like placing a candle on a shrine. The goal is not to memorize a dictionary. The goal is to belong to a language that has been spoken with kindness for centuries.</div>
     </div>
+  </section>
+
+  <section class="story-chapter">
+    <div class="chapter-label"><span>Chapter three · The four friends</span></div>
+    <div class="picture-frame" id="overview-img-3"></div>
+    <div class="story-card">
+      <h2>Why Animals Appear in Every Chapter</h2>
+      <div class="story-box">Myanmar folktales are full of animals who talk, argue, and forgive. The most beloved is the tale of the Four Friends: Elephant, Monkey, Rabbit, and Peacock. They are different in size and strength, yet when the forest flooded they did not ask who was most important. Elephant carried Rabbit. Monkey cleared the path. Peacock searched for dry land. Together they survived.
+
+The moral traveled from village to village for hundreds of years: friends who help one another need not be alike. That is also true of languages. You may speak English at school and hear Myanmar at home. You may live far from Yangon yet still learn the words your grandparents whispered over tea. The two languages are not enemies. They can be friends, like the animals in the forest.
+
+In this book you will meet ten worlds — family, food, animals, colors, numbers, body, home, school, feelings, and festivals. Each world has a big picture, a moral story in English, word cards to tap, a mini game, and a quiz. Turn the page from this overview and choose any chapter from the index. There is no single correct order. Follow the story that makes your eyes bright. The words will follow.</div>
+    </div>
+  </section>
+
+  <div class="how-card">
+    <h2>How to use this book</h2>
+    <ul>
+      <li>Each chapter has <strong>three</strong> picture · story · explanation blocks, then word cards and a game.</li>
+      <li>Read every story in English — no Myanmar script is required anywhere.</li>
+      <li>Tap 🔊 Hear on a word card to hear spoken Myanmar (English label stays on screen).</li>
+      <li>Play the catch game at the bottom of each chapter to earn badges.</li>
+      <li>Visit the Explained page for a second picture, a longer tale, and ten speaking sentences.</li>
+      <li>Parents: read the tip on each page — it links old Myanmar customs to today's practice.</li>
+    </ul>
   </div>
-  <div class="card">
-    <h2>✨ Each Chapter Includes</h2>
-    <p>📖 Mini story · 🇬🇧/🇲🇲 dual speak buttons · 🎮 Catch game · 👨‍👩‍👧 Parent phrase card</p>
-  </div>
-  <div class="nav-hint">Parents in Singapore, Malaysia, Australia, UK, US — this book is for you.</div>
+
+  <p class="footer-note">Scroll the index to choose your first chapter · May your words travel kindly between generations.</p>
 </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var slots = [
+    { id: 'overview-img-1', slot: 'overview-story1', alt: 'Grandmother teaching a child at dawn in Myanmar village' },
+    { id: 'overview-img-2', slot: 'overview-story2', alt: 'Storyteller under banyan tree with village children' },
+    { id: 'overview-img-3', slot: 'overview-story3', alt: 'Four Friends animals in Myanmar forest' }
+  ];
+  slots.forEach(function (s) {
+    var el = document.getElementById(s.id);
+    if (el && window.MMOverviewImage) el.innerHTML = MMOverviewImage.render(s.slot, s.alt);
+  });
+});
+</script>
 </body>
 </html>
