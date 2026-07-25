@@ -391,8 +391,81 @@
       ]
     },
     {
-      id: "coral-reefs",
+      id: "hadal",
       num: 20,
+      slug: "Hadal-Zone",
+      title: "Hadal Zone",
+      emoji: "⛰️",
+      opponent: { name: "Trench Titan", icon: "🐌" },
+      mainSegments: [
+        {
+          slot: "main-1",
+          storyTitle: "The Deepest Trenches",
+          story: "Kai's sub descended into a V-shaped canyon deeper than Mount Everest is tall. Trench Titan, a pale snailfish with translucent skin, drifted beside the porthole. \"Welcome to the hadal zone,\" she whispered. \"Few humans ever reach places this deep — below six kilometers.\"",
+          explanation: "The Hadal Zone includes ocean trenches deeper than 6,000 meters. The Mariana Trench's Challenger Deep reaches about 11,000 meters — the deepest known point in Earth's oceans.",
+          words: ["Hadal Zone", "trench", "Challenger Deep", "deepest"]
+        },
+        {
+          slot: "main-2",
+          storyTitle: "Crushing Pressure",
+          story: "The hull groaned as gauges climbed. Trench Titan barely seemed to notice. \"Pressure here is like an elephant standing on your thumbnail,\" she said calmly. \"We had millions of years to learn how to bend without breaking.\"",
+          explanation: "At hadal depths, water pressure exceeds 1,000 times atmospheric pressure at sea level. Hadal animals often have flexible bodies, minimal hard parts, and special molecules that keep their cells working under extreme force.",
+          words: ["pressure", "atmospheric", "flexible", "adaptation"]
+        },
+        {
+          slot: "main-3",
+          storyTitle: "Life at the Bottom",
+          story: "Amphipods like shiny shrimp scoured the trench floor, and ghostly fish wiggled above the mud. Kai stared at a plastic bag wedged in rock and frowned. Trench Titan sighed. \"Even the deepest trenches feel what humans throw away. We need clean oceans all the way down.\"",
+          explanation: "Hadal trenches host snailfish, amphipods, sea cucumbers, and bacteria in trench mud. Pollution and climate change reach even these remote depths, so protecting the whole ocean matters.",
+          words: ["snailfish", "amphipods", "pollution", "remote"]
+        }
+      ],
+      explainedSegments: [
+        {
+          slot: "explain-1",
+          storyTitle: "Snailfish Champions",
+          story: "Trench Titan held still while Kai filmed her gelatinous body. \"Snailfish hold records for deepest living fish,\" she said. \"No scales, soft bones — pressure would crush stiff bodies like yours or mine if we weren't built for it.\"",
+          explanation: "Hadal snailfish use flexible skulls and gelatinous flesh to survive extreme pressure. They feed on tiny crustaceans and carrion that drift into trenches from above."
+        },
+        {
+          slot: "explain-2",
+          storyTitle: "Trench Geography",
+          story: "Captain Coral overlaid a map showing dark slashes in the Pacific floor — Mariana, Tonga, Peru-Chile. \"Trenches form where tectonic plates collide,\" she explained. \"The seafloor bends and plunges, creating the deepest valleys on the planet.\"",
+          explanation: "Hadal zones occur in subduction trenches around the Pacific Ring of Fire and other tectonic boundaries. Each trench is a unique habitat shaped by local geology and food supply."
+        },
+        {
+          slot: "explain-3",
+          storyTitle: "Exploring the Abyssal Frontier",
+          story: "Kai watched a robotic lander send video from Challenger Deep — pale sediment, strange tracks, and a lone fish gliding past. \"Every trip finds something new,\" Captain Coral said. \"The hadal zone is Earth's last great frontier on our own planet.\"",
+          explanation: "Deep-submergence vehicles and landers map trenches and collect samples. Scientists discover new species and study how life adapts to darkness, cold, and crushing weight."
+        }
+      ],
+      game: {
+        id: "sonar-ping",
+        title: "⛰️ Trench Ping",
+        desc: "Total darkness! Ping sonar and tap snailfish & trench creatures before they vanish.",
+        boot: {
+          game: "sonar-ping",
+          goal: 52,
+          time: 55,
+          lives: 3,
+          good: ["⭐", "🐌", "✨"],
+          bad: ["🛢️"],
+          bgTop: "#020208",
+          bgBot: "#000004"
+        }
+      },
+      quiz: [
+        { q: "The Hadal Zone begins at about what depth?", options: ["6 meters", "60 meters", "6,000 meters", "600,000 meters"], correct: 2 },
+        { q: "Challenger Deep is found in the…", options: ["Mariana Trench", "Sunlight Zone", "Coral reef lagoon", "A desert"], correct: 0 },
+        { q: "Hadal snailfish survive because they…", options: ["Have flexible, pressure-adapted bodies", "Live on land", "Have metal shells", "Do not need water"], correct: 0 },
+        { q: "Ocean trenches often form where…", options: ["Tectonic plates collide", "Rivers end", "Volcanoes erupt on land only", "Fish build reefs"], correct: 0 },
+        { q: "Why should we protect even the deepest trenches?", options: ["Pollution and climate change reach them too", "They are empty and useless", "They contain no water", "They are above the clouds"], correct: 0 }
+      ]
+    },
+    {
+      id: "coral-reefs",
+      num: 23,
       slug: "Coral-Reefs",
       title: "Coral Reefs",
       emoji: "🪸",
@@ -466,7 +539,7 @@
     },
     {
       id: "marine-mammals",
-      num: 23,
+      num: 26,
       slug: "Marine-Mammals",
       title: "Marine Mammals",
       emoji: "🐬",
@@ -540,7 +613,7 @@
     },
     {
       id: "fish",
-      num: 26,
+      num: 29,
       slug: "Fish",
       title: "Fish",
       emoji: "🐟",

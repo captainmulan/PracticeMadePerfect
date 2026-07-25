@@ -19,6 +19,7 @@ CHAPTERS = [
     "twilight",
     "midnight",
     "abyss",
+    "hadal",
     "coral-reefs",
     "marine-mammals",
     "fish",

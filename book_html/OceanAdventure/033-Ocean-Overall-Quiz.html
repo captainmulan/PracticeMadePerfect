@@ -213,11 +213,18 @@ body.reading-page .container {
     <div class="feedback" id="feedback-5"></div>
   </div>
   <div class="quiz-card" id="quizCard-6">
-    <div class="question">6. Why should we protect the ocean?</div>
-    <div class="option" onclick="checkAnswer(this,6,false)">It has no effect on land</div>
-    <div class="option" onclick="checkAnswer(this,6,true)">It gives oxygen, food, and a healthy planet</div>
-    <div class="option" onclick="checkAnswer(this,6,false)">Only for fishing</div>
+    <div class="question">6. The Hadal Zone includes trenches deeper than about…</div>
+    <div class="option" onclick="checkAnswer(this,6,false)">60 meters</div>
+    <div class="option" onclick="checkAnswer(this,6,true)">6,000 meters</div>
+    <div class="option" onclick="checkAnswer(this,6,false)">600,000 meters</div>
     <div class="feedback" id="feedback-6"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-7">
+    <div class="question">7. Why should we protect the ocean?</div>
+    <div class="option" onclick="checkAnswer(this,7,false)">It has no effect on land</div>
+    <div class="option" onclick="checkAnswer(this,7,true)">It gives oxygen, food, and a healthy planet</div>
+    <div class="option" onclick="checkAnswer(this,7,false)">Only for fishing</div>
+    <div class="feedback" id="feedback-7"></div>
   </div>
   <div class="score-card" id="scoreCard">
     <h2>🎉 Final Quiz Complete!</h2>
@@ -232,7 +239,7 @@ body.reading-page .container {
 </div>
 <script>
 let score = 0, currentQuestion = 1, computerScore = 0;
-const totalQuestions = 6;
+const totalQuestions = 7;
 function checkAnswer(el, n, ok) {
   document.querySelectorAll('#quizCard-' + n + ' .option').forEach(o => o.style.pointerEvents = 'none');
   const fb = document.getElementById('feedback-' + n);
