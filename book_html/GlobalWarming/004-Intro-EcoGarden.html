@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Warming - My Eco Garden</title>
+  <style>
+    .leaves{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(4px 4px at 40px 60px,rgba(129,199,132,0.35),transparent),radial-gradient(5px 5px at 80px 100px,rgba(165,214,167,0.25),transparent);background-size:900px 150px;animation:fall 10s linear infinite;}
+    @keyframes fall{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a2e1a,#2d5016,#1b4332);color:#e8f5e9;min-height:100vh;}
+    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+    .title{text-align:center;font-size:24px;color:#81c784;margin:6px 0 4px;}
+    .game-desc{text-align:center;color:#a5d6a7;font-size:14px;margin-bottom:8px;line-height:1.5;padding:0 8px;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;padding:8px;background:rgba(0,0,0,0.28);border-radius:14px;border:1px solid rgba(129,199,132,0.25);}
+    .stamp-btn{width:52px;height:52px;border:2px solid rgba(129,199,132,0.35);border-radius:14px;background:rgba(129,199,132,0.08);font-size:28px;cursor:pointer;touch-action:manipulation;transition:.15s;}
+    .stamp-btn.selected{border-color:#ffeb3b;background:rgba(255,235,59,0.18);box-shadow:0 0 16px rgba(255,235,59,0.35);transform:scale(1.06);}
+    .stamp-btn:active{transform:scale(.96);}
+    .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+    .tool-btn{padding:8px 14px;border:none;border-radius:10px;background:rgba(255,255,255,0.1);color:#e8f5e9;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid rgba(129,199,132,0.3);}
+    .tool-btn:active{transform:scale(.97);}
+    .stage-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;}
+    .game-stage{position:relative;flex:1 1 auto;min-height:min(52vh,420px);border:2px solid rgba(129,199,132,0.45);border-radius:16px;overflow:hidden;background:#1b3a1b;touch-action:none;cursor:crosshair;}
+    canvas{display:block;width:100%;height:100%;}
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(20,40,20,0.9);text-align:center;padding:18px;z-index:5;}
+    .overlay h3{color:#81c784;font-size:22px;margin-bottom:8px;}
+    .overlay p{color:#c8e6c9;font-size:14px;line-height:1.55;margin-bottom:14px;max-width:320px;}
+    .btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#66bb6a,#43a047);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
+    .nav-hint{margin-top:10px;text-align:center;font-size:13px;color:#a5d6a7;background:rgba(129,199,132,0.1);padding:10px;border-radius:10px;flex-shrink:0;}
+    body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}
+    html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}
+    body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
+    body.big-game-page:has(.game-shell) .stage-wrap{flex:1 1 auto!important;min-height:0!important;}
+    body.big-game-page:has(.game-shell) .game-stage{flex:1 1 auto!important;min-height:0!important;max-height:none!important;aspect-ratio:unset!important;}
+  </style>
+  <script src="_global-player.js"></script>
+</head>
+<body class="big-game-page">
+<div class="leaves"></div>
+<div class="game-shell">
+  <h1 class="title">🌱 My Eco Garden</h1>
+  <p class="game-desc">Pick plants, trees, and eco icons — tap the garden to stamp your green world. No timer, just calm nature vibes.</p>
+
+  <div class="stamp-row" id="stampRow">
+    <button type="button" class="stamp-btn selected" data-emoji="🌱" title="Sprout">🌱</button>
+    <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
+    <button type="button" class="stamp-btn" data-emoji="🌻" title="Sunflower">🌻</button>
+    <button type="button" class="stamp-btn" data-emoji="🦋" title="Butterfly">🦋</button>
+    <button type="button" class="stamp-btn" data-emoji="🐝" title="Bee">🐝</button>
+    <button type="button" class="stamp-btn" data-emoji="🪴" title="Potted plant">🪴</button>
+    <button type="button" class="stamp-btn" data-emoji="🌿" title="Herb">🌿</button>
+    <button type="button" class="stamp-btn" data-emoji="🍃" title="Leaf">🍃</button>
+    <button type="button" class="stamp-btn" data-emoji="🌍" title="Earth">🌍</button>
+    <button type="button" class="stamp-btn" data-emoji="♻️" title="Recycle">♻️</button>
+  </div>
+  <div class="tool-row">
+    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnClear">🧹 Clear Garden</button>
+    <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="game-stage" id="stage">
+      <canvas id="gameCanvas"></canvas>
+      <div class="overlay" id="startScreen">
+        <h3>🌿 Welcome to Your Garden!</h3>
+        <p>Choose a stamp above, then tap anywhere in the garden to place it. Build a peaceful eco paradise — take your time!</p>
+        <button class="btn" type="button" id="btnStart">▶️ Start Planting</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+<script>
+const STORAGE_KEY = 'book:globalwarming:intro-garden';
+const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+let canvas, ctx, running = false, animId;
+let selectedEmoji = '🌱';
+let decorations = [];
+let leafParticles = [];
+
+function loadGarden() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) decorations = JSON.parse(raw);
+  } catch (e) { decorations = []; }
+}
+
+function saveGarden() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(decorations)); } catch (e) {}
+}
+
+function resize() {
+  const stage = document.getElementById('stage');
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+  const w = stage.clientWidth;
+  const h = stage.clientHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.floor(w * dpr);
+  canvas.height = Math.floor(h * dpr);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function initLeaves(count) {
+  leafParticles = [];
+  for (let i = 0; i < count; i++) {
+    leafParticles.push({
+      x: Math.random() * 400,
+      y: Math.random() * 400,
+      r: 1.5 + Math.random() * 3,
+      speed: 0.2 + Math.random() * 0.6,
+      wobble: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+function drawEmoji(emoji, x, y, size) {
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.font = 'bold ' + size + 'px ' + FONT;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(emoji, x, y);
+  ctx.restore();
+}
+
+function drawGardenBg(w, h, t) {
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, '#87ceeb');
+  g.addColorStop(0.2, '#a5d6a7');
+  g.addColorStop(0.55, '#66bb6a');
+  g.addColorStop(1, '#2e7d32');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  for (let i = 0; i < 4; i++) {
+    const rx = (w * 0.12) + i * 22;
+    const ry = h * 0.06 + Math.sin(t * 0.001 + i) * 5;
+    ctx.beginPath();
+    ctx.ellipse(w * 0.5 + (i - 1.5) * 50, ry, rx, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const soil = h - 38;
+  ctx.fillStyle = '#5d4037';
+  ctx.fillRect(0, soil, w, h - soil);
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.fillRect(0, soil, w, 5);
+
+  leafParticles.forEach(l => {
+    l.y += l.speed;
+    l.x += Math.sin(t * 0.002 + l.wobble) * 0.5;
+    if (l.y > h + 8) { l.y = -8; l.x = Math.random() * w; }
+    ctx.fillStyle = 'rgba(129,199,132,0.4)';
+    ctx.beginPath();
+    ctx.arc(l.x % w, l.y, l.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function updateCount() {
+  document.getElementById('countLabel').textContent = '🎨 ' + decorations.length + ' item' + (decorations.length === 1 ? '' : 's');
+}
+
+function loop(t) {
+  if (!running) return;
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  drawGardenBg(w, h, t);
+
+  decorations.forEach(d => {
+    const bob = Math.sin(t * 0.002 + d.phase) * (d.kind === 'plant' ? 4 : 2);
+    drawEmoji(d.emoji, d.x, d.y + bob, d.size);
+  });
+
+  animId = requestAnimationFrame(loop);
+}
+
+function placeAt(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  const x = clientX - r.left;
+  const y = clientY - r.top;
+  if (y > r.height - 32) return;
+  const plantish = /🌱|🌳|🌻|🪴|🌿|🍃/.test(selectedEmoji);
+  decorations.push({
+    emoji: selectedEmoji,
+    x: x,
+    y: y,
+    size: plantish ? 28 + Math.random() * 12 : 24 + Math.random() * 10,
+    phase: Math.random() * Math.PI * 2,
+    kind: plantish ? 'plant' : 'icon',
+  });
+  saveGarden();
+  updateCount();
+}
+
+function startPlanting() {
+  document.getElementById('startScreen').style.display = 'none';
+  running = true;
+  loop(0);
+}
+
+document.getElementById('btnStart').onclick = startPlanting;
+
+document.querySelectorAll('.stamp-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedEmoji = btn.dataset.emoji;
+  });
+});
+
+document.getElementById('btnUndo').onclick = () => {
+  if (!decorations.length) return;
+  decorations.pop();
+  saveGarden();
+  updateCount();
+};
+
+document.getElementById('btnClear').onclick = () => {
+  decorations = [];
+  saveGarden();
+  updateCount();
+};
+
+function bindTap() {
+  const hit = e => {
+    if (document.getElementById('startScreen').style.display !== 'none') return;
+    const p = e.touches ? e.touches[0] : e;
+    placeAt(p.clientX, p.clientY);
+  };
+  canvas.addEventListener('click', hit);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+}
+
+loadGarden();
+resize();
+initLeaves(20);
+updateCount();
+bindTap();
+window.addEventListener('resize', resize);
+
+(function fitGameFrame() {
+  function fit() {
+    const h = window.innerHeight + 'px';
+    document.documentElement.style.height = h;
+    document.body.style.height = h;
+    const shell = document.querySelector('.game-shell');
+    if (shell) shell.style.minHeight = h;
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
+</body>
+</html>

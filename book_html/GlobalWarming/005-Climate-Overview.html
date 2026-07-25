@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Warming - Climate Overview</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a2e1a 0%,#2d5016 50%,#1b4332 100%);color:#e8f5e9;min-height:100vh;position:relative;overflow-x:hidden;}
+    .leaves{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(4px 4px at 40px 60px,rgba(129,199,132,0.35),transparent),radial-gradient(5px 5px at 80px 100px,rgba(165,214,167,0.25),transparent);background-size:900px 150px;animation:fall 10s linear infinite;}
+    @keyframes fall{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
+    .container{max-width:640px;margin:auto;padding:12px 14px 24px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:12px;}
+    h1{font-size:28px;color:#81c784;margin-bottom:6px;}
+    .subtitle{color:#a5d6a7;font-size:16px;line-height:1.5;}
+    .panel{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;margin-bottom:16px;border:1px solid rgba(129,199,132,0.25);}
+    .climate-panel{padding:12px;}
+    .view-stage{position:relative;width:100%;height:min(98vw,calc(100svh - 118px));max-height:min(98vw,calc(100svh - 118px));aspect-ratio:1;margin:0 auto;border-radius:16px;overflow:hidden;background:#0d2818;box-shadow:inset 0 0 40px rgba(0,0,0,0.45);}
+    .view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
+    .view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
+    .view-layer canvas{display:block;width:100%;height:100%;}
+    .ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
+    .ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#388e3c,#1b5e20);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
+    .ctrl-btn:active{transform:scale(.96);}
+    .ctrl-btn.active{background:linear-gradient(135deg,#81c784,#66bb6a);color:#1a2e1a;}
+    .info-panel{margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.28);border-radius:14px;border-left:4px solid #81c784;}
+    .info-panel h2{color:#81c784;font-size:18px;margin-bottom:8px;}
+    .info-panel p{font-size:15px;line-height:1.65;color:#e8f5e9;}
+    .scroll-cue{text-align:center;color:#a5d6a7;font-size:13px;margin:10px 0;opacity:.9;}
+    .minigame-panel h2{color:#81c784;font-size:20px;text-align:center;margin-bottom:8px;}
+    .minigame-panel .game-desc{text-align:center;color:#a5d6a7;font-size:14px;margin-bottom:12px;line-height:1.5;}
+    .game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
+    .game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
+    .game-canvas{position:relative;width:100%;height:280px;min-height:220px;max-height:280px;background:#1b3a1b;border-radius:16px;overflow:hidden;border:2px solid rgba(129,199,132,0.35);touch-action:none;}
+    .game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+    .game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(20,40,20,0.92);text-align:center;padding:20px;z-index:5;}
+    .game-overlay h3{color:#81c784;font-size:22px;margin-bottom:8px;}
+    .game-overlay p{color:#c8e6c9;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+    .overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#66bb6a,#43a047);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
+    .touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
+    .touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(129,199,132,0.4);background:rgba(129,199,132,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+    .nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#a5d6a7;background:rgba(129,199,132,0.1);padding:10px;border-radius:10px;}
+    body.all-zones-page{overflow-y:auto!important;height:auto!important;min-height:100%;}
+    @media(max-width:639px){
+      body.all-zones-page .view-stage{height:min(78vw,calc(100svh - 220px));max-height:min(78vw,calc(100svh - 220px));}
+      body.all-zones-page .game-canvas{height:min(48vh,400px)!important;min-height:min(40vh,280px)!important;max-height:min(52vh,420px)!important;}
+      .ctrl-btn{font-size:11px;padding:8px 6px;}
+    }
+  </style>
+  <script src="_global-player.js"></script>
+</head>
+<body class="all-zones-page">
+<div class="leaves"></div>
+<div class="container">
+  <div class="header">
+    <h1>🌍 Our Climate</h1>
+    <div class="subtitle">Explore Earth layers, heat maps, weather patterns, and the atmosphere!</div>
+  </div>
+
+  <div class="panel climate-panel">
+    <div class="view-stage" id="viewStage">
+      <div class="view-layer view-layer-layers active" data-layer="layers">
+        <canvas id="canvasLayers" aria-label="Earth cross-section showing atmosphere, surface, and deep layers"></canvas>
+      </div>
+      <div class="view-layer view-layer-heat" data-layer="heat">
+        <canvas id="canvasHeat" aria-label="Global heat map"></canvas>
+      </div>
+      <div class="view-layer view-layer-weather" data-layer="weather">
+        <canvas id="canvasWeather" aria-label="Weather patterns across Earth"></canvas>
+      </div>
+      <div class="view-layer view-layer-atmosphere" data-layer="atmosphere">
+        <canvas id="canvasAtmosphere" aria-label="Atmosphere close-up view"></canvas>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <button type="button" class="ctrl-btn" id="btnPlay">⏸️ Pause</button>
+      <button type="button" class="ctrl-btn" id="btnSpeed">🌱 0.5×</button>
+      <button type="button" class="ctrl-btn" id="btnViewMode">👁️ View1</button>
+      <button type="button" class="ctrl-btn" id="btnReset">🔄 Reset</button>
+    </div>
+    <div class="info-panel" id="infoPanel">
+      <h2>🌍 Earth Layers</h2>
+      <p>Four climate zones from sky to deep Earth! Switch views: Earth layers, heat map, weather patterns, or atmosphere window. Tap to learn.</p>
+    </div>
+  </div>
+
+  <p class="scroll-cue">↓ Scroll for the Climate Sort mini-game</p>
+
+  <div class="panel minigame-panel">
+    <h2>🌍 Climate Sort</h2>
+    <p class="game-desc">Catch climate clues in order 🌡️ → 🏭 → 💨 → 🧊 → 🌱. Golden rings = correct next clue!</p>
+    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
+    <p id="ogHint" style="text-align:center;color:#a5d6a7;font-size:12px;margin:0 0 8px;min-height:18px;line-height:1.4;"></p>
+    <div class="game-canvas" id="ogCanvasBox">
+      <canvas id="ogCanvas"></canvas>
+      <div class="game-overlay" id="ogStart"><h3>🌍 Climate Sort</h3><p>Catch climate clues in order 🌡️ → 🏭 → 💨 → 🧊 → 🌱. Avoid trash!</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
+      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
+    </div>
+    <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const SPEEDS = [0.5, 1, 2];
+  const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+  const LABEL = 'system-ui,"Segoe UI",Roboto,sans-serif';
+  const ZONES = [
+    { id: 'atmosphere', name: 'Atmosphere', emoji: '💨', top: 0, h: 0.25, c1: '#87ceeb', c2: '#4682b4', fact: 'The atmosphere wraps Earth in a blanket of air. Greenhouse gases trap heat — too many make the planet warmer (0–15 km up).' },
+    { id: 'weather', name: 'Weather Layer', emoji: '🌦️', top: 0.25, h: 0.25, c1: '#5c8a5c', c2: '#336633', fact: 'Clouds, rain, wind, and storms happen here. Weather changes daily; climate is the long-term pattern of all this activity.' },
+    { id: 'surface', name: 'Earth Surface', emoji: '🌍', top: 0.5, h: 0.25, c1: '#4caf50', c2: '#2e7d32', fact: 'Forests, farms, cities, and ice caps live on the surface. Land and oceans absorb heat and send it back into the air.' },
+    { id: 'deep', name: 'Deep Earth & Ocean', emoji: '🌊', top: 0.75, h: 0.25, c1: '#1b4332', c2: '#0d2818', fact: 'Oceans store huge amounts of heat. Deep currents move warm and cold water around the planet, shaping climate for centuries.' },
+  ];
+  const VIEW_MODES = [
+    { id: 'layers', layer: 'layers', label: 'Earth Layers', desc: 'Cross-section from sky to deep ocean — tap each band to learn how Earth\'s climate system is stacked.' },
+    { id: 'heat', layer: 'heat', label: 'Heat Map', desc: 'Top-down global view — color rings show warmer and cooler regions. Tap a ring to learn what drives the heat.' },
+    { id: 'weather', layer: 'weather', label: 'Weather Patterns', desc: 'Clouds roll, storms form, and wind moves heat around the planet. Tap zones to explore weather vs climate.' },
+    { id: 'atmosphere', layer: 'atmosphere', label: 'Atmosphere Window', desc: 'Look through a scientist\'s window at the sky — one layer at a time. Tap to peek at the next discovery.' },
+  ];
+
+  const Climate = {
+    playing: true, speedIdx: 0, viewModeIdx: 0, t: 0,
+    canvases: {}, ctxs: {}, info: null,
+    portholeIdx: 0, portholeAccum: 0,
+    currentMode() { return VIEW_MODES[this.viewModeIdx] || VIEW_MODES[0]; },
+    activeLayer() { return this.currentMode().layer; },
+    speedMult() { return SPEEDS[this.speedIdx] || 1; },
+    drawEmoji(ctx, emoji, x, y, size) {
+      ctx.save();
+      ctx.font = 'bold ' + size + 'px ' + FONT;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(emoji, x, y);
+      ctx.restore();
+    },
+    drawZoneBands(ctx, w, top, height, opts) {
+      opts = opts || {};
+      ZONES.forEach(z => {
+        const y0 = top + z.top * height;
+        const zh = z.h * height;
+        const g = ctx.createLinearGradient(0, y0, 0, y0 + zh);
+        g.addColorStop(0, z.c1);
+        g.addColorStop(1, z.c2);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, y0, w, zh);
+        if (opts.labels !== false) {
+          ctx.fillStyle = 'rgba(232,245,233,0.88)';
+          ctx.font = '600 11px ' + LABEL;
+          ctx.textAlign = 'right';
+          ctx.fillText(z.emoji + ' ' + z.name, w - 10, y0 + zh * 0.45);
+        }
+      });
+    },
+    resizeCanvas(id) {
+      const c = this.canvases[id];
+      const stage = document.getElementById('viewStage');
+      if (!c || !stage) return;
+      const w = stage.clientWidth, h = stage.clientHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      c.width = Math.floor(w * dpr);
+      c.height = Math.floor(h * dpr);
+      c.style.width = w + 'px';
+      c.style.height = h + 'px';
+      this.ctxs[id].setTransform(dpr, 0, 0, dpr, 0, 0);
+    },
+    resizeAll() {
+      ['canvasLayers', 'canvasHeat', 'canvasWeather', 'canvasAtmosphere'].forEach(id => this.resizeCanvas(id));
+    },
+    switchLayer() {
+      const layer = this.activeLayer();
+      document.querySelectorAll('.view-layer').forEach(el => {
+        el.classList.toggle('active', el.dataset.layer === layer);
+      });
+      this.showDefaultInfo();
+      this.resizeAll();
+    },
+    hitZoneAt(x, y, w, h) {
+      const layer = this.activeLayer();
+      if (layer === 'atmosphere') {
+        this.portholeIdx = (this.portholeIdx + 1) % ZONES.length;
+        this.showZone(ZONES[this.portholeIdx]);
+        return;
+      }
+      if (layer === 'heat') {
+        const cx = w * 0.5, cy = h * 0.52, maxR = Math.min(w, h) * 0.44;
+        const dist = Math.hypot(x - cx, y - cy);
+        if (dist > maxR) return;
+        const rel = Math.min(1, dist / maxR);
+        let zi = 0;
+        for (let i = ZONES.length - 1; i >= 0; i--) {
+          if (rel >= ZONES[i].top) { zi = i; break; }
+        }
+        this.showZone(ZONES[zi]);
+        return;
+      }
+      const top = layer === 'weather' ? h * 0.22 : 0;
+      const height = layer === 'weather' ? h * 0.78 : h;
+      const rel = (y - top) / height;
+      if (rel < 0 || rel > 1) return;
+      for (let i = ZONES.length - 1; i >= 0; i--) {
+        if (rel >= ZONES[i].top) { this.showZone(ZONES[i]); return; }
+      }
+    },
+    bindTap() {
+      const self = this;
+      ['canvasLayers', 'canvasHeat', 'canvasWeather', 'canvasAtmosphere'].forEach(id => {
+        const c = self.canvases[id];
+        if (!c || c._tap) return;
+        c._tap = true;
+        const hit = e => {
+          const r = c.getBoundingClientRect();
+          const p = e.touches ? e.touches[0] : e;
+          self.hitZoneAt(p.clientX - r.left, p.clientY - r.top, r.width, r.height);
+        };
+        c.addEventListener('click', hit);
+        c.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+      });
+    },
+    drawLayers(w, h) {
+      const ctx = this.ctxs.canvasLayers;
+      ctx.fillStyle = '#0d2818';
+      ctx.fillRect(0, 0, w, h);
+      this.drawZoneBands(ctx, w, 0, h);
+      const mult = this.speedMult();
+      if (this.playing) {
+        for (let i = 0; i < 8; i++) {
+          const px = (i * 73 + this.t * 0.04 * mult) % w;
+          const py = h * 0.08 + (i * 29) % (h * 0.2);
+          ctx.fillStyle = 'rgba(255,255,255,' + (0.06 + (i % 3) * 0.04) + ')';
+          ctx.beginPath();
+          ctx.arc(px, py, 2 + (i % 2), 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      this.drawEmoji(ctx, '🌍', w * 0.15, h * 0.62, Math.min(w, h) * 0.08);
+      this.drawEmoji(ctx, '☀️', w * 0.82, h * 0.08, Math.min(w, h) * 0.07);
+      ctx.fillStyle = 'rgba(165,214,167,0.4)';
+      ctx.font = '500 9px ' + LABEL;
+      ctx.textAlign = 'center';
+      ctx.fillText('tap each layer to learn', w * 0.5, h - 10);
+    },
+    drawHeat(w, h) {
+      const ctx = this.ctxs.canvasHeat;
+      const cx = w * 0.5, cy = h * 0.52, maxR = Math.min(w, h) * 0.44;
+      ctx.fillStyle = '#0a1f0a';
+      ctx.fillRect(0, 0, w, h);
+      const heatColors = ['#2196f3', '#4caf50', '#ffeb3b', '#ff9800', '#f44336'];
+      ZONES.forEach((z, i) => {
+        const rOut = maxR * (z.top + z.h);
+        const rIn = maxR * z.top;
+        const rg = ctx.createRadialGradient(cx, cy, rIn, cx, cy, rOut);
+        rg.addColorStop(0, heatColors[i] + '55');
+        rg.addColorStop(1, heatColors[i] + 'aa');
+        ctx.fillStyle = rg;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOut, 0, Math.PI * 2);
+        ctx.arc(cx, cy, rIn, 0, Math.PI * 2, true);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(129,199,132,0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOut, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+      if (this.playing) {
+        const sweep = this.t * 0.0018 * this.speedMult();
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(sweep);
+        ctx.strokeStyle = 'rgba(129,199,132,0.55)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(maxR, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
+      this.drawEmoji(ctx, '🌍', cx, cy, Math.min(w, h) * 0.1);
+      ctx.fillStyle = 'rgba(129,199,132,0.75)';
+      ctx.font = '600 10px ' + LABEL;
+      ctx.textAlign = 'center';
+      ctx.fillText('HEAT MAP — tap a ring', cx, h - 14);
+    },
+    drawWeather(w, h) {
+      const ctx = this.ctxs.canvasWeather;
+      const horizon = h * 0.22;
+      const sky = ctx.createLinearGradient(0, 0, 0, horizon);
+      sky.addColorStop(0, '#1565c0');
+      sky.addColorStop(1, '#81c784');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, horizon);
+      this.drawZoneBands(ctx, w, horizon, h - horizon);
+      const mult = this.speedMult();
+      for (let i = 0; i < 5; i++) {
+        const cx = (i / 5) * w + Math.sin(this.t * 0.001 * mult + i) * 20;
+        const cy = horizon * 0.35 + (i % 2) * 12;
+        ctx.fillStyle = 'rgba(255,255,255,' + (0.5 + (i % 3) * 0.1) + ')';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 18 + i * 4, 0, Math.PI * 2);
+        ctx.arc(cx + 22, cy + 4, 14 + i * 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (this.playing) {
+        this.drawEmoji(ctx, '🌦️', w * 0.3 + Math.sin(this.t * 0.002) * 30, horizon + (h - horizon) * 0.35, 28);
+        this.drawEmoji(ctx, '💨', w * 0.7 + Math.cos(this.t * 0.0015) * 25, horizon + (h - horizon) * 0.55, 24);
+      }
+      ctx.strokeStyle = 'rgba(129,199,132,0.3)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 4) {
+        const y = horizon + Math.sin(x * 0.02 + this.t * 0.003 * mult) * 3;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    },
+    drawAtmosphere(w, h) {
+      const ctx = this.ctxs.canvasAtmosphere;
+      const cx = w * 0.5, cy = h * 0.48, R = Math.min(w, h) * 0.36;
+      const zi = this.portholeIdx;
+      const z = ZONES[zi];
+      ctx.fillStyle = '#0a1a0a';
+      ctx.fillRect(0, 0, w, h);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.clip();
+      const g = ctx.createLinearGradient(0, cy - R, 0, cy + R);
+      g.addColorStop(0, z.c1);
+      g.addColorStop(1, z.c2);
+      ctx.fillStyle = g;
+      ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
+      this.drawEmoji(ctx, z.emoji, cx, cy, R * 0.35);
+      if (this.playing) {
+        for (let i = 0; i < 12; i++) {
+          const px = cx - R + ((i * 47 + this.t * 0.03) % (R * 2));
+          const py = cy - R * 0.4 + ((i * 31) % (R * 1.2));
+          ctx.fillStyle = 'rgba(255,255,255,' + (0.08 + (i % 3) * 0.06) + ')';
+          ctx.beginPath();
+          ctx.arc(px, py, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+      ctx.fillStyle = 'rgba(10,20,10,0.97)';
+      ctx.beginPath();
+      ctx.rect(0, 0, w, h);
+      ctx.arc(cx, cy, R, 0, Math.PI * 2, true);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(129,199,132,0.7)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(129,199,132,0.88)';
+      ctx.font = '600 13px ' + LABEL;
+      ctx.textAlign = 'center';
+      ctx.fillText(z.name, cx, cy + R + R * 0.22);
+      ctx.fillStyle = 'rgba(165,214,167,0.65)';
+      ctx.font = '500 11px ' + LABEL;
+      ctx.fillText('tap for next layer', cx, cy + R + R * 0.34);
+    },
+    draw() {
+      const stage = document.getElementById('viewStage');
+      if (!stage) return;
+      const w = stage.clientWidth, h = stage.clientHeight;
+      const layer = this.activeLayer();
+      if (layer === 'layers') this.drawLayers(w, h);
+      else if (layer === 'heat') this.drawHeat(w, h);
+      else if (layer === 'weather') this.drawWeather(w, h);
+      else if (layer === 'atmosphere') this.drawAtmosphere(w, h);
+    },
+    tick() {
+      if (this.playing) {
+        this.t += 16 * (SPEEDS[this.speedIdx] || 1);
+        if (this.activeLayer() === 'atmosphere') {
+          this.portholeAccum += 16 * this.speedMult();
+          if (this.portholeAccum > 7000) {
+            this.portholeIdx = (this.portholeIdx + 1) % ZONES.length;
+            this.portholeAccum = 0;
+          }
+        }
+      }
+      this.draw();
+      requestAnimationFrame(() => this.tick());
+    },
+    showDefaultInfo() {
+      const m = this.currentMode();
+      this.info.innerHTML = '<h2>🌍 ' + m.label + '</h2><p>' + m.desc + '</p>';
+    },
+    showZone(z) {
+      this.info.innerHTML = '<h2>' + z.emoji + ' ' + z.name + '</h2><p>' + z.fact + '</p>';
+    },
+    init() {
+      ['canvasLayers', 'canvasHeat', 'canvasWeather', 'canvasAtmosphere'].forEach(id => {
+        this.canvases[id] = document.getElementById(id);
+        this.ctxs[id] = this.canvases[id].getContext('2d');
+      });
+      this.info = document.getElementById('infoPanel');
+      this.resizeAll();
+      this.bindTap();
+      window.addEventListener('resize', () => this.resizeAll());
+      document.getElementById('btnPlay').onclick = () => {
+        this.playing = !this.playing;
+        document.getElementById('btnPlay').textContent = this.playing ? '⏸️ Pause' : '▶️ Play';
+      };
+      document.getElementById('btnSpeed').onclick = () => {
+        this.speedIdx = (this.speedIdx + 1) % SPEEDS.length;
+        document.getElementById('btnSpeed').textContent = '🌱 ' + SPEEDS[this.speedIdx] + '×';
+      };
+      document.getElementById('btnViewMode').onclick = () => {
+        this.viewModeIdx = (this.viewModeIdx + 1) % VIEW_MODES.length;
+        document.getElementById('btnViewMode').textContent = '👁️ View' + (this.viewModeIdx + 1);
+        document.getElementById('btnViewMode').classList.toggle('active', this.viewModeIdx !== 0);
+        this.switchLayer();
+      };
+      document.getElementById('btnReset').onclick = () => {
+        this.t = 0; this.playing = true; this.speedIdx = 0; this.viewModeIdx = 0;
+        this.portholeIdx = 0; this.portholeAccum = 0;
+        document.getElementById('btnPlay').textContent = '⏸️ Pause';
+        document.getElementById('btnSpeed').textContent = '🌱 0.5×';
+        document.getElementById('btnViewMode').textContent = '👁️ View1';
+        document.getElementById('btnViewMode').classList.remove('active');
+        this.switchLayer();
+      };
+      this.showDefaultInfo();
+      this.tick();
+    },
+  };
+  Climate.init();
+})();
+</script>
+
+<script src="_global-games.js"></script>
+<script>
+GlobalGame.boot({
+  game: "zone-sort",
+  goal: 60,
+  time: 60,
+  lives: 3,
+  good: ["🌡️", "🏭", "💨", "🧊", "🌱"],
+  bad: ["🗑️", "🏭"],
+  player: "🌍",
+  bgTop: "#2e7d32",
+  bgBot: "#1b5e20"
+});
+</script>
+</body>
+</html>

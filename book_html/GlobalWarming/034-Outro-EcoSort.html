@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Warming - Eco Sort</title>
+  <style>
+    .leaves{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(4px 4px at 40px 60px,rgba(129,199,132,0.35),transparent);background-size:900px 150px;animation:fall 10s linear infinite;}
+    @keyframes fall{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a2e1a,#2d5016,#1b4332);color:#e8f5e9;min-height:100vh;}
+    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+    h1{text-align:center;color:#81c784;font-size:28px;margin-bottom:6px;}
+    .game-desc{text-align:center;color:#a5d6a7;font-size:14px;margin-bottom:12px;line-height:1.5;padding:0 8px;}
+    .game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;padding:0 4px;}
+    .game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
+    .game-canvas{position:relative;width:100%;height:min(52vh,420px);min-height:280px;background:#1b3a1b;border-radius:18px;border:2px solid rgba(129,199,132,0.4);overflow:hidden;touch-action:none;}
+    .game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+    .game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(20,40,20,0.92);text-align:center;padding:20px;z-index:5;}
+    .game-overlay h3{color:#81c784;font-size:22px;margin-bottom:8px;}
+    .game-overlay p{color:#c8e6c9;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+    .overlay-btn{padding:12px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#66bb6a,#43a047);color:#fff;font-size:15px;font-weight:bold;cursor:pointer;}
+    .touch-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;max-width:360px;margin-left:auto;margin-right:auto;}
+    .touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(129,199,132,0.4);background:rgba(129,199,132,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+    .nav-hint{margin-top:14px;text-align:center;font-size:13px;color:#a5d6a7;background:rgba(129,199,132,0.1);padding:10px;border-radius:10px;flex-shrink:0;}
+    body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}
+    html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}
+    body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
+  </style>
+  <script src="_global-player.js"></script>
+</head>
+<body class="big-game-page">
+<div class="leaves"></div>
+<div class="game-shell">
+  <h1>♻️ Eco Sort Finale</h1>
+  <p class="game-desc">Catch green action icons in order ♻️ → 🚲 → 🌱 → 💡 → 🌍. Avoid trash and pollution! Reach 60 points.</p>
+  <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
+  <p id="ogHint" style="text-align:center;color:#a5d6a7;font-size:12px;margin:0 0 8px;min-height:18px;line-height:1.4;"></p>
+  <div class="game-canvas" id="ogCanvasBox">
+    <canvas id="ogCanvas"></canvas>
+    <div class="game-overlay" id="ogStart">
+      <h3>♻️ Final Eco Mission!</h3>
+      <p>Move ← → (or buttons below) to catch eco icons in order. Dodge 🗑️ trash and 🏭 pollution!</p>
+      <button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start Sorting</button>
+    </div>
+    <div class="game-overlay" id="ogEnd" style="display:none;">
+      <h3 id="ogEndTitle">🏆 Eco Hero!</h3>
+      <p id="ogEndStats"></p>
+      <button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button>
+    </div>
+  </div>
+  <div class="touch-row">
+    <button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button>
+    <button class="touch-btn" id="ogRightBtn" type="button">➡️</button>
+  </div>
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+<script src="_global-games.js"></script>
+<script>
+GlobalGame.boot({
+  game: "zone-sort",
+  goal: 60,
+  time: 60,
+  lives: 3,
+  good: ["♻️", "🚲", "🌱", "💡", "🌍"],
+  bad: ["🗑️", "🏭"],
+  player: GlobalPlayer.getCharacter() || "🌍",
+  bgTop: "#43a047",
+  bgBot: "#1b5e20"
+});
+</script>
+<script>
+(function () {
+  function fitGameFrame() {
+    if (!document.body.classList.contains("big-game-page")) return;
+    const h = window.innerHeight + "px";
+    document.documentElement.style.height = h;
+    document.documentElement.style.minHeight = h;
+    document.body.style.height = h;
+    document.body.style.minHeight = h;
+    const shell = document.querySelector(".game-shell");
+    if (shell) { shell.style.height = h; shell.style.minHeight = h; }
+  }
+  fitGameFrame();
+  window.addEventListener("resize", fitGameFrame);
+})();
+</script>
+</body>
+</html>
