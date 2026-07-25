@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continents Adventure - Landforms</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a237e 0%,#33691e 45%,#5d4037 100%);color:#fff8e1;min-height:100vh;position:relative;overflow-x:hidden;}
+.clouds{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(40px 18px at 60px 40px,rgba(255,255,255,0.22),transparent),radial-gradient(50px 20px at 200px 80px,rgba(255,255,255,0.18),transparent),radial-gradient(35px 16px at 380px 50px,rgba(255,255,255,0.2),transparent);background-size:600px 120px;animation:drift 12s ease-in-out infinite;}
+@keyframes drift{0%,100%{transform:translateX(0);}50%{transform:translateX(24px);}}
+.container{max-width:680px;margin:0 auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header,.top-bar{text-align:center;margin-bottom:16px;}
+h1{font-size:clamp(22px,5vw,30px);color:#aed581;margin-bottom:6px;}
+.subtitle{color:#ffe082;font-size:15px;line-height:1.45;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.pill{background:rgba(174,213,129,0.15);color:#ffe082;font-size:11px;font-weight:bold;padding:5px 12px;border-radius:999px;border:1px solid rgba(174,213,129,0.4);}
+.segment,.block{margin-bottom:24px;}
+.segment-label,.block-label{font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;color:#ffe082;margin-bottom:8px;}
+.scene-wrap{margin-bottom:10px;}
+.scene-card{position:relative;width:100%;border-radius:16px;border:2px solid rgba(174,213,129,0.4);background:#2e1a0e;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,0.35);}
+.scene-card-hero.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 160px),420px);}
+.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-placeholder{width:100%;height:100%;min-height:200px;display:flex;align-items:center;justify-content:center;color:#ffe082;font-size:14px;padding:20px;text-align:center;}
+.card{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(174,213,129,0.25);}
+.card h2{color:#aed581;font-size:18px;margin-bottom:10px;}
+.story-box{background:rgba(40,30,10,0.35);border-left:4px solid #aed581;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.75;color:#fff8e1;}
+.explain-box{background:rgba(174,213,129,0.1);border-left:4px solid #ffb74d;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.7;color:#fff3e0;margin-top:10px;}
+.hear-row{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(174,213,129,0.3);}
+.hear-label{display:block;font-size:12px;font-weight:bold;color:#ffe082;margin-bottom:8px;}
+.speak-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.speak-chip{padding:8px 14px;border:2px solid rgba(174,213,129,0.45);border-radius:999px;background:rgba(174,213,129,0.12);color:#fff8e1;font-family:inherit;font-size:13px;font-weight:bold;cursor:pointer;touch-action:manipulation;}
+.speak-chip:active,.speak-chip.pressed{background:linear-gradient(135deg,#aed581,#689f38);color:#1b2e0a;border-color:#aed581;}
+.scroll-cue{text-align:center;color:#ffe082;font-size:13px;margin:8px 0 12px;}
+.planet-game,.game-section{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:20px;padding:18px;margin:16px 0;border:1px solid rgba(174,213,129,0.35);}
+.planet-game h2,.game-section h2{color:#aed581;font-size:19px;text-align:center;margin-bottom:8px;}
+.planet-game .game-desc,.game-desc{text-align:center;color:#ffe082;font-size:14px;margin-bottom:12px;line-height:1.5;}
+.game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
+.game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffd54f;}
+.game-canvas{position:relative;width:100%;height:min(48vh,320px);min-height:220px;background:#3e2723;border-radius:16px;overflow:hidden;border:2px solid rgba(174,213,129,0.35);touch-action:none;}
+.game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+.game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,20,10,0.92);text-align:center;padding:20px;z-index:5;}
+.game-overlay h3{color:#aed581;font-size:22px;margin-bottom:8px;}
+.game-overlay p{color:#fff3e0;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+.overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#aed581,#689f38);color:#1b2e0a;font-size:15px;font-weight:bold;cursor:pointer;}
+.touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
+.touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(174,213,129,0.4);background:rgba(174,213,129,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+.nav-hint{margin-top:16px;text-align:center;font-size:12px;color:#ffe082;background:rgba(255,224,130,0.1);padding:12px;border-radius:10px;line-height:1.5;}
+.competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:14px;padding:12px;margin-bottom:14px;border:1px solid rgba(174,213,129,0.25);}
+.competitor{text-align:center;flex:1;}
+.competitor-icon{font-size:36px;}
+.competitor-name{font-size:12px;color:#ffe082;margin-top:4px;}
+.competitor-score{font-size:22px;font-weight:bold;color:#aed581;}
+.vs-divider{font-size:20px;font-weight:bold;color:#ffd54f;margin:0 8px;}
+.quiz-card{background:rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.1);display:none;}
+.quiz-card.active{display:block;}
+.question{font-size:17px;font-weight:bold;margin-bottom:14px;color:#fff;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{padding:12px 16px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.2);border-radius:12px;cursor:pointer;font-size:15px;transition:.15s;}
+.option:hover{background:rgba(255,255,255,0.1);border-color:#aed581;}
+.option.correct{background:rgba(76,175,80,0.3);border-color:#4caf50;}
+.option.wrong{background:rgba(244,67,54,0.3);border-color:#f44336;}
+.feedback{margin-top:12px;padding:10px;border-radius:10px;font-size:14px;display:none;}
+.feedback.show{display:block;}
+.feedback.correct{background:rgba(76,175,80,0.2);color:#81c784;}
+.feedback.wrong{background:rgba(244,67,54,0.2);color:#e57373;}
+.score-card{display:none;background:linear-gradient(135deg,rgba(174,213,129,0.95),rgba(104,159,56,0.95));border-radius:24px;padding:20px;text-align:center;margin-top:16px;border:4px solid #ffe082;}
+.score-card.show{display:block;}
+.score-card h2{color:#1b2e0a;font-size:22px;margin-bottom:12px;}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin:16px 0;}
+.podium-place{text-align:center;flex:1;max-width:110px;}
+.podium-character{font-size:32px;margin-bottom:6px;}
+.podium-bar{height:60px;border-radius:8px 8px 0 0;width:72px;margin:0 auto;background:rgba(30,20,10,0.35);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-size:13px;font-weight:bold;color:#1b2e0a;}
+.podium-bar.first{height:90px;background:linear-gradient(180deg,#ffd700,#daa520);}
+.podium-bar.second{height:70px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);}
+.podium-score{font-size:18px;font-weight:bold;color:#1b2e0a;margin-top:6px;}
+.podium-name{font-size:11px;color:#1b2e0a;}
+.message{margin:10px 0;font-size:15px;color:#1b2e0a;font-weight:bold;}
+.retry-btn,.continue-btn{padding:12px 22px;border:none;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;margin:4px;}
+.retry-btn{background:#1b2e0a;color:#aed581;}
+.continue-btn{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+.panel{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;margin-bottom:16px;border:1px solid rgba(174,213,129,0.25);}
+.view-stage{position:relative;width:100%;height:min(98vw,calc(100svh - 118px));max-height:min(98vw,calc(100svh - 118px));aspect-ratio:1;margin:0 auto;border-radius:16px;overflow:hidden;background:#2e1a0e;box-shadow:inset 0 0 40px rgba(0,0,0,0.45);}
+.view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
+.view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
+.view-photo{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;}
+.view-tap-overlay{position:absolute;inset:0;cursor:pointer;}
+.ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
+.ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#558b2f,#33691e);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
+.ctrl-btn.active{background:linear-gradient(135deg,#aed581,#689f38);color:#1b2e0a;}
+.info-panel{margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.28);border-radius:14px;border-left:4px solid #aed581;}
+.info-panel h2{color:#aed581;font-size:18px;margin-bottom:8px;}
+.info-panel p{font-size:15px;line-height:1.65;color:#fff8e1;}
+body.all-zones-page{overflow-y:auto!important;height:auto!important;}
+body.reading-page .container{height:auto!important;max-height:none!important;}
+@media(max-width:639px){.game-canvas{height:min(44vh,300px)!important;}}
+</style>
+<script src="_continents-player.js"></script>
+<script src="_continents-data.js"></script>
+<script src="_continents-chapter-images.js"></script>
+<script src="_continents-scenes.js"></script>
+<script src="_continents-speak.js"></script>
+</head>
+<body class="big-planet-page reading-page">
+<div class="clouds"></div>
+<div class="container">
+  <div class="header">
+    <h1>⛰️ Landforms</h1>
+    <div class="subtitle">Picture · story · explanation · press words to hear × 3 · mini game</div>
+    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span><span class="pill">🎮 Game below</span></div>
+  </div>
+  <p class="scroll-cue">↓ Scroll — each section has its own picture, story, explanation, and words to hear</p>
+  
+  <div class="segment">
+    <div class="segment-label">Picture · Mountains That Touch Clouds</div>
+    <div class="scene-wrap"><div id="scene-main-1" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Mountains That Touch Clouds</h2>
+      <div class="story-box">Maya clipped onto a trail as peaks rose around her like teeth. Rocky Ridge tossed pebbles and caught them one-handed. "Landforms are Earth's shapes — mountains, valleys, plains, and plateaus," he rumbled. "Mountains form when tectonic plates crash together or volcanoes pile up rock."</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Mountains rise through tectonic collisions (like the Himalayas), volcanic activity, or fault-block lifting. They affect weather — forcing air upward to create rain — and provide homes for unique plants and animals at high elevations.</div>
+      <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="mountains" onclick="ContinentSpeak.chip(this)">mountains</button><button type="button" class="speak-chip" data-word="landforms" onclick="ContinentSpeak.chip(this)">landforms</button><button type="button" class="speak-chip" data-word="tectonic" onclick="ContinentSpeak.chip(this)">tectonic</button><button type="button" class="speak-chip" data-word="volcanoes" onclick="ContinentSpeak.chip(this)">volcanoes</button></div></div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-label">Picture · Rivers That Carve the Land</div>
+    <div class="scene-wrap"><div id="scene-main-2" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Rivers That Carve the Land</h2>
+      <div class="story-box">They followed a river from a mountain spring down to a wide delta. Rocky Ridge skipped a stone across the water. "Rivers are sculptors," he said. "They cut canyons, carry soil to farms, and spread nutrients to oceans. Civilizations grew beside rivers for a reason — fresh water and fertile mud."</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Rivers erode rock, transport sediment, and deposit rich soil in floodplains and deltas. The Nile, Amazon, Mississippi, and Yangtze shaped human history by providing water for drinking, farming, and transportation.</div>
+      <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="rivers" onclick="ContinentSpeak.chip(this)">rivers</button><button type="button" class="speak-chip" data-word="erosion" onclick="ContinentSpeak.chip(this)">erosion</button><button type="button" class="speak-chip" data-word="sediment" onclick="ContinentSpeak.chip(this)">sediment</button><button type="button" class="speak-chip" data-word="delta" onclick="ContinentSpeak.chip(this)">delta</button></div></div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-label">Picture · Plates Beneath Our Feet</div>
+    <div class="scene-wrap"><div id="scene-main-3" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Plates Beneath Our Feet</h2>
+      <div class="story-box">Maya watched an animation of continents sliding apart and together. Rocky Ridge tapped the ground. "Earth's crust is broken into plates floating on hot, soft rock below," he explained. "When they move, we get earthquakes, volcanoes, and brand-new mountains — geology in action!"</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Tectonic plates move a few centimeters per year on the mantle. Collisions build mountains; separations open rifts and oceans. The Ring of Fire and Mid-Atlantic Ridge show plate boundaries where Earth reshapes itself.</div>
+      <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="plates" onclick="ContinentSpeak.chip(this)">plates</button><button type="button" class="speak-chip" data-word="earthquakes" onclick="ContinentSpeak.chip(this)">earthquakes</button><button type="button" class="speak-chip" data-word="mantle" onclick="ContinentSpeak.chip(this)">mantle</button><button type="button" class="speak-chip" data-word="geology" onclick="ContinentSpeak.chip(this)">geology</button></div></div>
+    </div>
+  </div>
+  
+  <div class="planet-game">
+    <h2>⛰️ Landform Sort</h2>
+    <p class="game-desc">Move ← → to catch landform icons in order ⛰️ → 🏞️ → 🌋 → 🏜️ → 🏝️. Avoid trash! Reach 60 points.</p>
+    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
+    <p id="ogHint" style="text-align:center;color:#ffe082;font-size:12px;margin:0 0 8px;min-height:18px;"></p>
+    <div class="game-canvas" id="ogCanvasBox">
+      <canvas id="ogCanvas"></canvas>
+      <div class="game-overlay" id="ogStart"><h3>⛰️ Landform Sort</h3><p>Move ← → to catch landform icons in order ⛰️ → 🏞️ → 🌋 → 🏜️ → 🏝️. Avoid trash! Reach 60 points.</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
+      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
+    </div>
+    <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
+  </div>
+  <script src="_continents-games.js"></script>
+  <script>ContinentGame.boot({
+  "game": "zone-sort",
+  "goal": 60,
+  "time": 60,
+  "lives": 3,
+  "good": [
+    "⛰️",
+    "🏞️",
+    "🌋",
+    "🏜️",
+    "🏝️"
+  ],
+  "bad": [
+    "🗑️",
+    "🏭"
+  ],
+  "player": "🧗",
+  "bgTop": "#5d4037",
+  "bgBot": "#3e2723"
+});</script>
+  <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  ContinentScene.boot({ containerId: "scene-main-1", chapterId: "landforms", slot: "main-1", title: "Landforms" });
+  ContinentScene.boot({ containerId: "scene-main-2", chapterId: "landforms", slot: "main-2", title: "Landforms" });
+  ContinentScene.boot({ containerId: "scene-main-3", chapterId: "landforms", slot: "main-3", title: "Landforms" });
+});
+</script>
+</body></html>

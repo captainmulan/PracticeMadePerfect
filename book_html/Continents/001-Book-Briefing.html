@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Continents Adventure - Book Briefing</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a237e 0%,#33691e 45%,#5d4037 100%);color:#fff8e1;min-height:100vh;position:relative;overflow-x:hidden;}
+    .clouds{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(40px 18px at 60px 40px,rgba(255,255,255,0.22),transparent),radial-gradient(50px 20px at 200px 80px,rgba(255,255,255,0.18),transparent),radial-gradient(35px 16px at 380px 50px,rgba(255,255,255,0.2),transparent),radial-gradient(45px 20px at 520px 60px,rgba(255,255,255,0.16),transparent);background-size:600px 120px;animation:drift 12s ease-in-out infinite;}
+    @keyframes drift{0%,100%{transform:translateX(0);}50%{transform:translateX(24px);}}
+    .container{max-width:640px;margin:auto;padding:24px 16px 40px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:30px;}
+    .globe-icon{font-size:60px;animation:spin 4s ease-in-out infinite;}
+    @keyframes spin{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
+    h1{font-size:36px;color:#aed581;margin-bottom:8px;}
+    .subtitle{color:#ffe082;font-size:18px;}
+    .card{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:20px;padding:20px;margin-bottom:16px;border:1px solid rgba(174,213,129,0.25);}
+    .card h2{color:#aed581;margin-bottom:12px;font-size:22px;}
+    .card p{font-size:16px;line-height:1.7;margin-bottom:10px;}
+    .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px;}
+    .info-item{background:rgba(174,213,129,0.12);border-radius:12px;padding:14px;text-align:center;border:1px solid rgba(174,213,129,0.3);}
+    .info-label{font-size:13px;color:#ffe082;margin-bottom:4px;}
+    .info-value{font-size:18px;font-weight:bold;color:#aed581;}
+    .nav-hint{margin-top:20px;text-align:center;font-size:13px;color:#ffe082;background:rgba(255,224,130,0.1);padding:10px;border-radius:10px;line-height:1.5;}
+    body.reading-page{overflow-x:hidden;overflow-y:auto!important;height:auto!important;min-height:100%;-webkit-overflow-scrolling:touch;}
+    body.reading-page .container{height:auto!important;max-height:none!important;overflow:visible!important;display:block;}
+  </style>
+<script>
+(function (w) {
+  var BOOK = "continents";
+  function key(name) { return "book:" + BOOK + ":" + name; }
+  w.ContinentPlayer = {
+    getUserName: function () { return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer"; },
+    getCharacter: function () { return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🧭"; },
+    getCharacterName: function () { return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Explorer"; },
+    save: function (name, character, characterName) {
+      localStorage.setItem(key("userName"), name);
+      localStorage.setItem(key("userCharacter"), character);
+      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userCharacter", character);
+      if (characterName != null) localStorage.setItem("characterName", characterName);
+    }
+  };
+})(window);
+</script>
+</head>
+<body class="reading-page">
+<div class="clouds"></div>
+<div class="container">
+  <div class="header">
+    <div class="globe-icon">🌍</div>
+    <h1>Continents Adventure</h1>
+    <div class="subtitle">An exciting journey across all seven continents!</div>
+  </div>
+
+  <div class="card">
+    <h2>📖 About This Book</h2>
+    <p>
+      Welcome to Continents Adventure! This book will take you on an amazing journey around the world. You'll explore all seven continents, discover famous landmarks, meet incredible animals, and learn how Earth's land shapes our planet.
+    </p>
+    <p>
+      Get ready to pack your compass and explore every corner of our beautiful Earth!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>📚 Book Details</h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">Author</div>
+        <div class="info-value">Jimmy Cooper</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Age Group</div>
+        <div class="info-value">7-8 years</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Chapters</div>
+        <div class="info-value">35</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">Theme</div>
+        <div class="info-value">Continents &amp; Geography</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💬 Author's Message</h2>
+    <p style="font-style:italic;line-height:1.7;background:rgba(174,213,129,0.12);padding:16px;border-radius:14px;border-left:4px solid #aed581;">
+      "Hello, young explorer! I'm Jimmy Cooper, and I created this book so you can travel the whole world from your chair. From icy Antarctica to sunny Africa, from ancient Europe to wild Australia — all seven continents are waiting for you. Grab your map, choose your avatar, and let's explore together!"
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🎯 What You'll Learn</h2>
+    <ul style="margin-left:20px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">The seven continents and where they are on Earth</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Famous landmarks like the Eiffel Tower, Great Wall, and Amazon rainforest</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Amazing animals from lions and pandas to kangaroos and penguins</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Landforms such as mountains, valleys, deserts, and rivers</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">Plate tectonics and how continents move over time</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🎮 How to Use This Book</h2>
+    <p>Each chapter has fun activities to help you learn:</p>
+    <ul style="margin-left:20px;margin-top:10px;">
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">📖 Read the briefing and index, then choose your explorer</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">🎮 Play the Map Explorer intro game, then visit each continent</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">🎯 Each topic: activity + explained + quiz</li>
+      <li style="font-size:16px;line-height:1.7;margin-bottom:8px;">🏆 Finish with conclusion, overall quiz, Globe Rush, and congratulations!</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🌍 Why Continents Matter</h2>
+    <p>
+      Continents are the giant puzzle pieces of land where billions of people and animals live. Learning about them helps us understand different cultures, climates, and how our planet works. When we know the world, we can explore it with care and protect it for the future!
+    </p>
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+</body>
+</html>

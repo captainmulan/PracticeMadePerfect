@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Continents Adventure - Globe Rush</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a237e 0%,#33691e 45%,#5d4037 100%);color:#fff8e1;min-height:100vh;}
+    .clouds{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(40px 18px at 60px 40px,rgba(255,255,255,0.22),transparent),radial-gradient(50px 20px at 200px 80px,rgba(255,255,255,0.18),transparent),radial-gradient(35px 16px at 380px 50px,rgba(255,255,255,0.2),transparent);background-size:600px 120px;animation:drift 12s ease-in-out infinite;}
+    @keyframes drift{0%,100%{transform:translateX(0);}50%{transform:translateX(24px);}}
+    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;}
+    .container{max-width:720px;margin:auto;padding:16px;}
+    h1{text-align:center;color:#ffe082;font-size:28px;margin-bottom:6px;}
+    .game-desc{text-align:center;color:#aed581;font-size:14px;margin-bottom:12px;line-height:1.5;}
+    .hud{display:flex;justify-content:space-between;background:rgba(0,0,0,0.35);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-weight:bold;color:#ffd54f;}
+    .game-wrap,.game-stage{position:relative;width:100%;height:280px;min-height:220px;max-height:320px;background:#2e1a0e;border-radius:18px;border:2px solid rgba(174,213,129,0.45);overflow:hidden;touch-action:none;}
+    canvas{display:block;width:100%;height:100%;}
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,20,10,0.92);text-align:center;padding:20px;z-index:5;}
+    .overlay h3{color:#aed581;font-size:22px;margin-bottom:8px;}
+    .overlay p{color:#fff3e0;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+    .btn{padding:12px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#aed581,#689f38);color:#1b2e0a;font-size:15px;font-weight:bold;cursor:pointer;font-family:inherit;}
+    .touch-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;max-width:360px;margin-left:auto;margin-right:auto;}
+    .touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(174,213,129,0.4);background:rgba(174,213,129,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;font-family:inherit;}
+    .nav-hint{margin-top:14px;text-align:center;font-size:13px;color:#ffe082;background:rgba(255,224,130,0.1);padding:10px;border-radius:10px;line-height:1.5;}
+    body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}
+    html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}
+    body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
+  </style>
+<script>
+(function (w) {
+  var BOOK = "continents";
+  function key(name) { return "book:" + BOOK + ":" + name; }
+  w.ContinentPlayer = {
+    getUserName: function () { return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer"; },
+    getCharacter: function () { return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🧭"; },
+    getCharacterName: function () { return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Explorer"; },
+    save: function (name, character, characterName) {
+      localStorage.setItem(key("userName"), name);
+      localStorage.setItem(key("userCharacter"), character);
+      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userCharacter", character);
+      if (characterName != null) localStorage.setItem("characterName", characterName);
+    }
+  };
+})(window);
+</script>
+</head>
+<body class="big-game-page">
+<div class="clouds"></div>
+<div class="game-shell">
+<div class="container">
+  <h1>🗺️ Globe Rush</h1>
+  <p class="game-desc">Move left and right to catch 🌍 globe icons. Avoid ❌ wrong icons! Reach 100 points before time runs out.</p>
+  <div class="hud"><span id="hudScore">⭐ 0</span><span id="hudTime">⏱ 60s</span><span id="hudLives">❤️❤️❤️</span></div>
+  <div class="game-wrap" id="wrap">
+    <canvas id="gameCanvas"></canvas>
+    <div class="overlay" id="startScreen">
+      <h3>🌍 Final Globe Mission!</h3>
+      <p>Move ← → (or buttons below) to catch globes 🌍. Dodge ❌ wrong answers!</p>
+      <button class="btn" type="button" onclick="startGame()">▶️ Start Rush</button>
+    </div>
+    <div class="overlay" id="endScreen" style="display:none;">
+      <h3 id="endTitle">🏆 Globe Champion!</h3>
+      <p id="endStats"></p>
+      <button class="btn" type="button" onclick="startGame()">🔄 Play Again</button>
+    </div>
+  </div>
+  <div class="touch-row">
+    <button class="touch-btn" id="leftBtn" type="button">⬅️</button>
+    <button class="touch-btn" id="rightBtn" type="button">➡️</button>
+  </div>
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+</div>
+<script>
+let canvas, ctx, running = false, score = 0, timeLeft = 60, lives = 3, timerId, animId;
+let player = { x: 0, y: 0, vx: 0 }, items = [], hazards = [], moveL = false, moveR = false;
+const GOAL = 100;
+const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+
+function resize() {
+  const wrap = document.getElementById('wrap');
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.floor(w * dpr);
+  canvas.height = Math.floor(h * dpr);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  player.x = w / 2;
+  player.y = h - 48;
+}
+
+function spawn() {
+  if (Math.random() < 0.58) {
+    items.push({ x: 20 + Math.random() * (canvas.clientWidth - 40), y: -16, icon: '🌍', pts: 10, speed: 1.6 + Math.random() });
+  } else {
+    hazards.push({ x: 20 + Math.random() * (canvas.clientWidth - 40), y: -16, icon: '❌', speed: 1.8 + Math.random() * 0.8 });
+  }
+}
+
+function drawEmojiSprite(emoji, x, y, sizePx) {
+  ctx.save();
+  ctx.font = 'bold ' + sizePx + 'px ' + FONT;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(emoji, x, y);
+  ctx.restore();
+}
+
+function draw() {
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, '#1a237e');
+  g.addColorStop(0.5, '#33691e');
+  g.addColorStop(1, '#3e2723');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+  items.forEach(it => drawEmojiSprite(it.icon, it.x, it.y, 26));
+  hazards.forEach(hz => drawEmojiSprite(hz.icon, hz.x, hz.y, 24));
+  drawEmojiSprite(ContinentPlayer.getCharacter() || '🧭', player.x, player.y, 28);
+}
+
+function updateHud() {
+  document.getElementById('hudScore').textContent = '⭐ ' + score;
+  document.getElementById('hudTime').textContent = '⏱ ' + timeLeft + 's';
+  document.getElementById('hudLives').textContent = '❤️'.repeat(Math.max(0, lives));
+}
+
+function endGame(won) {
+  running = false;
+  clearInterval(timerId);
+  cancelAnimationFrame(animId);
+  document.getElementById('endTitle').textContent = won ? '🏆 Globe Champion!' : '💫 Keep Exploring!';
+  document.getElementById('endStats').textContent = 'Score: ' + score + ' / ' + GOAL + ' | Time left: ' + timeLeft + 's';
+  document.getElementById('endScreen').style.display = 'flex';
+}
+
+function loop() {
+  if (!running) return;
+  if (moveL) player.vx = -5;
+  else if (moveR) player.vx = 5;
+  else player.vx *= 0.8;
+  player.x = Math.max(20, Math.min(canvas.clientWidth - 20, player.x + player.vx));
+  if (Math.random() < 0.04) spawn();
+  items.forEach((it, i) => {
+    it.y += it.speed;
+    if (Math.hypot(player.x - it.x, player.y - it.y) < 26) {
+      items.splice(i, 1);
+      score += it.pts;
+      updateHud();
+      if (score >= GOAL) endGame(true);
+    } else if (it.y > canvas.clientHeight + 20) items.splice(i, 1);
+  });
+  hazards.forEach((h, i) => {
+    h.y += h.speed;
+    if (Math.hypot(player.x - h.x, player.y - h.y) < 24) {
+      hazards.splice(i, 1);
+      lives--;
+      updateHud();
+      if (lives <= 0) endGame(false);
+    } else if (h.y > canvas.clientHeight + 20) hazards.splice(i, 1);
+  });
+  draw();
+  animId = requestAnimationFrame(loop);
+}
+
+function startGame() {
+  resize();
+  running = true;
+  score = 0;
+  timeLeft = 60;
+  lives = 3;
+  items = [];
+  hazards = [];
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'none';
+  updateHud();
+  clearInterval(timerId);
+  timerId = setInterval(function () {
+    if (!running) return;
+    timeLeft--;
+    updateHud();
+    if (timeLeft <= 0) endGame(score >= GOAL);
+  }, 1000);
+  loop();
+}
+
+['leftBtn', 'rightBtn'].forEach((id, idx) => {
+  const el = document.getElementById(id);
+  const set = idx === 0 ? v => { moveL = v; } : v => { moveR = v; };
+  el.addEventListener('touchstart', e => { e.preventDefault(); set(true); });
+  el.addEventListener('touchend', () => set(false));
+  el.addEventListener('mousedown', () => set(true));
+  el.addEventListener('mouseup', () => set(false));
+});
+document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') moveL = true; if (e.key === 'ArrowRight') moveR = true; });
+document.addEventListener('keyup', e => { if (e.key === 'ArrowLeft') moveL = false; if (e.key === 'ArrowRight') moveR = false; });
+window.addEventListener('resize', resize);
+resize();
+
+(function fitGameFrame() {
+  function fit() {
+    if (!document.body.classList.contains('big-game-page')) return;
+    const h = window.innerHeight + 'px';
+    document.documentElement.style.height = h;
+    document.body.style.height = h;
+    const shell = document.querySelector('.game-shell');
+    if (shell) { shell.style.height = h; shell.style.minHeight = h; }
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
+</body>
+</html>
