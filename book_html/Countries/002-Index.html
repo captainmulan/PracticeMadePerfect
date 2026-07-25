@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countries Adventure - Index</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#1a2f1a 0%,#2d5a3d 50%,#1e4620 100%);
+      color:#f1f8e9;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .clouds{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),
+        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),
+        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);
+      background-size:900px 150px;
+      animation:rise 8s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes rise{
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-20px);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:32px;
+      color:#ffd54f;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#a5d6a7;
+      font-size:16px;
+    }
+    .chapter-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+      gap:12px;
+    }
+    .chapter-card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:16px;
+      padding:16px;
+      border:1px solid rgba(255,255,255,0.1);
+      cursor:pointer;
+      transition:transform 0.2s,background 0.2s;
+    }
+    .chapter-card:hover{
+      transform:translateY(-4px);
+      background:rgba(255,255,255,0.15);
+    }
+    .chapter-number{
+      font-size:14px;
+      color:#a5d6a7;
+      margin-bottom:4px;
+    }
+    .chapter-emoji{
+      font-size:32px;
+      margin-bottom:8px;
+    }
+    .chapter-title{
+      font-size:15px;
+      font-weight:bold;
+      color:#ffd54f;
+      margin-bottom:4px;
+    }
+    .chapter-concept{
+      font-size:12px;
+      color:#b0bec5;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a5d6a7;
+      background:rgba(128,222,234,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  
+/* world-ui-audit-overrides */
+body.reading-page,
+body.reading-page:has(.container),
+body.reading-page:has(.quiz-card),
+body.reading-page:has(.character-grid) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.reading-page:has(.character-grid) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+@media (max-width: 639px) {
+  body.big-planet-page .world-display {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(78vw, calc(100svh - 220px)) !important;
+    min-height: min(56vw, 220px) !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .container {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+  body.big-planet-page .planet-game .game-canvas,
+  body:has(.planet-game) .game-canvas {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+  .planet-game { padding: 10px !important; margin-top: 10px !important; }
+  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }
+  .touch-controls { margin-top: 6px; gap: 6px; }
+  .touch-btn { min-height: 48px; font-size: 18px; }
+}
+@media (min-width: 640px) {
+  body.big-planet-page .world-display {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+    min-height: min(56vw, calc(100svh - 200px)) !important;
+  }
+}
+body.big-planet-page .planet-game .game-canvas {
+  width: 100% !important;
+  height: min(50vh, 440px) !important;
+  min-height: min(42vh, 300px) !important;
+  max-height: min(56vh, 480px) !important;
+}
+body.big-planet-page .planet-game { margin-bottom: 8px !important; }
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+}
+html:has(body.big-game-page) {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+body.big-game-page:has(.game-shell) .game-shell {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.big-game-page:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+body.reading-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}
+    .game-overlay.end-popup h3{color:#ffd54f;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}
+  </style>
+<script>
+(function (w) {
+  var BOOK = "countries";
+  function key(name) { return "book:" + BOOK + ":" + name; }
+  w.CountriesPlayer = {
+    getUserName: function () { return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer"; },
+    getCharacter: function () { return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🤿"; },
+    getCharacterName: function () { return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "traveler"; },
+    save: function (name, character, characterName) {
+      localStorage.setItem(key("userName"), name);
+      localStorage.setItem(key("userCharacter"), character);
+      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userCharacter", character);
+      if (characterName != null) localStorage.setItem("characterName", characterName);
+    }
+  };
+})(window);
+</script>
+</head>
+<body class="reading-page">
+<div class="clouds"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Countries Adventure Index</h1>
+    <div class="subtitle">Choose a chapter to explore!</div>
+  </div>
+
+  <div class="chapter-grid">
+    <div class="chapter-card"><div class="chapter-number">001</div><div class="chapter-emoji">📖</div><div class="chapter-title">Book Briefing</div><div class="chapter-concept">Introduction</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">002</div><div class="chapter-emoji">📑</div><div class="chapter-title">Index</div><div class="chapter-concept">Chapter List</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">003</div><div class="chapter-emoji">🧳</div><div class="chapter-title">Character Selection</div><div class="chapter-concept">Choose Traveler</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">004</div><div class="chapter-emoji">🎮</div><div class="chapter-title">World Map Maker</div><div class="chapter-concept">Intro Game</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">005</div><div class="chapter-emoji">🌍</div><div class="chapter-title">World Overview</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">006</div><div class="chapter-emoji">📖</div><div class="chapter-title">World Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">007</div><div class="chapter-emoji">❓</div><div class="chapter-title">World Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">008</div><div class="chapter-emoji">🌏</div><div class="chapter-title">Asia</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">009</div><div class="chapter-emoji">📖</div><div class="chapter-title">Asia Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">010</div><div class="chapter-emoji">❓</div><div class="chapter-title">Asia Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">011</div><div class="chapter-emoji">🏰</div><div class="chapter-title">Europe</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">012</div><div class="chapter-emoji">📖</div><div class="chapter-title">Europe Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">013</div><div class="chapter-emoji">❓</div><div class="chapter-title">Europe Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">014</div><div class="chapter-emoji">🦁</div><div class="chapter-title">Africa</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">015</div><div class="chapter-emoji">📖</div><div class="chapter-title">Africa Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">016</div><div class="chapter-emoji">❓</div><div class="chapter-title">Africa Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">017</div><div class="chapter-emoji">🗽</div><div class="chapter-title">North America</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">018</div><div class="chapter-emoji">📖</div><div class="chapter-title">North America Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">019</div><div class="chapter-emoji">❓</div><div class="chapter-title">North America Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">020</div><div class="chapter-emoji">🌎</div><div class="chapter-title">South America</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">021</div><div class="chapter-emoji">📖</div><div class="chapter-title">South America Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">022</div><div class="chapter-emoji">❓</div><div class="chapter-title">South America Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">023</div><div class="chapter-emoji">🦘</div><div class="chapter-title">Australia & Oceania</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">024</div><div class="chapter-emoji">📖</div><div class="chapter-title">Australia Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">025</div><div class="chapter-emoji">❓</div><div class="chapter-title">Australia Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">026</div><div class="chapter-emoji">🐧</div><div class="chapter-title">Antarctica</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">027</div><div class="chapter-emoji">📖</div><div class="chapter-title">Antarctica Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">028</div><div class="chapter-emoji">❓</div><div class="chapter-title">Antarctica Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">029</div><div class="chapter-emoji">🗿</div><div class="chapter-title">Famous Landmarks</div><div class="chapter-concept">Activity</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">030</div><div class="chapter-emoji">📖</div><div class="chapter-title">Landmarks Explained</div><div class="chapter-concept">Reading</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">031</div><div class="chapter-emoji">❓</div><div class="chapter-title">Landmarks Quiz</div><div class="chapter-concept">Quiz Time</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">032</div><div class="chapter-emoji">📚</div><div class="chapter-title">Conclusion</div><div class="chapter-concept">Summary</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">033</div><div class="chapter-emoji">🏆</div><div class="chapter-title">Overall Quiz</div><div class="chapter-concept">Final Quiz</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">034</div><div class="chapter-emoji">✈️</div><div class="chapter-title">Globe Rush</div><div class="chapter-concept">Outro Game</div></div>
+
+    <div class="chapter-card"><div class="chapter-number">035</div><div class="chapter-emoji">🎉</div><div class="chapter-title">Congratulations</div><div class="chapter-concept">You Did It!</div></div>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

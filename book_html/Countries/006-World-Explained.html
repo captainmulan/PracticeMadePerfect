@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countries Adventure - World Overview Explained</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a2f1a 0%,#2d5a3d 50%,#1e4620 100%);color:#f1f8e9;min-height:100vh;position:relative;overflow-x:hidden;}
+.clouds{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.18),transparent),radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.25),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;}
+@keyframes rise{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+.container{max-width:680px;margin:0 auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header,.top-bar{text-align:center;margin-bottom:16px;}
+h1{font-size:clamp(22px,5vw,30px);color:#ffd54f;margin-bottom:6px;}
+.subtitle{color:#a5d6a7;font-size:15px;line-height:1.45;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.pill{background:rgba(255,213,79,0.12);color:#a5d6a7;font-size:11px;font-weight:bold;padding:5px 12px;border-radius:999px;border:1px solid rgba(255,213,79,0.35);}
+.segment,.block{margin-bottom:24px;}
+.segment-label,.block-label{font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;color:#a5d6a7;margin-bottom:8px;}
+.scene-wrap{margin-bottom:10px;}
+.scene-card{position:relative;width:100%;border-radius:16px;border:2px solid rgba(255,213,79,0.35);background:#0d2810;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,0.35);}
+.scene-card-hero.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 160px),420px);}
+.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-placeholder{width:100%;height:100%;min-height:200px;display:flex;align-items:center;justify-content:center;color:#a5d6a7;font-size:14px;padding:20px;text-align:center;}
+.card{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(255,213,79,0.25);}
+.card h2{color:#ffd54f;font-size:18px;margin-bottom:10px;}
+.story-box{background:rgba(0,40,60,0.35);border-left:4px solid #ffd54f;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.75;color:#f1f8e9;}
+.explain-box{background:rgba(255,213,79,0.08);border-left:4px solid #81c784;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.7;color:#dcedc8;margin-top:10px;}
+.hear-row{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,213,79,0.25);}
+.hear-label{display:block;font-size:12px;font-weight:bold;color:#a5d6a7;margin-bottom:8px;}
+.speak-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.speak-chip{padding:8px 14px;border:2px solid rgba(255,213,79,0.45);border-radius:999px;background:rgba(255,213,79,0.1);color:#f1f8e9;font-family:inherit;font-size:13px;font-weight:bold;cursor:pointer;touch-action:manipulation;}
+.speak-chip:active,.speak-chip.pressed{background:linear-gradient(135deg,#ffd54f,#81c784);color:#1b3a1b;border-color:#ffd54f;}
+.scroll-cue{text-align:center;color:#a5d6a7;font-size:13px;margin:8px 0 12px;}
+.planet-game,.game-section{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);border-radius:20px;padding:18px;margin:16px 0;border:1px solid rgba(255,213,79,0.35);}
+.planet-game h2,.game-section h2{color:#ffd54f;font-size:19px;text-align:center;margin-bottom:8px;}
+.planet-game .game-desc,.game-desc{text-align:center;color:#a5d6a7;font-size:14px;margin-bottom:12px;line-height:1.5;}
+.game-hud-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:13px;font-weight:bold;flex-wrap:wrap;}
+.game-hud-row span{background:rgba(0,0,0,0.35);padding:6px 10px;border-radius:8px;color:#ffeb3b;}
+.game-canvas{position:relative;width:100%;height:min(48vh,320px);min-height:220px;background:#1b3a1b;border-radius:16px;overflow:hidden;border:2px solid rgba(255,213,79,0.35);touch-action:none;}
+.game-canvas canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+.game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,0.92);text-align:center;padding:20px;z-index:5;}
+.game-overlay h3{color:#ffd54f;font-size:22px;margin-bottom:8px;}
+.game-overlay p{color:#dcedc8;font-size:14px;line-height:1.5;margin-bottom:14px;max-width:320px;}
+.overlay-btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#ffd54f,#81c784);color:#1b3a1b;font-size:15px;font-weight:bold;cursor:pointer;}
+.touch-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:280px;margin:12px auto 0;}
+.touch-btn{padding:14px;border-radius:12px;border:2px solid rgba(255,213,79,0.4);background:rgba(255,213,79,0.12);font-size:22px;cursor:pointer;touch-action:manipulation;}
+.nav-hint{margin-top:16px;text-align:center;font-size:12px;color:#a5d6a7;background:rgba(128,222,234,0.1);padding:12px;border-radius:10px;line-height:1.5;}
+.competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:14px;padding:12px;margin-bottom:14px;border:1px solid rgba(255,213,79,0.25);}
+.competitor{text-align:center;flex:1;}
+.competitor-icon{font-size:36px;}
+.competitor-name{font-size:12px;color:#a5d6a7;margin-top:4px;}
+.competitor-score{font-size:22px;font-weight:bold;color:#ffd54f;}
+.vs-divider{font-size:20px;font-weight:bold;color:#ffeb3b;margin:0 8px;}
+.quiz-card{background:rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.1);display:none;}
+.quiz-card.active{display:block;}
+.question{font-size:17px;font-weight:bold;margin-bottom:14px;color:#fff;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{padding:12px 16px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.2);border-radius:12px;cursor:pointer;font-size:15px;transition:.15s;}
+.option:hover{background:rgba(255,255,255,0.1);border-color:#ffd54f;}
+.option.correct{background:rgba(76,175,80,0.3);border-color:#4caf50;}
+.option.wrong{background:rgba(244,67,54,0.3);border-color:#f44336;}
+.feedback{margin-top:12px;padding:10px;border-radius:10px;font-size:14px;display:none;}
+.feedback.show{display:block;}
+.feedback.correct{background:rgba(76,175,80,0.2);color:#81c784;}
+.feedback.wrong{background:rgba(244,67,54,0.2);color:#e57373;}
+.score-card{display:none;background:linear-gradient(135deg,rgba(255,213,79,0.95),rgba(0,188,212,0.95));border-radius:24px;padding:20px;text-align:center;margin-top:16px;border:4px solid #a5d6a7;}
+.score-card.show{display:block;}
+.score-card h2{color:#0a1628;font-size:22px;margin-bottom:12px;}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin:16px 0;}
+.podium-place{text-align:center;flex:1;max-width:110px;}
+.podium-character{font-size:32px;margin-bottom:6px;}
+.podium-bar{height:60px;border-radius:8px 8px 0 0;width:72px;margin:0 auto;background:rgba(10,22,40,0.35);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-size:13px;font-weight:bold;color:#0a1628;}
+.podium-bar.first{height:90px;background:linear-gradient(180deg,#ffd700,#daa520);}
+.podium-bar.second{height:70px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);}
+.podium-score{font-size:18px;font-weight:bold;color:#0a1628;margin-top:6px;}
+.podium-name{font-size:11px;color:#0a1628;}
+.message{margin:10px 0;font-size:15px;color:#0a1628;font-weight:bold;}
+.retry-btn,.continue-btn{padding:12px 22px;border:none;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;margin:4px;}
+.retry-btn{background:#0a1628;color:#ffd54f;}
+.continue-btn{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+.panel{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;margin-bottom:16px;border:1px solid rgba(255,213,79,0.25);}
+.view-stage{position:relative;width:100%;height:min(98vw,calc(100svh - 118px));max-height:min(98vw,calc(100svh - 118px));aspect-ratio:1;margin:0 auto;border-radius:16px;overflow:hidden;background:#0d2810;box-shadow:inset 0 0 40px rgba(0,0,0,0.45);}
+.view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
+.view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
+.view-photo{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;}
+.view-tap-overlay{position:absolute;inset:0;cursor:pointer;}
+.ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
+.ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#558b2f,#33691e);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
+.ctrl-btn.active{background:linear-gradient(135deg,#ffd54f,#81c784);color:#1b3a1b;}
+.info-panel{margin-top:10px;padding:12px 14px;background:rgba(0,0,0,0.28);border-radius:14px;border-left:4px solid #ffd54f;}
+.info-panel h2{color:#ffd54f;font-size:18px;margin-bottom:8px;}
+.info-panel p{font-size:15px;line-height:1.65;color:#f1f8e9;}
+body.all-zones-page{overflow-y:auto!important;height:auto!important;}
+body.reading-page .container{height:auto!important;max-height:none!important;}
+@media(max-width:639px){.game-canvas{height:min(44vh,300px)!important;}}
+</style>
+<script src="_countries-player.js"></script>
+<script src="_countries-data.js"></script>
+<script src="_countries-chapter-images.js"></script>
+<script src="_countries-scenes.js"></script>
+<script src="_countries-speak.js"></script>
+</head>
+<body class="reading-page">
+<div class="clouds"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 World Overview — Explained</h1>
+    <div class="subtitle">Picture · story · explanation × 3</div>
+  </div>
+  <p class="scroll-cue">Scroll through three deeper sections with painted scenes</p>
+  
+  <div class="segment">
+    <div class="segment-label">Deep dive · What Makes a Country?</div>
+    <div class="scene-wrap"><div id="scene-explain-1" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 What Makes a Country?</h2>
+      <div class="story-box">Globe Gus showed Mia a passport stamp and a flag. "Countries have governments that make laws, currencies for money, and capital cities where leaders work," he said. "Some countries are huge; others are tiny islands you could walk across in a day."</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> A country needs recognized borders, a government, and usually its own flag and anthem. Capital cities (like Washington D.C., Tokyo, or Paris) are where national decisions are made.</div>
+      
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-label">Deep dive · Maps and Scale</div>
+    <div class="scene-wrap"><div id="scene-explain-2" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Maps and Scale</h2>
+      <div class="story-box">Mia tried to flatten an orange peel — it wrinkled and tore. "That's why world maps look stretched near the poles," Globe Gus laughed. "Cartographers use different map types to show size, shape, or direction as fairly as possible."</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Globes show Earth accurately, but flat maps distort size or shape. The Mercator map preserves direction for sailors; other projections try to show continent sizes more fairly.</div>
+      
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-label">Deep dive · Time Zones and Hemispheres</div>
+    <div class="scene-wrap"><div id="scene-explain-3" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Time Zones and Hemispheres</h2>
+      <div class="story-box">When Mia ate breakfast, kids in Australia were heading to bed. Globe Gus drew a line through Greenwich, England. "Earth spins once every 24 hours," he said. "We split the world into time zones so clocks make sense."</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> The equator divides Earth into Northern and Southern Hemispheres. Time zones are roughly 15° of longitude wide. When it's noon in London, it might be evening in Tokyo and early morning in New York.</div>
+      
+    </div>
+  </div>
+  <div class="nav-hint"><div>💡 Use the ↝ → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🝠 button in the top navigation bar to go back to the Home page.</div></div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  CountriesScene.boot({ containerId: "scene-explain-1", chapterId: "overview", slot: "explain-1", title: "World Overview" });
+  CountriesScene.boot({ containerId: "scene-explain-2", chapterId: "overview", slot: "explain-2", title: "World Overview" });
+  CountriesScene.boot({ containerId: "scene-explain-3", chapterId: "overview", slot: "explain-3", title: "World Overview" });
+});
+</script>
+</body></html>
