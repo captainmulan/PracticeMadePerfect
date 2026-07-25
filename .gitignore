@@ -24,3 +24,7 @@ build
 # misc
 *.log
 .cache
+
+# Generated base64 image bundles (exceed GitHub 100MB limit — run each book's gen script)
+**/*-chapter-images.js
+**/_mmwords-chapter-images.js
