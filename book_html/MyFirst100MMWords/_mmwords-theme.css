@@ -771,37 +771,66 @@ html:has(body.main-chapter-page){
   min-height:0;
   height:100%;
   display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-rows:minmax(0,1.6fr) auto auto;
   gap:8px;
   width:100%;
 }
-.chapter-scene{margin-bottom:0;}
-.main-chapter-page .chapter-scene .scene-wrap{width:100%;}
+.chapter-scene{margin-bottom:0;min-height:0;height:100%;}
+.main-chapter-page .chapter-scene{
+  margin:0 -14px;
+  width:calc(100% + 28px);
+}
+.main-chapter-page .chapter-scene .scene-wrap{
+  width:100%;
+  height:100%;
+  margin:0;
+}
 .main-chapter-page .chapter-scene .scene-card-hero,
 .main-chapter-page .chapter-scene .chapter-photo-hero{
   width:100%;
-  max-height:min(20dvh,140px);
+  height:100%;
+  min-height:min(42dvh,360px);
+  max-height:none;
   aspect-ratio:auto;
-  height:auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  border-radius:0;
+  border-left:none;
+  border-right:none;
+  box-shadow:none;
+  display:block;
   background:#1a1008;
+  overflow:hidden;
 }
 .main-chapter-page .chapter-scene .chapter-hero-img{
   width:100%;
-  height:auto;
-  max-height:min(20dvh,140px);
+  height:100%;
+  min-height:min(42dvh,360px);
+  max-height:none;
   aspect-ratio:auto;
-  object-fit:contain;
+  object-fit:cover;
   object-position:center;
+  display:block;
 }
-@media(min-width:768px){
-  .main-chapter-page .chapter-scene .scene-card-hero,
-  .main-chapter-page .chapter-scene .chapter-photo-hero,
-  .main-chapter-page .chapter-scene .chapter-hero-img{
-    max-height:min(26dvh,220px);
-  }
+.story-row{
+  min-height:0;
+}
+.story-row .card{
+  padding:12px;
+  min-height:0;
+  margin:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.story-row .story-card h2{
+  font-size:15px;
+  margin-bottom:6px;
+  flex-shrink:0;
+  color:var(--lacquer-deep);
+}
+.story-row .story-box{
+  font-size:13px;
+  line-height:1.55;
+  overflow:hidden;
 }
 .story-teach-row{
   display:grid;
@@ -868,9 +897,12 @@ html:has(body.main-chapter-page){
 @media(orientation:landscape) and (max-height:900px){
   body.main-chapter-page{padding:4px;}
   .main-chapter-page .container{padding:6px 10px 8px;}
+  .main-chapter-page .chapter-scene{margin:0 -10px;width:calc(100% + 20px);}
   .main-chapter-page .chapter-scene .scene-card-hero,
   .main-chapter-page .chapter-scene .chapter-photo-hero,
-  .main-chapter-page .chapter-scene .chapter-hero-img{max-height:min(16dvh,120px);}
+  .main-chapter-page .chapter-scene .chapter-hero-img{min-height:min(34dvh,240px);}
+  .story-row .card{padding:10px;}
+  .story-row .story-box{font-size:12px;line-height:1.45;}
   .story-teach-row .card{padding:10px;}
   .story-teach-row .story-box{font-size:12px;line-height:1.45;}
   .story-teach-row .tip-card p{font-size:11px;line-height:1.45;}

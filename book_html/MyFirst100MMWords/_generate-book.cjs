@@ -710,21 +710,17 @@ function cleanPartTitle(title) {
     .trim();
 }
 
-function mainWizardPanelHtml(ch, idx, story, explanation, words, titles, active) {
+function mainWizardPanelHtml(ch, idx, story, words, titles, active) {
   const slot = "seg" + (idx + 1);
   const pic = imgHtml(ch.id, slot, ch.title + " — part " + (idx + 1));
   return `
     <div class="wizard-panel chapter-panel${active ? " active" : ""}" id="cw-part-${idx}" data-part="${idx + 1}">
       <div class="chapter-panel-inner">
         <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
-        <div class="story-teach-row">
+        <div class="story-row">
           <div class="card story-card">
             <h2>${esc(titles[idx])}</h2>
             <div class="story-box">${esc(story)}</div>
-          </div>
-          <div class="card tip-card">
-            <span class="tip-tag">What this teaches</span>
-            <p>${esc(explanation)}</p>
           </div>
         </div>
         <div class="chapter-words-block">
@@ -889,11 +885,10 @@ function segmentTitles(ch, kind) {
 
 function genActivity(ch) {
   const stories = splitThree(ch.story);
-  const explanations = mainExplanations(ch);
   const titles = segmentTitles(ch, "main");
   const wordGroups = splitWords(ch.words);
   const panels = [0, 1, 2]
-    .map((i) => mainWizardPanelHtml(ch, i, stories[i], explanations[i], wordGroups[i], titles, i === 0))
+    .map((i) => mainWizardPanelHtml(ch, i, stories[i], wordGroups[i], titles, i === 0))
     .join("");
   const wizardHtml = mainChapterWizardHtml(ch, panels, mainGamePanelHtml(ch));
 
