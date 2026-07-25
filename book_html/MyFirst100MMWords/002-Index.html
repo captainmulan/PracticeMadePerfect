@@ -4,283 +4,119 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My First 100 Myanmar Words - Index</title>
-<style>
-:root{
-  --palm:#E6D5B8;
-  --palm-dark:#C4A574;
-  --ink:#2C1810;
-  --lacquer:#6B1A1A;
-  --lacquer-deep:#4A0E0E;
-  --gold:#C9A227;
-  --gold-light:#E8C547;
-  --saffron:#D97706;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-  font-family:'Myanmar Text',Padauk,Georgia,'Times New Roman',serif;
-  background:var(--lacquer-deep);
-  color:var(--ink);
-  min-height:100vh;
-  padding:12px;
-}
-.manuscript-bg{
-  min-height:calc(100vh - 24px);
-  background:
-    linear-gradient(180deg,rgba(0,0,0,.04),transparent 12%,transparent 88%,rgba(0,0,0,.06)),
-    repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(44,24,16,.03) 3px,rgba(44,24,16,.03) 4px),
-    linear-gradient(165deg,#EDE0C4 0%,var(--palm) 35%,#D9C49A 70%,#C9B082 100%);
-  border:3px solid var(--gold);
-  outline:6px solid var(--lacquer);
-  outline-offset:-9px;
-  box-shadow:inset 0 0 80px rgba(44,24,16,.12),0 8px 32px rgba(0,0,0,.45);
-  position:relative;
-  overflow:hidden;
-}
-.manuscript-bg::before,.manuscript-bg::after{
-  content:'';
-  position:absolute;
-  width:72px;height:72px;
-  border:2px solid var(--gold);
-  opacity:.55;
-  pointer-events:none;
-}
-.manuscript-bg::before{top:16px;left:16px;border-right:none;border-bottom:none;}
-.manuscript-bg::after{bottom:16px;right:16px;border-left:none;border-top:none;}
-.scroll-wrap{
-  max-width:680px;
-  margin:0 auto;
-  padding:28px 22px 36px;
-  position:relative;
-  z-index:1;
-}
-.header{
-  text-align:center;
-  padding-bottom:20px;
-  border-bottom:2px double var(--lacquer);
-  margin-bottom:22px;
-}
-.ornament-top{
-  font-size:28px;
-  color:var(--gold);
-  letter-spacing:.35em;
-  margin-bottom:8px;
-  text-shadow:0 1px 0 rgba(255,255,255,.35);
-}
-.title-mm{
-  font-family:'Myanmar Text',Padauk,sans-serif;
-  font-size:clamp(22px,5vw,28px);
-  font-weight:700;
-  color:var(--lacquer-deep);
-  line-height:1.45;
-  margin-bottom:6px;
-}
-.title-en{
-  font-family:Georgia,serif;
-  font-size:15px;
-  font-style:italic;
-  color:#5C4033;
-  letter-spacing:.04em;
-}
-.subtitle-mm{
-  font-family:'Myanmar Text',Padauk,sans-serif;
-  font-size:14px;
-  color:var(--saffron);
-  margin-top:10px;
-}
-.section-block{margin-bottom:22px;}
-.section-label{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:10px;
-}
-.section-label span{
-  font-family:'Myanmar Text',Padauk,sans-serif;
-  font-size:13px;
-  font-weight:700;
-  color:var(--lacquer);
-  white-space:nowrap;
-}
-.section-label::after{
-  content:'';
-  flex:1;
-  height:1px;
-  background:linear-gradient(90deg,var(--gold),transparent);
-}
-.toc-list{list-style:none;}
-.toc-row{
-  display:grid;
-  grid-template-columns:42px 1fr auto;
-  gap:8px;
-  align-items:baseline;
-  padding:9px 10px;
-  border-bottom:1px dotted rgba(44,24,16,.22);
-  transition:background .15s;
-}
-.toc-row:hover{background:rgba(201,162,39,.12);}
-.toc-num{
-  font-family:Georgia,serif;
-  font-size:12px;
-  font-weight:700;
-  color:var(--gold);
-  text-shadow:0 0 1px var(--lacquer-deep);
-}
-.toc-body{min-width:0;}
-.toc-title{
-  font-size:14px;
-  font-weight:700;
-  color:var(--ink);
-  line-height:1.35;
-}
-.toc-mm{
-  font-family:'Myanmar Text',Padauk,sans-serif;
-  font-size:12px;
-  color:#5C4033;
-  margin-top:2px;
-  opacity:.9;
-}
-.toc-type{
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--lacquer);
-  opacity:.75;
-  white-space:nowrap;
-  align-self:center;
-}
-.toc-emoji{font-size:16px;margin-right:4px;vertical-align:middle;}
-.topic-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px 14px;
-}
-.topic-grid .toc-row{
-  grid-template-columns:36px 1fr;
-  padding:8px;
-  border:1px solid rgba(107,26,26,.15);
-  border-radius:4px;
-  background:rgba(255,252,245,.45);
-  border-bottom:1px solid rgba(107,26,26,.15);
-}
-.topic-grid .toc-type{display:none;}
-.footer-scroll{
-  margin-top:24px;
-  text-align:center;
-  padding:14px 12px;
-  border-top:2px double var(--lacquer);
-}
-.footer-scroll p{
-  font-family:'Myanmar Text',Padauk,sans-serif;
-  font-size:13px;
-  color:#5C4033;
-  line-height:1.65;
-}
-.footer-scroll .hint-en{
-  font-family:Georgia,serif;
-  font-size:12px;
-  font-style:italic;
-  color:#7A5C44;
-  margin-top:6px;
-}
-.pagoda-deco{
-  display:block;
-  margin:0 auto 12px;
-  opacity:.85;
-}
-@media(max-width:520px){
-  .topic-grid{grid-template-columns:1fr;}
-  .scroll-wrap{padding:20px 14px 28px;}
-}
-</style>
+<link rel="stylesheet" href="_mmwords-theme.css">
 </head>
 <body>
 <div class="manuscript-bg">
 <div class="scroll-wrap">
 
   <div class="header">
-    <svg class="pagoda-deco" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#C9A227" d="M24 4 L32 14 H16 Z"/>
-      <path fill="#6B1A1A" d="M24 14 L34 26 H14 Z"/>
-      <rect x="18" y="26" width="12" height="14" fill="#C9A227"/>
-      <circle cx="24" cy="3" r="2" fill="#E8C547"/>
+    <svg class="pagoda-deco" width="56" height="64" viewBox="0 0 56 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="idx-pg-gold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FDE68A"/>
+          <stop offset="50%" stop-color="#E8C547"/>
+          <stop offset="100%" stop-color="#C9A227"/>
+        </linearGradient>
+        <linearGradient id="idx-pg-lac" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#8B2525"/>
+          <stop offset="100%" stop-color="#4A0E0E"/>
+        </linearGradient>
+        <linearGradient id="idx-pg-shine" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#FFF8E7" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#C9A227" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="idx-pg-sh" x="-25%" y="-25%" width="150%" height="150%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2.2" flood-color="#2C1810" flood-opacity=".28"/>
+        </filter>
+      </defs>
+      <g filter="url(#idx-pg-sh)">
+        <rect x="10" y="54" width="36" height="5" rx="1.2" fill="#6B4423"/>
+        <rect x="12" y="50" width="32" height="4" rx="1" fill="url(#idx-pg-gold)" stroke="#92400E" stroke-width=".5"/>
+        <rect x="15" y="41" width="26" height="10" rx="1" fill="url(#idx-pg-lac)" stroke="#C9A227" stroke-width=".7"/>
+        <path d="M8 41 L28 31 L48 41 L45 43 L28 35 L11 43 Z" fill="url(#idx-pg-gold)" stroke="#92400E" stroke-width=".55"/>
+        <path d="M8 41 L28 31 L48 41" fill="none" stroke="url(#idx-pg-shine)" stroke-width="1.2" opacity=".8"/>
+        <rect x="19" y="33" width="18" height="6" rx=".8" fill="url(#idx-pg-lac)" stroke="#C9A227" stroke-width=".55"/>
+        <path d="M13 33 L28 25 L43 33 L41 35 L28 28 L15 35 Z" fill="url(#idx-pg-gold)" stroke="#92400E" stroke-width=".55"/>
+        <rect x="21" y="25" width="14" height="5" rx=".6" fill="url(#idx-pg-lac)" stroke="#C9A227" stroke-width=".5"/>
+        <path d="M16 25 L28 18 L40 25 L38 27 L28 21 L18 27 Z" fill="url(#idx-pg-gold)" stroke="#92400E" stroke-width=".5"/>
+        <path d="M18 25 L28 18 L38 25 L28 22 Z" fill="url(#idx-pg-shine)" opacity=".45"/>
+        <line x1="28" y1="18" x2="28" y2="6" stroke="#B8860B" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="28" cy="5" r="3.2" fill="#FDE68A" stroke="#D97706" stroke-width=".8"/>
+        <circle cx="27" cy="4" r="1" fill="#fff" opacity=".65"/>
+        <ellipse cx="28" cy="58" rx="14" ry="2" fill="#000" opacity=".08"/>
+      </g>
     </svg>
     <div class="ornament-top">✦ ✦ ✦</div>
-    <h1 class="title-mm">Table of Contents</h1>
-    <p class="title-en">Parabaik Index · Ancient manuscript style</p>
-    <p class="subtitle-mm">Stories, morals, and your first Myanmar words</p>
+    <h1 class="page-title">Table of Contents</h1>
   </div>
 
   <div class="section-block">
     <div class="section-label"><span>Introduction</span></div>
     <ul class="toc-list">
-      <li class="toc-row"><span class="toc-num">၀၀၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📖</span>Book Briefing</div><div class="toc-mm">Get started</div></div><span class="toc-type">Welcome</span></li>
-      <li class="toc-row"><span class="toc-num">၀၀၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📑</span>Index</div><div class="toc-mm">Chapter list</div></div><span class="toc-type">You are here</span></li>
-      <li class="toc-row"><span class="toc-num">၀၀၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🧒</span>Character Selection</div><div class="toc-mm">Pick your learner</div></div><span class="toc-type">Start</span></li>
-      <li class="toc-row"><span class="toc-num">၀၀၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🌉</span>Word Bridge Intro</div><div class="toc-mm">How words connect</div></div><span class="toc-type">Intro</span></li>
-      <li class="toc-row"><span class="toc-num">၀၀၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🍎</span>First Words Overview</div><div class="toc-mm">Three tales to begin</div></div><span class="toc-type">Overview</span></li>
-      <li class="toc-row"><span class="toc-num">၀၀၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>First Words Explained</div><div class="toc-mm">Deep dive</div></div><span class="toc-type">Explained</span></li>
-      <li class="toc-row"><span class="toc-num">၀၀၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>First Words Quiz</div><div class="toc-mm">Quiz</div></div><span class="toc-type">Quiz</span></li>
+      <li class="toc-row"><span class="toc-num">1</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📖</span>Book Briefing</div><div class="toc-mm">Get started</div></div><span class="toc-type">Welcome</span></li>
+      <li class="toc-row"><span class="toc-num">2</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📑</span>Index</div><div class="toc-mm">Chapter list</div></div><span class="toc-type">You are here</span></li>
+      <li class="toc-row"><span class="toc-num">3</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🧒</span>Character Selection</div><div class="toc-mm">Pick your learner</div></div><span class="toc-type">Start</span></li>
+      <li class="toc-row"><span class="toc-num">4</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🏘️</span>Build Myanmar Village</div><div class="toc-mm">Stamp your village</div></div><span class="toc-type">Intro</span></li>
     </ul>
   </div>
 
   <div class="section-block">
     <div class="section-label"><span>Ten Chapters</span></div>
     <div class="topic-grid">
-      <div class="toc-row"><span class="toc-num">၀၀၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">👨‍👩‍👧</span>Family</div><div class="toc-mm">Family words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၀၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Family Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၁၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Family Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">5</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">👨‍👩‍👧</span>Family</div><div class="toc-mm">Family words</div></div></div>
+      <div class="toc-row"><span class="toc-num">6</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Family Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">7</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Family Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၁၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🍚</span>Food</div><div class="toc-mm">Food words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၁၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Food Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၁၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Food Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">8</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🍚</span>Food</div><div class="toc-mm">Food words</div></div></div>
+      <div class="toc-row"><span class="toc-num">9</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Food Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">10</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Food Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၁၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🐘</span>Animals</div><div class="toc-mm">Animal words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၁၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Animals Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၁၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Animals Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">11</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🐘</span>Animals</div><div class="toc-mm">Animal words</div></div></div>
+      <div class="toc-row"><span class="toc-num">12</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Animals Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">13</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Animals Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၁၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎨</span>Colors</div><div class="toc-mm">Color words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၁၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Colors Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၁၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Colors Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">14</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎨</span>Colors</div><div class="toc-mm">Color words</div></div></div>
+      <div class="toc-row"><span class="toc-num">15</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Colors Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">16</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Colors Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၂၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🔢</span>Numbers</div><div class="toc-mm">Number words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၂၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Numbers Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၂၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Numbers Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">17</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🔢</span>Numbers</div><div class="toc-mm">Number words</div></div></div>
+      <div class="toc-row"><span class="toc-num">18</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Numbers Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">19</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Numbers Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၂၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">👂</span>Body Parts</div><div class="toc-mm">Body words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၂၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Body Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၂၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Body Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">20</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">👂</span>Body Parts</div><div class="toc-mm">Body words</div></div></div>
+      <div class="toc-row"><span class="toc-num">21</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Body Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">22</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Body Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၂၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🏠</span>Home</div><div class="toc-mm">Home words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၂၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Home Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၂၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Home Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">23</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🏠</span>Home</div><div class="toc-mm">Home words</div></div></div>
+      <div class="toc-row"><span class="toc-num">24</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Home Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">25</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Home Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၂၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎒</span>School</div><div class="toc-mm">School words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၃၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>School Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၃၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>School Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">26</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎒</span>School</div><div class="toc-mm">School words</div></div></div>
+      <div class="toc-row"><span class="toc-num">27</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>School Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">28</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>School Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၃၂</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">😊</span>Feelings</div><div class="toc-mm">Feeling words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၃၃</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Feelings Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၃၄</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Feelings Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">29</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">😊</span>Feelings</div><div class="toc-mm">Feeling words</div></div></div>
+      <div class="toc-row"><span class="toc-num">30</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Feelings Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">31</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Feelings Quiz</div><div class="toc-mm">Quiz</div></div></div>
 
-      <div class="toc-row"><span class="toc-num">၀၃၅</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎆</span>Myanmar Festivals</div><div class="toc-mm">Festival words</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၃၆</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Festivals Explained</div><div class="toc-mm">Deep dive</div></div></div>
-      <div class="toc-row"><span class="toc-num">၀၃၇</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Festivals Quiz</div><div class="toc-mm">Quiz</div></div></div>
+      <div class="toc-row"><span class="toc-num">32</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎆</span>Myanmar Festivals</div><div class="toc-mm">Festival words</div></div></div>
+      <div class="toc-row"><span class="toc-num">33</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📜</span>Festivals Sentences</div><div class="toc-mm">Deep dive</div></div></div>
+      <div class="toc-row"><span class="toc-num">34</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">❓</span>Festivals Quiz</div><div class="toc-mm">Quiz</div></div></div>
     </div>
   </div>
 
   <div class="section-block">
     <div class="section-label"><span>Conclusion</span></div>
     <ul class="toc-list">
-      <li class="toc-row"><span class="toc-num">၀၃၈</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📚</span>Conclusion</div><div class="toc-mm">Wrap-up</div></div><span class="toc-type">End</span></li>
-      <li class="toc-row"><span class="toc-num">၀၃၉</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🏆</span>Overall Quiz</div><div class="toc-mm">Final quiz</div></div><span class="toc-type">Final</span></li>
-      <li class="toc-row"><span class="toc-num">၀၄၀</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎮</span>Word Catch Finale</div><div class="toc-mm">Final game</div></div><span class="toc-type">Game</span></li>
-      <li class="toc-row"><span class="toc-num">၀၄၁</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎉</span>Congratulations</div><div class="toc-mm">You did it!</div></div><span class="toc-type">Done</span></li>
+      <li class="toc-row"><span class="toc-num">35</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">📚</span>Conclusion</div><div class="toc-mm">Wrap-up</div></div><span class="toc-type">End</span></li>
+      <li class="toc-row"><span class="toc-num">36</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🏆</span>Overall Quiz</div><div class="toc-mm">Final quiz</div></div><span class="toc-type">Final</span></li>
+      <li class="toc-row"><span class="toc-num">37</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎮</span>Word Catch Finale</div><div class="toc-mm">Final game</div></div><span class="toc-type">Game</span></li>
+      <li class="toc-row"><span class="toc-num">38</span><div class="toc-body"><div class="toc-title"><span class="toc-emoji">🎉</span>Congratulations</div><div class="toc-mm">You did it!</div></div><span class="toc-type">Done</span></li>
     </ul>
   </div>
 
-  <div class="footer-scroll">
-    <p class="hint-en">Use ← → in the top bar to turn each leaf · 🏠 for home</p>
-  </div>
+  <div class="footer-scroll">Use ← → in the top bar to turn each leaf · Home for library</div>
 
 </div>
 </div>

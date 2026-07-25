@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Colors — Quiz</title>
+<link rel="stylesheet" href="_mmwords-theme.css">
+<style>.container{max-width:680px;margin:0 auto;padding:22px 18px 36px;position:relative;z-index:1;}
+body.main-chapter-page{padding:8px;height:100dvh;max-height:100dvh;overflow:hidden;}
+.main-chapter-page .manuscript-bg,.main-chapter-page .container{
+  min-height:0;max-height:100%;display:flex;flex-direction:column;overflow:hidden;
+}
+.main-chapter-page .manuscript-bg{width:100%;height:100%;align-items:stretch;}
+.main-chapter-page .container{flex:1 1 auto;height:auto;max-width:100%;width:100%;margin:0;padding:8px 14px 10px;}
+.explained-page{overflow:hidden;}
+body.explained-page{padding:8px;}
+@media(min-width:768px){body.explained-page{padding:10px 12px;}}
+.explained-page .manuscript-bg,.explained-page .container{
+  height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+}
+.explained-page .manuscript-bg{width:100%;align-items:stretch;}
+.explained-page .container{max-width:100%;width:100%;margin:0;padding:10px 18px 8px;}</style>
+<script src="_mmwords-player.js"></script>
+<script src="_mmwords-data.js"></script>
+<script src="_mmwords-games.js"></script>
+</head>
+<body class="quiz-page">
+<div class="manuscript-bg">
+<div class="container">
+  <div class="top-bar">
+    <h1>Colors Quiz</h1>
+    <div class="subtitle">Beat Professor M · 5 words · 1 sentences · hear Myanmar, answer in English</div>
+  </div>
+  
+  <div class="competition-bar" id="liveScoreBar">
+    <div class="competitor">
+      <div class="competitor-icon" id="playerIcon">🧒</div>
+      <div class="competitor-name" id="playerName2">Explorer</div>
+      <div class="competitor-score" id="playerScore">0</div>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="competitor">
+      <div class="competitor-icon" id="botIcon">👩‍🏫</div>
+      <div class="competitor-name" id="botName">Professor M</div>
+      <div class="competitor-score" id="computerScore">0</div>
+    </div>
+  </div>
+  <div id="quizArea">
+  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="အညိုရောင်" data-hint="a-nyo-yaung">
+    <div class="question">1. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🟤</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">🟡 Yellow</div><div class="option" data-correct="1">🟤 Brown</div><div class="option" data-correct="0">⚪ White</div><div class="option" data-correct="0">🟠 Orange</div></div>
+    <div class="feedback" id="feedback-1"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="ပန်းရောင်" data-hint="pan-yaung">
+    <div class="question">2. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🌸</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">✨ Gold</div><div class="option" data-correct="1">🌸 Pink</div><div class="option" data-correct="0">🔵 Blue</div><div class="option" data-correct="0">🟠 Orange</div></div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="အဖြူ" data-hint="a-phu">
+    <div class="question">3. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">⚪</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">🟤 Brown</div><div class="option" data-correct="0">🔵 Blue</div><div class="option" data-correct="1">⚪ White</div><div class="option" data-correct="0">🟠 Orange</div></div>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="ခရမ်းရောင်" data-hint="kyaung-yaung">
+    <div class="question">4. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🟣</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">🟢 Green</div><div class="option" data-correct="0">🔵 Blue</div><div class="option" data-correct="0">🟤 Brown</div><div class="option" data-correct="1">🟣 Purple</div></div>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="ရွှေရောင်" data-hint="shwe-yaung">
+    <div class="question">5. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">✨</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">🟢 Green</div><div class="option" data-correct="1">✨ Gold</div><div class="option" data-correct="0">🟤 Brown</div><div class="option" data-correct="0">🟠 Orange</div></div>
+    <div class="feedback" id="feedback-5"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="တိမ်တွေ အဖြူရောင်ပါ။" data-hint="">
+    <div class="question">6. What is this sentence about?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">💬</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear sentence</button>
+    </div>
+    <p class="hear-hint-text">Listen to the full Myanmar sentence — then pick what it is about (Mom, Aunt, Family…).</p>
+    <div class="options"><div class="option" data-correct="0">This is about Orange</div><div class="option" data-correct="0">This is about Brown</div><div class="option" data-correct="0">This is about Red</div><div class="option" data-correct="1">This is about White</div></div>
+    <div class="feedback" id="feedback-6"></div>
+  </div></div>
+  
+  <div class="score-card" id="scoreCard">
+    <h2 id="scoreMessage"></h2>
+    <div class="podium" id="podium">
+      <div class="podium-place" id="podium-second">
+        <div class="podium-character" id="podium-char-2">👩‍🏫</div>
+        <div class="podium-bar second"><span class="rank-badge">🥈</span></div>
+        <div class="podium-score" id="podium-score-2">0</div>
+        <div class="podium-name" id="podium-name-2">Professor M</div>
+      </div>
+      <div class="podium-place" id="podium-first">
+        <div class="podium-character" id="podium-char-1">🧒</div>
+        <div class="podium-bar first"><span class="rank-badge">🥇</span></div>
+        <div class="podium-score" id="podium-score-1">0</div>
+        <div class="podium-name" id="podium-name-1">Explorer</div>
+      </div>
+    </div>
+    <p class="message" id="scoreDetail"></p>
+    <button type="button" class="retry-btn" id="quizRetryBtn">🔄 Try Again</button>
+  </div>
+  <div class="nav-hint"><div>Use ← → in the top bar for the next chapter.</div><div>Home button returns to the library.</div></div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  MMGame.bootHybridQuiz({ badge: "Color Artist Quiz", opponent: { name: "Professor M", icon: "👩‍🏫" } });
+});
+</script>
+</body></html>

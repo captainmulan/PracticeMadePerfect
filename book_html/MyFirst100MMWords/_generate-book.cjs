@@ -8,7 +8,16 @@ const DIR = __dirname;
 const ASSETS = path.join(DIR, "assets");
 const sandbox = { window: {}, console };
 vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-data.js"), "utf8"), sandbox);
-const CHAPTERS = sandbox.window.MM_CHAPTERS;
+vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-explained-groups.js"), "utf8"), sandbox);
+const EXPLAINED_GROUPS = sandbox.window.MM_EXPLAINED_GROUPS || {};
+const CHAPTERS = sandbox.window.MM_CHAPTERS.map((ch) => {
+  if (EXPLAINED_GROUPS[ch.id]) {
+    return Object.assign({}, ch, { explainedGroups: EXPLAINED_GROUPS[ch.id] });
+  }
+  return ch;
+});
+vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-pyramid-mm.js"), "utf8"), sandbox);
+const PYRAMID_MM = sandbox.window.MM_PYRAMID_MM || {};
 
 const LEGACY_IMG = { family: { seg1: "family-photo.png" } };
 const imgCache = {};
@@ -41,76 +50,240 @@ function imgHtml(chapterId, slot, alt) {
   return `<img class="chapter-hero-img" src="${uri}" alt="${esc(alt)}" decoding="async">`;
 }
 
-const CSS = `
-:root{--palm:#E6D5B8;--palm-dark:#C4A574;--ink:#2C1810;--lacquer:#6B1A1A;--lacquer-deep:#4A0E0E;--gold:#C9A227;--gold-light:#E8C547;--saffron:#D97706;--surface:#FDF8F0;--text:#2C1810;--text-muted:#5C4033;--border:rgba(107,26,26,.18);--shadow:0 2px 10px rgba(44,24,16,.1);--shadow-lg:0 8px 28px rgba(44,24,16,.16);--radius:14px;--radius-sm:10px;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:Georgia,'Times New Roman',serif;background:var(--lacquer-deep);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;padding:10px;}
-.manuscript-bg{min-height:calc(100vh - 20px);background:linear-gradient(180deg,rgba(0,0,0,.04),transparent 12%,transparent 88%,rgba(0,0,0,.06)),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(44,24,16,.03) 3px,rgba(44,24,16,.03) 4px),linear-gradient(165deg,#EDE0C4 0%,var(--palm) 35%,#D9C49A 70%,#C9B082 100%);border:3px solid var(--gold);outline:5px solid var(--lacquer);outline-offset:-8px;box-shadow:inset 0 0 80px rgba(44,24,16,.1),0 8px 32px rgba(0,0,0,.4);position:relative;overflow:hidden;}
-.manuscript-bg::before,.manuscript-bg::after{content:'';position:absolute;width:56px;height:56px;border:2px solid var(--gold);opacity:.45;pointer-events:none;}
-.manuscript-bg::before{top:12px;left:12px;border-right:none;border-bottom:none;}
-.manuscript-bg::after{bottom:12px;right:12px;border-left:none;border-top:none;}
-.container{max-width:680px;margin:0 auto;padding:22px 18px 36px;position:relative;z-index:1;}
-.top-bar{text-align:center;padding-bottom:18px;border-bottom:2px double var(--lacquer);margin-bottom:18px;}
-.top-bar h1{font-size:clamp(20px,5vw,26px);font-weight:700;color:var(--lacquer-deep);margin-bottom:6px;}
-.top-bar .subtitle{font-size:14px;color:var(--text-muted);font-style:italic;}
-.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px;}
-.pill{display:inline-flex;align-items:center;gap:4px;background:rgba(201,162,39,.2);color:var(--lacquer-deep);font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px;border:1px solid rgba(201,162,39,.45);}
-.story-chapter{margin-bottom:28px;}
-.chapter-label{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.chapter-label span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--lacquer);white-space:nowrap;}
-.chapter-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
-.scene-wrap{margin-bottom:10px;}
-.scene-card{position:relative;width:100%;border-radius:var(--radius);border:2px solid var(--gold);background:var(--surface);box-shadow:var(--shadow-lg);overflow:hidden;}
-.scene-card-hero{aspect-ratio:16/9;max-height:min(56vw,420px);background:#1a1008;}
-.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 140px),480px);}
-.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
-.scene-static{pointer-events:none;}
-.scene-placeholder{display:flex;align-items:center;justify-content:center;min-height:180px;padding:20px;text-align:center;font-size:13px;color:var(--text-muted);font-style:italic;}
-.card{background:rgba(253,248,240,.92);border-radius:var(--radius);padding:18px;margin-bottom:14px;border:1px solid var(--border);box-shadow:var(--shadow);}
-.card h2{font-size:17px;font-weight:700;color:var(--lacquer-deep);margin-bottom:10px;}
-.card p{font-size:15px;line-height:1.7;color:var(--text-muted);}
-.story-box{font-size:15px;line-height:1.75;color:var(--ink);white-space:pre-line;}
-.tip-card{background:rgba(201,162,39,.14);border:1px solid rgba(201,162,39,.4);}
-.tip-tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--saffron);margin-bottom:8px;}
-.section-head{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--lacquer);margin:16px 0 12px;display:flex;align-items:center;gap:8px;}
-.section-head::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
-.legend{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:10px;font-style:italic;}
-.word-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.word-card-item{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:rgba(253,248,240,.95);box-shadow:var(--shadow);}
-.word-card-label{padding:14px 10px 10px;text-align:center;font-size:16px;font-weight:700;color:var(--lacquer-deep);background:rgba(255,255,255,.5);border-bottom:1px solid var(--border);}
-.word-bridge{display:flex;align-items:stretch;}
-.speak-btn{flex:1;border:none;padding:12px 8px;cursor:pointer;font-family:inherit;transition:transform .1s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:64px;}
-.speak-btn:active,.speak-btn.pressed{transform:scale(.96);}
-.speak-btn-en{background:rgba(107,26,26,.08);color:var(--lacquer-deep);border-right:1px solid var(--border);}
-.speak-btn-mm{background:rgba(201,162,39,.15);color:var(--lacquer);}
-.speak-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.75;}
-.speak-icon{font-size:13px;font-weight:700;}
-.game-section{margin-top:8px;background:rgba(253,248,240,.92);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
-.game-section h2{font-size:17px;font-weight:700;color:var(--lacquer-deep);margin-bottom:8px;}
-.game-canvas{width:100%;height:min(42vh,280px);border-radius:var(--radius-sm);background:rgba(255,255,255,.45);display:block;touch-action:none;border:1px solid var(--border);}
-.game-start-btn{display:inline-flex;align-items:center;gap:6px;margin:10px 0;padding:11px 20px;border:none;border-radius:999px;background:var(--lacquer);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
-.challenge-box{background:rgba(201,162,39,.15);border-radius:var(--radius-sm);padding:12px;margin-top:12px;text-align:center;font-size:14px;color:var(--lacquer-deep);border:1px solid rgba(201,162,39,.35);}
-.nav-hint{padding:14px;text-align:center;font-size:12px;color:var(--text-muted);background:rgba(253,248,240,.85);border-radius:var(--radius-sm);border:1px solid var(--border);margin-top:16px;}
-.quiz-card{display:none;background:rgba(253,248,240,.95);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;box-shadow:var(--shadow);}
-.quiz-card.active{display:block;}
-.question{font-size:18px;font-weight:700;color:var(--lacquer-deep);margin-bottom:14px;line-height:1.45;}
-.options{display:flex;flex-direction:column;gap:10px;}
-.option{padding:12px 16px;background:rgba(255,255,255,.55);border:2px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-family:Georgia,serif;font-size:16px;text-align:left;line-height:1.4;transition:border-color .15s;}
-.option.correct{background:rgba(201,162,39,.25);border-color:var(--gold);}
-.option.wrong{background:rgba(107,26,26,.08);border-color:var(--lacquer);}
-.feedback{margin-top:12px;font-size:15px;font-weight:700;min-height:24px;}
-.feedback.correct{color:#166534;}
-.feedback.wrong{color:var(--lacquer);}
-.score-bar{text-align:center;font-size:17px;font-weight:700;color:var(--lacquer);padding:12px;margin-bottom:8px;}
-.score-card{display:none;text-align:center;padding:24px;background:rgba(201,162,39,.15);border-radius:var(--radius);border:2px solid var(--gold);margin-top:16px;}
-.score-card.show{display:block;}
-@media(max-width:480px){.word-grid{gap:8px;}.speak-btn{min-height:58px;padding:10px 6px;}}
-@media(max-width:360px){.word-grid{grid-template-columns:1fr;}}
-`;
+const CHAPTER_CSS = `.container{max-width:680px;margin:0 auto;padding:22px 18px 36px;position:relative;z-index:1;}
+body.main-chapter-page{padding:8px;height:100dvh;max-height:100dvh;overflow:hidden;}
+.main-chapter-page .manuscript-bg,.main-chapter-page .container{
+  min-height:0;max-height:100%;display:flex;flex-direction:column;overflow:hidden;
+}
+.main-chapter-page .manuscript-bg{width:100%;height:100%;align-items:stretch;}
+.main-chapter-page .container{flex:1 1 auto;height:auto;max-width:100%;width:100%;margin:0;padding:8px 14px 10px;}
+.explained-page{overflow:hidden;}
+body.explained-page{padding:8px;}
+@media(min-width:768px){body.explained-page{padding:10px 12px;}}
+.explained-page .manuscript-bg,.explained-page .container{
+  height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+}
+.explained-page .manuscript-bg{width:100%;align-items:stretch;}
+.explained-page .container{max-width:100%;width:100%;margin:0;padding:10px 18px 8px;}`;
 
 function pad(n) { return String(n).padStart(3, "0"); }
 function slug(title) { return title.replace(/\s+/g, "-"); }
 function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;"); }
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildHearPickQuestions(words, count) {
+  if (!words || !words.length) return [];
+  return shuffle(words).slice(0, Math.min(count, words.length)).map((correct) => {
+    const others = shuffle(words.filter((w) => w.en !== correct.en)).slice(0, 3);
+    const options = shuffle([correct, ...others]);
+    return {
+      type: "hear",
+      mm: correct.mm,
+      hint: correct.hint || correct.en,
+      emoji: correct.emoji || "🔊",
+      correctEn: correct.en,
+      options: options.map((o) => ({ en: o.en, emoji: o.emoji || "" }))
+    };
+  });
+}
+
+function sentencePoolFor(ch) {
+  const seen = new Set();
+  const out = [];
+  const add = (list) => {
+    (list || []).forEach((s) => {
+      if (!s || !s.en || !s.mm || seen.has(s.en)) return;
+      seen.add(s.en);
+      out.push(s);
+    });
+  };
+  add(ch.explainedSentences);
+  add(ch.practiceSentences);
+  (ch.words || []).forEach((w) => {
+    if (w.useEn && w.useMm) add([{ en: w.useEn, mm: w.useMm }]);
+  });
+  return out;
+}
+
+function sentenceAboutLabel(en, words) {
+  const s = en.toLowerCase();
+  const kidNames = { Mother: "Mom", Father: "Dad", Grandmother: "Grandma", Grandfather: "Grandpa" };
+  const nickMap = {
+    grandmother: ["grandma", "grandmother"],
+    grandfather: ["grandpa", "grandfather"],
+    mother: ["mother", "mom"],
+    father: ["father", "dad"]
+  };
+  const sorted = (words || []).slice().sort((a, b) => b.en.length - a.en.length);
+  for (const w of sorted) {
+    const key = w.en.toLowerCase();
+    const terms = nickMap[key] || [key];
+    if (terms.some((t) => s.includes(t))) {
+      return "This is about " + (kidNames[w.en] || w.en);
+    }
+  }
+  return "This is about: " + en.replace(/\.$/, "");
+}
+
+function buildSentencePickQuestions(ch, count) {
+  const pool = sentencePoolFor(ch);
+  if (!pool.length || count <= 0) return [];
+  const picked = shuffle(pool).slice(0, Math.min(count, pool.length));
+  return picked.map((correct) => {
+    const correctLabel = sentenceAboutLabel(correct.en, ch.words);
+    const usedLabels = new Set([correctLabel]);
+    const options = [correct];
+    for (const s of shuffle(pool.filter((s) => s.en !== correct.en))) {
+      const label = sentenceAboutLabel(s.en, ch.words);
+      if (usedLabels.has(label)) continue;
+      usedLabels.add(label);
+      options.push(s);
+      if (options.length >= 4) break;
+    }
+    while (options.length < 4) {
+      const extra = pool.find((s) => !options.some((o) => o.en === s.en));
+      if (!extra) break;
+      options.push(extra);
+    }
+    const shuffled = shuffle(options.slice(0, 4));
+    return {
+      type: "hear-sentence",
+      mm: correct.mm,
+      hint: correct.hint || "",
+      correctEn: correct.en,
+      options: shuffled.map((s) => ({
+        label: sentenceAboutLabel(s.en, ch.words),
+        en: s.en
+      }))
+    };
+  });
+}
+
+function quizCompetitionBarHtml() {
+  return `
+  <div class="competition-bar" id="liveScoreBar">
+    <div class="competitor">
+      <div class="competitor-icon" id="playerIcon">🧒</div>
+      <div class="competitor-name" id="playerName2">Explorer</div>
+      <div class="competitor-score" id="playerScore">0</div>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="competitor">
+      <div class="competitor-icon" id="botIcon">👩‍🏫</div>
+      <div class="competitor-name" id="botName">Professor M</div>
+      <div class="competitor-score" id="computerScore">0</div>
+    </div>
+  </div>`;
+}
+
+function quizScoreCardHtml() {
+  return `
+  <div class="score-card" id="scoreCard">
+    <h2 id="scoreMessage"></h2>
+    <div class="podium" id="podium">
+      <div class="podium-place" id="podium-second">
+        <div class="podium-character" id="podium-char-2">👩‍🏫</div>
+        <div class="podium-bar second"><span class="rank-badge">🥈</span></div>
+        <div class="podium-score" id="podium-score-2">0</div>
+        <div class="podium-name" id="podium-name-2">Professor M</div>
+      </div>
+      <div class="podium-place" id="podium-first">
+        <div class="podium-character" id="podium-char-1">🧒</div>
+        <div class="podium-bar first"><span class="rank-badge">🥇</span></div>
+        <div class="podium-score" id="podium-score-1">0</div>
+        <div class="podium-name" id="podium-name-1">Explorer</div>
+      </div>
+    </div>
+    <p class="message" id="scoreDetail"></p>
+    <button type="button" class="retry-btn" id="quizRetryBtn">🔄 Try Again</button>
+  </div>`;
+}
+
+function buildOverallSentencePickQuestions(count) {
+  const megaPool = [];
+  CHAPTERS.forEach((ch) => {
+    sentencePoolFor(ch).forEach((s) => {
+      megaPool.push({ ...s, words: ch.words });
+    });
+  });
+  if (!megaPool.length || count <= 0) return [];
+  const picked = shuffle(megaPool).slice(0, Math.min(count, megaPool.length));
+  return picked.map((correct) => {
+    const correctLabel = sentenceAboutLabel(correct.en, correct.words);
+    const usedLabels = new Set([correctLabel]);
+    const options = [correct];
+    for (const s of shuffle(megaPool.filter((x) => x.en !== correct.en))) {
+      const label = sentenceAboutLabel(s.en, s.words);
+      if (usedLabels.has(label)) continue;
+      usedLabels.add(label);
+      options.push(s);
+      if (options.length >= 4) break;
+    }
+    while (options.length < 4) {
+      const extra = megaPool.find((s) => !options.some((o) => o.en === s.en));
+      if (!extra) break;
+      options.push(extra);
+    }
+    const shuffled = shuffle(options.slice(0, 4));
+    return {
+      type: "hear-sentence",
+      mm: correct.mm,
+      hint: correct.hint || "",
+      correctEn: correct.en,
+      options: shuffled.map((s) => ({
+        label: sentenceAboutLabel(s.en, s.words),
+        en: s.en
+      }))
+    };
+  });
+}
+
+function genOverallQuiz() {
+  const wordCount = 5;
+  const sentenceCount = 1;
+  const allWords = CHAPTERS.flatMap((ch) => ch.words || []);
+  const megaPoolLen = CHAPTERS.reduce((n, ch) => n + sentencePoolFor(ch).length, 0);
+  const wordQs = buildHearPickQuestions(allWords, wordCount);
+  const sentenceQs = buildOverallSentencePickQuestions(megaPoolLen ? sentenceCount : 0);
+  const questions = [...wordQs, ...sentenceQs];
+  const cards = questions
+    .map((q, i) => {
+      const active = i === 0;
+      if (q.type === "hear-sentence") return sentenceHearQuizCard(q, i, active);
+      return hearQuizCard(q, i, active);
+    })
+    .join("");
+
+  const html = `${chapterHead("Overall Quiz")}
+<body class="quiz-page">
+<div class="manuscript-bg">
+<div class="container">
+  <div class="top-bar">
+    <h1>Overall Quiz</h1>
+    <div class="subtitle">Beat Professor M · ${wordQs.length} words · ${sentenceQs.length} sentence${sentenceQs.length === 1 ? "" : "s"} · all chapters</div>
+  </div>
+  ${quizCompetitionBarHtml()}
+  <div id="quizArea">${cards}</div>
+  ${quizScoreCardHtml()}
+  <div class="nav-hint">Win against Professor M to earn the Myanmar Word Champion badge!</div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  MMGame.bootHybridQuiz({ badge: "Myanmar Word Champion", opponent: { name: "Professor M", icon: "👩‍🏫" } });
+});
+</script>
+</body></html>`;
+  fs.writeFileSync(path.join(DIR, "036-Overall-Quiz.html"), html);
+}
 
 function chapterHead(title) {
   return `<!DOCTYPE html>
@@ -119,7 +292,8 @@ function chapterHead(title) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My First 100 Myanmar Words - ${esc(title)}</title>
-<style>${CSS}</style>
+<link rel="stylesheet" href="_mmwords-theme.css">
+<style>${CHAPTER_CSS}</style>
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
@@ -155,23 +329,357 @@ function mainExplanations(ch) {
 function explainedExplanations(ch) {
   if (ch.explainedExplanations && ch.explainedExplanations.length >= 3) return ch.explainedExplanations.slice(0, 3);
   return [
-    ch.explainedTip || explainedTip(ch),
-    ch.heritage ? ch.heritage.text : (ch.tip || ""),
-    "Keep telling these tales — children remember words that arrive inside a story, not on a list."
+    "Start at the top of the pyramid — one word. Say it, then tap 🔊.",
+    "Add a little more each step — do not rush to the full sentence.",
+    "Say the full sentence, then tap hear again if you need help."
   ];
 }
 
-function explainedTip(ch) {
-  if (ch.explainedTip) return ch.explainedTip;
-  if (ch.heritage) return ch.heritage.title + " — " + ch.heritage.text;
-  return ch.tip || "";
+function explainedSentencesFor(ch) {
+  if (ch.explainedSentences && ch.explainedSentences.length) return ch.explainedSentences;
+  return (ch.words || [])
+    .filter((w) => w.useEn)
+    .slice(0, 9)
+    .map((w) => ({ en: w.useEn, mm: w.useMm || w.mm }));
 }
 
-function segmentTitles(ch, kind) {
-  const key = kind === "explained" ? "explainedSegmentTitles" : "segmentTitles";
-  if (ch[key] && ch[key].length >= 3) return ch[key].slice(0, 3);
-  const base = kind === "explained" ? "Another tale" : (ch.storyTitle || ch.title + " tale");
-  return [`Part one · ${base}`, "Part two · The lesson deepens", "Part three · The moral"];
+function explainedGroupsFor(ch) {
+  if (ch.explainedGroups && ch.explainedGroups.length) return ch.explainedGroups;
+  const pool = explainedSentencesFor(ch);
+  const wordsWithUse = (ch.words || []).filter((w) => w.useEn).slice(0, 10);
+  return wordsWithUse.map((w, i) => {
+    const related = pool.filter(
+      (s) => s.en !== w.useEn && s.en.toLowerCase().includes(w.en.toLowerCase())
+    );
+    const s2 = related[0] || pool[i * 2] || { en: w.useEn, mm: w.useMm || w.mm };
+    const s3 = related[1] || pool[i * 2 + 1] || pool[(i + 1) % pool.length] || s2;
+    return {
+      title: w.en,
+      tip: ch.didYouKnow || (ch.heritage && ch.heritage.text) || "Practice these sentences with someone at home.",
+      sentences: [
+        { en: w.useEn, mm: w.useMm || w.mm },
+        { en: s2.en, mm: s2.mm },
+        { en: s3.en, mm: s3.mm }
+      ]
+    };
+  });
+}
+
+function splitList(list) {
+  const n = list.length;
+  const a = Math.ceil(n / 3);
+  const b = Math.ceil((n - a) / 2);
+  return [list.slice(0, a), list.slice(a, a + b), list.slice(a + b)];
+}
+
+const PYRAMID_STOP = new Set([
+  "this", "is", "my", "the", "a", "an", "i", "we", "please", "look", "at", "in", "on", "for", "to",
+  "with", "our", "your", "me", "let", "s", "and", "not", "too", "give", "open", "close", "turn", "use"
+]);
+
+function mkPyramid(l1, l2, l3) {
+  const fix = (s) => String(s || "").trim();
+  return [
+    { step: 1, label: "Step 1 · One word", text: fix(l1) },
+    { step: 2, label: "Step 2 · A little more", text: fix(l2) },
+    { step: 3, label: "Step 3 · Full sentence", text: fix(l3) }
+  ];
+}
+
+const TRAIL_STOP = new Set(["in", "on", "at", "with", "to", "for", "the", "a", "an", "my", "and", "is", "are", "of"]);
+
+function trimTrailWords(words) {
+  const w = words.slice();
+  while (w.length > 1 && TRAIL_STOP.has(w[w.length - 1].toLowerCase().replace(/[,]/g, ""))) w.pop();
+  return w;
+}
+
+function endPunct(full, fallback) {
+  return full.match(/[!?.]$/)?.[0] || fallback || ".";
+}
+
+function buildPyramid(sentenceEn, customPyramid) {
+  if (customPyramid && customPyramid.length >= 3) {
+    return customPyramid.map((text, i) => ({
+      step: i + 1,
+      label: ["Step 1 · One word", "Step 2 · A little more", "Step 3 · Full sentence"][i] || `Step ${i + 1}`,
+      text
+    }));
+  }
+
+  const full = sentenceEn.trim();
+  const punct = endPunct(full, ".");
+  const clean = full.replace(/[!?.]+$/, "").trim();
+  const words = clean.split(/\s+/);
+  const lower = words.map((w) => w.toLowerCase().replace(/[,]/g, ""));
+
+  if (words.length === 1) {
+    return mkPyramid(full, full, full);
+  }
+
+  if (words.length === 2) {
+    const w0 = capWord(words[0].replace(/[,]/g, ""));
+    return mkPyramid(w0 + endPunct(full, "."), full, full);
+  }
+
+  if (lower[0] === "this" && lower[1] === "is" && lower[2] === "my" && words.length >= 4) {
+    const noun = words.slice(3).join(" ");
+    const first = noun.split(" ")[0].replace(/[,]/g, "");
+    return mkPyramid(capWord(first) + ".", "My " + noun + ".", full);
+  }
+
+  if (lower[0] === "my" && words.length >= 3) {
+    const first = words[1].replace(/[,]/g, "");
+    const mid = trimTrailWords(words.slice(0, Math.max(3, words.length - 1)));
+    const l2 = (mid.length ? mid : words.slice(0, 2)).join(" ") + endPunct(full, ".");
+    return mkPyramid(capWord(first) + ".", l2, full);
+  }
+
+  const myIdx = lower.indexOf("my");
+  if (myIdx >= 0 && myIdx < words.length - 1) {
+    const key = words[myIdx + 1].replace(/[,]/g, "");
+    const l2 = capWord(words[myIdx]) + " " + key + ".";
+    return mkPyramid(capWord(key) + ".", l2, full);
+  }
+
+  if (lower[1] === "is" && words.length >= 3) {
+    const adj = words.slice(2).join(" ").replace(/[!?]+$/, "");
+    return mkPyramid(
+      capWord(words[0].replace(/[,]/g, "")) + ".",
+      capWord(words[0]) + " is " + adj + ".",
+      full
+    );
+  }
+
+  if (lower[0] === "the" && words.length >= 3) {
+    const noun = words[1].replace(/[,]/g, "");
+    const mid = trimTrailWords(words.slice(0, Math.max(2, words.length - 1)));
+    return mkPyramid(capWord(noun) + ".", mid.join(" ") + endPunct(full, "."), full);
+  }
+
+  if (lower[0] === "i" && words.length >= 2) {
+    const key = words[words.length - 1].replace(/[,!]/g, "");
+    const mid = trimTrailWords(words.slice(0, Math.max(2, words.length - 1)));
+    return mkPyramid(capWord(key) + ".", mid.join(" ") + endPunct(full, "."), full);
+  }
+
+  if (lower[0] === "we" && words.length >= 2) {
+    const key = words[1].replace(/[,]/g, "");
+    const mid = trimTrailWords(words.slice(0, Math.max(2, words.length - 1)));
+    return mkPyramid(capWord(key) + ".", mid.join(" ") + endPunct(full, "."), full);
+  }
+
+  if (words[0].includes(",") && words.length >= 2) {
+    const name = words[0].replace(/[,]/g, "");
+    return mkPyramid(name + ".", words.slice(0, 2).join(" ") + endPunct(full, punct), full);
+  }
+
+  const keyIdx = words.findIndex((w) => !PYRAMID_STOP.has(w.toLowerCase().replace(/[,]/g, "")));
+  const key = (keyIdx >= 0 ? words[keyIdx] : words[0]).replace(/[,]/g, "");
+  const mid = trimTrailWords(words.slice(0, Math.max(2, words.length - 1)));
+  return mkPyramid(capWord(key) + ".", mid.join(" ") + endPunct(full, "."), full);
+}
+
+function capWord(w) {
+  if (!w) return w;
+  return w.charAt(0).toUpperCase() + w.slice(1);
+}
+
+function stepMyanmar(stepText, item, words, stepIndex) {
+  if (item.pyramidMm && item.pyramidMm[stepIndex]) return item.pyramidMm[stepIndex];
+  if (stepIndex === 2) return item.mm;
+  const tokens = stepText.replace(/[!?.]+$/, "").trim().split(/\s+/).map((t) => t.replace(/[,]/g, "").toLowerCase());
+  for (let t = tokens.length - 1; t >= 0; t--) {
+    for (const w of words) {
+      if (w.en.toLowerCase() === tokens[t]) return w.mm;
+    }
+  }
+  for (const w of words) {
+    if (stepText.toLowerCase().includes(w.en.toLowerCase())) return w.mm;
+  }
+  return item.mm;
+}
+
+function pyramidMmTexts(item, chapterId, words, enSteps) {
+  const mapped = PYRAMID_MM[chapterId] && PYRAMID_MM[chapterId][item.en];
+  if (mapped && mapped.length >= 3) return mapped.slice(0, 3);
+  if (item.pyramidMm && item.pyramidMm.length >= 3) return item.pyramidMm.slice(0, 3);
+  return enSteps.map((s, i) => stepMyanmar(s.text, item, words, i));
+}
+
+function pyramidPairHtml(en, mm) {
+  return `<div class="pyramid-lines"><div class="pyramid-line pyramid-line-en">${esc(en)}</div><div class="pyramid-line pyramid-line-mm">${esc(mm)}</div></div>`;
+}
+
+function whiteboardLineHtml(text, lang) {
+  const attr = lang === "en" ? "data-en" : "data-mm";
+  const label = lang === "en" ? "Hear English" : "Hear Myanmar";
+  return `
+            <div class="wb-line wb-line-${lang}">
+              <span class="wb-text wb-text-${lang}">${esc(text)}</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-${lang}" ${attr}="${esc(text)}" onclick="tapPhrase(this,'${lang}')" aria-label="${label}">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>`;
+}
+
+function sentencePairHtml(en, mm) {
+  return `
+        <div class="wb-sentence-pair">
+          ${whiteboardLineHtml(en, "en")}
+          ${whiteboardLineHtml(mm, "mm")}
+        </div>`;
+}
+
+function defaultGroupTip(group, ch) {
+  if (group.tip) return group.tip;
+  if (ch.didYouKnow) return ch.didYouKnow;
+  if (ch.heritage && ch.heritage.text) return ch.heritage.text;
+  return "Practice these sentences with someone at home.";
+}
+
+function pyramidGroupContentHtml(group, si, ch, activeClass) {
+  const sentences = (group.sentences || []).slice(0, 3);
+  const rows = sentences.map((line) => sentencePairHtml(line.en, line.mm)).join("");
+  const tip = defaultGroupTip(group, ch);
+
+  return `
+        <div class="wizard-panel pyramid-group-panel${activeClass}" id="pw-group-${si}" data-sentence="${si + 1}" data-group="${si}" data-topic="${esc(tip)}">
+          <p class="whiteboard-heading">${esc(group.title)}</p>
+          <div class="whiteboard-lines">${rows}</div>
+        </div>`;
+}
+
+function classroomShelfHtml() {
+  const pot = `<div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div>`;
+  return `<div class="classroom-pots-row" aria-hidden="true">${pot}${pot}${pot}${pot}</div>`;
+}
+
+function explainedWizardHtml(ch, groups) {
+  const contentPanels = groups
+    .map((group, si) => pyramidGroupContentHtml(group, si, ch, si === 0 ? " active" : ""))
+    .join("");
+
+  const groupDots = groups
+    .map(
+      (_, si) =>
+        `<button type="button" class="wizard-dot pyramid-group-dot" data-group="${si}" aria-label="Word group ${si + 1}"></button>`
+    )
+    .join("");
+
+  const firstTip = defaultGroupTip(groups[0] || {}, ch);
+
+  return `
+  <div class="wizard-shell pyramid-wizard card" id="pyramid-wizard" data-groups="${groups.length}">
+    <div class="pyramid-wizard-head">
+      <span class="wizard-progress-text" id="pw-progress">Group 1 of ${groups.length}</span>
+      <div class="wizard-dots pyramid-wizard-dots pyramid-group-dots" id="pw-group-dots">${groupDots}</div>
+    </div>
+    <div class="pyramid-wizard-stage">
+      <div class="classroom-scene">
+        <div class="classroom-room">
+          <div class="classroom-wall">
+            <div class="wb-frame-outer">
+              <span class="wb-screw wb-screw-l" aria-hidden="true"></span>
+              <span class="wb-screw wb-screw-r" aria-hidden="true"></span>
+              <div class="wb-frame-inner">
+                <div class="wb-surface">
+                  <div class="whiteboard-content-stack">${contentPanels}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="classroom-floor">
+            ${classroomShelfHtml()}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pyramid-wizard-foot">
+      <div class="sentences-control-bar">
+        <button type="button" class="wizard-btn wizard-btn-back" id="pw-back">← Back</button>
+        <p class="sentences-hint">Tap 🔊 · Read aloud</p>
+        <button type="button" class="wizard-btn wizard-btn-next" id="pw-next">Next →</button>
+      </div>
+      <div class="wizard-topic-foot" id="pw-topic-foot">
+        <span class="topic-foot-emoji" aria-hidden="true">${ch.emoji || "📖"}</span>
+        <p class="topic-foot-text" id="pw-topic-text">${esc(firstTip)}</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function explainedWizardScript() {
+  return `
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var wizard = document.getElementById('pyramid-wizard');
+  if (!wizard) return;
+  var panels = wizard.querySelectorAll('.pyramid-group-panel');
+  var back = document.getElementById('pw-back');
+  var next = document.getElementById('pw-next');
+  var progress = document.getElementById('pw-progress');
+  var groupDots = wizard.querySelectorAll('.pyramid-group-dot');
+  var topicText = document.getElementById('pw-topic-text');
+  var groupIdx = 0;
+  var totalGroups = panels.length;
+
+  function fitWhiteboard() {
+    var surface = wizard.querySelector('.wb-surface');
+    var stack = wizard.querySelector('.whiteboard-content-stack');
+    if (!surface || !stack) return;
+    var panel = stack.querySelector('.pyramid-group-panel.active');
+    stack.style.transform = '';
+    if (!panel) return;
+    var available = surface.clientHeight - 12;
+    var needed = panel.scrollHeight;
+    if (needed > available && available > 0) {
+      var scale = Math.max(0.78, available / needed);
+      stack.style.transform = 'scale(' + scale + ')';
+      stack.style.transformOrigin = 'top center';
+    }
+  }
+
+  function updateUI() {
+    panels.forEach(function(p, i) { p.classList.toggle('active', i === groupIdx); });
+    groupDots.forEach(function(d, i) {
+      d.classList.toggle('active', i === groupIdx);
+      d.classList.toggle('done', i < groupIdx);
+    });
+    progress.textContent = 'Group ' + (groupIdx + 1) + ' of ' + totalGroups;
+    back.disabled = groupIdx === 0;
+    next.textContent = groupIdx === totalGroups - 1 ? 'Finish ✓' : 'Next →';
+    if (topicText && panels[groupIdx]) {
+      topicText.textContent = panels[groupIdx].getAttribute('data-topic') || '';
+    }
+    requestAnimationFrame(fitWhiteboard);
+  }
+
+  back.addEventListener('click', function() {
+    if (groupIdx > 0) {
+      groupIdx--;
+      updateUI();
+    }
+  });
+
+  next.addEventListener('click', function() {
+    if (groupIdx < totalGroups - 1) {
+      groupIdx++;
+      updateUI();
+    }
+  });
+
+  groupDots.forEach(function(d) {
+    d.addEventListener('click', function() {
+      groupIdx = parseInt(d.getAttribute('data-group'), 10);
+      updateUI();
+    });
+  });
+
+  updateUI();
+  window.addEventListener('resize', fitWhiteboard);
+});
+</script>`;
 }
 
 function wordGridHtml(words, chapterId) {
@@ -196,43 +704,187 @@ function wordGridHtml(words, chapterId) {
     .join("");
 }
 
-function mainSegmentHtml(ch, idx, story, explanation, words, titles) {
+function cleanPartTitle(title) {
+  return String(title || "")
+    .replace(/^Part\s+(one|two|three|\d+)\s*·\s*/i, "")
+    .trim();
+}
+
+function mainWizardPanelHtml(ch, idx, story, explanation, words, titles, active) {
   const slot = "seg" + (idx + 1);
   const pic = imgHtml(ch.id, slot, ch.title + " — part " + (idx + 1));
   return `
-  <section class="story-chapter">
-    <div class="chapter-label"><span>Part ${idx + 1} of 3</span></div>
-    <div class="scene-wrap"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
-    <div class="card">
-      <h2>${esc(titles[idx])}</h2>
-      <div class="story-box">${esc(story)}</div>
-    </div>
-    <div class="card tip-card">
-      <span class="tip-tag">What this teaches</span>
-      <p>${esc(explanation)}</p>
-    </div>
-    <div class="section-head">Press words to hear</div>
-    <p class="legend">English labels only — tap 🔊 Hear for spoken Myanmar (no script shown)</p>
-    <div class="word-grid">${wordGridHtml(words, ch.id)}</div>
-  </section>`;
+    <div class="wizard-panel chapter-panel${active ? " active" : ""}" id="cw-part-${idx}" data-part="${idx + 1}">
+      <div class="chapter-panel-inner">
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
+        <div class="story-teach-row">
+          <div class="card story-card">
+            <h2>${esc(titles[idx])}</h2>
+            <div class="story-box">${esc(story)}</div>
+          </div>
+          <div class="card tip-card">
+            <span class="tip-tag">What this teaches</span>
+            <p>${esc(explanation)}</p>
+          </div>
+        </div>
+        <div class="chapter-words-block">
+          <div class="section-head">Press words to hear</div>
+          <div class="word-grid chapter-word-grid">${wordGridHtml(words, ch.id)}</div>
+        </div>
+      </div>
+    </div>`;
 }
 
-function explainedSegmentHtml(ch, idx, story, explanation, titles) {
-  const slot = "exp" + (idx + 1);
-  const pic = imgHtml(ch.id, slot, ch.title + " explained — part " + (idx + 1));
+function mainGamePanelHtml(ch) {
   return `
-  <section class="story-chapter">
-    <div class="chapter-label"><span>Deeper tale · Part ${idx + 1}</span></div>
-    <div class="scene-wrap"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
-    <div class="card">
-      <h2>${esc(titles[idx])}</h2>
-      <div class="story-box">${esc(story)}</div>
+    <div class="wizard-panel chapter-panel chapter-game-panel" id="cw-game" data-part="game">
+      <div class="game-section chapter-game-inner">
+        <h2>${esc(ch.gameTitle)}</h2>
+        <p class="game-meta">Catch ${ch.words.length} words · Score: <strong id="catch-score">0</strong></p>
+        <button type="button" class="game-start-btn">▶ Start game</button>
+        <canvas id="catch-canvas" class="game-canvas"></canvas>
+        <div class="challenge-box">Earn badge: <strong>${esc(ch.badge)}</strong></div>
+      </div>
+    </div>`;
+}
+
+function mainChapterWizardHtml(ch, panels, gamePanel) {
+  const dots = [0, 1, 2]
+    .map(
+      (i) =>
+        `<button type="button" class="wizard-dot chapter-wizard-dot" data-part="${i}" aria-label="Story part ${i + 1}"></button>`
+    )
+    .concat(
+      `<button type="button" class="wizard-dot chapter-wizard-dot" data-part="game" aria-label="Mini game"></button>`
+    )
+    .join("");
+
+  return `
+  <div class="wizard-shell chapter-wizard card" id="chapter-wizard" data-parts="4">
+    <div class="chapter-wizard-head">
+      <span class="wizard-progress-text" id="cw-progress">Story 1 of 3</span>
+      <div class="wizard-dots chapter-wizard-dots" id="cw-dots">${dots}</div>
     </div>
-    <div class="card tip-card">
-      <span class="tip-tag">What this teaches</span>
-      <p>${esc(explanation)}</p>
+    <div class="chapter-wizard-stage">
+      ${panels}
+      ${gamePanel}
     </div>
-  </section>`;
+    <div class="chapter-wizard-foot">
+      <button type="button" class="wizard-btn wizard-btn-back" id="cw-back">← Back</button>
+      <button type="button" class="wizard-btn wizard-btn-next" id="cw-next">Next →</button>
+    </div>
+  </div>`;
+}
+
+function mainChapterWizardScript(ch) {
+  return `
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var wizard = document.getElementById('chapter-wizard');
+  if (!wizard) return;
+  var panels = wizard.querySelectorAll('.chapter-panel');
+  var storyPanels = wizard.querySelectorAll('.chapter-panel:not(.chapter-game-panel)');
+  var back = document.getElementById('cw-back');
+  var next = document.getElementById('cw-next');
+  var progress = document.getElementById('cw-progress');
+  var dots = wizard.querySelectorAll('.chapter-wizard-dot');
+  var stepIdx = 0;
+  var totalSteps = panels.length;
+  var gameBooted = false;
+
+  function fitPanel() {
+    var panel = wizard.querySelector('.chapter-panel.active .chapter-panel-inner');
+    var stage = wizard.querySelector('.chapter-wizard-stage');
+    if (!panel || !stage) return;
+    panel.style.transform = '';
+    var available = stage.clientHeight - 2;
+    var needed = panel.scrollHeight;
+    if (needed > available && available > 0) {
+      var scale = Math.max(0.75, available / needed);
+      panel.style.transform = 'scale(' + scale + ')';
+      panel.style.transformOrigin = 'top center';
+    }
+  }
+
+  function scheduleFit() {
+    requestAnimationFrame(function() {
+      requestAnimationFrame(fitPanel);
+    });
+  }
+
+  function bootGameIfNeeded() {
+    if (gameBooted) return;
+    gameBooted = true;
+    MMGame.bootCatch({
+      canvasId: 'catch-canvas',
+      scoreId: 'catch-score',
+      words: ${JSON.stringify(ch.words)},
+      badge: ${JSON.stringify(ch.badge)},
+      chapterId: ${JSON.stringify(ch.id)}
+    });
+  }
+
+  function updateUI() {
+    panels.forEach(function(p, i) { p.classList.toggle('active', i === stepIdx); });
+    dots.forEach(function(d, i) {
+      d.classList.toggle('active', i === stepIdx);
+      d.classList.toggle('done', i < stepIdx);
+    });
+    back.disabled = stepIdx === 0;
+    if (stepIdx < storyPanels.length) {
+      progress.textContent = 'Story ' + (stepIdx + 1) + ' of ' + storyPanels.length;
+      next.textContent = stepIdx === storyPanels.length - 1 ? 'Mini game →' : 'Next →';
+    } else {
+      progress.textContent = 'Mini game';
+      next.textContent = 'Finish ✓';
+    }
+    if (stepIdx === totalSteps - 1) bootGameIfNeeded();
+    scheduleFit();
+  }
+
+  back.addEventListener('click', function() {
+    if (stepIdx > 0) {
+      stepIdx--;
+      updateUI();
+    }
+  });
+
+  next.addEventListener('click', function() {
+    if (stepIdx < totalSteps - 1) {
+      stepIdx++;
+      updateUI();
+    }
+  });
+
+  dots.forEach(function(d, i) {
+    d.addEventListener('click', function() {
+      stepIdx = i;
+      updateUI();
+    });
+  });
+
+  updateUI();
+  window.addEventListener('resize', scheduleFit);
+  window.addEventListener('orientationchange', scheduleFit);
+  wizard.querySelectorAll('.chapter-hero-img').forEach(function(img) {
+    if (img.complete) scheduleFit();
+    else img.addEventListener('load', scheduleFit);
+  });
+  if (window.ResizeObserver) {
+    var ro = new ResizeObserver(scheduleFit);
+    ro.observe(wizard.querySelector('.chapter-wizard-stage'));
+  }
+});
+</script>`;
+}
+
+function segmentTitles(ch, kind) {
+  const key = kind === "explained" ? "explainedSegmentTitles" : "segmentTitles";
+  if (ch[key] && ch[key].length >= 3) {
+    return ch[key].slice(0, 3).map(cleanPartTitle);
+  }
+  const base = ch.storyTitle || ch.title + " tale";
+  return [base, "The lesson deepens", "The moral"];
 }
 
 function genActivity(ch) {
@@ -240,70 +892,43 @@ function genActivity(ch) {
   const explanations = mainExplanations(ch);
   const titles = segmentTitles(ch, "main");
   const wordGroups = splitWords(ch.words);
-  const segments = [0, 1, 2]
-    .map((i) => mainSegmentHtml(ch, i, stories[i], explanations[i], wordGroups[i], titles))
+  const panels = [0, 1, 2]
+    .map((i) => mainWizardPanelHtml(ch, i, stories[i], explanations[i], wordGroups[i], titles, i === 0))
     .join("");
+  const wizardHtml = mainChapterWizardHtml(ch, panels, mainGamePanelHtml(ch));
 
   const fname = `${pad(ch.num)}-${slug(ch.title)}.html`;
   const html = `${chapterHead(ch.title + " — Learn")}
-<body class="big-chapter-page">
+<body class="main-chapter-page">
 <div class="manuscript-bg">
 <div class="container">
   <div class="top-bar">
     <h1>${ch.title}</h1>
-    <div class="subtitle">Three ancient tales · ${ch.words.length} words · tap to hear Myanmar</div>
-    <div class="pill-row">
-      <span class="pill">${ch.words.length} words</span>
-      <span class="pill">English stories · hear-only Myanmar</span>
-    </div>
   </div>
-  ${segments}
-  <div class="game-section">
-    <h2>${ch.gameTitle}</h2>
-    <p style="font-size:14px;color:var(--text-muted);margin-bottom:4px;">Catch ${ch.words.length} words · Score: <strong id="catch-score">0</strong></p>
-    <button type="button" class="game-start-btn">▶ Start game</button>
-    <canvas id="catch-canvas" class="game-canvas"></canvas>
-    <div class="challenge-box">Earn badge: <strong>${esc(ch.badge)}</strong></div>
-  </div>
-  ${navHint()}
+  ${wizardHtml}
 </div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  MMGame.bootCatch({
-    canvasId: 'catch-canvas',
-    scoreId: 'catch-score',
-    words: ${JSON.stringify(ch.words)},
-    badge: ${JSON.stringify(ch.badge)},
-    chapterId: ${JSON.stringify(ch.id)}
-  });
-});
-</script>
+${mainChapterWizardScript(ch)}
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
 
 function genExplained(ch) {
-  const stories = splitThree(ch.explainedStory || ch.story);
-  const explanations = explainedExplanations(ch);
-  const titles = segmentTitles(ch, "explained");
-  const segments = [0, 1, 2]
-    .map((i) => explainedSegmentHtml(ch, i, stories[i], explanations[i], titles))
-    .join("");
+  const groups = explainedGroupsFor(ch);
+  const wizardHtml = explainedWizardHtml(ch, groups);
 
   const fname = `${pad(ch.num + 1)}-${slug(ch.title)}-Explained.html`;
-  const html = `${chapterHead(ch.title + " — Explained")}
-<body class="big-chapter-page">
+  const html = `${chapterHead(ch.title + " — Sentences")}
+<body class="explained-page">
 <div class="manuscript-bg">
 <div class="container">
   <div class="top-bar">
-    <h1>${ch.title} — Explained</h1>
-    <div class="subtitle">Three deeper tales · tradition &amp; moral · English only</div>
+    <h1>Sentences</h1>
   </div>
-  ${segments}
-  ${navHint()}
+  ${wizardHtml}
 </div>
 </div>
+${explainedWizardScript()}
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
@@ -349,109 +974,97 @@ function defaultQuizQuestions(ch) {
   ];
 }
 
+function hearQuizCard(q, i, isActive) {
+  const correctIdx = q.options.findIndex((o) => o.en === q.correctEn);
+  const fixedOpts = q.options
+    .map((opt, oi) => {
+      const label = opt.emoji ? `${opt.emoji} ${opt.en}` : opt.en;
+      return `<div class="option" data-correct="${oi === correctIdx ? "1" : "0"}">${esc(label)}</div>`;
+    })
+    .join("");
+  return `
+  <div class="quiz-card${isActive ? " active" : ""}" id="quizCard-${i + 1}" data-quiz-type="hear" data-mm="${esc(q.mm)}" data-hint="${esc(q.hint)}">
+    <div class="question">${i + 1}. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">${esc(q.emoji)}</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options">${fixedOpts}</div>
+    <div class="feedback" id="feedback-${i + 1}"></div>
+  </div>`;
+}
+
+function sentenceHearQuizCard(q, i, isActive) {
+  const correctIdx = q.options.findIndex((o) => o.en === q.correctEn);
+  const fixedOpts = q.options
+    .map((opt, oi) =>
+      `<div class="option" data-correct="${oi === correctIdx ? "1" : "0"}">${esc(opt.label)}</div>`
+    )
+    .join("");
+  return `
+  <div class="quiz-card${isActive ? " active" : ""}" id="quizCard-${i + 1}" data-quiz-type="hear-sentence" data-mm="${esc(q.mm)}" data-hint="${esc(q.hint)}">
+    <div class="question">${i + 1}. What is this sentence about?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">💬</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear sentence</button>
+    </div>
+    <p class="hear-hint-text">Listen to the full Myanmar sentence — then pick what it is about (Mom, Aunt, Family…).</p>
+    <div class="options">${fixedOpts}</div>
+    <div class="feedback" id="feedback-${i + 1}"></div>
+  </div>`;
+}
+
 function genQuiz(ch) {
-  const questions = (ch.quizQuestions && ch.quizQuestions.length >= 5)
-    ? ch.quizQuestions.slice(0, 8)
-    : defaultQuizQuestions(ch);
+  const wordCount = 5;
+  const sentenceCount = 1;
+  const sentencePool = sentencePoolFor(ch);
+  const wordQs = buildHearPickQuestions(ch.words, wordCount);
+  const sentenceQs = buildSentencePickQuestions(ch, sentencePool.length ? sentenceCount : 0);
+  const questions = [...wordQs, ...sentenceQs];
 
   const cards = questions
     .map((q, i) => {
-      const opts = q.options
-        .map(
-          (opt, oi) =>
-            `<div class="option" data-correct="${oi === q.correct ? "1" : "0"}" onclick="checkAnswer(this, ${i + 1}, ${oi === q.correct})">${esc(opt)}</div>`
-        )
-        .join("");
-      return `
-  <div class="quiz-card${i === 0 ? " active" : ""}" id="quizCard-${i + 1}">
-    <div class="question">${i + 1}. ${esc(q.q)}</div>
-    <div class="options">${opts}</div>
-    <div class="feedback" id="feedback-${i + 1}"></div>
-  </div>`;
+      const active = i === 0;
+      if (q.type === "hear-sentence") return sentenceHearQuizCard(q, i, active);
+      return hearQuizCard(q, i, active);
     })
     .join("");
 
   const fname = `${pad(ch.num + 2)}-${slug(ch.title)}-Quiz.html`;
   const html = `${chapterHead(ch.title + " — Quiz")}
-<body>
+<body class="quiz-page">
 <div class="manuscript-bg">
 <div class="container">
   <div class="top-bar">
     <h1>${ch.title} Quiz</h1>
-    <div class="subtitle">Story &amp; tradition — all questions in English</div>
+    <div class="subtitle">Beat Professor M · ${wordQs.length} words · ${sentenceQs.length} sentence${sentenceQs.length === 1 ? "" : "s"} · hear Myanmar, answer in English</div>
   </div>
-  <div class="score-bar">Score: <span id="quiz-score">0</span> / ${questions.length}</div>
-  ${cards}
-  <div class="score-card" id="scoreCard">
-    <h2 id="scoreMessage">Well done!</h2>
-    <p id="scoreDetail"></p>
-  </div>
+  ${quizCompetitionBarHtml()}
+  <div id="quizArea">${cards}</div>
+  ${quizScoreCardHtml()}
   ${navHint()}
 </div>
 </div>
 <script>
-var currentQuestion = 1;
-var totalQuestions = ${questions.length};
-var score = 0;
-
-function checkAnswer(element, questionNum, isCorrect) {
-  var parent = element.parentElement;
-  var options = parent.querySelectorAll('.option');
-  var feedback = document.getElementById('feedback-' + questionNum);
-  options.forEach(function(opt) { opt.style.pointerEvents = 'none'; });
-  if (isCorrect) {
-    element.classList.add('correct');
-    feedback.textContent = 'Correct! Great job!';
-    feedback.className = 'feedback correct';
-    score++;
-    document.getElementById('quiz-score').textContent = score;
-  } else {
-    element.classList.add('wrong');
-    feedback.textContent = 'Not quite — read the story again!';
-    feedback.className = 'feedback wrong';
-    options.forEach(function(opt) {
-      if (opt.dataset.correct === '1') opt.classList.add('correct');
-    });
-  }
-  setTimeout(nextQuestion, 1400);
-}
-
-function nextQuestion() {
-  var current = document.getElementById('quizCard-' + currentQuestion);
-  if (current) current.classList.remove('active');
-  currentQuestion++;
-  if (currentQuestion <= totalQuestions) {
-    document.getElementById('quizCard-' + currentQuestion).classList.add('active');
-  } else {
-    showScore();
-  }
-}
-
-function showScore() {
-  var card = document.getElementById('scoreCard');
-  var msg = document.getElementById('scoreMessage');
-  var detail = document.getElementById('scoreDetail');
-  card.classList.add('show');
-  if (score === totalQuestions) {
-    msg.textContent = 'Perfect score!';
-    detail.textContent = 'You understood the tales and traditions.';
-    if (window.MMPlayer) MMPlayer.earnBadge(${JSON.stringify(ch.badge + " Quiz")});
-  } else if (score >= totalQuestions - 1) {
-    msg.textContent = 'Almost perfect!';
-    detail.textContent = 'Score: ' + score + ' / ' + totalQuestions;
-  } else {
-    msg.textContent = 'Keep reading the stories!';
-    detail.textContent = 'Score: ' + score + ' / ' + totalQuestions + ' — try the chapter again.';
-  }
-}
+document.addEventListener('DOMContentLoaded', function() {
+  MMGame.bootHybridQuiz({ badge: ${JSON.stringify(ch.badge + " Quiz")}, opponent: { name: "Professor M", icon: "👩‍🏫" } });
+});
 </script>
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
 
+const mode = process.argv[2] || "all";
+
 CHAPTERS.forEach((ch) => {
-  genActivity(ch);
-  genExplained(ch);
-  genQuiz(ch);
+  if (mode === "all" || mode === "learn") genActivity(ch);
+  if (mode === "all" || mode === "explained") genExplained(ch);
+  if (mode === "all" || mode === "quiz") genQuiz(ch);
 });
-console.log("Generated", CHAPTERS.length * 3, "chapter files (3-segment layout).");
+if (mode === "all" || mode === "quiz") genOverallQuiz();
+const count =
+  mode === "quiz" ? CHAPTERS.length + 1 :
+  mode === "learn" || mode === "explained" ? CHAPTERS.length :
+  CHAPTERS.length * 3;
+console.log("Generated", count, mode === "all" ? "chapter files (3-segment layout)." : mode + " file(s).");

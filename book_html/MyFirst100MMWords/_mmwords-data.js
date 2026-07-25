@@ -3,7 +3,7 @@
   var CHAPTERS = [
     {
       id: "family",
-      num: 8,
+      num: 5,
       emoji: "👨‍👩‍👧",
       title: "Family",
       badge: "Family Star",
@@ -13,13 +13,18 @@
         title: "Respecting elders first",
         text: "In Myanmar tradition, children greet grandparents and elders before anyone else. At Thadingyut, the Festival of Lights, families visit parents and grandparents with gifts and candles. Knowing family words is how children show love and respect across generations."
       },
-      story: "Long ago in a teak village near the Irrawaddy River, a girl named Su lived in a house where cousins slept on woven mats and uncles told jokes by the kitchen fire. Every evening her grandmother lit an oil lamp and asked, \"Who did you meet today?\" Su would answer with names — mother, father, aunt, uncle, cousin — because in Myanmar a family is not a small tree but a wide forest of relatives.\n\nOne Thadingyut night, the whole family gathered under strings of paper lanterns. Su carried a tray of candles to her grandparents first, bowing gently as her mother had taught her. \"Grandmother,\" she said, \"thank you for teaching me.\" The old woman smiled and replied, \"When you know a person's name in our language, you carry them in your heart, even when rivers and mountains lie between you.\"\n\nFrom that night on, Su never rushed past an elder. She learned that mother and father feed the body, but aunts and uncles feed the stories — and cousins are the friends the gods place beside you at birth.",
+      story: "Su lived in a teak village with cousins, aunts, and uncles under one roof. Each evening Grandmother asked who she met — and Su answered with family names.\n\nAt Thadingyut, Su carried candles to her grandparents first and bowed low. Grandmother said, \"When you know someone's name, you carry them in your heart.\"\n\nSu never rushed past an elder again. Parents feed the body; aunts and uncles feed the stories.",
       explainedStory: "There is an old village tale about a boy who forgot his uncle's name during a feast and felt ashamed before the whole table. His grandfather did not scold him. Instead he brought out a long scroll painted with faces — generations of mothers, fathers, sisters, brothers, and babies.\n\n\"Each name is a branch,\" the grandfather said. \"Cut one and the tree still stands, but the shade grows thinner.\" The boy practiced every day until he could name thirty relatives without pause. When strangers visited the village, he became the one who introduced everyone properly, and guests said the house felt warm because the children had been taught well.\n\nMyanmar families grow wide, not only tall. Learning aunt, uncle, and cousin is not just vocabulary — it is remembering who you belong to.",
+      segmentExplanations: [
+        "In Myanmar, children greet grandparents and elders first. At Thadingyut, families visit with candles and gifts.",
+        "Su bows to her grandparents while lanterns glow. Respect starts with the people who raised your parents.",
+        "Many Myanmar children grow up with grandparents, aunts, and cousins in the same compound."
+      ],
       tip: "Point at a family photo and say each English name aloud, then tap the Myanmar button on the word cards so your child hears the sound. Start with grandmother and grandfather — elders first, as Myanmar custom teaches.",
       explainedTip: "Tell your child one family story each week — how an aunt made mohinga, or how an uncle fixed a bicycle. Link each story to one new family word so the name carries a memory.",
       explainedSentences: [
-        { en: "This is my mother.", mm: "ဒီအမေပါ။" },
-        { en: "This is my father.", mm: "ဒီအဖေပါ။" },
+        { en: "This is my mother.", mm: "ဒါက ကျွန်မအမေပါ။" },
+        { en: "This is my father.", mm: "ဒါက ကျွန်မအဖေပါ။" },
         { en: "Grandma lives in Myanmar.", mm: "အဘွားက မြန်မာနိုင်ငံမှာ နေတယ်။" },
         { en: "My aunt lives in Yangon.", mm: "အဒေါ်က ရန်ကုန်မှာ နေတယ်။" },
         { en: "Uncle is funny!", mm: "ဦးလေးက ရယ်စရာကောင်းတယ်!" },
@@ -29,11 +34,11 @@
         { en: "I love my family.", mm: "မိသားစုကို ချစ်တယ်။" },
         { en: "Grandma, hello!", mm: "အဘွား၊ မင်္ဂလာပါ!" }
       ],
-      parentPhrase: { en: "This is my mother.", mm: "ဒီအမေပါ။" },
+      parentPhrase: { en: "This is my mother.", mm: "ဒါက ကျွန်မအမေပါ။" },
       didYouKnow: "In Myanmar villages, children often grow up surrounded by grandparents, aunts, and cousins in the same compound.",
       practiceSentences: [
-        { en: "This is my mother.", mm: "ဒီအမေပါ။" },
-        { en: "I love my family.", mm: "မိသားစုကို ချစ်တယ်။" },
+        { en: "This is my mother.", mm: "ဒါက ကျွန်မအမေပါ။" },
+        { en: "I love my family.", mm: "ကျွန်မမိသားစုကို ချစ်တယ်။" },
         { en: "Grandma, hello!", mm: "အဘွား၊ မင်္ဂလာပါ!" }
       ],
       quizQuestions: [
@@ -89,23 +94,23 @@
             }
       ],
       words: [
-        { en: "Mother", mm: "မေမာ", emoji: "👩", hint: "ma-ma", useEn: "This is my mother.", useMm: "ဒီအမေပါ။" },
-        { en: "Father", mm: "အဖေ", emoji: "👨", hint: "a-phe", useEn: "My father cooks rice.", useMm: "အဖေက ထမင်းချက်တယ်။" },
-        { en: "Grandmother", mm: "အဘွား", emoji: "👵", hint: "a-bwa", useEn: "Grandma lives in Myanmar.", useMm: "အဘွားက မြန်မာနိုင်ငံမှာ နေတယ်။" },
-        { en: "Grandfather", mm: "အဘိုး", emoji: "👴", hint: "a-bo", useEn: "Grandpa tells stories.", useMm: "အဘိုးက ပုံပြင်ပြောတယ်။" },
-        { en: "Sister", mm: "ညီမ", emoji: "👧", hint: "nyi-ma", useEn: "My sister is kind.", useMm: "ညီမက ကောင်းတယ်။" },
-        { en: "Brother", mm: "အစ်ကို", emoji: "👦", hint: "a-ko", useEn: "My brother plays football.", useMm: "အစ်ကို ဘောလုံးကစားတယ်။" },
-        { en: "Baby", mm: "ကလေး", emoji: "👶", hint: "ka-lay", useEn: "The baby is sleeping.", useMm: "ကလေးက အိပ်နေတယ်။" },
-        { en: "Family", mm: "မိသားစု", emoji: "👨‍👩‍👧", hint: "mi-tha-zu", useEn: "I love my family.", useMm: "မိသားစုကို ချစ်တယ်။" },
-        { en: "Aunt", mm: "အဒေါ်", emoji: "👩", hint: "a-daw", useEn: "My aunt lives in Yangon.", useMm: "အဒေါ်က ရန်ကုန်မှာ နေတယ်။" },
-        { en: "Uncle", mm: "ဦးလေး", emoji: "👨", hint: "u-lay", useEn: "Uncle is funny!", useMm: "ဦးလေးက ရယ်စရာကောင်းတယ်!" },
-        { en: "Cousin", mm: "ဝမ်းကွဲ", emoji: "🧒", hint: "win-pwe", useEn: "I play with my cousin.", useMm: "ဝမ်းကွဲနဲ့ ကစားတယ်။" },
-        { en: "Parents", mm: "မိဘ", emoji: "👨‍👩‍👧", hint: "mi-ba", useEn: "My parents help me.", useMm: "မိဘတွေက ကူညီပေးတယ်။" }
+        { en: "Mother", mm: "မေမေ", emoji: "👩", hint: "may-may", useEn: "This is my mother.", useMm: "ဒါက ကျွန်မအမေပါ။" },
+        { en: "Father", mm: "အဖေ", emoji: "👨", hint: "a-phe", useEn: "This is my father.", useMm: "ဒါက ကျွန်မအဖေပါ။" },
+        { en: "Grandmother", mm: "အဘွား", emoji: "👵", hint: "a-bwa", useEn: "This is my grandmother.", useMm: "ဒါက ကျွန်မအဘွားပါ။" },
+        { en: "Grandfather", mm: "အဘိုး", emoji: "👴", hint: "a-bo", useEn: "This is my grandfather.", useMm: "ဒါက ကျွန်မအဘိုးပါ။" },
+        { en: "Sister", mm: "ညီမ", emoji: "👧", hint: "nyi-ma", useEn: "This is my sister.", useMm: "ဒါက ကျွန်မညီမပါ။" },
+        { en: "Brother", mm: "အစ်ကို", emoji: "👦", hint: "a-ko", useEn: "This is my brother.", useMm: "ဒါက ကျွန်မအစ်ကိုပါ။" },
+        { en: "Baby", mm: "ကလေး", emoji: "👶", hint: "ka-lay", useEn: "This is the baby.", useMm: "ဒါက ကလေးလေးပါ။" },
+        { en: "Family", mm: "မိသားစု", emoji: "👨‍👩‍👧", hint: "mi-tha-zu", useEn: "This is my family.", useMm: "ဒါက ကျွန်မမိသားစုပါ။" },
+        { en: "Aunt", mm: "အဒေါ်", emoji: "👩", hint: "a-daw", useEn: "This is my aunt.", useMm: "ဒါက ကျွန်မအဒေါ်ပါ။" },
+        { en: "Uncle", mm: "ဦးလေး", emoji: "👨", hint: "u-lay", useEn: "This is my uncle.", useMm: "ဒါက ကျွန်မဦးလေးပါ။" },
+        { en: "Cousin", mm: "ဝမ်းကွဲ", emoji: "🧒", hint: "win-pwe", useEn: "This is my cousin.", useMm: "ဒါက ကျွန်မဝမ်းကွဲပါ။" },
+        { en: "Parents", mm: "မိဘ", emoji: "👨‍👩‍👧", hint: "mi-ba", useEn: "These are my parents.", useMm: "ဒါတွေက ကျွန်မမိဘတွေပါ။" }
       ]
     },
     {
       id: "food",
-      num: 11,
+      num: 8,
       emoji: "🍚",
       title: "Food",
       badge: "Food Master",
@@ -115,7 +120,12 @@
         title: "Sharing food with gratitude",
         text: "Each morning in Myanmar, families cook rice and place the first spoonful aside with gratitude before eating. Tea shops gather neighbors over sweet milk tea. Mohinga — fish noodle soup — is the breakfast of kings and farmers alike. Food words carry the taste of home."
       },
-      story: "Before dawn in a riverside town, a boy named Kyaw watched his mother steam rice in a clay pot while the roosters still slept. \"We always cook a little extra,\" she said, \"because kindness should not be measured cup by cup.\" When the monks walked barefoot down the lane, Kyaw filled their alms bowls with rice, water, and a banana — quietly, without showing off.\n\nAt the tea shop later, old men laughed over strong sweet tea and lahpet thoke, the famous tea-leaf salad that makes strangers into friends. Kyaw's uncle taught him the names of what they ate: fish from the river, egg from the hen, mango sweet as sunshine. \"Learn what feeds you,\" his uncle said, \"and you will never forget where you come from.\"\n\nThat evening Kyaw shared his snack with a hungry dog at the gate. His mother nodded with pride. \"Hungry bellies make selfish hearts,\" she said. \"Full bellies can choose to be generous.\"",
+      segmentExplanations: [
+        "Families cook extra rice to share — with monks, guests, and neighbors.",
+        "Tea shops and markets teach food names: fish, egg, mango, tea.",
+        "Sharing food builds a generous heart, not a selfish one."
+      ],
+      story: "Before dawn, Kyaw watched his mother steam rice. \"We cook a little extra,\" she said, \"so we can share with others.\"\n\nWhen monks walked the lane, Kyaw filled their bowls with rice and fruit — quietly, without showing off.\n\nThat evening he shared his snack with a hungry dog. \"Full bellies can choose to be generous,\" his mother said.",
       explainedStory: "There is a folk tale about a greedy merchant who hoarded rice while villagers went hungry. One night he dreamed of golden grains turning to sand. When he woke, he opened his storehouse and called the whole village to eat.\n\nFrom that day he kept only what he needed and gave the rest away. People said the merchant grew richer anyway — not in silver, but in friends who brought him fish, eggs, tea, and fruit from every corner of the valley. The moral is simple: rice shared fills more stomachs than rice hidden.\n\nMyanmar kitchens teach children that water, bread, and soup are not just words on a card. They are promises that no guest should leave an empty house.",
       tip: "At one meal this week, name three foods in English, then tap the Myanmar button so your child hears each word. Rice and water are gentle starting points every child knows.",
       explainedTip: "Cook or share one Myanmar dish together — even simple rice and tea. Say the food words before eating, the way village families bless a meal with names before the first bite.",
@@ -195,7 +205,7 @@
         { en: "Bread", mm: "ပေါင်မုန့်", emoji: "🍞", hint: "poun-moun" },
         { en: "Tea", mm: "လက်ဖက်ရည်", emoji: "🍵", hint: "laphet-yay" },
         { en: "Soup", mm: "ဟင်းရည်", emoji: "🍲", hint: "hin-yay", useEn: "The soup is hot.", useMm: "ဟင်းရည် ပူတယ်။" },
-        { en: "Mango", mm: "သရက်သီး", emoji: "🥭", hint: "tha-yat-thee", useEn: "I like mango.", useMm: "သရက်သီး ကြိုက်တယ်။" },
+        { en: "Mango", mm: "သရက်သီး", emoji: "🥭", hint: "tha-yat-thee", useEn: "I like mango.", useMm: "ကျွန်မ သရက်သီး ကြိုက်တယ်။" },
         { en: "Noodle", mm: "ခေါက်ဆွဲ", emoji: "🍜", hint: "khauk-swe", useEn: "Noodles for lunch!", useMm: "နေ့လည်ခေါက်ဆွဲ!" },
         { en: "Sugar", mm: "သကြား", emoji: "🍬", hint: "sa-ya", useEn: "Not too much sugar.", useMm: "သကြားမများနဲ့။" },
         { en: "Meat", mm: "အသား", emoji: "🥩", hint: "a-tha", useEn: "We eat meat today.", useMm: "ဒီနေ့ အသားစားမယ်။" }
@@ -203,7 +213,7 @@
     },
     {
       id: "animals",
-      num: 14,
+      num: 11,
       emoji: "🐘",
       title: "Animals",
       badge: "Animal Friend",
@@ -213,7 +223,12 @@
         title: "The sacred elephant",
         text: "In ancient Burma, white elephants were royal treasures and symbols of a just kingdom. Elephants, tigers, peacocks, and birds fill Myanmar forests and folktales. The elephant is often the first animal every Myanmar child learns — strong, gentle, and wise."
       },
-      story: "Deep in a green forest where the Irrawaddy mist hangs on leaves, four friends lived together: Elephant, Monkey, Rabbit, and Peacock. They were different in size and habit, yet they shared one home beneath a great banyan tree.\n\nOne year the river flooded early. Rabbit's burrow filled with water. Without a word, Elephant carried Rabbit on his trunk, Monkey cleared fallen branches, and Peacock flew ahead to find dry ground. When the storm passed, the friends discovered a fruit tree heavy with food. Peacock fanned the fruit down, Monkey caught it, Rabbit sorted the small pieces, and Elephant carried the rest to old Tortoise who could not climb.\n\nVillagers who saw them said, \"Strength without kindness is noise. Kindness without friends is lonely.\" The four friends became a lesson told around every fire: help one another, and the forest itself will protect you.",
+      segmentExplanations: [
+        "The elephant is sacred in Myanmar — strong, gentle, and wise.",
+        "When the flood came, each friend helped in a different way.",
+        "Help one another, and the forest protects you too."
+      ],
+      story: "Elephant, Monkey, Rabbit, and Peacock lived under one banyan tree. They were different, but they shared one home.\n\nWhen floods came, Elephant carried Rabbit, Monkey cleared branches, and Peacock found dry ground.\n\nVillagers said, \"Help one another, and the forest protects you.\" The four friends became a lesson for every child.",
       explainedStory: "Long before cities of glass and steel, kings of Burma kept white elephants as signs of a righteous reign. A cruel king, people said, could never keep such an animal — it would walk away into the hills.\n\nOne legend tells of a young prince who found a wounded elephant calf and nursed it with banana leaves and river water. Years later, when enemies surrounded the palace, the grown elephant appeared at dawn and led the prince through hidden paths. The prince remembered the calf and whispered, \"You saved me because I saved you.\" That is why Myanmar children learn the elephant first — not only as an animal, but as a reminder that gentleness and strength can live in the same heart.\n\nFrom tigers in the tall grass to ducks on the village pond, every creature has a place in Myanmar stories.",
       tip: "Walk outside or look at picture books and name animals in English first. Then tap the Myanmar button on each card — animal sounds are fun to repeat together.",
       explainedTip: "Tell the Four Friends tale at bedtime and ask your child which animal they would be. Link each answer to a new animal word from this chapter.",
@@ -221,12 +236,12 @@
         { en: "Look at the elephant!", mm: "ဆင်ကို ကြည့်ပါ!" },
         { en: "The cat sleeps in the sun.", mm: "ကြောင်က နေရောင်မှာ အိပ်တယ်။" },
         { en: "The dog guards the house.", mm: "ခွေးက အိမ်ကို စောင့်တယ်။" },
-        { en: "Birds sing at dawn.", mm: "ငှက်တွေ အရုဏ်ဦး သီချင်းဆိုတယ်။" },
+        { en: "Birds sing at dawn.", mm: "ငှက်တွေ မနက်ခင်းမှာ သီချင်းဆိုတယ်။" },
         { en: "Fish swim in the river.", mm: "ငါးတွေ မြစ်မှာ ရေကူးတယ်။" },
         { en: "The cow gives milk.", mm: "နွားက နို့ပေးတယ်။" },
-        { en: "The chicken wakes early.", mm: "ကြက် စောစောထတယ်။" },
+        { en: "The chicken wakes early.", mm: "ကြက်က စောစောထတယ်။" },
         { en: "The tiger stays in the forest.", mm: "ကျားက တောထဲမှာ နေတယ်။" },
-        { en: "The monkey climbs fast.", mm: "မျောက် မြန်မြန် တက်တယ်။" },
+        { en: "The monkey climbs fast.", mm: "မျောက်က မြန်မြန် တက်တယ်။" },
         { en: "A butterfly is pretty.", mm: "လိပ်ပြာလေး လှတယ်!" }
       ],
       parentPhrase: { en: "Look at the elephant!", mm: "ဆင်ကို ကြည့်ပါ!" },
@@ -301,7 +316,7 @@
     },
     {
       id: "colors",
-      num: 17,
+      num: 14,
       emoji: "🎨",
       title: "Colors",
       badge: "Color Artist",
@@ -311,19 +326,24 @@
         title: "Gold of Shwedagon",
         text: "Shwedagon Pagoda in Yangon shines with real gold leaf — a color every Myanmar heart knows. Monks wear saffron robes at dawn. Thingyan brings bright splashes of festival color. In Myanmar, gold is not only pretty — it means sacred and worthy of respect."
       },
-      story: "In old Yangon, a girl named May walked with her father before sunrise to Shwedagon Pagoda. The hill was quiet except for barefoot pilgrims and the soft sweep of brooms on stone. \"Why is it gold?\" May asked. Her father pointed to the spire glowing in the first light. \"People donate gold leaf to show gratitude,\" he said. \"A little from many hands becomes something the whole city can see.\"\n\nOn the way home they passed monks in saffron robes carrying black alms bowls. May noticed how the orange cloth looked like fire that did not burn — calm, steady, bright. At the market she saw red tomatoes, green bananas, white jasmine garlands, and blue umbrellas against the monsoon sky.\n\nThat afternoon May painted a picture for her grandmother using every color she had learned. Her grandmother said, \"Colors are words for feelings we cannot speak. Gold is thankfulness. Green is hope after rain.\" May kept the painting for years.",
+      segmentExplanations: [
+        "Shwedagon shines with gold leaf donated by many grateful hands.",
+        "Monks wear saffron; markets show red, green, white, and blue.",
+        "Colors are feelings — gold is thankfulness, green is hope after rain."
+      ],
+      story: "May walked with her father to Shwedagon at dawn. \"People donate gold leaf,\" he said, \"a little from many hands.\"\n\nOn the way home she saw monks in saffron robes and market colors — red tomatoes, green bananas, white jasmine.\n\nMay painted every color for her grandmother. \"Gold is thankfulness,\" Grandmother said. \"Green is hope after rain.\"",
       explainedStory: "There is a temple tale about a poor girl who wanted to offer something beautiful to the pagoda but owned only white flowers from the roadside. She stayed all night arranging them while richer visitors placed gold and jewels.\n\nAt dawn the flowers shimmered like gold in the sun, and the head monk said, \"The gift is not measured by weight but by sincerity.\" The girl learned that white can be pure and gold can live in a humble heart.\n\nMyanmar festivals paint the world in every hue — red lanterns at Thadingyut, yellow robes at ordination, pink blossoms in the hot season. Learning colors is learning to see the country the way poets and painters have seen it for centuries.",
       tip: "Pick one color each day from clothes, toys, or fruit. Say the English name, then tap Myanmar on the card. Gold and green connect easily to pagodas and forests.",
       explainedTip: "Draw a pagoda together and talk about gold, red, and white — the colors children see in Myanmar art. Let your child name each part aloud before coloring.",
       explainedSentences: [
         { en: "The pagoda is gold.", mm: "ဘုရားက ရွှေရောင်ပါ။" },
         { en: "Monks wear orange robes.", mm: "ရဟန်းတွေ လိမ္မော်ရောင် ဝတ်တယ်။" },
-        { en: "The sky is blue.", mm: "ကောင်းကင် အပြာပါ။" },
+        { en: "The sky is blue.", mm: "ကောင်းကင်က အပြာရောင်ပါ။" },
         { en: "Grass is green.", mm: "မြက်က အစိမ်းပါ။" },
-        { en: "The flower is red.", mm: "ပန်း အနီပါ။" },
-        { en: "Clouds are white.", mm: "တိမ်တွေ အဖြူပါ။" },
-        { en: "Night is black.", mm: "ညက အနက်ပါ။" },
-        { en: "The sun is yellow.", mm: "နေက အဝါပါ။" },
+        { en: "The flower is red.", mm: "ပန်းက အနီရောင်ပါ။" },
+        { en: "Clouds are white.", mm: "တိမ်တွေ အဖြူရောင်ပါ။" },
+        { en: "Night is black.", mm: "ညက အနက်ရောင်ပါ။" },
+        { en: "The sun is yellow.", mm: "နေက အဝါရောင်ပါ။" },
         { en: "I like pink flowers.", mm: "ပန်းရောင် ပန်းလေး ကြိုက်တယ်။" },
         { en: "Brown is the color of earth.", mm: "အညိုရောင် မြေကြီးရဲ့ အရောင်ပါ။" }
       ],
@@ -396,7 +416,7 @@
     },
     {
       id: "numbers",
-      num: 20,
+      num: 17,
       emoji: "🔢",
       title: "Numbers",
       badge: "Number Ninja",
@@ -406,7 +426,12 @@
         title: "Counting at Bagan",
         text: "Ancient Bagan once held thousands of brick temples — builders counted bricks, donors counted offerings, monks counted prayer beads. At village markets, sellers still count mangoes and eggs aloud in Myanmar. Numbers rhythm through daily life like footsteps on temple stairs."
       },
-      story: "In a market town near Bagan, a young seller named Hnin laid out mangoes in neat rows. An old traveler stopped and asked, \"Child, how many?\" Hnin counted quickly — one, two, three, up to ten — but she rushed and gave the traveler eleven by mistake.\n\nThe traveler did not scold her. He placed ten coins on the mat and said, \"Count again with your eyes and your voice together. Numbers are honest when we are patient.\" Hnin counted slowly, touching each mango. She laughed when she saw her error and returned the extra fruit.\n\nFrom that day, merchants trusted her. She taught her little brother the same lesson: count fingers, count steps to the pagoda, count candles on Thadingyut night — and never hurry past the truth.",
+      segmentExplanations: [
+        "Market sellers count aloud — mangoes, eggs, coins.",
+        "Count with your eyes and voice together. Do not rush.",
+        "Numbers order daily life: steps, candles, fingers, festival days."
+      ],
+      story: "Hnin sold mangoes near Bagan. She counted too fast and gave one extra by mistake.\n\nThe traveler asked her to count again slowly. \"Numbers are honest when we are patient,\" he said.\n\nHnin never rushed a count again — not fingers, not steps, not festival candles.",
       explainedStory: "Legend says the first king of Bagan asked his builders how many temples would stand on the plain. One wise monk answered with a handful of sand. \"As many as grains you cannot hold,\" he said, \"for merit has no final number.\"\n\nStill, children learned to count — one lamp, two bowls, three birds on the wall, four oxen in the field, five monks at dawn. Numbers ordered the world: seasons, festivals, ages, and gifts for elders.\n\nWhen you learn one through ten in Myanmar, you join a chain of market sellers, temple caretakers, and mothers measuring rice that stretches back longer than memory.",
       tip: "Count everyday objects aloud — fingers, stairs, spoons. Say the English number first, then tap Myanmar on the card. Keep it playful, never a test.",
       explainedTip: "Use snack time: count five grapes or ten raisins in English, then hear the Myanmar number on each card. Slow counting builds confidence.",
@@ -492,7 +517,7 @@
     },
     {
       id: "body",
-      num: 23,
+      num: 20,
       emoji: "👂",
       title: "Body Parts",
       badge: "Body Explorer",
@@ -502,7 +527,12 @@
         title: "Body and respect",
         text: "Classical Burmese dance tells stories with every movement — curved fingers like flower petals, feet stepping in careful patterns. In Myanmar culture, pointing feet at a person or sacred image is impolite. Learning body words helps children speak clearly and move respectfully."
       },
-      story: "In Mandalay, a dance teacher named Daw Khin gathered children in a teak hall open to the garden. \"Your hands speak before your mouth,\" she told them. She lifted her arms slowly, wrists soft, fingers bent like temple roof corners.\n\nA shy boy named Zaw watched his feet nervously. \"Feet carry you to elders,\" Daw Khin said gently. \"Do not turn your soles toward the Buddha image or toward your teacher. Turn your heart instead.\" Zaw practiced bowing, placing his hands together, washing his face and ears each morning as his mother instructed.\n\nOn performance day, the audience saw not only red costumes and gold belts but children who understood that head, eye, ear, and heart belong to a body that should show kindness. Afterward, Daw Khin said, \"A dancer with clean hands and a calm heart honors the story.\"",
+      segmentExplanations: [
+        "Dance hands speak before the mouth — soft wrists, curved fingers.",
+        "Do not point feet at a Buddha image or teacher. Bow with respect.",
+        "Head, hands, and heart belong to a body that shows kindness."
+      ],
+      story: "Daw Khin taught dance in an open teak hall. \"Your hands speak before your mouth,\" she told the children.\n\nZaw learned not to point his feet at the Buddha image or his teacher. He practiced bowing with clean hands each morning.\n\nOn show day, the children moved with kindness. \"Clean hands and a calm heart honor the story,\" Daw Khin said.",
       explainedStory: "There is an old tale about a giant who had strong arms and legs but never listened. Birds spoke into his ears; he ignored them. Friends looked into his eyes; he turned away. When he fell ill, only small hands — a child's hands — could feed him spoon by spoon until he learned to care.\n\nThe giant wept and said, \"I used my mouth too much and my heart too little.\" From then on he washed his hands before meals and touched his chest when he apologized.\n\nMyanmar parents teach children that the body is a guesthouse for the soul. Wash it, rest it, and use it to help — not to frighten or shame others.",
       tip: "Play Simon Says with body parts in English, then tap the Myanmar button on each card. Include wash your hands — a daily habit with a clear word.",
       explainedTip: "Before bedtime, name three body parts you used today — hands that drew, feet that ran, eyes that read. Hear the Myanmar word for each one together.",
@@ -510,12 +540,12 @@
         { en: "Wash your hands.", mm: "လက်ကို ဆေးပါ။" },
         { en: "Open your eyes wide.", mm: "မျက်လုံး ချွင့်ပါ။" },
         { en: "Listen with your ears.", mm: "နားနဲ့ နားထောင်ပါ။" },
-        { en: "Smell the flowers with your nose.", mm: "နှာခေါင်းနဲ့ ပန်းကို ရနံ့ကြည့်ပါ။" },
+        { en: "Smell the flowers with your nose.", mm: "နှာခေါင်းနဲ့ ပန်းကို မြှုပ်ကြည့်ပါ။" },
         { en: "Speak kind words with your mouth.", mm: "ပါးစပ်နဲ့ ကောင်းကောင်း ပြောပါ။" },
         { en: "My head bows to Grandma.", mm: "ခေါင်းက အဘွားကို ညွတ်တယ်။" },
         { en: "My feet walk slowly in the temple.", mm: "ခြေထောက်က ဘုရားမှာ ဖြည်းဖြည်းလျှောက်တယ်။" },
         { en: "My heart feels happy.", mm: "နှလုံးက ပျော်တယ်။" },
-        { en: "Brush your hair.", mm: "ဆံပင်ကို စီပါ။" },
+        { en: "Brush your hair.", mm: "ဆံပင်ကို ဖြီးပါ။" },
         { en: "Clean your teeth.", mm: "သွားကို သန့်ရှင်းပါ။" }
       ],
       parentPhrase: { en: "Wash your hands.", mm: "လက်ကို ဆေးပါ။" },
@@ -579,15 +609,15 @@
         { en: "Mouth", mm: "ပါးစပ်", emoji: "👄", hint: "ba-zut" },
         { en: "Hand", mm: "လက်", emoji: "✋", hint: "let" },
         { en: "Foot", mm: "ခြေထောက်", emoji: "🦶", hint: "chay-thout" },
-        { en: "Heart", mm: "နှလုံး", emoji: "❤️", hint: "hna-lone", useEn: "My heart beats fast.", useMm: "နှလုံးက မြန်မြန်ခုန်တယ်။" },
-        { en: "Hair", mm: "ဆံပင်", emoji: "💇", hint: "san-pin", useEn: "Brush your hair.", useMm: "ဆံပင်ကို စီပါ။" },
+        { en: "Heart", mm: "နှလုံး", emoji: "❤️", hint: "hna-lone", useEn: "My heart beats fast.", useMm: "ကျွန်မနှလုံးက မြန်မြန်ခုန်တယ်။" },
+        { en: "Hair", mm: "ဆံပင်", emoji: "💇", hint: "san-pin", useEn: "Brush your hair.", useMm: "ဆံပင်ကို ဖြီးပါ။" },
         { en: "Teeth", mm: "သွား", emoji: "🦷", hint: "dthwa", useEn: "Clean your teeth.", useMm: "သွားကို သန့်ရှင်းပါ။" },
-        { en: "Stomach", mm: "ဗိုက်", emoji: "🫃", hint: "bite", useEn: "My stomach is full.", useMm: "ဗိုက်ဝတယ်။" }
+        { en: "Stomach", mm: "ဗိုက်", emoji: "🫃", hint: "bite", useEn: "My stomach is full.", useMm: "ကျွန်မဗိုက်ဝတယ်။" }
       ]
     },
     {
       id: "home",
-      num: 26,
+      num: 23,
       emoji: "🏠",
       title: "Home",
       badge: "Home Helper",
@@ -597,7 +627,12 @@
         title: "Teak houses and open windows",
         text: "Traditional Myanmar homes are built from teak, raised on stilts so rain flows beneath and cool air passes through. The kitchen smells of garlic and tea. The bed waits after long days. These home words hold the shape of memory for families near and far."
       },
-      story: "When the monsoon came to a delta village, water rose around the houses but never entered Nwe's home, because the floor stood on strong teak stilts. She opened the window and smelled rain on banana leaves while her mother cooked in the kitchen below.\n\n\"Every room has a duty,\" her father said, carrying a chair to the porch. \"The door welcomes guests. The lamp welcomes sight. The bed welcomes rest after honest work.\" Nwe swept the floor, folded blankets, and placed slippers neatly by the door — small tasks that kept the house peaceful.\n\nOne evening travelers knocked, wet and tired. Nwe's family lit the lamp, boiled water, and offered rice. Later her grandmother said, \"A house is not only wood and nails. It is the way people inside treat those who arrive.\" Nwe never forgot that the home begins at the door.",
+      segmentExplanations: [
+        "Teak houses on stilts stay dry when monsoon water rises.",
+        "Every room has a duty — door, lamp, bed, kitchen.",
+        "A home is how people treat those who arrive at the door."
+      ],
+      story: "Nwe's house stood on teak stilts, so monsoon water never came inside. She smelled rain while Mother cooked below.\n\nFather said every room has a duty — the door welcomes guests, the lamp welcomes sight, the bed welcomes rest.\n\nOne night wet travelers knocked. The family lit the lamp and shared rice. \"A home begins at the door,\" Grandmother said.",
       explainedStory: "Folk wisdom says a house with a clean kitchen feeds the spirit, a house with a bright window feeds the mind, and a house with a soft bed feeds the body. A lazy son in an old tale left his room messy and his lamp unlit. Guests thought the family had moved away.\n\nWhen his sister returned from the convent, she cleaned each room in silence. The neighbors said the house looked alive again, as if light had remembered where to sit. The brother learned to care for table, chair, and window — not for praise, but because a neglected house forgets its own name.\n\nLearning words like room, door, and kitchen is learning the grammar of hospitality Myanmar families have practiced for generations.",
       tip: "Walk through your home naming one object per room in English, then tap Myanmar on the matching card. Start with bed, door, and kitchen — words children use every day.",
       explainedTip: "Give your child one small home task — closing a window, placing a chair back, switching on a lamp — and say the word together before and after doing it.",
@@ -675,14 +710,14 @@
         { en: "Chair", mm: "ထိုင်ခုံ", emoji: "🪑", hint: "htaing-khone" },
         { en: "Table", mm: "စားပွဲ", emoji: "🪑", hint: "sa-bwe" },
         { en: "Lamp", mm: "မီး", emoji: "💡", hint: "mi", useEn: "Turn on the lamp.", useMm: "မီးဖွင့်ပါ။" },
-        { en: "Kitchen", mm: "မီးဖိုချောင်", emoji: "🍳", hint: "mi-fo-chaung", useEn: "Mum is in the kitchen.", useMm: "အမေ မီးဖိုချောင်မှာ ရှိတယ်။" },
+        { en: "Kitchen", mm: "မီးဖိုချောင်", emoji: "🍳", hint: "mi-fo-chaung", useEn: "Mum is in the kitchen.", useMm: "ကျွန်မအမေ မီးဖိုချောင်မှာ ရှိတယ်။" },
         { en: "Bathroom", mm: "ရေချိုးခန်း", emoji: "🚿", hint: "yay-cho-khan", useEn: "Wash in the bathroom.", useMm: "ရေချိုးခန်းမှာ ရေချိုးပါ။" },
         { en: "Phone", mm: "ဖုန်း", emoji: "📱", hint: "phone", useEn: "Call Grandma on the phone.", useMm: "ဖုန်းနဲ့ အဘွားကို ခေါ်ပါ။" }
       ]
     },
     {
       id: "school",
-      num: 29,
+      num: 26,
       emoji: "🎒",
       title: "School",
       badge: "School Star",
@@ -692,13 +727,18 @@
         title: "Learning under the saya",
         text: "For centuries, monastery schools called kyaung taught reading, writing, and gentle ethics across Myanmar. Teachers — saya for men, sayama for women — are deeply respected. Students bow and say thank you with both hands. Learning is a gift, not a race."
       },
-      story: "Before sunrise, boys in white shirts walked barefoot to the monastery school, slates and pencils wrapped in cloth. The oldest monk — everyone called him Saya — rang a small bell, and the courtyard grew quiet except for birds.\n\nA new student named Paing could not yet write his name. He hid his blank slate, ashamed. Saya knelt beside him and drew one line, then another. \"Every book begins with a single mark,\" he said. \"Your pencil is small, but your patience can be large.\" Paing copied the letters until the sun touched the pagoda spire.\n\nAt term's end, Paing read aloud to the village. His mother cried with joy. Saya only nodded, but his eyes shone. \"Knowledge kept in one pocket disappears,\" he told the class. \"Knowledge shared becomes a lantern for others.\"",
+      segmentExplanations: [
+        "Monastery schools teach reading, writing, and gentle ethics.",
+        "Every book begins with one mark — patience matters more than speed.",
+        "Knowledge shared becomes a lantern for others."
+      ],
+      story: "Before sunrise, boys walked to the monastery school with slates and pencils. Saya rang a bell and the courtyard grew quiet.\n\nPaing could not write his name. Saya drew one line, then another. \"Every book begins with a single mark.\"\n\nAt term's end Paing read aloud. \"Knowledge shared,\" Saya said, \"becomes a lantern for others.\"",
       explainedStory: "There is a story about a lazy pupil who copied his friend's homework with a stolen pen. The ink faded overnight, leaving empty pages. The friend, kinder than the thief deserved, shared his own book and stayed late teaching letters by lamplight.\n\nThe lazy pupil wept and returned the pen. From that day he carried his own bag, sharpened his own pencil, and erased mistakes without shame. The teacher said, \"A true student fails aloud and tries again.\"\n\nWhether lessons happen in a monastery courtyard or a modern classroom, Myanmar tradition honors the teacher, the book, and the friend who helps you when a word is hard.",
       tip: "Pack a bag together and name each school item in English, then tap Myanmar on the card. Thank the teacher out loud — gratitude is part of Myanmar school culture.",
       explainedTip: "After homework, read one sentence from the explained page together. Praise effort, not speed — the monastery teachers did the same for centuries.",
       explainedSentences: [
         { en: "I go to school.", mm: "ကျောင်းသွားတယ်။" },
-        { en: "The teacher is kind.", mm: "ဆရာ ကောင်းတယ်။" },
+        { en: "The teacher is kind.", mm: "ဆရာက ကောင်းတယ်။" },
         { en: "Open your book.", mm: "စာအုပ်ဖွင့်ပါ။" },
         { en: "Write with a pencil.", mm: "ခဲတံနဲ့ ရေးပါ။" },
         { en: "My bag is heavy.", mm: "အိတ်က လေးတယ်။" },
@@ -769,7 +809,7 @@
         { en: "Bag", mm: "အိတ်", emoji: "🎒", hint: "ate" },
         { en: "Friend", mm: "သူငယ်ချင်း", emoji: "🤝", hint: "thu-ngay-chin" },
         { en: "Class", mm: "စာသင်ခန်း", emoji: "📖", hint: "sa-thin-khan" },
-        { en: "Homework", mm: "အိမ်စာ", emoji: "📝", hint: "ain-sa", useEn: "I have homework.", useMm: "အိမ်စာ ရှိတယ်။" },
+        { en: "Homework", mm: "အိမ်စာ", emoji: "📝", hint: "ain-sa", useEn: "I have homework.", useMm: "ကျွန်မအိမ်စာ ရှိတယ်။" },
         { en: "Pen", mm: "ဘောပင်", emoji: "🖊️", hint: "baw-pin", useEn: "Write with a pen.", useMm: "ဘောပင်နဲ့ ရေးပါ။" },
         { en: "Eraser", mm: "ခဲဖျက်", emoji: "🧽", hint: "khe-phyet", useEn: "Use the eraser.", useMm: "ခဲဖျက်သုံးပါ။" },
         { en: "Lesson", mm: "သင်ခန်းစာ", emoji: "📖", hint: "thin-khan-sa", useEn: "Today's lesson is fun.", useMm: "ဒီနေ့ သင်ခန်းစာ ပျော်စရာကောင်းတယ်။" }
@@ -777,7 +817,7 @@
     },
     {
       id: "feelings",
-      num: 32,
+      num: 29,
       emoji: "😊",
       title: "Feelings",
       badge: "Feelings Friend",
@@ -787,7 +827,12 @@
         title: "Gentle speech",
         text: "Burmese has soft ways to say thank you and please. Feelings live in the heart — sate — in Myanmar thought. Folk tales teach that anger burns quickly but kindness lasts like lamp oil through the night."
       },
-      story: "Under a full moon, a girl named Thiri helped her aunt prepare offerings for the pagoda. When a tray slipped, rice scattered on the floor. Thiri felt anger rise hot in her chest, and sharp words flew toward her little cousin.\n\nHer aunt did not punish her. She placed a hand on Thiri's heart and said, \"Feelings are visitors. You may greet them, but you need not let them sit forever.\" Together they cleaned the floor. Thiri whispered sorry. Her cousin hugged her, and the anger melted like sugar in tea.\n\nWalking home, Thiri saw lanterns glowing along the road. She felt happy, tired, and grateful all at once. \"Thank you,\" she told her aunt — not only for the lesson, but for patience when her own heart had been stormy.",
+      segmentExplanations: [
+        "Feelings live in the heart — name them, do not hide them.",
+        "Feelings are visitors — greet them, but do not let them stay forever.",
+        "Thank you, please, and sorry lighten the heart like lamp oil."
+      ],
+      story: "Thiri helped her aunt carry pagoda offerings. When rice spilled, sharp words flew at her little cousin.\n\nAunt placed a hand on her heart. \"Feelings are visitors — greet them, but do not let them stay forever.\"\n\nThiri whispered sorry. Walking home under lanterns, she said thank you for patience when her heart had been stormy.",
       explainedStory: "There is a tale about a prince who owned every toy yet always felt sad. A wandering monk asked to share his meal. The prince refused at first, then watched the monk thank the cook, the farmer, and the rain with equal warmth.\n\nThe prince tried the same words — please, thank you, sorry — and discovered his chest felt lighter. He learned that love and gratitude are feelings you can practice like a dance step until they become natural.\n\nMyanmar children are taught to name what they feel instead of hiding it. Hungry, scared, excited, tired — each word is a bridge between the heart and the people who care.",
       tip: "At day’s end, ask your child to name one feeling in English. Tap the Myanmar button together. Model saying thank you and sorry when feelings run strong.",
       explainedTip: "When your child is upset, name the feeling calmly — angry, sad, tired — then breathe once before speaking. This mirrors how elders teach emotional patience.",
@@ -796,10 +841,10 @@
         { en: "I feel sad.", mm: "ဝမ်းနည်းတယ်။" },
         { en: "Please help me.", mm: "ကျေးဇူးပြုပြီး ကူညီပေးပါ။" },
         { en: "Thank you very much.", mm: "ကျေးဇူးအများကြီးတင်ပါတယ်။" },
-        { en: "Sorry, I was wrong.", mm: "ဆောရီး မှားသွားတယ်။" },
+        { en: "Sorry, I was wrong.", mm: "တောင်းပန်ပါတယ် မှားသွားလို့။" },
         { en: "I am tired.", mm: "ပင်ပန်းတယ်။" },
         { en: "I am hungry.", mm: "ဗိုက်ဆာတယ်။" },
-        { en: "I love you, Grandma.", mm: "အဘွား ချစ်တယ်။" },
+        { en: "I love you, Grandma.", mm: "အဘွားကို ချစ်တယ်။" },
         { en: "I am a little scared.", mm: "နည်းနည်း ကြောက်တယ်။" },
         { en: "I am excited!", mm: "စိတ်လှုပ်ရှားလိုက်တာ!" }
       ],
@@ -865,14 +910,14 @@
         { en: "Hungry", mm: "ဗိုက်ဆာ", emoji: "🍽️", hint: "bite-sa" },
         { en: "Love", mm: "ချစ်", emoji: "❤️", hint: "chit" },
         { en: "Thank you", mm: "ကျေးဇူးတင်ပါတယ်", emoji: "🙏", hint: "kyay-zu tin-ba-de", useEn: "Thank you very much!", useMm: "ကျေးဇူးအများကြီးတင်ပါတယ်!" },
-        { en: "Sorry", mm: "ဆောရီး", emoji: "😔", hint: "sorry", useEn: "Sorry, Mum.", useMm: "ဆောရီး အမေ။" },
-        { en: "Please", mm: "ကျေးဇူးပြု", emoji: "🙏", hint: "kyay-zu pyu", useEn: "Please help me.", useMm: "ကျေးဇူးပြုပြီး ကူညီပေးပါ။" },
-        { en: "Excited", mm: "စိတ်လှုပ်ရှား", emoji: "🤩", hint: "sate-hlote-shwa", useEn: "I am so excited!", useMm: "စိတ်လှုပ်ရှားလိုက်တာ!" }
+        { en: "Sorry", mm: "တောင်းပန်ပါတယ်", emoji: "😔", hint: "taung-pan-ba-de", useEn: "Sorry, Mum.", useMm: "တောင်းပန်ပါတယ် အမေရေ။" },
+        { en: "Please", mm: "ကျေးဇူးပြု", emoji: "🙏", hint: "kyay-zu pyu", useEn: "Please help me.", useMm: "ကျေးဇူးပြုပြီး ကျွန်မကို ကူညီပေးပါ။" },
+        { en: "Excited", mm: "စိတ်လှုပ်ရှား", emoji: "🤩", hint: "sate-hlote-shwa", useEn: "I am so excited!", useMm: "ကျွန်မ စိတ်လှုပ်ရှားလိုက်တာ!" }
       ]
     },
     {
       id: "festivals",
-      num: 35,
+      num: 32,
       emoji: "🎆",
       title: "Myanmar Festivals",
       badge: "Festival Fan",
@@ -882,21 +927,26 @@
         title: "Thingyan, Thadingyut, Tazaungdaing",
         text: "Thingyan washes the old year away with water and laughter. Thadingyut honors parents and grandparents with candles and gifts. At Tazaungdaing, giant hot-air balloons rise over Taunggyi like stars you can touch. These festivals hold some of Myanmar's brightest memories."
       },
-      story: "In one turning year, a village celebrated three great festivals, and a boy named Lin tried to remember them all.\n\nAt Thingyan, elders poured scented water over his hands and said, \"Let anger flow away like mud in the street.\" Children danced while drums shook the air, and everyone laughed when Lin's shirt soaked through.\n\nMonths later, Thadingyut lit the hills with candles. Lin carried gifts to his grandparents and bowed low. \"Light for those who lighted your path,\" his father said.\n\nWhen Tazaungdaing arrived, paper balloons filled with flame rose into the night above Taunggyi. Lin whispered a wish as his village balloon climbed — not for toys, but for health for his family and peace for the land. He understood then that festivals are not only fun. They are promises renewed each year.",
+      segmentExplanations: [
+        "Thingyan water washes anger away — a fresh start for the new year.",
+        "Thadingyut candles honor grandparents and parents first.",
+        "Tazaungdaing balloons carry wishes for family health and peace."
+      ],
+      story: "Lin's village celebrated three festivals in one year. Each taught him something new.\n\nAt Thingyan, water washed anger away like mud in the street. At Thadingyut, he bowed to his grandparents with candles.\n\nAt Tazaungdaing, balloons rose into the night. Lin wished health for his family — festivals are promises renewed each year.",
       explainedStory: "An old monk once told travelers that Myanmar festivals follow the heart's seasons. Thingyan cleans. Thadingyut thanks. Tazaungdaing hopes.\n\nHe said a child who only wants candy at a festival learns sugar, but a child who watches monks receive offerings learns gratitude. A child who runs from water learns fear, but a child who shares a cup learns courage.\n\nPagoda visits, dancing, gifts, and lights — each word in this chapter names a piece of joy Myanmar people have guarded through war, rain, and time. To speak these words is to carry the festival forward.",
       tip: "Show photos or videos of Myanmar festivals if you have them. Name Thingyan, lights, and pagoda in English, then tap Myanmar on each card. Connect words to memories, not dates.",
       explainedTip: "Pick one festival tradition to act out at home — a small water blessing, lighting a safe candle, or making a paper balloon drawing — and say the festival words while you play.",
       explainedSentences: [
         { en: "Happy Thingyan!", mm: "သင်္ကြန်ပျော်ရွှင်ပါ!" },
-        { en: "We pour water with joy.", mm: "ရေလောင်းကြတယ် ပျော်ရွှင်စွာ။" },
+        { en: "We pour water with joy.", mm: "ပျော်ရွှင်စွာ ရေလောင်းကြတယ်။" },
         { en: "We visit the pagoda.", mm: "ဘုရားကို သွားကြတယ်။" },
         { en: "Candles shine at Thadingyut.", mm: "တန်ဆောင်တိုင်မှာ ဖယောင်းတိုင်လင်းတယ်။" },
         { en: "I give a gift to Grandma.", mm: "အဘွားကို လက်ဆောင်ပေးတယ်။" },
         { en: "Balloons rise at night.", mm: "ညမှာ မီးပုံးပျံ လွှတ်တယ်။" },
         { en: "We dance together.", mm: "အတူတူ ကပြတယ်။" },
-        { en: "Monks bless our family.", mm: "ရဟန်းက ကျွန်တော်တို့ မိသားစုကို ကျေးဇူးပြုတယ်။" },
-        { en: "Happy New Year!", mm: "နှစ်သစ်မှ ပျော်ရွှင်ပါ!" },
-        { en: "Let's celebrate!", mm: "ပျော်မွေ့ကြရအောင်!" }
+        { en: "Monks bless our family.", mm: "ရဟန်းက ကျွန်တော်တို့ မိသားစုကို ကောင်းချီးပေးတယ်။" },
+        { en: "Happy New Year!", mm: "နှစ်သစ်ကူး ပျော်ရွှင်ပါ!" },
+        { en: "Let's celebrate!", mm: "ပျော်ကြရအောင်!" }
       ],
       parentPhrase: { en: "Happy Thingyan!", mm: "သင်္ကြန်ပျော်ရွှင်ပါ!" },
       quizQuestions: [
@@ -959,15 +1009,16 @@
         { en: "Balloon", mm: "မီးပုံးပျံ", emoji: "🎈", hint: "mi-pone-pyan" },
         { en: "Dance", mm: "က", emoji: "💃", hint: "ka" },
         { en: "Gift", mm: "လက်ဆောင်", emoji: "🎁", hint: "let-saung" },
-        { en: "Celebrate", mm: "ပျော်မွေ့", emoji: "🎉", hint: "pyaw-mway", useEn: "Let's celebrate!", useMm: "ပျော်မွေ့ကြရအောင်!" },
-        { en: "New Year", mm: "နှစ်သစ်", emoji: "🎊", hint: "hnit-thit", useEn: "Happy New Year!", useMm: "နှစ်သစ်မှ ပျော်ရွှင်ပါ!" },
+        { en: "Celebrate", mm: "အခမ်းအနား", emoji: "🎉", hint: "a-khan-a-na", useEn: "Let's celebrate!", useMm: "ပျော်ကြရအောင်!" },
+        { en: "New Year", mm: "နှစ်သစ်ကူး", emoji: "🎊", hint: "hnit-thit-ku", useEn: "Happy New Year!", useMm: "နှစ်သစ်ကူး ပျော်ရွှင်ပါ!" },
         { en: "Offering", mm: "ပွဲတော်", emoji: "🙏", hint: "pe-daw", useEn: "We give offerings.", useMm: "ပွဲတော်တင်ကြတယ်။" },
-        { en: "Monk", mm: "ရဟန်း", emoji: "🧘", hint: "ya-han", useEn: "The monk blesses us.", useMm: "ရဟန်းက ကျေးဇူးပြုပါတယ်။" }
+        { en: "Monk", mm: "ရဟန်း", emoji: "🧘", hint: "ya-han", useEn: "The monk blesses us.", useMm: "ရဟန်းက ကျွန်တော်တို့ကို ကောင်းချီးပေးပါတယ်။" }
       ]
     }
   ];
 
   w.MM_CHAPTERS = CHAPTERS;
+  w.MM_QUIZ_OPPONENT = { name: "Professor M", icon: "👩‍🏫" };
   w.MM_BOOK = {
     title: "My First 100 Myanmar Words",
     author: "Jimmy Cooper",

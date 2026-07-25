@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Numbers — Sentences</title>
+<link rel="stylesheet" href="_mmwords-theme.css">
+<style>.container{max-width:680px;margin:0 auto;padding:22px 18px 36px;position:relative;z-index:1;}
+.explained-page{overflow:hidden;}
+body.explained-page{padding:8px;}
+@media(min-width:768px){body.explained-page{padding:10px 12px;}}
+.explained-page .manuscript-bg,.explained-page .container{
+  height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+}
+.explained-page .manuscript-bg{width:100%;align-items:stretch;}
+.explained-page .container{max-width:100%;width:100%;margin:0;padding:10px 18px 8px;}</style>
+<script src="_mmwords-player.js"></script>
+<script src="_mmwords-data.js"></script>
+<script src="_mmwords-games.js"></script>
+</head>
+<body class="explained-page">
+<div class="manuscript-bg">
+<div class="container">
+  <div class="top-bar">
+    <h1>Sentences</h1>
+  </div>
+  
+  <div class="wizard-shell pyramid-wizard card" id="pyramid-wizard" data-groups="10">
+    <div class="pyramid-wizard-head">
+      <span class="wizard-progress-text" id="pw-progress">Group 1 of 10</span>
+      <div class="wizard-dots pyramid-wizard-dots pyramid-group-dots" id="pw-group-dots"><button type="button" class="wizard-dot pyramid-group-dot" data-group="0" aria-label="Word group 1"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="1" aria-label="Word group 2"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="2" aria-label="Word group 3"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="3" aria-label="Word group 4"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="4" aria-label="Word group 5"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="5" aria-label="Word group 6"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="6" aria-label="Word group 7"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="7" aria-label="Word group 8"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="8" aria-label="Word group 9"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="9" aria-label="Word group 10"></button></div>
+    </div>
+    <div class="pyramid-wizard-stage">
+      <div class="classroom-scene">
+        <div class="classroom-room">
+          <div class="classroom-wall">
+            <div class="wb-frame-outer">
+              <span class="wb-screw wb-screw-l" aria-hidden="true"></span>
+              <span class="wb-screw wb-screw-r" aria-hidden="true"></span>
+              <div class="wb-frame-inner">
+                <div class="wb-surface">
+                  <div class="whiteboard-content-stack">
+        <div class="wizard-panel pyramid-group-panel active" id="pw-group-0" data-sentence="1" data-group="0" data-topic="Count one mango, one egg, or one finger at a time.">
+          <p class="whiteboard-heading">One</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is one.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is one." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက တစ်ပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက တစ်ပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">One mango.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="One mango." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">သရက်သီး တစ်လုံး။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="သရက်သီး တစ်လုံး။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">One egg.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="One egg." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဥ တစ်လုံး။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဥ တစ်လုံး။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-1" data-sentence="2" data-group="1" data-topic="Two cups of tea, two friends, two hands to clap.">
+          <p class="whiteboard-heading">Two</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is two.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is two." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက နှစ်ပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက နှစ်ပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Two cups of tea.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Two cups of tea." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">လက်ဖက်ရည် နှစ်ခွက်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="လက်ဖက်ရည် နှစ်ခွက်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Two friends.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Two friends." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">သူငယ်ချင်း နှစ်ယောက်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="သူငယ်ချင်း နှစ်ယောက်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-2" data-sentence="3" data-group="2" data-topic="Three birds, three bowls, three steps — count slowly.">
+          <p class="whiteboard-heading">Three</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is three.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is three." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက သုံးပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက သုံးပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Three monks walk by.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Three monks walk by." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ရဟန်း သုံးပါး လျှောက်သွားတယ်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ရဟန်း သုံးပါး လျှောက်သွားတယ်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Three eggs.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Three eggs." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဥ သုံးလုံး။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဥ သုံးလုံး။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-3" data-sentence="4" data-group="3" data-topic="Four friends can share fruit at snack time.">
+          <p class="whiteboard-heading">Four</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is four.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is four." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက လေးပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက လေးပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Four friends share fruit.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Four friends share fruit." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">သူငယ်ချင်း လေးယောက် သစ်သီး မျှကြတယ်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="သူငယ်ချင်း လေးယောက် သစ်သီး မျှကြတယ်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Four chairs.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Four chairs." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ထိုင်ခုံ လေးခု။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ထိုင်ခုံ လေးခု။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-4" data-sentence="5" data-group="4" data-topic="Five candles glow at Thadingyut festival.">
+          <p class="whiteboard-heading">Five</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is five.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is five." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက ငါးပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက ငါးပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Five candles for Grandma.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Five candles for Grandma." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">အဘွားအတွက် ဖယောင်းတိုင် ငါးတိုင်း။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="အဘွားအတွက် ဖယောင်းတိုင် ငါးတိုင်း။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Five fingers.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Five fingers." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">လက်ချောင်း ငါးချောင်း။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="လက်ချောင်း ငါးချောင်း။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-5" data-sentence="6" data-group="5" data-topic="Six eggs fit neatly in a market basket.">
+          <p class="whiteboard-heading">Six</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is six.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is six." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက ခြောက်ပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက ခြောက်ပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Six eggs in the basket.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Six eggs in the basket." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ခြင်းထဲမှာ ဥ ခြောက်လုံး။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ခြင်းထဲမှာ ဥ ခြောက်လုံး။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Six mangoes.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Six mangoes." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">သရက်သီး ခြောက်လုံး။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="သရက်သီး ခြောက်လုံး။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-6" data-sentence="7" data-group="6" data-topic="Seven days make one week.">
+          <p class="whiteboard-heading">Seven</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is seven.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is seven." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက ခုနစ်ပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက ခုနစ်ပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Seven days in a week.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Seven days in a week." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">တစ်ပတ်မှာ ခုနစ်ရက် ရှိတယ်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="တစ်ပတ်မှာ ခုနစ်ရက် ရှိတယ်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Seven birds.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Seven birds." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ငှက် ခုနစ်ကောင်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ငှက် ခုနစ်ကောင်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-7" data-sentence="8" data-group="7" data-topic="Eight birds sometimes rest on a village roof.">
+          <p class="whiteboard-heading">Eight</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is eight.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is eight." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက ရှစ်ပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက ရှစ်ပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Eight birds on the roof.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Eight birds on the roof." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">အမိုးပေါ်မှာ ငှက် ရှစ်ကောင်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="အမိုးပေါ်မှာ ငှက် ရှစ်ကောင်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Eight cups of tea.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Eight cups of tea." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">လက်ဖက်ရည် ရှစ်ခွက်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="လက်ဖက်ရည် ရှစ်ခွက်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-8" data-sentence="9" data-group="8" data-topic="Nine flowers can decorate a pagoda offering.">
+          <p class="whiteboard-heading">Nine</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is nine.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is nine." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက ကိုးပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက ကိုးပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Nine flowers for the pagoda.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Nine flowers for the pagoda." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဘုရားအတွက် ပန်း ကိုးပွင့်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဘုရားအတွက် ပန်း ကိုးပွင့်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Nine mangoes.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Nine mangoes." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">သရက်သီး ကိုးလုံး။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="သရက်သီး ကိုးလုံး။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div>
+        <div class="wizard-panel pyramid-group-panel" id="pw-group-9" data-sentence="10" data-group="9" data-topic="Ten fingers are perfect for counting aloud.">
+          <p class="whiteboard-heading">Ten</p>
+          <div class="whiteboard-lines">
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">This is ten.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="This is ten." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">ဒါက တဆယ်ပါ။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="ဒါက တဆယ်ပါ။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Ten fingers!</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Ten fingers!" onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">လက်ချောင်း ဆယ်ချောင်း!</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="လက်ချောင်း ဆယ်ချောင်း!" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div>
+        <div class="wb-sentence-pair">
+          
+            <div class="wb-line wb-line-en">
+              <span class="wb-text wb-text-en">Ten fingers to count with.</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-en" data-en="Ten fingers to count with." onclick="tapPhrase(this,'en')" aria-label="Hear English">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+          
+            <div class="wb-line wb-line-mm">
+              <span class="wb-text wb-text-mm">လက်ချောင်းဆယ်ချောင်းနဲ့ ရေတွက်မယ်။</span>
+              <button type="button" class="wb-speak-btn btn-speak speak-btn-mm" data-mm="လက်ချောင်းဆယ်ချောင်းနဲ့ ရေတွက်မယ်။" onclick="tapPhrase(this,'mm')" aria-label="Hear Myanmar">
+                <span class="wb-speak-icon">🔊</span>
+              </button>
+            </div>
+        </div></div>
+        </div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="classroom-floor">
+            <div class="classroom-pots-row" aria-hidden="true"><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pyramid-wizard-foot">
+      <div class="sentences-control-bar">
+        <button type="button" class="wizard-btn wizard-btn-back" id="pw-back">← Back</button>
+        <p class="sentences-hint">Tap 🔊 · Read aloud</p>
+        <button type="button" class="wizard-btn wizard-btn-next" id="pw-next">Next →</button>
+      </div>
+      <div class="wizard-topic-foot" id="pw-topic-foot">
+        <span class="topic-foot-emoji" aria-hidden="true">🔢</span>
+        <p class="topic-foot-text" id="pw-topic-text">Count one mango, one egg, or one finger at a time.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var wizard = document.getElementById('pyramid-wizard');
+  if (!wizard) return;
+  var panels = wizard.querySelectorAll('.pyramid-group-panel');
+  var back = document.getElementById('pw-back');
+  var next = document.getElementById('pw-next');
+  var progress = document.getElementById('pw-progress');
+  var groupDots = wizard.querySelectorAll('.pyramid-group-dot');
+  var topicText = document.getElementById('pw-topic-text');
+  var groupIdx = 0;
+  var totalGroups = panels.length;
+
+  function fitWhiteboard() {
+    var surface = wizard.querySelector('.wb-surface');
+    var stack = wizard.querySelector('.whiteboard-content-stack');
+    if (!surface || !stack) return;
+    var panel = stack.querySelector('.pyramid-group-panel.active');
+    stack.style.transform = '';
+    if (!panel) return;
+    var available = surface.clientHeight - 12;
+    var needed = panel.scrollHeight;
+    if (needed > available && available > 0) {
+      var scale = Math.max(0.78, available / needed);
+      stack.style.transform = 'scale(' + scale + ')';
+      stack.style.transformOrigin = 'top center';
+    }
+  }
+
+  function updateUI() {
+    panels.forEach(function(p, i) { p.classList.toggle('active', i === groupIdx); });
+    groupDots.forEach(function(d, i) {
+      d.classList.toggle('active', i === groupIdx);
+      d.classList.toggle('done', i < groupIdx);
+    });
+    progress.textContent = 'Group ' + (groupIdx + 1) + ' of ' + totalGroups;
+    back.disabled = groupIdx === 0;
+    next.textContent = groupIdx === totalGroups - 1 ? 'Finish ✓' : 'Next →';
+    if (topicText && panels[groupIdx]) {
+      topicText.textContent = panels[groupIdx].getAttribute('data-topic') || '';
+    }
+    requestAnimationFrame(fitWhiteboard);
+  }
+
+  back.addEventListener('click', function() {
+    if (groupIdx > 0) {
+      groupIdx--;
+      updateUI();
+    }
+  });
+
+  next.addEventListener('click', function() {
+    if (groupIdx < totalGroups - 1) {
+      groupIdx++;
+      updateUI();
+    }
+  });
+
+  groupDots.forEach(function(d) {
+    d.addEventListener('click', function() {
+      groupIdx = parseInt(d.getAttribute('data-group'), 10);
+      updateUI();
+    });
+  });
+
+  updateUI();
+  window.addEventListener('resize', fitWhiteboard);
+});
+</script>
+</body></html>

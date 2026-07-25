@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My First 100 Myanmar Words - Congratulations</title>
+<link rel="stylesheet" href="_mmwords-theme.css">
+<script src="_mmwords-player.js"></script>
+</head>
+<body>
+<div class="manuscript-bg">
+<div class="scroll-wrap congrats-wrap">
+  <div class="congrats-card">
+    <div class="congrats-trophy">🎉</div>
+    <h1 class="page-title">Congratulations!</h1>
+    <p>You finished <strong>My First 100 Myanmar Words</strong>.</p>
+    <div class="congrats-name" id="userName">Friend</div>
+    <p>You kept Myanmar alive — one story, one word, one smile at a time.</p>
+    <p style="margin-top:12px;font-size:15px;color:var(--text-muted);">Tap below to hear thank you in Myanmar — spoken, not written on screen.</p>
+    <button type="button" class="btn-primary" style="margin-top:16px;max-width:280px;" id="hearBtn">🔊 Hear thank you</button>
+    <div class="nav-hint" style="margin-top:20px;">Share your badges with family · Stage 2 storybooks coming soon!</div>
+  </div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var n = MMPlayer.getUserName();
+  var c = MMPlayer.getCharacter();
+  document.getElementById('userName').textContent = (c || '') + ' ' + (n || 'Friend');
+  document.getElementById('hearBtn').addEventListener('click', function(){
+    if (window.MMAudio) MMAudio.speak('Thank you very much','en-US');
+    if (window.MMAudio) setTimeout(function(){ MMAudio.speakMyanmar('ကျေးဇူးတင်ပါတယ်','kyay-zu tin-ba-de'); }, 1200);
+  });
+});
+</script>
+</body>
+</html>

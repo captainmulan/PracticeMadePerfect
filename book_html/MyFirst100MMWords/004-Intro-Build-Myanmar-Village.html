@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My First 100 Myanmar Words - Build Myanmar Village</title>
+  <style>
+    .petals{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(4px 4px at 50px 70px,rgba(201,162,39,0.22),transparent),radial-gradient(3px 3px at 120px 40px,rgba(139,37,37,0.15),transparent);background-size:900px 150px;animation:drift 12s ease-in-out infinite;}
+    @keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',Georgia,system-ui,sans-serif;background:linear-gradient(180deg,#87CEEB,#FDF8F0 45%,#C9E4CA 70%,#6B8E4E);color:#2C1810;min-height:100vh;}
+    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+    .title{text-align:center;font-size:24px;color:#8B2525;margin:6px 0 4px;}
+    .game-desc{text-align:center;color:#5C4033;font-size:14px;margin-bottom:8px;line-height:1.5;padding:0 8px;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;padding:8px;background:rgba(74,14,14,0.12);border-radius:14px;border:1px solid rgba(201,162,39,0.35);}
+    .stamp-btn{width:52px;height:52px;border:2px solid rgba(201,162,39,0.45);border-radius:14px;background:rgba(253,248,240,0.85);font-size:28px;cursor:pointer;touch-action:manipulation;transition:.15s;}
+    .stamp-btn.selected{border-color:#8B2525;background:rgba(139,37,37,0.12);box-shadow:0 0 16px rgba(201,162,39,0.45);transform:scale(1.06);}
+    .stamp-btn:active{transform:scale(.96);}
+    .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+    .tool-btn{padding:8px 14px;border:none;border-radius:10px;background:rgba(139,37,37,0.12);color:#2C1810;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid rgba(201,162,39,0.4);}
+    .tool-btn:active{transform:scale(.97);}
+    .stage-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;}
+    .game-stage{position:relative;flex:1 1 auto;min-height:min(52vh,420px);border:2px solid rgba(201,162,39,0.55);border-radius:16px;overflow:hidden;background:#7CB342;touch-action:none;cursor:crosshair;}
+    canvas{display:block;width:100%;height:100%;}
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(44,24,16,0.88);text-align:center;padding:18px;z-index:5;}
+    .overlay h3{color:#E8C547;font-size:22px;margin-bottom:8px;}
+    .overlay p{color:#FDF8F0;font-size:14px;line-height:1.55;margin-bottom:14px;max-width:320px;}
+    .btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#C9A227,#8B2525);color:#FDF8F0;font-size:15px;font-weight:bold;cursor:pointer;}
+    .nav-hint{margin-top:10px;text-align:center;font-size:13px;color:#5C4033;background:rgba(201,162,39,0.15);padding:10px;border-radius:10px;flex-shrink:0;}
+    body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}
+    html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}
+    body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
+    body.big-game-page:has(.game-shell) .stage-wrap{flex:1 1 auto!important;min-height:0!important;}
+    body.big-game-page:has(.game-shell) .game-stage{flex:1 1 auto!important;min-height:0!important;max-height:none!important;aspect-ratio:unset!important;}
+  </style>
+  <script src="_mmwords-player.js"></script>
+</head>
+<body class="big-game-page">
+<div class="petals"></div>
+<div class="game-shell">
+  <h1 class="title">🏘️ Build Myanmar Village</h1>
+  <p class="game-desc">Pick houses, pagodas, trees, and animals — tap the scene to stamp your village. No timer, just calm Myanmar countryside vibes.</p>
+
+  <div class="stamp-row" id="stampRow">
+    <button type="button" class="stamp-btn selected" data-emoji="🏠" title="House">🏠</button>
+    <button type="button" class="stamp-btn" data-emoji="🛕" title="Pagoda">🛕</button>
+    <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
+    <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
+    <button type="button" class="stamp-btn" data-emoji="🐔" title="Chicken">🐔</button>
+    <button type="button" class="stamp-btn" data-emoji="👨‍👩‍👧" title="Family">👨‍👩‍👧</button>
+    <button type="button" class="stamp-btn" data-emoji="🍚" title="Rice">🍚</button>
+    <button type="button" class="stamp-btn" data-emoji="🌸" title="Flower">🌸</button>
+    <button type="button" class="stamp-btn" data-emoji="🪴" title="Plant">🪴</button>
+    <button type="button" class="stamp-btn" data-emoji="☀️" title="Sun">☀️</button>
+  </div>
+  <div class="tool-row">
+    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnClear">🧹 Clear Village</button>
+    <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="game-stage" id="stage">
+      <canvas id="gameCanvas"></canvas>
+      <div class="overlay" id="startScreen">
+        <h3>🌾 Welcome to Your Village!</h3>
+        <p>Choose a stamp above, then tap anywhere on the green land to place it. Build a peaceful Myanmar village — take your time!</p>
+        <button class="btn" type="button" id="btnStart">▶️ Start Building</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+<script>
+const STORAGE_KEY = 'book:myfirst100mmwords:intro-village';
+const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+const STATIC = /🏠|🛕|🌳|🪴|🌸|☀️|🍚/;
+const MOBILE = /🐘|🐔|👨‍👩‍👧/;
+let canvas, ctx, running = false, animId;
+let selectedEmoji = '🏠';
+let decorations = [];
+let floaters = [];
+
+function loadVillage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) decorations = JSON.parse(raw);
+  } catch (e) { decorations = []; }
+}
+
+function saveVillage() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(decorations)); } catch (e) {}
+}
+
+function resize() {
+  const stage = document.getElementById('stage');
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+  const w = stage.clientWidth;
+  const h = stage.clientHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.floor(w * dpr);
+  canvas.height = Math.floor(h * dpr);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function initFloaters(count) {
+  floaters = [];
+  for (let i = 0; i < count; i++) {
+    floaters.push({
+      x: Math.random() * 400,
+      y: Math.random() * 200,
+      r: 1.5 + Math.random() * 2.5,
+      speed: 0.15 + Math.random() * 0.35,
+      wobble: Math.random() * Math.PI * 2,
+    });
+  }
+}
+
+function drawEmoji(emoji, x, y, size, flipX) {
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.font = 'bold ' + size + 'px ' + FONT;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+  if (flipX && MOBILE.test(emoji)) {
+    ctx.translate(x, y);
+    ctx.scale(-1, 1);
+    ctx.fillText(emoji, 0, 0);
+  } else {
+    ctx.fillText(emoji, x, y);
+  }
+  ctx.restore();
+}
+
+function drawVillageBg(w, h, t) {
+  const sky = ctx.createLinearGradient(0, 0, 0, h * 0.62);
+  sky.addColorStop(0, '#87CEEB');
+  sky.addColorStop(0.55, '#FDF8F0');
+  sky.addColorStop(1, '#C9E4CA');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.fillStyle = 'rgba(107,142,78,0.35)';
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.48);
+  ctx.lineTo(w * 0.25, h * 0.38);
+  ctx.lineTo(w * 0.55, h * 0.44);
+  ctx.lineTo(w * 0.82, h * 0.36);
+  ctx.lineTo(w, h * 0.46);
+  ctx.lineTo(w, h * 0.62);
+  ctx.lineTo(0, h * 0.58);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = 'rgba(201,162,39,0.18)';
+  ctx.font = 'bold 28px ' + FONT;
+  ctx.textAlign = 'center';
+  ctx.fillText('🛕', w * 0.78, h * 0.34);
+
+  const groundTop = h - 48;
+  const field = ctx.createLinearGradient(0, groundTop, 0, h);
+  field.addColorStop(0, '#8BC34A');
+  field.addColorStop(0.4, '#689F38');
+  field.addColorStop(1, '#558B2F');
+  ctx.fillStyle = field;
+  ctx.fillRect(0, groundTop, w, h - groundTop);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 6; i++) {
+    const y = groundTop + 8 + i * 7;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#A1887F';
+  ctx.fillRect(w * 0.08, groundTop + 6, w * 0.18, 10);
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.fillRect(0, groundTop, w, 4);
+
+  floaters.forEach(f => {
+    f.y -= f.speed;
+    f.x += Math.sin(t * 0.0015 + f.wobble) * 0.3;
+    if (f.y < h * 0.08) { f.y = h * 0.55; f.x = Math.random() * w; }
+    ctx.fillStyle = 'rgba(232,197,71,0.35)';
+    ctx.beginPath();
+    ctx.arc(f.x % w, f.y, f.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function itemKind(emoji) {
+  if (MOBILE.test(emoji)) return 'mobile';
+  if (STATIC.test(emoji)) return 'static';
+  return 'static';
+}
+
+function updateCount() {
+  document.getElementById('countLabel').textContent = '🎨 ' + decorations.length + ' item' + (decorations.length === 1 ? '' : 's');
+}
+
+function loop(t) {
+  if (!running) return;
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  drawVillageBg(w, h, t);
+
+  decorations.forEach(d => {
+    const bob = Math.sin(t * 0.002 + d.phase) * (d.kind === 'static' ? 1.5 : 4);
+    let drift = 0;
+    let flip = false;
+    if (d.kind === 'mobile') {
+      const phase = t * 0.001 + d.phase;
+      drift = Math.sin(phase) * 6;
+      flip = Math.cos(phase) * 0.001 * 6 < 0;
+    }
+    drawEmoji(d.emoji, d.x + drift, d.y + bob, d.size, flip);
+  });
+
+  animId = requestAnimationFrame(loop);
+}
+
+function placeAt(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  const x = clientX - r.left;
+  const y = clientY - r.top;
+  if (y > r.height - 40) return;
+  const kind = itemKind(selectedEmoji);
+  decorations.push({
+    emoji: selectedEmoji,
+    x: x,
+    y: y,
+    size: kind === 'static' ? 26 + Math.random() * 12 : 28 + Math.random() * 14,
+    phase: Math.random() * Math.PI * 2,
+    kind: kind,
+  });
+  saveVillage();
+  updateCount();
+}
+
+function startBuilding() {
+  document.getElementById('startScreen').style.display = 'none';
+  running = true;
+  loop(0);
+}
+
+document.getElementById('btnStart').onclick = startBuilding;
+
+document.querySelectorAll('.stamp-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedEmoji = btn.dataset.emoji;
+  });
+});
+
+document.getElementById('btnUndo').onclick = () => {
+  if (!decorations.length) return;
+  decorations.pop();
+  saveVillage();
+  updateCount();
+};
+
+document.getElementById('btnClear').onclick = () => {
+  decorations = [];
+  saveVillage();
+  updateCount();
+};
+
+function bindTap() {
+  const hit = e => {
+    if (document.getElementById('startScreen').style.display !== 'none') return;
+    const p = e.touches ? e.touches[0] : e;
+    placeAt(p.clientX, p.clientY);
+  };
+  canvas.addEventListener('click', hit);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+}
+
+loadVillage();
+resize();
+initFloaters(18);
+updateCount();
+bindTap();
+window.addEventListener('resize', resize);
+
+(function fitGameFrame() {
+  function fit() {
+    const h = window.innerHeight + 'px';
+    document.documentElement.style.height = h;
+    document.body.style.height = h;
+    const shell = document.querySelector('.game-shell');
+    if (shell) shell.style.minHeight = h;
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
+</body>
+</html>

@@ -5,21 +5,18 @@
 
   w.MMPlayer = {
     getUserName: function () {
-      return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Friend";
+      return localStorage.getItem(key("userName")) || "Explorer";
     },
     getCharacter: function () {
-      return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🧒";
+      return localStorage.getItem(key("userCharacter")) || "🧒";
     },
     getCharacterName: function () {
-      return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Learner";
+      return localStorage.getItem(key("characterName")) || "Learner";
     },
     save: function (name, character, characterName) {
       localStorage.setItem(key("userName"), name);
       localStorage.setItem(key("userCharacter"), character);
       if (characterName != null) localStorage.setItem(key("characterName"), characterName);
-      localStorage.setItem("userName", name);
-      localStorage.setItem("userCharacter", character);
-      if (characterName != null) localStorage.setItem("characterName", characterName);
     },
     getBadges: function () {
       try { return JSON.parse(localStorage.getItem(key("badges")) || "[]"); }
@@ -53,20 +50,36 @@
   var myanmarVoice = null;
   var englishVoice = null;
 
+  function isFemaleVoice(v) {
+    if (!v) return false;
+    if (v.gender === "female") return true;
+    return /female|woman|girl|zira|samantha|karen|heera|priya|hazel|susan|aria|jenny|natasha|xiaoxiao|xiaoyi/i.test(v.name || "");
+  }
+
+  function isMyanmarVoice(v) {
+    var lang = (v.lang || "").toLowerCase();
+    var name = (v.name || "").toLowerCase();
+    return lang.indexOf("my") === 0 || name.indexOf("myanmar") >= 0 || name.indexOf("burmese") >= 0;
+  }
+
+  function pickVoice(voices, matcher, preferFemale) {
+    var matches = voices.filter(matcher);
+    if (!matches.length) return null;
+    if (preferFemale) {
+      var female = matches.filter(isFemaleVoice);
+      if (female.length) return female[0];
+    }
+    return matches[0];
+  }
+
   function loadVoices() {
     if (!w.speechSynthesis) return;
     var voices = w.speechSynthesis.getVoices();
     if (!voices.length) return;
-    myanmarVoice = null;
-    englishVoice = null;
-    voices.forEach(function (v) {
-      var lang = (v.lang || "").toLowerCase();
-      var name = (v.name || "").toLowerCase();
-      if (!myanmarVoice && (lang.indexOf("my") === 0 || name.indexOf("myanmar") >= 0 || name.indexOf("burmese") >= 0)) {
-        myanmarVoice = v;
-      }
-      if (!englishVoice && lang.indexOf("en") === 0) englishVoice = v;
-    });
+    myanmarVoice = pickVoice(voices, isMyanmarVoice, true);
+    englishVoice = pickVoice(voices, function (v) {
+      return (v.lang || "").toLowerCase().indexOf("en") === 0;
+    }, true);
   }
 
   function resumeSynth() {
@@ -95,7 +108,7 @@
 
   function googleTtsUrl(text, lang, mirror) {
     var q = encodeURIComponent(text);
-    if (mirror === 1) {
+    if (mirror === 0) {
       return "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lang + "&q=" + q;
     }
     return "https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=" + lang + "&q=" + q;
@@ -104,7 +117,7 @@
   function playGoogleTts(text, lang, mirror, gen, onok, onfail) {
     if (isStale(gen)) return;
     var a = new Audio(googleTtsUrl(text, lang, mirror));
-    a.playbackRate = 1.18;
+    a.playbackRate = 0.96;
     a.volume = 1;
     currentAudio = a;
     a.onended = function () {
@@ -135,8 +148,8 @@
     resumeSynth();
     var u = new SpeechSynthesisUtterance(text);
     u.lang = lang || "en-US";
-    u.rate = lang && lang.indexOf("my") === 0 ? 0.95 : 1.0;
-    u.pitch = 1;
+    u.rate = lang && lang.indexOf("my") === 0 ? 0.9 : 1.0;
+    u.pitch = voice && isFemaleVoice(voice) ? 1.02 : 1.08;
     if (voice) u.voice = voice;
     u.onend = function () { if (!isStale(gen) && onend) onend(); };
     u.onerror = function () { if (!isStale(gen) && onend) onend(); };
@@ -146,14 +159,18 @@
   function playMyanmar(text, hint, onend) {
     var gen = speakGen;
     loadVoices();
-    /* Google TTS is usually clearer for Myanmar on most devices */
+    /* Prefer a local female Myanmar voice when available — warmer tone for kids */
+    if (myanmarVoice) {
+      speakSynth(text, "my-MM", myanmarVoice, gen, function () {
+        if (!isStale(gen) && onend) onend();
+      });
+      return;
+    }
     playGoogleTts(text, "my", 0, gen, function () {
       if (!isStale(gen) && onend) onend();
     }, function () {
       if (isStale(gen)) return;
-      if (myanmarVoice) {
-        speakSynth(text, "my-MM", myanmarVoice, gen, onend);
-      } else if (hint) {
+      if (hint) {
         speakSynth(hint, "en-US", englishVoice, gen, onend);
       } else if (onend) onend();
     });
@@ -162,7 +179,11 @@
   w.MMAudio = {
     init: function () {
       loadVoices();
-      if (w.speechSynthesis) w.speechSynthesis.onvoiceschanged = loadVoices;
+      if (w.speechSynthesis) {
+        w.speechSynthesis.onvoiceschanged = loadVoices;
+        setTimeout(loadVoices, 300);
+        setTimeout(loadVoices, 1200);
+      }
       document.addEventListener("click", resumeSynth, true);
       document.addEventListener("touchstart", resumeSynth, true);
     },
@@ -173,6 +194,7 @@
     speakMyanmar: function (text, hint, onend) {
       if (!text) { if (onend) onend(); return; }
       stopAll();
+      loadVoices();
       playMyanmar(text, hint, onend);
     },
 

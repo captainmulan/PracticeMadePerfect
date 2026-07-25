@@ -4,7 +4,6 @@ Drop PNG or JPG files here, then run:
 
 ```bash
 node scripts/gen_chapter_images.cjs
-node scripts/gen_overview_images.cjs   # overview-story1..3 only
 node _generate-book.cjs
 ```
 
@@ -23,14 +22,6 @@ node _generate-book.cjs
 | `{id}-exp1.png` | Deeper tale part 1 |
 | `{id}-exp2.png` | Deeper tale part 2 |
 | `{id}-exp3.png` | Deeper tale part 3 |
-
-## Overview (005)
-
-| File | Chapter |
-|------|---------|
-| `overview-story1.png` | The Girl Who Listened at Dawn |
-| `overview-story2.png` | The Teacher Under the Banyan Tree |
-| `overview-story3.png` | The Four Friends |
 
 ## Chapter IDs
 
