@@ -810,8 +810,37 @@ html:has(body.main-chapter-page){
   display:block;
 }
 @media(min-width:768px){
+  .main-chapter-page .chapter-panel-inner{
+    grid-template-rows:minmax(0,1.3fr) auto auto;
+  }
+  .main-chapter-page .chapter-scene{
+    height:100%;
+    min-height:0;
+  }
+  .main-chapter-page .chapter-scene .scene-wrap{
+    height:100%;
+  }
+  .main-chapter-page .chapter-scene .scene-card-hero,
+  .main-chapter-page .chapter-scene .chapter-photo-hero{
+    height:100%;
+    min-height:min(34dvh,300px);
+  }
   .main-chapter-page .chapter-scene .chapter-hero-img{
-    max-height:min(46dvh,400px);
+    height:100%;
+    max-height:none;
+    min-height:min(34dvh,300px);
+    object-fit:cover;
+    object-position:center top;
+  }
+}
+@media(min-width:768px) and (orientation:portrait){
+  .main-chapter-page .chapter-panel-inner{
+    grid-template-rows:minmax(0,1.45fr) auto auto;
+  }
+  .main-chapter-page .chapter-scene .scene-card-hero,
+  .main-chapter-page .chapter-scene .chapter-photo-hero,
+  .main-chapter-page .chapter-scene .chapter-hero-img{
+    min-height:min(40dvh,440px);
   }
 }
 .story-row{
