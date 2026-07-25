@@ -717,6 +717,7 @@ html:has(body.main-chapter-page){
   flex-direction:column;
   overflow:hidden;
   padding:8px 14px 10px;
+  --chapter-pad-x:14px;
 }
 .main-chapter-page .top-bar{
   flex-shrink:0;
@@ -771,44 +772,47 @@ html:has(body.main-chapter-page){
   min-height:0;
   height:100%;
   display:grid;
-  grid-template-rows:minmax(0,1.6fr) auto auto;
+  grid-template-rows:auto auto minmax(0,1fr);
   gap:8px;
   width:100%;
 }
-.chapter-scene{margin-bottom:0;min-height:0;height:100%;}
+.chapter-scene{margin-bottom:0;min-height:0;height:auto;}
 .main-chapter-page .chapter-scene{
-  margin:0 -14px;
-  width:calc(100% + 28px);
+  margin:0 calc(-1 * var(--chapter-pad-x, 14px));
+  width:calc(100% + 2 * var(--chapter-pad-x, 14px));
 }
 .main-chapter-page .chapter-scene .scene-wrap{
   width:100%;
-  height:100%;
+  height:auto;
   margin:0;
 }
 .main-chapter-page .chapter-scene .scene-card-hero,
 .main-chapter-page .chapter-scene .chapter-photo-hero{
   width:100%;
-  height:100%;
-  min-height:min(42dvh,360px);
+  height:auto;
+  min-height:0;
   max-height:none;
-  aspect-ratio:auto;
+  aspect-ratio:unset;
+  border:none;
   border-radius:0;
-  border-left:none;
-  border-right:none;
   box-shadow:none;
-  display:block;
-  background:#1a1008;
+  background:var(--palm);
   overflow:hidden;
+  line-height:0;
 }
 .main-chapter-page .chapter-scene .chapter-hero-img{
   width:100%;
-  height:100%;
-  min-height:min(42dvh,360px);
-  max-height:none;
-  aspect-ratio:auto;
-  object-fit:cover;
-  object-position:center;
+  height:auto;
+  max-height:min(40dvh,320px);
+  aspect-ratio:unset;
+  object-fit:contain;
+  object-position:center top;
   display:block;
+}
+@media(min-width:768px){
+  .main-chapter-page .chapter-scene .chapter-hero-img{
+    max-height:min(46dvh,400px);
+  }
 }
 .story-row{
   min-height:0;
@@ -896,11 +900,8 @@ html:has(body.main-chapter-page){
 }
 @media(orientation:landscape) and (max-height:900px){
   body.main-chapter-page{padding:4px;}
-  .main-chapter-page .container{padding:6px 10px 8px;}
-  .main-chapter-page .chapter-scene{margin:0 -10px;width:calc(100% + 20px);}
-  .main-chapter-page .chapter-scene .scene-card-hero,
-  .main-chapter-page .chapter-scene .chapter-photo-hero,
-  .main-chapter-page .chapter-scene .chapter-hero-img{min-height:min(34dvh,240px);}
+  .main-chapter-page .container{padding:6px 10px 8px;--chapter-pad-x:10px;}
+  .main-chapter-page .chapter-scene .chapter-hero-img{max-height:min(34dvh,240px);}
   .story-row .card{padding:10px;}
   .story-row .story-box{font-size:12px;line-height:1.45;}
   .story-teach-row .card{padding:10px;}
