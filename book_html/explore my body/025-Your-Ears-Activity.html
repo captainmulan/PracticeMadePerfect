@@ -1,233 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Explore My Body - Your Ears Activity</title>
-  <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-    body{
-      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
-      background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
-      color:#1565c0;
-      min-height:100vh;
-      position:relative;
-      overflow-x:hidden;
-    }
-    .hearts{
-      position:fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
-      pointer-events:none;
-      background-image:
-        radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.3),transparent),
-        radial-gradient(5px 5px at 80px 100px,rgba(233,30,99,0.2),transparent),
-        radial-gradient(3px 3px at 140px 50px,rgba(244,67,54,0.3),transparent),
-        radial-gradient(4px 4px at 200px 90px,rgba(233,30,99,0.2),transparent),
-        radial-gradient(3px 3px at 260px 70px,rgba(244,67,54,0.3),transparent),
-        radial-gradient(5px 5px at 320px 110px,rgba(233,30,99,0.2),transparent),
-        radial-gradient(3px 3px at 380px 50px,rgba(244,67,54,0.3),transparent),
-        radial-gradient(4px 4px at 440px 90px,rgba(233,30,99,0.2),transparent),
-        radial-gradient(3px 3px at 500px 60px,rgba(244,67,54,0.3),transparent),
-        radial-gradient(5px 5px at 560px 100px,rgba(233,30,99,0.2),transparent);
-      background-size:900px 150px;
-      animation:float 15s ease-in-out infinite;
-      z-index:0;
-    }
-    @keyframes float{
-      0%,100%{transform:translateY(0);}
-      50%{transform:translateY(-20px);}
-    }
-    .container{
-      max-width:640px;
-      margin:auto;
-      padding:32px 16px 40px;
-      position:relative;
-      z-index:1;
-    }
-    .header{
-      text-align:center;
-      margin-bottom:30px;
-    }
-    h1{
-      font-size:32px;
-      color:#ff6b6b;
-      margin-bottom:8px;
-    }
-    .subtitle{
-      color:#1976d2;
-      font-size:16px;
-    }
-    .card{
-      background:rgba(255,255,255,0.8);
-      backdrop-filter:blur(10px);
-      border-radius:20px;
-      padding:24px;
-      margin-bottom:16px;
-      border:2px solid rgba(255,107,107,0.3);
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-    }
-    .card h2{
-      color:#ff6b6b;
-      margin-bottom:12px;
-      font-size:22px;
-    }
-    .card p{
-      font-size:16px;
-      line-height:1.7;
-      margin-bottom:10px;
-      color:#1565c0;
-    }
-    .listen-section{
-      text-align:center;
-      margin:30px 0;
-    }
-    .ear-container{
-      width:180px;
-      height:180px;
-      margin:0 auto;
-      position:relative;
-    }
-    .ear{
-      width:100%;
-      height:100%;
-      font-size:140px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      transition:transform 0.3s ease;
-      user-select:none;
-    }
-    .ear:hover{
-      transform:scale(1.1);
-    }
-    .ear.listening{
-      animation:wiggle 0.8s ease-in-out;
-    }
-    @keyframes wiggle{
-      0%,100%{transform:rotate(0deg);}
-      25%{transform:rotate(-10deg);}
-      75%{transform:rotate(10deg);}
-    }
-    .listen-hint{
-      margin-top:12px;
-      font-size:14px;
-      color:#1976d2;
-    }
-    .fact-box{
-      background:rgba(255,193,7,0.2);
-      border-left:6px solid #ffc107;
-      padding:16px;
-      border-radius:12px;
-      margin-top:12px;
-    }
-    .fact-box h3{
-      color:#ffc107;
-      margin-bottom:8px;
-      font-size:18px;
-    }
-    .fact-box p{
-      font-size:15px;
-      line-height:1.6;
-      margin:0;
-      color:#1565c0;
-    }
-    .nav-hint{
-      margin-top:20px;
-      text-align:center;
-      font-size:13px;
-      color:#1976d2;
-      background:rgba(255,255,255,0.6);
-      padding:10px;
-      border-radius:10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore My Body - Your Ears Activity</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+  background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
+  color:#1565c0;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.hearts{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.25),transparent),
+    radial-gradient(3px 3px at 140px 50px,rgba(233,30,99,0.2),transparent),
+    radial-gradient(4px 4px at 260px 90px,rgba(244,67,54,0.2),transparent);
+  background-size:900px 150px;
+  animation:float 15s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.container{max-width:680px;margin:0 auto;padding:20px 16px 40px;position:relative;z-index:1;}
+.top-bar{text-align:center;margin-bottom:16px;}
+.top-bar h1{font-size:clamp(22px,5vw,30px);color:#ff6b6b;margin-bottom:6px;}
+.top-bar .subtitle{color:#1976d2;font-size:15px;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.pill{background:rgba(255,255,255,0.75);color:#1565c0;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;border:1px solid rgba(255,107,107,0.35);}
+.section{margin-bottom:8px;}
+.segment{margin-bottom:20px;}
+.scene-wrap{margin-bottom:8px;}
+.scene-card{border-radius:18px;border:2px solid rgba(255,107,107,0.35);background:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.12);overflow:hidden;}
+.scene-card-hero.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 160px),460px);}
+.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-placeholder{display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#1976d2;font-size:15px;background:#e3f2fd;}
+.card{background:rgba(255,255,255,0.88);border-radius:18px;padding:18px;margin-bottom:12px;border:2px solid rgba(255,107,107,0.25);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+.card h2{color:#ff6b6b;font-size:18px;margin-bottom:10px;}
+.card p,.card li{font-size:15px;line-height:1.7;color:#1565c0;}
+.story-box{background:rgba(227,242,253,0.9);border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.75;color:#0d47a1;border-left:4px solid #ff6b6b;}
+.explain-box{background:rgba(255,243,224,0.95);border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.7;color:#e65100;border-left:4px solid #ff9800;margin-top:10px;}
+.segment-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1976d2;margin-bottom:8px;}
+.game-section{background:rgba(255,255,255,0.92);border-radius:18px;padding:18px;margin-top:8px;border:2px solid rgba(255,107,107,0.35);box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+.game-section h2{color:#ff6b6b;font-size:18px;margin-bottom:8px;text-align:center;}
+.game-desc{text-align:center;color:#1976d2;font-size:14px;margin-bottom:12px;line-height:1.5;}
+.game-canvas{width:100%;height:min(42vh,280px);border-radius:14px;background:#1a237e;display:block;touch-action:none;border:2px solid rgba(255,107,107,0.3);}
+.game-start-btn{display:block;margin:10px auto 0;padding:10px 22px;border:none;border-radius:999px;background:#ff6b6b;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.nav-hint{margin-top:16px;text-align:center;font-size:12px;color:#1976d2;background:rgba(255,255,255,0.65);padding:12px;border-radius:12px;}
+.competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.85);border-radius:14px;padding:12px;margin-bottom:14px;border:2px solid rgba(255,107,107,0.3);}
+.competitor{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.competitor-icon{font-size:32px;}
+.competitor-name{font-size:12px;color:#1976d2;}
+.competitor-score{font-size:20px;font-weight:bold;color:#ff6b6b;}
+.vs-divider{font-size:18px;font-weight:bold;color:#ff9800;padding:0 8px;}
+.quiz-card{background:rgba(255,255,255,0.9);border-radius:14px;padding:16px;margin-bottom:10px;border:2px solid rgba(255,107,107,0.25);display:none;}
+.quiz-card.active{display:block;}
+.question{font-size:16px;font-weight:bold;margin-bottom:12px;color:#1565c0;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{padding:12px 14px;background:rgba(255,255,255,0.95);border:2px solid rgba(255,107,107,0.3);border-radius:10px;cursor:pointer;font-size:15px;color:#1565c0;transition:.15s;}
+.option:hover{background:rgba(255,107,107,0.1);border-color:#ff6b6b;}
+.option.correct{background:rgba(76,175,80,0.25);border-color:#4caf50;}
+.option.wrong{background:rgba(244,67,54,0.2);border-color:#f44336;}
+.feedback{margin-top:10px;padding:10px;border-radius:10px;font-size:14px;display:none;}
+.feedback.show{display:block;}
+.feedback.correct{background:rgba(76,175,80,0.2);color:#2e7d32;}
+.feedback.wrong{background:rgba(244,67,54,0.15);color:#c62828;}
+.score-card{background:linear-gradient(135deg,#fff9c4,#ffcc80);border-radius:20px;padding:20px;text-align:center;margin-top:16px;display:none;border:3px solid #ff9800;}
+.score-card.show{display:block;}
+.score-card h2{color:#e65100;font-size:22px;margin-bottom:12px;}
+.score-card .score{font-size:48px;font-weight:bold;color:#ff6b6b;}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-top:20px;height:120px;}
+.podium-place{text-align:center;flex:1;max-width:100px;}
+.podium-bar{border-radius:8px 8px 0 0;background:linear-gradient(180deg,#ff6b6b,#e53935);color:#fff;padding:8px 4px;font-size:12px;font-weight:bold;}
+.podium-place.first .podium-bar{height:90px;background:linear-gradient(180deg,#ffd700,#ff9800);}
+.podium-place.second .podium-bar{height:65px;background:linear-gradient(180deg,#b0bec5,#78909c);}
+.podium-place.third .podium-bar{height:45px;background:linear-gradient(180deg,#bcaaa4,#8d6e63);}
+body.big-chapter-page .container{padding-top:12px;}
+.scroll-cue{text-align:center;font-size:13px;color:#1976d2;padding:6px 0 12px;}
+</style>
+<script src="_body-player.js"></script>
+<script src="_body-data.js"></script>
+<script src="_body-chapter-images.js"></script>
+<script src="_body-scenes.js"></script>
+<script src="_body-games.js"></script>
 </head>
-<body>
+<body class="big-chapter-page">
 <div class="hearts"></div>
 <div class="container">
-  <div class="header">
-    <h1>👂 Your Ears Activity</h1>
-    <div class="subtitle">Tap the ear to discover facts!</div>
+  <div class="top-bar">
+    <h1>👂 Your Ears</h1>
+    <div class="subtitle">Picture · story · explanation × 3 · then mini game</div>
+    <div class="pill-row"><span class="pill">3 scenes</span><span class="pill">🎮 Game below</span></div>
   </div>
-
-  <div class="listen-section">
-    <div class="ear-container">
-      <div class="ear" id="ear" onclick="wiggleEar()">👂</div>
+  <p class="scroll-cue">Scroll — each section has its own picture, story, and explanation</p>
+  
+  <div class="segment">
+    <div class="segment-label">Learn · Catch the vibration</div>
+    <div class="scene-wrap">
+      <div id="scene-main-1" class="scene-card scene-card-hero chapter-photo-hero"></div>
     </div>
-    <div class="listen-hint">👆 Tap the ear to wiggle and learn facts!</div>
-  </div>
-
-  <div class="card">
-    <h2>🎯 Activity Instructions</h2>
-    <p>
-      Tap on the ear above to make it wiggle! Each time you tap it, you'll learn a new fun fact about your amazing ears.
-    </p>
-    <p>
-      Your ears help you hear sounds and keep your balance so you don't fall over!
-    </p>
-  </div>
-
-  <div class="card">
-    <h2>🔊 Quick Facts</h2>
-    <ul>
-      <li>Your ears can hear sounds from 20 to 20,000 Hz</li>
-      <li>Your smallest bone is in your ear</li>
-      <li>Your ears help you keep your balance</li>
-      <li>Your ears never stop working - even when you sleep</li>
-      <li>Your ears clean themselves naturally</li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <div class="fact-box">
-      <h3>💡 Challenge</h3>
-      <p>Try tapping the ear 5 times to learn all the facts!</p>
+    <div class="card">
+      <h2>📖 Catch the vibration</h2>
+      <div class="story-box">Maya strums a rubber-band guitar — the band wiggles, air wiggles, and her eardrum wiggles too. Ears turn vibrations into sounds she recognises.</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Sound is vibration travelling through air. The outer ear collects it; the eardrum and tiny bones pass it deeper inside.</div>
     </div>
   </div>
 
-<div class="nav-hint">
-  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
-  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
-</div>
+  <div class="segment">
+    <div class="segment-label">Learn · Three tiny bones</div>
+    <div class="scene-wrap">
+      <div id="scene-main-2" class="scene-card scene-card-hero chapter-photo-hero"></div>
+    </div>
+    <div class="card">
+      <h2>📖 Three tiny bones</h2>
+      <div class="story-box">Maya sees a model of the hammer, anvil, and stirrup — the smallest bones in the body — passing vibrations like a relay team.</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> These ossicles amplify sound from the eardrum to the cochlea — a spiral organ filled with fluid and hair cells.</div>
+    </div>
+  </div>
 
+  <div class="segment">
+    <div class="segment-label">Learn · Balance buddies</div>
+    <div class="scene-wrap">
+      <div id="scene-main-3" class="scene-card scene-card-hero chapter-photo-hero"></div>
+    </div>
+    <div class="card">
+      <h2>📖 Balance buddies</h2>
+      <div class="story-box">Spinning on a chair, Maya feels dizzy when she stops. Her inner ear also senses balance and movement, not just sound.</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Semicircular canals detect head rotation. Together with vision, they help you stay upright and coordinated.</div>
+    </div>
+  </div>
+  <div class="game-section">
+    <h2>🎮 Sound Match</h2>
+    <p class="game-desc">Match the sound icon to the correct source!</p>
+    <canvas id="gameCanvas" class="game-canvas"></canvas>
+    <button type="button" class="game-start-btn" id="gameStartBtn">Play again</button>
+  </div>
+  <div class="nav-hint"><div>💡 Use ← → in the top bar for the next chapter.</div><div>🏠 Home button returns to the library.</div></div>
 </div>
-
 <script>
-const earFacts = [
-  "Your ears can hear sounds from 20 to 20,000 Hertz!",
-  "Your smallest bone is in your ear - it's called the stapes!",
-  "Your ears help you keep your balance using the semicircular canals!",
-  "Your ears never stop working - they even hear while you sleep!",
-  "Your ears clean themselves naturally with earwax!",
-  "Your ears have three parts: outer, middle, and inner ear!",
-  "Your ears can tell where a sound is coming from!",
-  "Your ears continue to grow throughout your entire life!"
-];
-let factIndex = 0;
-let isWiggling = false;
-
-function wiggleEar() {
-  if (isWiggling) return;
-  
-  isWiggling = true;
-  const ear = document.getElementById('ear');
-  ear.classList.add('listening');
-  
-  setTimeout(() => {
-    ear.classList.remove('listening');
-    isWiggling = false;
-    alert("👂 " + earFacts[factIndex]);
-    factIndex = (factIndex + 1) % earFacts.length;
-  }, 800);
-}
+BodyScene.boot({ containerId: "scene-main-1", chapterId: "ears", slot: "main-1", title: "Your Ears" });
+BodyScene.boot({ containerId: "scene-main-2", chapterId: "ears", slot: "main-2", title: "Your Ears" });
+BodyScene.boot({ containerId: "scene-main-3", chapterId: "ears", slot: "main-3", title: "Your Ears" });
 </script>
-</body>
-</html>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  BodyGames.boot("ear-match", "gameCanvas");
+});
+</script>
+</body></html>

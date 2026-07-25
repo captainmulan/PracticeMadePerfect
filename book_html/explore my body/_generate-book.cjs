@@ -1,0 +1,315 @@
+#!/usr/bin/env node
+/* Generate activity / explained / quiz HTML for Explore My Body */
+const fs = require("fs");
+const path = require("path");
+const vm = require("vm");
+
+const DIR = __dirname;
+const sandbox = { window: {}, console };
+vm.runInNewContext(fs.readFileSync(path.join(DIR, "_body-data.js"), "utf8"), sandbox);
+const CHAPTERS = sandbox.window.BODY_CHAPTERS;
+
+const CSS = `
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+  background:linear-gradient(180deg,#e3f2fd 0%,#bbdefb 50%,#90caf9 100%);
+  color:#1565c0;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.hearts{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(4px 4px at 40px 60px,rgba(244,67,54,0.25),transparent),
+    radial-gradient(3px 3px at 140px 50px,rgba(233,30,99,0.2),transparent),
+    radial-gradient(4px 4px at 260px 90px,rgba(244,67,54,0.2),transparent);
+  background-size:900px 150px;
+  animation:float 15s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.container{max-width:680px;margin:0 auto;padding:20px 16px 40px;position:relative;z-index:1;}
+.top-bar{text-align:center;margin-bottom:16px;}
+.top-bar h1{font-size:clamp(22px,5vw,30px);color:#ff6b6b;margin-bottom:6px;}
+.top-bar .subtitle{color:#1976d2;font-size:15px;}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;}
+.pill{background:rgba(255,255,255,0.75);color:#1565c0;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;border:1px solid rgba(255,107,107,0.35);}
+.section{margin-bottom:8px;}
+.segment{margin-bottom:20px;}
+.scene-wrap{margin-bottom:8px;}
+.scene-card{border-radius:18px;border:2px solid rgba(255,107,107,0.35);background:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.12);overflow:hidden;}
+.scene-card-hero.chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 160px),460px);}
+.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.scene-placeholder{display:flex;align-items:center;justify-content:center;height:100%;min-height:200px;color:#1976d2;font-size:15px;background:#e3f2fd;}
+.card{background:rgba(255,255,255,0.88);border-radius:18px;padding:18px;margin-bottom:12px;border:2px solid rgba(255,107,107,0.25);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+.card h2{color:#ff6b6b;font-size:18px;margin-bottom:10px;}
+.card p,.card li{font-size:15px;line-height:1.7;color:#1565c0;}
+.story-box{background:rgba(227,242,253,0.9);border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.75;color:#0d47a1;border-left:4px solid #ff6b6b;}
+.explain-box{background:rgba(255,243,224,0.95);border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.7;color:#e65100;border-left:4px solid #ff9800;margin-top:10px;}
+.segment-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1976d2;margin-bottom:8px;}
+.game-section{background:rgba(255,255,255,0.92);border-radius:18px;padding:18px;margin-top:8px;border:2px solid rgba(255,107,107,0.35);box-shadow:0 4px 16px rgba(0,0,0,0.1);}
+.game-section h2{color:#ff6b6b;font-size:18px;margin-bottom:8px;text-align:center;}
+.game-desc{text-align:center;color:#1976d2;font-size:14px;margin-bottom:12px;line-height:1.5;}
+.game-canvas{width:100%;height:min(42vh,280px);border-radius:14px;background:#1a237e;display:block;touch-action:none;border:2px solid rgba(255,107,107,0.3);}
+.game-start-btn{display:block;margin:10px auto 0;padding:10px 22px;border:none;border-radius:999px;background:#ff6b6b;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.nav-hint{margin-top:16px;text-align:center;font-size:12px;color:#1976d2;background:rgba(255,255,255,0.65);padding:12px;border-radius:12px;}
+.competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.85);border-radius:14px;padding:12px;margin-bottom:14px;border:2px solid rgba(255,107,107,0.3);}
+.competitor{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.competitor-icon{font-size:32px;}
+.competitor-name{font-size:12px;color:#1976d2;}
+.competitor-score{font-size:20px;font-weight:bold;color:#ff6b6b;}
+.vs-divider{font-size:18px;font-weight:bold;color:#ff9800;padding:0 8px;}
+.quiz-card{background:rgba(255,255,255,0.9);border-radius:14px;padding:16px;margin-bottom:10px;border:2px solid rgba(255,107,107,0.25);display:none;}
+.quiz-card.active{display:block;}
+.question{font-size:16px;font-weight:bold;margin-bottom:12px;color:#1565c0;}
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{padding:12px 14px;background:rgba(255,255,255,0.95);border:2px solid rgba(255,107,107,0.3);border-radius:10px;cursor:pointer;font-size:15px;color:#1565c0;transition:.15s;}
+.option:hover{background:rgba(255,107,107,0.1);border-color:#ff6b6b;}
+.option.correct{background:rgba(76,175,80,0.25);border-color:#4caf50;}
+.option.wrong{background:rgba(244,67,54,0.2);border-color:#f44336;}
+.feedback{margin-top:10px;padding:10px;border-radius:10px;font-size:14px;display:none;}
+.feedback.show{display:block;}
+.feedback.correct{background:rgba(76,175,80,0.2);color:#2e7d32;}
+.feedback.wrong{background:rgba(244,67,54,0.15);color:#c62828;}
+.score-card{background:linear-gradient(135deg,#fff9c4,#ffcc80);border-radius:20px;padding:20px;text-align:center;margin-top:16px;display:none;border:3px solid #ff9800;}
+.score-card.show{display:block;}
+.score-card h2{color:#e65100;font-size:22px;margin-bottom:12px;}
+.score-card .score{font-size:48px;font-weight:bold;color:#ff6b6b;}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-top:20px;height:120px;}
+.podium-place{text-align:center;flex:1;max-width:100px;}
+.podium-bar{border-radius:8px 8px 0 0;background:linear-gradient(180deg,#ff6b6b,#e53935);color:#fff;padding:8px 4px;font-size:12px;font-weight:bold;}
+.podium-place.first .podium-bar{height:90px;background:linear-gradient(180deg,#ffd700,#ff9800);}
+.podium-place.second .podium-bar{height:65px;background:linear-gradient(180deg,#b0bec5,#78909c);}
+.podium-place.third .podium-bar{height:45px;background:linear-gradient(180deg,#bcaaa4,#8d6e63);}
+body.big-chapter-page .container{padding-top:12px;}
+.scroll-cue{text-align:center;font-size:13px;color:#1976d2;padding:6px 0 12px;}
+`;
+
+function pad(n) { return String(n).padStart(3, "0"); }
+
+function head(title, extraScripts) {
+  const scripts = [
+    "_body-player.js",
+    "_body-data.js",
+    "_body-chapter-images.js",
+    "_body-scenes.js",
+    "_body-games.js",
+    ...(extraScripts || [])
+  ];
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore My Body - ${title}</title>
+<style>${CSS}</style>
+${scripts.map((s) => `<script src="${s}"></script>`).join("\n")}
+</head>`;
+}
+
+function navHint() {
+  return `<div class="nav-hint"><div>💡 Use ← → in the top bar for the next chapter.</div><div>🏠 Home button returns to the library.</div></div>`;
+}
+
+function segmentHtml(ch, seg, kind) {
+  const label = kind === "main" ? "Learn" : "Go deeper";
+  return `
+  <div class="segment">
+    <div class="segment-label">${label} · ${seg.storyTitle}</div>
+    <div class="scene-wrap">
+      <div id="scene-${seg.slot}" class="scene-card scene-card-hero chapter-photo-hero"></div>
+    </div>
+    <div class="card">
+      <h2>📖 ${seg.storyTitle}</h2>
+      <div class="story-box">${seg.story}</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> ${seg.explanation}</div>
+    </div>
+  </div>`;
+}
+
+function bootScenesScript(ch, segments) {
+  const boots = segments.map(
+    (s) => `BodyScene.boot({ containerId: "scene-${s.slot}", chapterId: "${ch.id}", slot: "${s.slot}", title: "${ch.title.replace(/"/g, '\\"')}" });`
+  );
+  return `<script>\n${boots.join("\n")}\n</script>`;
+}
+
+function genActivity(ch) {
+  const num = ch.num;
+  const fname = `${pad(num)}-${ch.slug}-Activity.html`;
+  const segs = ch.mainSegments.map((s) => segmentHtml(ch, s, "main")).join("\n");
+  const html = `${head(ch.title + " Activity")}
+<body class="big-chapter-page">
+<div class="hearts"></div>
+<div class="container">
+  <div class="top-bar">
+    <h1>${ch.emoji} ${ch.title}</h1>
+    <div class="subtitle">Picture · story · explanation × 3 · then mini game</div>
+    <div class="pill-row"><span class="pill">3 scenes</span><span class="pill">🎮 Game below</span></div>
+  </div>
+  <p class="scroll-cue">Scroll — each section has its own picture, story, and explanation</p>
+  ${segs}
+  <div class="game-section">
+    <h2>🎮 ${ch.game.title}</h2>
+    <p class="game-desc">${ch.game.desc}</p>
+    <canvas id="gameCanvas" class="game-canvas"></canvas>
+    <button type="button" class="game-start-btn" id="gameStartBtn">Play again</button>
+  </div>
+  ${navHint()}
+</div>
+${bootScenesScript(ch, ch.mainSegments)}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  BodyGames.boot("${ch.game.id}", "gameCanvas");
+});
+</script>
+</body></html>`;
+  fs.writeFileSync(path.join(DIR, fname), html);
+  return fname;
+}
+
+function genExplained(ch) {
+  const num = ch.num + 1;
+  const fname = `${pad(num)}-${ch.slug}-Explained.html`;
+  const segs = ch.explainedSegments.map((s) => segmentHtml(ch, s, "explained")).join("\n");
+  const html = `${head(ch.title + " Explained")}
+<body class="big-chapter-page">
+<div class="hearts"></div>
+<div class="container">
+  <div class="top-bar">
+    <h1>📖 ${ch.title} — Explained</h1>
+    <div class="subtitle">Three deeper pictures · stories · explanations</div>
+  </div>
+  <p class="scroll-cue">Scroll through all three deep-dive sections</p>
+  ${segs}
+  ${navHint()}
+</div>
+${bootScenesScript(ch, ch.explainedSegments)}
+</body></html>`;
+  fs.writeFileSync(path.join(DIR, fname), html);
+  return fname;
+}
+
+function genQuiz(ch) {
+  const num = ch.num + 2;
+  const fname = `${pad(num)}-${ch.slug}-QuizTime.html`;
+  const opp = ch.opponent;
+  const cards = ch.quiz
+    .map(
+      (q, i) => `
+  <div class="quiz-card${i === 0 ? " active" : ""}" id="quizCard-${i + 1}">
+    <div class="question">${i + 1}. ${q.q}</div>
+    <div class="options">
+      ${q.options
+        .map(
+          (opt, j) =>
+            `<div class="option" onclick="checkAnswer(this, ${i + 1}, ${j === q.correct})">${opt}</div>`
+        )
+        .join("\n      ")}
+    </div>
+    <div class="feedback" id="feedback-${i + 1}"></div>
+  </div>`
+    )
+    .join("\n");
+
+  const html = `${head(ch.title + " Quiz Time")}
+<body>
+<div class="hearts"></div>
+<div class="container">
+  <div class="top-bar">
+    <h1>❓ ${ch.title} Quiz</h1>
+    <div class="subtitle">Beat ${opp.name}!</div>
+  </div>
+  <div class="competition-bar" id="liveScoreBar">
+    <div class="competitor">
+      <div class="competitor-icon" id="playerIcon">🧒</div>
+      <div class="competitor-name" id="playerName">Explorer</div>
+      <div class="competitor-score" id="playerScore">0</div>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="competitor">
+      <div class="competitor-icon">${opp.icon}</div>
+      <div class="competitor-name">${opp.name}</div>
+      <div class="competitor-score" id="opponentScore">0</div>
+    </div>
+  </div>
+  <div id="quizArea">
+${cards}
+  </div>
+  <div class="score-card" id="scoreCard">
+    <h2>Quiz Complete!</h2>
+    <div class="score" id="finalScore">0</div>
+    <p id="scoreMessage">Great job exploring your body!</p>
+    <div class="podium" id="podium">
+      <div class="podium-place second"><div class="podium-bar" id="secondName">${opp.name}</div></div>
+      <div class="podium-place first"><div class="podium-bar" id="firstName">You</div></div>
+      <div class="podium-place third"><div class="podium-bar" id="thirdName">Helper</div></div>
+    </div>
+  </div>
+  ${navHint()}
+</div>
+<script>
+var playerScore = 0, opponentScore = 0, currentQ = 1, totalQ = ${ch.quiz.length}, answered = false;
+
+function loadPlayerInfo() {
+  var name = BodyPlayer.getUserName();
+  var icon = BodyPlayer.getCharacter();
+  document.getElementById("playerName").textContent = name;
+  document.getElementById("playerIcon").textContent = icon;
+  var first = document.getElementById("firstName");
+  if (first) first.textContent = name;
+}
+
+function checkAnswer(el, qNum, correct) {
+  if (answered) return;
+  answered = true;
+  var fb = document.getElementById("feedback-" + qNum);
+  var opts = el.parentElement.querySelectorAll(".option");
+  opts.forEach(function(o) { o.style.pointerEvents = "none"; });
+  if (correct) {
+    el.classList.add("correct");
+    playerScore++;
+    fb.textContent = "✅ Correct!";
+    fb.className = "feedback show correct";
+  } else {
+    el.classList.add("wrong");
+    opponentScore++;
+    fb.textContent = "❌ ${opp.name} gets this one!";
+    fb.className = "feedback show wrong";
+  }
+  document.getElementById("playerScore").textContent = playerScore;
+  document.getElementById("opponentScore").textContent = opponentScore;
+  setTimeout(function() {
+    answered = false;
+    if (qNum >= totalQ) showResults();
+    else {
+      document.getElementById("quizCard-" + qNum).classList.remove("active");
+      currentQ = qNum + 1;
+      document.getElementById("quizCard-" + currentQ).classList.add("active");
+    }
+  }, 1200);
+}
+
+function showResults() {
+  document.getElementById("quizArea").style.display = "none";
+  document.getElementById("liveScoreBar").style.display = "none";
+  document.getElementById("finalScore").textContent = playerScore + " / " + totalQ;
+  document.getElementById("scoreMessage").textContent = playerScore >= totalQ - 1
+    ? "Amazing! You really know your " + "${ch.title.toLowerCase()}" + "!"
+    : "Keep exploring — read the chapter again!";
+  document.getElementById("scoreCard").classList.add("show");
+}
+
+loadPlayerInfo();
+</script>
+</body></html>`;
+  fs.writeFileSync(path.join(DIR, fname), html);
+  return fname;
+}
+
+CHAPTERS.forEach((ch) => {
+  console.log(genActivity(ch));
+  console.log(genExplained(ch));
+  console.log(genQuiz(ch));
+});
+console.log("Done —", CHAPTERS.length * 3, "chapter files");
