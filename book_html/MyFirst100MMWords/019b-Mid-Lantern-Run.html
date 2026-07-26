@@ -10,8 +10,19 @@
 <script src="_mmwords-games.js"></script>
 <script src="_mmwords-action-games.js"></script>
 <style>
-  .book-game-page .action-canvas{height:min(52vh,360px);min-height:260px;}
+  .book-game-page .scroll-wrap{max-width:980px;}
+  .book-game-page .game-section{max-width:none;padding-left:8px;padding-right:8px;}
+  .book-game-page .action-game-stage{width:100%;}
+  .book-game-page .action-canvas{
+    width:100%;
+    height:min(48vw,420px);
+    min-height:300px;
+    max-height:460px;
+  }
   .book-game-lead{font-size:15px;color:var(--lacquer-deep);font-weight:700;line-height:1.5;margin:0 0 6px;}
+  @media (min-width:900px){
+    .book-game-page .action-canvas{height:min(42vh,440px);min-height:320px;}
+  }
 </style>
 </head>
 <body class="book-game-page">
@@ -21,15 +32,15 @@
     <div class="ornament-top">✦ ✦ ✦</div>
     <h1 class="page-title">🪔 Lantern Run</h1>
     <p class="page-subtitle book-game-lead">Welcome to the mid-book game — congratulations, you reached the middle of the book. Let&apos;s play!</p>
-    <p class="page-subtitle">10 timed levels · 3 lives · Jump past wolves, dogs &amp; thieves to reach your family.</p>
+    <p class="page-subtitle">15 timed levels · boss fights at 4, 8, 12 &amp; 15 · 3 lives · Lane gets faster each level</p>
   </header>
 
   <div class="game-section action-game-wrap">
-    <p class="game-meta">Progress: <strong id="action-score">Level 1 / 10  ⏱ 22s  ❤️❤️❤️  ·  Reach family!</strong></p>
+    <p class="game-meta">Progress: <strong id="action-score">Level 1 / 15  ⏱ 62s  ❤️❤️❤️  ·  Reach family!</strong></p>
     <div class="action-game-stage">
       <canvas id="action-canvas" class="game-canvas action-canvas"></canvas>
       <div class="action-overlay" id="action-start-overlay">
-        <p>Tap Start — jump past wolves &amp; thieves! Reach each family member before time runs out.</p>
+        <p>Tap Start — jump past wolves, dogs &amp; thieves! Reach each family member before time runs out. Boss fights every 4 levels!</p>
         <button type="button" class="game-start-btn" id="action-start-btn">▶ Start game</button>
       </div>
     </div>
@@ -51,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     words: family ? family.words : [],
     badge: 'Mid-Book Lantern Hero',
     chapterId: 'mid-lantern-run',
-    target: 10
+    target: 15
   });
 });
 </script>

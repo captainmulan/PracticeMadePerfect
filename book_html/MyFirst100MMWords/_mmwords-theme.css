@@ -483,8 +483,14 @@ body{
 .game-hint{font-size:14px;color:var(--text-muted);line-height:1.4;}
 .action-canvas{
   background:linear-gradient(180deg,#E0F2FE,#BAE6FD);
+  width:100%;
   height:min(46vh,300px);
   min-height:220px;
+}
+.book-game-page .action-canvas{
+  height:min(48vw,420px);
+  min-height:300px;
+  max-height:460px;
 }
 @media(max-width:520px){.world-grid{grid-template-columns:1fr;}}
 /* Character selection */

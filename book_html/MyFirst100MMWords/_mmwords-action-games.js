@@ -426,18 +426,22 @@
   }
 
   function drawFamilyEnemy(ctx, o, ox, groundY, tick) {
-    var hop = Math.abs(Math.sin(tick * 0.12 + o.x * 0.02)) * 3;
-    var ey = groundY - 38 - hop;
-    ctx.fillStyle = "rgba(69,10,10,.88)";
-    ctx.fillRect(ox - 30, ey - 28, 60, 56);
-    ctx.strokeStyle = "#FCA5A5";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(ox - 29.5, ey - 27.5, 59, 55);
-    drawEmoji(ctx, o.emoji, ox, ey - 4, 36);
-    ctx.font = "bold 9px Georgia,serif";
-    ctx.fillStyle = "#FEE2E2";
-    ctx.textAlign = "center";
-    ctx.fillText(o.label || "!", ox, ey + 22);
+    var walk = Math.sin(tick * 0.14 + (o.x || 0) * 0.015) * (o.boss ? 4 : 2.5);
+    var hop = Math.abs(Math.sin(tick * 0.2 + (o.x || 0) * 0.02)) * (o.boss ? 6 : 4);
+    var size = o.size || (o.boss ? 50 : 36);
+    var ey = groundY - 34 - hop;
+    var sx = ox + walk;
+    drawShadow(ctx, sx, groundY - 6, o.boss ? 26 : 15);
+    drawEmoji(ctx, o.emoji, sx, ey, size);
+    if (o.label) {
+      ctx.font = "bold " + (o.boss ? 11 : 9) + "px Georgia,serif";
+      ctx.fillStyle = o.boss ? "#FDE68A" : "rgba(255,255,255,.95)";
+      ctx.strokeStyle = "rgba(49,46,129,.8)";
+      ctx.lineWidth = 2.5;
+      ctx.textAlign = "center";
+      ctx.strokeText(o.label, sx, ey - size * 0.62);
+      ctx.fillText(o.label, sx, ey - size * 0.62);
+    }
   }
 
   function drawSkyLanterns(ctx, W, H, lanterns, scroll, tick) {
@@ -476,15 +480,21 @@
     return list;
   }
 
-  /** Thadingyut Lantern Run — 10 timed levels, 3 lives */
+  /** Thadingyut Lantern Run — 15 timed levels, boss every 4 levels, 3 lives */
   function bootLanternRun(opts, canvas, cv, scoreEl, words, hero, overlayEl) {
-    var maxLevel = 10;
+    var maxLevel = opts.target || 15;
     var maxLives = 3;
     var familyEnemies = [
       { type: "wolf", emoji: "🐺", label: "Wolf!" },
       { type: "dog", emoji: "🐕", label: "Dog!" },
       { type: "thief", emoji: "🥷", label: "Thief!" }
     ];
+    var bossRoster = {
+      4: { emoji: "🐺", label: "Alpha Wolf Boss", size: 54 },
+      8: { emoji: "🥷", label: "Lantern Thief Boss", size: 52 },
+      12: { emoji: "🐕‍🦺", label: "Wild Dog Boss", size: 52 },
+      15: { emoji: "👹", label: "Festival Guardian", size: 58 }
+    };
     var theme = {
       skyTop: "#312E81", skyBot: "#C084FC", ground: "#6B4423", groundAccent: "#A16207",
       label: "🪔 Thadingyut lane"
@@ -502,14 +512,17 @@
       grounded: true,
       scroll: 0,
       levelDist: 0,
+      scrollSpeed: 2,
       timeLeft: 0,
       timeTotal: 0,
       obstacles: [],
+      boss: null,
       pickup: null,
       skyLanterns: [],
       spawnT: 0,
       raf: null,
-      onJump: null
+      onJump: null,
+      isBossLevel: false
     };
     state.onJump = function () {
       if (state.grounded && state.running) {
@@ -549,23 +562,61 @@
       updateLanternHud(scoreEl, state.level, maxLevel, state.lives, goalLabel(), state.timeLeft / 60);
     }
 
+    function isBossLevel(level) {
+      return level % 4 === 0 || level === maxLevel;
+    }
+
     function levelConfig(level) {
-      var dist = 950 + level * 160;
-      var timeSec = 20 + level * 2;
-      var enemyCount = 4 + Math.floor(level * 0.65);
-      var gap = Math.max(88, 130 - level * 3);
+      var bossLevel = isBossLevel(level);
+      var dist = 1500 + level * 240 + (bossLevel ? 520 : 0);
+      var timeSec = 55 + level * 7 + (bossLevel ? 30 : 0);
+      var scrollSpeed = 1.35 + level * 0.22;
+      var enemyCount = bossLevel ? 2 + Math.floor(level / 4) : 3 + Math.floor(level * 0.45);
+      var gap = Math.max(150, 220 - level * 3);
       var obstacles = [];
-      var x = 280;
+      var x = 360;
       for (var i = 0; i < enemyCount; i++) {
         var e = familyEnemies[i % familyEnemies.length];
-        obstacles.push({ x: x, w: 44, type: e.type, emoji: e.emoji, label: e.label });
-        x += gap + (i % 2 === 0 ? 20 : 0);
+        obstacles.push({ x: x, w: 44, type: e.type, emoji: e.emoji, label: e.label, boss: false });
+        x += gap + (i % 2 === 0 ? 30 : 0);
+      }
+      var boss = null;
+      if (bossLevel && bossRoster[level]) {
+        var b = bossRoster[level];
+        boss = {
+          x: dist - 520,
+          emoji: b.emoji,
+          label: b.label,
+          size: b.size,
+          boss: true,
+          patrolT: 0
+        };
+        obstacles.push({
+          x: dist - 680,
+          w: 70,
+          type: "boss",
+          emoji: b.emoji,
+          label: b.label,
+          size: b.size,
+          boss: true
+        });
+        obstacles.push({
+          x: dist - 420,
+          w: 70,
+          type: "boss",
+          emoji: b.emoji,
+          label: b.label,
+          size: b.size,
+          boss: true
+        });
       }
       return {
         dist: dist,
         timeSec: timeSec,
+        scrollSpeed: scrollSpeed,
         obstacles: obstacles,
-        pickupX: dist - 120
+        boss: boss,
+        pickupX: dist - 140
       };
     }
 
@@ -573,10 +624,13 @@
       var cfg = levelConfig(state.level);
       state.scroll = 0;
       state.levelDist = cfg.dist;
+      state.scrollSpeed = cfg.scrollSpeed;
       state.timeTotal = cfg.timeSec * 60;
       state.timeLeft = cfg.timeSec * 60;
       state.obstacles = cfg.obstacles.slice();
-      state.skyLanterns = initSkyLanterns(cv.W, cv.H, 10 + state.level);
+      state.boss = cfg.boss;
+      state.isBossLevel = isBossLevel(state.level);
+      state.skyLanterns = initSkyLanterns(cv.W, cv.H, 12 + state.level);
       var w = levelWord();
       state.pickup = {
         x: cfg.pickupX,
@@ -599,7 +653,9 @@
       startLevel();
       if (full && overlayEl) {
         var msg = overlayEl.querySelector("p");
-        if (msg) msg.textContent = "Tap Start — jump past wolves & thieves! Reach family before time runs out. 10 levels, 3 lives.";
+        if (msg) {
+          msg.textContent = "Tap Start — jump past wolves, dogs & thieves! Reach family before time runs out. 15 levels with boss fights every 4 levels. 3 lives.";
+        }
       }
     }
 
@@ -623,7 +679,7 @@
       state.grounded = false;
       syncHud();
       if (state.lives <= 0) {
-        gameOver("Out of lives! Jump over wolves, dogs, and thieves. Try all 10 levels again!");
+        gameOver("Out of lives! Jump over wolves, dogs, and thieves. Try all " + maxLevel + " levels again!");
       } else {
         startLevel();
       }
@@ -648,11 +704,12 @@
       startLevel();
     }
 
-    function playerHitsEnemy(ox, groundY) {
-      if (ox < 40 || ox > 110) return false;
-      if (state.py < groundY - 50) return false;
+    function playerHitsEnemy(ox, groundY, enemy) {
+      var halfW = enemy && enemy.boss ? 38 : 28;
+      if (ox < state.px - halfW || ox > state.px + halfW) return false;
+      if (state.py < groundY - 52) return false;
       if (!state.grounded && state.vy < -2) return false;
-      return state.py >= groundY - 36;
+      return state.py >= groundY - 38;
     }
 
     function start() {
@@ -692,13 +749,20 @@
         state.grounded = false;
       }
 
-      var speed = 3 + state.level * 0.32;
+      var speed = state.scrollSpeed;
       state.scroll += speed;
       state.spawnT++;
 
+      if (state.boss) {
+        state.boss.patrolT++;
+      }
+
       state.obstacles.forEach(function (o) {
         var ox = o.x - state.scroll;
-        if (playerHitsEnemy(ox, groundY)) hurtPlayer();
+        if (state.boss && o.boss) {
+          ox += Math.sin(state.boss.patrolT * 0.05 + o.x * 0.01) * 36;
+        }
+        if (playerHitsEnemy(ox, groundY, o)) hurtPlayer();
       });
 
       if (state.pickup && !state.pickup.got) {
@@ -719,7 +783,10 @@
 
       state.obstacles.forEach(function (o) {
         var ox = o.x - state.scroll;
-        if (ox < -60 || ox > W + 60) return;
+        if (state.boss && o.boss) {
+          ox += Math.sin(state.boss.patrolT * 0.05 + o.x * 0.01) * 36;
+        }
+        if (ox < -80 || ox > W + 80) return;
         drawFamilyEnemy(ctx, o, ox, groundY, state.spawnT);
       });
 
@@ -735,17 +802,23 @@
       drawLanternHud(ctx, W, state.level, maxLevel, state.lives, goalLabel(), state.timeLeft / 60, progress);
 
       if (state.levelBanner > 0) {
-        ctx.fillStyle = "rgba(49,46,129,.78)";
-        ctx.fillRect(W * 0.08, H * 0.32, W * 0.84, 46);
-        ctx.strokeStyle = "#FBBF24";
+        ctx.fillStyle = state.isBossLevel ? "rgba(127,29,29,.82)" : "rgba(49,46,129,.78)";
+        ctx.fillRect(W * 0.06, H * 0.28, W * 0.88, state.isBossLevel ? 54 : 46);
+        ctx.strokeStyle = state.isBossLevel ? "#FCA5A5" : "#FBBF24";
         ctx.lineWidth = 2;
-        ctx.strokeRect(W * 0.08 + 1, H * 0.32 + 1, W * 0.84 - 2, 44);
+        ctx.strokeRect(W * 0.06 + 1, H * 0.28 + 1, W * 0.88 - 2, (state.isBossLevel ? 54 : 46) - 2);
         ctx.font = "bold 17px Georgia,serif";
         ctx.fillStyle = "#FFF8E7";
         ctx.textAlign = "center";
-        ctx.fillText("Level " + state.level + " — " + goalLabel(), W / 2, H * 0.32 + 22);
-        ctx.font = "12px Georgia,serif";
-        ctx.fillText("Jump many times — dodge wolves, dogs & thieves!", W / 2, H * 0.32 + 40);
+        if (state.isBossLevel) {
+          ctx.fillText("⚔️ BOSS — Level " + state.level + " · " + goalLabel(), W / 2, H * 0.28 + 22);
+          ctx.font = "12px Georgia,serif";
+          ctx.fillText("Jump past the boss wolves, thieves & dogs — then reach family!", W / 2, H * 0.28 + 42);
+        } else {
+          ctx.fillText("Level " + state.level + " — " + goalLabel(), W / 2, H * 0.28 + 22);
+          ctx.font = "12px Georgia,serif";
+          ctx.fillText("Lane speed rises each level — jump over every obstacle!", W / 2, H * 0.28 + 40);
+        }
       }
     }
 
