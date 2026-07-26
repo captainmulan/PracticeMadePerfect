@@ -414,7 +414,7 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
     titleTextAlign: course.titleTextAlign ?? undefined,
     titleAlignment: course.titleAlignment ?? course.titleTextAlign ?? undefined,
     iconPosition: course.iconPosition ?? undefined,
-    meta: `${course.chapters.length} chapters`,
+    meta: `${course.stepCount ?? course.chapters.length} pages`,
     link: `/courses/${course.id}`,
     category,
     artifactType: course.artifactType,

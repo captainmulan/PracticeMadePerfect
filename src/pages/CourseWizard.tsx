@@ -1,49 +1,28 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CourseCodeStep from "../components/CourseCodeStep";
 import CourseHtmlStep from "../components/CourseHtmlStep";
 import CourseQuizStep from "../components/CourseQuizStep";
-import type { Course } from "../data/courses";
-import { courseStepLabel, flattenCourseSteps } from "../data/courses";
+import type { CourseStep } from "../data/courses";
+import { courseStepLabel } from "../data/courses";
+import { useCourseReader } from "../hooks/useCourseReader";
 import { loadCourseProgress, saveCourseProgress } from "../utils/courseUtils";
-import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
-  const { courses, loaded: catalogLoaded } = useCourseCatalog();
-  const catalogCourse = courses.find((item) => item.id === courseId);
-  const [course, setCourse] = useState<Course | null>(null);
-  const [courseLoaded, setCourseLoaded] = useState(false);
-  const steps = useMemo(() => (course ? flattenCourseSteps(course) : []), [course]);
+  const {
+    outline,
+    steps,
+    outlineLoaded,
+    stepLoading,
+    error,
+    loadStep,
+  } = useCourseReader(courseId);
   const [stepIndex, setStepIndex] = useState(0);
+  const [currentStep, setCurrentStep] = useState<CourseStep | null>(null);
   const placeholder = getPracticePageData().placeholder;
-
-  useEffect(() => {
-    if (!courseId) {
-      setCourse(null);
-      setCourseLoaded(true);
-      return;
-    }
-    let active = true;
-    setCourseLoaded(false);
-    loadFullCourseById(courseId)
-      .then((fullCourse) => {
-        if (!active) return;
-        setCourse(fullCourse);
-        setCourseLoaded(true);
-      })
-      .catch(() => {
-        if (!active) return;
-        setCourse(null);
-        setCourseLoaded(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, [courseId]);
 
   useEffect(() => {
     if (!courseId) return;
@@ -55,6 +34,25 @@ export default function CourseWizard() {
     if (!courseId) return;
     saveCourseProgress(courseId, stepIndex);
   }, [courseId, stepIndex]);
+
+  useEffect(() => {
+    const outlineStep = steps[stepIndex];
+    if (!outlineStep) {
+      setCurrentStep(null);
+      return;
+    }
+
+    let active = true;
+    loadStep(outlineStep).then((fullStep) => {
+      if (active) {
+        setCurrentStep(fullStep);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [stepIndex, steps, loadStep]);
 
   const handlePrevious = useCallback(() => {
     setStepIndex((value) => Math.max(0, value - 1));
@@ -73,32 +71,31 @@ export default function CourseWizard() {
     handleNext,
   );
 
-  if (!catalogLoaded || !courseLoaded) {
+  if (!outlineLoaded || (stepLoading && !currentStep)) {
     return <div className="page-content panel"><div className="panel-body">Loading course...</div></div>;
   }
 
-  if (!catalogCourse || !course || steps.length === 0) {
+  if (error || !outline || !currentStep || steps.length === 0) {
     return (
       <div className="page-content panel">
         <div className="panel-heading">Course not found</div>
         <div className="panel-body">
-          <p>This course is missing or has no steps yet.</p>
+          <p>{error ?? "This course is missing or has no steps yet."}</p>
           <Link to="/" className="primary-button">Back home</Link>
         </div>
       </div>
     );
   }
 
-  const currentStep = steps[stepIndex];
-  const progressPct = Math.round(((stepIndex + 1) / steps.length) * 100);
-  const bookName = `${course.icon} ${course.title}`;
+  const bookName = `${outline.icon} ${outline.title}`;
   const chapterName = currentStep.chapterTitle;
-  const chapterNumber = currentStep.chapterIndex + 1; // Show 1-based
+  const chapterNumber = currentStep.chapterIndex + 1;
   const pageType = courseStepLabel(currentStep);
   const pageIndex = stepIndex + 1;
   const totalPages = steps.length;
-  // If chapterIndex exists (could be 0), prepend "Chapter X" to description
-  const hasChapterIndex = typeof currentStep.chapterIndex !== undefined && currentStep.chapterIndex !== null && currentStep.chapterIndex > 0;
+  const hasChapterIndex = typeof currentStep.chapterIndex !== undefined
+    && currentStep.chapterIndex !== null
+    && currentStep.chapterIndex > 0;
   const pageBrief = hasChapterIndex
     ? `<div><strong>Chapter ${currentStep.chapterIndex + 1}</strong></div>${currentStep.description ?? ""}`
     : (currentStep.description ?? "");

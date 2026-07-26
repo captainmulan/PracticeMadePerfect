@@ -1,4 +1,4 @@
-import type { Course, CourseChapter, CourseStep } from "../data/courses";
+import type { Course, CourseChapter, CourseStep, CourseStepOutline } from "../data/courses";
 import type { PracticeTask } from "../data/tasks";
 import type { Announcement } from "../types/announcement";
 
@@ -150,6 +150,91 @@ export async function saveTasks(tasks: PracticeTask[]): Promise<void> {
 }
 
 // --- Courses operations ---
+type CourseRecord = Course & { stepOutline?: CourseStepOutline[] };
+
+function buildStepOutline(course: Course): CourseStepOutline[] {
+  return course.chapters
+    .flatMap((chapter) =>
+      chapter.steps.map((step) => ({
+        id: step.id,
+        courseId: course.id,
+        chapterId: chapter.id,
+        chapterTitle: chapter.title,
+        chapterIndex: chapter.chapterIndex,
+        stepIndex: step.stepIndex,
+        stepType: step.stepType,
+        title: step.title,
+        description: step.description,
+      })),
+    )
+    .sort((a, b) => a.stepIndex - b.stepIndex);
+}
+
+function rebuildChaptersFromStepOutline(courseId: string, outline: CourseStepOutline[]): CourseChapter[] {
+  const chapterMap = new Map<string, CourseChapter>();
+  outline.forEach((item) => {
+    if (!chapterMap.has(item.chapterId)) {
+      chapterMap.set(item.chapterId, {
+        id: item.chapterId,
+        courseId,
+        chapterIndex: item.chapterIndex,
+        title: item.chapterTitle,
+        steps: [],
+      });
+    }
+    const chapter = chapterMap.get(item.chapterId)!;
+    chapter.steps.push({
+      id: item.id,
+      courseId: item.courseId,
+      chapterId: item.chapterId,
+      chapterTitle: item.chapterTitle,
+      chapterIndex: item.chapterIndex,
+      stepIndex: item.stepIndex,
+      stepType: item.stepType,
+      title: item.title,
+      description: item.description,
+    });
+  });
+  return [...chapterMap.values()]
+    .sort((a, b) => a.chapterIndex - b.chapterIndex)
+    .map((chapter) => ({
+      ...chapter,
+      steps: chapter.steps.slice().sort((a, b) => a.stepIndex - b.stepIndex),
+    }));
+}
+
+function toCourseSummaryRecord(raw: CourseRecord): Course {
+  return {
+    id: raw.id,
+    title: raw.title,
+    description: raw.description,
+    color: raw.color,
+    coverColorStart: raw.coverColorStart,
+    coverColorMiddle: raw.coverColorMiddle,
+    coverColorEnd: raw.coverColorEnd,
+    coverWidth: raw.coverWidth,
+    coverHeight: raw.coverHeight,
+    icon: raw.icon,
+    iconColorStart: raw.iconColorStart,
+    iconColorMiddle: raw.iconColorMiddle,
+    iconColorEnd: raw.iconColorEnd,
+    iconSize: raw.iconSize,
+    titleFontSize: raw.titleFontSize,
+    titleFontWeight: raw.titleFontWeight,
+    titleColor: raw.titleColor,
+    titlePosition: raw.titlePosition,
+    titleTextAlign: raw.titleTextAlign,
+    titleAlignment: raw.titleAlignment,
+    iconPosition: raw.iconPosition,
+    courseIndex: raw.courseIndex,
+    category: raw.category,
+    pIndex: raw.pIndex,
+    artifactType: raw.artifactType,
+    stepCount: raw.stepCount ?? raw.stepOutline?.length ?? 0,
+    chapters: [],
+  };
+}
+
 function assembleChaptersForCourse(
   courseId: string,
   chapters: CourseChapter[],
@@ -171,9 +256,35 @@ export async function getCourseSummaries(): Promise<Course[]> {
   const courses = await promisifyRequest(
     db.transaction(STORE_COURSES, "readonly").objectStore(STORE_COURSES).getAll(),
   );
-  return courses
-    .sort((a: Course, b: Course) => (a.courseIndex ?? 0) - (b.courseIndex ?? 0))
-    .map(({ chapters: _embedded, ...meta }) => ({ ...meta, chapters: [] } as Course));
+  return (courses as CourseRecord[])
+    .sort((a, b) => (a.courseIndex ?? 0) - (b.courseIndex ?? 0))
+    .map(toCourseSummaryRecord);
+}
+
+export async function getCourseOutlineById(courseId: string): Promise<Course | null> {
+  const db = await openDb();
+  const raw = await promisifyRequest(
+    db.transaction(STORE_COURSES, "readonly").objectStore(STORE_COURSES).get(courseId),
+  ) as CourseRecord | undefined;
+  if (!raw) return null;
+
+  const summary = toCourseSummaryRecord(raw);
+  if (raw.stepOutline?.length) {
+    return {
+      ...summary,
+      chapters: rebuildChaptersFromStepOutline(courseId, raw.stepOutline),
+    };
+  }
+
+  return getCourseById(courseId);
+}
+
+export async function getCourseStepById(stepId: string): Promise<CourseStep | null> {
+  const db = await openDb();
+  const step = await promisifyRequest(
+    db.transaction(STORE_STEPS, "readonly").objectStore(STORE_STEPS).get(stepId),
+  );
+  return step ?? null;
 }
 
 export async function getCourseById(courseId: string): Promise<Course | null> {
@@ -182,7 +293,7 @@ export async function getCourseById(courseId: string): Promise<Course | null> {
   const raw = await promisifyRequest(tx.objectStore(STORE_COURSES).get(courseId));
   if (!raw) return null;
 
-  const { chapters: _embedded, ...meta } = raw as Course;
+  const summary = toCourseSummaryRecord(raw as CourseRecord);
   const chapters = await promisifyRequest(
     tx.objectStore(STORE_CHAPTERS).index("courseId").getAll(courseId),
   );
@@ -191,7 +302,7 @@ export async function getCourseById(courseId: string): Promise<Course | null> {
   );
 
   return {
-    ...meta,
+    ...summary,
     chapters: assembleChaptersForCourse(courseId, chapters, steps),
   } as Course;
 }
@@ -235,7 +346,13 @@ export async function saveCourse(course: Course): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     const writeTransaction = db.transaction([STORE_COURSES, STORE_CHAPTERS, STORE_STEPS], "readwrite");
     const { chapters, ...courseMeta } = course;
-    writeTransaction.objectStore(STORE_COURSES).put({ ...courseMeta, chapters: [] });
+    const stepOutline = buildStepOutline(course);
+    writeTransaction.objectStore(STORE_COURSES).put({
+      ...courseMeta,
+      chapters: [],
+      stepOutline,
+      stepCount: stepOutline.length,
+    });
 
     // Delete old
     const chaptersStore = writeTransaction.objectStore(STORE_CHAPTERS);
@@ -437,12 +554,26 @@ async function loadFromIndexedDbExport(): Promise<boolean> {
 }
 
 export async function migrateFromSqlJs(): Promise<void> {
-  console.log("migrateFromSqlJs called");
-  // First check if we already have data in IndexedDB
-  const testCourses = await getCourses();
-  console.log("testCourses:", testCourses);
+  return ensureMigrated();
+}
 
-  if (testCourses.length > 0) {
+let migrationPromise: Promise<void> | null = null;
+
+function ensureMigrated(): Promise<void> {
+  if (!migrationPromise) {
+    migrationPromise = runInitialMigration().catch((error) => {
+      migrationPromise = null;
+      throw error;
+    });
+  }
+  return migrationPromise;
+}
+
+async function runInitialMigration(): Promise<void> {
+  console.log("migrateFromSqlJs called");
+  const summaries = await getCourseSummaries();
+
+  if (summaries.length > 0) {
     console.log("Courses already exist, skipping initialization");
     await ensureAnnouncementsSeeded();
     return;

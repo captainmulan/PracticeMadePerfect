@@ -79,7 +79,22 @@ export interface Course {
   category: string;
   pIndex?: number;
   artifactType: ArtifactType;
+  /** Page count stored in IndexedDB metadata (available without loading steps). */
+  stepCount?: number;
   chapters: CourseChapter[];
+}
+
+/** Lightweight step metadata stored on the course record for fast outline loading. */
+export interface CourseStepOutline {
+  id: string;
+  courseId: string;
+  chapterId: string;
+  chapterTitle: string;
+  chapterIndex: number;
+  stepIndex: number;
+  stepType: CourseStepType;
+  title: string;
+  description: string;
 }
 
 export function flattenCourseSteps(course: Course): CourseStep[] {

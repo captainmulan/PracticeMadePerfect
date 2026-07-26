@@ -1,10 +1,11 @@
-import type { Course } from "../data/courses";
-import { DEFAULT_COURSES } from "../data/courses";
+import type { Course, CourseStep } from "../data/courses";
 import { FICTION_BOOK_ID, FICTION_BOOK } from "../data/fictionBook";
 import {
   getCourses as getCoursesFromIndexedDb,
   getCourseSummaries as getCourseSummariesFromIndexedDb,
   getCourseById as getCourseByIdFromIndexedDb,
+  getCourseOutlineById as getCourseOutlineByIdFromIndexedDb,
+  getCourseStepById as getCourseStepByIdFromIndexedDb,
   saveCourse as saveCourseToIndexedDb,
   deleteCourse as deleteCourseFromIndexedDb,
   migrateFromSqlJs,
@@ -80,7 +81,11 @@ export function rebuildChaptersFromSteps(courseId: string, steps: any[]): any[] 
 
 export function toCourseSummary(course: Course): Course {
   const { chapters: _chapters, ...meta } = course;
-  return { ...meta, chapters: [] };
+  return {
+    ...meta,
+    stepCount: meta.stepCount ?? course.chapters.reduce((count, chapter) => count + chapter.steps.length, 0),
+    chapters: [],
+  };
 }
 
 // Now our main functions, using IndexedDB
@@ -92,6 +97,16 @@ export async function loadCourseSummariesFromBrowserDb(): Promise<Course[]> {
 export async function loadFullCourseById(courseId: string): Promise<Course | null> {
   await migrateFromSqlJs();
   return getCourseByIdFromIndexedDb(courseId);
+}
+
+export async function loadCourseOutlineById(courseId: string): Promise<Course | null> {
+  await migrateFromSqlJs();
+  return getCourseOutlineByIdFromIndexedDb(courseId);
+}
+
+export async function loadCourseStepById(stepId: string): Promise<CourseStep | null> {
+  await migrateFromSqlJs();
+  return getCourseStepByIdFromIndexedDb(stepId);
 }
 
 export async function loadCoursesFromBrowserDb(): Promise<Course[]> {

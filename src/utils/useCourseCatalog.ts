@@ -11,9 +11,7 @@ export function useCourseCatalog() {
     let active = true;
     (async () => {
       try {
-        console.log("loading books");
         const data = await loadCourseSummariesFromBrowserDb();
-        console.log("loaded books:", data);
         if (!active) return;
         setCourses(data);
         setLoaded(true);
