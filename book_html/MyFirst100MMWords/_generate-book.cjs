@@ -750,7 +750,7 @@ function mainGamePanelHtml(ch) {
     : `0 / ${target}`;
   const progressCaption = isLantern ? "Progress:" : "Score:";
   const startMsg = isLantern
-    ? "Tap Start — jump puddles, collect family! 10 levels, 3 lives."
+    ? "Tap Start — tap Jump to leap over obstacles! 10 levels, 3 lives."
     : "Tap Start — use buttons below to play!";
   return `
     <div class="wizard-panel chapter-panel chapter-game-panel" id="cw-game" data-part="game">

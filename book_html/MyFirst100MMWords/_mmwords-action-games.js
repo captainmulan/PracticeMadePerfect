@@ -49,6 +49,24 @@
     };
   }
 
+  function wireJumpPad(container, state) {
+    if (!container) return;
+    container.innerHTML =
+      '<button type="button" class="action-btn action-btn-jump" data-dir="up">▲ Jump</button>';
+    var btn = container.querySelector(".action-btn-jump");
+    function down(e) {
+      e.preventDefault();
+      state.keys.up = true;
+      if (state.onJump) state.onJump();
+    }
+    function up() { state.keys.up = false; }
+    btn.addEventListener("touchstart", down, { passive: false });
+    btn.addEventListener("mousedown", down);
+    btn.addEventListener("touchend", up);
+    btn.addEventListener("mouseup", up);
+    btn.addEventListener("mouseleave", up);
+  }
+
   function wireTouchPad(container, state) {
     if (!container) return;
     container.innerHTML =
@@ -447,7 +465,7 @@
         state.grounded = false;
       }
     };
-    wireTouchPad(document.getElementById(opts.controlsId || "action-controls"), state);
+    wireJumpPad(document.getElementById(opts.controlsId || "action-controls"), state);
     bindKeys(state);
 
     function levelWord() {
@@ -482,7 +500,7 @@
       syncHud();
       if (full && overlayEl) {
         var msg = overlayEl.querySelector("p");
-        if (msg) msg.textContent = "Tap Start — jump puddles, collect family! 10 levels, 3 lives.";
+        if (msg) msg.textContent = "Tap Start — tap Jump to leap over obstacles! 10 levels, 3 lives.";
       }
     }
 

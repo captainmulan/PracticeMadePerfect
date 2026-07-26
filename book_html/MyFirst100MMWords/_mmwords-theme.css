@@ -478,6 +478,7 @@ body{
 .action-btn-wide{min-width:120px;font-size:14px;}
 .action-btn-main{background:rgba(56,189,248,.2);}
 .action-btn-hit{width:100%;max-width:280px;font-size:15px;background:linear-gradient(135deg,var(--teal),#0EA5E9);color:#fff;border-color:transparent;}
+.action-btn-jump{width:100%;max-width:220px;font-size:17px;padding:14px 20px;background:linear-gradient(135deg,rgba(56,189,248,.28),rgba(167,139,250,.28));}
 .action-btn:active{transform:scale(.96);}
 .game-hint{font-size:14px;color:var(--text-muted);line-height:1.4;}
 .action-canvas{
