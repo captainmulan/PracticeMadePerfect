@@ -39,7 +39,7 @@
 <div class="petals"></div>
 <div class="game-shell">
   <h1 class="title">🏘️ Build Myanmar Village</h1>
-  <p class="game-desc">Pick items. Tap the green land to build your village.</p>
+  <p class="game-desc">Pick items. Tap anywhere to build your village.</p>
 
   <div class="stamp-row" id="stampRow">
     <button type="button" class="stamp-btn selected" data-emoji="🏠" title="House">🏠</button>
@@ -58,6 +58,8 @@
     <button type="button" class="stamp-btn" data-emoji="🏮" title="Lantern">🏮</button>
     <button type="button" class="stamp-btn" data-emoji="🌸" title="Flower">🌸</button>
     <button type="button" class="stamp-btn" data-emoji="🪴" title="Plant">🪴</button>
+    <button type="button" class="stamp-btn" data-emoji="🎋" title="Bamboo">🎋</button>
+    <button type="button" class="stamp-btn" data-emoji="🐕" title="Dog">🐕</button>
     <button type="button" class="stamp-btn" data-emoji="☀️" title="Sun">☀️</button>
   </div>
   <div class="tool-row">
@@ -71,23 +73,20 @@
       <canvas id="gameCanvas"></canvas>
       <div class="overlay" id="startScreen">
         <h3>🌾 Welcome to Your Village!</h3>
-        <p>Pick a stamp. Tap the land to build.</p>
+        <p>Pick a stamp. Tap anywhere to build.</p>
         <button class="btn" type="button" id="btnStart">▶️ Start Building</button>
       </div>
     </div>
   </div>
 
-  <div class="nav-hint">
-    <div>← → next chapter.</div>
-    <div>🏠 Home page.</div>
-  </div>
+  <div class="nav-hint">← → next chapter. 🏠 Home page.</div>
 </div>
 <script>
 const STORAGE_KEY = 'book:myfirst100mmwords:intro-village';
 const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
 const GROUND_PAD = 48;
-const MOBILE = /🐘|🐔|🐃|🐄/;
-const STATIC = /🏠|🛖|🛕|🌳|🪵|🧱|🌾|🪴|🌸|☀️|🍚|🏮|👨‍👩‍👧/;
+const MOBILE = /🐘|🐔|🐃|🐄|🐕/;
+const STATIC = /🏠|🛖|🛕|🌳|🪵|🧱|🌾|🪴|🌸|☀️|🍚|🏮|👨‍👩‍👧|🎋/;
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
 let decorations = [];
@@ -127,8 +126,6 @@ function resize() {
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const gy = groundY(h);
-  decorations.forEach(d => { d.y = gy; });
 }
 
 function drawEmoji(emoji, x, y, size, flipX) {
@@ -215,11 +212,9 @@ function loop() {
   if (!running) return;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
-  const gy = groundY(h);
   drawVillageBg(w, h);
 
   decorations.forEach(d => {
-    d.y = gy;
     if (d.kind === 'mobile') {
       d.x += d.speed * d.dir;
       const margin = d.size * 0.55;
@@ -243,16 +238,16 @@ function placeAt(clientX, clientY) {
   const r = canvas.getBoundingClientRect();
   const w = r.width;
   const h = r.height;
-  const gy = groundY(h);
   const kind = itemKind(selectedEmoji);
   const size = kind === 'static' ? 26 + Math.random() * 10 : 28 + Math.random() * 12;
   const x = Math.max(size * 0.5, Math.min(w - size * 0.5, clientX - r.left));
+  const y = Math.max(size * 0.5, Math.min(h - size * 0.5, clientY - r.top));
 
   if (kind === 'mobile') {
     decorations.push({
       emoji: selectedEmoji,
       x: x,
-      y: gy,
+      y: y,
       size: size,
       kind: 'mobile',
       dir: Math.random() > 0.5 ? 1 : -1,
@@ -262,7 +257,7 @@ function placeAt(clientX, clientY) {
     decorations.push({
       emoji: selectedEmoji,
       x: x,
-      y: gy,
+      y: y,
       size: size,
       kind: 'static',
     });
