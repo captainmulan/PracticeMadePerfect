@@ -19,6 +19,8 @@
     .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
     .tool-btn{padding:8px 14px;border:none;border-radius:10px;background:rgba(139,37,37,0.12);color:#2C1810;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid rgba(201,162,39,0.4);}
     .tool-btn:active{transform:scale(.97);}
+    .tool-btn.active{border-color:#8B2525;background:rgba(139,37,37,0.18);box-shadow:0 0 10px rgba(201,162,39,0.35);}
+    .game-stage.eraser-mode{cursor:cell;}
     .stage-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;}
     .game-stage{position:relative;flex:1 1 auto;min-height:min(52vh,420px);border:2px solid rgba(201,162,39,0.55);border-radius:16px;overflow:hidden;background:#7CB342;touch-action:none;cursor:crosshair;}
     canvas{display:block;width:100%;height:100%;}
@@ -64,6 +66,7 @@
   </div>
   <div class="tool-row">
     <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnEraser">🧽 Eraser</button>
     <button type="button" class="tool-btn" id="btnClear">🧹 Clear Village</button>
     <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
   </div>
@@ -91,6 +94,7 @@ const PEOPLE = /👨‍👩‍👧|🧍|🧍‍♀️/;
 const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🌸|☀️|👨‍👩‍👧|🧍|🧍‍♀️|🎋|🌴|🌲/;
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
+let toolMode = 'stamp';
 let decorations = [];
 
 function loadVillage() {
@@ -112,7 +116,7 @@ function groundY(h) {
 function normalizeItem(d) {
   if (d.kind === 'mobile') {
     if (typeof d.dir !== 'number') d.dir = Math.random() > 0.5 ? 1 : -1;
-    if (typeof d.speed !== 'number') d.speed = 0.55 + Math.random() * 0.35;
+    if (typeof d.speed !== 'number' || d.speed > 0.45) d.speed = 0.35 + Math.random() * 0.2;
   }
 }
 
@@ -243,6 +247,33 @@ function loop() {
   animId = requestAnimationFrame(loop);
 }
 
+function updateToolUi() {
+  document.getElementById('btnEraser').classList.toggle('active', toolMode === 'eraser');
+  document.getElementById('stage').classList.toggle('eraser-mode', toolMode === 'eraser');
+}
+
+function hitDecoration(x, y) {
+  for (let i = decorations.length - 1; i >= 0; i--) {
+    const d = decorations[i];
+    const r = d.size * 0.48;
+    const dx = x - d.x;
+    const dy = y - d.y;
+    if (dx * dx + dy * dy <= r * r) return i;
+  }
+  return -1;
+}
+
+function eraseAt(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  const x = clientX - r.left;
+  const y = clientY - r.top;
+  const idx = hitDecoration(x, y);
+  if (idx < 0) return;
+  decorations.splice(idx, 1);
+  saveVillage();
+  updateCount();
+}
+
 function placeAt(clientX, clientY) {
   const r = canvas.getBoundingClientRect();
   const w = r.width;
@@ -260,7 +291,7 @@ function placeAt(clientX, clientY) {
       size: size,
       kind: 'mobile',
       dir: Math.random() > 0.5 ? 1 : -1,
-      speed: 0.55 + Math.random() * 0.35,
+      speed: 0.35 + Math.random() * 0.2,
     });
   } else {
     decorations.push({
@@ -285,11 +316,19 @@ document.getElementById('btnStart').onclick = startBuilding;
 
 document.querySelectorAll('.stamp-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    toolMode = 'stamp';
     document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedEmoji = btn.dataset.emoji;
+    updateToolUi();
   });
 });
+
+document.getElementById('btnEraser').onclick = () => {
+  toolMode = 'eraser';
+  document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+  updateToolUi();
+};
 
 document.getElementById('btnUndo').onclick = () => {
   if (!decorations.length) return;
@@ -308,7 +347,8 @@ function bindTap() {
   const hit = e => {
     if (document.getElementById('startScreen').style.display !== 'none') return;
     const p = e.touches ? e.touches[0] : e;
-    placeAt(p.clientX, p.clientY);
+    if (toolMode === 'eraser') eraseAt(p.clientX, p.clientY);
+    else placeAt(p.clientX, p.clientY);
   };
   canvas.addEventListener('click', hit);
   canvas.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
@@ -317,6 +357,7 @@ function bindTap() {
 loadVillage();
 resize();
 updateCount();
+updateToolUi();
 bindTap();
 window.addEventListener('resize', resize);
 
