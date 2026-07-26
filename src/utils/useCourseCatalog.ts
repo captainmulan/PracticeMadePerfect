@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Course } from "../data/courses";
-import { loadCoursesFromBrowserDb } from "./sqliteBrowserCourses";
+import { loadCourseSummariesFromBrowserDb } from "./sqliteBrowserCourses";
 
 export function useCourseCatalog() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -12,7 +12,7 @@ export function useCourseCatalog() {
     (async () => {
       try {
         console.log("loading books");
-        const data = await loadCoursesFromBrowserDb();
+        const data = await loadCourseSummariesFromBrowserDb();
         console.log("loaded books:", data);
         if (!active) return;
         setCourses(data);

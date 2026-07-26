@@ -150,46 +150,60 @@ export async function saveTasks(tasks: PracticeTask[]): Promise<void> {
 }
 
 // --- Courses operations ---
-export async function getCourses(): Promise<Course[]> {
-  console.log("getCourses called");
-  const db = await openDb();
-  console.log("db opened successfully");
-  const coursesTransaction = db.transaction([STORE_COURSES, STORE_CHAPTERS, STORE_STEPS], "readonly");
-  const coursesStore = coursesTransaction.objectStore(STORE_COURSES);
-  const chaptersStore = coursesTransaction.objectStore(STORE_CHAPTERS);
-  const stepsStore = coursesTransaction.objectStore(STORE_STEPS);
-  
-  console.log("fetching courses");
-  const courses = await promisifyRequest(coursesStore.getAll());
-  console.log("courses retrieved:", courses);
-  courses.forEach((c: any) => {
-    console.log(`Course ${c.id}: coverWidth=${c.coverWidth}, coverHeight=${c.coverHeight}`);
-  });
-  const chapters = await promisifyRequest(chaptersStore.getAll());
-  console.log("chapters retrieved:", chapters);
-  const steps = await promisifyRequest(stepsStore.getAll());
-  console.log("steps retrieved:", steps);
+function assembleChaptersForCourse(
+  courseId: string,
+  chapters: CourseChapter[],
+  steps: CourseStep[],
+): CourseChapter[] {
+  return chapters
+    .filter((chapter) => chapter.courseId === courseId)
+    .sort((a, b) => (a.chapterIndex ?? 0) - (b.chapterIndex ?? 0))
+    .map((chapter) => ({
+      ...chapter,
+      steps: steps
+        .filter((step) => step.chapterId === chapter.id)
+        .sort((a, b) => (a.stepIndex ?? 0) - (b.stepIndex ?? 0)),
+    }));
+}
 
-  // Reassemble the courses with chapters and steps
-  const result = courses
-    .sort((a: any, b: any) => (a.courseIndex ?? 0) - (b.courseIndex ?? 0))
-    .map((course: any) => ({
-    ...course,
-    chapters: chapters
-      .filter((chapter: any) => chapter.courseId === course.id)
-      .sort((a: any, b: any) => (a.chapterIndex ?? 0) - (b.chapterIndex ?? 0))
-      .map((chapter: any) => ({
-        ...chapter,
-        steps: steps
-          .filter((step: any) => step.chapterId === chapter.id)
-          .sort((a: any, b: any) => (a.stepIndex ?? 0) - (b.stepIndex ?? 0)),
-      })),
-  }));
-  console.log("assembled courses:", result);
-  result.forEach((c: any) => {
-    console.log(`Assembled course ${c.id}: coverWidth=${c.coverWidth}, coverHeight=${c.coverHeight}`);
-  });
-  return result;
+export async function getCourseSummaries(): Promise<Course[]> {
+  const db = await openDb();
+  const courses = await promisifyRequest(
+    db.transaction(STORE_COURSES, "readonly").objectStore(STORE_COURSES).getAll(),
+  );
+  return courses
+    .sort((a: Course, b: Course) => (a.courseIndex ?? 0) - (b.courseIndex ?? 0))
+    .map(({ chapters: _embedded, ...meta }) => ({ ...meta, chapters: [] } as Course));
+}
+
+export async function getCourseById(courseId: string): Promise<Course | null> {
+  const db = await openDb();
+  const tx = db.transaction([STORE_COURSES, STORE_CHAPTERS, STORE_STEPS], "readonly");
+  const raw = await promisifyRequest(tx.objectStore(STORE_COURSES).get(courseId));
+  if (!raw) return null;
+
+  const { chapters: _embedded, ...meta } = raw as Course;
+  const chapters = await promisifyRequest(
+    tx.objectStore(STORE_CHAPTERS).index("courseId").getAll(courseId),
+  );
+  const steps = await promisifyRequest(
+    tx.objectStore(STORE_STEPS).index("courseId").getAll(courseId),
+  );
+
+  return {
+    ...meta,
+    chapters: assembleChaptersForCourse(courseId, chapters, steps),
+  } as Course;
+}
+
+export async function getCourses(): Promise<Course[]> {
+  const summaries = await getCourseSummaries();
+  const courses: Course[] = [];
+  for (const summary of summaries) {
+    const course = await getCourseById(summary.id);
+    if (course) courses.push(course);
+  }
+  return courses;
 }
 
 export async function saveCourse(course: Course): Promise<void> {
@@ -220,7 +234,8 @@ export async function saveCourse(course: Course): Promise<void> {
   // Then: Write everything in a separate transaction without await
   await new Promise<void>((resolve, reject) => {
     const writeTransaction = db.transaction([STORE_COURSES, STORE_CHAPTERS, STORE_STEPS], "readwrite");
-    writeTransaction.objectStore(STORE_COURSES).put(course);
+    const { chapters, ...courseMeta } = course;
+    writeTransaction.objectStore(STORE_COURSES).put({ ...courseMeta, chapters: [] });
 
     // Delete old
     const chaptersStore = writeTransaction.objectStore(STORE_CHAPTERS);
@@ -252,18 +267,14 @@ export async function deleteCourse(courseId: string): Promise<void> {
   // Read phase
   await new Promise<void>((resolve, reject) => {
     const readTransaction = db.transaction([STORE_CHAPTERS, STORE_STEPS], "readonly");
-    const chaptersReq = readTransaction.objectStore(STORE_CHAPTERS).getAll();
-    const stepsReq = readTransaction.objectStore(STORE_STEPS).getAll();
+    const chaptersReq = readTransaction.objectStore(STORE_CHAPTERS).index("courseId").getAll(courseId);
+    const stepsReq = readTransaction.objectStore(STORE_STEPS).index("courseId").getAll(courseId);
 
     chaptersReq.onsuccess = () => {
-      chaptersToDelete = chaptersReq.result
-        .filter(ch => ch.courseId === courseId)
-        .map(ch => ch.id);
+      chaptersToDelete = chaptersReq.result.map((ch) => ch.id);
     };
     stepsReq.onsuccess = () => {
-      stepsToDelete = stepsReq.result
-        .filter(st => st.courseId === courseId)
-        .map(st => st.id);
+      stepsToDelete = stepsReq.result.map((st) => st.id);
     };
     readTransaction.oncomplete = () => resolve();
     readTransaction.onerror = () => reject(readTransaction.error);

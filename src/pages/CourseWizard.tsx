@@ -3,19 +3,47 @@ import { Link, useParams } from "react-router-dom";
 import CourseCodeStep from "../components/CourseCodeStep";
 import CourseHtmlStep from "../components/CourseHtmlStep";
 import CourseQuizStep from "../components/CourseQuizStep";
+import type { Course } from "../data/courses";
 import { courseStepLabel, flattenCourseSteps } from "../data/courses";
 import { loadCourseProgress, saveCourseProgress } from "../utils/courseUtils";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
+import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
-  const { courses, loaded } = useCourseCatalog();
-  const course = courses.find((item) => item.id === courseId);
+  const { courses, loaded: catalogLoaded } = useCourseCatalog();
+  const catalogCourse = courses.find((item) => item.id === courseId);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [courseLoaded, setCourseLoaded] = useState(false);
   const steps = useMemo(() => (course ? flattenCourseSteps(course) : []), [course]);
   const [stepIndex, setStepIndex] = useState(0);
   const placeholder = getPracticePageData().placeholder;
+
+  useEffect(() => {
+    if (!courseId) {
+      setCourse(null);
+      setCourseLoaded(true);
+      return;
+    }
+    let active = true;
+    setCourseLoaded(false);
+    loadFullCourseById(courseId)
+      .then((fullCourse) => {
+        if (!active) return;
+        setCourse(fullCourse);
+        setCourseLoaded(true);
+      })
+      .catch(() => {
+        if (!active) return;
+        setCourse(null);
+        setCourseLoaded(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [courseId]);
 
   useEffect(() => {
     if (!courseId) return;
@@ -45,11 +73,11 @@ export default function CourseWizard() {
     handleNext,
   );
 
-  if (!loaded) {
+  if (!catalogLoaded || !courseLoaded) {
     return <div className="page-content panel"><div className="panel-body">Loading course...</div></div>;
   }
 
-  if (!course || steps.length === 0) {
+  if (!catalogCourse || !course || steps.length === 0) {
     return (
       <div className="page-content panel">
         <div className="panel-heading">Course not found</div>

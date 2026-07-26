@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
-import { loadCoursesFromBrowserDb, persistCourse, removeCourse } from "../utils/sqliteBrowserCourses";
+import { loadCourseSummariesFromBrowserDb, loadFullCourseById, persistCourse, removeCourse, toCourseSummary } from "../utils/sqliteBrowserCourses";
 import { MAX_INLINE_HTML_BYTES } from "../utils/bookImport";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import AdminBookUploadPanel from "../components/AdminBookUploadPanel";
@@ -32,6 +32,8 @@ function rebuildChaptersFromSteps(courseId: string, steps: CourseStep[]): Course
 
 export default function AdminCourses() {
   const [books, setBooks] = useState<Course[]>([]);
+  const [loadedBook, setLoadedBook] = useState<Course | null>(null);
+  const [bookLoading, setBookLoading] = useState(false);
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [draftBook, setDraftBook] = useState<Course | null>(null);
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
@@ -45,19 +47,56 @@ export default function AdminCourses() {
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
 
   useEffect(() => {
-    loadCoursesFromBrowserDb()
+    loadCourseSummariesFromBrowserDb()
       .then((data) => {
         setBooks(data);
         if (data.length > 0) setSelectedBookId(data[0].id);
         setLoaded(true);
       })
       .catch((err) => setMessage(String(err)));
-    
+
     const defaultData = loadAdminData();
     setAdminData(defaultData);
   }, []);
 
-  const activeBook = draftBook ?? books.find((c) => c.id === selectedBookId) ?? null;
+  useEffect(() => {
+    if (!selectedBookId || draftBook) {
+      if (!draftBook) {
+        setLoadedBook(null);
+      }
+      setBookLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setBookLoading(true);
+    setLoadedBook(null);
+    loadFullCourseById(selectedBookId)
+      .then((book) => {
+        if (cancelled) return;
+        setLoadedBook(book);
+        setSelectedStepId((current) => {
+          if (!book) return null;
+          const steps = flattenCourseSteps(book);
+          if (current && steps.some((step) => step.id === current)) {
+            return current;
+          }
+          return steps[0]?.id ?? null;
+        });
+      })
+      .catch((err) => {
+        if (!cancelled) setMessage(String(err));
+      })
+      .finally(() => {
+        if (!cancelled) setBookLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedBookId, draftBook]);
+
+  const activeBook = draftBook ?? loadedBook;
   // Flatten all steps to treat as chapters in UI
   const allSteps = useMemo(() => (activeBook ? flattenCourseSteps(activeBook) : []), [activeBook]);
   const selectedStep = useMemo(() => {
@@ -123,9 +162,19 @@ export default function AdminCourses() {
     const next = updater(activeBook);
     if (draftBook) {
       setDraftBook(next);
-    } else {
-      setBooks((prev) => prev.map((c) => (c.id === next.id ? next : c)));
+      return;
     }
+    setLoadedBook(next);
+    setBooks((prev) => {
+      const summary = toCourseSummary(next);
+      const idx = prev.findIndex((book) => book.id === activeBook.id);
+      if (idx >= 0) {
+        const copy = prev.slice();
+        copy[idx] = summary;
+        return copy;
+      }
+      return [...prev, summary];
+    });
   }
 
   function updateStep(stepId: string, patch: Partial<CourseStep>) {
@@ -227,15 +276,18 @@ export default function AdminCourses() {
     };
     try {
       await persistCourse(normalized);
+      const summary = toCourseSummary(normalized);
       setBooks((prev) => {
-        const idx = prev.findIndex((book) => book.id === trimmedId);
+        const withoutIds = prev.filter((book) => book.id !== activeBook.id && book.id !== trimmedId);
+        const idx = prev.findIndex((book) => book.id === activeBook.id || book.id === trimmedId);
         if (idx >= 0) {
           const next = prev.slice();
-          next[idx] = normalized;
+          next[idx] = summary;
           return next;
         }
-        return [...prev, normalized];
+        return [...withoutIds, summary];
       });
+      setLoadedBook(normalized);
       setDraftBook(null);
       setSelectedBookId(trimmedId);
       const largePages = flattenCourseSteps(normalized).filter(
@@ -272,15 +324,17 @@ export default function AdminCourses() {
     if (saveImmediately) {
       try {
         await persistCourse(normalized);
+        const summary = toCourseSummary(normalized);
         setBooks((prev) => {
           const idx = prev.findIndex((book) => book.id === normalized.id);
           if (idx >= 0) {
             const next = prev.slice();
-            next[idx] = normalized;
+            next[idx] = summary;
             return next;
           }
-          return [...prev, normalized];
+          return [...prev, summary];
         });
+        setLoadedBook(normalized);
         setDraftBook(null);
         setSelectedBookId(normalized.id);
         setSelectedStepId(normalized.chapters[0]?.steps[0]?.id ?? null);
@@ -327,9 +381,10 @@ export default function AdminCourses() {
 
     try {
       await removeCourse(targetBookId);
-      const refreshed = await loadCoursesFromBrowserDb();
-      setBooks(refreshed);
-      const nextSelection = refreshed.find((book) => book.id !== targetBookId)?.id ?? null;
+      const remaining = books.filter((book) => book.id !== targetBookId);
+      setBooks(remaining);
+      setLoadedBook(null);
+      const nextSelection = remaining[0]?.id ?? null;
       setSelectedBookId(nextSelection);
       setSelectedStepId(null);
       setMessage("Book deleted.");
@@ -341,7 +396,7 @@ export default function AdminCourses() {
   }
 
   if (!loaded) {
-    return <div className="admin-section-body">Loading books...</div>;
+    return <div className="admin-section-body">Loading book list...</div>;
   }
 
   return (
@@ -364,9 +419,9 @@ export default function AdminCourses() {
         <div className="admin-book-actions">
           <button type="button" className="admin-btn admin-btn-book secondary small" onClick={startNewBook}>New Book</button>
           <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => setShowUploadPanel(true)}>Upload Book</button>
-          <button type="button" className="admin-btn admin-btn-book small" onClick={handleSaveBook}>Save Book</button>
+          <button type="button" className="admin-btn admin-btn-book small" onClick={handleSaveBook} disabled={bookLoading || !activeBook}>Save Book</button>
           {!draftBook && activeBook ? (
-            <button type="button" className="admin-btn admin-btn-book danger small" onClick={handleDeleteBook} disabled={isDeletingBook}>
+            <button type="button" className="admin-btn admin-btn-book danger small" onClick={handleDeleteBook} disabled={isDeletingBook || bookLoading}>
               {isDeletingBook ? "Deleting..." : "Delete Entire Book"}
             </button>
           ) : null}
@@ -375,7 +430,11 @@ export default function AdminCourses() {
 
       {message && <div className="admin-course-message">{message}</div>}
 
-      {showUploadPanel ? (
+      {bookLoading && !draftBook ? (
+        <div className="admin-section-body">Loading book pages...</div>
+      ) : null}
+
+      {!bookLoading && showUploadPanel ? (
         <AdminBookUploadPanel
           books={books}
           selectedBookId={selectedBookId}
@@ -384,7 +443,7 @@ export default function AdminCourses() {
         />
       ) : null}
 
-      {activeBook ? (
+      {!bookLoading && activeBook ? (
         <div className={`admin-courses-grid ${bookBuilderTab === "book" || bookBuilderTab === "empty-book" ? "admin-courses-grid-book-only" : ""}`}>
           <section className="admin-course-meta panel-bordered">
             <div className="admin-tabs admin-tabs-page" style={{ marginBottom: "16px" }}>
@@ -1029,9 +1088,9 @@ export default function AdminCourses() {
             </section>
           )}
         </div>
-      ) : (
+      ) : !bookLoading ? (
         <div className="admin-empty-state">No books yet. Create one in Admin.</div>
-      )}
+      ) : null}
     </div>
   );
 }
