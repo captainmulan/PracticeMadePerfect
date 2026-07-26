@@ -746,11 +746,11 @@ function mainGamePanelHtml(ch) {
   const hint = ch.gameHint || "Have fun and earn your badge!";
   const isLantern = ch.gameType === "lantern-run";
   const progressLabel = isLantern
-    ? `Level 1 / ${target}  ❤️❤️❤️  ·  Find family!`
+    ? `Level 1 / ${target}  ⏱ 22s  ❤️❤️❤️  ·  Reach family!`
     : `0 / ${target}`;
   const progressCaption = isLantern ? "Progress:" : "Score:";
   const startMsg = isLantern
-    ? "Tap Start — tap Jump to leap over obstacles! 10 levels, 3 lives."
+    ? "Tap Start — jump past wolves & thieves! Reach each family member before time runs out."
     : "Tap Start — use buttons below to play!";
   return `
     <div class="wizard-panel chapter-panel chapter-game-panel" id="cw-game" data-part="game">

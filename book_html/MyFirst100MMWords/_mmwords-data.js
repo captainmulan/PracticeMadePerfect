@@ -9,7 +9,7 @@
       badge: "Family Star",
       gameType: "lantern-run",
       gameTitle: "Lantern Run",
-      gameHint: "10 levels — jump puddles & lanterns, collect each family member! 3 lives.",
+      gameHint: "10 levels — dodge wolves, dogs & thieves! Reach family before time runs out. 3 lives.",
       gameTarget: 10,
       storyTitle: "The House Full of Names",
       segmentTitles: [
