@@ -691,16 +691,17 @@ function wordGridHtml(words, chapterId) {
   return words
     .map((w) => {
       const id = w.en.toLowerCase().replace(/\s+/g, "-");
+      const emoji = w.emoji || "🔤";
       return `
     <div class="word-card-item word-card" id="word-${id}" data-en="${esc(w.en)}" data-mm="${esc(w.mm)}" data-hint="${esc(w.hint || w.en)}">
-      <div class="word-card-label">${esc(w.en)}</div>
+      <div class="word-card-label word-card-emoji">${emoji}</div>
       <div class="word-bridge">
         <button type="button" class="speak-btn speak-btn-en" onclick="tapEn(this,'${chapterId}')">
-          <span class="speak-label">English</span>
+          <span class="speak-label speak-word-en">${esc(w.en)}</span>
           <span class="speak-icon">🔊 Hear</span>
         </button>
         <button type="button" class="speak-btn speak-btn-mm" onclick="tapMm(this,'${chapterId}')">
-          <span class="speak-label">Myanmar</span>
+          <span class="speak-label speak-word-mm">${esc(w.mm)}</span>
           <span class="speak-icon">🔊 Hear</span>
         </button>
       </div>

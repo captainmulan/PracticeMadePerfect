@@ -1055,12 +1055,26 @@ html:has(body.main-chapter-page){
 .word-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
 .word-card-item{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:rgba(253,248,240,.95);box-shadow:var(--shadow);}
 .word-card-label{padding:14px 10px 10px;text-align:center;font-size:16px;font-weight:700;color:var(--lacquer-deep);background:rgba(255,255,255,.5);border-bottom:1px solid var(--border);}
+.word-card-emoji{font-size:28px;line-height:1.2;font-weight:400;}
+.chapter-word-grid .word-card-emoji{font-size:24px;padding:10px 6px 8px;}
 .word-bridge{display:flex;align-items:stretch;}
 .speak-btn{flex:1;border:none;padding:12px 8px;cursor:pointer;font-family:inherit;transition:transform .1s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:64px;}
 .speak-btn:active,.speak-btn.pressed{transform:scale(.96);}
 .speak-btn-en{background:rgba(107,26,26,.08);color:var(--lacquer-deep);border-right:1px solid var(--border);}
 .speak-btn-mm{background:rgba(201,162,39,.15);color:var(--lacquer);}
 .speak-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.75;}
+.speak-word-en,.speak-word-mm{
+  font-size:13px;
+  font-weight:700;
+  text-transform:none;
+  letter-spacing:0;
+  opacity:1;
+  line-height:1.25;
+  text-align:center;
+}
+.speak-word-mm{font-family:'Padauk','Myanmar Text',sans-serif;font-size:14px;}
+.chapter-word-grid .speak-word-en{font-size:12px;}
+.chapter-word-grid .speak-word-mm{font-size:13px;}
 .speak-icon{font-size:13px;font-weight:700;}
 .challenge-box{background:rgba(201,162,39,.15);border-radius:var(--radius-sm);padding:12px;margin-top:12px;text-align:center;font-size:14px;color:var(--lacquer-deep);border:1px solid rgba(201,162,39,.35);}
 /* Explained — Sentences page (stage sizing like Solar System All Planets) */
