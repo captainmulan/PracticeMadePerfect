@@ -47,7 +47,7 @@
     <button type="button" class="stamp-btn" data-emoji="🛕" title="Pagoda">🛕</button>
     <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
     <button type="button" class="stamp-btn" data-emoji="🪵" title="Fence">🪵</button>
-    <button type="button" class="stamp-btn" data-emoji="🧱" title="Wall">🧱</button>
+    <button type="button" class="stamp-btn" data-emoji="🚪" title="Gate">🚪</button>
     <button type="button" class="stamp-btn" data-emoji="🌾" title="Paddy">🌾</button>
     <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
     <button type="button" class="stamp-btn" data-emoji="🐔" title="Chicken">🐔</button>
@@ -86,7 +86,8 @@ const STORAGE_KEY = 'book:myfirst100mmwords:intro-village';
 const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
 const GROUND_PAD = 48;
 const MOBILE = /🐘|🐔|🐃|🐄|🐕/;
-const STATIC = /🏠|🛖|🛕|🌳|🪵|🧱|🌾|🪴|🌸|☀️|🍚|🏮|👨‍👩‍👧|🎋/;
+const BUILDING = /🏠|🛖|🛕/;
+const STATIC = /🏠|🛖|🛕|🌳|🪵|🚪|🌾|🪴|🌸|☀️|🍚|🏮|👨‍👩‍👧|🎋/;
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
 let decorations = [];
@@ -204,6 +205,12 @@ function itemKind(emoji) {
   return 'static';
 }
 
+function itemSize(emoji, kind) {
+  if (BUILDING.test(emoji)) return 34 + Math.random() * 8;
+  if (kind === 'mobile') return 22 + Math.random() * 8;
+  return 26 + Math.random() * 10;
+}
+
 function updateCount() {
   document.getElementById('countLabel').textContent = '🎨 ' + decorations.length + ' item' + (decorations.length === 1 ? '' : 's');
 }
@@ -225,7 +232,7 @@ function loop() {
         d.x = w - margin;
         d.dir = -1;
       }
-      drawEmoji(d.emoji, d.x, d.y, d.size, d.dir < 0);
+      drawEmoji(d.emoji, d.x, d.y, d.size, d.dir > 0);
     } else {
       drawEmoji(d.emoji, d.x, d.y, d.size, false);
     }
@@ -239,7 +246,7 @@ function placeAt(clientX, clientY) {
   const w = r.width;
   const h = r.height;
   const kind = itemKind(selectedEmoji);
-  const size = kind === 'static' ? 26 + Math.random() * 10 : 28 + Math.random() * 12;
+  const size = itemSize(selectedEmoji, kind);
   const x = Math.max(size * 0.5, Math.min(w - size * 0.5, clientX - r.left));
   const y = Math.max(size * 0.5, Math.min(h - size * 0.5, clientY - r.top));
 
