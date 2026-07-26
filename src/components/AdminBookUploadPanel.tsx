@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Course } from "../data/courses";
 import {
   buildBookImportPreview,
@@ -7,12 +7,14 @@ import {
   previewExistingBookPageMappings,
   type BookImportPreview,
 } from "../utils/bookImport";
+import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 
 type UploadMode = "new" | "existing";
 
 interface AdminBookUploadPanelProps {
   books: Course[];
   selectedBookId: string | null;
+  loadedBook?: Course | null;
   onImported: (course: Course, summary: string, saveImmediately: boolean) => void;
   onCancel: () => void;
 }
@@ -20,29 +22,66 @@ interface AdminBookUploadPanelProps {
 export default function AdminBookUploadPanel({
   books,
   selectedBookId,
+  loadedBook = null,
   onImported,
   onCancel,
 }: AdminBookUploadPanelProps) {
   const folderInputRef = useRef<HTMLInputElement>(null);
   const [uploadMode, setUploadMode] = useState<UploadMode>("new");
   const [targetBookId, setTargetBookId] = useState(selectedBookId ?? "");
+  const [targetBookFull, setTargetBookFull] = useState<Course | null>(null);
+  const [targetBookLoading, setTargetBookLoading] = useState(false);
   const [preview, setPreview] = useState<BookImportPreview | null>(null);
   const [category, setCategory] = useState("IT");
   const [bookId, setBookId] = useState("");
   const [isReading, setIsReading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetBook = useMemo(
+  const targetBookSummary = useMemo(
     () => books.find((book) => book.id === targetBookId) ?? null,
     [books, targetBookId],
   );
 
+  useEffect(() => {
+    if (uploadMode !== "existing" || !targetBookId) {
+      setTargetBookFull(null);
+      setTargetBookLoading(false);
+      return;
+    }
+
+    if (loadedBook?.id === targetBookId && loadedBook.chapters.length > 0) {
+      setTargetBookFull(loadedBook);
+      setTargetBookLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setTargetBookLoading(true);
+    loadFullCourseById(targetBookId)
+      .then((book) => {
+        if (!cancelled) setTargetBookFull(book);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setTargetBookFull(null);
+          setError(String(err));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setTargetBookLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [uploadMode, targetBookId, loadedBook]);
+
   const existingMappings = useMemo(() => {
-    if (uploadMode !== "existing" || !preview || !targetBook) {
+    if (uploadMode !== "existing" || !preview || !targetBookFull) {
       return [];
     }
-    return previewExistingBookPageMappings(targetBook, preview.pages);
-  }, [preview, targetBook, uploadMode]);
+    return previewExistingBookPageMappings(targetBookFull, preview.pages);
+  }, [preview, targetBookFull, uploadMode]);
 
   async function handleFolderSelect(event: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files || []);
@@ -79,12 +118,16 @@ export default function AdminBookUploadPanel({
     if (!preview) return;
 
     if (uploadMode === "existing") {
-      if (!targetBook) {
+      if (!targetBookSummary) {
         setError("Select an existing book to update.");
         return;
       }
+      if (targetBookLoading || !targetBookFull) {
+        setError("Loading book pages for matching. Try again in a moment.");
+        return;
+      }
 
-      const result = mergeHtmlPagesIntoExistingCourse(targetBook, preview.pages);
+      const result = mergeHtmlPagesIntoExistingCourse(targetBookFull, preview.pages);
       if (result.updatedCount === 0) {
         setError("No HTML pages matched existing book pages. Use names like 001-intro.html or page1.html.");
         return;
@@ -95,8 +138,8 @@ export default function AdminBookUploadPanel({
         : "";
 
       const summary = saveImmediately
-        ? `Updated ${result.updatedCount} page(s) in "${targetBook.title}".${unmatchedNote}`
-        : `Loaded ${result.updatedCount} updated page(s) for "${targetBook.title}". Review pages, then click Save Book.${unmatchedNote}`;
+        ? `Updated ${result.updatedCount} page(s) in "${targetBookFull.title}".${unmatchedNote}`
+        : `Loaded ${result.updatedCount} updated page(s) for "${targetBookFull.title}". Review pages, then click Save Book.${unmatchedNote}`;
 
       onImported(result.course, summary, saveImmediately);
       return;
@@ -233,8 +276,11 @@ export default function AdminBookUploadPanel({
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Target book</span>
-                <input value={targetBook?.title ?? "Select a book"} readOnly className="admin-grid-input" />
+                <input value={targetBookSummary?.title ?? "Select a book"} readOnly className="admin-grid-input" />
               </label>
+              {targetBookLoading ? (
+                <div className="admin-course-message">Loading book pages for matching...</div>
+              ) : null}
             </div>
           )}
 
@@ -247,7 +293,9 @@ export default function AdminBookUploadPanel({
           <div className="admin-book-upload-summary">
             {preview.pages.length} HTML pages found
             {uploadMode === "existing"
-              ? ` · ${existingMappings.filter((mapping) => mapping.matched).length} matched to existing pages`
+              ? targetBookLoading
+                ? " · loading existing pages..."
+                : ` · ${existingMappings.filter((mapping) => mapping.matched).length} matched to existing pages`
               : ""}
           </div>
 
@@ -278,10 +326,10 @@ export default function AdminBookUploadPanel({
           </ul>
 
           <div className="admin-book-upload-footer">
-            <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => handleApply(false)}>
+            <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => handleApply(false)} disabled={uploadMode === "existing" && targetBookLoading}>
               {uploadMode === "existing" ? "Apply to Draft" : "Load as Draft"}
             </button>
-            <button type="button" className="admin-btn admin-btn-book small" onClick={() => handleApply(true)}>
+            <button type="button" className="admin-btn admin-btn-book small" onClick={() => handleApply(true)} disabled={uploadMode === "existing" && targetBookLoading}>
               {uploadMode === "existing" ? "Apply & Save Book" : "Create & Save Book"}
             </button>
           </div>

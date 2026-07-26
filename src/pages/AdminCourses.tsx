@@ -438,6 +438,7 @@ export default function AdminCourses() {
         <AdminBookUploadPanel
           books={books}
           selectedBookId={selectedBookId}
+          loadedBook={loadedBook}
           onImported={handleImportedBook}
           onCancel={() => setShowUploadPanel(false)}
         />
