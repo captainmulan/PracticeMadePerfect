@@ -166,8 +166,9 @@
     ctx.fill();
   }
 
-  function drawVillageBg(ctx, W, H, scroll, groundY) {
-    var off = (scroll * 0.15) % (W + 80);
+  function drawVillageBg(ctx, W, H, scroll, groundY, parallax) {
+    var rate = parallax == null ? 0.15 : parallax;
+    var off = (scroll * rate) % (W + 80);
     for (var i = -1; i < 4; i++) {
       var bx = i * (W * 0.35) - off;
       ctx.fillStyle = "rgba(30,18,12,.55)";
@@ -185,7 +186,7 @@
     }
   }
 
-  function drawGround(ctx, W, H, color, label, accent) {
+  function drawGround(ctx, W, H, color, label, accent, scroll) {
     var gy = H - 40;
     var g = ctx.createLinearGradient(0, gy - 8, 0, H);
     g.addColorStop(0, accent || color);
@@ -196,10 +197,12 @@
     ctx.fillRect(0, gy, W, 3);
     ctx.strokeStyle = "rgba(0,0,0,.08)";
     ctx.lineWidth = 1;
-    for (var i = 0; i < W; i += 28) {
+    var dashOff = typeof scroll === "number" ? scroll % 28 : 0;
+    for (var i = -1; i <= Math.ceil(W / 28) + 1; i++) {
+      var xi = i * 28 - dashOff;
       ctx.beginPath();
-      ctx.moveTo(i, gy + 8);
-      ctx.lineTo(i + 14, gy + 8);
+      ctx.moveTo(xi, gy + 8);
+      ctx.lineTo(xi + 14, gy + 8);
       ctx.stroke();
     }
     if (label) {
@@ -427,8 +430,8 @@
 
   function drawFamilyEnemy(ctx, o, ox, groundY, tick) {
     if (o.remove) return;
-    var walk = Math.sin(tick * 0.14 + (o.x || 0) * 0.015) * (o.boss ? 4 : 2.5);
-    var hop = Math.abs(Math.sin(tick * 0.2 + (o.x || 0) * 0.02)) * (o.boss ? 6 : 4);
+    var walk = Math.sin(tick * 0.22 + (o.x || 0) * 0.015) * (o.boss ? 5 : 3);
+    var hop = Math.abs(Math.sin(tick * 0.28 + (o.x || 0) * 0.02)) * (o.boss ? 6 : 4);
     var size = o.size || (o.boss ? 50 : 36);
     var ey = groundY - 34 - hop;
     var sx = ox + walk;
@@ -441,9 +444,9 @@
     ctx.save();
     ctx.globalAlpha = alpha;
     if (o.flash > 0) {
-      ctx.fillStyle = "rgba(251,191,36,.45)";
+      ctx.fillStyle = "rgba(251,191,36,.35)";
       ctx.beginPath();
-      ctx.arc(sx, ey, size * 0.55, 0, Math.PI * 2);
+      ctx.arc(sx, ey, size * 0.45, 0, Math.PI * 2);
       ctx.fill();
     }
     if (!o.dead) drawShadow(ctx, sx, groundY - 6, o.boss ? 26 : 15);
@@ -452,24 +455,21 @@
       ctx.font = "16px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("💫", sx, ey - size * 0.8);
-    }
-    if (o.label && !o.dead) {
-      ctx.font = "bold " + (o.boss ? 11 : 9) + "px Georgia,serif";
-      ctx.fillStyle = o.boss ? "#FDE68A" : "rgba(255,255,255,.95)";
-      ctx.strokeStyle = "rgba(49,46,129,.8)";
-      ctx.lineWidth = 2.5;
+    } else if (o.label) {
+      ctx.font = "bold " + (o.boss ? 10 : 9) + "px Georgia,serif";
+      ctx.fillStyle = o.boss ? "#FDE68A" : "#FFF8E7";
       ctx.textAlign = "center";
-      ctx.strokeText(o.label, sx, ey - size * 0.62);
-      ctx.fillText(o.label, sx, ey - size * 0.62);
+      ctx.fillText(o.label, sx, ey - size * 0.58);
     }
     ctx.restore();
   }
 
-  function drawSkyLanterns(ctx, W, H, lanterns, scroll, tick) {
+  function drawSkyLanterns(ctx, W, H, lanterns, scroll, tick, parallax) {
+    var rate = parallax == null ? 0.08 : parallax;
     lanterns.forEach(function (L) {
-      var sx = ((L.x - scroll * 0.08) % (W + 80)) - 20;
+      var sx = ((L.x - scroll * rate) % (W + 80)) - 20;
       if (sx < -40 || sx > W + 40) return;
-      var sy = L.y + Math.sin(tick * 0.025 + L.seed) * 10;
+      var sy = L.y + Math.sin(tick * 0.045 + L.seed) * 10;
       var glow = 0.2 + 0.15 * Math.sin(tick * 0.04 + L.seed);
       ctx.fillStyle = "rgba(251,191,36," + glow + ")";
       ctx.beginPath();
@@ -592,13 +592,13 @@
 
     function levelConfig(level) {
       var bossLevel = isBossLevel(level);
-      var dist = 1500 + level * 240 + (bossLevel ? 520 : 0);
-      var timeSec = 55 + level * 7 + (bossLevel ? 30 : 0);
-      var scrollSpeed = 0.75 + level * 0.24;
+      var dist = 1100 + level * 180 + (bossLevel ? 420 : 0);
+      var timeSec = 40 + level * 5 + (bossLevel ? 25 : 0);
+      var scrollSpeed = 2.8 + level * 0.38;
       var enemyCount = bossLevel ? 2 + Math.floor(level / 4) : 3 + Math.floor(level * 0.45);
-      var gap = Math.max(150, 220 - level * 3);
+      var gap = Math.max(130, 190 - level * 3);
       var obstacles = [];
-      var x = 360;
+      var x = 220;
       for (var i = 0; i < enemyCount; i++) {
         var e = familyEnemies[i % familyEnemies.length];
         obstacles.push({
@@ -676,7 +676,7 @@
         got: false
       };
       state.spawnT = 0;
-      state.levelBanner = 100;
+      state.levelBanner = 50;
       state.px = 70;
       state.vy = 0;
       state.grounded = true;
@@ -744,7 +744,7 @@
     function enemyOx(o) {
       var ox = o.x - state.scroll;
       if (state.boss && o.boss) {
-        ox += Math.sin(state.boss.patrolT * 0.05 + o.x * 0.01) * 36;
+        ox += Math.sin(state.boss.patrolT * 0.09 + o.x * 0.01) * 42;
       }
       return ox;
     }
@@ -849,9 +849,9 @@
       drawSky(ctx, W, H, theme.skyTop, theme.skyBot);
       drawStars(ctx, W, H, state.spawnT);
       drawMoon(ctx, W);
-      drawSkyLanterns(ctx, W, H, state.skyLanterns, state.scroll, state.spawnT);
-      drawVillageBg(ctx, W, H, state.scroll, groundY);
-      drawGround(ctx, W, H, theme.ground, theme.label, theme.groundAccent);
+      drawSkyLanterns(ctx, W, H, state.skyLanterns, state.scroll, state.spawnT, 0.45);
+      drawVillageBg(ctx, W, H, state.scroll, groundY, 0.62);
+      drawGround(ctx, W, H, theme.ground, theme.label, theme.groundAccent, state.scroll);
 
       state.obstacles.forEach(function (o) {
         var ox = enemyOx(o);
