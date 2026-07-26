@@ -49,6 +49,24 @@ export function resolveBookHtmlFolder(options: {
   return null;
 }
 
+/** Folder name for /book_html/… iframe links when importing or updating a book. */
+export function resolveImportBookHtmlFolder(
+  course?: { id?: string; bookHtmlFolder?: string | null } | null,
+  uploadFolderName?: string,
+): string {
+  const fromCourse = resolveBookHtmlFolder({
+    bookHtmlFolder: course?.bookHtmlFolder,
+    courseId: course?.id,
+  });
+  if (fromCourse) {
+    return fromCourse;
+  }
+  if (uploadFolderName && uploadFolderName !== "Imported Book") {
+    return uploadFolderName;
+  }
+  return uploadFolderName ?? "Imported Book";
+}
+
 function usesRelativeBookAssets(html: string): boolean {
   return /(?:href|src)=["'](?:_mmwords-|assets\/)/i.test(html);
 }

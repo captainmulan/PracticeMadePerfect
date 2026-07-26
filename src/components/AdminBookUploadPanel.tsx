@@ -5,8 +5,10 @@ import {
   buildCourseFromPreview,
   mergeHtmlPagesIntoExistingCourse,
   previewExistingBookPageMappings,
+  readHtmlPagesFromFiles,
   type BookImportPreview,
 } from "../utils/bookImport";
+import { resolveImportBookHtmlFolder } from "../utils/htmlStepContent";
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 
 type UploadMode = "new" | "existing";
@@ -27,6 +29,7 @@ export default function AdminBookUploadPanel({
   onCancel,
 }: AdminBookUploadPanelProps) {
   const folderInputRef = useRef<HTMLInputElement>(null);
+  const selectedFilesRef = useRef<File[]>([]);
   const [uploadMode, setUploadMode] = useState<UploadMode>("new");
   const [targetBookId, setTargetBookId] = useState(selectedBookId ?? "");
   const [targetBookFull, setTargetBookFull] = useState<Course | null>(null);
@@ -94,6 +97,7 @@ export default function AdminBookUploadPanel({
     setError("");
 
     try {
+      selectedFilesRef.current = files;
       const nextPreview = await buildBookImportPreview(
         files,
         books.length,
@@ -114,49 +118,69 @@ export default function AdminBookUploadPanel({
     }
   }
 
-  function handleApply(saveImmediately: boolean) {
+  async function handleApply(saveImmediately: boolean) {
     if (!preview) return;
-
-    if (uploadMode === "existing") {
-      if (!targetBookSummary) {
-        setError("Select an existing book to update.");
-        return;
-      }
-      if (targetBookLoading || !targetBookFull) {
-        setError("Loading book pages for matching. Try again in a moment.");
-        return;
-      }
-
-      const result = mergeHtmlPagesIntoExistingCourse(targetBookFull, preview.pages, preview.folderName);
-      if (result.updatedCount === 0) {
-        setError("No HTML pages matched existing book pages. Use names like 001-intro.html or page1.html.");
-        return;
-      }
-
-      const unmatchedNote = result.unmatchedFiles.length > 0
-        ? ` Skipped ${result.unmatchedFiles.length} file(s): ${result.unmatchedFiles.slice(0, 4).join(", ")}${result.unmatchedFiles.length > 4 ? "…" : ""}.`
-        : "";
-
-      const summary = saveImmediately
-        ? `Updated ${result.updatedCount} page(s) in "${targetBookFull.title}".${unmatchedNote}`
-        : `Loaded ${result.updatedCount} updated page(s) for "${targetBookFull.title}". Review pages, then click Save Book.${unmatchedNote}`;
-
-      onImported(result.course, summary, saveImmediately);
+    const files = selectedFilesRef.current;
+    if (files.length === 0) {
+      setError("Choose the HTML folder again before applying.");
       return;
     }
 
-    const trimmedId = bookId.trim() || preview.bookId;
+    setError("");
+
+    try {
+      if (uploadMode === "existing") {
+        if (!targetBookSummary) {
+          setError("Select an existing book to update.");
+          return;
+        }
+        if (targetBookLoading || !targetBookFull) {
+          setError("Loading book pages for matching. Try again in a moment.");
+          return;
+        }
+
+        const folder = resolveImportBookHtmlFolder(targetBookFull, preview.folderName);
+        const pages = await readHtmlPagesFromFiles(files, { preferredFolder: folder });
+        const result = mergeHtmlPagesIntoExistingCourse(targetBookFull, pages, folder);
+        if (result.updatedCount === 0) {
+          setError("No HTML pages matched existing book pages. Use names like 001-intro.html or page1.html.");
+          return;
+        }
+
+        const unmatchedNote = result.unmatchedFiles.length > 0
+          ? ` Skipped ${result.unmatchedFiles.length} file(s): ${result.unmatchedFiles.slice(0, 4).join(", ")}${result.unmatchedFiles.length > 4 ? "…" : ""}.`
+          : "";
+
+        const summary = saveImmediately
+          ? `Updated ${result.updatedCount} page(s) in "${targetBookFull.title}".${unmatchedNote}`
+          : `Loaded ${result.updatedCount} updated page(s) for "${targetBookFull.title}". Review pages, then click Save Book.${unmatchedNote}`;
+
+        onImported(result.course, summary, saveImmediately);
+        return;
+      }
+
+      const trimmedId = bookId.trim() || preview.bookId;
     if (!trimmedId) {
       setError("Book id is required.");
       return;
     }
 
-    const course = buildCourseFromPreview(preview, books.length, category, trimmedId);
+    const folder = resolveImportBookHtmlFolder(null, preview.folderName);
+    const pages = await readHtmlPagesFromFiles(files, { preferredFolder: folder });
+    const course = buildCourseFromPreview(
+      { ...preview, pages },
+      books.length,
+      category,
+      trimmedId,
+    );
     const summary = saveImmediately
       ? `Uploaded and saved "${course.title}" with ${preview.pages.length} pages.`
       : `Loaded "${course.title}" with ${preview.pages.length} pages. Review pages, then click Save Book.`;
 
-    onImported(course, summary, saveImmediately);
+    onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
+    } catch (err) {
+      setError(String(err));
+    }
   }
 
   return (

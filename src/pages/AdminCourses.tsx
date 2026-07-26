@@ -45,6 +45,7 @@ export default function AdminCourses() {
   const [isDeletingBook, setIsDeletingBook] = useState(false);
   const [showUploadPanel, setShowUploadPanel] = useState(false);
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
+  const skipBookReloadRef = useRef<string | null>(null);
 
   useEffect(() => {
     loadCourseSummariesFromBrowserDb()
@@ -64,6 +65,12 @@ export default function AdminCourses() {
       if (!draftBook) {
         setLoadedBook(null);
       }
+      setBookLoading(false);
+      return;
+    }
+
+    if (skipBookReloadRef.current === selectedBookId) {
+      skipBookReloadRef.current = null;
       setBookLoading(false);
       return;
     }
@@ -289,6 +296,7 @@ export default function AdminCourses() {
       });
       setLoadedBook(normalized);
       setDraftBook(null);
+      skipBookReloadRef.current = trimmedId;
       setSelectedBookId(trimmedId);
       const largePages = flattenCourseSteps(normalized).filter(
         (step) => (step.contentHtml?.length ?? 0) > MAX_INLINE_HTML_BYTES,
@@ -301,6 +309,11 @@ export default function AdminCourses() {
     } catch (err) {
       setMessage(String(err));
     }
+  }
+
+  function firstStepId(course: Course): string | null {
+    const steps = flattenCourseSteps(course).slice().sort((a, b) => a.stepIndex - b.stepIndex);
+    return steps[0]?.id ?? null;
   }
 
   async function handleImportedBook(course: Course, summary: string, saveImmediately: boolean) {
@@ -336,8 +349,9 @@ export default function AdminCourses() {
         });
         setLoadedBook(normalized);
         setDraftBook(null);
+        skipBookReloadRef.current = normalized.id;
         setSelectedBookId(normalized.id);
-        setSelectedStepId(normalized.chapters[0]?.steps[0]?.id ?? null);
+        setSelectedStepId(firstStepId(normalized));
         setShowUploadPanel(false);
         setBookBuilderTab("page");
         setMessage(summary);
@@ -349,7 +363,7 @@ export default function AdminCourses() {
 
     setDraftBook(normalized);
     setSelectedBookId(null);
-    setSelectedStepId(normalized.chapters[0]?.steps[0]?.id ?? null);
+    setSelectedStepId(firstStepId(normalized));
     setShowUploadPanel(false);
     setBookBuilderTab("page");
     setMessage(summary);

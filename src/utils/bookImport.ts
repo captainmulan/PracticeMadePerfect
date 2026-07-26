@@ -1,5 +1,6 @@
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
+import { resolveImportBookHtmlFolder } from "./htmlStepContent";
 
 export interface ParsedHtmlPage {
   fileName: string;
@@ -77,6 +78,7 @@ export function mergeHtmlPagesIntoExistingCourse(
   bookHtmlFolder?: string,
 ): ExistingBookMergeResult {
   const steps = flattenCourseSteps(course);
+  const folder = resolveImportBookHtmlFolder(course, bookHtmlFolder);
   const contentUpdates = new Map<string, string>();
   const titleUpdates = new Map<string, string>();
   const unmatchedFiles: string[] = [];
@@ -100,7 +102,7 @@ export function mergeHtmlPagesIntoExistingCourse(
       continue;
     }
 
-    contentUpdates.set(step.id, page.content);
+    contentUpdates.set(step.id, normalizeImportedPageContent(page, folder));
     if (page.title) {
       titleUpdates.set(step.id, page.title);
     }
@@ -115,7 +117,7 @@ export function mergeHtmlPagesIntoExistingCourse(
 
   const mergedCourse: Course = {
     ...course,
-    bookHtmlFolder: bookHtmlFolder ?? course.bookHtmlFolder,
+    bookHtmlFolder: folder,
     chapters: course.chapters.map((chapter) => ({
       ...chapter,
       steps: chapter.steps.map((step) => {
@@ -204,6 +206,13 @@ export function resolveStepContentHtml(
   return content;
 }
 
+function normalizeImportedPageContent(page: ParsedHtmlPage, folderName: string): string {
+  if (/^\s*<iframe\b/i.test(page.content)) {
+    return bookHtmlIframeContent(folderName, page.fileName);
+  }
+  return page.content;
+}
+
 export function getFolderInfoFromFiles(files: File[]): { folderPath: string; folderName: string } {
   const firstPath = files.find((file) => file.webkitRelativePath)?.webkitRelativePath;
   if (!firstPath) {
@@ -220,20 +229,27 @@ export function getFolderInfoFromFiles(files: File[]): { folderPath: string; fol
   return { folderPath, folderName };
 }
 
-export async function readHtmlPagesFromFiles(files: File[]): Promise<ParsedHtmlPage[]> {
+export async function readHtmlPagesFromFiles(
+  files: File[],
+  options?: { preferredFolder?: string },
+): Promise<ParsedHtmlPage[]> {
   const htmlFiles = files.filter((file) => /\.html?$/i.test(file.name));
-  const { folderName } = getFolderInfoFromFiles(files);
-  const pages = htmlFiles.map((file) => {
+  const { folderName: detectedFolder } = getFolderInfoFromFiles(files);
+  const folderName = options?.preferredFolder ?? detectedFolder;
+
+  const pages = await Promise.all(htmlFiles.map(async (file) => {
     const parsed = parseHtmlFileName(file.name);
+    const text = await file.text();
+    const content = resolveStepContentHtml(folderName, file.name, text);
     return {
       fileName: file.name,
       relativePath: file.webkitRelativePath || file.name,
       pageNumber: parsed.pageNumber,
       sortOrder: parsed.sortOrder,
       title: parsed.title,
-      content: bookHtmlIframeContent(folderName, file.name),
+      content,
     };
-  });
+  }));
 
   return pages.sort((a, b) => {
     if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
@@ -331,8 +347,9 @@ export async function buildBookImportPreview(
   files: File[],
   _courseIndex: number,
   existingBookIds: string[],
+  options?: { preferredFolder?: string },
 ): Promise<BookImportPreview | null> {
-  const pages = await readHtmlPagesFromFiles(files);
+  const pages = await readHtmlPagesFromFiles(files, options);
   if (pages.length === 0) {
     return null;
   }

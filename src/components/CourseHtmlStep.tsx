@@ -63,7 +63,7 @@ export default function CourseHtmlStep({
       canNext={canNext}
     >
       <iframe
-        key={frameSrc ?? `${step.id}-${resolvedFolder ?? "inline"}`}
+        key={frameSrc ?? `${step.id}-${(step.contentHtml ?? "").length}`}
         title={step.title}
         className="practice-html-iframe"
         sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-popups"
