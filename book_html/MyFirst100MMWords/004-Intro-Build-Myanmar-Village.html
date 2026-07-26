@@ -50,12 +50,12 @@
     <button type="button" class="stamp-btn" data-emoji="🌴" title="Palm tree">🌴</button>
     <button type="button" class="stamp-btn" data-emoji="🌾" title="Paddy">🌾</button>
     <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
-    <button type="button" class="stamp-btn" data-emoji="🐔" title="Chicken">🐔</button>
+    <button type="button" class="stamp-btn" data-emoji="🧒" title="Child">🧒</button>
     <button type="button" class="stamp-btn" data-emoji="🐃" title="Buffalo">🐃</button>
     <button type="button" class="stamp-btn" data-emoji="🐄" title="Cow">🐄</button>
     <button type="button" class="stamp-btn" data-emoji="👨‍👩‍👧" title="Family">👨‍👩‍👧</button>
     <button type="button" class="stamp-btn" data-emoji="🌲" title="Evergreen">🌲</button>
-    <button type="button" class="stamp-btn" data-emoji="🪷" title="Lotus">🪷</button>
+    <button type="button" class="stamp-btn" data-emoji="👦" title="Boy">👦</button>
     <button type="button" class="stamp-btn" data-emoji="🌸" title="Flower">🌸</button>
     <button type="button" class="stamp-btn" data-emoji="🪴" title="Plant">🪴</button>
     <button type="button" class="stamp-btn" data-emoji="🎋" title="Bamboo">🎋</button>
@@ -85,10 +85,10 @@
 const STORAGE_KEY = 'book:myfirst100mmwords:intro-village';
 const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
 const GROUND_PAD = 48;
-const MOBILE = /🐘|🐔|🐃|🐄|🐕/;
+const MOBILE = /🐘|🐃|🐄|🐕/;
 const BUILDING = /🏠|🛖|🛕/;
-const PEOPLE = /👨‍👩‍👧/;
-const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🌸|☀️|👨‍👩‍👧|🎋|🌴|🌲|🪷/;
+const PEOPLE = /👨‍👩‍👧|🧒|👦/;
+const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🌸|☀️|👨‍👩‍👧|🧒|👦|🎋|🌴|🌲/;
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
 let decorations = [];
