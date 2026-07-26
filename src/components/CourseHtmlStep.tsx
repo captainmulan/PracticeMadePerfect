@@ -1,5 +1,6 @@
 import type { CourseStep } from "../data/courses";
 import PracticeWorkspace from "./PracticeWorkspace";
+import { buildHtmlStepSrcDoc, extractBookHtmlIframeSrc } from "../utils/htmlStepContent";
 import "../styles/course.css";
 
 interface CourseHtmlStepProps {
@@ -32,10 +33,8 @@ export default function CourseHtmlStep({
   canNext = false,
 }: CourseHtmlStepProps) {
   const contentHtml = step.contentHtml ?? "<p><em>No lesson content yet.</em></p>";
-  const isFullDocument = /<\s*html/i.test(contentHtml);
-  const srcDoc = isFullDocument
-    ? contentHtml
-    : `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${contentHtml}</body></html>`;
+  const frameSrc = extractBookHtmlIframeSrc(contentHtml);
+  const srcDoc = frameSrc ? undefined : buildHtmlStepSrcDoc(contentHtml);
 
   return (
     <PracticeWorkspace
@@ -53,9 +52,11 @@ export default function CourseHtmlStep({
       canNext={canNext}
     >
       <iframe
+        key={frameSrc ?? step.id}
         title={step.title}
         className="practice-html-iframe"
         sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-popups"
+        src={frameSrc}
         srcDoc={srcDoc}
         loading="lazy"
       />

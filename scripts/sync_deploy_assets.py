@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC_DB = ROOT / 'data' / 'tasks.db'
 PUBLIC_DB = ROOT / 'public' / 'data' / 'tasks.db'
 DIST_DIR = ROOT / 'dist'
+BOOK_HTML_SRC = ROOT / 'book_html'
 ADMIN_SRC = ROOT / 'deploy' / 'admin.json'
 DEPLOY_DB_SRC = ROOT / 'deploy' / 'tasks.db'
 DEPLOY_INDEXEDDB_SRC = ROOT / 'deploy' / 'indexeddb-export.json'
@@ -71,6 +72,12 @@ if ADMIN_SRC.exists():
 print(f'Copied {SRC_DB} -> {PUBLIC_DB}')
 if DIST_DIR.exists():
     print(f'Copied {SRC_DB} -> {dist_db}')
+    if BOOK_HTML_SRC.exists():
+        dist_book_html = DIST_DIR / 'book_html'
+        if dist_book_html.exists():
+            shutil.rmtree(dist_book_html)
+        shutil.copytree(BOOK_HTML_SRC, dist_book_html)
+        print(f'Copied book_html -> {dist_book_html}')
     if ADMIN_SRC.exists():
         print(f'Copied {ADMIN_SRC} -> {dist_admin} and injected into {index_path}')
     
