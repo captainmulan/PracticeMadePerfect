@@ -89,7 +89,7 @@
         sentences: [
           { en: "This is my cousin.", mm: "ဒါက ကျွန်မဝမ်းကွဲပါ။" },
           { en: "I play with my cousin.", mm: "ကျွန်မဝမ်းကွဲနဲ့ ကစားတယ်။" },
-          { en: "My cousin is my friend.", mm: "ကျွန်မဝမ်းကွဲက မိတ်ဆွေပါ။" }
+          { en: "My cousin lives nearby.", mm: "ကျွန်မဝမ်းကွဲက အနီးမှာ နေတယ်။" }
         ]
       },
       {
