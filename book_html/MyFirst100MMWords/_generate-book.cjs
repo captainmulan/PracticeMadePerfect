@@ -744,16 +744,24 @@ function mainWizardPanelHtml(ch, idx, story, words, titles, active) {
 function mainGamePanelHtml(ch) {
   const target = ch.gameTarget || 8;
   const hint = ch.gameHint || "Have fun and earn your badge!";
+  const isLantern = ch.gameType === "lantern-run";
+  const progressLabel = isLantern
+    ? `Level 1 / ${target}  ❤️❤️❤️  ·  Find family!`
+    : `0 / ${target}`;
+  const progressCaption = isLantern ? "Progress:" : "Score:";
+  const startMsg = isLantern
+    ? "Tap Start — jump puddles, collect family! 10 levels, 3 lives."
+    : "Tap Start — use buttons below to play!";
   return `
     <div class="wizard-panel chapter-panel chapter-game-panel" id="cw-game" data-part="game">
       <div class="game-section chapter-game-inner action-game-wrap">
         <h2>${esc(ch.gameTitle)}</h2>
         <p class="game-meta game-hint">${esc(hint)}</p>
-        <p class="game-meta">Score: <strong id="action-score">0 / ${target}</strong></p>
+        <p class="game-meta">${progressCaption} <strong id="action-score">${esc(progressLabel)}</strong></p>
         <div class="action-game-stage">
           <canvas id="action-canvas" class="game-canvas action-canvas"></canvas>
           <div class="action-overlay" id="action-start-overlay">
-            <p>Tap Start — use buttons below to play!</p>
+            <p>${esc(startMsg)}</p>
             <button type="button" class="game-start-btn" id="action-start-btn">▶ Start game</button>
           </div>
         </div>

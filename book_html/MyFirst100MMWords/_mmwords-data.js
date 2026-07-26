@@ -9,8 +9,8 @@
       badge: "Family Star",
       gameType: "lantern-run",
       gameTitle: "Lantern Run",
-      gameHint: "Run the Thadingyut path — jump puddles, collect family!",
-      gameTarget: 8,
+      gameHint: "10 levels — jump puddles & lanterns, collect each family member! 3 lives.",
+      gameTarget: 10,
       storyTitle: "The House Full of Names",
       segmentTitles: [
         "One Roof, Many Smiles",

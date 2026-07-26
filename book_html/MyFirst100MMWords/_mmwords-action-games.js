@@ -228,6 +228,32 @@
     drawEmoji(ctx, emoji, x, py, 26);
   }
 
+  function drawBrightPickup(ctx, emoji, x, y, tick, seed, label) {
+    var bob = Math.sin(tick * 0.08 + seed) * 4;
+    var py = y + bob;
+    drawShadow(ctx, x, py + 18, 18);
+    ctx.fillStyle = "rgba(255,255,255,.95)";
+    ctx.beginPath();
+    ctx.arc(x, py, 24, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#F59E0B";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(x, py, 24, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = "rgba(251,191,36,.35)";
+    ctx.beginPath();
+    ctx.arc(x, py, 30, 0, Math.PI * 2);
+    ctx.fill();
+    drawEmoji(ctx, emoji, x, py - 1, 34);
+    if (label) {
+      ctx.font = "bold 10px Georgia,serif";
+      ctx.fillStyle = "#1E1B4B";
+      ctx.textAlign = "center";
+      ctx.fillText(label, x, py + 38);
+    }
+  }
+
   function drawPlayer(ctx, x, y, emoji, jumping) {
     drawShadow(ctx, x, y + 16, jumping ? 10 : 14);
     var scale = jumping ? 1.08 : 1;
@@ -235,6 +261,27 @@
     ctx.translate(x, y);
     ctx.scale(scale, scale);
     drawEmoji(ctx, emoji, 0, 0, 30);
+    ctx.restore();
+  }
+
+  function drawBrightPlayer(ctx, x, y, emoji, jumping, invincible, tick) {
+    var blink = invincible > 0 && Math.floor(tick / 6) % 2 === 0;
+    if (blink) return;
+    drawShadow(ctx, x, y + 18, jumping ? 12 : 16);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.beginPath();
+    ctx.arc(x, y, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#F59E0B";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(x, y, 22, 0, Math.PI * 2);
+    ctx.stroke();
+    var scale = jumping ? 1.1 : 1;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+    drawEmoji(ctx, emoji, 0, 0, 34);
     ctx.restore();
   }
 
@@ -247,6 +294,32 @@
     ctx.beginPath();
     ctx.ellipse(x - w * 0.15, y - 3, w * 0.18, 3, 0, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  function drawRock(ctx, x, y, w) {
+    ctx.fillStyle = "#57534E";
+    ctx.beginPath();
+    ctx.ellipse(x, y - 8, w * 0.45, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#78716C";
+    ctx.beginPath();
+    ctx.ellipse(x - w * 0.12, y - 12, w * 0.22, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = "14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("🪨", x, y - 10);
+  }
+
+  function drawFallenLantern(ctx, x, y) {
+    ctx.font = "22px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("🏮", x, y - 6);
+    ctx.strokeStyle = "rgba(220,38,38,.55)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x - 14, y + 2);
+    ctx.lineTo(x + 14, y + 2);
+    ctx.stroke();
   }
 
   function drawFurniture(ctx, x, y, w, h) {
@@ -279,6 +352,32 @@
     ctx.fillText("★ " + score + " / " + target, 16, 23);
   }
 
+  function drawLanternHud(ctx, W, level, maxLevel, lives, goalLabel) {
+    ctx.fillStyle = "rgba(15,23,42,.55)";
+    ctx.fillRect(6, 6, W - 12, 28);
+    ctx.strokeStyle = "rgba(251,191,36,.75)";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(6.5, 6.5, W - 13, 27);
+    ctx.font = "600 12px Georgia,serif";
+    ctx.fillStyle = "#FFF8E7";
+    ctx.textAlign = "left";
+    ctx.fillText("Lvl " + level + " / " + maxLevel, 14, 24);
+    ctx.textAlign = "center";
+    ctx.fillText(goalLabel || "Find family!", W / 2, 24);
+    ctx.textAlign = "right";
+    var hearts = "";
+    for (var i = 0; i < 3; i++) hearts += i < lives ? "❤️" : "🖤";
+    ctx.font = "13px sans-serif";
+    ctx.fillText(hearts, W - 14, 24);
+  }
+
+  function updateLanternHud(el, level, maxLevel, lives, goal) {
+    if (!el) return;
+    var hearts = "";
+    for (var i = 0; i < 3; i++) hearts += i < lives ? "❤️" : "🖤";
+    el.textContent = "Level " + level + " / " + maxLevel + "  " + hearts + (goal ? "  ·  " + goal : "");
+  }
+
   function endGame(state, badge) {
     state.running = false;
     if (state.raf) cancelAnimationFrame(state.raf);
@@ -293,34 +392,43 @@
     }
   }
 
-  /** Side-scrolling runner — Family / Home / School */
+  /** Side-scrolling runner — Family (10 levels + lives) / Home / School */
   function bootRunner(opts) {
     var canvas = document.getElementById(opts.canvasId || "action-canvas");
     if (!canvas) return;
     var cv = setupCanvas(canvas);
     var scoreEl = document.getElementById(opts.scoreId || "action-score");
-    var target = opts.target || 8;
     var words = opts.words || [];
     var hero = playerEmoji();
+    var isLanternRun = opts.variant === "family";
+    var maxLevel = isLanternRun ? 10 : 1;
+    var target = isLanternRun ? maxLevel : (opts.target || 8);
+    var maxLives = 3;
     var themes = {
       family: {
-        skyTop: "#1e1035", skyBot: "#4c1d95", ground: "#3d2b1f", groundAccent: "#5c4033",
-        obs: "puddle", label: "🪔 Thadingyut lane", village: true
+        skyTop: "#312E81", skyBot: "#C084FC", ground: "#6B4423", groundAccent: "#A16207",
+        obs: "puddle", label: "🪔 Thadingyut lane", village: true, bright: true
       },
       home: {
         skyTop: "#FDF8F0", skyBot: "#E8DCC8", ground: "#A68B5B", groundAccent: "#C4A574",
-        obs: "furniture", label: "🏠 Home runner", village: false
+        obs: "furniture", label: "🏠 Home runner", village: false, bright: false
       },
       school: {
         skyTop: "#DBEAFE", skyBot: "#93C5FD", ground: "#64748B", groundAccent: "#94A3B8",
-        obs: "desk", label: "🏫 Bell rush", village: false
+        obs: "desk", label: "🏫 Bell rush", village: false, bright: false
       }
     };
     var theme = themes[opts.variant] || themes.family;
+    var familyObsTypes = ["puddle", "rock", "lantern"];
+    var overlayEl = document.getElementById("action-start-overlay");
     var state = {
       running: false,
       keys: { left: false, right: false, up: false, down: false },
       score: 0,
+      level: 1,
+      lives: maxLives,
+      invincible: 0,
+      levelBanner: 0,
       px: 70,
       py: 0,
       vy: 0,
@@ -329,33 +437,81 @@
       obstacles: [],
       pickups: [],
       spawnT: 0,
+      needPickup: false,
       raf: null,
       onJump: null
     };
     state.onJump = function () {
       if (state.grounded && state.running) {
-        state.vy = -11;
+        state.vy = isLanternRun ? -12 : -11;
         state.grounded = false;
       }
     };
     wireTouchPad(document.getElementById(opts.controlsId || "action-controls"), state);
     bindKeys(state);
 
-    function reset() {
+    function levelWord() {
+      if (!words.length) return { emoji: "👨‍👩‍👧", en: "Family" };
+      return words[(state.level - 1) % words.length];
+    }
+
+    function goalLabel() {
+      var w = levelWord();
+      return isLanternRun ? "Find " + (w.en || "family") + "!" : "";
+    }
+
+    function syncHud() {
+      if (isLanternRun) updateLanternHud(scoreEl, state.level, maxLevel, state.lives, goalLabel());
+      else updateScore(scoreEl, state.score, target);
+    }
+
+    function reset(full) {
       state.score = 0;
+      state.level = 1;
+      state.lives = maxLives;
+      state.invincible = 0;
+      state.levelBanner = 90;
       state.scroll = 0;
       state.obstacles = [];
       state.pickups = [];
       state.spawnT = 0;
+      state.needPickup = false;
       state.px = 70;
       state.vy = 0;
       state.grounded = true;
-      updateScore(scoreEl, 0, target);
+      syncHud();
+      if (full && overlayEl) {
+        var msg = overlayEl.querySelector("p");
+        if (msg) msg.textContent = "Tap Start — jump puddles, collect family! 10 levels, 3 lives.";
+      }
     }
 
-    function spawn() {
-      var W = cv.W;
-      var x = W + state.scroll + 40;
+    function spawnFamilyPickup() {
+      if (state.needPickup || state.pickups.length) return;
+      var w = levelWord();
+      state.pickups.push({
+        x: state.scroll + cv.W + 120,
+        emoji: w.emoji || "👨‍👩‍👧",
+        word: w,
+        label: w.en || "",
+        required: true,
+        got: false
+      });
+      state.needPickup = true;
+    }
+
+    function spawnFamilyObstacle() {
+      var x = cv.W + state.scroll + 50 + Math.random() * 80;
+      var type = rand(familyObsTypes);
+      state.obstacles.push({
+        x: x,
+        w: 32 + Math.random() * 28,
+        type: type
+      });
+    }
+
+    function spawnClassic() {
+      var x = cv.W + state.scroll + 40;
       if (Math.random() < 0.55) {
         var w = rand(words);
         state.pickups.push({ x: x, emoji: w.emoji || "⭐", word: w, got: false });
@@ -364,10 +520,60 @@
       }
     }
 
+    function advanceLevel() {
+      if (state.level >= maxLevel) {
+        endGame(state, opts.badge);
+        return;
+      }
+      state.level++;
+      state.levelBanner = 90;
+      state.scroll = 0;
+      state.obstacles = [];
+      state.pickups = [];
+      state.needPickup = false;
+      state.spawnT = 0;
+      syncHud();
+    }
+
+    function hurtPlayer() {
+      if (state.invincible > 0) return;
+      state.lives--;
+      state.invincible = 100;
+      state.vy = -8;
+      state.grounded = false;
+      syncHud();
+      if (state.lives <= 0) {
+        state.running = false;
+        if (state.raf) cancelAnimationFrame(state.raf);
+        showOverlay("action-start-overlay", true);
+        var btn = document.getElementById("action-start-btn");
+        if (btn) btn.textContent = "▶ Try again";
+        if (overlayEl) {
+          var msg = overlayEl.querySelector("p");
+          if (msg) msg.textContent = "Out of lives! Jump over puddles and lanterns. Try all 10 levels again!";
+        }
+      }
+    }
+
+    function playerHitsObstacle(ox, groundY) {
+      if (ox < 42 || ox > 108) return false;
+      if (state.py < groundY - 46) return false;
+      if (!state.grounded && state.vy < -1.5) return false;
+      return state.py >= groundY - 34;
+    }
+
+    function drawFamilyObstacle(ctx, o, ox, groundY) {
+      if (o.type === "puddle") drawPuddle(ctx, ox, groundY - 4, o.w);
+      else if (o.type === "rock") drawRock(ctx, ox, groundY, o.w);
+      else drawFallenLantern(ctx, ox, groundY - 2);
+    }
+
     function start() {
       cv.resize();
-      reset();
+      reset(true);
       showOverlay("action-start-overlay", false);
+      var btn = document.getElementById("action-start-btn");
+      if (btn) btn.textContent = "▶ Start game";
       state.running = true;
       loop();
     }
@@ -380,6 +586,9 @@
       var H = cv.H;
       var groundY = H - 40;
 
+      if (state.invincible > 0) state.invincible--;
+      if (state.levelBanner > 0) state.levelBanner--;
+
       if (state.keys.up && state.grounded) state.onJump();
       state.vy += 0.55;
       state.py += state.vy;
@@ -391,28 +600,48 @@
         state.grounded = false;
       }
 
-      state.scroll += 3.2;
+      var speed = isLanternRun ? 2.8 + state.level * 0.35 : 3.2;
+      state.scroll += speed;
       state.spawnT++;
-      if (state.spawnT % 55 === 0) spawn();
+
+      if (isLanternRun) {
+        if (state.spawnT === 30) spawnFamilyPickup();
+        var obsEvery = Math.max(28, 62 - state.level * 3);
+        if (state.spawnT > 40 && state.spawnT % obsEvery === 0) spawnFamilyObstacle();
+      } else if (state.spawnT % 55 === 0) {
+        spawnClassic();
+      }
 
       state.obstacles = state.obstacles.filter(function (o) { return o.x > state.scroll - 80; });
       state.pickups = state.pickups.filter(function (p) { return p.x > state.scroll - 80 && !p.got; });
 
-      state.obstacles.forEach(function (o) {
-        var ox = o.x - state.scroll;
-        if (ox > 30 && ox < 90 && state.grounded) {
-          state.vy = -9;
-          state.grounded = false;
-        }
-      });
+      if (isLanternRun) {
+        state.obstacles.forEach(function (o) {
+          var ox = o.x - state.scroll;
+          if (playerHitsObstacle(ox, groundY)) hurtPlayer();
+        });
+      } else {
+        state.obstacles.forEach(function (o) {
+          var ox = o.x - state.scroll;
+          if (ox > 30 && ox < 90 && state.grounded) {
+            state.vy = -9;
+            state.grounded = false;
+          }
+        });
+      }
 
       state.pickups.forEach(function (p) {
         var px = p.x - state.scroll;
         if (!p.got && px > 40 && px < 100) {
           p.got = true;
-          state.score++;
-          updateScore(scoreEl, state.score, target);
-          if (state.score >= target) endGame(state, opts.badge);
+          if (isLanternRun) {
+            state.needPickup = false;
+            advanceLevel();
+          } else {
+            state.score++;
+            syncHud();
+            if (state.score >= target) endGame(state, opts.badge);
+          }
         }
       });
 
@@ -426,18 +655,37 @@
 
       state.obstacles.forEach(function (o) {
         var ox = o.x - state.scroll;
-        if (o.type === "puddle") drawPuddle(ctx, ox, groundY - 4, o.w);
+        if (isLanternRun) drawFamilyObstacle(ctx, o, ox, groundY);
+        else if (o.type === "puddle") drawPuddle(ctx, ox, groundY - 4, o.w);
         else if (o.type === "furniture") drawFurniture(ctx, ox, groundY, o.w, 34);
         else drawDesk(ctx, ox, groundY, o.w);
       });
 
       state.pickups.forEach(function (p) {
         if (p.got) return;
-        drawPickup(ctx, p.emoji, p.x - state.scroll, groundY - 48, state.spawnT, p.x);
+        var sx = p.x - state.scroll;
+        if (isLanternRun) drawBrightPickup(ctx, p.emoji, sx, groundY - 52, state.spawnT, p.x, p.label);
+        else drawPickup(ctx, p.emoji, sx, groundY - 48, state.spawnT, p.x);
       });
 
-      drawPlayer(ctx, state.px, state.py, hero, !state.grounded);
-      drawHudBar(ctx, W, state.score, target);
+      if (isLanternRun) {
+        drawBrightPlayer(ctx, state.px, state.py, hero, !state.grounded, state.invincible, state.spawnT);
+        drawLanternHud(ctx, W, state.level, maxLevel, state.lives, goalLabel());
+        if (state.levelBanner > 0) {
+          ctx.fillStyle = "rgba(49,46,129,.72)";
+          ctx.fillRect(W * 0.12, H * 0.34, W * 0.76, 42);
+          ctx.strokeStyle = "#FBBF24";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(W * 0.12 + 1, H * 0.34 + 1, W * 0.76 - 2, 40);
+          ctx.font = "bold 18px Georgia,serif";
+          ctx.fillStyle = "#FFF8E7";
+          ctx.textAlign = "center";
+          ctx.fillText("Level " + state.level + " — " + goalLabel(), W / 2, H * 0.34 + 27);
+        }
+      } else {
+        drawPlayer(ctx, state.px, state.py, hero, !state.grounded);
+        drawHudBar(ctx, W, state.score, target);
+      }
     }
 
     var startBtn = document.getElementById("action-start-btn");
