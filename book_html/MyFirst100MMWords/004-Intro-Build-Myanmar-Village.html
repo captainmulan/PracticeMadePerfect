@@ -9,17 +9,16 @@
     @keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Comic Sans MS','Comic Neue',Georgia,system-ui,sans-serif;background:linear-gradient(180deg,#87CEEB,#FDF8F0 45%,#C9E4CA 70%,#6B8E4E);color:#2C1810;min-height:100vh;}
-    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
-    .title{text-align:center;font-size:24px;color:#8B2525;margin:6px 0 4px;}
-    .game-desc{text-align:center;color:#5C4033;font-size:14px;margin-bottom:8px;line-height:1.5;padding:0 8px;}
-    .stamp-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;padding:8px;background:rgba(74,14,14,0.12);border-radius:14px;border:1px solid rgba(201,162,39,0.35);}
-    .stamp-groups{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
-    .stamp-group{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;padding:6px 8px;background:rgba(74,14,14,0.12);border-radius:12px;border:1px solid rgba(201,162,39,0.3);}
-    .stamp-label{flex:0 0 100%;text-align:center;font-size:11px;font-weight:bold;color:#8B2525;letter-spacing:0.03em;margin-bottom:2px;}
-    .stamp-btn{width:52px;height:52px;border:2px solid rgba(201,162,39,0.45);border-radius:14px;background:rgba(253,248,240,0.85);font-size:28px;cursor:pointer;touch-action:manipulation;transition:.15s;}
+    .game-shell{max-width:720px;margin:0 auto;padding:8px 10px 6px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+    .title{flex-shrink:0;}
+    .game-desc{flex-shrink:0;}
+    .title{text-align:center;font-size:22px;color:#8B2525;margin:4px 0 2px;}
+    .game-desc{text-align:center;color:#5C4033;font-size:13px;margin-bottom:6px;line-height:1.4;padding:0 8px;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:6px;padding:6px;background:rgba(74,14,14,0.12);border-radius:14px;border:1px solid rgba(201,162,39,0.35);flex-shrink:0;}
+    .stamp-btn{width:46px;height:46px;border:2px solid rgba(201,162,39,0.45);border-radius:12px;background:rgba(253,248,240,0.85);font-size:24px;cursor:pointer;touch-action:manipulation;transition:.15s;}
     .stamp-btn.selected{border-color:#8B2525;background:rgba(139,37,37,0.12);box-shadow:0 0 16px rgba(201,162,39,0.45);transform:scale(1.06);}
     .stamp-btn:active{transform:scale(.96);}
-    .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
+    .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:6px;flex-wrap:wrap;flex-shrink:0;}
     .tool-btn{padding:8px 14px;border:none;border-radius:10px;background:rgba(139,37,37,0.12);color:#2C1810;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid rgba(201,162,39,0.4);}
     .tool-btn:active{transform:scale(.97);}
     .tool-btn.active{border-color:#8B2525;background:rgba(139,37,37,0.18);box-shadow:0 0 10px rgba(201,162,39,0.35);}
@@ -31,7 +30,7 @@
     .overlay h3{color:#E8C547;font-size:22px;margin-bottom:8px;}
     .overlay p{color:#FDF8F0;font-size:14px;line-height:1.55;margin-bottom:14px;max-width:320px;}
     .btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#C9A227,#8B2525);color:#FDF8F0;font-size:15px;font-weight:bold;cursor:pointer;}
-    .nav-hint{margin-top:10px;text-align:center;font-size:13px;color:#5C4033;background:rgba(201,162,39,0.15);padding:10px;border-radius:10px;flex-shrink:0;}
+    .nav-hint{margin-top:6px;text-align:center;font-size:12px;color:#5C4033;background:rgba(201,162,39,0.15);padding:8px;border-radius:10px;flex-shrink:0;}
     body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}
     html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}
     body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
@@ -46,44 +45,26 @@
   <h1 class="title">🏘️ Build Myanmar Village</h1>
   <p class="game-desc">Pick items. Tap anywhere to build your village.</p>
 
-  <div class="stamp-groups" id="stampRow">
-    <div class="stamp-group">
-      <span class="stamp-label">Homes</span>
-      <button type="button" class="stamp-btn selected" data-emoji="🏠" title="House">🏠</button>
-      <button type="button" class="stamp-btn" data-emoji="🛖" title="Hut">🛖</button>
-      <button type="button" class="stamp-btn" data-emoji="🛕" title="Pagoda">🛕</button>
-    </div>
-    <div class="stamp-group">
-      <span class="stamp-label">Trees &amp; plants</span>
-      <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
-      <button type="button" class="stamp-btn" data-emoji="🌴" title="Palm tree">🌴</button>
-      <button type="button" class="stamp-btn" data-emoji="🌲" title="Evergreen">🌲</button>
-      <button type="button" class="stamp-btn" data-emoji="🎋" title="Bamboo">🎋</button>
-      <button type="button" class="stamp-btn" data-emoji="🪴" title="Plant">🪴</button>
-      <button type="button" class="stamp-btn" data-emoji="🌾" title="Paddy">🌾</button>
-    </div>
-    <div class="stamp-group">
-      <span class="stamp-label">Fence &amp; flowers</span>
-      <button type="button" class="stamp-btn" data-emoji="🪵" title="Fence">🪵</button>
-      <button type="button" class="stamp-btn" data-emoji="🌸" title="Flower">🌸</button>
-    </div>
-    <div class="stamp-group">
-      <span class="stamp-label">Animals</span>
-      <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
-      <button type="button" class="stamp-btn" data-emoji="🐃" title="Buffalo">🐃</button>
-      <button type="button" class="stamp-btn" data-emoji="🐄" title="Cow">🐄</button>
-      <button type="button" class="stamp-btn" data-emoji="🐕" title="Dog">🐕</button>
-      <button type="button" class="stamp-btn" data-emoji="🐈" title="Cat">🐈</button>
-    </div>
-    <div class="stamp-group">
-      <span class="stamp-label">People</span>
-      <button type="button" class="stamp-btn" data-emoji="🧍" title="Person">🧍</button>
-      <button type="button" class="stamp-btn" data-emoji="🧍‍♀️" title="Woman">🧍‍♀️</button>
-    </div>
-    <div class="stamp-group">
-      <span class="stamp-label">Sky</span>
-      <button type="button" class="stamp-btn" data-emoji="☀️" title="Sun">☀️</button>
-    </div>
+  <div class="stamp-row" id="stampRow">
+    <button type="button" class="stamp-btn selected" data-emoji="🏠" title="House">🏠</button>
+    <button type="button" class="stamp-btn" data-emoji="🛖" title="Hut">🛖</button>
+    <button type="button" class="stamp-btn" data-emoji="🛕" title="Pagoda">🛕</button>
+    <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
+    <button type="button" class="stamp-btn" data-emoji="🌴" title="Palm tree">🌴</button>
+    <button type="button" class="stamp-btn" data-emoji="🌲" title="Evergreen">🌲</button>
+    <button type="button" class="stamp-btn" data-emoji="🎋" title="Bamboo">🎋</button>
+    <button type="button" class="stamp-btn" data-emoji="🪴" title="Plant">🪴</button>
+    <button type="button" class="stamp-btn" data-emoji="🌾" title="Paddy">🌾</button>
+    <button type="button" class="stamp-btn" data-emoji="🪵" title="Fence">🪵</button>
+    <button type="button" class="stamp-btn" data-emoji="🌸" title="Flower">🌸</button>
+    <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
+    <button type="button" class="stamp-btn" data-emoji="🐃" title="Buffalo">🐃</button>
+    <button type="button" class="stamp-btn" data-emoji="🐄" title="Cow">🐄</button>
+    <button type="button" class="stamp-btn" data-emoji="🐕" title="Dog">🐕</button>
+    <button type="button" class="stamp-btn" data-emoji="🐈" title="Cat">🐈</button>
+    <button type="button" class="stamp-btn" data-emoji="🧍" title="Person">🧍</button>
+    <button type="button" class="stamp-btn" data-emoji="🧍‍♀️" title="Woman">🧍‍♀️</button>
+    <button type="button" class="stamp-btn" data-emoji="☀️" title="Sun">☀️</button>
   </div>
   <div class="tool-row">
     <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
