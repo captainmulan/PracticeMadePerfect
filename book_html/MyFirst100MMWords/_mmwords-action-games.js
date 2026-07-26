@@ -1598,6 +1598,366 @@
     document.getElementById("action-start-btn").onclick = start;
   }
 
+  function wireWalkPad(container, state) {
+    if (!container) return;
+    container.innerHTML =
+      '<button type="button" class="action-btn action-btn-wide" data-dir="left">◀ Left</button>' +
+      '<button type="button" class="action-btn action-btn-wide" data-dir="right">Right ▶</button>' +
+      '<button type="button" class="action-btn action-btn-wide" data-dir="up">▲ Up</button>' +
+      '<button type="button" class="action-btn action-btn-wide" data-dir="down">▼ Down</button>';
+    container.querySelectorAll(".action-btn").forEach(function (btn) {
+      var dir = btn.getAttribute("data-dir");
+      function down(e) { e.preventDefault(); state.keys[dir] = true; }
+      function up() { state.keys[dir] = false; }
+      btn.addEventListener("touchstart", down, { passive: false });
+      btn.addEventListener("mousedown", down);
+      btn.addEventListener("touchend", up);
+      btn.addEventListener("mouseup", up);
+      btn.addEventListener("mouseleave", up);
+    });
+  }
+
+  function dist(ax, ay, bx, by) {
+    var dx = ax - bx;
+    var dy = ay - by;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  /** End book — walk the finished village, deliver festival gifts */
+  function bootFestivalParade(opts) {
+    var canvas = document.getElementById(opts.canvasId || "action-canvas");
+    if (!canvas) return;
+    var cv = setupCanvas(canvas);
+    var scoreEl = document.getElementById(opts.scoreId || "action-score");
+    var target = opts.target || 8;
+    var hero = playerEmoji();
+    var overlayEl = document.getElementById("action-start-overlay");
+    var state = {
+      running: false,
+      keys: { left: false, right: false, up: false, down: false },
+      px: 0,
+      py: 0,
+      score: 0,
+      carrying: false,
+      targetHouse: -1,
+      houses: [],
+      lanterns: [],
+      hazards: [],
+      villagers: [],
+      fireworks: [],
+      tick: 0,
+      stun: 0,
+      finale: false,
+      finaleT: 0,
+      raf: null
+    };
+    wireWalkPad(document.getElementById(opts.controlsId || "action-controls"), state);
+    bindKeys(state);
+
+    function layoutVillage(W, H) {
+      state.houses = [
+        { x: W * 0.18, y: H * 0.28, lit: false, glow: 0 },
+        { x: W * 0.42, y: H * 0.2, lit: false, glow: 0 },
+        { x: W * 0.68, y: H * 0.26, lit: false, glow: 0 },
+        { x: W * 0.82, y: H * 0.44, lit: false, glow: 0 },
+        { x: W * 0.62, y: H * 0.58, lit: false, glow: 0 },
+        { x: W * 0.28, y: H * 0.52, lit: false, glow: 0 }
+      ];
+      state.lanterns = [];
+      state.hazards = [
+        { x: W * 0.35, y: H * 0.42, type: "puddle", r: 22 },
+        { x: W * 0.55, y: H * 0.48, type: "puddle", r: 20 },
+        { x: W * 0.48, y: H * 0.62, type: "dog", r: 18, vx: 0.8, vy: -0.4 },
+        { x: W * 0.72, y: H * 0.38, type: "dog", r: 18, vx: -0.6, vy: 0.5 }
+      ];
+      state.villagers = [];
+      state.fireworks = [];
+      state.px = W * 0.5;
+      state.py = H * 0.72;
+    }
+
+    function pickTargetHouse() {
+      var open = [];
+      state.houses.forEach(function (h, i) {
+        if (!h.lit) open.push(i);
+      });
+      if (!open.length) {
+        state.houses.forEach(function (h, i) {
+          if (i !== state.targetHouse) open.push(i);
+        });
+      }
+      state.targetHouse = open.length ? rand(open) : 0;
+    }
+
+    function spawnLantern() {
+      var W = cv.W;
+      var H = cv.H;
+      var tries = 0;
+      while (tries++ < 12) {
+        var lx = 40 + Math.random() * (W - 80);
+        var ly = H * 0.32 + Math.random() * (H * 0.38);
+        var ok = true;
+        state.houses.forEach(function (h) {
+          if (dist(lx, ly, h.x, h.y) < 50) ok = false;
+        });
+        if (ok) {
+          state.lanterns.push({ x: lx, y: ly, bob: Math.random() * 6 });
+          return;
+        }
+      }
+    }
+
+    function syncHud() {
+      if (!scoreEl) return;
+      var msg = "Gifts delivered: " + state.score + " / " + target;
+      if (state.carrying) msg += "  ·  🎁 Find the glowing house!";
+      else msg += "  ·  Collect 🏮 lanterns";
+      scoreEl.textContent = msg;
+    }
+
+    function reset(full) {
+      cv.resize();
+      layoutVillage(cv.W, cv.H);
+      state.score = 0;
+      state.carrying = false;
+      state.targetHouse = -1;
+      state.tick = 0;
+      state.stun = 0;
+      state.finale = false;
+      state.finaleT = 0;
+      spawnLantern();
+      spawnLantern();
+      syncHud();
+      if (full && overlayEl) {
+        var msg = overlayEl.querySelector("p");
+        if (msg) {
+          msg.textContent = "The village you built is complete! Walk around, collect lanterns, avoid puddles and playful dogs, and deliver gifts to every house.";
+        }
+      }
+    }
+
+    function bumpHazard() {
+      if (state.stun > 0 || state.finale) return;
+      state.stun = 45;
+      state.carrying = false;
+      state.targetHouse = -1;
+      syncHud();
+    }
+
+    function addVillager() {
+      var W = cv.W;
+      var H = cv.H;
+      var faces = ["🧒", "👧", "👩", "👨", "👵", "👴", "🧍", "🧍‍♀️"];
+      state.villagers.push({
+        x: 30 + Math.random() * (W - 60),
+        y: H * 0.34 + Math.random() * (H * 0.36),
+        emoji: rand(faces),
+        wave: Math.random() * Math.PI * 2
+      });
+    }
+
+    function spawnFirework() {
+      var W = cv.W;
+      state.fireworks.push({
+        x: 20 + Math.random() * (W - 40),
+        y: 20 + Math.random() * (cv.H * 0.35),
+        c: rand(["#FDE68A", "#F472B6", "#38BDF8", "#A78BFA", "#4ADE80"]),
+        life: 40 + Math.random() * 30,
+        r: 2 + Math.random() * 3
+      });
+    }
+
+    function startFinale() {
+      state.finale = true;
+      state.finaleT = 0;
+      state.carrying = false;
+      state.houses.forEach(function (h) {
+        h.lit = true;
+        h.glow = 1;
+      });
+      while (state.villagers.length < 10) addVillager();
+    }
+
+    function start() {
+      reset(false);
+      showOverlay("action-start-overlay", false);
+      state.running = true;
+      loop();
+    }
+
+    function loop() {
+      if (!state.running) return;
+      state.raf = requestAnimationFrame(loop);
+      var ctx = cv.ctx;
+      var W = cv.W;
+      var H = cv.H;
+      state.tick++;
+      if (state.stun > 0) state.stun--;
+
+      if (!state.finale) {
+        var speed = state.stun > 0 ? 1.6 : 3.2;
+        if (state.keys.left) state.px -= speed;
+        if (state.keys.right) state.px += speed;
+        if (state.keys.up) state.py -= speed;
+        if (state.keys.down) state.py += speed;
+        state.px = clamp(state.px, 24, W - 24);
+        state.py = clamp(state.py, H * 0.24, H - 28);
+
+        state.hazards.forEach(function (z) {
+          if (z.type === "dog") {
+            z.x += z.vx;
+            z.y += z.vy;
+            if (z.x < 30 || z.x > W - 30) z.vx *= -1;
+            if (z.y < H * 0.3 || z.y > H * 0.68) z.vy *= -1;
+          }
+          if (dist(state.px, state.py, z.x, z.y) < z.r + 14) bumpHazard();
+        });
+
+        state.lanterns = state.lanterns.filter(function (L) {
+          L.bob += 0.08;
+          if (!state.carrying && dist(state.px, state.py, L.x, L.y) < 26) {
+            state.carrying = true;
+            pickTargetHouse();
+            syncHud();
+            if (state.lanterns.length < 2) spawnLantern();
+            return false;
+          }
+          return true;
+        });
+
+        if (state.carrying && state.targetHouse >= 0) {
+          var th = state.houses[state.targetHouse];
+          if (th && dist(state.px, state.py, th.x, th.y) < 44) {
+            state.carrying = false;
+            state.score++;
+            th.lit = true;
+            th.glow = 1;
+            addVillager();
+            if (state.villagers.length < 12) addVillager();
+            syncHud();
+            spawnLantern();
+            if (state.score >= target) {
+              startFinale();
+            } else {
+              pickTargetHouse();
+            }
+          }
+        }
+
+        if (state.tick % 70 === 0 && state.lanterns.length < 3) spawnLantern();
+        if (state.tick % Math.max(18, 40 - state.score * 2) === 0) spawnFirework();
+      } else {
+        state.finaleT++;
+        if (state.finaleT % 8 === 0) spawnFirework();
+        if (state.finaleT > 180) {
+          endGame(state, opts.badge || "Festival Fan");
+          return;
+        }
+      }
+
+      var sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, "#1e1b4b");
+      sky.addColorStop(0.45, "#312e81");
+      sky.addColorStop(1, "#4ade80");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      drawStars(ctx, W, H, state.tick);
+      state.fireworks.forEach(function (f) {
+        f.life--;
+        ctx.globalAlpha = clamp(f.life / 40, 0, 1);
+        ctx.fillStyle = f.c;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r + (40 - f.life) * 0.08, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+      state.fireworks = state.fireworks.filter(function (f) { return f.life > 0; });
+
+      ctx.fillStyle = "rgba(34,197,94,.55)";
+      ctx.fillRect(0, H * 0.22, W, H * 0.78);
+      ctx.fillStyle = "rgba(180,83,9,.35)";
+      ctx.beginPath();
+      ctx.ellipse(W * 0.5, H * 0.55, W * 0.42, H * 0.22, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      state.houses.forEach(function (h, i) {
+        var glow = h.glow || (state.targetHouse === i && state.carrying ? 0.6 + Math.sin(state.tick * 0.12) * 0.3 : 0);
+        if (glow > 0) {
+          ctx.fillStyle = "rgba(251,191,36," + (0.25 + glow * 0.35) + ")";
+          ctx.beginPath();
+          ctx.arc(h.x, h.y, 38, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.font = "28px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(h.lit ? "🏠" : "🛖", h.x, h.y);
+        if (h.lit || glow > 0.4) {
+          ctx.font = "14px sans-serif";
+          ctx.fillText("🏮", h.x + 14, h.y - 18);
+        }
+        if (state.carrying && state.targetHouse === i) {
+          ctx.font = "20px sans-serif";
+          ctx.fillText("🎁", h.x, h.y - 32);
+        }
+      });
+
+      state.lanterns.forEach(function (L) {
+        var bob = Math.sin(L.bob) * 4;
+        ctx.font = "22px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("🏮", L.x, L.y + bob);
+      });
+
+      state.hazards.forEach(function (z) {
+        ctx.font = z.type === "dog" ? "24px sans-serif" : "20px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(z.type === "dog" ? "🐕" : "💧", z.x, z.y);
+      });
+
+      state.villagers.forEach(function (v) {
+        var wobble = state.finale ? Math.sin(state.tick * 0.2 + v.wave) * 6 : Math.sin(state.tick * 0.08 + v.wave) * 2;
+        ctx.font = "22px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(v.emoji, v.x, v.y + wobble);
+        if (state.finale && state.finaleT > 20) {
+          ctx.font = "16px sans-serif";
+          ctx.fillText("👋", v.x + 12, v.y - 16 + wobble);
+        }
+      });
+
+      if (state.carrying) {
+        ctx.font = "18px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("🎁", state.px, state.py - 28);
+      }
+      drawPlayer(ctx, state.px, state.py, hero, false);
+      drawHudBar(ctx, W, state.score, target);
+
+      if (state.finale) {
+        ctx.fillStyle = "rgba(49,46,129,.72)";
+        ctx.fillRect(W * 0.06, H * 0.08, W * 0.88, 52);
+        ctx.strokeStyle = "#FBBF24";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(W * 0.06 + 1, H * 0.08 + 1, W * 0.88 - 2, 50);
+        ctx.font = "bold 15px Georgia,serif";
+        ctx.fillStyle = "#FFF8E7";
+        ctx.textAlign = "center";
+        ctx.fillText("🎆 The whole village lights up — everyone waves!", W / 2, H * 0.08 + 22);
+        ctx.font = "12px Georgia,serif";
+        ctx.fillText("Thank you for finishing My First 100 Myanmar Words!", W / 2, H * 0.08 + 42);
+      } else {
+        ctx.font = "600 11px Georgia,serif";
+        ctx.fillStyle = "rgba(255,248,231,.92)";
+        ctx.textAlign = "center";
+        ctx.fillText("🎆 Myanmar Festival Parade — walk, collect, deliver!", W / 2, H - 10);
+      }
+    }
+
+    reset(true);
+    document.getElementById("action-start-btn").onclick = start;
+  }
+
   /** Festivals — dodge sparks, collect lanterns */
   function bootFireworksDodge(opts) {
     var canvas = document.getElementById(opts.canvasId || "action-canvas");
@@ -1712,7 +2072,8 @@
     "market-sprint": bootMarketSprint,
     "obstacle-course": bootObstacleCourse,
     "mood-hop": bootMoodHop,
-    "fireworks-dodge": bootFireworksDodge
+    "fireworks-dodge": bootFireworksDodge,
+    "festival-parade": bootFestivalParade
   };
 
   w.MMGame = w.MMGame || {};
@@ -1736,7 +2097,7 @@
       '<div class="badge-modal-box">' +
       '<button type="button" class="badge-modal-x" aria-label="Close">×</button>' +
       "<h3>" + (isNew ? "🏆 You earned: " + badge + "!" : "🏆 " + badge + " — great job!") + "</h3>" +
-      "<p>Mini game complete!</p>" +
+      "<p>Book game complete!</p>" +
       '<button type="button" class="dismiss-btn">OK</button></div>';
     document.body.appendChild(modal);
     function close() { modal.remove(); }

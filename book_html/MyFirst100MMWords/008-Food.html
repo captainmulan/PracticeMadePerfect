@@ -28,7 +28,6 @@ body.explained-page{padding:8px;}
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
-<script src="_mmwords-action-games.js"></script>
 </head>
 <body class="main-chapter-page">
 <div class="manuscript-bg">
@@ -37,10 +36,10 @@ body.explained-page{padding:8px;}
     <h1>Food</h1>
   </div>
   
-  <div class="wizard-shell chapter-wizard card" id="chapter-wizard" data-parts="4">
+  <div class="wizard-shell chapter-wizard card" id="chapter-wizard" data-parts="3">
     <div class="chapter-wizard-head">
       <span class="wizard-progress-text" id="cw-progress">Story 1 of 3</span>
-      <div class="wizard-dots chapter-wizard-dots" id="cw-dots"><button type="button" class="wizard-dot chapter-wizard-dot" data-part="0" aria-label="Story part 1"></button><button type="button" class="wizard-dot chapter-wizard-dot" data-part="1" aria-label="Story part 2"></button><button type="button" class="wizard-dot chapter-wizard-dot" data-part="2" aria-label="Story part 3"></button><button type="button" class="wizard-dot chapter-wizard-dot" data-part="game" aria-label="Mini game"></button></div>
+      <div class="wizard-dots chapter-wizard-dots" id="cw-dots"><button type="button" class="wizard-dot chapter-wizard-dot" data-part="0" aria-label="Story part 1"></button><button type="button" class="wizard-dot chapter-wizard-dot" data-part="1" aria-label="Story part 2"></button><button type="button" class="wizard-dot chapter-wizard-dot" data-part="2" aria-label="Story part 3"></button></div>
     </div>
     <div class="chapter-wizard-stage">
       
@@ -271,23 +270,6 @@ body.explained-page{padding:8px;}
         </div>
       </div>
     </div>
-      
-    <div class="wizard-panel chapter-panel chapter-game-panel" id="cw-game" data-part="game">
-      <div class="game-section chapter-game-inner action-game-wrap">
-        <h2>Tea Shop Dash</h2>
-        <p class="game-meta game-hint">Slide the tray — catch tea cups and bowls!</p>
-        <p class="game-meta">Score: <strong id="action-score">0 / 8</strong></p>
-        <div class="action-game-stage">
-          <canvas id="action-canvas" class="game-canvas action-canvas"></canvas>
-          <div class="action-overlay" id="action-start-overlay">
-            <p>Tap Start — use buttons below to play!</p>
-            <button type="button" class="game-start-btn" id="action-start-btn">▶ Start game</button>
-          </div>
-        </div>
-        <div class="action-controls" id="action-controls"></div>
-        <div class="challenge-box">Earn badge: <strong>Food Master</strong></div>
-      </div>
-    </div>
     </div>
     <div class="chapter-wizard-foot">
       <button type="button" class="wizard-btn wizard-btn-back" id="cw-back">← Back</button>
@@ -302,14 +284,12 @@ document.addEventListener('DOMContentLoaded', function() {
   var wizard = document.getElementById('chapter-wizard');
   if (!wizard) return;
   var panels = wizard.querySelectorAll('.chapter-panel');
-  var storyPanels = wizard.querySelectorAll('.chapter-panel:not(.chapter-game-panel)');
   var back = document.getElementById('cw-back');
   var next = document.getElementById('cw-next');
   var progress = document.getElementById('cw-progress');
   var dots = wizard.querySelectorAll('.chapter-wizard-dot');
   var stepIdx = 0;
   var totalSteps = panels.length;
-  var gameBooted = false;
 
   function fitPanel() {
     var panel = wizard.querySelector('.chapter-panel.active .chapter-panel-inner');
@@ -332,21 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  function bootGameIfNeeded() {
-    if (gameBooted) return;
-    gameBooted = true;
-    MMGame.bootActionGame({
-      canvasId: 'action-canvas',
-      scoreId: 'action-score',
-      controlsId: 'action-controls',
-      gameType: "tea-dash",
-      words: [{"en":"Rice","mm":"ထမင်း","emoji":"🍚","hint":"hta-min"},{"en":"Water","mm":"ရေ","emoji":"💧","hint":"yay"},{"en":"Apple","mm":"ပန်းသီး","emoji":"🍎","hint":"pan-thee"},{"en":"Banana","mm":"ငှက်ပျောသီး","emoji":"🍌","hint":"ngat-pyaw-thee"},{"en":"Fish","mm":"ငါး","emoji":"🐟","hint":"nga"},{"en":"Egg","mm":"ဥ","emoji":"🥚","hint":"u"},{"en":"Milk","mm":"နို့","emoji":"🥛","hint":"no"},{"en":"Bread","mm":"ပေါင်မုန့်","emoji":"🍞","hint":"poun-moun"},{"en":"Tea","mm":"လက်ဖက်ရည်","emoji":"🍵","hint":"laphet-yay"},{"en":"Soup","mm":"ဟင်းရည်","emoji":"🍲","hint":"hin-yay","useEn":"The soup is hot.","useMm":"ဟင်းရည် ပူတယ်။"},{"en":"Mango","mm":"သရက်သီး","emoji":"🥭","hint":"tha-yat-thee","useEn":"I like mango.","useMm":"ကျွန်မ သရက်သီး ကြိုက်တယ်။"},{"en":"Noodle","mm":"ခေါက်ဆွဲ","emoji":"🍜","hint":"khauk-swe","useEn":"Noodles for lunch!","useMm":"နေ့လည်ခေါက်ဆွဲ!"},{"en":"Sugar","mm":"သကြား","emoji":"🍬","hint":"sa-ya","useEn":"Not too much sugar.","useMm":"သကြားမများနဲ့။"},{"en":"Meat","mm":"အသား","emoji":"🥩","hint":"a-tha","useEn":"We eat meat today.","useMm":"ဒီနေ့ အသားစားမယ်။"}],
-      badge: "Food Master",
-      chapterId: "food",
-      target: 8
-    });
-  }
-
   function updateUI() {
     panels.forEach(function(p, i) { p.classList.toggle('active', i === stepIdx); });
     dots.forEach(function(d, i) {
@@ -354,36 +319,21 @@ document.addEventListener('DOMContentLoaded', function() {
       d.classList.toggle('done', i < stepIdx);
     });
     back.disabled = stepIdx === 0;
-    if (stepIdx < storyPanels.length) {
-      progress.textContent = 'Story ' + (stepIdx + 1) + ' of ' + storyPanels.length;
-      next.textContent = stepIdx === storyPanels.length - 1 ? 'Mini game →' : 'Next →';
-    } else {
-      progress.textContent = 'Mini game';
-      next.textContent = 'Finish ✓';
-    }
-    if (stepIdx === totalSteps - 1) bootGameIfNeeded();
+    progress.textContent = 'Story ' + (stepIdx + 1) + ' of ' + totalSteps;
+    next.textContent = stepIdx === totalSteps - 1 ? 'Finish ✓' : 'Next →';
     scheduleFit();
   }
 
   back.addEventListener('click', function() {
-    if (stepIdx > 0) {
-      stepIdx--;
-      updateUI();
-    }
+    if (stepIdx > 0) { stepIdx--; updateUI(); }
   });
 
   next.addEventListener('click', function() {
-    if (stepIdx < totalSteps - 1) {
-      stepIdx++;
-      updateUI();
-    }
+    if (stepIdx < totalSteps - 1) { stepIdx++; updateUI(); }
   });
 
   dots.forEach(function(d, i) {
-    d.addEventListener('click', function() {
-      stepIdx = i;
-      updateUI();
-    });
+    d.addEventListener('click', function() { stepIdx = i; updateUI(); });
   });
 
   updateUI();

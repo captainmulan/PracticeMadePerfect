@@ -305,7 +305,6 @@ function chapterHead(title) {
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
-<script src="_mmwords-action-games.js"></script>
 </head>`;
 }
 
@@ -771,26 +770,22 @@ function mainGamePanelHtml(ch) {
     </div>`;
 }
 
-function mainChapterWizardHtml(ch, panels, gamePanel) {
+function mainChapterWizardHtml(ch, panels) {
   const dots = [0, 1, 2]
     .map(
       (i) =>
         `<button type="button" class="wizard-dot chapter-wizard-dot" data-part="${i}" aria-label="Story part ${i + 1}"></button>`
     )
-    .concat(
-      `<button type="button" class="wizard-dot chapter-wizard-dot" data-part="game" aria-label="Mini game"></button>`
-    )
     .join("");
 
   return `
-  <div class="wizard-shell chapter-wizard card" id="chapter-wizard" data-parts="4">
+  <div class="wizard-shell chapter-wizard card" id="chapter-wizard" data-parts="3">
     <div class="chapter-wizard-head">
       <span class="wizard-progress-text" id="cw-progress">Story 1 of 3</span>
       <div class="wizard-dots chapter-wizard-dots" id="cw-dots">${dots}</div>
     </div>
     <div class="chapter-wizard-stage">
       ${panels}
-      ${gamePanel}
     </div>
     <div class="chapter-wizard-foot">
       <button type="button" class="wizard-btn wizard-btn-back" id="cw-back">← Back</button>
@@ -799,21 +794,19 @@ function mainChapterWizardHtml(ch, panels, gamePanel) {
   </div>`;
 }
 
-function mainChapterWizardScript(ch) {
+function mainChapterWizardScript() {
   return `
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var wizard = document.getElementById('chapter-wizard');
   if (!wizard) return;
   var panels = wizard.querySelectorAll('.chapter-panel');
-  var storyPanels = wizard.querySelectorAll('.chapter-panel:not(.chapter-game-panel)');
   var back = document.getElementById('cw-back');
   var next = document.getElementById('cw-next');
   var progress = document.getElementById('cw-progress');
   var dots = wizard.querySelectorAll('.chapter-wizard-dot');
   var stepIdx = 0;
   var totalSteps = panels.length;
-  var gameBooted = false;
 
   function fitPanel() {
     var panel = wizard.querySelector('.chapter-panel.active .chapter-panel-inner');
@@ -836,21 +829,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  function bootGameIfNeeded() {
-    if (gameBooted) return;
-    gameBooted = true;
-    MMGame.bootActionGame({
-      canvasId: 'action-canvas',
-      scoreId: 'action-score',
-      controlsId: 'action-controls',
-      gameType: ${JSON.stringify(ch.gameType || "lantern-run")},
-      words: ${JSON.stringify(ch.words)},
-      badge: ${JSON.stringify(ch.badge)},
-      chapterId: ${JSON.stringify(ch.id)},
-      target: ${ch.gameTarget || 8}
-    });
-  }
-
   function updateUI() {
     panels.forEach(function(p, i) { p.classList.toggle('active', i === stepIdx); });
     dots.forEach(function(d, i) {
@@ -858,36 +836,21 @@ document.addEventListener('DOMContentLoaded', function() {
       d.classList.toggle('done', i < stepIdx);
     });
     back.disabled = stepIdx === 0;
-    if (stepIdx < storyPanels.length) {
-      progress.textContent = 'Story ' + (stepIdx + 1) + ' of ' + storyPanels.length;
-      next.textContent = stepIdx === storyPanels.length - 1 ? 'Mini game →' : 'Next →';
-    } else {
-      progress.textContent = 'Mini game';
-      next.textContent = 'Finish ✓';
-    }
-    if (stepIdx === totalSteps - 1) bootGameIfNeeded();
+    progress.textContent = 'Story ' + (stepIdx + 1) + ' of ' + totalSteps;
+    next.textContent = stepIdx === totalSteps - 1 ? 'Finish ✓' : 'Next →';
     scheduleFit();
   }
 
   back.addEventListener('click', function() {
-    if (stepIdx > 0) {
-      stepIdx--;
-      updateUI();
-    }
+    if (stepIdx > 0) { stepIdx--; updateUI(); }
   });
 
   next.addEventListener('click', function() {
-    if (stepIdx < totalSteps - 1) {
-      stepIdx++;
-      updateUI();
-    }
+    if (stepIdx < totalSteps - 1) { stepIdx++; updateUI(); }
   });
 
   dots.forEach(function(d, i) {
-    d.addEventListener('click', function() {
-      stepIdx = i;
-      updateUI();
-    });
+    d.addEventListener('click', function() { stepIdx = i; updateUI(); });
   });
 
   updateUI();
@@ -921,7 +884,7 @@ function genActivity(ch) {
   const panels = [0, 1, 2]
     .map((i) => mainWizardPanelHtml(ch, i, stories[i], wordGroups[i], titles, i === 0))
     .join("");
-  const wizardHtml = mainChapterWizardHtml(ch, panels, mainGamePanelHtml(ch));
+  const wizardHtml = mainChapterWizardHtml(ch, panels);
 
   const fname = `${pad(ch.num)}-${slug(ch.title)}.html`;
   const html = `${chapterHead(ch.title + " — Learn")}
@@ -934,7 +897,7 @@ function genActivity(ch) {
   ${wizardHtml}
 </div>
 </div>
-${mainChapterWizardScript(ch)}
+${mainChapterWizardScript()}
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
