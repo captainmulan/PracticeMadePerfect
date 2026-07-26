@@ -87,9 +87,9 @@
         title: "Cousin",
         tip: "Cousins are playmates — many Myanmar children grow up with cousins nearby.",
         sentences: [
-          { en: "This is my cousin.", mm: "ဒါက ကျွန်မဝမ်းကွဲပါ။" },
-          { en: "I play with my cousin.", mm: "ကျွန်မဝမ်းကွဲနဲ့ ကစားတယ်။" },
-          { en: "My cousin lives nearby.", mm: "ကျွန်မဝမ်းကွဲက အနီးမှာ နေတယ်။" }
+          { en: "This is my cousin brother.", mm: "ဒါက ကျွန်မရဲ့ ဝမ်းကွဲအစ်ကိုပါ။" },
+          { en: "My cousin brother is my friend.", mm: "ကျွန်မရဲ့ ဝမ်းကွဲအစ်ကိုက ကျွန်မရဲ့ သူငယ်ချင်းပါ။" },
+          { en: "I play hide-and-seek with my cousin brother.", mm: "ကျွန်မရဲ့ ဝမ်းကွဲအစ်ကိုနဲ့ တူတူ ပုန်းတမ်းကစားတယ်။" }
         ]
       },
       {
