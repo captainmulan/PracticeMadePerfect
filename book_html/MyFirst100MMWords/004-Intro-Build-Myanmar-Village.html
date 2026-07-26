@@ -39,16 +39,23 @@
 <div class="petals"></div>
 <div class="game-shell">
   <h1 class="title">🏘️ Build Myanmar Village</h1>
-  <p class="game-desc">Pick houses, pagodas, trees, and animals — tap the scene to stamp your village. No timer, just calm Myanmar countryside vibes.</p>
+  <p class="game-desc">Pick items. Tap the green land to build your village.</p>
 
   <div class="stamp-row" id="stampRow">
     <button type="button" class="stamp-btn selected" data-emoji="🏠" title="House">🏠</button>
+    <button type="button" class="stamp-btn" data-emoji="🛖" title="Hut">🛖</button>
     <button type="button" class="stamp-btn" data-emoji="🛕" title="Pagoda">🛕</button>
     <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
+    <button type="button" class="stamp-btn" data-emoji="🪵" title="Fence">🪵</button>
+    <button type="button" class="stamp-btn" data-emoji="🧱" title="Wall">🧱</button>
+    <button type="button" class="stamp-btn" data-emoji="🌾" title="Paddy">🌾</button>
     <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
     <button type="button" class="stamp-btn" data-emoji="🐔" title="Chicken">🐔</button>
+    <button type="button" class="stamp-btn" data-emoji="🐃" title="Buffalo">🐃</button>
+    <button type="button" class="stamp-btn" data-emoji="🐄" title="Cow">🐄</button>
     <button type="button" class="stamp-btn" data-emoji="👨‍👩‍👧" title="Family">👨‍👩‍👧</button>
     <button type="button" class="stamp-btn" data-emoji="🍚" title="Rice">🍚</button>
+    <button type="button" class="stamp-btn" data-emoji="🏮" title="Lantern">🏮</button>
     <button type="button" class="stamp-btn" data-emoji="🌸" title="Flower">🌸</button>
     <button type="button" class="stamp-btn" data-emoji="🪴" title="Plant">🪴</button>
     <button type="button" class="stamp-btn" data-emoji="☀️" title="Sun">☀️</button>
@@ -64,36 +71,48 @@
       <canvas id="gameCanvas"></canvas>
       <div class="overlay" id="startScreen">
         <h3>🌾 Welcome to Your Village!</h3>
-        <p>Choose a stamp above, then tap anywhere on the green land to place it. Build a peaceful Myanmar village — take your time!</p>
+        <p>Pick a stamp. Tap the land to build.</p>
         <button class="btn" type="button" id="btnStart">▶️ Start Building</button>
       </div>
     </div>
   </div>
 
   <div class="nav-hint">
-    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
-    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+    <div>← → next chapter.</div>
+    <div>🏠 Home page.</div>
   </div>
 </div>
 <script>
 const STORAGE_KEY = 'book:myfirst100mmwords:intro-village';
 const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
-const STATIC = /🏠|🛕|🌳|🪴|🌸|☀️|🍚/;
-const MOBILE = /🐘|🐔|👨‍👩‍👧/;
+const GROUND_PAD = 48;
+const MOBILE = /🐘|🐔|🐃|🐄/;
+const STATIC = /🏠|🛖|🛕|🌳|🪵|🧱|🌾|🪴|🌸|☀️|🍚|🏮|👨‍👩‍👧/;
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
 let decorations = [];
-let floaters = [];
 
 function loadVillage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) decorations = JSON.parse(raw);
   } catch (e) { decorations = []; }
+  decorations.forEach(normalizeItem);
 }
 
 function saveVillage() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(decorations)); } catch (e) {}
+}
+
+function groundY(h) {
+  return h - GROUND_PAD + 10;
+}
+
+function normalizeItem(d) {
+  if (d.kind === 'mobile') {
+    if (typeof d.dir !== 'number') d.dir = Math.random() > 0.5 ? 1 : -1;
+    if (typeof d.speed !== 'number') d.speed = 0.55 + Math.random() * 0.35;
+  }
 }
 
 function resize() {
@@ -108,19 +127,8 @@ function resize() {
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-
-function initFloaters(count) {
-  floaters = [];
-  for (let i = 0; i < count; i++) {
-    floaters.push({
-      x: Math.random() * 400,
-      y: Math.random() * 200,
-      r: 1.5 + Math.random() * 2.5,
-      speed: 0.15 + Math.random() * 0.35,
-      wobble: Math.random() * Math.PI * 2,
-    });
-  }
+  const gy = groundY(h);
+  decorations.forEach(d => { d.y = gy; });
 }
 
 function drawEmoji(emoji, x, y, size, flipX) {
@@ -130,7 +138,7 @@ function drawEmoji(emoji, x, y, size, flipX) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
-  if (flipX && MOBILE.test(emoji)) {
+  if (flipX) {
     ctx.translate(x, y);
     ctx.scale(-1, 1);
     ctx.fillText(emoji, 0, 0);
@@ -140,68 +148,62 @@ function drawEmoji(emoji, x, y, size, flipX) {
   ctx.restore();
 }
 
-function drawVillageBg(w, h, t) {
-  const sky = ctx.createLinearGradient(0, 0, 0, h * 0.62);
+function drawVillageBg(w, h) {
+  const sky = ctx.createLinearGradient(0, 0, 0, h * 0.58);
   sky.addColorStop(0, '#87CEEB');
-  sky.addColorStop(0.55, '#FDF8F0');
-  sky.addColorStop(1, '#C9E4CA');
+  sky.addColorStop(0.7, '#FDF8F0');
+  sky.addColorStop(1, '#D4E8C8');
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
 
-  ctx.fillStyle = 'rgba(107,142,78,0.35)';
+  ctx.fillStyle = 'rgba(90,120,70,0.45)';
   ctx.beginPath();
-  ctx.moveTo(0, h * 0.48);
-  ctx.lineTo(w * 0.25, h * 0.38);
-  ctx.lineTo(w * 0.55, h * 0.44);
-  ctx.lineTo(w * 0.82, h * 0.36);
-  ctx.lineTo(w, h * 0.46);
+  ctx.moveTo(0, h * 0.5);
+  ctx.lineTo(w * 0.18, h * 0.36);
+  ctx.lineTo(w * 0.42, h * 0.42);
+  ctx.lineTo(w * 0.68, h * 0.33);
+  ctx.lineTo(w * 0.88, h * 0.4);
+  ctx.lineTo(w, h * 0.48);
   ctx.lineTo(w, h * 0.62);
   ctx.lineTo(0, h * 0.58);
   ctx.closePath();
   ctx.fill();
 
-  ctx.fillStyle = 'rgba(201,162,39,0.18)';
-  ctx.font = 'bold 28px ' + FONT;
-  ctx.textAlign = 'center';
-  ctx.fillText('🛕', w * 0.78, h * 0.34);
+  ctx.fillStyle = 'rgba(70,95,55,0.35)';
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.56);
+  ctx.lineTo(w * 0.3, h * 0.46);
+  ctx.lineTo(w * 0.62, h * 0.5);
+  ctx.lineTo(w, h * 0.44);
+  ctx.lineTo(w, h * 0.66);
+  ctx.lineTo(0, h * 0.64);
+  ctx.closePath();
+  ctx.fill();
 
-  const groundTop = h - 48;
+  const groundTop = h - GROUND_PAD;
   const field = ctx.createLinearGradient(0, groundTop, 0, h);
   field.addColorStop(0, '#8BC34A');
-  field.addColorStop(0.4, '#689F38');
+  field.addColorStop(0.45, '#689F38');
   field.addColorStop(1, '#558B2F');
   ctx.fillStyle = field;
   ctx.fillRect(0, groundTop, w, h - groundTop);
 
-  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
   ctx.lineWidth = 1;
-  for (let i = 0; i < 6; i++) {
-    const y = groundTop + 8 + i * 7;
+  for (let i = 0; i < 5; i++) {
+    const y = groundTop + 10 + i * 8;
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(w, y);
     ctx.stroke();
   }
 
-  ctx.fillStyle = '#A1887F';
-  ctx.fillRect(w * 0.08, groundTop + 6, w * 0.18, 10);
-  ctx.fillStyle = 'rgba(0,0,0,0.1)';
-  ctx.fillRect(0, groundTop, w, 4);
-
-  floaters.forEach(f => {
-    f.y -= f.speed;
-    f.x += Math.sin(t * 0.0015 + f.wobble) * 0.3;
-    if (f.y < h * 0.08) { f.y = h * 0.55; f.x = Math.random() * w; }
-    ctx.fillStyle = 'rgba(232,197,71,0.35)';
-    ctx.beginPath();
-    ctx.arc(f.x % w, f.y, f.r, 0, Math.PI * 2);
-    ctx.fill();
-  });
+  ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  ctx.fillRect(0, groundTop, w, 3);
 }
 
 function itemKind(emoji) {
   if (MOBILE.test(emoji)) return 'mobile';
-  if (STATIC.test(emoji)) return 'static';
   return 'static';
 }
 
@@ -209,22 +211,29 @@ function updateCount() {
   document.getElementById('countLabel').textContent = '🎨 ' + decorations.length + ' item' + (decorations.length === 1 ? '' : 's');
 }
 
-function loop(t) {
+function loop() {
   if (!running) return;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
-  drawVillageBg(w, h, t);
+  const gy = groundY(h);
+  drawVillageBg(w, h);
 
   decorations.forEach(d => {
-    const bob = Math.sin(t * 0.002 + d.phase) * (d.kind === 'static' ? 1.5 : 4);
-    let drift = 0;
-    let flip = false;
+    d.y = gy;
     if (d.kind === 'mobile') {
-      const phase = t * 0.001 + d.phase;
-      drift = Math.sin(phase) * 6;
-      flip = Math.cos(phase) * 0.001 * 6 < 0;
+      d.x += d.speed * d.dir;
+      const margin = d.size * 0.55;
+      if (d.x <= margin) {
+        d.x = margin;
+        d.dir = 1;
+      } else if (d.x >= w - margin) {
+        d.x = w - margin;
+        d.dir = -1;
+      }
+      drawEmoji(d.emoji, d.x, d.y, d.size, d.dir < 0);
+    } else {
+      drawEmoji(d.emoji, d.x, d.y, d.size, false);
     }
-    drawEmoji(d.emoji, d.x + drift, d.y + bob, d.size, flip);
   });
 
   animId = requestAnimationFrame(loop);
@@ -232,18 +241,32 @@ function loop(t) {
 
 function placeAt(clientX, clientY) {
   const r = canvas.getBoundingClientRect();
-  const x = clientX - r.left;
-  const y = clientY - r.top;
-  if (y > r.height - 40) return;
+  const w = r.width;
+  const h = r.height;
+  const gy = groundY(h);
   const kind = itemKind(selectedEmoji);
-  decorations.push({
-    emoji: selectedEmoji,
-    x: x,
-    y: y,
-    size: kind === 'static' ? 26 + Math.random() * 12 : 28 + Math.random() * 14,
-    phase: Math.random() * Math.PI * 2,
-    kind: kind,
-  });
+  const size = kind === 'static' ? 26 + Math.random() * 10 : 28 + Math.random() * 12;
+  const x = Math.max(size * 0.5, Math.min(w - size * 0.5, clientX - r.left));
+
+  if (kind === 'mobile') {
+    decorations.push({
+      emoji: selectedEmoji,
+      x: x,
+      y: gy,
+      size: size,
+      kind: 'mobile',
+      dir: Math.random() > 0.5 ? 1 : -1,
+      speed: 0.55 + Math.random() * 0.35,
+    });
+  } else {
+    decorations.push({
+      emoji: selectedEmoji,
+      x: x,
+      y: gy,
+      size: size,
+      kind: 'static',
+    });
+  }
   saveVillage();
   updateCount();
 }
@@ -251,7 +274,7 @@ function placeAt(clientX, clientY) {
 function startBuilding() {
   document.getElementById('startScreen').style.display = 'none';
   running = true;
-  loop(0);
+  loop();
 }
 
 document.getElementById('btnStart').onclick = startBuilding;
@@ -289,7 +312,6 @@ function bindTap() {
 
 loadVillage();
 resize();
-initFloaters(18);
 updateCount();
 bindTap();
 window.addEventListener('resize', resize);
