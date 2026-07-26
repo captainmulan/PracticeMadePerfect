@@ -234,7 +234,7 @@
         emoji: correct.emoji || "🔊",
         correctEn: correct.en,
         options: options.map(function (o) {
-          return { en: o.en, emoji: o.emoji || "" };
+          return { en: o.en, emoji: o.emoji || "", mm: o.mm || "" };
         })
       };
     });

@@ -194,27 +194,21 @@ export async function getCourses(): Promise<Course[]> {
 
 export async function saveCourse(course: Course): Promise<void> {
   console.log("saveCourse called for", course.id, course.title);
-  console.log("course.coverWidth:", course.coverWidth, "course.coverHeight:", course.coverHeight);
   const db = await openDb();
 
-  // First: Get all existing chapters and steps in one go without await inside the transaction
   let chaptersToDelete: string[] = [];
   let stepsToDelete: string[] = [];
 
   await new Promise<void>((resolve, reject) => {
     const readTransaction = db.transaction([STORE_CHAPTERS, STORE_STEPS], "readonly");
-    const chaptersReq = readTransaction.objectStore(STORE_CHAPTERS).getAll();
-    const stepsReq = readTransaction.objectStore(STORE_STEPS).getAll();
+    const chaptersReq = readTransaction.objectStore(STORE_CHAPTERS).index("courseId").getAll(course.id);
+    const stepsReq = readTransaction.objectStore(STORE_STEPS).index("courseId").getAll(course.id);
 
     chaptersReq.onsuccess = () => {
-      chaptersToDelete = chaptersReq.result
-        .filter(ch => ch.courseId === course.id)
-        .map(ch => ch.id);
+      chaptersToDelete = chaptersReq.result.map((ch) => ch.id);
     };
     stepsReq.onsuccess = () => {
-      stepsToDelete = stepsReq.result
-        .filter(st => st.courseId === course.id)
-        .map(st => st.id);
+      stepsToDelete = stepsReq.result.map((st) => st.id);
     };
     readTransaction.oncomplete = () => {
       console.log("read transaction complete, chapters to delete:", chaptersToDelete.length, "steps to delete:", stepsToDelete.length);

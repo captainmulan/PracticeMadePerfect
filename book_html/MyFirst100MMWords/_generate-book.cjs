@@ -32,9 +32,7 @@ function loadImageUri(chapterId, slot) {
   for (const name of names) {
     const p = path.join(ASSETS, name);
     if (fs.existsSync(p)) {
-      const ext = path.extname(p).toLowerCase();
-      const mime = ext === ".png" ? "image/png" : "image/jpeg";
-      imgCache[key] = `data:${mime};base64,${fs.readFileSync(p).toString("base64")}`;
+      imgCache[key] = `assets/${name}`;
       return imgCache[key];
     }
   }
@@ -84,6 +82,11 @@ function shuffle(arr) {
   return a;
 }
 
+function wordOptionLabel(opt) {
+  const base = opt.emoji ? `${opt.emoji} ${opt.en}` : opt.en;
+  return opt.mm ? `${base} (${opt.mm})` : base;
+}
+
 function buildHearPickQuestions(words, count) {
   if (!words || !words.length) return [];
   return shuffle(words).slice(0, Math.min(count, words.length)).map((correct) => {
@@ -95,7 +98,7 @@ function buildHearPickQuestions(words, count) {
       hint: correct.hint || correct.en,
       emoji: correct.emoji || "🔊",
       correctEn: correct.en,
-      options: options.map((o) => ({ en: o.en, emoji: o.emoji || "" }))
+      options: options.map((o) => ({ en: o.en, emoji: o.emoji || "", mm: o.mm || "" }))
     };
   });
 }
@@ -980,7 +983,7 @@ function hearQuizCard(q, i, isActive) {
   const correctIdx = q.options.findIndex((o) => o.en === q.correctEn);
   const fixedOpts = q.options
     .map((opt, oi) => {
-      const label = opt.emoji ? `${opt.emoji} ${opt.en}` : opt.en;
+      const label = wordOptionLabel(opt);
       return `<div class="option" data-correct="${oi === correctIdx ? "1" : "0"}">${esc(label)}</div>`;
     })
     .join("");
@@ -991,7 +994,7 @@ function hearQuizCard(q, i, isActive) {
       <span class="hear-emoji" aria-hidden="true">${esc(q.emoji)}</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
-    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Each answer shows English and Myanmar.</p>
     <div class="options">${fixedOpts}</div>
     <div class="feedback" id="feedback-${i + 1}"></div>
   </div>`;

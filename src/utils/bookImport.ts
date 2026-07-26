@@ -179,6 +179,29 @@ export function parseHtmlFileName(fileName: string): { pageNumber: number; sortO
   };
 }
 
+/** Inline HTML above this size (or with embedded images) is stored as a book_html iframe instead. */
+export const MAX_INLINE_HTML_BYTES = 150_000;
+
+export function bookHtmlIframeContent(folderName: string, fileName: string): string {
+  return `<iframe src="/book_html/${folderName}/${fileName}" style="width:100%;height:100%;border:none;"></iframe>`;
+}
+
+export function shouldUseBookHtmlIframe(file: File, sample = ""): boolean {
+  if (file.size > MAX_INLINE_HTML_BYTES) return true;
+  return sample.includes("data:image");
+}
+
+export function resolveStepContentHtml(
+  folderName: string,
+  fileName: string,
+  content: string,
+): string {
+  if (content.length > MAX_INLINE_HTML_BYTES || content.includes("data:image")) {
+    return bookHtmlIframeContent(folderName, fileName);
+  }
+  return content;
+}
+
 export function getFolderInfoFromFiles(files: File[]): { folderPath: string; folderName: string } {
   const firstPath = files.find((file) => file.webkitRelativePath)?.webkitRelativePath;
   if (!firstPath) {
@@ -197,16 +220,24 @@ export function getFolderInfoFromFiles(files: File[]): { folderPath: string; fol
 
 export async function readHtmlPagesFromFiles(files: File[]): Promise<ParsedHtmlPage[]> {
   const htmlFiles = files.filter((file) => /\.html?$/i.test(file.name));
+  const { folderName } = getFolderInfoFromFiles(files);
   const pages = await Promise.all(
     htmlFiles.map(async (file) => {
       const parsed = parseHtmlFileName(file.name);
+      let content: string;
+      if (shouldUseBookHtmlIframe(file)) {
+        content = bookHtmlIframeContent(folderName, file.name);
+      } else {
+        const text = await file.text();
+        content = resolveStepContentHtml(folderName, file.name, text);
+      }
       return {
         fileName: file.name,
         relativePath: file.webkitRelativePath || file.name,
         pageNumber: parsed.pageNumber,
         sortOrder: parsed.sortOrder,
         title: parsed.title,
-        content: await file.text(),
+        content,
       };
     }),
   );

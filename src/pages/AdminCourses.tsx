@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
-import { loadCoursesFromBrowserDb, persistCourse, removeCourse, reloadCourses } from "../utils/sqliteBrowserCourses";
+import { loadCoursesFromBrowserDb, persistCourse, removeCourse } from "../utils/sqliteBrowserCourses";
+import { MAX_INLINE_HTML_BYTES } from "../utils/bookImport";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import AdminBookUploadPanel from "../components/AdminBookUploadPanel";
 
@@ -226,11 +227,25 @@ export default function AdminCourses() {
     };
     try {
       await persistCourse(normalized);
-      const refreshed = await reloadCourses();
-      setBooks(refreshed);
+      setBooks((prev) => {
+        const idx = prev.findIndex((book) => book.id === trimmedId);
+        if (idx >= 0) {
+          const next = prev.slice();
+          next[idx] = normalized;
+          return next;
+        }
+        return [...prev, normalized];
+      });
       setDraftBook(null);
       setSelectedBookId(trimmedId);
-      setMessage("Book saved.");
+      const largePages = flattenCourseSteps(normalized).filter(
+        (step) => (step.contentHtml?.length ?? 0) > MAX_INLINE_HTML_BYTES,
+      ).length;
+      setMessage(
+        largePages > 0
+          ? `Book saved. ${largePages} page(s) still store large inline HTML — re-upload the book folder to use lightweight iframe links.`
+          : "Book saved.",
+      );
     } catch (err) {
       setMessage(String(err));
     }
@@ -257,8 +272,15 @@ export default function AdminCourses() {
     if (saveImmediately) {
       try {
         await persistCourse(normalized);
-        const refreshed = await reloadCourses();
-        setBooks(refreshed);
+        setBooks((prev) => {
+          const idx = prev.findIndex((book) => book.id === normalized.id);
+          if (idx >= 0) {
+            const next = prev.slice();
+            next[idx] = normalized;
+            return next;
+          }
+          return [...prev, normalized];
+        });
         setDraftBook(null);
         setSelectedBookId(normalized.id);
         setSelectedStepId(normalized.chapters[0]?.steps[0]?.id ?? null);
@@ -910,10 +932,41 @@ export default function AdminCourses() {
                   </label>
                   <h3>Content</h3>
                   {selectedStep.stepType === "html" ? (
-                    <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Content HTML</span>
-                      <textarea rows={12} value={selectedStep.contentHtml ?? ""} onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })} className="admin-grid-input" />
-                    </label>
+                    (() => {
+                      const html = selectedStep.contentHtml ?? "";
+                      const htmlSize = html.length;
+                      const isLarge = htmlSize > MAX_INLINE_HTML_BYTES;
+                      const isIframe = /^\s*<iframe[\s>]/i.test(html);
+                      if (isLarge && !isIframe) {
+                        return (
+                          <div className="admin-task-editor-field admin-task-editor-full">
+                            <p className="admin-course-message">
+                              This page stores {Math.round(htmlSize / 1024 / 1024)} MB of inline HTML (usually embedded images).
+                              Editing it here can crash the browser. Re-upload the book folder so pages link to{" "}
+                              <code>/book_html/…</code> instead.
+                            </p>
+                          </div>
+                        );
+                      }
+                      if (isIframe) {
+                        return (
+                          <label className="admin-task-editor-field admin-task-editor-full">
+                            <span className="admin-task-editor-label">Content HTML (iframe link)</span>
+                            <input
+                              value={html}
+                              onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })}
+                              className="admin-grid-input"
+                            />
+                          </label>
+                        );
+                      }
+                      return (
+                        <label className="admin-task-editor-field admin-task-editor-full">
+                          <span className="admin-task-editor-label">Content HTML</span>
+                          <textarea rows={12} value={html} onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })} className="admin-grid-input" />
+                        </label>
+                      );
+                    })()
                   ) : null}
                   {selectedStep.stepType === "code-exam" ? (
                     <>
