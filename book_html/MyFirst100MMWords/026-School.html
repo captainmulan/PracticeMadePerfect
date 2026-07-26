@@ -28,6 +28,7 @@ body.explained-page{padding:8px;}
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
+<script src="_mmwords-action-games.js"></script>
 </head>
 <body class="main-chapter-page">
 <div class="manuscript-bg">
@@ -233,11 +234,18 @@ body.explained-page{padding:8px;}
     </div>
       
     <div class="wizard-panel chapter-panel chapter-game-panel" id="cw-game" data-part="game">
-      <div class="game-section chapter-game-inner">
-        <h2>Catch School Items</h2>
-        <p class="game-meta">Catch 11 words · Score: <strong id="catch-score">0</strong></p>
-        <button type="button" class="game-start-btn">▶ Start game</button>
-        <canvas id="catch-canvas" class="game-canvas"></canvas>
+      <div class="game-section chapter-game-inner action-game-wrap">
+        <h2>Bell Rush</h2>
+        <p class="game-meta game-hint">Race to school — jump desks before the bell!</p>
+        <p class="game-meta">Score: <strong id="action-score">0 / 8</strong></p>
+        <div class="action-game-stage">
+          <canvas id="action-canvas" class="game-canvas action-canvas"></canvas>
+          <div class="action-overlay" id="action-start-overlay">
+            <p>Tap Start — use buttons below to play!</p>
+            <button type="button" class="game-start-btn" id="action-start-btn">▶ Start game</button>
+          </div>
+        </div>
+        <div class="action-controls" id="action-controls"></div>
         <div class="challenge-box">Earn badge: <strong>School Star</strong></div>
       </div>
     </div>
@@ -288,12 +296,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function bootGameIfNeeded() {
     if (gameBooted) return;
     gameBooted = true;
-    MMGame.bootCatch({
-      canvasId: 'catch-canvas',
-      scoreId: 'catch-score',
+    MMGame.bootActionGame({
+      canvasId: 'action-canvas',
+      scoreId: 'action-score',
+      controlsId: 'action-controls',
+      gameType: "bell-rush",
       words: [{"en":"School","mm":"ကျောင်း","emoji":"🏫","hint":"kyaung"},{"en":"Teacher","mm":"ဆရာ","emoji":"👩‍🏫","hint":"saya"},{"en":"Book","mm":"စာအုပ်","emoji":"📚","hint":"sa-ouk"},{"en":"Pencil","mm":"ခဲတံ","emoji":"✏️","hint":"khe-dan"},{"en":"Bag","mm":"အိတ်","emoji":"🎒","hint":"ate"},{"en":"Friend","mm":"သူငယ်ချင်း","emoji":"🤝","hint":"thu-ngay-chin"},{"en":"Class","mm":"စာသင်ခန်း","emoji":"📖","hint":"sa-thin-khan"},{"en":"Homework","mm":"အိမ်စာ","emoji":"📝","hint":"ain-sa","useEn":"I have homework.","useMm":"ကျွန်မအိမ်စာ ရှိတယ်။"},{"en":"Pen","mm":"ဘောပင်","emoji":"🖊️","hint":"baw-pin","useEn":"Write with a pen.","useMm":"ဘောပင်နဲ့ ရေးပါ။"},{"en":"Eraser","mm":"ခဲဖျက်","emoji":"🧽","hint":"khe-phyet","useEn":"Use the eraser.","useMm":"ခဲဖျက်သုံးပါ။"},{"en":"Lesson","mm":"သင်ခန်းစာ","emoji":"📖","hint":"thin-khan-sa","useEn":"Today's lesson is fun.","useMm":"ဒီနေ့ သင်ခန်းစာ ပျော်စရာကောင်းတယ်။"}],
       badge: "School Star",
-      chapterId: "school"
+      chapterId: "school",
+      target: 8
     });
   }
 

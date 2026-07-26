@@ -7,12 +7,12 @@
     s.textContent =
       ".badge-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}" +
       ".badge-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45);cursor:pointer;}" +
-      ".badge-modal-box{position:relative;background:#FDF8F0;border-radius:20px;padding:24px 20px 20px;max-width:340px;width:100%;text-align:center;border:3px solid #C9A227;box-shadow:0 8px 32px rgba(0,0,0,.2);z-index:1;}" +
-      ".badge-modal-box h3{color:#6B1A1A;margin-bottom:8px;font-size:20px;font-family:Georgia,'Times New Roman',serif;}" +
-      ".badge-modal-box p{color:#5C4033;margin-bottom:14px;font-size:15px;font-family:Georgia,'Times New Roman',serif;}" +
-      ".badge-modal-x{position:absolute;top:8px;right:12px;border:none;background:transparent;font-size:28px;line-height:1;color:#888;cursor:pointer;padding:4px 8px;}" +
-      ".badge-modal-x:hover{color:#6B1A1A;}" +
-      ".badge-modal .dismiss-btn{padding:10px 22px;border:none;border-radius:12px;background:#6B1A1A;color:#fff;font-weight:bold;cursor:pointer;font-size:15px;font-family:inherit;}";
+      ".badge-modal-box{position:relative;background:#FFFFFF;border-radius:20px;padding:24px 20px 20px;max-width:340px;width:100%;text-align:center;border:3px solid #38BDF8;box-shadow:0 8px 32px rgba(56,189,248,.35);z-index:1;}" +
+      ".badge-modal-box h3{color:#6D28D9;margin-bottom:8px;font-size:20px;font-family:'Comic Neue','Comic Sans MS',system-ui,sans-serif;}" +
+      ".badge-modal-box p{color:#475569;margin-bottom:14px;font-size:15px;font-family:'Comic Neue','Comic Sans MS',system-ui,sans-serif;}" +
+      ".badge-modal-x{position:absolute;top:8px;right:12px;border:none;background:transparent;font-size:28px;line-height:1;color:#94A3B8;cursor:pointer;padding:4px 8px;}" +
+      ".badge-modal-x:hover{color:#DB2777;}" +
+      ".badge-modal .dismiss-btn{padding:10px 22px;border:none;border-radius:12px;background:linear-gradient(135deg,#DB2777,#8B5CF6);color:#fff;font-weight:bold;cursor:pointer;font-size:15px;font-family:inherit;}";
     document.head.appendChild(s);
   }
   injectBadgeModalStyles();

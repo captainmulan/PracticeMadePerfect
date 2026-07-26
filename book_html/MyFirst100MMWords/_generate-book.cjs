@@ -305,6 +305,7 @@ function chapterHead(title) {
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
+<script src="_mmwords-action-games.js"></script>
 </head>`;
 }
 
@@ -741,13 +742,22 @@ function mainWizardPanelHtml(ch, idx, story, words, titles, active) {
 }
 
 function mainGamePanelHtml(ch) {
+  const target = ch.gameTarget || 8;
+  const hint = ch.gameHint || "Have fun and earn your badge!";
   return `
     <div class="wizard-panel chapter-panel chapter-game-panel" id="cw-game" data-part="game">
-      <div class="game-section chapter-game-inner">
+      <div class="game-section chapter-game-inner action-game-wrap">
         <h2>${esc(ch.gameTitle)}</h2>
-        <p class="game-meta">Catch ${ch.words.length} words · Score: <strong id="catch-score">0</strong></p>
-        <button type="button" class="game-start-btn">▶ Start game</button>
-        <canvas id="catch-canvas" class="game-canvas"></canvas>
+        <p class="game-meta game-hint">${esc(hint)}</p>
+        <p class="game-meta">Score: <strong id="action-score">0 / ${target}</strong></p>
+        <div class="action-game-stage">
+          <canvas id="action-canvas" class="game-canvas action-canvas"></canvas>
+          <div class="action-overlay" id="action-start-overlay">
+            <p>Tap Start — use buttons below to play!</p>
+            <button type="button" class="game-start-btn" id="action-start-btn">▶ Start game</button>
+          </div>
+        </div>
+        <div class="action-controls" id="action-controls"></div>
         <div class="challenge-box">Earn badge: <strong>${esc(ch.badge)}</strong></div>
       </div>
     </div>`;
@@ -821,12 +831,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function bootGameIfNeeded() {
     if (gameBooted) return;
     gameBooted = true;
-    MMGame.bootCatch({
-      canvasId: 'catch-canvas',
-      scoreId: 'catch-score',
+    MMGame.bootActionGame({
+      canvasId: 'action-canvas',
+      scoreId: 'action-score',
+      controlsId: 'action-controls',
+      gameType: ${JSON.stringify(ch.gameType || "lantern-run")},
       words: ${JSON.stringify(ch.words)},
       badge: ${JSON.stringify(ch.badge)},
-      chapterId: ${JSON.stringify(ch.id)}
+      chapterId: ${JSON.stringify(ch.id)},
+      target: ${ch.gameTarget || 8}
     });
   }
 
