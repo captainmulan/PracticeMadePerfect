@@ -426,14 +426,34 @@
   }
 
   function drawFamilyEnemy(ctx, o, ox, groundY, tick) {
+    if (o.remove) return;
     var walk = Math.sin(tick * 0.14 + (o.x || 0) * 0.015) * (o.boss ? 4 : 2.5);
     var hop = Math.abs(Math.sin(tick * 0.2 + (o.x || 0) * 0.02)) * (o.boss ? 6 : 4);
     var size = o.size || (o.boss ? 50 : 36);
     var ey = groundY - 34 - hop;
     var sx = ox + walk;
-    drawShadow(ctx, sx, groundY - 6, o.boss ? 26 : 15);
+    var alpha = 1;
+    if (o.dead && o.dying > 0) {
+      alpha = o.dying / 40;
+      size *= 0.55 + (1 - o.dying / 40) * 0.2;
+      ey += (40 - o.dying) * 0.35;
+    }
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    if (o.flash > 0) {
+      ctx.fillStyle = "rgba(251,191,36,.45)";
+      ctx.beginPath();
+      ctx.arc(sx, ey, size * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (!o.dead) drawShadow(ctx, sx, groundY - 6, o.boss ? 26 : 15);
     drawEmoji(ctx, o.emoji, sx, ey, size);
-    if (o.label) {
+    if (o.dead && o.dying > 0) {
+      ctx.font = "16px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("💫", sx, ey - size * 0.8);
+    }
+    if (o.label && !o.dead) {
       ctx.font = "bold " + (o.boss ? 11 : 9) + "px Georgia,serif";
       ctx.fillStyle = o.boss ? "#FDE68A" : "rgba(255,255,255,.95)";
       ctx.strokeStyle = "rgba(49,46,129,.8)";
@@ -442,6 +462,7 @@
       ctx.strokeText(o.label, sx, ey - size * 0.62);
       ctx.fillText(o.label, sx, ey - size * 0.62);
     }
+    ctx.restore();
   }
 
   function drawSkyLanterns(ctx, W, H, lanterns, scroll, tick) {
@@ -484,6 +505,9 @@
   function bootLanternRun(opts, canvas, cv, scoreEl, words, hero, overlayEl) {
     var maxLevel = opts.target || 15;
     var maxLives = 3;
+    var JUMP_V = -13;
+    var GRAVITY = 0.58;
+    var STOMP_BOUNCE = -10.5;
     var familyEnemies = [
       { type: "wolf", emoji: "🐺", label: "Wolf!" },
       { type: "dog", emoji: "🐕", label: "Dog!" },
@@ -526,7 +550,7 @@
     };
     state.onJump = function () {
       if (state.grounded && state.running) {
-        state.vy = -13;
+        state.vy = JUMP_V;
         state.grounded = false;
       }
     };
@@ -570,14 +594,17 @@
       var bossLevel = isBossLevel(level);
       var dist = 1500 + level * 240 + (bossLevel ? 520 : 0);
       var timeSec = 55 + level * 7 + (bossLevel ? 30 : 0);
-      var scrollSpeed = 1.35 + level * 0.22;
+      var scrollSpeed = 0.75 + level * 0.24;
       var enemyCount = bossLevel ? 2 + Math.floor(level / 4) : 3 + Math.floor(level * 0.45);
       var gap = Math.max(150, 220 - level * 3);
       var obstacles = [];
       var x = 360;
       for (var i = 0; i < enemyCount; i++) {
         var e = familyEnemies[i % familyEnemies.length];
-        obstacles.push({ x: x, w: 44, type: e.type, emoji: e.emoji, label: e.label, boss: false });
+        obstacles.push({
+          x: x, w: 44, type: e.type, emoji: e.emoji, label: e.label,
+          boss: false, stompHp: 1, dead: false, dying: 0, flash: 0, remove: false
+        });
         x += gap + (i % 2 === 0 ? 30 : 0);
       }
       var boss = null;
@@ -598,7 +625,12 @@
           emoji: b.emoji,
           label: b.label,
           size: b.size,
-          boss: true
+          boss: true,
+          stompHp: 2,
+          dead: false,
+          dying: 0,
+          flash: 0,
+          remove: false
         });
         obstacles.push({
           x: dist - 420,
@@ -607,7 +639,12 @@
           emoji: b.emoji,
           label: b.label,
           size: b.size,
-          boss: true
+          boss: true,
+          stompHp: 2,
+          dead: false,
+          dying: 0,
+          flash: 0,
+          remove: false
         });
       }
       return {
@@ -654,7 +691,7 @@
       if (full && overlayEl) {
         var msg = overlayEl.querySelector("p");
         if (msg) {
-          msg.textContent = "Tap Start — jump past wolves, dogs & thieves! Reach family before time runs out. 15 levels with boss fights every 4 levels. 3 lives.";
+          msg.textContent = "Tap Start — jump ON enemies to stomp them Mario-style! Only the lane speed changes each level — your jump stays quick. 15 levels, boss fights every 4 levels. 3 lives.";
         }
       }
     }
@@ -679,7 +716,7 @@
       state.grounded = false;
       syncHud();
       if (state.lives <= 0) {
-        gameOver("Out of lives! Jump over wolves, dogs, and thieves. Try all " + maxLevel + " levels again!");
+        gameOver("Out of lives! Stomp enemies from above or dodge from the side. Try all " + maxLevel + " levels again!");
       } else {
         startLevel();
       }
@@ -704,12 +741,51 @@
       startLevel();
     }
 
-    function playerHitsEnemy(ox, groundY, enemy) {
-      var halfW = enemy && enemy.boss ? 38 : 28;
-      if (ox < state.px - halfW || ox > state.px + halfW) return false;
-      if (state.py < groundY - 52) return false;
-      if (!state.grounded && state.vy < -2) return false;
-      return state.py >= groundY - 38;
+    function enemyOx(o) {
+      var ox = o.x - state.scroll;
+      if (state.boss && o.boss) {
+        ox += Math.sin(state.boss.patrolT * 0.05 + o.x * 0.01) * 36;
+      }
+      return ox;
+    }
+
+    function enemyHeadTop(o, groundY) {
+      var hop = Math.abs(Math.sin(state.spawnT * 0.2 + (o.x || 0) * 0.02)) * (o.boss ? 6 : 4);
+      var size = o.size || (o.boss ? 50 : 36);
+      return groundY - 34 - hop - size * 0.52;
+    }
+
+    function stompEnemy(o) {
+      o.stompHp = (o.stompHp || 1) - 1;
+      state.vy = STOMP_BOUNCE;
+      state.grounded = false;
+      state.invincible = 26;
+      if (o.stompHp <= 0) {
+        o.dead = true;
+        o.dying = 42;
+      } else {
+        o.flash = 20;
+      }
+    }
+
+    function resolveEnemyCollision(o, ox, groundY) {
+      if (o.dead || o.remove) return;
+      var halfW = o.boss ? 34 : 26;
+      if (Math.abs(ox - state.px) > halfW) return;
+      var headTop = enemyHeadTop(o, groundY);
+      var bodyCenter = groundY - 34;
+      var playerBottom = state.py + 20;
+      var playerTop = state.py - 22;
+
+      if (state.vy > 1 && playerBottom >= headTop - 4 && playerTop < bodyCenter) {
+        stompEnemy(o);
+        return;
+      }
+
+      if (state.invincible > 0) return;
+      if (playerBottom >= groundY - 34 && state.py >= groundY - 50 && playerTop < headTop + 18) {
+        hurtPlayer();
+      }
     }
 
     function start() {
@@ -739,7 +815,7 @@
       }
 
       if (state.keys.up && state.grounded) state.onJump();
-      state.vy += 0.58;
+      state.vy += GRAVITY;
       state.py += state.vy;
       if (state.py >= groundY - 32) {
         state.py = groundY - 32;
@@ -758,11 +834,7 @@
       }
 
       state.obstacles.forEach(function (o) {
-        var ox = o.x - state.scroll;
-        if (state.boss && o.boss) {
-          ox += Math.sin(state.boss.patrolT * 0.05 + o.x * 0.01) * 36;
-        }
-        if (playerHitsEnemy(ox, groundY, o)) hurtPlayer();
+        resolveEnemyCollision(o, enemyOx(o), groundY);
       });
 
       if (state.pickup && !state.pickup.got) {
@@ -782,10 +854,7 @@
       drawGround(ctx, W, H, theme.ground, theme.label, theme.groundAccent);
 
       state.obstacles.forEach(function (o) {
-        var ox = o.x - state.scroll;
-        if (state.boss && o.boss) {
-          ox += Math.sin(state.boss.patrolT * 0.05 + o.x * 0.01) * 36;
-        }
+        var ox = enemyOx(o);
         if (ox < -80 || ox > W + 80) return;
         drawFamilyEnemy(ctx, o, ox, groundY, state.spawnT);
       });
@@ -813,13 +882,20 @@
         if (state.isBossLevel) {
           ctx.fillText("⚔️ BOSS — Level " + state.level + " · " + goalLabel(), W / 2, H * 0.28 + 22);
           ctx.font = "12px Georgia,serif";
-          ctx.fillText("Jump past the boss wolves, thieves & dogs — then reach family!", W / 2, H * 0.28 + 42);
+          ctx.fillText("Stomp the boss twice from above — then reach family!", W / 2, H * 0.28 + 42);
         } else {
-          ctx.fillText("Level " + state.level + " — " + goalLabel(), W / 2, H * 0.28 + 22);
+          ctx.fillText("Level " + state.level + " · " + goalLabel(), W / 2, H * 0.28 + 22);
           ctx.font = "12px Georgia,serif";
-          ctx.fillText("Lane speed rises each level — jump over every obstacle!", W / 2, H * 0.28 + 40);
+          ctx.fillText("Jump ON enemies to stomp them — lane speed rises, your jump stays the same!", W / 2, H * 0.28 + 40);
         }
       }
+
+      state.obstacles.forEach(function (o) {
+        if (o.flash > 0) o.flash--;
+        if (o.dead && o.dying > 0) o.dying--;
+        if (o.dead && o.dying <= 0) o.remove = true;
+      });
+      state.obstacles = state.obstacles.filter(function (o) { return !o.remove; });
     }
 
     document.getElementById("action-start-btn").onclick = start;
