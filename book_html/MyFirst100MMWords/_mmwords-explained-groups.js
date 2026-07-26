@@ -96,18 +96,18 @@
         title: "Family",
         tip: "In Myanmar villages, grandparents, aunts, and cousins often live in one compound.",
         sentences: [
-          { en: "This is my family.", mm: "ဒါက ကျွန်မမိသားစုပါ။" },
-          { en: "I love my family.", mm: "ကျွန်မမိသားစုကို ချစ်တယ်။" },
-          { en: "My family eats together.", mm: "ကျွန်မမိသားစု အတူတူ ထမင်းစားကြတယ်။" }
+          { en: "This is my family.", mm: "ဒါက ကျွန်မရဲ့ မိသားစုပါ။" },
+          { en: "I love my family.", mm: "ကျွန်မရဲ့ မိသားစုကို ချစ်တယ်။" },
+          { en: "My family eats together.", mm: "ကျွန်မရဲ့ မိသားစုက အတူတူ ထမင်းစားကြတယ်။" }
         ]
       },
       {
         title: "Parents",
         tip: "Parents feed, teach, and care for children every day.",
         sentences: [
-          { en: "These are my parents.", mm: "ဒါတွေက ကျွန်မမိဘတွေပါ။" },
-          { en: "My parents help me.", mm: "ကျွန်မမိဘတွေက ကျွန်မကို ကူညီပေးတယ်။" },
-          { en: "My parents cook rice.", mm: "ကျွန်မမိဘတွေက ထမင်းချက်ကြတယ်။" }
+          { en: "These are my parents.", mm: "ဒါတွေက ကျွန်မရဲ့ မိဘတွေပါ။" },
+          { en: "My parents help me.", mm: "ကျွန်မရဲ့ မိဘတွေက ကျွန်မကို ကူညီပေးတယ်။" },
+          { en: "My parents cook rice.", mm: "ကျွန်မရဲ့ မိဘတွေက ထမင်းချက်ကြတယ်။" }
         ]
       }
     ],
