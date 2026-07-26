@@ -12,6 +12,11 @@ body.main-chapter-page{padding:8px;height:100dvh;max-height:100dvh;overflow:hidd
 }
 .main-chapter-page .manuscript-bg{width:100%;height:100%;align-items:stretch;}
 .main-chapter-page .container{flex:1 1 auto;height:auto;max-width:100%;width:100%;margin:0;padding:8px 14px 10px;}
+@media(min-width:1024px){
+  body.main-chapter-page{height:auto;min-height:100dvh;max-height:none;overflow-y:auto;}
+  .main-chapter-page .manuscript-bg,.main-chapter-page .container{max-height:none;overflow:visible;}
+  .main-chapter-page .manuscript-bg{height:auto;min-height:100dvh;}
+}
 .explained-page{overflow:hidden;}
 body.explained-page{padding:8px;}
 @media(min-width:768px){body.explained-page{padding:10px 12px;}}
@@ -264,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var stage = wizard.querySelector('.chapter-wizard-stage');
     if (!panel || !stage) return;
     panel.style.transform = '';
+    if (window.matchMedia('(min-width: 1024px)').matches) return;
     var available = stage.clientHeight - 2;
     var needed = panel.scrollHeight;
     if (needed > available && available > 0) {

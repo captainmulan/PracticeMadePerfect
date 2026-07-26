@@ -974,6 +974,67 @@ html:has(body.main-chapter-page){
   .chapter-word-grid .speak-label{font-size:9px;}
   .chapter-wizard-foot .wizard-btn{padding:10px 12px;font-size:13px;}
 }
+@media(min-width:1024px){
+  html:has(body.main-chapter-page){
+    height:auto;
+    overflow-y:auto;
+  }
+  body.main-chapter-page{
+    height:auto;
+    min-height:100dvh;
+    max-height:none;
+    overflow-y:auto;
+  }
+  .main-chapter-page .manuscript-bg{
+    height:auto;
+    min-height:100dvh;
+    max-height:none;
+  }
+  .main-chapter-page .container{
+    max-height:none;
+    overflow:visible;
+  }
+  .chapter-wizard{
+    flex:0 0 auto;
+  }
+  .chapter-wizard-stage{
+    overflow:visible;
+    height:auto;
+  }
+  .chapter-panel.active{
+    height:auto;
+  }
+  .chapter-panel-inner{
+    height:auto;
+    grid-template-rows:auto auto auto;
+    transform:none !important;
+  }
+  .main-chapter-page .chapter-scene{
+    height:auto;
+  }
+  .main-chapter-page .chapter-scene .scene-wrap{
+    height:auto;
+  }
+  .main-chapter-page .chapter-scene .scene-card-hero,
+  .main-chapter-page .chapter-scene .chapter-photo-hero,
+  .main-chapter-page .chapter-scene .chapter-hero-img{
+    height:auto;
+    min-height:0;
+    max-height:min(48vh,520px);
+    object-fit:cover;
+  }
+  .story-row .card,
+  .story-row .story-box{
+    overflow:visible;
+  }
+  .story-row .story-box{
+    font-size:15px;
+    line-height:1.65;
+  }
+  .chapter-words-block{
+    min-height:auto;
+  }
+}
 .top-bar{text-align:center;padding-bottom:18px;border-bottom:2px double var(--lacquer);margin-bottom:18px;}
 .top-bar h1{font-size:clamp(20px,5vw,26px);font-weight:700;color:var(--lacquer-deep);margin-bottom:6px;}
 .top-bar .subtitle{font-size:14px;color:var(--text-muted);font-style:italic;}
