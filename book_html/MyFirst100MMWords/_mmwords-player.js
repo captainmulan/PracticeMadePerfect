@@ -56,16 +56,39 @@
     return /female|woman|girl|zira|samantha|karen|heera|priya|hazel|susan|aria|jenny|natasha|xiaoxiao|xiaoyi/i.test(v.name || "");
   }
 
+  function isMaleVoice(v) {
+    if (!v) return false;
+    if (v.gender === "male") return true;
+    return /male|man|boy|david|mark|james|daniel|george|brian|andrew|guy|ryan|paul/i.test(v.name || "");
+  }
+
   function isMyanmarVoice(v) {
     var lang = (v.lang || "").toLowerCase();
     var name = (v.name || "").toLowerCase();
     return lang.indexOf("my") === 0 || name.indexOf("myanmar") >= 0 || name.indexOf("burmese") >= 0;
   }
 
-  function pickVoice(voices, matcher, preferFemale) {
+  function scoreMyanmarVoice(v) {
+    var name = (v.name || "").toLowerCase();
+    var score = 0;
+    if (isMaleVoice(v)) score += 4;
+    else if (!isFemaleVoice(v)) score += 2;
+    if (/google|online|natural|neural|premium|standard/i.test(name)) score += 3;
+    if (/microsoft/i.test(name) && isFemaleVoice(v)) score -= 3;
+    return score;
+  }
+
+  function pickVoice(voices, matcher, options) {
+    options = options || {};
     var matches = voices.filter(matcher);
     if (!matches.length) return null;
-    if (preferFemale) {
+    if (options.preferMale) {
+      matches = matches.slice().sort(function (a, b) {
+        return scoreMyanmarVoice(b) - scoreMyanmarVoice(a);
+      });
+      return matches[0];
+    }
+    if (options.preferFemale) {
       var female = matches.filter(isFemaleVoice);
       if (female.length) return female[0];
     }
@@ -76,10 +99,10 @@
     if (!w.speechSynthesis) return;
     var voices = w.speechSynthesis.getVoices();
     if (!voices.length) return;
-    myanmarVoice = pickVoice(voices, isMyanmarVoice, true);
+    myanmarVoice = pickVoice(voices, isMyanmarVoice, { preferMale: true });
     englishVoice = pickVoice(voices, function (v) {
       return (v.lang || "").toLowerCase().indexOf("en") === 0;
-    }, true);
+    }, { preferFemale: true });
   }
 
   function resumeSynth() {
@@ -117,7 +140,7 @@
   function playGoogleTts(text, lang, mirror, gen, onok, onfail) {
     if (isStale(gen)) return;
     var a = new Audio(googleTtsUrl(text, lang, mirror));
-    a.playbackRate = 0.96;
+    a.playbackRate = 1.0;
     a.volume = 1;
     currentAudio = a;
     a.onended = function () {
@@ -148,8 +171,14 @@
     resumeSynth();
     var u = new SpeechSynthesisUtterance(text);
     u.lang = lang || "en-US";
-    u.rate = lang && lang.indexOf("my") === 0 ? 0.9 : 1.0;
-    u.pitch = voice && isFemaleVoice(voice) ? 1.02 : 1.08;
+    if (lang && lang.indexOf("my") === 0) {
+      u.rate = 1.0;
+      u.pitch = 0.92;
+      u.volume = 1;
+    } else {
+      u.rate = 1.0;
+      u.pitch = voice && isFemaleVoice(voice) ? 1.02 : 1.08;
+    }
     if (voice) u.voice = voice;
     u.onend = function () { if (!isStale(gen) && onend) onend(); };
     u.onerror = function () { if (!isStale(gen) && onend) onend(); };
@@ -159,17 +188,17 @@
   function playMyanmar(text, hint, onend) {
     var gen = speakGen;
     loadVoices();
-    /* Prefer a local female Myanmar voice when available — warmer tone for kids */
-    if (myanmarVoice) {
-      speakSynth(text, "my-MM", myanmarVoice, gen, function () {
-        if (!isStale(gen) && onend) onend();
-      });
-      return;
-    }
+    /* Google TTS first — clearer Myanmar than most built-in voices */
     playGoogleTts(text, "my", 0, gen, function () {
       if (!isStale(gen) && onend) onend();
     }, function () {
       if (isStale(gen)) return;
+      if (myanmarVoice) {
+        speakSynth(text, "my-MM", myanmarVoice, gen, function () {
+          if (!isStale(gen) && onend) onend();
+        });
+        return;
+      }
       if (hint) {
         speakSynth(hint, "en-US", englishVoice, gen, onend);
       } else if (onend) onend();
