@@ -74,6 +74,7 @@ export function previewExistingBookPageMappings(
 export function mergeHtmlPagesIntoExistingCourse(
   course: Course,
   pages: ParsedHtmlPage[],
+  bookHtmlFolder?: string,
 ): ExistingBookMergeResult {
   const steps = flattenCourseSteps(course);
   const contentUpdates = new Map<string, string>();
@@ -114,6 +115,7 @@ export function mergeHtmlPagesIntoExistingCourse(
 
   const mergedCourse: Course = {
     ...course,
+    bookHtmlFolder: bookHtmlFolder ?? course.bookHtmlFolder,
     chapters: course.chapters.map((chapter) => ({
       ...chapter,
       steps: chapter.steps.map((step) => {
@@ -221,26 +223,17 @@ export function getFolderInfoFromFiles(files: File[]): { folderPath: string; fol
 export async function readHtmlPagesFromFiles(files: File[]): Promise<ParsedHtmlPage[]> {
   const htmlFiles = files.filter((file) => /\.html?$/i.test(file.name));
   const { folderName } = getFolderInfoFromFiles(files);
-  const pages = await Promise.all(
-    htmlFiles.map(async (file) => {
-      const parsed = parseHtmlFileName(file.name);
-      let content: string;
-      if (shouldUseBookHtmlIframe(file)) {
-        content = bookHtmlIframeContent(folderName, file.name);
-      } else {
-        const text = await file.text();
-        content = resolveStepContentHtml(folderName, file.name, text);
-      }
-      return {
-        fileName: file.name,
-        relativePath: file.webkitRelativePath || file.name,
-        pageNumber: parsed.pageNumber,
-        sortOrder: parsed.sortOrder,
-        title: parsed.title,
-        content,
-      };
-    }),
-  );
+  const pages = htmlFiles.map((file) => {
+    const parsed = parseHtmlFileName(file.name);
+    return {
+      fileName: file.name,
+      relativePath: file.webkitRelativePath || file.name,
+      pageNumber: parsed.pageNumber,
+      sortOrder: parsed.sortOrder,
+      title: parsed.title,
+      content: bookHtmlIframeContent(folderName, file.name),
+    };
+  });
 
   return pages.sort((a, b) => {
     if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
@@ -329,6 +322,7 @@ export function buildCourseFromHtmlPages(
 
   return {
     ...createDefaultBookFields(courseIndex, folderName, bookId, category),
+    bookHtmlFolder: folderName,
     chapters,
   };
 }

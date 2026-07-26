@@ -79,6 +79,8 @@ export interface Course {
   category: string;
   pIndex?: number;
   artifactType: ArtifactType;
+  /** Folder name under /book_html used for iframe page links and asset base URLs. */
+  bookHtmlFolder?: string;
   /** Page count stored in IndexedDB metadata (available without loading steps). */
   stepCount?: number;
   chapters: CourseChapter[];

@@ -112,6 +112,8 @@ export default function CourseWizard() {
           pageIndex={pageIndex}
           totalPages={totalPages}
           pageBrief={pageBrief}
+          bookHtmlFolder={outline.bookHtmlFolder}
+          courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}
           canPrevious={stepIndex > 0}

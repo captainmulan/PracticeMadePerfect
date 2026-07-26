@@ -127,7 +127,7 @@ export default function AdminBookUploadPanel({
         return;
       }
 
-      const result = mergeHtmlPagesIntoExistingCourse(targetBookFull, preview.pages);
+      const result = mergeHtmlPagesIntoExistingCourse(targetBookFull, preview.pages, preview.folderName);
       if (result.updatedCount === 0) {
         setError("No HTML pages matched existing book pages. Use names like 001-intro.html or page1.html.");
         return;

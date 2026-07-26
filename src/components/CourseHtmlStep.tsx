@@ -1,6 +1,6 @@
 import type { CourseStep } from "../data/courses";
 import PracticeWorkspace from "./PracticeWorkspace";
-import { buildHtmlStepSrcDoc, extractBookHtmlIframeSrc } from "../utils/htmlStepContent";
+import { buildHtmlStepSrcDoc, extractBookHtmlIframeSrc, resolveBookHtmlFolder } from "../utils/htmlStepContent";
 import "../styles/course.css";
 
 interface CourseHtmlStepProps {
@@ -12,6 +12,8 @@ interface CourseHtmlStepProps {
   pageIndex: number;
   totalPages: number;
   pageBrief: string;
+  bookHtmlFolder?: string | null;
+  courseId?: string | null;
   onPrevious?: () => void;
   onNext?: () => void;
   canPrevious?: boolean;
@@ -27,6 +29,8 @@ export default function CourseHtmlStep({
   pageIndex,
   totalPages,
   pageBrief,
+  bookHtmlFolder,
+  courseId,
   onPrevious,
   onNext,
   canPrevious = false,
@@ -34,7 +38,14 @@ export default function CourseHtmlStep({
 }: CourseHtmlStepProps) {
   const contentHtml = step.contentHtml ?? "<p><em>No lesson content yet.</em></p>";
   const frameSrc = extractBookHtmlIframeSrc(contentHtml);
-  const srcDoc = frameSrc ? undefined : buildHtmlStepSrcDoc(contentHtml);
+  const resolvedFolder = resolveBookHtmlFolder({
+    bookHtmlFolder,
+    courseId,
+    contentHtml,
+  });
+  const srcDoc = frameSrc
+    ? undefined
+    : buildHtmlStepSrcDoc(contentHtml, resolvedFolder);
 
   return (
     <PracticeWorkspace
@@ -52,7 +63,7 @@ export default function CourseHtmlStep({
       canNext={canNext}
     >
       <iframe
-        key={frameSrc ?? step.id}
+        key={frameSrc ?? `${step.id}-${resolvedFolder ?? "inline"}`}
         title={step.title}
         className="practice-html-iframe"
         sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-popups"

@@ -230,6 +230,7 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     category: raw.category,
     pIndex: raw.pIndex,
     artifactType: raw.artifactType,
+    bookHtmlFolder: raw.bookHtmlFolder,
     stepCount: raw.stepCount ?? raw.stepOutline?.length ?? 0,
     chapters: [],
   };
