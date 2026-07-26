@@ -96,28 +96,90 @@ let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
 let toolMode = 'stamp';
 let decorations = [];
+let savedCanvasW = null;
+let savedCanvasH = null;
+let needsMigrate = false;
 
 function loadVillage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) decorations = JSON.parse(raw);
-  } catch (e) { decorations = []; }
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (Array.isArray(data)) {
+      decorations = data;
+      needsMigrate = true;
+      return;
+    }
+    decorations = data.items || [];
+    savedCanvasW = data.cw || null;
+    savedCanvasH = data.ch || null;
+    if (decorations.some(d => d.x != null && d.xr == null)) needsMigrate = true;
+  } catch (e) {
+    decorations = [];
+  }
   decorations.forEach(normalizeItem);
 }
 
 function saveVillage() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(decorations)); } catch (e) {}
+  try {
+    const w = canvas ? canvas.clientWidth : savedCanvasW;
+    const h = canvas ? canvas.clientHeight : savedCanvasH;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      v: 2,
+      cw: w || null,
+      ch: h || null,
+      items: decorations
+    }));
+  } catch (e) {}
 }
 
-function groundY(h) {
-  return h - GROUND_PAD + 10;
+function canvasSize() {
+  return {
+    w: canvas ? canvas.clientWidth : 720,
+    h: canvas ? canvas.clientHeight : 420
+  };
+}
+
+function itemPixels(d, w, h) {
+  return {
+    x: d.xr * w,
+    y: d.yr * h,
+    size: d.sr * w
+  };
+}
+
+function migrateToNormalized(w, h) {
+  if (!needsMigrate) return;
+  const refW = savedCanvasW || w;
+  const refH = savedCanvasH || h;
+  decorations.forEach(d => {
+    if (d.xr != null) return;
+    if (typeof d.x === 'number') {
+      d.xr = d.x / refW;
+      d.yr = d.y / refH;
+      d.sr = d.size / refW;
+      if (d.kind === 'mobile' && typeof d.speed === 'number') d.sp = d.speed / refW;
+      delete d.x;
+      delete d.y;
+      delete d.size;
+      delete d.speed;
+    }
+  });
+  needsMigrate = false;
+  saveVillage();
 }
 
 function normalizeItem(d) {
   if (d.kind === 'mobile') {
     if (typeof d.dir !== 'number') d.dir = Math.random() > 0.5 ? 1 : -1;
-    if (typeof d.speed !== 'number' || d.speed > 0.45) d.speed = 0.35 + Math.random() * 0.2;
+    if (typeof d.sp !== 'number') {
+      if (typeof d.speed === 'number') d.sp = d.speed / 720;
+      else d.sp = 0.00045 + Math.random() * 0.00025;
+      delete d.speed;
+    }
+    if (d.sp > 0.001) d.sp = 0.00045 + Math.random() * 0.00025;
   }
+  if (typeof d.sr !== 'number' && typeof d.size === 'number') d.sr = d.size / 720;
 }
 
 function resize() {
@@ -132,6 +194,7 @@ function resize() {
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  migrateToNormalized(w, h);
 }
 
 function drawEmoji(emoji, x, y, size, flipX) {
@@ -210,11 +273,12 @@ function itemKind(emoji) {
   return 'static';
 }
 
-function itemSize(emoji, kind) {
-  if (BUILDING.test(emoji)) return 34 + Math.random() * 8;
-  if (kind === 'mobile') return 22 + Math.random() * 8;
-  if (PEOPLE.test(emoji)) return 20 + Math.random() * 6;
-  return 26 + Math.random() * 10;
+function itemSizeRatio(emoji, kind) {
+  const w = canvasSize().w;
+  if (BUILDING.test(emoji)) return (34 + Math.random() * 8) / w;
+  if (kind === 'mobile') return (22 + Math.random() * 8) / w;
+  if (PEOPLE.test(emoji)) return (20 + Math.random() * 6) / w;
+  return (26 + Math.random() * 10) / w;
 }
 
 function updateCount() {
@@ -228,19 +292,21 @@ function loop() {
   drawVillageBg(w, h);
 
   decorations.forEach(d => {
+    const p = itemPixels(d, w, h);
     if (d.kind === 'mobile') {
-      d.x += d.speed * d.dir;
-      const margin = d.size * 0.55;
-      if (d.x <= margin) {
-        d.x = margin;
+      d.xr += d.sp * d.dir;
+      const margin = d.sr * 0.55;
+      if (d.xr <= margin) {
+        d.xr = margin;
         d.dir = 1;
-      } else if (d.x >= w - margin) {
-        d.x = w - margin;
+      } else if (d.xr >= 1 - margin) {
+        d.xr = 1 - margin;
         d.dir = -1;
       }
-      drawEmoji(d.emoji, d.x, d.y, d.size, d.dir > 0);
+      const px = itemPixels(d, w, h);
+      drawEmoji(d.emoji, px.x, px.y, px.size, d.dir > 0);
     } else {
-      drawEmoji(d.emoji, d.x, d.y, d.size, false);
+      drawEmoji(d.emoji, p.x, p.y, p.size, false);
     }
   });
 
@@ -253,11 +319,13 @@ function updateToolUi() {
 }
 
 function hitDecoration(x, y) {
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
   for (let i = decorations.length - 1; i >= 0; i--) {
-    const d = decorations[i];
-    const r = d.size * 0.48;
-    const dx = x - d.x;
-    const dy = y - d.y;
+    const p = itemPixels(decorations[i], w, h);
+    const r = p.size * 0.48;
+    const dx = x - p.x;
+    const dy = y - p.y;
     if (dx * dx + dy * dy <= r * r) return i;
   }
   return -1;
@@ -279,26 +347,29 @@ function placeAt(clientX, clientY) {
   const w = r.width;
   const h = r.height;
   const kind = itemKind(selectedEmoji);
-  const size = itemSize(selectedEmoji, kind);
+  const sr = itemSizeRatio(selectedEmoji, kind);
+  const size = sr * w;
   const x = Math.max(size * 0.5, Math.min(w - size * 0.5, clientX - r.left));
   const y = Math.max(size * 0.5, Math.min(h - size * 0.5, clientY - r.top));
+  const xr = x / w;
+  const yr = y / h;
 
   if (kind === 'mobile') {
     decorations.push({
       emoji: selectedEmoji,
-      x: x,
-      y: y,
-      size: size,
+      xr: xr,
+      yr: yr,
+      sr: sr,
       kind: 'mobile',
       dir: Math.random() > 0.5 ? 1 : -1,
-      speed: 0.35 + Math.random() * 0.2,
+      sp: 0.00045 + Math.random() * 0.00025,
     });
   } else {
     decorations.push({
       emoji: selectedEmoji,
-      x: x,
-      y: y,
-      size: size,
+      xr: xr,
+      yr: yr,
+      sr: sr,
       kind: 'static',
     });
   }
@@ -360,6 +431,7 @@ updateCount();
 updateToolUi();
 bindTap();
 window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', () => { setTimeout(resize, 120); });
 
 (function fitGameFrame() {
   function fit() {
