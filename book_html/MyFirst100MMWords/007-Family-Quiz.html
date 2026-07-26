@@ -12,6 +12,11 @@ body.main-chapter-page{padding:8px;height:100dvh;max-height:100dvh;overflow:hidd
 }
 .main-chapter-page .manuscript-bg{width:100%;height:100%;align-items:stretch;}
 .main-chapter-page .container{flex:1 1 auto;height:auto;max-width:100%;width:100%;margin:0;padding:8px 14px 10px;}
+@media(min-width:1024px){
+  body.main-chapter-page{height:auto;min-height:100dvh;max-height:none;overflow-y:auto;}
+  .main-chapter-page .manuscript-bg,.main-chapter-page .container{max-height:none;overflow:visible;}
+  .main-chapter-page .manuscript-bg{height:auto;min-height:100dvh;}
+}
 .explained-page{overflow:hidden;}
 body.explained-page{padding:8px;}
 @media(min-width:768px){body.explained-page{padding:10px 12px;}}
@@ -29,7 +34,7 @@ body.explained-page{padding:8px;}
 <div class="container">
   <div class="top-bar">
     <h1>Family Quiz</h1>
-    <div class="subtitle">Beat Professor M · 5 words · 1 sentences · hear Myanmar, answer in English</div>
+    <div class="subtitle">Beat Professor M · 5 words · 1 sentence · hear Myanmar, answer in English</div>
   </div>
   
   <div class="competition-bar" id="liveScoreBar">
@@ -46,34 +51,34 @@ body.explained-page{padding:8px;}
     </div>
   </div>
   <div id="quizArea">
-  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="ဝမ်းကွဲ" data-hint="win-pwe">
+  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="အစ်ကို" data-hint="a-ko">
     <div class="question">1. Which English word did you hear?</div>
     <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">🧒</span>
+      <span class="hear-emoji" aria-hidden="true">👦</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">👧 Sister</div><div class="option" data-correct="1">🧒 Cousin</div><div class="option" data-correct="0">👨 Father</div><div class="option" data-correct="0">👦 Brother</div></div>
+    <div class="options"><div class="option" data-correct="0">👧 Sister</div><div class="option" data-correct="0">👨‍👩‍👧 Family</div><div class="option" data-correct="1">👦 Brother</div><div class="option" data-correct="0">👨‍👩‍👧 Parents</div></div>
     <div class="feedback" id="feedback-1"></div>
   </div>
-  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="အဘွား" data-hint="a-bwa">
+  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="အဘိုး" data-hint="a-bo">
     <div class="question">2. Which English word did you hear?</div>
-    <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">👵</span>
-      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
-    </div>
-    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="1">👵 Grandmother</div><div class="option" data-correct="0">👩 Mother</div><div class="option" data-correct="0">👧 Sister</div><div class="option" data-correct="0">👨‍👩‍👧 Family</div></div>
-    <div class="feedback" id="feedback-2"></div>
-  </div>
-  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="အဘိုး" data-hint="a-bo">
-    <div class="question">3. Which English word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">👴</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">👨 Uncle</div><div class="option" data-correct="1">👴 Grandfather</div><div class="option" data-correct="0">👵 Grandmother</div><div class="option" data-correct="0">👩 Mother</div></div>
+    <div class="options"><div class="option" data-correct="1">👴 Grandfather</div><div class="option" data-correct="0">👵 Grandmother</div><div class="option" data-correct="0">👨 Father</div><div class="option" data-correct="0">👩 Mother</div></div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="ဝမ်းကွဲ" data-hint="win-pwe">
+    <div class="question">3. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🧒</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">👨 Father</div><div class="option" data-correct="0">👵 Grandmother</div><div class="option" data-correct="1">🧒 Cousin</div><div class="option" data-correct="0">👶 Baby</div></div>
     <div class="feedback" id="feedback-3"></div>
   </div>
   <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="အဒေါ်" data-hint="a-daw">
@@ -83,27 +88,27 @@ body.explained-page{padding:8px;}
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">🧒 Cousin</div><div class="option" data-correct="0">👨‍👩‍👧 Parents</div><div class="option" data-correct="1">👩 Aunt</div><div class="option" data-correct="0">👨‍👩‍👧 Family</div></div>
+    <div class="options"><div class="option" data-correct="0">👩 Mother</div><div class="option" data-correct="0">🧒 Cousin</div><div class="option" data-correct="0">👧 Sister</div><div class="option" data-correct="1">👩 Aunt</div></div>
     <div class="feedback" id="feedback-4"></div>
   </div>
-  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="ညီမ" data-hint="nyi-ma">
+  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="မိသားစု" data-hint="mi-tha-zu">
     <div class="question">5. Which English word did you hear?</div>
     <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">👧</span>
+      <span class="hear-emoji" aria-hidden="true">👨‍👩‍👧</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">👵 Grandmother</div><div class="option" data-correct="1">👧 Sister</div><div class="option" data-correct="0">🧒 Cousin</div><div class="option" data-correct="0">👶 Baby</div></div>
+    <div class="options"><div class="option" data-correct="0">👩 Mother</div><div class="option" data-correct="1">👨‍👩‍👧 Family</div><div class="option" data-correct="0">👧 Sister</div><div class="option" data-correct="0">👩 Aunt</div></div>
     <div class="feedback" id="feedback-5"></div>
   </div>
-  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="ဒါက ကလေးလေးပါ။" data-hint="">
+  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="ဝမ်းကွဲနဲ့ ကစားတယ်။" data-hint="">
     <div class="question">6. What is this sentence about?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">💬</span>
       <button type="button" class="hear-replay-btn">🔊 Hear sentence</button>
     </div>
     <p class="hear-hint-text">Listen to the full Myanmar sentence — then pick what it is about (Mom, Aunt, Family…).</p>
-    <div class="options"><div class="option" data-correct="0">This is about Grandma</div><div class="option" data-correct="0">This is about Family</div><div class="option" data-correct="1">This is about Baby</div><div class="option" data-correct="0">This is about Uncle</div></div>
+    <div class="options"><div class="option" data-correct="1">This is about Cousin</div><div class="option" data-correct="0">This is about Sister</div><div class="option" data-correct="0">This is about Baby</div><div class="option" data-correct="0">This is about Dad</div></div>
     <div class="feedback" id="feedback-6"></div>
   </div></div>
   

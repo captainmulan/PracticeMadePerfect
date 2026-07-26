@@ -11,14 +11,14 @@
       storyTitle: "The House Full of Names",
       segmentTitles: [
         "One Roof, Many Smiles",
-        "Candles for Grandmother First",
+        "Candles for Grandmother",
         "Every Name Has a Place"
       ],
       heritage: {
         title: "Respecting elders first",
         text: "In Myanmar tradition, children greet grandparents and elders before anyone else. At Thadingyut, the Festival of Lights, families visit parents and grandparents with gifts and candles. Knowing family words is how children show love and respect across generations."
       },
-      story: "Su lived in a teak village where her mother, father, baby brother, and grandparents shared one long house. Cousins raced through the yard while Auntie stirred curry and Uncle mended a fishing net. Each evening Grandmother sat by the window — pagodas glowing in the distance — and asked, \"Who did you meet today?\" Su had to answer with real family names, not just \"friend.\"\n\nWhen Thadingyut arrived, the whole family polished the floor and strung paper lanterns. Su carried candles to her grandparents first, bowing low while her parents watched with proud eyes. Grandmother whispered, \"In Myanmar, elders come before sweets, before games, before sleep. When you know someone's name, you carry them in your heart across any distance.\"\n\nOn the feast night, relatives arrived from three villages. Su introduced each person to a shy visitor — mother, father, sister, brother, aunt, uncle, cousin, baby — until the guest said the house felt like a forest of belonging. Su never rushed past an elder again. She learned that parents feed the body, but aunts and uncles feed the stories that make a family wide, not just tall.",
+      story: "Su lived in a wooden house in a small Myanmar village. Every morning, her mother cooked breakfast while her father swept the yard. Her baby brother laughed and crawled after the chickens. After breakfast, everyone smiled and started a new day together.\n\nWhen Thadingyut Festival arrived, Su's whole family gathered together. She gave candles to her grandmother and grandfather first. Her aunt prepared delicious food while her uncle decorated colorful lanterns. That evening, everyone thanked the elders with happy hearts.\n\nGrandfather gently unrolled the old family tree. \"These are our family members,\" he said with a warm smile. Together, they found Mother, Father, Grandmother, Grandfather, Aunt, Uncle, Cousin, and Baby. As they pointed to each face, Grandfather told a happy story about each person. By the end of the evening, Su knew that every family member had a special place in her heart.",
       explainedStory: "There is an old village tale about a boy who forgot his uncle's name during a feast and felt ashamed before the whole table. His grandfather did not scold him. Instead he brought out a long scroll painted with faces — generations of mothers, fathers, sisters, brothers, and babies.\n\n\"Each name is a branch,\" the grandfather said. \"Cut one and the tree still stands, but the shade grows thinner.\" The boy practiced every day until he could name thirty relatives without pause. When strangers visited the village, he became the one who introduced everyone properly, and guests said the house felt warm because the children had been taught well.\n\nMyanmar families grow wide, not only tall. Learning aunt, uncle, and cousin is not just vocabulary — it is remembering who you belong to.",
       segmentExplanations: [
         "In Myanmar, children greet grandparents and elders first. At Thadingyut, families visit with candles and gifts.",
@@ -50,7 +50,7 @@
             {
                   "q": "Where did Su live in the family tale?",
                   "options": [
-                        "A teak village near the Irrawaddy River",
+                        "A wooden house in a small Myanmar village",
                         "A desert oasis",
                         "An ice castle",
                         "Under the sea"
@@ -78,9 +78,9 @@
                   "correct": 0
             },
             {
-                  "q": "What did Grandmother say happens when you know a person's name in Myanmar?",
+                  "q": "What did Su learn about each family member by evening?",
                   "options": [
-                        "You carry them in your heart across distance",
+                        "Each one has a special place in her heart",
                         "You forget English",
                         "You must write it fifty times",
                         "You cannot travel"
@@ -88,9 +88,9 @@
                   "correct": 0
             },
             {
-                  "q": "How is a Myanmar family described in the tale?",
+                  "q": "What did Grandfather show Su on the family tree?",
                   "options": [
-                        "A wide forest of relatives",
+                        "Mother, Father, and other family members",
                         "Only two people",
                         "A single branch",
                         "A competition"
@@ -122,9 +122,9 @@
       gameTitle: "Catch the Food",
       storyTitle: "The Monk's Morning Rice",
       segmentTitles: [
-        "The First Spoonful Waits",
-        "Bowls on the Morning Lane",
-        "A Full Belly Can Share"
+        "Morning in the Kitchen",
+        "Sharing with the Monks",
+        "One More Bowl"
       ],
       heritage: {
         title: "Sharing food with gratitude",
@@ -135,7 +135,7 @@
         "Tea shops and markets teach food names: fish, egg, mango, tea.",
         "Sharing food builds a generous heart, not a selfish one."
       ],
-      story: "Before dawn, Kyaw heard rice bubbling in the kitchen and smelled fish soup his mother called \"the breakfast of kings.\" She steamed extra rice in a clay pot and set the first spoonful aside. \"We cook a little more than we need,\" she said, \"for monks, for guests, and for days when the river runs late.\" Kyaw counted bananas and eggs on the table and poured water into a clean cup.\n\nWhen barefoot monks walked the lane with empty bowls, Kyaw filled them with rice, fruit, and tea — quietly, without showing off. At the tea shop, old men laughed over lahpet thoke and sweet milk tea while a vendor sliced mango and bread for travelers. Kyaw named each food he saw: fish from the river, sugar in the tea, meat on the grill, noodles steaming in the pot.\n\nThat evening a hungry dog waited by the fence. Kyaw shared his snack and refilled its water. His mother smiled. \"Full bellies can choose to be generous,\" she said. Kyaw looked at the leftover rice and understood — food words are not only for markets. They are promises that no guest should leave an empty house.",
+      story: "Kyaw woke to the smell of rice in the kitchen. Mother cooked rice and warm soup for breakfast. She poured water into cups and placed an egg beside each bowl. \"Food is love you can taste,\" she said with a soft smile.\n\nMonks walked down the lane with empty bowls. Kyaw gave them rice, sweet mango, and hot tea. His hands shook a little, but his heart felt warm and proud. Mother nodded. \"In Myanmar, we share food with monks and guests before we eat our fill.\"\n\nA thin dog waited outside the gate. Kyaw saved bread and fish from his plate and filled a bowl with water. The dog wagged its tail and ate slowly. That night Kyaw fell asleep happy, still tasting banana and milk, knowing full bellies can choose to be kind.",
       explainedStory: "There is a folk tale about a greedy merchant who hoarded rice while villagers went hungry. One night he dreamed of golden grains turning to sand. When he woke, he opened his storehouse and called the whole village to eat.\n\nFrom that day he kept only what he needed and gave the rest away. People said the merchant grew richer anyway — not in silver, but in friends who brought him fish, eggs, tea, and fruit from every corner of the valley. The moral is simple: rice shared fills more stomachs than rice hidden.\n\nMyanmar kitchens teach children that water, bread, and soup are not just words on a card. They are promises that no guest should leave an empty house.",
       tip: "At one meal this week, name three foods in English, then tap the Myanmar button so your child hears each word. Rice and water are gentle starting points every child knows.",
       explainedTip: "Cook or share one Myanmar dish together — even simple rice and tea. Say the food words before eating, the way village families bless a meal with names before the first bite.",
@@ -230,9 +230,9 @@
       gameTitle: "Catch the Animals",
       storyTitle: "The Four Friends in the Forest",
       segmentTitles: [
-        "Under the Old Banyan Tree",
-        "When the River Rose",
-        "Strength With Kindness"
+        "Friends Under the Tree",
+        "The Rainy Day",
+        "A Lesson for the Village"
       ],
       heritage: {
         title: "The sacred elephant",
@@ -243,7 +243,7 @@
         "When the flood came, each friend helped in a different way.",
         "Help one another, and the forest protects you too."
       ],
-      story: "Elephant, Monkey, Rabbit, and Peacock lived under one banyan tree at the edge of the village. They were different — heavy feet, quick hands, soft ears, bright feathers — yet they shared shade, fruit, and stories. Birds sang at dawn, a cow wandered past the pond, and sometimes a tiger's shadow crossed the far grass, but the four friends stayed together.\n\nWhen monsoon rains swelled the river, flood water crept toward the roots. Elephant lifted Rabbit onto his back. Monkey cleared fallen branches. Peacock flew ahead to find dry ground and called to a duck paddling near the reeds. Even a sleepy cat from the nearest house watched, as if the forest itself held its breath.\n\nAfter the water fell, villagers came to thank them. An old farmer said, \"Strength without kindness is only noise. Help one another, and the forest protects you too.\" Children carved the four friends into a classroom tale — elephant, monkey, rabbit, and peacock — so every new learner would remember: different bodies, one home.",
+      story: "Four friends lived under a big banyan tree near a Myanmar village. Elephant was strong. Monkey was quick. Rabbit was small. Peacock was bright. Birds sang above them, a cow rested by the pond, and they felt safe together even when a tiger watched from far away.\n\nRain fell hard and the river rose. Elephant carried Rabbit on his back. Monkey pushed branches away. Peacock flew ahead to find dry ground. A little cat from the village watched and hoped they would be all right.\n\nWhen the sun returned, villagers came to say thank you. Duck and pig from nearby farms brought food to share. \"Kind friends help each other,\" said the old teacher. From that day, children in Myanmar loved the tale of the four friends.",
       explainedStory: "Long before cities of glass and steel, kings of Burma kept white elephants as signs of a righteous reign. A cruel king, people said, could never keep such an animal — it would walk away into the hills.\n\nOne legend tells of a young prince who found a wounded elephant calf and nursed it with banana leaves and river water. Years later, when enemies surrounded the palace, the grown elephant appeared at dawn and led the prince through hidden paths. The prince remembered the calf and whispered, \"You saved me because I saved you.\" That is why Myanmar children learn the elephant first — not only as an animal, but as a reminder that gentleness and strength can live in the same heart.\n\nFrom tigers in the tall grass to ducks on the village pond, every creature has a place in Myanmar stories.",
       tip: "Walk outside or look at picture books and name animals in English first. Then tap the Myanmar button on each card — animal sounds are fun to repeat together.",
       explainedTip: "Tell the Four Friends tale at bedtime and ask your child which animal they would be. Link each answer to a new animal word from this chapter.",
@@ -338,9 +338,9 @@
       gameTitle: "Catch the Colors",
       storyTitle: "The Pagoda of Gold",
       segmentTitles: [
-        "Steps to Shwedagon",
-        "Colors of the Market Road",
-        "Painting What the Heart Sees"
+        "Gold at Dawn",
+        "Colors on the Walk Home",
+        "Grandmother's Painting"
       ],
       heritage: {
         title: "Gold of Shwedagon",
@@ -351,7 +351,7 @@
         "Monks wear saffron; markets show red, green, white, and blue.",
         "Colors are feelings — gold is thankfulness, green is hope after rain."
       ],
-      story: "May walked with her father to Shwedagon at dawn, when the sky was still blue and the bells were quiet. \"People donate gold leaf,\" he said, \"a little from many hands, so the pagoda shines for everyone.\" May watched white clouds drift above the golden spire and touched the cool stone steps with bare feet.\n\nOn the way home they passed monks in saffron orange robes and a market bursting with color — red tomatoes, green bananas, yellow mangoes, purple flowers, brown baskets, pink blossoms, and black iron pans. May named each color aloud until her voice felt like a song. A vendor smiled and gave her white jasmine to carry.\n\nThat afternoon May painted for her grandmother — gold like thankfulness, green like hope after rain, blue like the wide sky, red like festival lanterns. Grandmother hung the picture near the window. \"Colors are feelings,\" she said. \"Learn their names and you will see Myanmar the way poets and painters have seen it for centuries.\"",
+      story: "May climbed Shwedagon Hill with her father at dawn. The pagoda shone gold in the morning light. White clouds floated above a blue sky. May felt small and happy at the same time.\n\nMonks walked by in orange robes. The market was full of color — red tomatoes, green bananas, yellow mangoes, pink flowers, brown baskets, and black pans. May pointed at each color and said its name aloud. Her father laughed and bought white jasmine for her hair.\n\nAt home, May painted everything she saw. Gold for thankfulness. Green for new leaves after rain. Purple flowers. Red for festival lights. Grandmother hugged her tight. \"You see Myanmar with a kind heart,\" she said.",
       explainedStory: "There is a temple tale about a poor girl who wanted to offer something beautiful to the pagoda but owned only white flowers from the roadside. She stayed all night arranging them while richer visitors placed gold and jewels.\n\nAt dawn the flowers shimmered like gold in the sun, and the head monk said, \"The gift is not measured by weight but by sincerity.\" The girl learned that white can be pure and gold can live in a humble heart.\n\nMyanmar festivals paint the world in every hue — red lanterns at Thadingyut, yellow robes at ordination, pink blossoms in the hot season. Learning colors is learning to see the country the way poets and painters have seen it for centuries.",
       tip: "Pick one color each day from clothes, toys, or fruit. Say the English name, then tap Myanmar on the card. Gold and green connect easily to pagodas and forests.",
       explainedTip: "Draw a pagoda together and talk about gold, red, and white — the colors children see in Myanmar art. Let your child name each part aloud before coloring.",
@@ -443,9 +443,9 @@
       gameTitle: "Catch the Numbers",
       storyTitle: "The Merchant Who Counted Wrong",
       segmentTitles: [
-        "Mangoes by the Temple Road",
+        "Mangoes at the Market",
         "Ten Coins on the Mat",
-        "Slow Numbers, Honest Hands"
+        "Counting with Love"
       ],
       heritage: {
         title: "Counting at Bagan",
@@ -456,7 +456,7 @@
         "Count with your eyes and voice together. Do not rush.",
         "Numbers order daily life: steps, candles, fingers, festival days."
       ],
-      story: "Hnin sold mangoes near Bagan, where temple bells counted the hours better than she did. She stacked fruit in pyramids of one, two, three, four, five — then lost track and gave a customer one extra by mistake. Her brother laughed; Hnin blushed and hid behind the basket.\n\nA gentle traveler placed ten coins on her mat and asked her to count again, slowly, with eyes and voice together. \"Numbers are honest when we are patient,\" he said. \"At Bagan, builders once counted bricks and offerings; at your stall, you count trust.\" Hnin breathed, pointed to each mango, and smiled when the count came right.\n\nThat week she taught her little brother to count fingers, steps to the pagoda, eggs in a basket, candles for Grandma, and festival days on the calendar. Hnin never rushed again — not at the market, not at school, not under the stars. She learned that many mangoes can feed many friends when the counting is true.",
+      story: "Hnin sold mangoes near old Bagan temples. She stacked them in groups — one, two, three, four, five — then counted too fast and gave one extra away. Her face turned red. \"Slow eyes,\" her brother teased with a grin.\n\nA kind traveler placed ten coins on her mat. \"Count again,\" he said. Hnin pointed to each mango and counted out loud — six, seven, eight, nine, ten. When she finished, she smiled. Zero mistakes this time.\n\nThat week Hnin taught her brother to count the world around them. Six eggs in a basket. Seven steps to the pagoda. Eight birds on the roof. Nine flowers for Grandma. Ten fingers on his hands. \"Many numbers,\" he laughed, \"many smiles.\"",
       explainedStory: "Legend says the first king of Bagan asked his builders how many temples would stand on the plain. One wise monk answered with a handful of sand. \"As many as grains you cannot hold,\" he said, \"for merit has no final number.\"\n\nStill, children learned to count — one lamp, two bowls, three birds on the wall, four oxen in the field, five monks at dawn. Numbers ordered the world: seasons, festivals, ages, and gifts for elders.\n\nWhen you learn one through ten in Myanmar, you join a chain of market sellers, temple caretakers, and mothers measuring rice that stretches back longer than memory.",
       tip: "Count everyday objects aloud — fingers, stairs, spoons. Say the English number first, then tap Myanmar on the card. Keep it playful, never a test.",
       explainedTip: "Use snack time: count five grapes or ten raisins in English, then hear the Myanmar number on each card. Slow counting builds confidence.",
@@ -549,9 +549,9 @@
       gameTitle: "Catch the Body Parts",
       storyTitle: "The Dancer's Hands",
       segmentTitles: [
-        "Hands That Speak First",
-        "Feet, Head, and Respect",
-        "The Calm Heart on Show Day"
+        "Dance Class Begins",
+        "Respect for the Body",
+        "Show Day Smiles"
       ],
       heritage: {
         title: "Body and respect",
@@ -562,7 +562,7 @@
         "Do not point feet at a Buddha image or teacher. Bow with respect.",
         "Head, hands, and heart belong to a body that shows kindness."
       ],
-      story: "Daw Khin taught dance in an open teak hall where morning light touched the polished floor. \"Your hands speak before your mouth,\" she told the children, lifting her wrists like flower petals. Zaw watched her fingers curve and tried to copy each gentle shape. Even his eyes and ears felt awake.\n\nDaw Khin also taught respect for the whole body. \"Do not point your feet at the Buddha image or your teacher,\" she said. \"Bow with clean hands, wash your hair and teeth, and listen with your nose when incense passes.\" Zaw practiced each morning until his head, mouth, heart, and stomach felt quiet together.\n\nOn show day, the village gathered. Zaw's feet moved in careful patterns, his hands told the story, and his heart beat fast but kindly. Daw Khin bowed. \"Clean hands and a calm heart honor the tale,\" she said. Zaw understood — body words are not only names. They are how Myanmar children show care.",
+      story: "Daw Khin taught children to dance in a teak hall open to the garden. \"Your hands speak first,\" she said, moving her fingers like flower petals. Zaw watched her calm eyes and ears and wanted to learn.\n\nZaw learned to bow with clean hands. He washed his hair and teeth each morning. He never pointed his feet at the Buddha image or at his teacher. \"Your head, heart, and stomach feel better when you are respectful,\" Daw Khin said gently.\n\nOn show day, the village clapped and smiled. Zaw's hands told the story. His feet moved softly. His mouth smiled and his heart felt light. Daw Khin bowed. \"You danced with kindness,\" she said, and Zaw felt proud.",
       explainedStory: "There is an old tale about a giant who had strong arms and legs but never listened. Birds spoke into his ears; he ignored them. Friends looked into his eyes; he turned away. When he fell ill, only small hands — a child's hands — could feed him spoon by spoon until he learned to care.\n\nThe giant wept and said, \"I used my mouth too much and my heart too little.\" From then on he washed his hands before meals and touched his chest when he apologized.\n\nMyanmar parents teach children that the body is a guesthouse for the soul. Wash it, rest it, and use it to help — not to frighten or shame others.",
       tip: "Play Simon Says with body parts in English, then tap the Myanmar button on each card. Include wash your hands — a daily habit with a clear word.",
       explainedTip: "Before bedtime, name three body parts you used today — hands that drew, feet that ran, eyes that read. Hear the Myanmar word for each one together.",
@@ -654,9 +654,9 @@
       gameTitle: "Catch Home Items",
       storyTitle: "The House on Stilts",
       segmentTitles: [
-        "Rain Under the Teak Floor",
-        "Every Room Has a Duty",
-        "Light at the Door"
+        "Rain Under the House",
+        "Every Room Helps",
+        "Guests at the Door"
       ],
       heritage: {
         title: "Teak houses and open windows",
@@ -667,7 +667,7 @@
         "Every room has a duty — door, lamp, bed, kitchen.",
         "A home is how people treat those who arrive at the door."
       ],
-      story: "Nwe's house stood on strong teak stilts, so when monsoon rain flooded the lane, water flowed beneath while her family stayed dry upstairs. She smelled garlic from the kitchen, heard her phone buzz once, and looked through the window at ducks crossing the yard. Mother said a good house breathes like a living thing.\n\nFather walked her through each room and named its duty. \"The door welcomes guests. The lamp welcomes sight. The bed welcomes rest. The table holds shared meals. The chair waits for tired travelers.\" Even the bathroom and kitchen, he said, keep the house honest and clean.\n\nOne night, wet strangers knocked after sunset. Nwe's family opened the door, lit the lamp, and shared rice from the kitchen. Grandmother said, \"A home begins at the door — not in the teak, not in the nails, but in how people are treated when they arrive.\" Nwe never forgot that the word house means welcome.",
+      story: "Nwe lived in a house on tall teak stilts. When monsoon rain came, water flowed under the floor but her family stayed dry upstairs. The kitchen smelled warm, and Nwe felt safe with the people she loved.\n\nFather showed her each room in their home. The door welcomes friends. The window lets in gentle light. The bed gives rest. The table and chairs hold shared meals. The lamp glows when the night is dark.\n\nOne evening, wet travelers knocked at the door. Mother opened it with a smile. They sat down, ate rice from the kitchen, and called family on the phone. Grandmother said, \"A home is how we treat people who arrive.\" Nwe never forgot those kind words.",
       explainedStory: "Folk wisdom says a house with a clean kitchen feeds the spirit, a house with a bright window feeds the mind, and a house with a soft bed feeds the body. A lazy son in an old tale left his room messy and his lamp unlit. Guests thought the family had moved away.\n\nWhen his sister returned from the convent, she cleaned each room in silence. The neighbors said the house looked alive again, as if light had remembered where to sit. The brother learned to care for table, chair, and window — not for praise, but because a neglected house forgets its own name.\n\nLearning words like room, door, and kitchen is learning the grammar of hospitality Myanmar families have practiced for generations.",
       tip: "Walk through your home naming one object per room in English, then tap Myanmar on the matching card. Start with bed, door, and kitchen — words children use every day.",
       explainedTip: "Give your child one small home task — closing a window, placing a chair back, switching on a lamp — and say the word together before and after doing it.",
@@ -708,7 +708,7 @@
             {
                   "q": "What did Nwe's family offer wet travelers?",
                   "options": [
-                        "Lamp light, boiled water, and rice",
+                        "Rice from the kitchen and a warm welcome",
                         "Nothing — they locked the door",
                         "Only jokes",
                         "A map to Mars"
@@ -716,22 +716,22 @@
                   "correct": 0
             },
             {
-                  "q": "In folk wisdom, a house with a clean kitchen feeds what?",
+                  "q": "What did Grandmother say a home really is?",
                   "options": [
-                        "The spirit",
-                        "Only insects",
-                        "Nothing at all",
-                        "The moon"
+                        "How we treat people who arrive",
+                        "Only the color of paint",
+                        "The number of windows",
+                        "A shopping list"
                   ],
                   "correct": 0
             },
             {
-                  "q": "What is a house beyond wood and nails?",
+                  "q": "What room did Father say gives rest?",
                   "options": [
+                        "The bed",
                         "How people inside treat those who arrive",
-                        "Only the color of paint",
-                        "The number of windows",
-                        "A shopping list"
+                        "The closet",
+                        "The roof only"
                   ],
                   "correct": 0
             }
@@ -759,9 +759,9 @@
       gameTitle: "Catch School Items",
       storyTitle: "The Monastery School",
       segmentTitles: [
-        "Bell in the Courtyard",
-        "One Line, Then Another",
-        "A Lantern for Others"
+        "Walk to School",
+        "Learning One Line",
+        "Reading Aloud"
       ],
       heritage: {
         title: "Learning under the saya",
@@ -772,7 +772,7 @@
         "Every book begins with one mark — patience matters more than speed.",
         "Knowledge shared becomes a lantern for others."
       ],
-      story: "Before sunrise, boys walked to the monastery school with bags, books, pencils, and slates while roosters still called. Saya rang a small bell and the courtyard grew quiet as monks passed in saffron robes. Paing sat in class beside his friend, hoping the lesson would not jump ahead without him.\n\nPaing could not write his name. His face felt hot, but Saya knelt beside him and drew one line, then another, on the blank slate. \"Every book begins with a single mark,\" he said. \"Use your pen slowly. Erase mistakes without shame. Homework is practice, not punishment.\" Paing copied again and again until the letters looked like his own.\n\nAt term's end, Paing read aloud while parents smiled from the shade. Saya bowed with both hands. \"Knowledge shared becomes a lantern for others,\" he said. Paing looked at his bag, his book, and his friend who had waited after class — and knew school is a gift, not a race.",
+      story: "Before sunrise, Paing walked to the monastery school with his bag, book, and pencil. His friend waited under an old tree. A bell rang, the teacher smiled, and the class grew quiet and ready to learn.\n\nPaing could not write his name. His face felt hot and his eyes stung. The teacher drew one line, then another, on the slate. \"Slow is fine,\" he said. \"Use your eraser and try again.\" Paing took a deep breath and kept going.\n\nWeeks later, Paing read his name aloud. His friend clapped. The teacher bowed with both hands. \"Share what you learn,\" he said. Paing walked home with homework in his bag and a happy lesson in his heart.",
       explainedStory: "There is a story about a lazy pupil who copied his friend's homework with a stolen pen. The ink faded overnight, leaving empty pages. The friend, kinder than the thief deserved, shared his own book and stayed late teaching letters by lamplight.\n\nThe lazy pupil wept and returned the pen. From that day he carried his own bag, sharpened his own pencil, and erased mistakes without shame. The teacher said, \"A true student fails aloud and tries again.\"\n\nWhether lessons happen in a monastery courtyard or a modern classroom, Myanmar tradition honors the teacher, the book, and the friend who helps you when a word is hard.",
       tip: "Pack a bag together and name each school item in English, then tap Myanmar on the card. Thank the teacher out loud — gratitude is part of Myanmar school culture.",
       explainedTip: "After homework, read one sentence from the explained page together. Praise effort, not speed — the monastery teachers did the same for centuries.",
@@ -801,9 +801,9 @@
                   "correct": 0
             },
             {
-                  "q": "What did Saya ring to begin lessons?",
+                  "q": "What did the teacher ring to begin lessons?",
                   "options": [
-                        "A small bell",
+                        "A bell",
                         "A fire alarm for fun",
                         "A drum made of chocolate",
                         "Nothing"
@@ -811,7 +811,7 @@
                   "correct": 0
             },
             {
-                  "q": "What did Saya draw for Paing on the blank slate?",
+                  "q": "What did the teacher draw for Paing on the slate?",
                   "options": [
                         "One line, then another — the start of his name",
                         "A rocket ship only",
@@ -821,19 +821,19 @@
                   "correct": 0
             },
             {
-                  "q": "In the lazy pupil tale, what happened to copied ink overnight?",
+                  "q": "What did the teacher tell Paing about going slow?",
                   "options": [
+                        "Slow is fine — use your eraser and try again",
                         "It faded, leaving empty pages",
                         "It turned to gold",
-                        "It became a butterfly",
-                        "It sang a song"
+                        "It became a butterfly"
                   ],
                   "correct": 0
             },
             {
-                  "q": "What did Saya say knowledge shared becomes?",
+                  "q": "What lesson did Paing carry home in his heart?",
                   "options": [
-                        "A lantern for others",
+                        "Share what you learn",
                         "A locked box",
                         "A forgotten dream",
                         "A punishment"
@@ -864,9 +864,9 @@
       gameTitle: "Catch the Feelings",
       storyTitle: "The Heart That Said Thank You",
       segmentTitles: [
-        "When the Rice Spilled",
-        "Visitors in the Heart",
-        "Lanterns and Thank You"
+        "A Busy Festival Day",
+        "Feelings Like Visitors",
+        "Thank You Under the Lights"
       ],
       heritage: {
         title: "Gentle speech",
@@ -877,7 +877,7 @@
         "Feelings are visitors — greet them, but do not let them stay forever.",
         "Thank you, please, and sorry lighten the heart like lamp oil."
       ],
-      story: "Thiri helped her aunt carry pagoda offerings under a bright moon — flowers, rice, and fruit for the full-moon festival. When a basket tipped and rice spilled, sharp words flew at her little cousin. Thiri felt anger heat her face and fear tighten her stomach. She wanted to run, but Aunt stopped her with a calm hand.\n\n\"Feelings live in the heart,\" Aunt said, touching her chest. \"They are visitors — greet them, but do not let them stay forever. You can be angry and still choose please, sorry, and thank you.\" Thiri breathed slowly, looked into her cousin's eyes, and whispered an apology. Her anger melted like sugar in tea.\n\nWalking home under Thadingyut lanterns, Thiri said thank you for patience when her heart had been stormy. She felt happy, tired, and a little excited for tomorrow. Aunt smiled. \"Love and gratitude are feelings you can practice,\" she said, \"until they become as natural as saying goodnight.\"",
+      story: "Thiri helped her aunt carry food to the pagoda on a bright morning. She felt happy until a basket tipped and rice spilled on the ground. Angry words jumped out before she could stop them, and her little cousin looked scared.\n\nAunt put a warm hand on Thiri's heart. \"Feelings come and go,\" she said. \"You can feel angry, then choose sorry and please.\" Thiri whispered an apology. Her angry heart grew quiet, like rain stopping after a storm.\n\nWalking home under Thadingyut lights, Thiri felt tired but peaceful. She said thank you to her aunt and felt love for her family. She was a little excited for tomorrow too. \"Kind words,\" Aunt said, \"make a hungry heart feel full.\"",
       explainedStory: "There is a tale about a prince who owned every toy yet always felt sad. A wandering monk asked to share his meal. The prince refused at first, then watched the monk thank the cook, the farmer, and the rain with equal warmth.\n\nThe prince tried the same words — please, thank you, sorry — and discovered his chest felt lighter. He learned that love and gratitude are feelings you can practice like a dance step until they become natural.\n\nMyanmar children are taught to name what they feel instead of hiding it. Hungry, scared, excited, tired — each word is a bridge between the heart and the people who care.",
       tip: "At day’s end, ask your child to name one feeling in English. Tap the Myanmar button together. Model saying thank you and sorry when feelings run strong.",
       explainedTip: "When your child is upset, name the feeling calmly — angry, sad, tired — then breathe once before speaking. This mirrors how elders teach emotional patience.",
@@ -896,9 +896,9 @@
       parentPhrase: { en: "Are you happy?", mm: "ပျော်ရွှင်လား?" },
       quizQuestions: [
             {
-                  "q": "What festival preparations was Thiri helping with?",
+                  "q": "What was Thiri helping her aunt carry to the pagoda?",
                   "options": [
-                        "Pagoda offerings under a full moon",
+                        "Food on a bright morning",
                         "A snowball fight",
                         "A car race",
                         "Nothing — she slept all day"
@@ -906,9 +906,9 @@
                   "correct": 0
             },
             {
-                  "q": "What did Thiri's aunt compare feelings to?",
+                  "q": "What did Thiri's aunt say about feelings?",
                   "options": [
-                        "Visitors you greet but need not keep forever",
+                        "They come and go — you can choose sorry and please",
                         "Stones you must swallow",
                         "Birds that never land",
                         "Ghosts that own you"
@@ -916,9 +916,9 @@
                   "correct": 0
             },
             {
-                  "q": "What melted like sugar in tea after Thiri apologized?",
+                  "q": "What happened to Thiri's angry heart after she apologized?",
                   "options": [
-                        "Her anger",
+                        "It grew quiet, like rain stopping after a storm",
                         "The pagoda",
                         "The moon",
                         "Her shoes"
@@ -926,9 +926,9 @@
                   "correct": 0
             },
             {
-                  "q": "In the prince's tale, what words made his chest feel lighter?",
+                  "q": "What did Aunt say kind words can do?",
                   "options": [
-                        "Please, thank you, and sorry",
+                        "Make a hungry heart feel full",
                         "Shout louder",
                         "Buy more toys",
                         "Never speak"
@@ -969,9 +969,9 @@
       gameTitle: "Catch Festival Fun",
       storyTitle: "Three Lights in One Year",
       segmentTitles: [
-        "Water That Washes the Old Year",
-        "Candles for Grandparents",
-        "Balloons Full of Wishes"
+        "Thingyan Water",
+        "Thadingyut Candles",
+        "Tazaungdaing Balloons"
       ],
       heritage: {
         title: "Thingyan, Thadingyut, Tazaungdaing",
@@ -982,7 +982,7 @@
         "Thadingyut candles honor grandparents and parents first.",
         "Tazaungdaing balloons carry wishes for family health and peace."
       ],
-      story: "Lin's village celebrated three great festivals in one year, and each one taught him a different kind of joy. At Thingyan, neighbors splashed water in the street, laughing until old anger felt washed away like mud. \"Happy New Year!\" children shouted, dancing while monks smiled from shaded doorways.\n\nAt Thadingyut, the Festival of Lights, Lin bowed to his grandparents with candles and a small gift. Pagoda bells rang, families visited parents first, and the night shimmered with gold and gratitude. Lin's mother said, \"We celebrate not only with sweets, but with respect.\"\n\nAt Tazaungdaing, giant balloons rose over the hills like stars you could almost touch. Monks blessed the crowd, dancers spun in bright cloth, and Lin whispered a wish for family health. He understood what an old monk once said — Thingyan cleans, Thadingyut thanks, Tazaungdaing hopes. Festivals are promises renewed each year.",
+      story: "At Thingyan, Lin splashed water with friends in the street. Everyone laughed. Old anger washed away like dust in the rain. \"Happy New Year!\" children shouted, and Lin felt happy from his head to his toes.\n\nAt Thadingyut, Lin lit candles for his grandparents and gave them a small gift. He bowed low while the pagoda glowed and monks smiled. Family sang soft songs together. Lin's heart felt full of thank you.\n\nAt Tazaungdaing, bright balloons rose into the night sky. Dancers spun in colorful clothes. Lin danced with his cousins and wished health for every person he loved. Three festivals, three lights — and one grateful family all year long.",
       explainedStory: "An old monk once told travelers that Myanmar festivals follow the heart's seasons. Thingyan cleans. Thadingyut thanks. Tazaungdaing hopes.\n\nHe said a child who only wants candy at a festival learns sugar, but a child who watches monks receive offerings learns gratitude. A child who runs from water learns fear, but a child who shares a cup learns courage.\n\nPagoda visits, dancing, gifts, and lights — each word in this chapter names a piece of joy Myanmar people have guarded through war, rain, and time. To speak these words is to carry the festival forward.",
       tip: "Show photos or videos of Myanmar festivals if you have them. Name Thingyan, lights, and pagoda in English, then tap Myanmar on each card. Connect words to memories, not dates.",
       explainedTip: "Pick one festival tradition to act out at home — a small water blessing, lighting a safe candle, or making a paper balloon drawing — and say the festival words while you play.",

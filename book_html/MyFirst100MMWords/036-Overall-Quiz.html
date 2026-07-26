@@ -12,6 +12,11 @@ body.main-chapter-page{padding:8px;height:100dvh;max-height:100dvh;overflow:hidd
 }
 .main-chapter-page .manuscript-bg{width:100%;height:100%;align-items:stretch;}
 .main-chapter-page .container{flex:1 1 auto;height:auto;max-width:100%;width:100%;margin:0;padding:8px 14px 10px;}
+@media(min-width:1024px){
+  body.main-chapter-page{height:auto;min-height:100dvh;max-height:none;overflow-y:auto;}
+  .main-chapter-page .manuscript-bg,.main-chapter-page .container{max-height:none;overflow:visible;}
+  .main-chapter-page .manuscript-bg{height:auto;min-height:100dvh;}
+}
 .explained-page{overflow:hidden;}
 body.explained-page{padding:8px;}
 @media(min-width:768px){body.explained-page{padding:10px 12px;}}
@@ -46,64 +51,64 @@ body.explained-page{padding:8px;}
     </div>
   </div>
   <div id="quizArea">
-  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="လေး" data-hint="lay">
+  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="ခြောက်" data-hint="chauk">
     <div class="question">1. Which English word did you hear?</div>
     <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">4️⃣</span>
+      <span class="hear-emoji" aria-hidden="true">6️⃣</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">1️⃣ One</div><div class="option" data-correct="1">4️⃣ Four</div><div class="option" data-correct="0">👦 Brother</div><div class="option" data-correct="0">🪑 Table</div></div>
+    <div class="options"><div class="option" data-correct="0">👧 Sister</div><div class="option" data-correct="1">6️⃣ Six</div><div class="option" data-correct="0">❤️ Love</div><div class="option" data-correct="0">🍚 Rice</div></div>
     <div class="feedback" id="feedback-1"></div>
   </div>
-  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="သရက်သီး" data-hint="tha-yat-thee">
+  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="စားပွဲ" data-hint="sa-bwe">
     <div class="question">2. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🪑</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">🍬 Sugar</div><div class="option" data-correct="0">🟠 Orange</div><div class="option" data-correct="1">🪑 Table</div><div class="option" data-correct="0">🐔 Chicken</div></div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="သရက်သီး" data-hint="tha-yat-thee">
+    <div class="question">3. Which English word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🥭</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">📱 Phone</div><div class="option" data-correct="0">🥚 Egg</div><div class="option" data-correct="1">🥭 Mango</div><div class="option" data-correct="0">⚫ Black</div></div>
-    <div class="feedback" id="feedback-2"></div>
-  </div>
-  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="တဆယ်" data-hint="ta-ze">
-    <div class="question">3. Which English word did you hear?</div>
-    <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">🔟</span>
-      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
-    </div>
-    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">7️⃣ Seven</div><div class="option" data-correct="1">🔟 Ten</div><div class="option" data-correct="0">🔵 Blue</div><div class="option" data-correct="0">🎊 New Year</div></div>
+    <div class="options"><div class="option" data-correct="0">💧 Water</div><div class="option" data-correct="1">🥭 Mango</div><div class="option" data-correct="0">😠 Angry</div><div class="option" data-correct="0">👨‍👩‍👧 Parents</div></div>
     <div class="feedback" id="feedback-3"></div>
   </div>
-  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="ပန်းသီး" data-hint="pan-thee">
+  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="သုံး" data-hint="thone">
     <div class="question">4. Which English word did you hear?</div>
     <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">🍎</span>
+      <span class="hear-emoji" aria-hidden="true">3️⃣</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">🚪 Room</div><div class="option" data-correct="0">👨 Uncle</div><div class="option" data-correct="0">🍚 Rice</div><div class="option" data-correct="1">🍎 Apple</div></div>
+    <div class="options"><div class="option" data-correct="0">🟤 Brown</div><div class="option" data-correct="0">🔢 Many</div><div class="option" data-correct="0">🙏 Offering</div><div class="option" data-correct="1">3️⃣ Three</div></div>
     <div class="feedback" id="feedback-4"></div>
   </div>
-  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="စာအုပ်" data-hint="sa-ouk">
+  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="ပန်းရောင်" data-hint="pan-yaung">
     <div class="question">5. Which English word did you hear?</div>
     <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">📚</span>
+      <span class="hear-emoji" aria-hidden="true">🌸</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">🚪 Door</div><div class="option" data-correct="0">🟢 Green</div><div class="option" data-correct="1">📚 Book</div><div class="option" data-correct="0">🤩 Excited</div></div>
+    <div class="options"><div class="option" data-correct="0">7️⃣ Seven</div><div class="option" data-correct="0">🔵 Blue</div><div class="option" data-correct="1">🌸 Pink</div><div class="option" data-correct="0">🐶 Dog</div></div>
     <div class="feedback" id="feedback-5"></div>
   </div>
-  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="နေက အဝါရောင်ပါ။" data-hint="">
+  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="တောင်းပန်ပါတယ် မှားသွားလို့။" data-hint="">
     <div class="question">6. What is this sentence about?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">💬</span>
       <button type="button" class="hear-replay-btn">🔊 Hear sentence</button>
     </div>
     <p class="hear-hint-text">Listen to the full Myanmar sentence — then pick what it is about (Mom, Aunt, Family…).</p>
-    <div class="options"><div class="option" data-correct="0">This is about Baby</div><div class="option" data-correct="0">This is about Soup</div><div class="option" data-correct="1">This is about Yellow</div><div class="option" data-correct="0">This is about Grandma</div></div>
+    <div class="options"><div class="option" data-correct="0">This is about Seven</div><div class="option" data-correct="0">This is about Celebrate</div><div class="option" data-correct="0">This is about: Candles shine at Thadingyut</div><div class="option" data-correct="1">This is about Sorry</div></div>
     <div class="feedback" id="feedback-6"></div>
   </div></div>
   

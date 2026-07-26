@@ -12,6 +12,11 @@ body.main-chapter-page{padding:8px;height:100dvh;max-height:100dvh;overflow:hidd
 }
 .main-chapter-page .manuscript-bg{width:100%;height:100%;align-items:stretch;}
 .main-chapter-page .container{flex:1 1 auto;height:auto;max-width:100%;width:100%;margin:0;padding:8px 14px 10px;}
+@media(min-width:1024px){
+  body.main-chapter-page{height:auto;min-height:100dvh;max-height:none;overflow-y:auto;}
+  .main-chapter-page .manuscript-bg,.main-chapter-page .container{max-height:none;overflow:visible;}
+  .main-chapter-page .manuscript-bg{height:auto;min-height:100dvh;}
+}
 .explained-page{overflow:hidden;}
 body.explained-page{padding:8px;}
 @media(min-width:768px){body.explained-page{padding:10px 12px;}}
@@ -29,7 +34,7 @@ body.explained-page{padding:8px;}
 <div class="container">
   <div class="top-bar">
     <h1>Food Quiz</h1>
-    <div class="subtitle">Beat Professor M · 5 words · 1 sentences · hear Myanmar, answer in English</div>
+    <div class="subtitle">Beat Professor M · 5 words · 1 sentence · hear Myanmar, answer in English</div>
   </div>
   
   <div class="competition-bar" id="liveScoreBar">
@@ -46,64 +51,64 @@ body.explained-page{padding:8px;}
     </div>
   </div>
   <div id="quizArea">
-  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="ပေါင်မုန့်" data-hint="poun-moun">
+  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="သကြား" data-hint="sa-ya">
     <div class="question">1. Which English word did you hear?</div>
     <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">🍞</span>
+      <span class="hear-emoji" aria-hidden="true">🍬</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">🍎 Apple</div><div class="option" data-correct="0">🥩 Meat</div><div class="option" data-correct="0">🍲 Soup</div><div class="option" data-correct="1">🍞 Bread</div></div>
+    <div class="options"><div class="option" data-correct="1">🍬 Sugar</div><div class="option" data-correct="0">💧 Water</div><div class="option" data-correct="0">🍌 Banana</div><div class="option" data-correct="0">🍵 Tea</div></div>
     <div class="feedback" id="feedback-1"></div>
   </div>
-  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="ဟင်းရည်" data-hint="hin-yay">
+  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="ငှက်ပျောသီး" data-hint="ngat-pyaw-thee">
     <div class="question">2. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🍌</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">🍵 Tea</div><div class="option" data-correct="0">🥚 Egg</div><div class="option" data-correct="1">🍌 Banana</div><div class="option" data-correct="0">🥩 Meat</div></div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="နို့" data-hint="no">
+    <div class="question">3. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🥛</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="0">🥭 Mango</div><div class="option" data-correct="1">🥛 Milk</div><div class="option" data-correct="0">🍜 Noodle</div><div class="option" data-correct="0">🍵 Tea</div></div>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="ခေါက်ဆွဲ" data-hint="khauk-swe">
+    <div class="question">4. Which English word did you hear?</div>
+    <div class="hear-panel">
+      <span class="hear-emoji" aria-hidden="true">🍜</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+    </div>
+    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
+    <div class="options"><div class="option" data-correct="1">🍜 Noodle</div><div class="option" data-correct="0">🥩 Meat</div><div class="option" data-correct="0">💧 Water</div><div class="option" data-correct="0">🍞 Bread</div></div>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="ဟင်းရည်" data-hint="hin-yay">
+    <div class="question">5. Which English word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🍲</span>
       <button type="button" class="hear-replay-btn">🔊 Hear again</button>
     </div>
     <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">🥚 Egg</div><div class="option" data-correct="0">🥭 Mango</div><div class="option" data-correct="1">🍲 Soup</div><div class="option" data-correct="0">🍬 Sugar</div></div>
-    <div class="feedback" id="feedback-2"></div>
-  </div>
-  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="သရက်သီး" data-hint="tha-yat-thee">
-    <div class="question">3. Which English word did you hear?</div>
-    <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">🥭</span>
-      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
-    </div>
-    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="1">🥭 Mango</div><div class="option" data-correct="0">🍌 Banana</div><div class="option" data-correct="0">🍚 Rice</div><div class="option" data-correct="0">🥩 Meat</div></div>
-    <div class="feedback" id="feedback-3"></div>
-  </div>
-  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="အသား" data-hint="a-tha">
-    <div class="question">4. Which English word did you hear?</div>
-    <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">🥩</span>
-      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
-    </div>
-    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="1">🥩 Meat</div><div class="option" data-correct="0">🍵 Tea</div><div class="option" data-correct="0">🐟 Fish</div><div class="option" data-correct="0">🥭 Mango</div></div>
-    <div class="feedback" id="feedback-4"></div>
-  </div>
-  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="ရေ" data-hint="yay">
-    <div class="question">5. Which English word did you hear?</div>
-    <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">💧</span>
-      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
-    </div>
-    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Pick the English answer only.</p>
-    <div class="options"><div class="option" data-correct="0">🍵 Tea</div><div class="option" data-correct="0">🍬 Sugar</div><div class="option" data-correct="1">💧 Water</div><div class="option" data-correct="0">🥩 Meat</div></div>
+    <div class="options"><div class="option" data-correct="0">🍜 Noodle</div><div class="option" data-correct="1">🍲 Soup</div><div class="option" data-correct="0">🥚 Egg</div><div class="option" data-correct="0">🥩 Meat</div></div>
     <div class="feedback" id="feedback-5"></div>
   </div>
-  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="ငါးက မြစ်ကနေ ရတယ်။" data-hint="">
+  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="အမေ ဟင်းရည် ချက်တယ်။" data-hint="">
     <div class="question">6. What is this sentence about?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">💬</span>
       <button type="button" class="hear-replay-btn">🔊 Hear sentence</button>
     </div>
     <p class="hear-hint-text">Listen to the full Myanmar sentence — then pick what it is about (Mom, Aunt, Family…).</p>
-    <div class="options"><div class="option" data-correct="0">This is about Soup</div><div class="option" data-correct="0">This is about Bread</div><div class="option" data-correct="0">This is about Noodle</div><div class="option" data-correct="1">This is about Fish</div></div>
+    <div class="options"><div class="option" data-correct="1">This is about Soup</div><div class="option" data-correct="0">This is about: Thank you for the meal</div><div class="option" data-correct="0">This is about Rice</div><div class="option" data-correct="0">This is about Sugar</div></div>
     <div class="feedback" id="feedback-6"></div>
   </div></div>
   
