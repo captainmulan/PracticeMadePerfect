@@ -15,6 +15,18 @@ node _generate-book.cjs
 | `{id}-seg2.png` | Picture for story part 2 |
 | `{id}-seg3.png` | Picture for story part 3 |
 
+## Sentences page (generated scene art)
+
+Run `node scripts/gen_sentence_images.cjs` to create `{id}-sent1.svg` … `sent3.svg`, then `node _generate-book.cjs explained`.
+
+| File | Part |
+|------|------|
+| `{id}-sent1.svg` | Sentences section 1 (word group + story) |
+| `{id}-sent2.svg` | Sentences section 2 |
+| `{id}-sent3.svg` | Sentences section 3 |
+
+Optional PNG/JPG with the same names override SVG. Falls back to `exp*` then `seg*`.
+
 ## Explained page (optional — falls back to seg images)
 
 | File | Part |

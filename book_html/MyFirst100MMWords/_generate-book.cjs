@@ -10,6 +10,8 @@ const sandbox = { window: {}, console };
 vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-data.js"), "utf8"), sandbox);
 vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-explained-groups.js"), "utf8"), sandbox);
 const EXPLAINED_GROUPS = sandbox.window.MM_EXPLAINED_GROUPS || {};
+vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-explained-stories.js"), "utf8"), sandbox);
+const EXPLAINED_STORIES = sandbox.window.MM_EXPLAINED_STORIES || {};
 const CHAPTERS = sandbox.window.MM_CHAPTERS.map((ch) => {
   if (EXPLAINED_GROUPS[ch.id]) {
     return Object.assign({}, ch, { explainedGroups: EXPLAINED_GROUPS[ch.id] });
@@ -25,9 +27,18 @@ const imgCache = {};
 function loadImageUri(chapterId, slot) {
   const key = chapterId + ":" + slot;
   if (imgCache[key] !== undefined) return imgCache[key];
-  const names = [`${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.png`];
+  const names = [`${chapterId}-${slot}.png`, `${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.svg`];
   if (LEGACY_IMG[chapterId] && LEGACY_IMG[chapterId][slot]) names.unshift(LEGACY_IMG[chapterId][slot]);
-  const fallbacks = { seg2: ["seg1"], seg3: ["seg1"], exp1: ["seg1"], exp2: ["seg2", "seg1"], exp3: ["seg3", "seg1"] };
+  const fallbacks = {
+    seg2: ["seg1"],
+    seg3: ["seg1"],
+    exp1: ["seg1"],
+    exp2: ["seg2", "seg1"],
+    exp3: ["seg3", "seg1"],
+    sent1: ["exp1", "seg1"],
+    sent2: ["exp2", "seg2", "seg1"],
+    sent3: ["exp3", "seg3", "seg1"]
+  };
   for (const fb of fallbacks[slot] || []) names.push(`${chapterId}-${fb}.jpg`, `${chapterId}-${fb}.png`);
   for (const name of names) {
     const p = path.join(ASSETS, name);
@@ -541,36 +552,46 @@ function defaultGroupTip(group, ch) {
   return "Practice these sentences with someone at home.";
 }
 
+function explainedSectionMeta(ch, idx, groups) {
+  const fromFile = EXPLAINED_STORIES[ch.id] && EXPLAINED_STORIES[ch.id][idx];
+  const titles = segmentTitles(ch, "main");
+  return {
+    title: (fromFile && fromFile.title) || titles[idx] || "Part " + (idx + 1),
+    story: (fromFile && fromFile.story) || defaultGroupTip(groups[0] || {}, ch)
+  };
+}
+
+function primarySentence(group) {
+  const list = group.sentences || [];
+  return list[0] || { en: "", mm: "" };
+}
+
 function sentenceGroupsBlockHtml(groups) {
   return groups
     .map((group) => {
-      const sentences = (group.sentences || []).slice(0, 3);
-      const rows = sentences.map((line) => sentencePairHtml(line.en, line.mm)).join("");
-      const tip = group.tip ? `<p class="sentence-group-tip">${esc(group.tip)}</p>` : "";
+      const line = primarySentence(group);
+      const row = sentencePairHtml(line.en, line.mm);
       return `
     <div class="sentence-group-card">
       <h3 class="sentence-group-title">${esc(group.title)}</h3>
-      ${tip}
-      <div class="sentence-pairs-list">${rows}</div>
+      <div class="sentence-pairs-list">${row}</div>
     </div>`;
     })
     .join("");
 }
 
 function explainedScrollPartHtml(ch, idx, groups, titles) {
-  const slot = "exp" + (idx + 1);
-  const pic = imgHtml(ch.id, slot, ch.title + " — sentences part " + (idx + 1));
-  const intro = defaultGroupTip(groups[0] || {}, ch);
-  const wordsLabel = groups.map((g) => g.title).filter(Boolean).join(", ");
+  const slot = "sent" + (idx + 1);
+  const meta = explainedSectionMeta(ch, idx, groups);
+  const pic = imgHtml(ch.id, slot, ch.title + " — " + meta.title);
   return `
     <section class="chapter-part sentences-part" id="sentences-part-${idx}" aria-labelledby="sentences-part-title-${idx}">
-      <h2 class="chapter-part-title" id="sentences-part-title-${idx}">${esc(titles[idx])}</h2>
+      <h2 class="chapter-part-title" id="sentences-part-title-${idx}">${esc(meta.title)}</h2>
       <div class="chapter-part-inner">
         <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
         <div class="story-row">
           <div class="card story-card">
-            <div class="story-box">${esc(intro)}</div>
-            ${wordsLabel ? `<p class="sentence-part-words"><strong>Words in this section:</strong> ${esc(wordsLabel)}</p>` : ""}
+            <div class="story-box">${esc(meta.story)}</div>
           </div>
         </div>
         <div class="chapter-sentences-block">
@@ -705,9 +726,8 @@ function genActivity(ch) {
 function genExplained(ch) {
   const groups = explainedGroupsFor(ch);
   const groupParts = splitList(groups);
-  const titles = segmentTitles(ch, "explained");
   const panels = [0, 1, 2]
-    .map((i) => explainedScrollPartHtml(ch, i, groupParts[i], titles))
+    .map((i) => explainedScrollPartHtml(ch, i, groupParts[i]))
     .join("");
   const scrollHtml = explainedChapterScrollHtml(panels);
 
