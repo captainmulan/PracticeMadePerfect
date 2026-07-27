@@ -6,8 +6,8 @@ export const READING_PAGE_CSS = `
 body.reading-page {
   overflow-x: hidden;
   overflow-y: auto !important;
+  min-height: 100vh;
   height: auto !important;
-  min-height: 100%;
   -webkit-overflow-scrolling: touch;
 }
 body.reading-page .container {
@@ -70,6 +70,7 @@ body.reading-page:has(.container),
 body.reading-page:has(.quiz-card),
 body.reading-page:has(.character-grid) {
   overflow-y: auto !important;
+  min-height: 100vh;
   height: auto !important;
 }
 body.reading-page .container {

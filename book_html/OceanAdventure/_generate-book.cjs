@@ -112,11 +112,11 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 function pad(n) { return String(n).padStart(3, "0"); }
 function esc(s) { return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " "); }
 
-function head(title, scripts) {
+function head(title, scripts, chapterId) {
   const list = [
     "_ocean-player.js",
+    ...(chapterId ? [`_ocean-img-${chapterId}.js`] : []),
     "_ocean-data.js",
-    "_ocean-chapter-images.js",
     "_ocean-scenes.js",
     "_ocean-speak.js",
     ...(scripts || [])
@@ -203,7 +203,7 @@ function genActivity(ch) {
   if (ch.id === "overview") return null;
   const fname = `${pad(ch.num)}-${ch.slug}.html`;
   const segs = ch.mainSegments.map((s) => segmentHtml(ch, s, "main")).join("\n");
-  const html = `${head(ch.title)}
+  const html = `${head(ch.title, [], ch.id)}
 <body class="big-planet-page reading-page">
 <div class="bubbles"></div>
 <div class="container">
@@ -320,7 +320,7 @@ function genExplained(ch) {
   const num = ch.num + 1;
   const fname = `${pad(num)}-${explainedSlug(ch)}.html`;
   const segs = ch.explainedSegments.map((s) => segmentHtml(ch, s, "explained")).join("\n");
-  const html = `${head(ch.title + " Explained")}
+  const html = `${head(ch.title + " Explained", [], ch.id)}
 <body class="reading-page">
 <div class="bubbles"></div>
 <div class="container">
@@ -351,7 +351,7 @@ function genQuiz(ch) {
     <div class="feedback" id="feedback-${i + 1}"></div>
   </div>`).join("\n");
 
-  const html = `${head(ch.title + " Quiz")}
+  const html = `${head(ch.title + " Quiz", [], null)}
 <body class="reading-page">
 <div class="bubbles"></div>
 <div class="container">

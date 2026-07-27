@@ -94,7 +94,7 @@ Chapter activity pages (008–031) have **no** embedded mini-games — picture �
 |-----------|----------------|
 | Theme | Deep ocean gradient, `.bubbles` animated background |
 | Accents | Teal `#64ffda`, yellow `#ffeb3b`, light blue `#80deea` |
-| Illustrations | **Quality PNG** embedded as base64 in `_ocean-chapter-images.js` |
+| Illustrations | **Photorealistic PNG** embedded as base64 in `_ocean-chapter-images.js` (National Geographic–style documentary scenes per chapter segment) |
 | Vocabulary | **Press words to hear** via `_ocean-speak.js` |
 | Structure | One standalone HTML file per chapter |
 | Learning loop | Activity → Explained → Quiz (×9 topics including overview) |
@@ -116,9 +116,10 @@ OceanAdventure/
   _generate-book.cjs            # Regenerate activity / explained / quiz HTML
   _renumber-chapters.cjs        # One-time HTML renumber helper (Hadal insert)
   scripts/
-    gen_ocean_art.py            # Legacy PIL placeholders (overview only if needed)
-    sync_ai_images.cjs          # Copy AI chapter PNGs into assets/
-    gen_chapter_images.cjs      # PNG → _ocean-chapter-images.js
+    gen_ocean_prompts.cjs         # Build photoreal prompts from _ocean-data.js
+    gen_ocean_art.py              # Legacy PIL placeholders (deprecated)
+    sync_ai_images.cjs            # Copy AI chapter PNGs into assets/
+    gen_chapter_images.cjs        # PNG → _ocean-chapter-images.js
   assets/                       # Source PNGs ({chapter}-{slot}.png)
   *.html                        # Standalone chapters
 ```
@@ -126,22 +127,27 @@ OceanAdventure/
 ### Build pipeline
 
 ```bash
-# 1. Place / sync quality chapter PNGs (overview unchanged)
+# 1. Generate photoreal PNGs (GenerateImage → Cursor assets folder)
+#    Prompts: scripts/ocean-image-prompts.json (from gen_ocean_prompts.cjs)
+
+# 2. Copy generated PNGs into book assets/
 node book_html/OceanAdventure/scripts/sync_ai_images.cjs
 
-# 2. Embed all PNGs as data URIs (single-file, no fetch)
+# 3. Embed all PNGs as data URIs (single-file, no fetch)
 node book_html/OceanAdventure/scripts/gen_chapter_images.cjs
 
-# 3. Regenerate activity, explained, and quiz HTML from _ocean-data.js
+# 4. Regenerate activity, explained, and quiz HTML from _ocean-data.js (if content changed)
 node book_html/OceanAdventure/_generate-book.cjs
 
-# 4. Refresh index grid
+# 5. Refresh index grid
 node book_html/OceanAdventure/_gen-index-grid.cjs
 ```
 
-Replace a hero illustration: update PNG in `assets/`, re-run steps 2–3.
+Replace a chapter illustration: regenerate PNG in `assets/` (or Cursor assets + sync), re-run steps 2–3.
 
-**Chapter art (48 images):** sunlight, twilight, midnight, abyss, hadal, coral-reefs, marine-mammals, fish — each has 6 slots (`main-1`…`main-3`, `explain-1`…`explain-3`).
+**Chapter art (54 images):** overview + 8 zone/topic chapters — each has 6 slots (`main-1`…`main-3`, `explain-1`…`explain-3`). Photorealistic National Geographic–style scenes matched to each story segment in `_ocean-data.js`.
+
+**App import:** Images are inline base64 inside `_ocean-img-{chapter}.js` (one file per chapter, ~16–25 MB). When imported into the PracticeMadePerfect app, pages must load from `/book_html/OceanAdventure/` (iframe) or get a `<base href="/book_html/OceanAdventure/">` tag — opening `file://` locally works without that. Re-import the book folder after updates so steps use iframe links, not stale inline HTML.
 
 ---
 

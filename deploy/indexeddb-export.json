@@ -8,12 +8,22 @@
       "coverColorStart": "#61dafb",
       "coverColorMiddle": "#61dafb",
       "coverColorEnd": "#61dafb",
+      "coverWidth": 100,
+      "coverHeight": 150,
       "icon": "React",
       "iconColorStart": "#68217a",
       "iconColorMiddle": "#68217a",
       "iconColorEnd": "#68217a",
+      "iconSize": 45,
+      "titleFontSize": 60,
+      "titleFontWeight": "bolder",
+      "titleColor": "#fafafa",
+      "titlePosition": "bottom-center",
+      "iconPosition": "top-center",
       "courseIndex": 0,
       "category": "IT",
+      "pIndex": 4,
+      "stepCount": 0,
       "chapters": [
         {
           "id": "react-crud-premium-ch1",
@@ -658,16 +668,7 @@
             }
           ]
         }
-      ],
-      "iconPosition": "top-center",
-      "titleFontWeight": "bolder",
-      "titlePosition": "bottom-center",
-      "titleFontSize": 60,
-      "titleColor": "#fafafa",
-      "coverHeight": 150,
-      "coverWidth": 100,
-      "iconSize": 45,
-      "pIndex": 4
+      ]
     },
     {
       "id": "react-interview-practice",
@@ -677,12 +678,22 @@
       "coverColorStart": "#b2831f",
       "coverColorMiddle": "#c9ae26",
       "coverColorEnd": "#b7b93c",
+      "coverWidth": 100,
+      "coverHeight": 152,
       "icon": "React",
       "iconColorStart": "#68217a",
       "iconColorMiddle": "#68217a",
       "iconColorEnd": "#68217a",
+      "iconSize": 45,
+      "titleFontSize": 60,
+      "titleFontWeight": "bolder",
+      "titleColor": "#f7f7f8",
+      "titlePosition": "bottom-center",
+      "iconPosition": "top-center",
       "courseIndex": 1,
       "category": "IT",
+      "pIndex": 5,
+      "stepCount": 0,
       "chapters": [
         {
           "id": "react-interview-ch1",
@@ -1079,16 +1090,7 @@
             }
           ]
         }
-      ],
-      "iconPosition": "top-center",
-      "titleFontWeight": "bolder",
-      "titlePosition": "bottom-center",
-      "titleFontSize": 60,
-      "titleColor": "#f7f7f8",
-      "coverWidth": 100,
-      "coverHeight": 152,
-      "iconSize": 45,
-      "pIndex": 5
+      ]
     },
     {
       "id": "tharapasa-nidana",
@@ -1098,6 +1100,8 @@
       "coverColorStart": "#6ab988",
       "coverColorMiddle": "#32808b",
       "coverColorEnd": "#2c9b3e",
+      "coverWidth": 100,
+      "coverHeight": 150,
       "icon": "⚔️",
       "iconColorStart": "#f2f2f3",
       "iconColorMiddle": "#fff",
@@ -1106,11 +1110,13 @@
       "titleFontSize": 60,
       "titleFontWeight": "bolder",
       "titleColor": "#f5f7f9",
-      "iconPosition": "center-center",
       "titlePosition": "bottom-center",
       "titleTextAlign": "left",
+      "iconPosition": "center-center",
       "courseIndex": 1,
       "category": "Fiction",
+      "pIndex": 4,
+      "stepCount": 0,
       "chapters": [
         {
           "id": "tharapasa-nidana-ch-0",
@@ -1677,10 +1683,7 @@
             }
           ]
         }
-      ],
-      "coverWidth": 100,
-      "coverHeight": 150,
-      "pIndex": 4
+      ]
     },
     {
       "id": "solid-interview-practice",
@@ -1690,12 +1693,22 @@
       "coverColorStart": "#4a90e2",
       "coverColorMiddle": "#4a90e2",
       "coverColorEnd": "#4a90e2",
+      "coverWidth": 100,
+      "coverHeight": 150,
       "icon": "SOLID",
       "iconColorStart": "#faf9fa",
       "iconColorMiddle": "#ffffff",
       "iconColorEnd": "#ffffff",
+      "iconSize": 40,
+      "titleFontSize": 60,
+      "titleFontWeight": "bolder",
+      "titleColor": "#eeeff1",
+      "titlePosition": "bottom-left",
+      "iconPosition": "top-center",
       "courseIndex": 2,
       "category": "IT",
+      "pIndex": 6,
+      "stepCount": 0,
       "chapters": [
         {
           "id": "solid-interview-ch1",
@@ -1777,16 +1790,7 @@
             }
           ]
         }
-      ],
-      "iconSize": 40,
-      "titleColor": "#eeeff1",
-      "titleFontWeight": "bolder",
-      "titleFontSize": 60,
-      "iconPosition": "top-center",
-      "titlePosition": "bottom-left",
-      "coverWidth": 100,
-      "coverHeight": 150,
-      "pIndex": 6
+      ]
     },
     {
       "id": "angular-interview-practice",
@@ -1796,12 +1800,22 @@
       "coverColorStart": "#dd0031",
       "coverColorMiddle": "#dd0031",
       "coverColorEnd": "#dd0031",
+      "coverWidth": 100,
+      "coverHeight": 150,
       "icon": "Angular",
       "iconColorStart": "#f7f6f9",
       "iconColorMiddle": "#ffffff",
       "iconColorEnd": "#ffffff",
+      "iconSize": 35,
+      "titleFontSize": 60,
+      "titleFontWeight": "bolder",
+      "titleColor": "#f5f7f9",
+      "titlePosition": "bottom-left",
+      "iconPosition": "top-center",
       "courseIndex": 3,
       "category": "IT",
+      "pIndex": 8,
+      "stepCount": 0,
       "chapters": [
         {
           "id": "angular-interview-ch1",
@@ -2200,16 +2214,7 @@
             }
           ]
         }
-      ],
-      "titleColor": "#f5f7f9",
-      "titleFontWeight": "bolder",
-      "iconSize": 35,
-      "iconPosition": "top-center",
-      "titleFontSize": 60,
-      "titlePosition": "bottom-left",
-      "coverWidth": 100,
-      "coverHeight": 150,
-      "pIndex": 8
+      ]
     },
     {
       "id": "csharp-interview-practice",
@@ -2219,12 +2224,21 @@
       "coverColorStart": "#68217A",
       "coverColorMiddle": "#68217A",
       "coverColorEnd": "#68217A",
+      "coverWidth": 100,
+      "coverHeight": 150,
       "icon": "C#",
       "iconColorStart": "#fafafa",
       "iconColorMiddle": "#ffffff",
       "iconColorEnd": "#ffffff",
+      "iconSize": 70,
+      "titleFontSize": 60,
+      "titleFontWeight": "bolder",
+      "titleColor": "#f0f1f4",
+      "titlePosition": "bottom-left",
+      "iconPosition": "top-center",
       "courseIndex": 4,
       "category": "IT",
+      "stepCount": 0,
       "chapters": [
         {
           "id": "csharp-interview-ch1",
@@ -2677,15 +2691,7 @@
             }
           ]
         }
-      ],
-      "iconSize": 70,
-      "titleColor": "#f0f1f4",
-      "titleFontWeight": "bolder",
-      "iconPosition": "top-center",
-      "titleFontSize": 60,
-      "titlePosition": "bottom-left",
-      "coverWidth": 100,
-      "coverHeight": 150
+      ]
     },
     {
       "id": "little-programmer",
@@ -2695,6 +2701,8 @@
       "coverColorStart": "#ead4a4",
       "coverColorMiddle": "#b6ac3e",
       "coverColorEnd": "#8c950e",
+      "coverWidth": 102,
+      "coverHeight": 150,
       "icon": "🌈",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
@@ -2708,6 +2716,9 @@
       "iconPosition": "top-center",
       "courseIndex": 5,
       "category": "Kid",
+      "pIndex": 2,
+      "artifactType": "book",
+      "stepCount": 0,
       "chapters": [
         {
           "id": "little-programmer-ch-1783088886354",
@@ -3302,11 +3313,7 @@
             }
           ]
         }
-      ],
-      "coverWidth": 102,
-      "coverHeight": 150,
-      "pIndex": 2,
-      "artifactType": "book"
+      ]
     },
     {
       "id": "sql-interview-practice",
@@ -3316,12 +3323,21 @@
       "coverColorStart": "#d2691e",
       "coverColorMiddle": "#d2691e",
       "coverColorEnd": "#d2691e",
+      "coverWidth": 100,
+      "coverHeight": 157,
       "icon": "SQL",
       "iconColorStart": "#fcfcfc",
       "iconColorMiddle": "#ffffff",
       "iconColorEnd": "#ffffff",
+      "iconSize": 55,
+      "titleFontSize": 60,
+      "titleFontWeight": "bolder",
+      "titleColor": "#f6f7f9",
+      "titlePosition": "bottom-left",
+      "iconPosition": "top-center",
       "courseIndex": 5,
       "category": "IT",
+      "stepCount": 0,
       "chapters": [
         {
           "id": "sql-interview-ch1",
@@ -3678,15 +3694,7 @@
             }
           ]
         }
-      ],
-      "titleColor": "#f6f7f9",
-      "titleFontWeight": "bolder",
-      "titleFontSize": 60,
-      "iconSize": 55,
-      "iconPosition": "top-center",
-      "titlePosition": "bottom-left",
-      "coverWidth": 100,
-      "coverHeight": 157
+      ]
     },
     {
       "id": "myanmar-letters",
@@ -3711,6 +3719,7 @@
       "iconPosition": "top-center",
       "courseIndex": 7,
       "category": "Kid",
+      "stepCount": 0,
       "chapters": [
         {
           "id": "myanmar-letters-ch-1783923638762",
@@ -3766,7 +3775,9 @@
       "iconPosition": "center-center",
       "courseIndex": 10,
       "category": "IT",
+      "pIndex": 3,
       "artifactType": "newspaper",
+      "stepCount": 0,
       "chapters": [
         {
           "id": "new-book-ch-1783656093762",
@@ -3789,8 +3800,7 @@
             }
           ]
         }
-      ],
-      "pIndex": 3
+      ]
     },
     {
       "id": "solarsystem",
@@ -3815,7 +3825,9 @@
       "iconPosition": "top-center",
       "courseIndex": 10,
       "category": "Kid",
+      "pIndex": 1,
       "artifactType": "book",
+      "stepCount": 0,
       "chapters": [
         {
           "id": "solarsystem-ch-import-1784351954791-1",
@@ -4677,8 +4689,1527 @@
             }
           ]
         }
-      ],
-      "pIndex": 1
+      ]
+    },
+    {
+      "id": "myfirst100mmwords",
+      "title": "100 Myanmar Words",
+      "description": "",
+      "color": "#2563eb",
+      "coverColorStart": "#1e1b4b",
+      "coverColorMiddle": "#7c3aed",
+      "coverColorEnd": "#fbbf24",
+      "coverWidth": 100,
+      "coverHeight": 150,
+      "icon": "🏮",
+      "iconColorStart": "#fff",
+      "iconColorMiddle": "#fff",
+      "iconColorEnd": "#fff",
+      "iconSize": 80,
+      "titleFontSize": 60,
+      "titleFontWeight": "bolder",
+      "titleColor": "#ffffff",
+      "titlePosition": "bottom-left",
+      "titleTextAlign": "left",
+      "iconPosition": "top-center",
+      "courseIndex": 11,
+      "category": "Kid",
+      "pIndex": 1,
+      "artifactType": "book",
+      "bookHtmlFolder": "MyFirst100MMWords",
+      "stepCount": 38,
+      "chapters": [
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-1",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 1",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-1-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-1",
+              "chapterTitle": "Page 1",
+              "chapterIndex": 0,
+              "stepIndex": 1,
+              "stepType": "html",
+              "title": "Book Briefing",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/001-Book-Briefing.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-10",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 10",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-10-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-10",
+              "chapterTitle": "Page 10",
+              "chapterIndex": 0,
+              "stepIndex": 10,
+              "stepType": "html",
+              "title": "Food Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/010-Food-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-11",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 11",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-11-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-11",
+              "chapterTitle": "Page 11",
+              "chapterIndex": 0,
+              "stepIndex": 11,
+              "stepType": "html",
+              "title": "Animals",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/011-Animals.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-12",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 12",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-12-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-12",
+              "chapterTitle": "Page 12",
+              "chapterIndex": 0,
+              "stepIndex": 12,
+              "stepType": "html",
+              "title": "Animals Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/012-Animals-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-13",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 13",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-13-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-13",
+              "chapterTitle": "Page 13",
+              "chapterIndex": 0,
+              "stepIndex": 13,
+              "stepType": "html",
+              "title": "Animals Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/013-Animals-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-14",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 14",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-14-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-14",
+              "chapterTitle": "Page 14",
+              "chapterIndex": 0,
+              "stepIndex": 14,
+              "stepType": "html",
+              "title": "Colors",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/014-Colors.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-15",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 15",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-15-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-15",
+              "chapterTitle": "Page 15",
+              "chapterIndex": 0,
+              "stepIndex": 15,
+              "stepType": "html",
+              "title": "Colors Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/015-Colors-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-16",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 16",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-16-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-16",
+              "chapterTitle": "Page 16",
+              "chapterIndex": 0,
+              "stepIndex": 16,
+              "stepType": "html",
+              "title": "Colors Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/016-Colors-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-17",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 17",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-17-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-17",
+              "chapterTitle": "Page 17",
+              "chapterIndex": 0,
+              "stepIndex": 17,
+              "stepType": "html",
+              "title": "Numbers",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/017-Numbers.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-18",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 18",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-18-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-18",
+              "chapterTitle": "Page 18",
+              "chapterIndex": 0,
+              "stepIndex": 18,
+              "stepType": "html",
+              "title": "Numbers Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/018-Numbers-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-19",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 19",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-19-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-19",
+              "chapterTitle": "Page 19",
+              "chapterIndex": 0,
+              "stepIndex": 19,
+              "stepType": "html",
+              "title": "b Mid Lantern Run",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/019b-Mid-Lantern-Run.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-2",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 2",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-2-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-2",
+              "chapterTitle": "Page 2",
+              "chapterIndex": 0,
+              "stepIndex": 2,
+              "stepType": "html",
+              "title": "Index",
+              "description": "",
+              "contentHtml": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>My First 100 Myanmar Words - Index</title>\n<link rel=\"stylesheet\" href=\"_mmwords-theme.css\">\n</head>\n<body>\n<div class=\"manuscript-bg\">\n<div class=\"scroll-wrap\">\n\n  <div class=\"header\">\n    <svg class=\"pagoda-deco\" width=\"56\" height=\"64\" viewBox=\"0 0 56 64\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\">\n      <defs>\n        <linearGradient id=\"idx-pg-gold\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n          <stop offset=\"0%\" stop-color=\"#FDE68A\"/>\n          <stop offset=\"50%\" stop-color=\"#E8C547\"/>\n          <stop offset=\"100%\" stop-color=\"#C9A227\"/>\n        </linearGradient>\n        <linearGradient id=\"idx-pg-lac\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n          <stop offset=\"0%\" stop-color=\"#8B2525\"/>\n          <stop offset=\"100%\" stop-color=\"#4A0E0E\"/>\n        </linearGradient>\n        <linearGradient id=\"idx-pg-shine\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n          <stop offset=\"0%\" stop-color=\"#FFF8E7\" stop-opacity=\".55\"/>\n          <stop offset=\"100%\" stop-color=\"#C9A227\" stop-opacity=\"0\"/>\n        </linearGradient>\n        <filter id=\"idx-pg-sh\" x=\"-25%\" y=\"-25%\" width=\"150%\" height=\"150%\">\n          <feDropShadow dx=\"0\" dy=\"2\" stdDeviation=\"2.2\" flood-color=\"#2C1810\" flood-opacity=\".28\"/>\n        </filter>\n      </defs>\n      <g filter=\"url(#idx-pg-sh)\">\n        <rect x=\"10\" y=\"54\" width=\"36\" height=\"5\" rx=\"1.2\" fill=\"#6B4423\"/>\n        <rect x=\"12\" y=\"50\" width=\"32\" height=\"4\" rx=\"1\" fill=\"url(#idx-pg-gold)\" stroke=\"#92400E\" stroke-width=\".5\"/>\n        <rect x=\"15\" y=\"41\" width=\"26\" height=\"10\" rx=\"1\" fill=\"url(#idx-pg-lac)\" stroke=\"#C9A227\" stroke-width=\".7\"/>\n        <path d=\"M8 41 L28 31 L48 41 L45 43 L28 35 L11 43 Z\" fill=\"url(#idx-pg-gold)\" stroke=\"#92400E\" stroke-width=\".55\"/>\n        <path d=\"M8 41 L28 31 L48 41\" fill=\"none\" stroke=\"url(#idx-pg-shine)\" stroke-width=\"1.2\" opacity=\".8\"/>\n        <rect x=\"19\" y=\"33\" width=\"18\" height=\"6\" rx=\".8\" fill=\"url(#idx-pg-lac)\" stroke=\"#C9A227\" stroke-width=\".55\"/>\n        <path d=\"M13 33 L28 25 L43 33 L41 35 L28 28 L15 35 Z\" fill=\"url(#idx-pg-gold)\" stroke=\"#92400E\" stroke-width=\".55\"/>\n        <rect x=\"21\" y=\"25\" width=\"14\" height=\"5\" rx=\".6\" fill=\"url(#idx-pg-lac)\" stroke=\"#C9A227\" stroke-width=\".5\"/>\n        <path d=\"M16 25 L28 18 L40 25 L38 27 L28 21 L18 27 Z\" fill=\"url(#idx-pg-gold)\" stroke=\"#92400E\" stroke-width=\".5\"/>\n        <path d=\"M18 25 L28 18 L38 25 L28 22 Z\" fill=\"url(#idx-pg-shine)\" opacity=\".45\"/>\n        <line x1=\"28\" y1=\"18\" x2=\"28\" y2=\"6\" stroke=\"#B8860B\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n        <circle cx=\"28\" cy=\"5\" r=\"3.2\" fill=\"#FDE68A\" stroke=\"#D97706\" stroke-width=\".8\"/>\n        <circle cx=\"27\" cy=\"4\" r=\"1\" fill=\"#fff\" opacity=\".65\"/>\n        <ellipse cx=\"28\" cy=\"58\" rx=\"14\" ry=\"2\" fill=\"#000\" opacity=\".08\"/>\n      </g>\n    </svg>\n    <div class=\"ornament-top\">✦ ✦ ✦</div>\n    <h1 class=\"page-title\">Table of Contents</h1>\n  </div>\n\n  <div class=\"section-block\">\n    <div class=\"section-label\"><span>Introduction</span></div>\n    <ul class=\"toc-list\">\n      <li class=\"toc-row\"><span class=\"toc-num\">1</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📖</span>Book Briefing</div><div class=\"toc-mm\">Get started</div></div><span class=\"toc-type\">Welcome</span></li>\n      <li class=\"toc-row\"><span class=\"toc-num\">2</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📑</span>Index</div><div class=\"toc-mm\">Chapter list</div></div><span class=\"toc-type\">You are here</span></li>\n      <li class=\"toc-row\"><span class=\"toc-num\">3</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🧒</span>Character Selection</div><div class=\"toc-mm\">Pick your learner</div></div><span class=\"toc-type\">Start</span></li>\n      <li class=\"toc-row\"><span class=\"toc-num\">4</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🏘️</span>Build Myanmar Village</div><div class=\"toc-mm\">Start game — build your village</div></div><span class=\"toc-type\">Start game</span></li>\n    </ul>\n  </div>\n\n  <div class=\"section-block\">\n    <div class=\"section-label\"><span>Ten Chapters</span></div>\n    <div class=\"topic-grid\">\n      <div class=\"toc-row\"><span class=\"toc-num\">5</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">👨‍👩‍👧</span>Family</div><div class=\"toc-mm\">Family words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">6</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Family Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">7</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Family Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">8</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🍚</span>Food</div><div class=\"toc-mm\">Food words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">9</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Food Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">10</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Food Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">11</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🐘</span>Animals</div><div class=\"toc-mm\">Animal words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">12</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Animals Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">13</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Animals Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">14</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🎨</span>Colors</div><div class=\"toc-mm\">Color words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">15</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Colors Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">16</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Colors Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">17</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🔢</span>Numbers</div><div class=\"toc-mm\">Number words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">18</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Numbers Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">19</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Numbers Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row toc-game-row\"><span class=\"toc-num\">★</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🪔</span>Lantern Run</div><div class=\"toc-mm\">Mid-book game — you reached the middle!</div></div><span class=\"toc-type\">Mid game</span></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">20</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">👂</span>Body Parts</div><div class=\"toc-mm\">Body words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">21</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Body Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">22</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Body Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">23</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🏠</span>Home</div><div class=\"toc-mm\">Home words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">24</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Home Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">25</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Home Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">26</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🎒</span>School</div><div class=\"toc-mm\">School words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">27</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>School Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">28</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>School Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">29</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">😊</span>Feelings</div><div class=\"toc-mm\">Feeling words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">30</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Feelings Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">31</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Feelings Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n\n      <div class=\"toc-row\"><span class=\"toc-num\">32</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🎆</span>Myanmar Festivals</div><div class=\"toc-mm\">Festival words</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">33</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📜</span>Festivals Sentences</div><div class=\"toc-mm\">Deep dive</div></div></div>\n      <div class=\"toc-row\"><span class=\"toc-num\">34</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">❓</span>Festivals Quiz</div><div class=\"toc-mm\">Quiz</div></div></div>\n    </div>\n  </div>\n\n  <div class=\"section-block\">\n    <div class=\"section-label\"><span>Conclusion</span></div>\n    <ul class=\"toc-list\">\n      <li class=\"toc-row\"><span class=\"toc-num\">35</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">📚</span>Conclusion</div><div class=\"toc-mm\">Wrap-up</div></div><span class=\"toc-type\">End</span></li>\n      <li class=\"toc-row\"><span class=\"toc-num\">36</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🏆</span>Overall Quiz</div><div class=\"toc-mm\">Final quiz</div></div><span class=\"toc-type\">Final</span></li>\n      <li class=\"toc-row\"><span class=\"toc-num\">37</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🎆</span>Myanmar Festival Parade</div><div class=\"toc-mm\">End game — light up the village</div></div><span class=\"toc-type\">End game</span></li>\n      <li class=\"toc-row\"><span class=\"toc-num\">38</span><div class=\"toc-body\"><div class=\"toc-title\"><span class=\"toc-emoji\">🎉</span>Congratulations</div><div class=\"toc-mm\">You did it!</div></div><span class=\"toc-type\">Done</span></li>\n    </ul>\n  </div>\n\n  <div class=\"footer-scroll\">Use ← → in the top bar to turn each leaf · Home for library</div>\n\n</div>\n</div>\n</body>\n</html>\n"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-20",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 20",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-20-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-20",
+              "chapterTitle": "Page 20",
+              "chapterIndex": 0,
+              "stepIndex": 20,
+              "stepType": "html",
+              "title": "Body Parts",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/020-Body-Parts.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-21",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 21",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-21-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-21",
+              "chapterTitle": "Page 21",
+              "chapterIndex": 0,
+              "stepIndex": 21,
+              "stepType": "html",
+              "title": "Body Parts Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/021-Body-Parts-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-22",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 22",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-22-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-22",
+              "chapterTitle": "Page 22",
+              "chapterIndex": 0,
+              "stepIndex": 22,
+              "stepType": "html",
+              "title": "Body Parts Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/022-Body-Parts-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-23",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 23",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-23-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-23",
+              "chapterTitle": "Page 23",
+              "chapterIndex": 0,
+              "stepIndex": 23,
+              "stepType": "html",
+              "title": "Home",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/023-Home.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-24",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 24",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-24-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-24",
+              "chapterTitle": "Page 24",
+              "chapterIndex": 0,
+              "stepIndex": 24,
+              "stepType": "html",
+              "title": "Home Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/024-Home-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-25",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 25",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-25-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-25",
+              "chapterTitle": "Page 25",
+              "chapterIndex": 0,
+              "stepIndex": 25,
+              "stepType": "html",
+              "title": "Home Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/025-Home-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-26",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 26",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-26-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-26",
+              "chapterTitle": "Page 26",
+              "chapterIndex": 0,
+              "stepIndex": 26,
+              "stepType": "html",
+              "title": "School",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/026-School.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-27",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 27",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-27-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-27",
+              "chapterTitle": "Page 27",
+              "chapterIndex": 0,
+              "stepIndex": 27,
+              "stepType": "html",
+              "title": "School Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/027-School-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-28",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 28",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-28-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-28",
+              "chapterTitle": "Page 28",
+              "chapterIndex": 0,
+              "stepIndex": 28,
+              "stepType": "html",
+              "title": "School Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/028-School-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-29",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 29",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-29-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-29",
+              "chapterTitle": "Page 29",
+              "chapterIndex": 0,
+              "stepIndex": 29,
+              "stepType": "html",
+              "title": "Feelings",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/029-Feelings.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-3",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 3",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-3-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-3",
+              "chapterTitle": "Page 3",
+              "chapterIndex": 0,
+              "stepIndex": 3,
+              "stepType": "html",
+              "title": "Character Selection",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/003-Character-Selection.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-30",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 30",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-30-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-30",
+              "chapterTitle": "Page 30",
+              "chapterIndex": 0,
+              "stepIndex": 30,
+              "stepType": "html",
+              "title": "Feelings Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/030-Feelings-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-31",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 31",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-31-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-31",
+              "chapterTitle": "Page 31",
+              "chapterIndex": 0,
+              "stepIndex": 31,
+              "stepType": "html",
+              "title": "Feelings Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/031-Feelings-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-32",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 32",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-32-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-32",
+              "chapterTitle": "Page 32",
+              "chapterIndex": 0,
+              "stepIndex": 32,
+              "stepType": "html",
+              "title": "Myanmar Festivals",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/032-Myanmar-Festivals.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-33",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 33",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-33-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-33",
+              "chapterTitle": "Page 33",
+              "chapterIndex": 0,
+              "stepIndex": 33,
+              "stepType": "html",
+              "title": "Myanmar Festivals Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/033-Myanmar-Festivals-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-34",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 34",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-34-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-34",
+              "chapterTitle": "Page 34",
+              "chapterIndex": 0,
+              "stepIndex": 34,
+              "stepType": "html",
+              "title": "Myanmar Festivals Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/034-Myanmar-Festivals-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-35",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 35",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-35-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-35",
+              "chapterTitle": "Page 35",
+              "chapterIndex": 0,
+              "stepIndex": 35,
+              "stepType": "html",
+              "title": "Conclusion",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/035-Conclusion.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-36",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 36",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-36-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-36",
+              "chapterTitle": "Page 36",
+              "chapterIndex": 0,
+              "stepIndex": 36,
+              "stepType": "html",
+              "title": "Overall Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/036-Overall-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-37",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 37",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-37-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-37",
+              "chapterTitle": "Page 37",
+              "chapterIndex": 0,
+              "stepIndex": 37,
+              "stepType": "html",
+              "title": "Myanmar Festival Parade",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/037-Myanmar-Festival-Parade.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-38",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 38",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-38-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-38",
+              "chapterTitle": "Page 38",
+              "chapterIndex": 0,
+              "stepIndex": 38,
+              "stepType": "html",
+              "title": "Congratulations",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/038-Congratulations.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-4",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 4",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-4-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-4",
+              "chapterTitle": "Page 4",
+              "chapterIndex": 0,
+              "stepIndex": 4,
+              "stepType": "html",
+              "title": "Intro Build Myanmar Village",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/004-Intro-Build-Myanmar-Village.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-5",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 5",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-5-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-5",
+              "chapterTitle": "Page 5",
+              "chapterIndex": 0,
+              "stepIndex": 5,
+              "stepType": "html",
+              "title": "Family",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/005-Family.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-6",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 6",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-6-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-6",
+              "chapterTitle": "Page 6",
+              "chapterIndex": 0,
+              "stepIndex": 6,
+              "stepType": "html",
+              "title": "Family Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/006-Family-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-7",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 7",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-7-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-7",
+              "chapterTitle": "Page 7",
+              "chapterIndex": 0,
+              "stepIndex": 7,
+              "stepType": "html",
+              "title": "Family Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/007-Family-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-8",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 8",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-8-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-8",
+              "chapterTitle": "Page 8",
+              "chapterIndex": 0,
+              "stepIndex": 8,
+              "stepType": "html",
+              "title": "Food",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/008-Food.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "myfirst100mmwords-ch-import-1785052942465-9",
+          "courseId": "myfirst100mmwords",
+          "chapterIndex": 0,
+          "title": "Page 9",
+          "steps": [
+            {
+              "id": "myfirst100mmwords-ch-import-1785052942465-9-step-0",
+              "courseId": "myfirst100mmwords",
+              "chapterId": "myfirst100mmwords-ch-import-1785052942465-9",
+              "chapterTitle": "Page 9",
+              "chapterIndex": 0,
+              "stepIndex": 9,
+              "stepType": "html",
+              "title": "Food Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/MyFirst100MMWords/009-Food-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oceanadventure",
+      "title": "Ocean Adventure",
+      "description": "",
+      "color": "#2563eb",
+      "coverColorStart": "#0a1628",
+      "coverColorMiddle": "#1a365d",
+      "coverColorEnd": "#0f4c75",
+      "coverWidth": 100,
+      "coverHeight": 150,
+      "icon": "🐬",
+      "iconColorStart": "#fff",
+      "iconColorMiddle": "#fff",
+      "iconColorEnd": "#fff",
+      "iconSize": 100,
+      "titleFontSize": 53,
+      "titleFontWeight": "bolder",
+      "titleColor": "#ffffff",
+      "titlePosition": "bottom-left",
+      "titleTextAlign": "left",
+      "iconPosition": "center-center",
+      "courseIndex": 12,
+      "category": "Kid",
+      "pIndex": 2,
+      "artifactType": "book",
+      "bookHtmlFolder": "OceanAdventure",
+      "stepCount": 35,
+      "chapters": [
+        {
+          "id": "oceanadventure-ch-import-1785156816483-1",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 1",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-1-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-1",
+              "chapterTitle": "Page 1",
+              "chapterIndex": 0,
+              "stepIndex": 1,
+              "stepType": "html",
+              "title": "Book Briefing",
+              "description": "",
+              "contentHtml": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Ocean Adventure - Book Briefing</title>\n  <style>\n    *{\n      margin:0;\n      padding:0;\n      box-sizing:border-box;\n    }\n    body{\n      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;\n      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);\n      color:#e0f4ff;\n      min-height:100vh;\n      position:relative;\n      overflow-x:hidden;\n    }\n    .bubbles{\n      position:fixed;\n      top:0;\n      left:0;\n      width:100%;\n      height:100%;\n      pointer-events:none;\n      background-image:\n        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);\n      background-size:900px 150px;\n      animation:rise 8s ease-in-out infinite;\n      z-index:0;\n    }\n    @keyframes rise{\n      0%,100%{transform:translateY(0);}\n      50%{transform:translateY(-20px);}\n    }\n    .container{\n      max-width:640px;\n      margin:auto;\n      padding:24px 16px 40px;\n      position:relative;\n      z-index:1;\n    }\n    .header{\n      text-align:center;\n      margin-bottom:30px;\n    }\n    .wave-icon{\n      font-size:60px;\n      animation:wave 2s ease-in-out infinite;\n    }\n    @keyframes wave{\n      0%,100%{transform:rotate(-5deg);}\n      50%{transform:rotate(5deg);}\n    }\n    h1{\n      font-size:36px;\n      color:#64ffda;\n      margin-bottom:8px;\n    }\n    .subtitle{\n      color:#80deea;\n      font-size:18px;\n    }\n    .card{\n      background:rgba(255,255,255,0.1);\n      backdrop-filter:blur(10px);\n      border-radius:20px;\n      padding:20px;\n      margin-bottom:16px;\n      border:1px solid rgba(255,255,255,0.1);\n    }\n    .card h2{\n      color:#64ffda;\n      margin-bottom:12px;\n      font-size:22px;\n    }\n    .card p{\n      font-size:16px;\n      line-height:1.7;\n      margin-bottom:10px;\n    }\n    .info-grid{\n      display:grid;\n      grid-template-columns:repeat(2,1fr);\n      gap:12px;\n      margin-top:12px;\n    }\n    .info-item{\n      background:rgba(100,255,218,0.1);\n      border-radius:12px;\n      padding:14px;\n      text-align:center;\n    }\n    .info-label{\n      font-size:13px;\n      color:#80deea;\n      margin-bottom:4px;\n    }\n    .info-value{\n      font-size:18px;\n      font-weight:bold;\n      color:#64ffda;\n    }\n    .nav-hint{\n      margin-top:20px;\n      text-align:center;\n      font-size:13px;\n      color:#80deea;\n      background:rgba(128,222,234,0.1);\n      padding:10px;\n      border-radius:10px;\n    }\n  \n/* ocean-ui-audit-overrides */\nbody.reading-page,\nbody.reading-page:has(.container),\nbody.reading-page:has(.quiz-card),\nbody.reading-page:has(.character-grid) {\n  overflow-y: auto !important;\n  height: auto !important;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\nbody.reading-page:has(.character-grid) .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  justify-content: flex-start;\n}\n@media (max-width: 639px) {\n  body.big-planet-page .ocean-display {\n    width: 100% !important;\n    max-width: 100% !important;\n    height: auto !important;\n    max-height: min(78vw, calc(100svh - 220px)) !important;\n    min-height: min(56vw, 220px) !important;\n    box-sizing: border-box !important;\n  }\n  body.big-planet-page .container {\n    overflow-x: hidden !important;\n    max-width: 100% !important;\n  }\n  body.big-planet-page .planet-game .game-canvas,\n  body:has(.planet-game) .game-canvas {\n    height: min(48vh, 400px) !important;\n    min-height: min(40vh, 280px) !important;\n    max-height: min(52vh, 420px) !important;\n  }\n  .planet-game { padding: 10px !important; margin-top: 10px !important; }\n  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }\n  .touch-controls { margin-top: 6px; gap: 6px; }\n  .touch-btn { min-height: 48px; font-size: 18px; }\n}\n@media (min-width: 640px) {\n  body.big-planet-page .ocean-display {\n    max-height: min(92vw, calc(100svh - 156px)) !important;\n    min-height: min(56vw, calc(100svh - 200px)) !important;\n  }\n}\nbody.big-planet-page .planet-game .game-canvas {\n  width: 100% !important;\n  height: min(50vh, 440px) !important;\n  min-height: min(42vh, 300px) !important;\n  max-height: min(56vh, 480px) !important;\n}\nbody.big-planet-page .planet-game { margin-bottom: 8px !important; }\nbody.big-game-page:has(.game-shell) {\n  overflow: hidden !important;\n  height: 100% !important;\n  min-height: 100% !important;\n  max-height: 100% !important;\n}\nhtml:has(body.big-game-page) {\n  height: 100% !important;\n  min-height: 100% !important;\n  overflow: hidden !important;\n}\nbody.big-game-page:has(.game-shell) .game-shell {\n  min-height: 100% !important;\n  height: 100% !important;\n  max-height: 100% !important;\n  display: flex !important;\n  flex-direction: column !important;\n}\nbody.big-game-page:has(.game-shell) .stage-wrap {\n  flex: 1 1 auto !important;\n  min-height: 0 !important;\n  align-items: center !important;\n  justify-content: center !important;\n}\nbody.big-game-page:has(.game-shell) .game-stage {\n  flex: 1 1 auto !important;\n  width: 100% !important;\n  height: 100% !important;\n  min-height: 0 !important;\n  max-height: none !important;\n  aspect-ratio: unset !important;\n  margin: 0 !important;\n}\nbody.reading-page {\n  overflow-x: hidden;\n  overflow-y: auto !important;\n  height: auto !important;\n  min-height: 100%;\n  -webkit-overflow-scrolling: touch;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\n      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}\n    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}\n  </style>\n<script>\n(function (w) {\n  var BOOK = \"oceanadventure\";\n  function key(name) { return \"book:\" + BOOK + \":\" + name; }\n  w.OceanPlayer = {\n    getUserName: function () { return localStorage.getItem(key(\"userName\")) || localStorage.getItem(\"userName\") || \"Explorer\"; },\n    getCharacter: function () { return localStorage.getItem(key(\"userCharacter\")) || localStorage.getItem(\"userCharacter\") || \"🤿\"; },\n    getCharacterName: function () { return localStorage.getItem(key(\"characterName\")) || localStorage.getItem(\"characterName\") || \"Diver\"; },\n    save: function (name, character, characterName) {\n      localStorage.setItem(key(\"userName\"), name);\n      localStorage.setItem(key(\"userCharacter\"), character);\n      if (characterName != null) localStorage.setItem(key(\"characterName\"), characterName);\n      localStorage.setItem(\"userName\", name);\n      localStorage.setItem(\"userCharacter\", character);\n      if (characterName != null) localStorage.setItem(\"characterName\", characterName);\n    }\n  };\n})(window);\n</script>\n</head>\n<body class=\"reading-page\">\n<div class=\"bubbles\"></div>\n<div class=\"container\">\n  <div class=\"header\">\n    <div class=\"wave-icon\">🌊</div>\n    <h1>Ocean Adventure</h1>\n    <div class=\"subtitle\">An exciting journey into the deep blue sea!</div>\n  </div>\n\n  <div class=\"card\">\n    <h2>📖 About This Book</h2>\n    <p>\n      Welcome to Ocean Adventure! This book will take you on an amazing journey through the world's oceans. You'll learn about different ocean zones, amazing sea creatures, and why the ocean is so important for our planet.\n    </p>\n    <p>\n      Get ready to dive deep and discover the wonders of the underwater world!\n    </p>\n  </div>\n\n  <div class=\"card\">\n    <h2>📚 Book Details</h2>\n    <div class=\"info-grid\">\n      <div class=\"info-item\">\n        <div class=\"info-label\">Author</div>\n        <div class=\"info-value\">Jimmy Cooper</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"info-label\">Age Group</div>\n        <div class=\"info-value\">7-8 years</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"info-label\">Chapters</div>\n        <div class=\"info-value\">32</div>\n      </div>\n      <div class=\"info-item\">\n        <div class=\"info-label\">Theme</div>\n        <div class=\"info-value\">Ocean & Sea Life</div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"card\">\n    <h2>💬 Author's Message</h2>\n    <p style=\"font-style:italic;line-height:1.7;background:rgba(100,255,218,0.12);padding:16px;border-radius:14px;border-left:4px solid #64ffda;\">\n      \"Hello, young explorer! I'm Jimmy Cooper, and I created this book to share my love for the ocean with you. From sunny shallows to the deep abyss, every zone has amazing stories. Dive in, play the games, and become an ocean hero!\"\n    </p>\n  </div>\n\n  <div class=\"card\">\n    <h2>🎯 What You'll Learn</h2>\n    <ul style=\"margin-left:20px;\">\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">About the different ocean zones</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">Amazing sea creatures and how they live</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">Why coral reefs are important</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">About marine mammals like dolphins and whales</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">How to protect our oceans</li>\n    </ul>\n  </div>\n\n  <div class=\"card\">\n    <h2>🎮 How to Use This Book</h2>\n    <p>\n      Each chapter has fun activities to help you learn:\n    </p>\n    <ul style=\"margin-left:20px;margin-top:10px;\">\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">📖 Read briefing and index, then choose your diver</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">🎮 Play the intro game, then explore each topic</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">🎯 Each topic: activity + explained + quiz</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">🏆 Finish with conclusion, overall quiz, and finale game</li>\n    </ul>\n  </div>\n\n  <div class=\"card\">\n    <h2>🌊 Why the Ocean Matters</h2>\n    <p>\n      The ocean covers more than 70% of Earth's surface! It's home to millions of amazing creatures and helps keep our planet healthy. Learning about the ocean helps us understand how to protect it for future generations.\n    </p>\n  </div>\n\n<div class=\"nav-hint\">\n  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>\n  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>\n</div>\n\n</div>\n</body>\n</html>\n"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-10",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 10",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-10-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-10",
+              "chapterTitle": "Page 10",
+              "chapterIndex": 0,
+              "stepIndex": 10,
+              "stepType": "html",
+              "title": "Sunlight Zone Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/010-Sunlight-Zone-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-11",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 11",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-11-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-11",
+              "chapterTitle": "Page 11",
+              "chapterIndex": 0,
+              "stepIndex": 11,
+              "stepType": "html",
+              "title": "Twilight Zone",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/011-Twilight-Zone.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-12",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 12",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-12-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-12",
+              "chapterTitle": "Page 12",
+              "chapterIndex": 0,
+              "stepIndex": 12,
+              "stepType": "html",
+              "title": "Twilight Zone Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/012-Twilight-Zone-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-13",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 13",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-13-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-13",
+              "chapterTitle": "Page 13",
+              "chapterIndex": 0,
+              "stepIndex": 13,
+              "stepType": "html",
+              "title": "Twilight Zone Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/013-Twilight-Zone-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-14",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 14",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-14-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-14",
+              "chapterTitle": "Page 14",
+              "chapterIndex": 0,
+              "stepIndex": 14,
+              "stepType": "html",
+              "title": "Midnight Zone",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/014-Midnight-Zone.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-15",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 15",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-15-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-15",
+              "chapterTitle": "Page 15",
+              "chapterIndex": 0,
+              "stepIndex": 15,
+              "stepType": "html",
+              "title": "Midnight Zone Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/015-Midnight-Zone-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-16",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 16",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-16-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-16",
+              "chapterTitle": "Page 16",
+              "chapterIndex": 0,
+              "stepIndex": 16,
+              "stepType": "html",
+              "title": "Midnight Zone Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/016-Midnight-Zone-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-17",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 17",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-17-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-17",
+              "chapterTitle": "Page 17",
+              "chapterIndex": 0,
+              "stepIndex": 17,
+              "stepType": "html",
+              "title": "Abyss Zone",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/017-Abyss-Zone.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-18",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 18",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-18-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-18",
+              "chapterTitle": "Page 18",
+              "chapterIndex": 0,
+              "stepIndex": 18,
+              "stepType": "html",
+              "title": "Abyss Zone Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/018-Abyss-Zone-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-19",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 19",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-19-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-19",
+              "chapterTitle": "Page 19",
+              "chapterIndex": 0,
+              "stepIndex": 19,
+              "stepType": "html",
+              "title": "b Ocean Zone Dive",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/019b-Ocean-Zone-Dive.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-2",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 2",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-2-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-2",
+              "chapterTitle": "Page 2",
+              "chapterIndex": 0,
+              "stepIndex": 2,
+              "stepType": "html",
+              "title": "Index",
+              "description": "",
+              "contentHtml": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Ocean Adventure - Index</title>\n  <style>\n    *{\n      margin:0;\n      padding:0;\n      box-sizing:border-box;\n    }\n    body{\n      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;\n      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);\n      color:#e0f4ff;\n      min-height:100vh;\n      position:relative;\n      overflow-x:hidden;\n    }\n    .bubbles{\n      position:fixed;\n      top:0;\n      left:0;\n      width:100%;\n      height:100%;\n      pointer-events:none;\n      background-image:\n        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);\n      background-size:900px 150px;\n      animation:rise 8s ease-in-out infinite;\n      z-index:0;\n    }\n    @keyframes rise{\n      0%,100%{transform:translateY(0);}\n      50%{transform:translateY(-20px);}\n    }\n    .container{\n      max-width:640px;\n      margin:auto;\n      padding:24px 16px 40px;\n      position:relative;\n      z-index:1;\n    }\n    .header{\n      text-align:center;\n      margin-bottom:30px;\n    }\n    h1{\n      font-size:32px;\n      color:#64ffda;\n      margin-bottom:8px;\n    }\n    .subtitle{\n      color:#80deea;\n      font-size:16px;\n    }\n    .chapter-grid{\n      display:grid;\n      grid-template-columns:repeat(auto-fill,minmax(140px,1fr));\n      gap:12px;\n    }\n    .chapter-card{\n      background:rgba(255,255,255,0.1);\n      backdrop-filter:blur(10px);\n      border-radius:16px;\n      padding:16px;\n      border:1px solid rgba(255,255,255,0.1);\n      cursor:pointer;\n      transition:transform 0.2s,background 0.2s;\n    }\n    .chapter-card:hover{\n      transform:translateY(-4px);\n      background:rgba(255,255,255,0.15);\n    }\n    .chapter-number{\n      font-size:14px;\n      color:#80deea;\n      margin-bottom:4px;\n    }\n    .chapter-emoji{\n      font-size:32px;\n      margin-bottom:8px;\n    }\n    .chapter-title{\n      font-size:15px;\n      font-weight:bold;\n      color:#64ffda;\n      margin-bottom:4px;\n    }\n    .chapter-concept{\n      font-size:12px;\n      color:#b0bec5;\n    }\n    .nav-hint{\n      margin-top:20px;\n      text-align:center;\n      font-size:13px;\n      color:#80deea;\n      background:rgba(128,222,234,0.1);\n      padding:10px;\n      border-radius:10px;\n    }\n  \n/* ocean-ui-audit-overrides */\nbody.reading-page,\nbody.reading-page:has(.container),\nbody.reading-page:has(.quiz-card),\nbody.reading-page:has(.character-grid) {\n  overflow-y: auto !important;\n  height: auto !important;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\nbody.reading-page:has(.character-grid) .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  justify-content: flex-start;\n}\n@media (max-width: 639px) {\n  body.big-planet-page .ocean-display {\n    width: 100% !important;\n    max-width: 100% !important;\n    height: auto !important;\n    max-height: min(78vw, calc(100svh - 220px)) !important;\n    min-height: min(56vw, 220px) !important;\n    box-sizing: border-box !important;\n  }\n  body.big-planet-page .container {\n    overflow-x: hidden !important;\n    max-width: 100% !important;\n  }\n  body.big-planet-page .planet-game .game-canvas,\n  body:has(.planet-game) .game-canvas {\n    height: min(48vh, 400px) !important;\n    min-height: min(40vh, 280px) !important;\n    max-height: min(52vh, 420px) !important;\n  }\n  .planet-game { padding: 10px !important; margin-top: 10px !important; }\n  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }\n  .touch-controls { margin-top: 6px; gap: 6px; }\n  .touch-btn { min-height: 48px; font-size: 18px; }\n}\n@media (min-width: 640px) {\n  body.big-planet-page .ocean-display {\n    max-height: min(92vw, calc(100svh - 156px)) !important;\n    min-height: min(56vw, calc(100svh - 200px)) !important;\n  }\n}\nbody.big-planet-page .planet-game .game-canvas {\n  width: 100% !important;\n  height: min(50vh, 440px) !important;\n  min-height: min(42vh, 300px) !important;\n  max-height: min(56vh, 480px) !important;\n}\nbody.big-planet-page .planet-game { margin-bottom: 8px !important; }\nbody.big-game-page:has(.game-shell) {\n  overflow: hidden !important;\n  height: 100% !important;\n  min-height: 100% !important;\n  max-height: 100% !important;\n}\nhtml:has(body.big-game-page) {\n  height: 100% !important;\n  min-height: 100% !important;\n  overflow: hidden !important;\n}\nbody.big-game-page:has(.game-shell) .game-shell {\n  min-height: 100% !important;\n  height: 100% !important;\n  max-height: 100% !important;\n  display: flex !important;\n  flex-direction: column !important;\n}\nbody.big-game-page:has(.game-shell) .stage-wrap {\n  flex: 1 1 auto !important;\n  min-height: 0 !important;\n  align-items: center !important;\n  justify-content: center !important;\n}\nbody.big-game-page:has(.game-shell) .game-stage {\n  flex: 1 1 auto !important;\n  width: 100% !important;\n  height: 100% !important;\n  min-height: 0 !important;\n  max-height: none !important;\n  aspect-ratio: unset !important;\n  margin: 0 !important;\n}\nbody.reading-page {\n  overflow-x: hidden;\n  overflow-y: auto !important;\n  height: auto !important;\n  min-height: 100%;\n  -webkit-overflow-scrolling: touch;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\n      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}\n    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}\n  </style>\n<script>\n(function (w) {\n  var BOOK = \"oceanadventure\";\n  function key(name) { return \"book:\" + BOOK + \":\" + name; }\n  w.OceanPlayer = {\n    getUserName: function () { return localStorage.getItem(key(\"userName\")) || localStorage.getItem(\"userName\") || \"Explorer\"; },\n    getCharacter: function () { return localStorage.getItem(key(\"userCharacter\")) || localStorage.getItem(\"userCharacter\") || \"🤿\"; },\n    getCharacterName: function () { return localStorage.getItem(key(\"characterName\")) || localStorage.getItem(\"characterName\") || \"Diver\"; },\n    save: function (name, character, characterName) {\n      localStorage.setItem(key(\"userName\"), name);\n      localStorage.setItem(key(\"userCharacter\"), character);\n      if (characterName != null) localStorage.setItem(key(\"characterName\"), characterName);\n      localStorage.setItem(\"userName\", name);\n      localStorage.setItem(\"userCharacter\", character);\n      if (characterName != null) localStorage.setItem(\"characterName\", characterName);\n    }\n  };\n})(window);\n</script>\n</head>\n<body class=\"reading-page\">\n<div class=\"bubbles\"></div>\n<div class=\"container\">\n  <div class=\"header\">\n    <h1>📚 Ocean Adventure Index</h1>\n    <div class=\"subtitle\">Choose a chapter to explore!</div>\n  </div>\n\n  <div class=\"chapter-grid\">\n    <div class=\"chapter-card\"><div class=\"chapter-number\">001</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Book Briefing</div><div class=\"chapter-concept\">Introduction</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">002</div><div class=\"chapter-emoji\">📑</div><div class=\"chapter-title\">Index</div><div class=\"chapter-concept\">Chapter List</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">003</div><div class=\"chapter-emoji\">🤿</div><div class=\"chapter-title\">Character Selection</div><div class=\"chapter-concept\">Choose Diver</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">004</div><div class=\"chapter-emoji\">🎮</div><div class=\"chapter-title\">Reef Defender</div><div class=\"chapter-concept\">Intro Game</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">005</div><div class=\"chapter-emoji\">🌊</div><div class=\"chapter-title\">Ocean Overview</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">006</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Ocean Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">007</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Ocean Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">008</div><div class=\"chapter-emoji\">☀️</div><div class=\"chapter-title\">Sunlight Zone</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">009</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Sunlight Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">010</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Sunlight Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">011</div><div class=\"chapter-emoji\">🌅</div><div class=\"chapter-title\">Twilight Zone</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">012</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Twilight Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">013</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Twilight Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">014</div><div class=\"chapter-emoji\">🌙</div><div class=\"chapter-title\">Midnight Zone</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">015</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Midnight Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">016</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Midnight Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">017</div><div class=\"chapter-emoji\">🕳️</div><div class=\"chapter-title\">Abyss Zone</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">018</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Abyss Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">019</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Abyss Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">019b</div><div class=\"chapter-emoji\">🤿</div><div class=\"chapter-title\">Zone Dive</div><div class=\"chapter-concept\">Mid-Book Game</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">020</div><div class=\"chapter-emoji\">⛰️</div><div class=\"chapter-title\">Hadal Zone</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">021</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Hadal Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">022</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Hadal Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">023</div><div class=\"chapter-emoji\">🪸</div><div class=\"chapter-title\">Coral Reefs</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">024</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Coral Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">025</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Coral Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">026</div><div class=\"chapter-emoji\">🐬</div><div class=\"chapter-title\">Marine Mammals</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">027</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Mammals Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">028</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Mammals Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">029</div><div class=\"chapter-emoji\">🐟</div><div class=\"chapter-title\">Fish</div><div class=\"chapter-concept\">Activity</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">030</div><div class=\"chapter-emoji\">📖</div><div class=\"chapter-title\">Fish Explained</div><div class=\"chapter-concept\">Reading</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">031</div><div class=\"chapter-emoji\">❓</div><div class=\"chapter-title\">Fish Quiz</div><div class=\"chapter-concept\">Quiz Time</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">032</div><div class=\"chapter-emoji\">📚</div><div class=\"chapter-title\">Conclusion</div><div class=\"chapter-concept\">Summary</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">033</div><div class=\"chapter-emoji\">🏆</div><div class=\"chapter-title\">Overall Quiz</div><div class=\"chapter-concept\">Final Quiz</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">034</div><div class=\"chapter-emoji\">💎</div><div class=\"chapter-title\">Treasure Rush</div><div class=\"chapter-concept\">Outro Game</div></div>\n\n    <div class=\"chapter-card\"><div class=\"chapter-number\">035</div><div class=\"chapter-emoji\">🎉</div><div class=\"chapter-title\">Congratulations</div><div class=\"chapter-concept\">You Did It!</div></div>\n  </div>\n\n<div class=\"nav-hint\">\n  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>\n  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>\n</div>\n\n</div>\n</body>\n</html>\n"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-20",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 20",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-20-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-20",
+              "chapterTitle": "Page 20",
+              "chapterIndex": 0,
+              "stepIndex": 20,
+              "stepType": "html",
+              "title": "Hadal Zone",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/020-Hadal-Zone.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-21",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 21",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-21-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-21",
+              "chapterTitle": "Page 21",
+              "chapterIndex": 0,
+              "stepIndex": 21,
+              "stepType": "html",
+              "title": "Hadal Zone Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/021-Hadal-Zone-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-22",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 22",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-22-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-22",
+              "chapterTitle": "Page 22",
+              "chapterIndex": 0,
+              "stepIndex": 22,
+              "stepType": "html",
+              "title": "Hadal Zone Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/022-Hadal-Zone-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-23",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 23",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-23-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-23",
+              "chapterTitle": "Page 23",
+              "chapterIndex": 0,
+              "stepIndex": 23,
+              "stepType": "html",
+              "title": "Coral Reefs",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/023-Coral-Reefs.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-24",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 24",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-24-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-24",
+              "chapterTitle": "Page 24",
+              "chapterIndex": 0,
+              "stepIndex": 24,
+              "stepType": "html",
+              "title": "Coral Reefs Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/024-Coral-Reefs-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-25",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 25",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-25-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-25",
+              "chapterTitle": "Page 25",
+              "chapterIndex": 0,
+              "stepIndex": 25,
+              "stepType": "html",
+              "title": "Coral Reefs Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/025-Coral-Reefs-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-26",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 26",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-26-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-26",
+              "chapterTitle": "Page 26",
+              "chapterIndex": 0,
+              "stepIndex": 26,
+              "stepType": "html",
+              "title": "Marine Mammals",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/026-Marine-Mammals.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-27",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 27",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-27-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-27",
+              "chapterTitle": "Page 27",
+              "chapterIndex": 0,
+              "stepIndex": 27,
+              "stepType": "html",
+              "title": "Marine Mammals Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/027-Marine-Mammals-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-28",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 28",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-28-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-28",
+              "chapterTitle": "Page 28",
+              "chapterIndex": 0,
+              "stepIndex": 28,
+              "stepType": "html",
+              "title": "Marine Mammals Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/028-Marine-Mammals-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-29",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 29",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-29-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-29",
+              "chapterTitle": "Page 29",
+              "chapterIndex": 0,
+              "stepIndex": 29,
+              "stepType": "html",
+              "title": "Fish",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/029-Fish.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-3",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 3",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-3-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-3",
+              "chapterTitle": "Page 3",
+              "chapterIndex": 0,
+              "stepIndex": 3,
+              "stepType": "html",
+              "title": "Character Selection",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/003-Character-Selection.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-30",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 30",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-30-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-30",
+              "chapterTitle": "Page 30",
+              "chapterIndex": 0,
+              "stepIndex": 30,
+              "stepType": "html",
+              "title": "Fish Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/030-Fish-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-31",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 31",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-31-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-31",
+              "chapterTitle": "Page 31",
+              "chapterIndex": 0,
+              "stepIndex": 31,
+              "stepType": "html",
+              "title": "Fish Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/031-Fish-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-32",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 32",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-32-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-32",
+              "chapterTitle": "Page 32",
+              "chapterIndex": 0,
+              "stepIndex": 32,
+              "stepType": "html",
+              "title": "Conclusion",
+              "description": "",
+              "contentHtml": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Ocean Adventure - Conclusion</title>\n  <style>\n    *{\n      margin:0;\n      padding:0;\n      box-sizing:border-box;\n    }\n    body{\n      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;\n      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);\n      color:#e0f4ff;\n      min-height:100vh;\n      position:relative;\n      overflow-x:hidden;\n    }\n    .bubbles{\n      position:fixed;\n      top:0;\n      left:0;\n      width:100%;\n      height:100%;\n      pointer-events:none;\n      background-image:\n        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);\n      background-size:900px 150px;\n      animation:rise 8s ease-in-out infinite;\n      z-index:0;\n    }\n    @keyframes rise{\n      0%,100%{transform:translateY(0);}\n      50%{transform:translateY(-20px);}\n    }\n    .container{\n      max-width:640px;\n      margin:auto;\n      padding:24px 16px 40px;\n      position:relative;\n      z-index:1;\n    }\n    .header{\n      text-align:center;\n      margin-bottom:20px;\n    }\n    h1{\n      font-size:32px;\n      color:#64ffda;\n      margin-bottom:8px;\n    }\n    .subtitle{\n      color:#80deea;\n      font-size:16px;\n    }\n    .card{\n      background:rgba(255,255,255,0.1);\n      backdrop-filter:blur(10px);\n      border-radius:20px;\n      padding:20px;\n      margin-bottom:16px;\n      border:1px solid rgba(255,255,255,0.1);\n    }\n    .card h2{\n      color:#64ffda;\n      margin-bottom:12px;\n      font-size:20px;\n    }\n    .card p{\n      font-size:16px;\n      line-height:1.7;\n      margin-bottom:10px;\n    }\n    .card ul{\n      margin-left:20px;\n      margin-bottom:10px;\n    }\n    .card li{\n      font-size:16px;\n      line-height:1.7;\n      margin-bottom:8px;\n    }\n    .summary-grid{\n      display:grid;\n      grid-template-columns:repeat(3,1fr);\n      gap:10px;\n      margin-top:12px;\n    }\n    .summary-item{\n      background:rgba(100,255,218,0.1);\n      border-radius:12px;\n      padding:12px;\n      text-align:center;\n    }\n    .summary-emoji{\n      font-size:24px;\n      margin-bottom:4px;\n    }\n    .summary-label{\n      font-size:12px;\n      color:#c4b5fd;\n    }\n    .nav-hint{\n      margin-top:20px;\n      text-align:center;\n      font-size:13px;\n      color:#80deea;\n      background:rgba(128,222,234,0.1);\n      padding:10px;\n      border-radius:10px;\n    }\n  \n/* ocean-ui-audit-overrides */\nbody.reading-page,\nbody.reading-page:has(.container),\nbody.reading-page:has(.quiz-card),\nbody.reading-page:has(.character-grid) {\n  overflow-y: auto !important;\n  height: auto !important;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\nbody.reading-page:has(.character-grid) .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  justify-content: flex-start;\n}\n@media (max-width: 639px) {\n  body.big-planet-page .ocean-display {\n    width: 100% !important;\n    max-width: 100% !important;\n    height: auto !important;\n    max-height: min(78vw, calc(100svh - 220px)) !important;\n    min-height: min(56vw, 220px) !important;\n    box-sizing: border-box !important;\n  }\n  body.big-planet-page .container {\n    overflow-x: hidden !important;\n    max-width: 100% !important;\n  }\n  body.big-planet-page .planet-game .game-canvas,\n  body:has(.planet-game) .game-canvas {\n    height: min(48vh, 400px) !important;\n    min-height: min(40vh, 280px) !important;\n    max-height: min(52vh, 420px) !important;\n  }\n  .planet-game { padding: 10px !important; margin-top: 10px !important; }\n  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }\n  .touch-controls { margin-top: 6px; gap: 6px; }\n  .touch-btn { min-height: 48px; font-size: 18px; }\n}\n@media (min-width: 640px) {\n  body.big-planet-page .ocean-display {\n    max-height: min(92vw, calc(100svh - 156px)) !important;\n    min-height: min(56vw, calc(100svh - 200px)) !important;\n  }\n}\nbody.big-planet-page .planet-game .game-canvas {\n  width: 100% !important;\n  height: min(50vh, 440px) !important;\n  min-height: min(42vh, 300px) !important;\n  max-height: min(56vh, 480px) !important;\n}\nbody.big-planet-page .planet-game { margin-bottom: 8px !important; }\nbody.big-game-page:has(.game-shell) {\n  overflow: hidden !important;\n  height: 100% !important;\n  min-height: 100% !important;\n  max-height: 100% !important;\n}\nhtml:has(body.big-game-page) {\n  height: 100% !important;\n  min-height: 100% !important;\n  overflow: hidden !important;\n}\nbody.big-game-page:has(.game-shell) .game-shell {\n  min-height: 100% !important;\n  height: 100% !important;\n  max-height: 100% !important;\n  display: flex !important;\n  flex-direction: column !important;\n}\nbody.big-game-page:has(.game-shell) .stage-wrap {\n  flex: 1 1 auto !important;\n  min-height: 0 !important;\n  align-items: center !important;\n  justify-content: center !important;\n}\nbody.big-game-page:has(.game-shell) .game-stage {\n  flex: 1 1 auto !important;\n  width: 100% !important;\n  height: 100% !important;\n  min-height: 0 !important;\n  max-height: none !important;\n  aspect-ratio: unset !important;\n  margin: 0 !important;\n}\nbody.reading-page {\n  overflow-x: hidden;\n  overflow-y: auto !important;\n  height: auto !important;\n  min-height: 100%;\n  -webkit-overflow-scrolling: touch;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\n      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}\n    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}\n  </style>\n<script>\n(function (w) {\n  var BOOK = \"oceanadventure\";\n  function key(name) { return \"book:\" + BOOK + \":\" + name; }\n  w.OceanPlayer = {\n    getUserName: function () { return localStorage.getItem(key(\"userName\")) || localStorage.getItem(\"userName\") || \"Explorer\"; },\n    getCharacter: function () { return localStorage.getItem(key(\"userCharacter\")) || localStorage.getItem(\"userCharacter\") || \"🤿\"; },\n    getCharacterName: function () { return localStorage.getItem(key(\"characterName\")) || localStorage.getItem(\"characterName\") || \"Diver\"; },\n    save: function (name, character, characterName) {\n      localStorage.setItem(key(\"userName\"), name);\n      localStorage.setItem(key(\"userCharacter\"), character);\n      if (characterName != null) localStorage.setItem(key(\"characterName\"), characterName);\n      localStorage.setItem(\"userName\", name);\n      localStorage.setItem(\"userCharacter\", character);\n      if (characterName != null) localStorage.setItem(\"characterName\", characterName);\n    }\n  };\n})(window);\n</script>\n</head>\n<body class=\"reading-page\">\n<div class=\"bubbles\"></div>\n<div class=\"container\">\n  <div class=\"header\">\n    <h1>📚 Conclusion</h1>\n    <div class=\"subtitle\">What an amazing ocean adventure!</div>\n  </div>\n\n  <div class=\"card\">\n    <h2>🌟 What You've Learned</h2>\n    <p>\n      Congratulations on completing your journey through the ocean! You've learned about:\n    </p>\n    <ul>\n      <li>The ocean and why it's important for our planet</li>\n      <li>The different ocean zones - from sunlight to the deepest hadal trenches</li>\n      <li>Amazing creatures that live in each zone</li>\n      <li>Coral reefs and their incredible biodiversity</li>\n      <li>Marine mammals like whales and dolphins</li>\n      <li>The incredible diversity of ocean fish</li>\n    </ul>\n  </div>\n\n  <div class=\"card\">\n    <h2>🌊 Ocean Zones Summary</h2>\n    <div class=\"summary-grid\">\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">☀️</div>\n        <div class=\"summary-label\">Sunlight Zone</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">🌅</div>\n        <div class=\"summary-label\">Twilight Zone</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">🌙</div>\n        <div class=\"summary-label\">Midnight Zone</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">🕳️</div>\n        <div class=\"summary-label\">Abyss Zone</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">⛰️</div>\n        <div class=\"summary-label\">Hadal Zone</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">🪸</div>\n        <div class=\"summary-label\">Coral Reefs</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">🐬</div>\n        <div class=\"summary-label\">Marine Mammals</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">🐟</div>\n        <div class=\"summary-label\">Fish</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-emoji\">🌍</div>\n        <div class=\"summary-label\">Our Ocean</div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"card\">\n    <h2>🔬 The Future of Ocean Exploration</h2>\n    <p>\n      There's still so much to discover! Scientists estimate that we've explored less than 5% of the ocean. New species are being discovered all the time!\n    </p>\n    <p>\n      New technologies like deep-sea submersibles and underwater robots are helping us explore deeper than ever before.\n    </p>\n  </div>\n\n  <div class=\"card\">\n    <h2>🌍 Why the Ocean Matters</h2>\n    <p>\n      The ocean is essential for life on Earth:\n    </p>\n    <ul>\n      <li>Provides most of the oxygen we breathe</li>\n      <li>Regulates Earth's climate and temperature</li>\n      <li>Provides food for billions of people</li>\n      <li>Home to millions of amazing creatures</li>\n      <li>Inspires wonder and discovery</li>\n    </ul>\n  </div>\n\n  <div class=\"card\">\n    <h2>🛡️ Protecting Our Ocean</h2>\n    <p>\n      The ocean faces many challenges, but we can all help protect it:\n    </p>\n    <ul>\n      <li>Reduce plastic use and don't litter</li>\n      <li>Choose sustainable seafood</li>\n      <li>Support marine conservation efforts</li>\n      <li>Learn more and share with others</li>\n      <li>Reduce your carbon footprint</li>\n    </ul>\n  </div>\n\n  <div class=\"card\">\n    <h2>📖 Keep Exploring!</h2>\n    <p>\n      Your ocean adventure is complete, but learning never stops! There's so much more to discover:\n    </p>\n    <ul>\n      <li>Learn about specific ocean species</li>\n      <li>Discover more about marine conservation</li>\n      <li>Watch documentaries about the ocean</li>\n      <li>Visit an aquarium or beach</li>\n      <li>Read more books about marine life</li>\n    </ul>\n  </div>\n\n<div class=\"nav-hint\">\n  <div>You've completed the Ocean Adventure! 🎉</div>\n  <div>💡 Go to the next chapter for your congratulations!</div>\n</div>\n\n</div>\n</body>\n</html>\n"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-33",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 33",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-33-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-33",
+              "chapterTitle": "Page 33",
+              "chapterIndex": 0,
+              "stepIndex": 33,
+              "stepType": "html",
+              "title": "Ocean Overall Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/033-Ocean-Overall-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-34",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 34",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-34-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-34",
+              "chapterTitle": "Page 34",
+              "chapterIndex": 0,
+              "stepIndex": 34,
+              "stepType": "html",
+              "title": "Outro OceanTreasureRush",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/034-Outro-OceanTreasureRush.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-35",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 35",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-35-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-35",
+              "chapterTitle": "Page 35",
+              "chapterIndex": 0,
+              "stepIndex": 35,
+              "stepType": "html",
+              "title": "Congratulations",
+              "description": "",
+              "contentHtml": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Ocean Adventure - Congratulations</title>\n  <style>\n    *{\n      margin:0;\n      padding:0;\n      box-sizing:border-box;\n    }\n    body{\n      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;\n      background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);\n      color:#e0f4ff;\n      min-height:100vh;\n      position:relative;\n      overflow-x:hidden;\n    }\n    .bubbles{\n      position:fixed;\n      top:0;\n      left:0;\n      width:100%;\n      height:100%;\n      pointer-events:none;\n      background-image:\n        radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 180px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 240px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 300px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 360px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 420px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 480px 40px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 540px 80px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 600px 60px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(3px 3px at 660px 100px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 720px 50px,rgba(255,255,255,0.3),transparent),\n        radial-gradient(4px 4px at 780px 90px,rgba(255,255,255,0.2),transparent),\n        radial-gradient(2px 2px at 840px 40px,rgba(255,255,255,0.3),transparent);\n      background-size:900px 150px;\n      animation:rise 8s ease-in-out infinite;\n      z-index:0;\n    }\n    @keyframes rise{\n      0%,100%{transform:translateY(0);}\n      50%{transform:translateY(-20px);}\n    }\n    .container{\n      max-width:640px;\n      margin:auto;\n      padding:24px 16px 40px;\n      position:relative;\n      z-index:1;\n    }\n    .header{\n      text-align:center;\n      margin-bottom:30px;\n    }\n    .trophy{\n      font-size:80px;\n      animation:bounce 1s ease-in-out infinite;\n    }\n    @keyframes bounce{\n      0%,100%{transform:translateY(0);}\n      50%{transform:translateY(-10px);}\n    }\n    h1{\n      font-size:36px;\n      color:#ffd700;\n      margin-bottom:8px;\n    }\n    .subtitle{\n      color:#80deea;\n      font-size:18px;\n    }\n    .card{\n      background:rgba(255,255,255,0.1);\n      backdrop-filter:blur(10px);\n      border-radius:20px;\n      padding:20px;\n      margin-bottom:16px;\n      border:1px solid rgba(255,255,255,0.1);\n      text-align:center;\n    }\n    .card h2{\n      font-size:24px;\n      margin-bottom:12px;\n      color:#64ffda;\n    }\n    .card p{\n      font-size:17px;\n      line-height:1.7;\n      margin-bottom:12px;\n    }\n    .achievement-grid{\n      display:grid;\n      grid-template-columns:repeat(3,1fr);\n      gap:12px;\n      margin-top:16px;\n    }\n    .achievement-item{\n      background:rgba(255,215,0,0.1);\n      border-radius:12px;\n      padding:16px;\n      text-align:center;\n    }\n    .achievement-emoji{\n      font-size:32px;\n      margin-bottom:8px;\n    }\n    .achievement-label{\n      font-size:13px;\n      color:#c4b5fd;\n      font-weight:bold;\n    }\n    .confetti{\n      position:fixed;\n      top:0;\n      left:0;\n      width:100%;\n      height:100%;\n      pointer-events:none;\n      z-index:2;\n    }\n    .confetti-piece{\n      position:absolute;\n      width:10px;\n      height:10px;\n      animation:fall 3s linear infinite;\n    }\n    @keyframes fall{\n      0%{transform:translateY(-100vh) rotate(0deg);opacity:1;}\n      100%{transform:translateY(100vh) rotate(720deg);opacity:0;}\n    }\n    .message-box{\n      background:linear-gradient(135deg,#64ffda,#4fc3f7);\n      border-radius:20px;\n      padding:24px;\n      margin-top:20px;\n      text-align:center;\n    }\n    .message-box h3{\n      color:#0a1628;\n      font-size:22px;\n      margin-bottom:12px;\n    }\n    .message-box p{\n      color:#0a1628;\n      font-size:16px;\n      line-height:1.6;\n    }\n    .nav-hint{\n      margin-top:20px;\n      text-align:center;\n      font-size:13px;\n      color:#80deea;\n      background:rgba(128,222,234,0.1);\n      padding:10px;\n      border-radius:10px;\n    }\n  \n/* ocean-ui-audit-overrides */\nbody.reading-page,\nbody.reading-page:has(.container),\nbody.reading-page:has(.quiz-card),\nbody.reading-page:has(.character-grid) {\n  overflow-y: auto !important;\n  height: auto !important;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\nbody.reading-page:has(.character-grid) .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  justify-content: flex-start;\n}\n@media (max-width: 639px) {\n  body.big-planet-page .ocean-display {\n    width: 100% !important;\n    max-width: 100% !important;\n    height: auto !important;\n    max-height: min(78vw, calc(100svh - 220px)) !important;\n    min-height: min(56vw, 220px) !important;\n    box-sizing: border-box !important;\n  }\n  body.big-planet-page .container {\n    overflow-x: hidden !important;\n    max-width: 100% !important;\n  }\n  body.big-planet-page .planet-game .game-canvas,\n  body:has(.planet-game) .game-canvas {\n    height: min(48vh, 400px) !important;\n    min-height: min(40vh, 280px) !important;\n    max-height: min(52vh, 420px) !important;\n  }\n  .planet-game { padding: 10px !important; margin-top: 10px !important; }\n  .planet-game h2 { margin-bottom: 8px !important; font-size: 17px !important; }\n  .touch-controls { margin-top: 6px; gap: 6px; }\n  .touch-btn { min-height: 48px; font-size: 18px; }\n}\n@media (min-width: 640px) {\n  body.big-planet-page .ocean-display {\n    max-height: min(92vw, calc(100svh - 156px)) !important;\n    min-height: min(56vw, calc(100svh - 200px)) !important;\n  }\n}\nbody.big-planet-page .planet-game .game-canvas {\n  width: 100% !important;\n  height: min(50vh, 440px) !important;\n  min-height: min(42vh, 300px) !important;\n  max-height: min(56vh, 480px) !important;\n}\nbody.big-planet-page .planet-game { margin-bottom: 8px !important; }\nbody.big-game-page:has(.game-shell) {\n  overflow: hidden !important;\n  height: 100% !important;\n  min-height: 100% !important;\n  max-height: 100% !important;\n}\nhtml:has(body.big-game-page) {\n  height: 100% !important;\n  min-height: 100% !important;\n  overflow: hidden !important;\n}\nbody.big-game-page:has(.game-shell) .game-shell {\n  min-height: 100% !important;\n  height: 100% !important;\n  max-height: 100% !important;\n  display: flex !important;\n  flex-direction: column !important;\n}\nbody.big-game-page:has(.game-shell) .stage-wrap {\n  flex: 1 1 auto !important;\n  min-height: 0 !important;\n  align-items: center !important;\n  justify-content: center !important;\n}\nbody.big-game-page:has(.game-shell) .game-stage {\n  flex: 1 1 auto !important;\n  width: 100% !important;\n  height: 100% !important;\n  min-height: 0 !important;\n  max-height: none !important;\n  aspect-ratio: unset !important;\n  margin: 0 !important;\n}\nbody.reading-page {\n  overflow-x: hidden;\n  overflow-y: auto !important;\n  height: auto !important;\n  min-height: 100%;\n  -webkit-overflow-scrolling: touch;\n}\nbody.reading-page .container {\n  height: auto !important;\n  max-height: none !important;\n  overflow: visible !important;\n  display: block;\n}\n      .game-overlay.end-popup{display:none;flex-direction:column;align-items:center;text-align:center;}\n    .game-overlay.end-popup h3{color:#64ffda;margin-bottom:8px;font-size:22px;writing-mode:horizontal-tb;text-orientation:mixed;}\n  </style>\n<script>\n(function (w) {\n  var BOOK = \"oceanadventure\";\n  function key(name) { return \"book:\" + BOOK + \":\" + name; }\n  w.OceanPlayer = {\n    getUserName: function () { return localStorage.getItem(key(\"userName\")) || localStorage.getItem(\"userName\") || \"Explorer\"; },\n    getCharacter: function () { return localStorage.getItem(key(\"userCharacter\")) || localStorage.getItem(\"userCharacter\") || \"🤿\"; },\n    getCharacterName: function () { return localStorage.getItem(key(\"characterName\")) || localStorage.getItem(\"characterName\") || \"Diver\"; },\n    save: function (name, character, characterName) {\n      localStorage.setItem(key(\"userName\"), name);\n      localStorage.setItem(key(\"userCharacter\"), character);\n      if (characterName != null) localStorage.setItem(key(\"characterName\"), characterName);\n      localStorage.setItem(\"userName\", name);\n      localStorage.setItem(\"userCharacter\", character);\n      if (characterName != null) localStorage.setItem(\"characterName\", characterName);\n    }\n  };\n})(window);\n</script>\n</head>\n<body class=\"reading-page\">\n<div class=\"bubbles\"></div>\n<div class=\"confetti\" id=\"confetti\"></div>\n\n<div class=\"container\">\n  <div class=\"header\">\n    <div class=\"trophy\">🏆</div>\n    <h1>Congratulations!</h1>\n    <div class=\"subtitle\">You completed the Ocean Adventure!</div>\n  </div>\n\n  <div class=\"card\">\n    <h2>🌟 Amazing Job!</h2>\n    <p>\n      You've journeyed through the entire ocean and learned about all the amazing zones, creatures, and ecosystems!\n    </p>\n    <p>\n      You are now an Ocean Expert! 🎓\n    </p>\n  </div>\n\n  <div class=\"card\">\n    <h2>🎯 Your Achievements</h2>\n    <div class=\"achievement-grid\">\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">☀️</div>\n        <div class=\"achievement-label\">Sunlight Zone</div>\n      </div>\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">🌅</div>\n        <div class=\"achievement-label\">Twilight Zone</div>\n      </div>\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">🌙</div>\n        <div class=\"achievement-label\">Midnight Zone</div>\n      </div>\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">🕳️</div>\n        <div class=\"achievement-label\">Abyss Zone</div>\n      </div>\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">🪸</div>\n        <div class=\"achievement-label\">Coral Reefs</div>\n      </div>\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">🐬</div>\n        <div class=\"achievement-label\">Marine Mammals</div>\n      </div>\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">🐟</div>\n        <div class=\"achievement-label\">Fish Expert</div>\n      </div>\n      <div class=\"achievement-item\">\n        <div class=\"achievement-emoji\">🌊</div>\n        <div class=\"achievement-label\">Ocean Guardian</div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"message-box\">\n    <h3>🚀 You're an Ocean Explorer!</h3>\n    <p>\n      You've learned about our amazing ocean. Keep asking questions, keep exploring, and keep protecting our blue planet!\n    </p>\n    <p>\n      Remember: The ocean is full of wonders waiting to be discovered. Maybe one day, YOU will discover something new!\n    </p>\n  </div>\n\n  <div class=\"card\">\n    <h2>📚 What's Next?</h2>\n    <p>\n      Now that you're an ocean expert, you can:\n    </p>\n    <ul style=\"text-align:left;margin-left:20px;margin-top:12px;\">\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">Watch documentaries about the ocean</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">Visit an aquarium to see ocean creatures</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">Learn about marine conservation</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">Share what you learned with friends!</li>\n      <li style=\"font-size:16px;line-height:1.7;margin-bottom:8px;\">Help protect our oceans!</li>\n    </ul>\n  </div>\n\n  <div class=\"card\">\n    <h2>⭐ Thank You!</h2>\n    <p>\n      Thank you for joining this Ocean Adventure! We hope you had fun learning about the amazing world beneath the waves.\n    </p>\n    <p>\n      Keep exploring, keep learning, and never stop being curious!\n    </p>\n    <div style=\"font-size:40px;margin-top:16px;\">🌊✨🐠</div>\n  </div>\n\n<div class=\"nav-hint\">\n  <div>You've completed all 28 chapters! 🎉</div>\n  <div>💡 You are now a certified Ocean Expert!</div>\n</div>\n\n</div>\n\n<script>\nconst colors = ['#64ffda','#4fc3f7','#00bcd4','#ff6b9d','#ff9800','#ffc107'];\nconst confetti = document.getElementById('confetti');\n\nfunction createConfetti() {\n  for (let i = 0; i < 50; i++) {\n    const piece = document.createElement('div');\n    piece.className = 'confetti-piece';\n    piece.style.left = Math.random() * 100 + '%';\n    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];\n    piece.style.animationDelay = Math.random() * 3 + 's';\n    piece.style.animationDuration = (Math.random() * 2 + 2) + 's';\n    confetti.appendChild(piece);\n  }\n}\n\ncreateConfetti();\n</script>\n</body>\n</html>\n"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-4",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 4",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-4-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-4",
+              "chapterTitle": "Page 4",
+              "chapterIndex": 0,
+              "stepIndex": 4,
+              "stepType": "html",
+              "title": "Intro MyAquarium",
+              "description": "",
+              "contentHtml": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Ocean Adventure - My Aquarium</title>\n  <style>\n    .bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,.18),transparent);background-size:900px 150px;animation:rise 9s ease-in-out infinite;}\n    @keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}\n    *{margin:0;padding:0;box-sizing:border-box;}\n    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628,#1a365d,#0f4c75);color:#e0f4ff;min-height:100vh;}\n    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}\n    .title{text-align:center;font-size:22px;color:#64ffda;margin:4px 0 2px;flex-shrink:0;}\n    .game-desc{text-align:center;color:#80deea;font-size:13px;margin-bottom:6px;line-height:1.45;padding:0 8px;flex-shrink:0;}\n    .stamp-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:6px;padding:6px 8px;background:rgba(0,0,0,.28);border-radius:12px;border:1px solid rgba(100,255,218,.25);max-height:72px;overflow-y:auto;flex-shrink:0;}\n    .stamp-btn{width:40px;height:40px;border:2px solid rgba(100,255,218,.35);border-radius:10px;background:rgba(100,255,218,.08);font-size:22px;cursor:pointer;touch-action:manipulation;transition:.15s;flex-shrink:0;}\n    .stamp-btn.selected{border-color:#ffeb3b;background:rgba(255,235,59,.18);box-shadow:0 0 16px rgba(255,235,59,.35);transform:scale(1.06);}\n    .stamp-btn:active{transform:scale(.96);}\n    .tool-row{display:flex;gap:6px;justify-content:center;margin-bottom:6px;flex-wrap:wrap;flex-shrink:0;}\n    .tool-btn{padding:6px 12px;border:none;border-radius:10px;background:rgba(255,255,255,.1);color:#cce7ff;font-size:12px;font-weight:bold;cursor:pointer;border:1px solid rgba(100,255,218,.3);}\n    .tool-btn:active{transform:scale(.97);}\n    .stage-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;}\n    .game-stage{position:relative;flex:1 1 auto;min-height:min(52vh,420px);border:2px solid rgba(100,255,218,.45);border-radius:16px;overflow:hidden;background:#062035;touch-action:none;cursor:crosshair;}\n    canvas{display:block;width:100%;height:100%;}\n    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,20,36,.9);text-align:center;padding:18px;z-index:5;}\n    .overlay h3{color:#64ffda;font-size:22px;margin-bottom:8px;}\n    .overlay p{color:#cce7ff;font-size:14px;line-height:1.55;margin-bottom:14px;max-width:320px;}\n    .btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#64ffda,#00bcd4);color:#062035;font-size:15px;font-weight:bold;cursor:pointer;}\n    .nav-hint{margin-top:10px;text-align:center;font-size:13px;color:#80deea;background:rgba(128,222,234,.1);padding:10px;border-radius:10px;flex-shrink:0;}\n    body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}\n    html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}\n    body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}\n    body.big-game-page:has(.game-shell) .stage-wrap{flex:1 1 auto!important;min-height:0!important;}\n    body.big-game-page:has(.game-shell) .game-stage{flex:1 1 auto!important;min-height:0!important;max-height:none!important;aspect-ratio:unset!important;}\n    @media(orientation:landscape){\n      body.big-game-page:has(.game-shell) .game-shell{max-width:none;padding:4px 10px;}\n      body.big-game-page:has(.game-shell) .stamp-row{max-height:52px;margin-bottom:4px;}\n      body.big-game-page:has(.game-shell) .title{font-size:18px;}\n      body.big-game-page:has(.game-shell) .game-desc{font-size:12px;margin-bottom:4px;}\n      body.big-game-page:has(.game-shell) .nav-hint{display:none;}\n    }\n  </style>\n<script>\n(function (w) {\n  var BOOK = \"oceanadventure\";\n  function key(name) { return \"book:\" + BOOK + \":\" + name; }\n  w.OceanPlayer = {\n    getUserName: function () { return localStorage.getItem(key(\"userName\")) || localStorage.getItem(\"userName\") || \"Explorer\"; },\n    getCharacter: function () { return localStorage.getItem(key(\"userCharacter\")) || localStorage.getItem(\"userCharacter\") || \"🤿\"; },\n    getCharacterName: function () { return localStorage.getItem(key(\"characterName\")) || localStorage.getItem(\"characterName\") || \"Diver\"; },\n    save: function (name, character, characterName) {\n      localStorage.setItem(key(\"userName\"), name);\n      localStorage.setItem(key(\"userCharacter\"), character);\n      if (characterName != null) localStorage.setItem(key(\"characterName\"), characterName);\n      localStorage.setItem(\"userName\", name);\n      localStorage.setItem(\"userCharacter\", character);\n      if (characterName != null) localStorage.setItem(\"characterName\", characterName);\n    }\n  };\n})(window);\n</script>\n</head>\n<body class=\"big-game-page\">\n<div class=\"bubbles\"></div>\n<div class=\"game-shell\">\n  <h1 class=\"title\">🐠 My Relaxing Aquarium</h1>\n  <p class=\"game-desc\">Pick fish, coral, or rocks — tap the tank to paint your underwater world. No timer, just calm ocean vibes.</p>\n\n  <div class=\"stamp-row\" id=\"stampRow\">\n    <button type=\"button\" class=\"stamp-btn selected\" data-emoji=\"🐠\" title=\"Clownfish\">🐠</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐟\" title=\"Fish\">🐟</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐡\" title=\"Pufferfish\">🐡</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🦈\" title=\"Shark\">🦈</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐙\" title=\"Octopus\">🐙</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🦑\" title=\"Squid\">🦑</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐢\" title=\"Turtle\">🐢</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐬\" title=\"Dolphin\">🐬</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐋\" title=\"Whale\">🐋</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐳\" title=\"Whale\">🐳</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🧜‍♀️\" title=\"Mermaid\">🧜‍♀️</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🦭\" title=\"Seal\">🦭</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🦐\" title=\"Shrimp\">🦐</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🪼\" title=\"Jellyfish\">🪼</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🪸\" title=\"Coral\">🪸</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🪨\" title=\"Rock\">🪨</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🐚\" title=\"Shell\">🐚</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🌿\" title=\"Seaweed\">🌿</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"⭐\" title=\"Starfish\">⭐</button>\n    <button type=\"button\" class=\"stamp-btn\" data-emoji=\"🦀\" title=\"Crab\">🦀</button>\n  </div>\n  <div class=\"tool-row\">\n    <button type=\"button\" class=\"tool-btn\" id=\"btnUndo\">↩️ Undo</button>\n    <button type=\"button\" class=\"tool-btn\" id=\"btnClear\">🧹 Clear Tank</button>\n    <span class=\"tool-btn\" id=\"countLabel\" style=\"cursor:default;\">🎨 0 items</span>\n  </div>\n\n  <div class=\"stage-wrap\">\n    <div class=\"game-stage\" id=\"stage\">\n      <canvas id=\"gameCanvas\"></canvas>\n      <div class=\"overlay\" id=\"startScreen\">\n        <h3>🌊 Welcome to Your Tank!</h3>\n        <p>Choose a stamp above, then tap anywhere in the water to place it. Build a peaceful reef — take your time!</p>\n        <button class=\"btn\" type=\"button\" id=\"btnStart\">▶️ Start Decorating</button>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"nav-hint\">\n    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>\n    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>\n  </div>\n</div>\n<script>\nconst STORAGE_KEY = 'book:oceanadventure:intro-aquarium';\nconst FONT = '\"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif';\nlet canvas, ctx, running = false, animId;\nlet selectedEmoji = '🐠';\nlet decorations = [];\nlet bubbles = [];\n\nfunction loadTank() {\n  try {\n    const raw = localStorage.getItem(STORAGE_KEY);\n    if (raw) decorations = JSON.parse(raw);\n  } catch (e) { decorations = []; }\n}\n\nfunction saveTank() {\n  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(decorations)); } catch (e) {}\n}\n\nfunction resize() {\n  const stage = document.getElementById('stage');\n  canvas = document.getElementById('gameCanvas');\n  ctx = canvas.getContext('2d');\n  const w = stage.clientWidth;\n  const h = stage.clientHeight;\n  const dpr = Math.min(window.devicePixelRatio || 1, 2);\n  canvas.width = Math.floor(w * dpr);\n  canvas.height = Math.floor(h * dpr);\n  canvas.style.width = w + 'px';\n  canvas.style.height = h + 'px';\n  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);\n}\n\nfunction initBubbles(count) {\n  bubbles = [];\n  for (let i = 0; i < count; i++) {\n    bubbles.push({\n      x: Math.random() * 400,\n      y: Math.random() * 400,\n      r: 1.5 + Math.random() * 3,\n      speed: 0.3 + Math.random() * 0.8,\n      wobble: Math.random() * Math.PI * 2,\n    });\n  }\n}\n\nfunction drawEmoji(emoji, x, y, size, flipX) {\n  ctx.save();\n  ctx.globalAlpha = 1;\n  ctx.font = 'bold ' + size + 'px ' + FONT;\n  ctx.textAlign = 'center';\n  ctx.textBaseline = 'middle';\n  ctx.fillStyle = '#ffffff';\n  const faceRe = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐|🧜/;\n  if (flipX && faceRe.test(emoji)) {\n    ctx.translate(x, y);\n    ctx.scale(-1, 1);\n    ctx.fillText(emoji, 0, 0);\n  } else {\n    ctx.fillText(emoji, x, y);\n  }\n  ctx.restore();\n}\n\nfunction drawTankBg(w, h, t) {\n  const g = ctx.createLinearGradient(0, 0, 0, h);\n  g.addColorStop(0, '#4fc3f7');\n  g.addColorStop(0.35, '#0288d1');\n  g.addColorStop(0.72, '#01579b');\n  g.addColorStop(1, '#002171');\n  ctx.fillStyle = g;\n  ctx.fillRect(0, 0, w, h);\n\n  ctx.fillStyle = 'rgba(255,255,255,0.07)';\n  for (let i = 0; i < 5; i++) {\n    const rx = (w * 0.15) + i * 18;\n    const ry = h * 0.08 + Math.sin(t * 0.001 + i) * 6;\n    ctx.beginPath();\n    ctx.ellipse(w * 0.5 + (i - 2) * 40, ry, rx, 12, 0, 0, Math.PI * 2);\n    ctx.fill();\n  }\n\n  const sand = h - 42;\n  ctx.fillStyle = '#c2a878';\n  ctx.fillRect(0, sand, w, h - sand);\n  ctx.fillStyle = 'rgba(0,0,0,0.12)';\n  ctx.fillRect(0, sand, w, 6);\n\n  bubbles.forEach(b => {\n    b.y -= b.speed;\n    b.x += Math.sin(t * 0.002 + b.wobble) * 0.4;\n    if (b.y < -8) { b.y = h + 8; b.x = Math.random() * w; }\n    ctx.fillStyle = 'rgba(255,255,255,0.35)';\n    ctx.beginPath();\n    ctx.arc(b.x % w, b.y, b.r, 0, Math.PI * 2);\n    ctx.fill();\n  });\n}\n\nfunction updateCount() {\n  document.getElementById('countLabel').textContent = '🎨 ' + decorations.length + ' item' + (decorations.length === 1 ? '' : 's');\n}\n\nfunction loop(t) {\n  if (!running) return;\n  const w = canvas.clientWidth;\n  const h = canvas.clientHeight;\n  drawTankBg(w, h, t);\n\n  decorations.forEach(d => {\n    const bob = Math.sin(t * 0.002 + d.phase) * (d.kind === 'rock' || d.kind === 'coral' ? 1.5 : 5);\n    let drift = 0;\n    let flip = false;\n    if (d.kind === 'fish') {\n      const phase = t * 0.001 + d.phase;\n      drift = Math.sin(phase) * 8;\n      flip = Math.cos(phase) * 0.001 * 8 < 0;\n    }\n    drawEmoji(d.emoji, d.x + drift, d.y + bob, d.size, flip);\n  });\n\n  animId = requestAnimationFrame(loop);\n}\n\nfunction placeAt(clientX, clientY) {\n  const r = canvas.getBoundingClientRect();\n  const x = clientX - r.left;\n  const y = clientY - r.top;\n  if (y > r.height - 36) return;\n  const rockish = selectedEmoji === '🪨' || selectedEmoji === '🪸' || selectedEmoji === '🐚' || selectedEmoji === '🌿' || selectedEmoji === '⭐';\n  decorations.push({\n    emoji: selectedEmoji,\n    x: x,\n    y: y,\n    size: rockish ? 26 + Math.random() * 10 : 28 + Math.random() * 14,\n    phase: Math.random() * Math.PI * 2,\n    kind: rockish ? (selectedEmoji === '🪨' ? 'rock' : 'coral') : 'fish',\n  });\n  saveTank();\n  updateCount();\n}\n\nfunction startDecorating() {\n  document.getElementById('startScreen').style.display = 'none';\n  running = true;\n  loop(0);\n}\n\ndocument.getElementById('btnStart').onclick = startDecorating;\n\ndocument.querySelectorAll('.stamp-btn').forEach(btn => {\n  btn.addEventListener('click', () => {\n    document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));\n    btn.classList.add('selected');\n    selectedEmoji = btn.dataset.emoji;\n  });\n});\n\ndocument.getElementById('btnUndo').onclick = () => {\n  if (!decorations.length) return;\n  decorations.pop();\n  saveTank();\n  updateCount();\n};\n\ndocument.getElementById('btnClear').onclick = () => {\n  decorations = [];\n  saveTank();\n  updateCount();\n};\n\nfunction bindTap() {\n  const hit = e => {\n    if (document.getElementById('startScreen').style.display !== 'none') return;\n    const p = e.touches ? e.touches[0] : e;\n    placeAt(p.clientX, p.clientY);\n  };\n  canvas.addEventListener('click', hit);\n  canvas.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });\n}\n\nloadTank();\nresize();\ninitBubbles(24);\nupdateCount();\nbindTap();\nwindow.addEventListener('resize', resize);\n\n(function fitGameFrame() {\n  function fit() {\n    const h = window.innerHeight + 'px';\n    document.documentElement.style.height = h;\n    document.body.style.height = h;\n    const shell = document.querySelector('.game-shell');\n    if (shell) shell.style.minHeight = h;\n  }\n  fit();\n  window.addEventListener('resize', fit);\n})();\n</script>\n</body>\n</html>\n"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-5",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 5",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-5-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-5",
+              "chapterTitle": "Page 5",
+              "chapterIndex": 0,
+              "stepIndex": 5,
+              "stepType": "html",
+              "title": "Ocean Overview",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/005-Ocean-Overview.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-6",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 6",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-6-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-6",
+              "chapterTitle": "Page 6",
+              "chapterIndex": 0,
+              "stepIndex": 6,
+              "stepType": "html",
+              "title": "Ocean Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/006-Ocean-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-7",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 7",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-7-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-7",
+              "chapterTitle": "Page 7",
+              "chapterIndex": 0,
+              "stepIndex": 7,
+              "stepType": "html",
+              "title": "Ocean Quiz",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/007-Ocean-Quiz.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-8",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 8",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-8-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-8",
+              "chapterTitle": "Page 8",
+              "chapterIndex": 0,
+              "stepIndex": 8,
+              "stepType": "html",
+              "title": "Sunlight Zone",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/008-Sunlight-Zone.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        },
+        {
+          "id": "oceanadventure-ch-import-1785156816483-9",
+          "courseId": "oceanadventure",
+          "chapterIndex": 0,
+          "title": "Page 9",
+          "steps": [
+            {
+              "id": "oceanadventure-ch-import-1785156816483-9-step-0",
+              "courseId": "oceanadventure",
+              "chapterId": "oceanadventure-ch-import-1785156816483-9",
+              "chapterTitle": "Page 9",
+              "chapterIndex": 0,
+              "stepIndex": 9,
+              "stepType": "html",
+              "title": "Sunlight Zone Explained",
+              "description": "",
+              "contentHtml": "<iframe src=\"/book_html/OceanAdventure/009-Sunlight-Zone-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        }
+      ]
     }
   ],
   "tasks": [
@@ -7794,5 +9325,5 @@
       "sortOrder": 0
     }
   ],
-  "exportedAt": "2026-07-21T03:27:03.431Z"
+  "exportedAt": "2026-07-27T13:48:20.757Z"
 }
