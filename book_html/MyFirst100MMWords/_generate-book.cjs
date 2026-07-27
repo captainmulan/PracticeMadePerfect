@@ -40,9 +40,9 @@ function loadImageUri(chapterId, slot) {
     exp1: ["seg1"],
     exp2: ["seg2", "seg1"],
     exp3: ["seg3", "seg1"],
-    sent1: ["exp1", "seg2", "seg3"],
-    sent2: ["exp2", "seg3", "seg1"],
-    sent3: ["exp3", "seg1", "seg2"]
+    sent1: ["exp1"],
+    sent2: ["exp2"],
+    sent3: ["exp3"]
   };
   for (const fb of fallbacks[slot] || []) names.push(`${chapterId}-${fb}.jpg`, `${chapterId}-${fb}.png`);
   for (const name of names) {
@@ -606,11 +606,13 @@ function explainedScrollPartHtml(ch, idx, groups, titles) {
     <section class="chapter-part sentences-part" id="sentences-part-${idx}" aria-labelledby="sentences-part-title-${idx}">
       <h2 class="chapter-part-title" id="sentences-part-title-${idx}">${esc(meta.title)}</h2>
       <div class="chapter-part-inner">
-        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
-        <div class="story-row">
-          <div class="card story-card">
-            <div class="story-box story-box-default">${esc(meta.story)}</div>
-            ${storyLongHtml}
+        <div class="sentences-media-col">
+          <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
+          <div class="story-row">
+            <div class="card story-card">
+              <div class="story-box story-box-default">${esc(meta.story)}</div>
+              ${storyLongHtml}
+            </div>
           </div>
         </div>
         <div class="chapter-sentences-block">

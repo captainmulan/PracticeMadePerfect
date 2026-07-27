@@ -15,11 +15,19 @@ node _generate-book.cjs
 | `{id}-seg2.png` | Picture for story part 2 |
 | `{id}-seg3.png` | Picture for story part 3 |
 
-## Sentences page (realistic scene art — PNG only)
+## Sentences page (unique realistic art — PNG only)
 
-Run `node scripts/sync_sentence_images.cjs` to build `{id}-sent1.png` … `sent3.png` from **different** seg slots than the matching Words section (sent1←seg2, sent2←seg3, sent3←seg1), then `node _generate-book.cjs explained`.
+1. `node scripts/gen_sentence_prompts.cjs` — writes `scripts/sentence-image-prompts.json` (30 scene prompts).
+2. Generate each `{id}-sent1.png` … `sent3.png` from those prompts (unique scenes — **do not** copy `seg*`).
+3. `node _generate-book.cjs explained`
 
-Drop custom `{id}-sent*.png` files here to override. Generator never falls back to the same-index seg image.
+| File | Part |
+|------|------|
+| `{id}-sent1.png` | Sentences section 1 |
+| `{id}-sent2.png` | Sentences section 2 |
+| `{id}-sent3.png` | Sentences section 3 |
+
+Generator uses `{id}-sent*.png` only (no SVG, no `seg*` fallback).
 
 ## Explained page (optional — falls back to seg images)
 
