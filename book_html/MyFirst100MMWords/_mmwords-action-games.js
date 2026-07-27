@@ -302,8 +302,10 @@
     var blink = invincible > 0 && Math.floor(tick / 5) % 2 === 0;
     drawShadow(ctx, x, y + 18, jumping ? 12 : 16);
     ctx.save();
-    if (blink) ctx.globalAlpha = 0.55;
-    drawBrightEmoji(ctx, emoji, x, y, jumping ? 36 : 34, "#F59E0B");
+    if (blink) ctx.globalAlpha = 0.5;
+    ctx.translate(x, y);
+    if (jumping) ctx.scale(1.06, 1.06);
+    drawEmoji(ctx, emoji, 0, 0, 38);
     ctx.restore();
   }
 
@@ -452,20 +454,17 @@
     }
     ctx.save();
     if (o.flash > 0) {
-      ctx.fillStyle = "rgba(251,191,36,.5)";
+      ctx.fillStyle = "rgba(251,191,36,.35)";
       ctx.beginPath();
-      ctx.arc(sx, ey, size * 0.58, 0, Math.PI * 2);
+      ctx.arc(sx, ey, size * 0.45, 0, Math.PI * 2);
       ctx.fill();
     }
-    drawShadow(ctx, sx, groundY - 6, o.boss ? 24 : 16);
-    drawBrightEmoji(ctx, o.emoji, sx, ey, size, o.boss ? "#EF4444" : "#FB923C");
+    drawShadow(ctx, sx, groundY - 6, o.boss ? 22 : 14);
+    drawEmoji(ctx, o.emoji, sx, ey, size);
     if (o.label) {
       ctx.font = "bold " + (o.boss ? 10 : 9) + "px Georgia,serif";
       ctx.fillStyle = "#FFF8E7";
-      ctx.strokeStyle = "rgba(49,46,129,.85)";
-      ctx.lineWidth = 3;
       ctx.textAlign = "center";
-      ctx.strokeText(o.label, sx, ey - size * 0.72);
       ctx.fillText(o.label, sx, ey - size * 0.72);
     }
     ctx.restore();
@@ -477,21 +476,22 @@
       var sx = ((L.x - scroll * rate) % (W + 80)) - 20;
       if (sx < -40 || sx > W + 40) return;
       var sy = L.y + Math.sin(tick * 0.045 + L.seed) * 10;
-      var glow = 0.2 + 0.15 * Math.sin(tick * 0.04 + L.seed);
-      ctx.fillStyle = "rgba(251,191,36," + glow + ")";
+      var pulse = 0.65 + 0.35 * Math.sin(tick * 0.05 + L.seed);
+      ctx.fillStyle = "rgba(255,200,80," + (pulse * 0.35) + ")";
       ctx.beginPath();
-      ctx.arc(sx, sy, 16 + L.size, 0, Math.PI * 2);
+      ctx.arc(sx, sy, 26 + L.size, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,.35)";
-      ctx.lineWidth = 1;
+      ctx.fillStyle = "rgba(251,191,36," + pulse + ")";
       ctx.beginPath();
-      ctx.moveTo(sx, sy - 22 - L.size);
+      ctx.arc(sx, sy, 14 + L.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,248,220,.75)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy - 24 - L.size);
       ctx.lineTo(sx, sy - 10);
       ctx.stroke();
-      ctx.font = (20 + L.size * 2) + "px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("🏮", sx, sy);
+      drawEmoji(ctx, "🏮", sx, sy, 22 + L.size * 2);
     });
   }
 
