@@ -598,6 +598,102 @@
     wireJumpPad(document.getElementById(opts.controlsId || "action-controls"), state);
     bindKeys(state);
 
+    var spriteRoot = document.getElementById("lr-sprites");
+    if (!spriteRoot && canvas.parentElement) {
+      spriteRoot = document.createElement("div");
+      spriteRoot.id = "lr-sprites";
+      spriteRoot.className = "lr-sprites";
+      canvas.parentElement.appendChild(spriteRoot);
+    }
+    var spriteMap = {};
+
+    function clearSpriteLayer() {
+      if (spriteRoot) spriteRoot.innerHTML = "";
+      spriteMap = {};
+    }
+
+    function showDomSprite(id, cls, x, y, W, H, emoji, label, extra) {
+      if (!spriteRoot) return;
+      var el = spriteMap[id];
+      if (!el) {
+        el = document.createElement("div");
+        el.className = "lr-sprite " + (cls || "");
+        el.innerHTML =
+          '<span class="lr-sprite-hearts"></span>' +
+          '<span class="lr-sprite-label"></span>' +
+          '<span class="lr-sprite-emoji"></span>' +
+          '<span class="lr-sprite-extra"></span>';
+        spriteRoot.appendChild(el);
+        spriteMap[id] = el;
+      }
+      el.style.display = "block";
+      el.style.left = (100 * x / W) + "%";
+      el.style.top = (100 * y / H) + "%";
+      el.querySelector(".lr-sprite-emoji").textContent = emoji || "";
+      var lab = el.querySelector(".lr-sprite-label");
+      var ht = el.querySelector(".lr-sprite-hearts");
+      var ex = el.querySelector(".lr-sprite-extra");
+      lab.textContent = label || "";
+      lab.style.display = label ? "block" : "none";
+      ht.textContent = extra && extra.hearts ? extra.hearts : "";
+      ht.style.display = extra && extra.hearts ? "block" : "none";
+      ex.textContent = extra && extra.sub ? extra.sub : "";
+      ex.style.display = extra && extra.sub ? "block" : "none";
+      if (extra && extra.invincible) el.classList.add("lr-sprite-hit");
+      else el.classList.remove("lr-sprite-hit");
+    }
+
+    function syncDomSprites(W, H, groundY, hero) {
+      var seen = {};
+      showDomSprite("player", "lr-sprite-player", state.px, state.py, W, H, hero, "", {
+        invincible: state.invincible > 0 && Math.floor(state.spawnT / 4) % 2 === 0
+      });
+      seen.player = true;
+
+      if (!state.bossPhase) {
+        state.obstacles.forEach(function (o) {
+          var ox = enemyOx(o);
+          if (ox < -70 || ox > W + 70) return;
+          var hop = Math.abs(Math.sin(state.spawnT * 0.22 + (o.x || 0) * 0.02)) * 3;
+          var ey = groundY - 36 - hop;
+          var id = "en" + o.x;
+          showDomSprite(id, "lr-sprite-enemy", ox, ey, W, H,
+            o.dead ? "💫" : o.emoji, o.dead ? "" : o.label, null);
+          seen[id] = true;
+        });
+        if (state.flyingHeart && !state.flyingHeart.got) {
+          var hx = state.flyingHeart.x - state.scroll;
+          var hy = state.flyingHeart.y + Math.sin(state.flyingHeart.bob) * 14;
+          if (hx > -40 && hx < W + 40) {
+            showDomSprite("heart", "lr-sprite-heart", hx, hy, W, H, "💖", "", { sub: "+1 ❤️" });
+            seen.heart = true;
+          }
+        }
+      } else if (state.bossFight) {
+        var bf = state.bossFight;
+        var bhop = Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
+        var bsx = bf.sx + Math.sin(bf.patrolT * 0.08) * 48;
+        var bey = groundY - 36 - bhop;
+        var bhearts = "";
+        for (var bi = 0; bi < bf.maxHp; bi++) bhearts += bi < bf.hp ? "❤️" : "🖤";
+        showDomSprite("boss", "lr-sprite-boss", bsx, bey, W, H, bf.emoji, bf.label, { hearts: bhearts });
+        seen.boss = true;
+      }
+
+      if (state.pickup && !state.pickup.got && (!state.isBossLevel || state.bossDefeated)) {
+        var psx = state.pickup.x - state.scroll;
+        if (psx > -50 && psx < W + 50) {
+          showDomSprite("pickup", "lr-sprite-pickup", psx, groundY - 50, W, H,
+            state.pickup.emoji, state.pickup.label, null);
+          seen.pickup = true;
+        }
+      }
+
+      Object.keys(spriteMap).forEach(function (k) {
+        if (!seen[k]) spriteMap[k].style.display = "none";
+      });
+    }
+
     var portraitEmoji = {
       Mother: "👩‍🦰",
       Father: "👨‍🦱",
@@ -783,6 +879,7 @@
       state.vy = 0;
       state.grounded = true;
       state.lastTs = 0;
+      clearSpriteLayer();
       syncHud();
     }
 
@@ -803,6 +900,7 @@
     function gameOver(msg) {
       state.running = false;
       if (state.raf) cancelAnimationFrame(state.raf);
+      clearSpriteLayer();
       showOverlay("action-start-overlay", true);
       var btn = document.getElementById("action-start-btn");
       if (btn) btn.textContent = "▶ Try again";
