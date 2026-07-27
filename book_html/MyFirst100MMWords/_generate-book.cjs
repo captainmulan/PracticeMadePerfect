@@ -75,6 +75,13 @@ function wordOptionLabel(opt) {
   return opt.en || "";
 }
 
+function wordOptionHtml(opt) {
+  const en = esc(opt.en || "");
+  const mm = esc(opt.mm || "");
+  if (mm) return `${en} <span class="option-mm">(${mm})</span>`;
+  return en;
+}
+
 function buildHearPickQuestions(words, count) {
   if (!words || !words.length) return [];
   return shuffle(words).slice(0, Math.min(count, words.length)).map((correct) => {
@@ -765,18 +772,18 @@ function hearQuizCard(q, i, isActive) {
   const correctIdx = q.options.findIndex((o) => o.en === q.correctEn);
   const fixedOpts = q.options
     .map((opt, oi) => {
-      const label = wordOptionLabel(opt);
-      return `<div class="option" data-correct="${oi === correctIdx ? "1" : "0"}">${esc(label)}</div>`;
+      const label = wordOptionHtml(opt);
+      return `<div class="option" data-correct="${oi === correctIdx ? "1" : "0"}">${label}</div>`;
     })
     .join("");
   return `
   <div class="quiz-card${isActive ? " active" : ""}" id="quizCard-${i + 1}" data-quiz-type="hear" data-mm="${esc(q.mm)}" data-hint="${esc(q.hint)}">
-    <div class="question">${i + 1}. Which English word did you hear?</div>
+    <div class="question">${i + 1}. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
-    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word (no peeking at emojis!).</p>
+    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
     <div class="options">${fixedOpts}</div>
     <div class="feedback" id="feedback-${i + 1}"></div>
   </div>`;
@@ -825,7 +832,7 @@ function genQuiz(ch) {
 <div class="container">
   <div class="top-bar">
     <h1>${ch.title} Quiz</h1>
-    <div class="subtitle">Beat Professor M · ${wordQs.length} words · ${sentenceQs.length} sentence${sentenceQs.length === 1 ? "" : "s"} · hear Myanmar, answer in English</div>
+    <div class="subtitle">Beat Professor M · ${wordQs.length} words · ${sentenceQs.length} sentence${sentenceQs.length === 1 ? "" : "s"} · hear Myanmar, pick the word</div>
   </div>
   ${quizCompetitionBarHtml()}
   <div id="quizArea">${cards}</div>

@@ -10,10 +10,10 @@
 body.main-chapter-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
 .main-chapter-page .manuscript-bg,.main-chapter-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
 .explained-page{overflow-x:hidden;overflow-y:auto;}
-body.explained-page{padding:0;}
-.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:flex;flex-direction:column;overflow:visible;}
-.explained-page .manuscript-bg{width:100%;align-items:stretch;}
-.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 20px;}</style>
+body.explained-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
+.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
+.explained-page .manuscript-bg{width:100%;}
+.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 28px;--chapter-pad-x:clamp(16px,3vw,40px);}</style>
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
@@ -23,7 +23,7 @@ body.explained-page{padding:0;}
 <div class="container">
   <div class="top-bar">
     <h1>School Quiz</h1>
-    <div class="subtitle">Beat Professor M · 5 words · 1 sentence · hear Myanmar, answer in English</div>
+    <div class="subtitle">Beat Professor M · 5 words · 1 sentence · hear Myanmar, pick the word</div>
   </div>
   
   <div class="competition-bar" id="liveScoreBar">
@@ -40,64 +40,64 @@ body.explained-page{padding:0;}
     </div>
   </div>
   <div id="quizArea">
-  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="စာသင်ခန်း" data-hint="sa-thin-khan">
-    <div class="question">1. Which English word did you hear?</div>
+  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="ကျောင်း" data-hint="kyaung">
+    <div class="question">1. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
-    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word (no peeking at emojis!).</p>
-    <div class="options"><div class="option" data-correct="0">School</div><div class="option" data-correct="0">Pen</div><div class="option" data-correct="1">Class</div><div class="option" data-correct="0">Teacher</div></div>
+    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
+    <div class="options"><div class="option" data-correct="0">Bag <span class="option-mm">(အိတ်)</span></div><div class="option" data-correct="1">School <span class="option-mm">(ကျောင်း)</span></div><div class="option" data-correct="0">Friend <span class="option-mm">(သူငယ်ချင်း)</span></div><div class="option" data-correct="0">Homework <span class="option-mm">(အိမ်စာ)</span></div></div>
     <div class="feedback" id="feedback-1"></div>
   </div>
-  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="ဘောပင်" data-hint="baw-pin">
-    <div class="question">2. Which English word did you hear?</div>
+  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="သင်ခန်းစာ" data-hint="thin-khan-sa">
+    <div class="question">2. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
-    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word (no peeking at emojis!).</p>
-    <div class="options"><div class="option" data-correct="1">Pen</div><div class="option" data-correct="0">School</div><div class="option" data-correct="0">Lesson</div><div class="option" data-correct="0">Bag</div></div>
+    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
+    <div class="options"><div class="option" data-correct="0">Eraser <span class="option-mm">(ခဲဖျက်)</span></div><div class="option" data-correct="0">Bag <span class="option-mm">(အိတ်)</span></div><div class="option" data-correct="1">Lesson <span class="option-mm">(သင်ခန်းစာ)</span></div><div class="option" data-correct="0">Friend <span class="option-mm">(သူငယ်ချင်း)</span></div></div>
     <div class="feedback" id="feedback-2"></div>
   </div>
-  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="စာအုပ်" data-hint="sa-ouk">
-    <div class="question">3. Which English word did you hear?</div>
+  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="ခဲတံ" data-hint="khe-dan">
+    <div class="question">3. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
-    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word (no peeking at emojis!).</p>
-    <div class="options"><div class="option" data-correct="0">Homework</div><div class="option" data-correct="0">Pen</div><div class="option" data-correct="0">School</div><div class="option" data-correct="1">Book</div></div>
+    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
+    <div class="options"><div class="option" data-correct="1">Pencil <span class="option-mm">(ခဲတံ)</span></div><div class="option" data-correct="0">Teacher <span class="option-mm">(ဆရာ)</span></div><div class="option" data-correct="0">Lesson <span class="option-mm">(သင်ခန်းစာ)</span></div><div class="option" data-correct="0">Friend <span class="option-mm">(သူငယ်ချင်း)</span></div></div>
     <div class="feedback" id="feedback-3"></div>
   </div>
-  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="သင်ခန်းစာ" data-hint="thin-khan-sa">
-    <div class="question">4. Which English word did you hear?</div>
+  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="ခဲဖျက်" data-hint="khe-phyet">
+    <div class="question">4. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
-    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word (no peeking at emojis!).</p>
-    <div class="options"><div class="option" data-correct="0">Teacher</div><div class="option" data-correct="0">Pen</div><div class="option" data-correct="0">School</div><div class="option" data-correct="1">Lesson</div></div>
+    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
+    <div class="options"><div class="option" data-correct="0">Pen <span class="option-mm">(ဘောပင်)</span></div><div class="option" data-correct="0">Class <span class="option-mm">(စာသင်ခန်း)</span></div><div class="option" data-correct="1">Eraser <span class="option-mm">(ခဲဖျက်)</span></div><div class="option" data-correct="0">Book <span class="option-mm">(စာအုပ်)</span></div></div>
     <div class="feedback" id="feedback-4"></div>
   </div>
-  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="အိမ်စာ" data-hint="ain-sa">
-    <div class="question">5. Which English word did you hear?</div>
+  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="ဆရာ" data-hint="saya">
+    <div class="question">5. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
-    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word (no peeking at emojis!).</p>
-    <div class="options"><div class="option" data-correct="0">School</div><div class="option" data-correct="1">Homework</div><div class="option" data-correct="0">Lesson</div><div class="option" data-correct="0">Eraser</div></div>
+    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
+    <div class="options"><div class="option" data-correct="0">Eraser <span class="option-mm">(ခဲဖျက်)</span></div><div class="option" data-correct="0">Lesson <span class="option-mm">(သင်ခန်းစာ)</span></div><div class="option" data-correct="0">Pencil <span class="option-mm">(ခဲတံ)</span></div><div class="option" data-correct="1">Teacher <span class="option-mm">(ဆရာ)</span></div></div>
     <div class="feedback" id="feedback-5"></div>
   </div>
-  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="ခဲဖျက်သုံးပါ။" data-hint="">
+  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="ဒီနေ့ သင်ခန်းစာ ပျော်စရာကောင်းတယ်။" data-hint="">
     <div class="question">6. What is this sentence about?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">💬</span>
       <button type="button" class="hear-replay-btn">🔊 Hear sentence</button>
     </div>
     <p class="hear-hint-text">Listen to the full Myanmar sentence — then pick what it is about (Mom, Aunt, Family…).</p>
-    <div class="options"><div class="option" data-correct="0">This is about Homework</div><div class="option" data-correct="0">This is about Pencil</div><div class="option" data-correct="1">This is about Eraser</div><div class="option" data-correct="0">This is about Bag</div></div>
+    <div class="options"><div class="option" data-correct="0">This is about Class</div><div class="option" data-correct="0">This is about School</div><div class="option" data-correct="0">This is about Pencil</div><div class="option" data-correct="1">This is about Lesson</div></div>
     <div class="feedback" id="feedback-6"></div>
   </div></div>
   

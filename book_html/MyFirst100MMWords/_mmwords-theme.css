@@ -626,6 +626,7 @@ input[type="text"]:focus{border-color:var(--gold);}
 }
 .option.correct{background:rgba(186,230,253,.25);border-color:var(--gold);}
 .option.wrong{background:rgba(56,189,248,.08);border-color:var(--lacquer);}
+.option .option-mm{font-family:'Padauk','Myanmar Text',sans-serif;font-weight:600;color:var(--lacquer);}
 .feedback{margin-top:12px;font-size:17px;font-weight:700;min-height:0;display:none;padding:10px;border-radius:var(--radius-sm);}
 .feedback.show{display:block;}
 .feedback.correct{color:#166534;background:rgba(186,230,253,.15);}
