@@ -79,7 +79,7 @@ Chapter activity pages (008–031) have **no** embedded mini-games — picture �
 
 ### Overview (`005-Ocean-Overview.html`)
 
-**Hand-maintained** — four views (no mini-game): View1 painted depth chart image, View2 surface & depth canvas, View3 sonar cone scan, View4 sub porthole with swimming life.
+**Hand-maintained** — three canvas views (surface, sonar, porthole) plus **3 lesson sections** below (picture · story · explanation · press words to hear). Porthole changes zone **on tap only** with zone-specific creatures.
 
 ---
 
