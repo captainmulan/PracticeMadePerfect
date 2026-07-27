@@ -10,8 +10,19 @@
 <script src="_mmwords-games.js"></script>
 <script src="_mmwords-action-games.js"></script>
 <style>
-  .book-game-page .action-canvas{height:min(52vh,360px);min-height:260px;}
+  .book-game-page .scroll-wrap{max-width:980px;}
+  .book-game-page .game-section{max-width:none;padding-left:8px;padding-right:8px;}
+  .book-game-page .action-game-stage{width:100%;}
+  .book-game-page .action-canvas{
+    width:100%;
+    height:min(56vw,520px);
+    min-height:360px;
+    max-height:560px;
+  }
   .book-game-lead{font-size:15px;color:var(--lacquer-deep);font-weight:700;line-height:1.5;margin:0 0 6px;}
+  @media (min-width:900px){
+    .book-game-page .action-canvas{height:min(52vh,520px);min-height:400px;}
+  }
 </style>
 </head>
 <body class="book-game-page">
@@ -25,7 +36,7 @@
   </header>
 
   <div class="game-section action-game-wrap">
-    <p class="game-meta">Progress: <strong id="action-score">Gifts delivered: 0 / 8  ·  Collect 🏮 lanterns</strong></p>
+    <p class="game-meta">Progress: <strong id="action-score">Level 1 / 10  ⏱ 75s  ❤️❤️❤️  ·  Collect 🏮 lanterns</strong></p>
     <div class="action-game-stage">
       <canvas id="action-canvas" class="game-canvas action-canvas"></canvas>
       <div class="action-overlay" id="action-start-overlay">
@@ -37,7 +48,7 @@
     <div class="challenge-box">Final reward: <strong>Everyone waves and the whole village lights up!</strong></div>
   </div>
 
-  <div class="nav-hint">Deliver 8 gifts to light up the village. Use the walk buttons or arrow keys.</div>
+  <div class="nav-hint">10 levels — deliver a gift each level before time runs out. Use walk buttons or arrow keys.</div>
 </div>
 </div>
 <script>
@@ -49,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
     gameType: 'festival-parade',
     badge: 'Festival Parade Star',
     chapterId: 'festival-parade',
-    target: 8
+    target: 10
   });
 });
 </script>

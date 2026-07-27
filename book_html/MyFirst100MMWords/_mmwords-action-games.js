@@ -2058,15 +2058,18 @@
     if (!canvas) return;
     var cv = setupCanvas(canvas);
     var scoreEl = document.getElementById(opts.scoreId || "action-score");
-    var target = opts.target || 8;
+    var maxLevel = opts.target || 10;
+    var maxLives = 3;
+    var levelTimes = [75, 72, 68, 65, 62, 58, 55, 52, 48, 45];
     var hero = playerEmoji();
     var overlayEl = document.getElementById("action-start-overlay");
     var state = {
       running: false,
       keys: { left: false, right: false, up: false, down: false },
+      level: 1,
+      lives: maxLives,
       px: 0,
       py: 0,
-      score: 0,
       carrying: false,
       targetHouse: -1,
       houses: [],
@@ -2074,8 +2077,14 @@
       hazards: [],
       villagers: [],
       fireworks: [],
+      walk: null,
       tick: 0,
       stun: 0,
+      invincible: 0,
+      timeLeft: 0,
+      timeTotal: 0,
+      lastTs: 0,
+      levelBanner: 0,
       finale: false,
       finaleT: 0,
       raf: null
@@ -2083,26 +2092,91 @@
     wireWalkPad(document.getElementById(opts.controlsId || "action-controls"), state);
     bindKeys(state);
 
-    function layoutVillage(W, H) {
-      state.houses = [
-        { x: W * 0.18, y: H * 0.28, lit: false, glow: 0 },
-        { x: W * 0.42, y: H * 0.2, lit: false, glow: 0 },
-        { x: W * 0.68, y: H * 0.26, lit: false, glow: 0 },
-        { x: W * 0.82, y: H * 0.44, lit: false, glow: 0 },
-        { x: W * 0.62, y: H * 0.58, lit: false, glow: 0 },
-        { x: W * 0.28, y: H * 0.52, lit: false, glow: 0 }
+    function walkBounds(W, H) {
+      return {
+        minX: W * 0.08,
+        maxX: W * 0.92,
+        minY: H * 0.44,
+        maxY: H * 0.86,
+        cx: W * 0.5,
+        cy: H * 0.64,
+        rx: W * 0.4,
+        ry: H * 0.17
+      };
+    }
+
+    function inWalkZone(x, y, w) {
+      var dx = (x - w.cx) / w.rx;
+      var dy = (y - w.cy) / w.ry;
+      return dx * dx + dy * dy <= 1.08;
+    }
+
+    function clampToWalk(x, y, w) {
+      x = clamp(x, w.minX, w.maxX);
+      y = clamp(y, w.minY, w.maxY);
+      if (!inWalkZone(x, y, w)) {
+        var ang = Math.atan2(y - w.cy, x - w.cx);
+        x = w.cx + Math.cos(ang) * w.rx * 0.96;
+        y = w.cy + Math.sin(ang) * w.ry * 0.96;
+      }
+      return { x: x, y: y };
+    }
+
+    function houseSlots() {
+      return [
+        { x: 0.2, y: 0.58 }, { x: 0.38, y: 0.52 }, { x: 0.55, y: 0.56 },
+        { x: 0.72, y: 0.54 }, { x: 0.32, y: 0.68 }, { x: 0.65, y: 0.7 }
       ];
+    }
+
+    function layoutVillage(W, H, level) {
+      var w = walkBounds(W, H);
+      state.walk = w;
+      var pos = clampToWalk(w.cx, w.maxY - 16, w);
+      state.px = pos.x;
+      state.py = pos.y;
+      state.houses = [];
+      var slots = houseSlots();
+      var count = Math.min(4 + Math.floor(level / 3), slots.length);
+      for (var i = 0; i < count; i++) {
+        var s = slots[i];
+        var hx = W * s.x;
+        var hy = H * s.y;
+        var clamped = clampToWalk(hx, hy, w);
+        state.houses.push({
+          x: clamped.x,
+          y: clamped.y,
+          lit: false,
+          glow: 0,
+          pulse: Math.random() * Math.PI * 2
+        });
+      }
       state.lanterns = [];
-      state.hazards = [
-        { x: W * 0.35, y: H * 0.42, type: "puddle", r: 22 },
-        { x: W * 0.55, y: H * 0.48, type: "puddle", r: 20 },
-        { x: W * 0.48, y: H * 0.62, type: "dog", r: 18, vx: 0.8, vy: -0.4 },
-        { x: W * 0.72, y: H * 0.38, type: "dog", r: 18, vx: -0.6, vy: 0.5 }
-      ];
+      state.hazards = [];
+      var puddleCount = 1 + Math.floor(level / 3);
+      var dogCount = level > 2 ? 1 + Math.floor(level / 4) : 0;
+      var hi = 0;
+      while (state.hazards.length < puddleCount && hi++ < 20) {
+        var px = w.minX + Math.random() * (w.maxX - w.minX);
+        var py = w.minY + Math.random() * (w.maxY - w.minY);
+        if (inWalkZone(px, py, w) && !state.houses.some(function (h) { return dist(px, py, h.x, h.y) < 55; })) {
+          state.hazards.push({ x: px, y: py, type: "puddle", r: 22 });
+        }
+      }
+      hi = 0;
+      while (state.hazards.filter(function (z) { return z.type === "dog"; }).length < dogCount && hi++ < 20) {
+        var dx = w.minX + Math.random() * (w.maxX - w.minX);
+        var dy = w.minY + Math.random() * (w.maxY - w.minY);
+        if (inWalkZone(dx, dy, w) && !state.houses.some(function (h) { return dist(dx, dy, h.x, h.y) < 55; })) {
+          state.hazards.push({
+            x: dx, y: dy, type: "dog", r: 20,
+            vx: (Math.random() < 0.5 ? -1 : 1) * (0.7 + level * 0.05),
+            vy: (Math.random() < 0.5 ? -1 : 1) * (0.5 + level * 0.04)
+          });
+        }
+      }
       state.villagers = [];
       state.fireworks = [];
-      state.px = W * 0.5;
-      state.py = H * 0.72;
     }
 
     function pickTargetHouse() {
@@ -2111,23 +2185,28 @@
         if (!h.lit) open.push(i);
       });
       if (!open.length) {
-        state.houses.forEach(function (h, i) {
-          if (i !== state.targetHouse) open.push(i);
-        });
+        state.houses.forEach(function (h, i) { open.push(i); });
       }
       state.targetHouse = open.length ? rand(open) : 0;
+      state.houses.forEach(function (h, i) {
+        h.glow = i === state.targetHouse ? 1 : 0;
+      });
     }
 
     function spawnLantern() {
-      var W = cv.W;
-      var H = cv.H;
+      var w = state.walk;
+      if (!w) return;
       var tries = 0;
-      while (tries++ < 12) {
-        var lx = 40 + Math.random() * (W - 80);
-        var ly = H * 0.32 + Math.random() * (H * 0.38);
+      while (tries++ < 24) {
+        var lx = w.minX + Math.random() * (w.maxX - w.minX);
+        var ly = w.minY + Math.random() * (w.maxY - w.minY);
+        if (!inWalkZone(lx, ly, w)) continue;
         var ok = true;
         state.houses.forEach(function (h) {
-          if (dist(lx, ly, h.x, h.y) < 50) ok = false;
+          if (dist(lx, ly, h.x, h.y) < 52) ok = false;
+        });
+        state.hazards.forEach(function (z) {
+          if (dist(lx, ly, z.x, z.y) < 36) ok = false;
         });
         if (ok) {
           state.lanterns.push({ x: lx, y: ly, bob: Math.random() * 6 });
@@ -2136,60 +2215,111 @@
       }
     }
 
-    function syncHud() {
-      if (!scoreEl) return;
-      var msg = "Gifts delivered: " + state.score + " / " + target;
-      if (state.carrying) msg += "  ·  🎁 Find the glowing house!";
-      else msg += "  ·  Collect 🏮 lanterns";
-      scoreEl.textContent = msg;
+    function hudGoal() {
+      if (state.finale) return "Celebrate!";
+      if (state.carrying) return "Deliver to the glowing house!";
+      return "Collect a lantern";
     }
 
-    function reset(full) {
+    function syncHud() {
+      updateLanternHud(scoreEl, state.level, maxLevel, state.lives, hudGoal(), state.timeLeft / 60);
+    }
+
+    function startLevel() {
       cv.resize();
-      layoutVillage(cv.W, cv.H);
-      state.score = 0;
+      layoutVillage(cv.W, cv.H, state.level);
+      var sec = levelTimes[Math.min(state.level - 1, levelTimes.length - 1)] || 45;
+      state.timeTotal = sec * 60;
+      state.timeLeft = sec * 60;
       state.carrying = false;
       state.targetHouse = -1;
-      state.tick = 0;
       state.stun = 0;
-      state.finale = false;
-      state.finaleT = 0;
+      state.levelBanner = 45;
       spawnLantern();
       spawnLantern();
       syncHud();
+    }
+
+    function reset(full) {
+      state.level = 1;
+      state.lives = maxLives;
+      state.finale = false;
+      state.finaleT = 0;
+      state.tick = 0;
+      state.lastTs = 0;
+      startLevel();
       if (full && overlayEl) {
         var msg = overlayEl.querySelector("p");
         if (msg) {
-          msg.textContent = "The village you built is complete! Walk around, collect lanterns, avoid puddles and playful dogs, and deliver gifts to every house.";
+          msg.textContent = "10 levels! Collect lanterns on the village path, dodge puddles and dogs, and deliver gifts before time runs out. You have 3 hearts.";
         }
       }
     }
 
     function bumpHazard() {
-      if (state.stun > 0 || state.finale) return;
-      state.stun = 45;
+      if (state.stun > 0 || state.finale || state.invincible > 0) return;
+      state.stun = 35;
+      state.invincible = 50;
       state.carrying = false;
       state.targetHouse = -1;
+      state.houses.forEach(function (h) { h.glow = 0; });
+      state.lives--;
       syncHud();
+      if (state.lives <= 0) gameOver();
+    }
+
+    function gameOver() {
+      state.running = false;
+      if (state.raf) cancelAnimationFrame(state.raf);
+      showOverlay("action-start-overlay", true);
+      var btn = document.getElementById("action-start-btn");
+      if (btn) btn.textContent = "▶ Try again";
+      if (overlayEl) {
+        var msg = overlayEl.querySelector("p");
+        if (msg) msg.textContent = "Out of hearts! Deliver gifts across 10 festival levels. Watch out for puddles and dogs on the path.";
+      }
+    }
+
+    function advanceLevel() {
+      if (state.level >= maxLevel) {
+        startFinale();
+        return;
+      }
+      state.level++;
+      startLevel();
+    }
+
+    function timeExpired() {
+      state.lives--;
+      syncHud();
+      if (state.lives <= 0) gameOver();
+      else startLevel();
     }
 
     function addVillager() {
-      var W = cv.W;
-      var H = cv.H;
+      var w = state.walk;
+      if (!w) return;
       var faces = ["🧒", "👧", "👩", "👨", "👵", "👴", "🧍", "🧍‍♀️"];
-      state.villagers.push({
-        x: 30 + Math.random() * (W - 60),
-        y: H * 0.34 + Math.random() * (H * 0.36),
-        emoji: rand(faces),
-        wave: Math.random() * Math.PI * 2
-      });
+      var tries = 0;
+      while (tries++ < 12) {
+        var vx = w.minX + Math.random() * (w.maxX - w.minX);
+        var vy = w.minY + Math.random() * (w.maxY - w.minY);
+        if (inWalkZone(vx, vy, w)) {
+          state.villagers.push({
+            x: vx, y: vy,
+            emoji: rand(faces),
+            wave: Math.random() * Math.PI * 2
+          });
+          return;
+        }
+      }
     }
 
     function spawnFirework() {
       var W = cv.W;
       state.fireworks.push({
         x: 20 + Math.random() * (W - 40),
-        y: 20 + Math.random() * (cv.H * 0.35),
+        y: 20 + Math.random() * (cv.H * 0.3),
         c: rand(["#FDE68A", "#F472B6", "#38BDF8", "#A78BFA", "#4ADE80"]),
         life: 40 + Math.random() * 30,
         r: 2 + Math.random() * 3
@@ -2200,18 +2330,39 @@
       state.finale = true;
       state.finaleT = 0;
       state.carrying = false;
+      state.targetHouse = -1;
       state.houses.forEach(function (h) {
         h.lit = true;
         h.glow = 1;
       });
       while (state.villagers.length < 10) addVillager();
+      syncHud();
     }
 
     function start() {
       reset(false);
       showOverlay("action-start-overlay", false);
+      var btn = document.getElementById("action-start-btn");
+      if (btn) btn.textContent = "▶ Start parade";
       state.running = true;
+      state.lastTs = 0;
       loop();
+    }
+
+    function drawWalkPath(ctx, W, H, w) {
+      ctx.fillStyle = "rgba(34,197,94,.65)";
+      ctx.fillRect(0, H * 0.38, W, H * 0.62);
+      ctx.fillStyle = "rgba(180,83,9,.45)";
+      ctx.beginPath();
+      ctx.ellipse(w.cx, w.cy, w.rx, w.ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(251,191,36,.55)";
+      ctx.lineWidth = 3;
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();
+      ctx.ellipse(w.cx, w.cy, w.rx, w.ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
     }
 
     function loop() {
@@ -2220,31 +2371,48 @@
       var ctx = cv.ctx;
       var W = cv.W;
       var H = cv.H;
-      state.tick++;
-      if (state.stun > 0) state.stun--;
+      var w = state.walk || walkBounds(W, H);
+      var now = performance.now();
+      if (!state.lastTs) state.lastTs = now;
+      var dt = clamp((now - state.lastTs) / 16.667, 0.45, 1.75);
+      state.lastTs = now;
+      state.tick += dt;
+      if (state.stun > 0) state.stun -= dt;
+      if (state.invincible > 0) state.invincible -= dt;
+      if (state.levelBanner > 0) state.levelBanner -= dt;
 
       if (!state.finale) {
-        var speed = state.stun > 0 ? 1.6 : 3.2;
+        state.timeLeft -= dt;
+        if (state.timeLeft <= 0) {
+          timeExpired();
+          if (!state.running) return;
+        }
+
+        var speed = (state.stun > 0 ? 2.2 : 4.2) * dt;
         if (state.keys.left) state.px -= speed;
         if (state.keys.right) state.px += speed;
         if (state.keys.up) state.py -= speed;
         if (state.keys.down) state.py += speed;
-        state.px = clamp(state.px, 24, W - 24);
-        state.py = clamp(state.py, H * 0.24, H - 28);
+        var clamped = clampToWalk(state.px, state.py, w);
+        state.px = clamped.x;
+        state.py = clamped.y;
 
         state.hazards.forEach(function (z) {
           if (z.type === "dog") {
-            z.x += z.vx;
-            z.y += z.vy;
-            if (z.x < 30 || z.x > W - 30) z.vx *= -1;
-            if (z.y < H * 0.3 || z.y > H * 0.68) z.vy *= -1;
+            z.x += z.vx * dt;
+            z.y += z.vy * dt;
+            if (z.x < w.minX || z.x > w.maxX) z.vx *= -1;
+            if (z.y < w.minY || z.y > w.maxY) z.vy *= -1;
+            var dogClamp = clampToWalk(z.x, z.y, w);
+            z.x = dogClamp.x;
+            z.y = dogClamp.y;
           }
-          if (dist(state.px, state.py, z.x, z.y) < z.r + 14) bumpHazard();
+          if (dist(state.px, state.py, z.x, z.y) < z.r + 16) bumpHazard();
         });
 
         state.lanterns = state.lanterns.filter(function (L) {
-          L.bob += 0.08;
-          if (!state.carrying && dist(state.px, state.py, L.x, L.y) < 26) {
+          L.bob += 0.06 * dt;
+          if (!state.carrying && dist(state.px, state.py, L.x, L.y) < 30) {
             state.carrying = true;
             pickTargetHouse();
             syncHud();
@@ -2256,28 +2424,25 @@
 
         if (state.carrying && state.targetHouse >= 0) {
           var th = state.houses[state.targetHouse];
-          if (th && dist(state.px, state.py, th.x, th.y) < 44) {
+          if (th && dist(state.px, state.py, th.x, th.y) < 50) {
             state.carrying = false;
-            state.score++;
             th.lit = true;
             th.glow = 1;
+            state.targetHouse = -1;
             addVillager();
-            if (state.villagers.length < 12) addVillager();
-            syncHud();
+            if (state.villagers.length < 8) addVillager();
             spawnLantern();
-            if (state.score >= target) {
-              startFinale();
-            } else {
-              pickTargetHouse();
-            }
+            syncHud();
+            advanceLevel();
+            if (!state.running) return;
           }
         }
 
-        if (state.tick % 70 === 0 && state.lanterns.length < 3) spawnLantern();
-        if (state.tick % Math.max(18, 40 - state.score * 2) === 0) spawnFirework();
+        if (Math.floor(state.tick) % 55 === 0 && state.lanterns.length < 3) spawnLantern();
+        if (Math.floor(state.tick) % Math.max(16, 38 - state.level * 2) === 0) spawnFirework();
       } else {
-        state.finaleT++;
-        if (state.finaleT % 8 === 0) spawnFirework();
+        state.finaleT += dt;
+        if (Math.floor(state.finaleT) % 8 === 0) spawnFirework();
         if (state.finaleT > 180) {
           endGame(state, opts.badge || "Festival Fan");
           return;
@@ -2286,14 +2451,14 @@
 
       var sky = ctx.createLinearGradient(0, 0, 0, H);
       sky.addColorStop(0, "#1e1b4b");
-      sky.addColorStop(0.45, "#312e81");
-      sky.addColorStop(1, "#4ade80");
+      sky.addColorStop(0.4, "#312e81");
+      sky.addColorStop(1, "#166534");
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, W, H);
 
       drawStars(ctx, W, H, state.tick);
       state.fireworks.forEach(function (f) {
-        f.life--;
+        f.life -= dt;
         ctx.globalAlpha = clamp(f.life / 40, 0, 1);
         ctx.fillStyle = f.c;
         ctx.beginPath();
@@ -2303,65 +2468,69 @@
       });
       state.fireworks = state.fireworks.filter(function (f) { return f.life > 0; });
 
-      ctx.fillStyle = "rgba(34,197,94,.55)";
-      ctx.fillRect(0, H * 0.22, W, H * 0.78);
-      ctx.fillStyle = "rgba(180,83,9,.35)";
-      ctx.beginPath();
-      ctx.ellipse(W * 0.5, H * 0.55, W * 0.42, H * 0.22, 0, 0, Math.PI * 2);
-      ctx.fill();
+      drawWalkPath(ctx, W, H, w);
 
       state.houses.forEach(function (h, i) {
-        var glow = h.glow || (state.targetHouse === i && state.carrying ? 0.6 + Math.sin(state.tick * 0.12) * 0.3 : 0);
-        if (glow > 0) {
-          ctx.fillStyle = "rgba(251,191,36," + (0.25 + glow * 0.35) + ")";
+        var isTarget = state.carrying && state.targetHouse === i;
+        var pulse = 0.65 + Math.sin(state.tick * 0.14 + h.pulse) * 0.35;
+        var glowAmt = h.lit ? 0.8 : (isTarget ? pulse : 0);
+        if (glowAmt > 0) {
+          ctx.fillStyle = "rgba(251,191,36," + (0.3 + glowAmt * 0.45) + ")";
           ctx.beginPath();
-          ctx.arc(h.x, h.y, 38, 0, Math.PI * 2);
+          ctx.arc(h.x, h.y, isTarget ? 52 : 42, 0, Math.PI * 2);
           ctx.fill();
+          ctx.strokeStyle = "rgba(251,191,36,.9)";
+          ctx.lineWidth = isTarget ? 4 : 2;
+          ctx.beginPath();
+          ctx.arc(h.x, h.y, isTarget ? 48 : 38, 0, Math.PI * 2);
+          ctx.stroke();
         }
-        ctx.font = "28px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(h.lit ? "🏠" : "🛖", h.x, h.y);
-        if (h.lit || glow > 0.4) {
-          ctx.font = "14px sans-serif";
-          ctx.fillText("🏮", h.x + 14, h.y - 18);
+        drawGameEmoji(ctx, h.lit ? "🏠" : "🛖", h.x, h.y, 36);
+        if (h.lit || isTarget) {
+          drawGameEmoji(ctx, "🏮", h.x + 16, h.y - 22, 22);
         }
-        if (state.carrying && state.targetHouse === i) {
-          ctx.font = "20px sans-serif";
-          ctx.fillText("🎁", h.x, h.y - 32);
+        if (isTarget) {
+          ctx.font = "bold 12px Georgia,serif";
+          ctx.fillStyle = "#FDE68A";
+          ctx.textAlign = "center";
+          ctx.strokeStyle = "#78350F";
+          ctx.lineWidth = 3;
+          ctx.strokeText("DELIVER HERE", h.x, h.y - 48);
+          ctx.fillText("DELIVER HERE", h.x, h.y - 48);
+          drawGameEmoji(ctx, "🎁", h.x, h.y - 62, 24);
         }
       });
 
       state.lanterns.forEach(function (L) {
-        var bob = Math.sin(L.bob) * 4;
-        ctx.font = "22px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("🏮", L.x, L.y + bob);
+        var bob = Math.sin(L.bob) * 5;
+        ctx.fillStyle = "rgba(251,191,36,.35)";
+        ctx.beginPath();
+        ctx.arc(L.x, L.y + bob, 22, 0, Math.PI * 2);
+        ctx.fill();
+        drawGameEmoji(ctx, "🏮", L.x, L.y + bob, 32);
       });
 
       state.hazards.forEach(function (z) {
-        ctx.font = z.type === "dog" ? "24px sans-serif" : "20px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(z.type === "dog" ? "🐕" : "💧", z.x, z.y);
+        if (z.type === "dog") drawGameEmoji(ctx, "🐕", z.x, z.y, 28);
+        else drawGameEmoji(ctx, "💧", z.x, z.y, 26);
       });
 
       state.villagers.forEach(function (v) {
         var wobble = state.finale ? Math.sin(state.tick * 0.2 + v.wave) * 6 : Math.sin(state.tick * 0.08 + v.wave) * 2;
-        ctx.font = "22px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(v.emoji, v.x, v.y + wobble);
+        drawGameEmoji(ctx, v.emoji, v.x, v.y + wobble, 28);
         if (state.finale && state.finaleT > 20) {
-          ctx.font = "16px sans-serif";
-          ctx.fillText("👋", v.x + 12, v.y - 16 + wobble);
+          drawGameEmoji(ctx, "👋", v.x + 14, v.y - 18 + wobble, 20);
         }
       });
 
       if (state.carrying) {
-        ctx.font = "18px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("🎁", state.px, state.py - 28);
+        drawGameEmoji(ctx, "🎁", state.px, state.py - 32, 26);
       }
-      drawPlayer(ctx, state.px, state.py, hero, false);
-      drawHudBar(ctx, W, state.score, target);
+      var blink = state.invincible > 0 && Math.floor(state.tick / 4) % 2 === 0;
+      if (!blink) drawBrightPlayer(ctx, state.px, state.py, hero, false, state.invincible, state.tick);
+
+      var progress = state.timeLeft / state.timeTotal;
+      drawLanternHud(ctx, W, state.level, maxLevel, state.lives, hudGoal(), state.timeLeft / 60, progress);
 
       if (state.finale) {
         ctx.fillStyle = "rgba(49,46,129,.72)";
@@ -2375,11 +2544,16 @@
         ctx.fillText("🎆 The whole village lights up — everyone waves!", W / 2, H * 0.08 + 22);
         ctx.font = "12px Georgia,serif";
         ctx.fillText("Thank you for finishing My First 100 Myanmar Words!", W / 2, H * 0.08 + 42);
-      } else {
-        ctx.font = "600 11px Georgia,serif";
-        ctx.fillStyle = "rgba(255,248,231,.92)";
+      } else if (state.levelBanner > 0) {
+        ctx.fillStyle = "rgba(49,46,129,.78)";
+        ctx.fillRect(W * 0.06, H * 0.22, W * 0.88, 40);
+        ctx.strokeStyle = "#FBBF24";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(W * 0.06 + 1, H * 0.22 + 1, W * 0.88 - 2, 38);
+        ctx.font = "bold 14px Georgia,serif";
+        ctx.fillStyle = "#FFF8E7";
         ctx.textAlign = "center";
-        ctx.fillText("🎆 Myanmar Festival Parade — walk, collect, deliver!", W / 2, H - 10);
+        ctx.fillText("Level " + state.level + " — deliver a gift before time runs out!", W / 2, H * 0.22 + 25);
       }
     }
 
