@@ -475,6 +475,25 @@ body{
 .lr-sprite-hearts{display:block;font-size:14px;margin-bottom:2px;}
 .lr-sprite-extra{display:block;font-size:9px;font-weight:700;color:#fbcfe8;margin-top:2px;}
 .lr-sprite-hit{box-shadow:0 0 0 3px #fbbf24;border-radius:50%;}
+.fp-sprites{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;
+}
+.fp-sprite{
+  position:absolute;transform:translate(-50%,-50%);
+  opacity:1!important;text-align:center;line-height:1.1;
+  font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.65));
+}
+.fp-sprite-emoji{display:block;font-size:42px;line-height:1;}
+.fp-sprite-player .fp-sprite-emoji{font-size:48px;}
+.fp-sprite-lantern .fp-sprite-emoji{font-size:40px;}
+.fp-sprite-hazard .fp-sprite-emoji{font-size:40px;}
+.fp-sprite-house .fp-sprite-emoji,.fp-sprite-target .fp-sprite-emoji{font-size:38px;}
+.fp-sprite-label{display:block;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 4px #000;margin-bottom:2px;}
+.fp-sprite-extra{display:block;font-size:9px;font-weight:700;color:#fbcfe8;margin-top:2px;}
+.fp-sprite-glow{filter:drop-shadow(0 0 8px rgba(251,191,36,.95)) drop-shadow(0 2px 5px rgba(0,0,0,.65));}
+.fp-sprite-target .fp-sprite-label{color:#fde68a;font-size:11px;}
+.fp-sprite-hit{box-shadow:0 0 0 3px #fbbf24;border-radius:50%;}
 .action-overlay{
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:10px;

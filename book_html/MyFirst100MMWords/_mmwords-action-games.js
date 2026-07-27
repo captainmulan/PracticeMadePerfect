@@ -759,9 +759,6 @@
       };
     }
 
-    function bossStompSlotX(bf) {
-      return state.px + (bf.bossFromLeft ? -92 : 92);
-    }
 
     function bossScreenX(bf) {
       return bf.sx;
@@ -771,11 +768,13 @@
       return Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
     }
 
-    function startBossCharge(bf, W) {
+    function startBossCross(bf, W) {
       bf.bossFromLeft = Math.random() < 0.5;
       bf.sx = bf.bossFromLeft ? -90 : W + 90;
-      bf.phase = "bossEnter";
-      bf.stompReady = false;
+      bf.phase = "bossCross";
+      bf.stompReady = true;
+      bf.stompedThisPass = false;
+      bf.crossSpeed = 3.4 + state.level * 0.07;
     }
 
     function enterBossPhase(W) {
@@ -828,7 +827,7 @@
     function resolveBossStomp(groundY) {
       if (!state.bossFight || state.bossFight.hp <= 0) return;
       var bf = state.bossFight;
-      if (!bf.stompReady || bf.phase !== "fight") return;
+      if (!bf.stompReady || bf.phase !== "bossCross") return;
       var hop = bossHopY(bf);
       var sx = bossScreenX(bf);
       var ey = groundY - 36 - hop;
@@ -848,8 +847,9 @@
           state.levelBanner = 70;
         } else {
           bf.stompReady = false;
+          bf.stompedThisPass = true;
           bf.phase = "retreat";
-          bf.retreatT = 28;
+          bf.retreatT = 22;
         }
         return;
       }
@@ -1065,26 +1065,23 @@
           state.px += (cx - state.px) * Math.min(1, dt * 0.14);
           if (Math.abs(state.px - cx) < 4) {
             state.px = cx;
-            startBossCharge(bf, W);
+            startBossCross(bf, W);
           }
-        } else if (bf.phase === "bossEnter") {
-          var slot = bossStompSlotX(bf);
-          bf.sx += (slot - bf.sx) * Math.min(1, dt * 0.11);
-          if (Math.abs(bf.sx - slot) < 6) {
-            bf.sx = slot;
-            bf.phase = "fight";
-            bf.stompReady = true;
-          }
-        } else if (bf.phase === "fight") {
-          var fightSlot = bossStompSlotX(bf) + Math.sin(bf.patrolT * 0.08) * 10;
-          bf.sx += (fightSlot - bf.sx) * Math.min(1, dt * 0.1);
+        } else if (bf.phase === "bossCross") {
+          var crossDir = bf.bossFromLeft ? 1 : -1;
+          bf.sx += crossDir * bf.crossSpeed * dt;
           if (bf.flash > 0) bf.flash -= dt;
           resolveBossStomp(groundY);
+          if (!bf.stompedThisPass) {
+            if (bf.bossFromLeft && bf.sx > W + 95) startBossCross(bf, W);
+            else if (!bf.bossFromLeft && bf.sx < -95) startBossCross(bf, W);
+          }
         } else if (bf.phase === "retreat") {
-          var offX = bf.bossFromLeft ? -120 : W + 120;
-          bf.sx += (offX - bf.sx) * Math.min(1, dt * 0.18);
+          var retDir = bf.bossFromLeft ? 1 : -1;
+          bf.sx += retDir * (bf.crossSpeed || 3.4) * dt * 1.15;
           bf.retreatT -= dt;
-          if (bf.retreatT <= 0) startBossCharge(bf, W);
+          var exited = bf.bossFromLeft ? bf.sx > W + 95 : bf.sx < -95;
+          if (bf.retreatT <= 0 || exited) startBossCross(bf, W);
         }
       } else {
         state.scroll += state.scrollSpeed * dt;
@@ -1131,11 +1128,9 @@
         var bossHint = "⚔️ BOSS FIGHT — Stomp 5 times!";
         if (state.bossFight) {
           if (state.bossFight.phase === "playerCenter") bossHint = "🏃 Step to the center!";
-          else if (state.bossFight.phase === "bossEnter") {
-            bossHint = state.bossFight.bossFromLeft ? "🐺 Boss charging from the left!" : "🐺 Boss charging from the right!";
-          } else if (state.bossFight.phase === "fight" && state.bossFight.stompReady) {
-            bossHint = "⬆️ Jump ON the boss now!";
-          } else if (state.bossFight.phase === "retreat") bossHint = "💨 Nice stomp! Boss is retreating…";
+          else if (state.bossFight.phase === "bossCross") {
+            bossHint = "⬆️ Boss crossing — jump ON it as it passes!";
+          } else if (state.bossFight.phase === "retreat") bossHint = "💨 Nice stomp! Boss is running off…";
           }
         ctx.fillText(bossHint, W / 2, 36);
       }
@@ -2092,6 +2087,106 @@
     wireWalkPad(document.getElementById(opts.controlsId || "action-controls"), state);
     bindKeys(state);
 
+    var spriteRoot = document.getElementById("fp-sprites");
+    if (!spriteRoot && canvas.parentElement) {
+      spriteRoot = document.createElement("div");
+      spriteRoot.id = "fp-sprites";
+      spriteRoot.className = "fp-sprites";
+      canvas.parentElement.appendChild(spriteRoot);
+    }
+    var spriteMap = {};
+
+    function clearFpSprites() {
+      if (spriteRoot) spriteRoot.innerHTML = "";
+      spriteMap = {};
+    }
+
+    function showFpSprite(id, cls, x, y, W, H, emoji, label, extra) {
+      if (!spriteRoot) return;
+      var el = spriteMap[id];
+      if (!el) {
+        el = document.createElement("div");
+        el.className = "fp-sprite " + (cls || "");
+        el.innerHTML =
+          '<span class="fp-sprite-label"></span>' +
+          '<span class="fp-sprite-emoji"></span>' +
+          '<span class="fp-sprite-extra"></span>';
+        spriteRoot.appendChild(el);
+        spriteMap[id] = el;
+      }
+      el.style.display = "block";
+      el.style.left = (100 * x / W) + "%";
+      el.style.top = (100 * y / H) + "%";
+      el.querySelector(".fp-sprite-emoji").textContent = emoji || "";
+      var lab = el.querySelector(".fp-sprite-label");
+      var ex = el.querySelector(".fp-sprite-extra");
+      lab.textContent = label || "";
+      lab.style.display = label ? "block" : "none";
+      ex.textContent = extra && extra.sub ? extra.sub : "";
+      ex.style.display = extra && extra.sub ? "block" : "none";
+      if (extra && extra.glow) el.classList.add("fp-sprite-glow");
+      else el.classList.remove("fp-sprite-glow");
+      if (extra && extra.invincible) el.classList.add("fp-sprite-hit");
+      else el.classList.remove("fp-sprite-hit");
+    }
+
+    function hazardEmoji(z) {
+      if (z.type === "dog") return "🐕";
+      if (z.type === "wolf") return "🐺";
+      if (z.type === "thief") return "🥷";
+      return "💧";
+    }
+
+    function hazardLabel(z) {
+      if (z.type === "dog") return "Dog!";
+      if (z.type === "wolf") return "Wolf!";
+      if (z.type === "thief") return "Thief!";
+      return "";
+    }
+
+    function syncFpSprites(W, H, hero) {
+      var seen = {};
+      var blink = state.invincible > 0 && Math.floor(state.tick / 4) % 2 === 0;
+      if (!blink) {
+        showFpSprite("player", "fp-sprite-player", state.px, state.py, W, H, hero, "", {
+          invincible: state.invincible > 0
+        });
+        seen.player = true;
+      }
+      if (state.carrying) {
+        showFpSprite("gift", "fp-sprite-gift", state.px, state.py - 28, W, H, "🎁", "", null);
+        seen.gift = true;
+      }
+      state.houses.forEach(function (h, i) {
+        var isTarget = state.carrying && state.targetHouse === i;
+        showFpSprite("house" + i, "fp-sprite-house" + (isTarget ? " fp-sprite-target" : ""), h.x, h.y, W, H,
+          h.lit ? "🏠" : "🛖", isTarget ? "DELIVER" : "", isTarget ? { glow: true } : null);
+        seen["house" + i] = true;
+        if (h.lit || isTarget) {
+          showFpSprite("hlantern" + i, "fp-sprite-lantern", h.x + 14, h.y - 20, W, H, "🏮", "", null);
+          seen["hlantern" + i] = true;
+        }
+      });
+      state.lanterns.forEach(function (L, i) {
+        var bob = Math.sin(L.bob) * 5;
+        showFpSprite("lantern" + i, "fp-sprite-lantern", L.x, L.y + bob, W, H, "🏮", "Collect", { glow: true });
+        seen["lantern" + i] = true;
+      });
+      state.hazards.forEach(function (z, i) {
+        showFpSprite("hz" + i, "fp-sprite-hazard", z.x, z.y, W, H,
+          hazardEmoji(z), hazardLabel(z), null);
+        seen["hz" + i] = true;
+      });
+      state.villagers.forEach(function (v, i) {
+        var wobble = state.finale ? Math.sin(state.tick * 0.2 + v.wave) * 6 : Math.sin(state.tick * 0.08 + v.wave) * 2;
+        showFpSprite("vill" + i, "fp-sprite-villager", v.x, v.y + wobble, W, H, v.emoji, "", null);
+        seen["vill" + i] = true;
+      });
+      Object.keys(spriteMap).forEach(function (k) {
+        if (!seen[k]) spriteMap[k].style.display = "none";
+      });
+    }
+
     function walkBounds(W, H) {
       return {
         minX: W * 0.08,
@@ -2153,28 +2248,31 @@
       }
       state.lanterns = [];
       state.hazards = [];
-      var puddleCount = 1 + Math.floor(level / 3);
-      var dogCount = level > 2 ? 1 + Math.floor(level / 4) : 0;
-      var hi = 0;
-      while (state.hazards.length < puddleCount && hi++ < 20) {
-        var px = w.minX + Math.random() * (w.maxX - w.minX);
-        var py = w.minY + Math.random() * (w.maxY - w.minY);
-        if (inWalkZone(px, py, w) && !state.houses.some(function (h) { return dist(px, py, h.x, h.y) < 55; })) {
-          state.hazards.push({ x: px, y: py, type: "puddle", r: 22 });
-        }
-      }
-      hi = 0;
-      while (state.hazards.filter(function (z) { return z.type === "dog"; }).length < dogCount && hi++ < 20) {
-        var dx = w.minX + Math.random() * (w.maxX - w.minX);
-        var dy = w.minY + Math.random() * (w.maxY - w.minY);
-        if (inWalkZone(dx, dy, w) && !state.houses.some(function (h) { return dist(dx, dy, h.x, h.y) < 55; })) {
+      var hazardPlan = [
+        { type: "puddle", count: 1 + Math.floor(level / 4) },
+        { type: "dog", count: 1 + Math.floor(level / 6) },
+        { type: "wolf", count: level >= 3 ? 1 : 0 },
+        { type: "thief", count: level >= 6 ? 1 : 0 }
+      ];
+      hazardPlan.forEach(function (plan) {
+        var added = 0;
+        var tries = 0;
+        while (added < plan.count && tries++ < 24) {
+          var hx = w.minX + Math.random() * (w.maxX - w.minX);
+          var hy = w.minY + Math.random() * (w.maxY - w.minY);
+          if (!inWalkZone(hx, hy, w)) continue;
+          var clash = state.houses.some(function (h) { return dist(hx, hy, h.x, h.y) < 58; });
+          if (!clash) clash = state.hazards.some(function (z) { return dist(hx, hy, z.x, z.y) < 44; });
+          if (clash) continue;
+          var mobile = plan.type !== "puddle";
           state.hazards.push({
-            x: dx, y: dy, type: "dog", r: 20,
-            vx: (Math.random() < 0.5 ? -1 : 1) * (0.7 + level * 0.05),
-            vy: (Math.random() < 0.5 ? -1 : 1) * (0.5 + level * 0.04)
+            x: hx, y: hy, type: plan.type, r: mobile ? 22 : 24,
+            vx: mobile ? (Math.random() < 0.5 ? -1 : 1) * (0.85 + level * 0.06) : 0,
+            vy: mobile ? (Math.random() < 0.5 ? -1 : 1) * (0.65 + level * 0.05) : 0
           });
+          added++;
         }
-      }
+      });
       state.villagers = [];
       state.fireworks = [];
     }
@@ -2251,7 +2349,7 @@
       if (full && overlayEl) {
         var msg = overlayEl.querySelector("p");
         if (msg) {
-          msg.textContent = "10 levels! Collect lanterns on the village path, dodge puddles and dogs, and deliver gifts before time runs out. You have 3 hearts.";
+          msg.textContent = "10 levels! Collect lanterns on the path. Dodge 💧 puddles, 🐕 dogs, 🐺 wolves & 🥷 thieves. Deliver gifts before time runs out — 3 hearts!";
         }
       }
     }
@@ -2271,6 +2369,7 @@
     function gameOver() {
       state.running = false;
       if (state.raf) cancelAnimationFrame(state.raf);
+      clearFpSprites();
       showOverlay("action-start-overlay", true);
       var btn = document.getElementById("action-start-btn");
       if (btn) btn.textContent = "▶ Try again";
@@ -2398,14 +2497,14 @@
         state.py = clamped.y;
 
         state.hazards.forEach(function (z) {
-          if (z.type === "dog") {
+          if (z.type !== "puddle") {
             z.x += z.vx * dt;
             z.y += z.vy * dt;
             if (z.x < w.minX || z.x > w.maxX) z.vx *= -1;
             if (z.y < w.minY || z.y > w.maxY) z.vy *= -1;
-            var dogClamp = clampToWalk(z.x, z.y, w);
-            z.x = dogClamp.x;
-            z.y = dogClamp.y;
+            var mobClamp = clampToWalk(z.x, z.y, w);
+            z.x = mobClamp.x;
+            z.y = mobClamp.y;
           }
           if (dist(state.px, state.py, z.x, z.y) < z.r + 16) bumpHazard();
         });
@@ -2485,50 +2584,9 @@
           ctx.arc(h.x, h.y, isTarget ? 48 : 38, 0, Math.PI * 2);
           ctx.stroke();
         }
-        drawGameEmoji(ctx, h.lit ? "🏠" : "🛖", h.x, h.y, 36);
-        if (h.lit || isTarget) {
-          drawGameEmoji(ctx, "🏮", h.x + 16, h.y - 22, 22);
-        }
-        if (isTarget) {
-          ctx.font = "bold 12px Georgia,serif";
-          ctx.fillStyle = "#FDE68A";
-          ctx.textAlign = "center";
-          ctx.strokeStyle = "#78350F";
-          ctx.lineWidth = 3;
-          ctx.strokeText("DELIVER HERE", h.x, h.y - 48);
-          ctx.fillText("DELIVER HERE", h.x, h.y - 48);
-          drawGameEmoji(ctx, "🎁", h.x, h.y - 62, 24);
-        }
       });
 
-      state.lanterns.forEach(function (L) {
-        var bob = Math.sin(L.bob) * 5;
-        ctx.fillStyle = "rgba(251,191,36,.35)";
-        ctx.beginPath();
-        ctx.arc(L.x, L.y + bob, 22, 0, Math.PI * 2);
-        ctx.fill();
-        drawGameEmoji(ctx, "🏮", L.x, L.y + bob, 32);
-      });
-
-      state.hazards.forEach(function (z) {
-        if (z.type === "dog") drawGameEmoji(ctx, "🐕", z.x, z.y, 28);
-        else drawGameEmoji(ctx, "💧", z.x, z.y, 26);
-      });
-
-      state.villagers.forEach(function (v) {
-        var wobble = state.finale ? Math.sin(state.tick * 0.2 + v.wave) * 6 : Math.sin(state.tick * 0.08 + v.wave) * 2;
-        drawGameEmoji(ctx, v.emoji, v.x, v.y + wobble, 28);
-        if (state.finale && state.finaleT > 20) {
-          drawGameEmoji(ctx, "👋", v.x + 14, v.y - 18 + wobble, 20);
-        }
-      });
-
-      if (state.carrying) {
-        drawGameEmoji(ctx, "🎁", state.px, state.py - 32, 26);
-      }
-      var blink = state.invincible > 0 && Math.floor(state.tick / 4) % 2 === 0;
-      if (!blink) drawBrightPlayer(ctx, state.px, state.py, hero, false, state.invincible, state.tick);
-
+      syncFpSprites(W, H, hero);
       var progress = state.timeLeft / state.timeTotal;
       drawLanternHud(ctx, W, state.level, maxLevel, state.lives, hudGoal(), state.timeLeft / 60, progress);
 
