@@ -342,7 +342,6 @@
       if (currentQuestion <= totalQuestions) {
         var next = document.getElementById("quizCard-" + currentQuestion);
         if (next) next.classList.add("active");
-        setTimeout(playActiveHear, 350);
       } else {
         showScore();
       }
@@ -414,7 +413,6 @@
           fb.className = "feedback";
         }
       });
-      setTimeout(playActiveHear, 350);
     }
 
     loadPlayerInfo();
@@ -431,7 +429,5 @@
         checkAnswer(option, option.dataset.correct === "1");
       }
     });
-
-    setTimeout(playActiveHear, 500);
   };
 })(window);

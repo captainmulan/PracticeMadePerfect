@@ -139,28 +139,28 @@
 
   function playGoogleTts(text, lang, mirror, gen, onok, onfail) {
     if (isStale(gen)) return;
+    var settled = false;
+    function doneOk() {
+      if (settled || isStale(gen)) return;
+      settled = true;
+      currentAudio = null;
+      if (onok) onok();
+    }
+    function doneFail() {
+      if (settled || isStale(gen)) return;
+      settled = true;
+      currentAudio = null;
+      if (mirror < 1) playGoogleTts(text, lang, mirror + 1, gen, onok, onfail);
+      else if (onfail) onfail();
+    }
     var a = new Audio(googleTtsUrl(text, lang, mirror));
     a.playbackRate = 1.0;
     a.volume = 1;
     currentAudio = a;
-    a.onended = function () {
-      if (isStale(gen)) return;
-      currentAudio = null;
-      if (onok) onok();
-    };
-    a.onerror = function () {
-      if (isStale(gen)) return;
-      currentAudio = null;
-      if (mirror < 1) playGoogleTts(text, lang, mirror + 1, gen, onok, onfail);
-      else if (onfail) onfail();
-    };
+    a.onended = doneOk;
+    a.onerror = doneFail;
     resumeSynth();
-    a.play().catch(function () {
-      if (isStale(gen)) return;
-      currentAudio = null;
-      if (mirror < 1) playGoogleTts(text, lang, mirror + 1, gen, onok, onfail);
-      else if (onfail) onfail();
-    });
+    a.play().catch(doneFail);
   }
 
   function speakSynth(text, lang, voice, gen, onend) {
@@ -185,23 +185,30 @@
     w.speechSynthesis.speak(u);
   }
 
+  function prefersSynthMyanmar() {
+    return /iPad|iPhone|iPod|Android/i.test(navigator.userAgent || "") ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+
   function playMyanmar(text, hint, onend) {
     var gen = speakGen;
     loadVoices();
-    /* Google TTS first — clearer Myanmar than most built-in voices */
+    if (!text) {
+      if (hint) speakSynth(hint, "en-US", englishVoice, gen, onend);
+      else if (onend) onend();
+      return;
+    }
+    if (prefersSynthMyanmar() && myanmarVoice) {
+      speakSynth(text, "my-MM", myanmarVoice, gen, onend);
+      return;
+    }
     playGoogleTts(text, "my", 0, gen, function () {
       if (!isStale(gen) && onend) onend();
     }, function () {
       if (isStale(gen)) return;
-      if (myanmarVoice) {
-        speakSynth(text, "my-MM", myanmarVoice, gen, function () {
-          if (!isStale(gen) && onend) onend();
-        });
-        return;
-      }
-      if (hint) {
-        speakSynth(hint, "en-US", englishVoice, gen, onend);
-      } else if (onend) onend();
+      speakSynth(text, "my-MM", myanmarVoice, gen, function () {
+        if (!isStale(gen) && onend) onend();
+      });
     });
   }
 
@@ -286,20 +293,25 @@
   };
 
   w.tapPhrase = function (btn, lang) {
-    var card = btn.closest(".phrase-card") || btn.closest(".phrase-btns") || btn.parentElement;
-    if (card && !card.getAttribute("data-en") && card.parentElement) {
-      card = card.closest("[data-en]") || card;
-    }
-    if (w.MMAudio) {
-      if (lang === "en") {
-        var en = (card && card.getAttribute("data-en")) || btn.getAttribute("data-en");
-        if (en) MMAudio.speakEnglish(en);
-      } else {
-        var mm = (card && card.getAttribute("data-mm")) || btn.getAttribute("data-mm");
-        MMAudio.speakMyanmar(mm, null);
+    if (!w.MMAudio) return;
+    var en = btn.getAttribute("data-en");
+    var mm = btn.getAttribute("data-mm");
+    if (!en || !mm) {
+      var pair = btn.closest(".wb-sentence-pair");
+      if (pair) {
+        var enEl = pair.querySelector("[data-en]");
+        var mmEl = pair.querySelector("[data-mm]");
+        en = en || (enEl && enEl.getAttribute("data-en"));
+        mm = mm || (mmEl && mmEl.getAttribute("data-mm"));
       }
-      btn.parentElement.querySelectorAll(".btn-speak").forEach(function (b) { b.classList.remove("pressed"); });
-      btn.classList.add("pressed");
+    }
+    var row = btn.closest(".wb-line") || btn.parentElement;
+    if (row) row.querySelectorAll(".btn-speak").forEach(function (b) { b.classList.remove("pressed"); });
+    btn.classList.add("pressed");
+    if (lang === "en") {
+      if (en) MMAudio.speakEnglish(en);
+    } else if (mm) {
+      MMAudio.speakMyanmar(mm, null);
     }
   };
 

@@ -10,6 +10,22 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(145deg,#7DD3FC 0%,#A78BFA 50%,#F9A8D4 100%);color:#1E293B;min-height:100vh;}
     .game-shell{max-width:720px;margin:0 auto;padding:8px 10px 6px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
+    @media(min-width:768px){
+      .game-shell{max-width:min(960px,96vw);padding:6px 14px 4px;}
+      .title{font-size:20px;margin:2px 0;}
+      .game-desc{font-size:12px;margin-bottom:4px;}
+      .stamp-row{margin-bottom:4px;padding:4px 6px;}
+      .tool-row{margin-bottom:4px;}
+      .nav-hint{margin-top:4px;padding:6px;font-size:11px;}
+    }
+    @media(max-width:520px){
+      .stamp-btn{width:34px;height:34px;font-size:17px;border-radius:9px;}
+      .stamp-row{gap:4px;padding:4px 5px;}
+      .title{font-size:18px;}
+      .game-desc{font-size:12px;margin-bottom:4px;}
+      .tool-btn{padding:6px 10px;font-size:12px;}
+      .nav-hint{font-size:11px;padding:6px;}
+    }
     .title{flex-shrink:0;}
     .game-desc{flex-shrink:0;}
     .title{text-align:center;font-size:22px;color:#6D28D9;margin:4px 0 2px;}
@@ -66,7 +82,7 @@
     <button type="button" class="stamp-btn" data-emoji="🐈" title="Cat">🐈</button>
     <button type="button" class="stamp-btn" data-emoji="🧍" title="Person">🧍</button>
     <button type="button" class="stamp-btn" data-emoji="🧍‍♀️" title="Woman">🧍‍♀️</button>
-    <button type="button" class="stamp-btn" data-emoji="☀️" title="Sun">☀️</button>
+    <button type="button" class="stamp-btn" data-emoji="🌤️" title="Cloudy sky">🌤️</button>
   </div>
   <div class="tool-row">
     <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
@@ -96,7 +112,7 @@ const MOBILE = /🐘|🐃|🐄|🐕|🐈/;
 const BUILDING = /🏠|🛖|🛕/;
 const PEOPLE = /🧍|🧍‍♀️/;
 const SMALL = /🪵|🌸/;
-const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🌸|☀️|🧍|🧍‍♀️|🎋|🌴|🌲/;
+const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🌸|🌤️|🧍|🧍‍♀️|🎋|🌴|🌲/;
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
 let toolMode = 'stamp';
@@ -226,6 +242,18 @@ function drawVillageBg(w, h) {
   sky.addColorStop(1, '#D4E8C8');
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
+
+  const sunX = w * 0.84;
+  const sunY = h * 0.13;
+  const sunR = Math.min(w, h) * 0.055;
+  const glow = ctx.createRadialGradient(sunX, sunY, sunR * 0.3, sunX, sunY, sunR * 2.4);
+  glow.addColorStop(0, 'rgba(255,235,130,0.65)');
+  glow.addColorStop(1, 'rgba(255,235,130,0)');
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(sunX, sunY, sunR * 2.4, 0, Math.PI * 2);
+  ctx.fill();
+  drawEmoji('☀️', sunX, sunY, sunR * 1.7);
 
   ctx.fillStyle = 'rgba(90,120,70,0.45)';
   ctx.beginPath();

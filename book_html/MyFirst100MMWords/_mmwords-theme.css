@@ -1052,17 +1052,18 @@ html:has(body.main-chapter-page){
   }
 }
 @media(orientation:landscape) and (max-height:900px){
-  body.main-chapter-page{padding:4px;}
-  .main-chapter-page .container{padding:6px 10px 8px;--chapter-pad-x:10px;}
-  .story-row .card{padding:10px;}
-  .story-row .story-box{font-size:12px;line-height:1.45;}
-  .story-teach-row .card{padding:10px;}
-  .story-teach-row .story-box{font-size:12px;line-height:1.45;}
-  .story-teach-row .tip-card p{font-size:11px;line-height:1.45;}
-  .chapter-word-grid{grid-template-columns:repeat(4,1fr);}
-  .chapter-word-grid .speak-btn{min-height:44px;padding:6px 3px;}
-  .chapter-word-grid .speak-label{font-size:9px;}
-  .chapter-wizard-foot .wizard-btn{padding:10px 12px;font-size:13px;}
+  body.main-chapter-page{padding:6px;}
+  .main-chapter-page .container{padding:8px 12px 10px;--chapter-pad-x:12px;}
+  .story-row .card{padding:12px;}
+  .story-row .story-box{font-size:14px;line-height:1.55;}
+  .story-teach-row .card{padding:12px;}
+  .story-teach-row .story-box{font-size:14px;line-height:1.55;}
+  .story-teach-row .tip-card p{font-size:13px;line-height:1.5;}
+  .chapter-word-grid{grid-template-columns:repeat(3,1fr);}
+  .chapter-word-grid .speak-btn{min-height:52px;padding:8px 5px;}
+  .chapter-word-grid .speak-label{font-size:10px;}
+  .chapter-word-grid .speak-word-en,.chapter-word-grid .speak-word-mm{font-size:14px;}
+  .chapter-wizard-foot .wizard-btn{padding:12px 14px;font-size:14px;}
 }
 @media(min-width:1024px){
   html:has(body.main-chapter-page){
@@ -1444,3 +1445,33 @@ html:has(body.main-chapter-page){
 }
 @media(max-width:480px){.word-grid{gap:8px;}.speak-btn{min-height:58px;padding:10px 6px;}}
 @media(max-width:360px){.word-grid{grid-template-columns:1fr;}}
+
+/* Mobile & tablet — larger readable text */
+@media(max-width:768px){
+  .card p,.card li{font-size:16px;line-height:1.65;}
+  .page-subtitle{font-size:16px;}
+  .nav-hint,.footer-scroll{font-size:13px;}
+  .top-bar .subtitle{font-size:15px;}
+  .section-head{font-size:13px;}
+  .legend{font-size:13px;}
+  .speak-label{font-size:11px;}
+  .speak-word-en,.speak-word-mm{font-size:15px;}
+  .chapter-word-grid .speak-word-en,.chapter-word-grid .speak-word-mm{font-size:15px;}
+  .chapter-word-grid .word-card-emoji{font-size:26px;}
+  .word-card-emoji{font-size:30px;}
+  .question{font-size:20px;}
+  .option{font-size:17px;padding:14px 16px;}
+  .feedback{font-size:16px;}
+  .hear-hint-text{font-size:14px;line-height:1.5;}
+  .quiz-card{padding:16px;}
+  .competitor-name{font-size:13px;}
+  .chapter-wizard-head .wizard-progress-text{font-size:12px;}
+  .story-row .story-box{font-size:15px;line-height:1.6;}
+  .explained-page .wb-text-en{font-size:clamp(14px,3.8vw,17px);}
+  .explained-page .wb-text-mm{font-size:clamp(15px,4vw,18px);}
+  .explained-page .wb-speak-btn{width:36px;height:36px;min-width:36px;}
+}
+@media(min-width:768px) and (max-width:1024px){
+  .chapter-word-grid{grid-template-columns:repeat(3,1fr);}
+  .speak-word-en,.speak-word-mm{font-size:15px;}
+}

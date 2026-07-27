@@ -83,8 +83,7 @@ function shuffle(arr) {
 }
 
 function wordOptionLabel(opt) {
-  const base = opt.emoji ? `${opt.emoji} ${opt.en}` : opt.en;
-  return opt.mm ? `${base} (${opt.mm})` : base;
+  return opt.en || "";
 }
 
 function buildHearPickQuestions(words, count) {
@@ -975,10 +974,10 @@ function hearQuizCard(q, i, isActive) {
   <div class="quiz-card${isActive ? " active" : ""}" id="quizCard-${i + 1}" data-quiz-type="hear" data-mm="${esc(q.mm)}" data-hint="${esc(q.hint)}">
     <div class="question">${i + 1}. Which English word did you hear?</div>
     <div class="hear-panel">
-      <span class="hear-emoji" aria-hidden="true">${esc(q.emoji)}</span>
-      <button type="button" class="hear-replay-btn">🔊 Hear again</button>
+      <span class="hear-emoji" aria-hidden="true">🔊</span>
+      <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
-    <p class="hear-hint-text">Myanmar plays automatically — tap 🔊 as many times as you need. Each answer shows English and Myanmar.</p>
+    <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word (no peeking at emojis!).</p>
     <div class="options">${fixedOpts}</div>
     <div class="feedback" id="feedback-${i + 1}"></div>
   </div>`;
