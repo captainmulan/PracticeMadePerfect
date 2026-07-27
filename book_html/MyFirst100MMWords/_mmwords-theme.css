@@ -247,17 +247,23 @@ body{
 @media(orientation:landscape) and (min-width:768px){
   .explained-page .story-box-default{display:none;}
   .explained-page .story-box-landscape{display:block;font-size:17px;line-height:1.8;}
+  /* Sentences: image on top, story under image, word cards below */
   .explained-page .sentences-part .chapter-part-inner{
-    display:grid;
-    grid-template-columns:minmax(280px,42%) 1fr;
-    grid-template-rows:auto auto;
-    gap:16px 20px;
-    align-items:start;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
   }
-  .explained-page .sentences-part .chapter-scene{grid-column:1;grid-row:1 / span 2;}
-  .explained-page .sentences-part .story-row{grid-column:2;grid-row:1;}
-  .explained-page .sentences-part .chapter-sentences-block{grid-column:2;grid-row:2;}
-  .explained-page .chapter-scene .chapter-hero-img{max-height:min(78dvh,680px);object-fit:cover;}
+  .explained-page .sentences-part .chapter-scene,
+  .explained-page .sentences-part .story-row,
+  .explained-page .sentences-part .chapter-sentences-block{
+    width:100%;
+    max-width:100%;
+  }
+  .explained-page .sentences-part .chapter-scene .chapter-hero-img{
+    max-height:min(42dvh,400px);
+    width:100%;
+    object-fit:cover;
+  }
 }
 .how-card{background:rgba(186,230,253,.14);border:1px solid rgba(186,230,253,.4);border-radius:var(--radius);padding:18px;}
 .how-card h2{font-size:17px;color:var(--lacquer);margin-bottom:10px;}
@@ -1052,25 +1058,25 @@ html:has(body.explained-page){
   .chapter-word-grid{grid-template-columns:repeat(3,1fr);}
 }
 @media(min-width:900px){
-  .chapter-part-inner{
+  .main-chapter-page .chapter-part-inner{
     display:grid;
     grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
     grid-template-rows:auto auto;
     gap:16px 24px;
     align-items:start;
   }
-  .chapter-part-inner .chapter-scene{
+  .main-chapter-page .chapter-part-inner .chapter-scene{
     grid-column:1;
     grid-row:1 / -1;
     margin:0;
     width:100%;
   }
-  .chapter-part-inner .story-row{
+  .main-chapter-page .chapter-part-inner .story-row{
     grid-column:2;
     grid-row:1;
   }
-  .chapter-part-inner .chapter-words-block,
-  .chapter-part-inner .chapter-sentences-block{
+  .main-chapter-page .chapter-part-inner .chapter-words-block,
+  .main-chapter-page .chapter-part-inner .chapter-sentences-block{
     grid-column:2;
     grid-row:2;
   }
