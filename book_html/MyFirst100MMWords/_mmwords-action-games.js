@@ -536,9 +536,9 @@
   function bootLanternRun(opts, canvas, cv, scoreEl, words, hero, overlayEl) {
     var maxLevel = opts.target || 15;
     var maxLives = 3;
-    var JUMP_V = -13;
-    var GRAVITY = 0.58;
-    var STOMP_BOUNCE = -10.5;
+    var JUMP_V = -12.2;
+    var GRAVITY = 0.50;
+    var STOMP_BOUNCE = -9.2;
     var familyEnemies = [
       { type: "wolf", emoji: "🐺", label: "Wolf!" },
       { type: "dog", emoji: "🐕", label: "Dog!" },
@@ -671,8 +671,8 @@
         }
       } else if (state.bossFight) {
         var bf = state.bossFight;
-        var bhop = Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
-        var bsx = bf.sx + Math.sin(bf.patrolT * 0.08) * 48;
+        var bhop = bossHopY(bf);
+        var bsx = bossScreenX(bf);
         var bey = groundY - 36 - bhop;
         var bhearts = "";
         for (var bi = 0; bi < bf.maxHp; bi++) bhearts += bi < bf.hp ? "❤️" : "🖤";
@@ -759,6 +759,18 @@
       };
     }
 
+    function bossTargetX(bf) {
+      return state.px + 88 + Math.sin(bf.patrolT * 0.08) * 18;
+    }
+
+    function bossScreenX(bf) {
+      return bf.sx;
+    }
+
+    function bossHopY(bf) {
+      return Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
+    }
+
     function enterBossPhase(W) {
       if (state.bossPhase || state.bossDefeated) return;
       var b = bossRoster[state.level];
@@ -768,7 +780,8 @@
       state.bossFight = {
         hp: 5,
         maxHp: 5,
-        sx: W * 0.62,
+        sx: W * 0.78,
+        approach: 0,
         emoji: b.emoji,
         label: b.label,
         size: b.size || 56,
@@ -779,8 +792,8 @@
     }
 
     function drawBossFight(ctx, bf, groundY, tick) {
-      var hop = Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
-      var sx = bf.sx + Math.sin(bf.patrolT * 0.08) * 48;
+      var hop = bossHopY(bf);
+      var sx = bossScreenX(bf);
       var ey = groundY - 36 - hop;
       if (bf.flash > 0) {
         ctx.fillStyle = "rgba(251,191,36,.4)";
@@ -804,13 +817,13 @@
     function resolveBossStomp(groundY) {
       if (!state.bossFight || state.bossFight.hp <= 0) return;
       var bf = state.bossFight;
-      var hop = Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
-      var sx = bf.sx + Math.sin(bf.patrolT * 0.08) * 48;
+      var hop = bossHopY(bf);
+      var sx = bossScreenX(bf);
       var ey = groundY - 36 - hop;
       var headTop = ey - bf.size * 0.52;
       var playerBottom = state.py + 20;
       var playerTop = state.py - 22;
-      if (Math.abs(sx - state.px) > 40) return;
+      if (Math.abs(sx - state.px) > 58) return;
       if (state.vy > 1 && playerBottom >= headTop - 4 && playerTop < groundY - 34) {
         bf.hp--;
         bf.flash = 18;
@@ -1003,7 +1016,7 @@
       var groundY = H - 40;
       var now = performance.now();
       if (!state.lastTs) state.lastTs = now;
-      var dt = clamp((now - state.lastTs) / 16.667, 0.65, 2.2);
+      var dt = clamp((now - state.lastTs) / 16.667, 0.45, 1.75);
       state.lastTs = now;
 
       if (state.invincible > 0) state.invincible -= dt;
@@ -1016,9 +1029,11 @@
 
       if (state.keys.up && state.grounded) state.onJump();
       state.vy += GRAVITY * dt;
+      if (!state.keys.up && state.vy < 0) state.vy += GRAVITY * 0.42 * dt;
       state.py += state.vy * dt;
-      if (state.py >= groundY - 32) {
-        state.py = groundY - 32;
+      var floorY = groundY - 32;
+      if (state.py >= floorY) {
+        state.py = floorY;
         state.vy = 0;
         state.grounded = true;
       } else {
@@ -1027,8 +1042,16 @@
 
       if (state.bossPhase) {
         state.scroll = state.bossTriggerScroll;
-        state.bossFight.patrolT += dt;
-        if (state.bossFight.flash > 0) state.bossFight.flash -= dt;
+        var bf = state.bossFight;
+        bf.patrolT += dt;
+        var targetX = bossTargetX(bf);
+        if (bf.approach < 1) {
+          bf.approach = Math.min(1, bf.approach + dt * 0.028);
+          bf.sx += (targetX - bf.sx) * Math.min(1, dt * 0.14);
+        } else {
+          bf.sx = targetX;
+        }
+        if (bf.flash > 0) bf.flash -= dt;
         resolveBossStomp(groundY);
       } else {
         state.scroll += state.scrollSpeed * dt;
@@ -1080,36 +1103,8 @@
       ctx.fillStyle = activeTheme.ground;
       ctx.fillRect(0, groundY - 52, W, 52);
 
-      if (!state.bossPhase) {
-        state.obstacles.forEach(function (o) {
-          var ox = enemyOx(o);
-          if (ox < -80 || ox > W + 80) return;
-          drawFamilyEnemy(ctx, o, ox, groundY, state.spawnT);
-        });
-        if (state.flyingHeart && !state.flyingHeart.got) {
-          var fh = state.flyingHeart;
-          var hx = fh.x - state.scroll;
-          var hy = fh.y + Math.sin(fh.bob) * 14;
-          if (hx > -50 && hx < W + 50) {
-            drawGameEmoji(ctx, "💖", hx, hy, 32);
-            ctx.font = "9px Georgia,serif";
-            ctx.fillStyle = "#FBCFE8";
-            ctx.textAlign = "center";
-            ctx.fillText("+1 ❤️", hx, hy - 28);
-          }
-        }
-      } else if (state.bossFight) {
-        drawBossFight(ctx, state.bossFight, groundY, state.spawnT);
-      }
+      syncDomSprites(W, H, groundY, hero);
 
-      if (state.pickup && !state.pickup.got) {
-        var sx = state.pickup.x - state.scroll;
-        if (sx > -60 && sx < W + 60) {
-          drawFamilyPortrait(ctx, state.pickup.emoji, sx, groundY - 58, state.spawnT, state.pickup.x, state.pickup.label);
-        }
-      }
-
-      drawBrightPlayer(ctx, state.px, state.py, hero, !state.grounded, state.invincible, state.spawnT);
       var progress = state.timeLeft / state.timeTotal;
       drawLanternHud(ctx, W, state.level, maxLevel, state.lives, goalLabel(), state.timeLeft / 60, progress);
 
