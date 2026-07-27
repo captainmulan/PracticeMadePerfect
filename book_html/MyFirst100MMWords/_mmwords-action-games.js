@@ -230,17 +230,49 @@
     ctx.fillText(emoji, x, y);
   }
 
-  function drawCrispEmoji(ctx, emoji, x, y, size) {
-    ctx.save();
+  function resetDrawState(ctx) {
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
-    ctx.shadowColor = "rgba(255,255,255,0.85)";
-    ctx.shadowBlur = 6;
-    drawEmoji(ctx, emoji, x, y, size);
     ctx.shadowBlur = 0;
     ctx.shadowColor = "transparent";
-    drawEmoji(ctx, emoji, x, y, size);
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  }
+
+  function drawGameEmoji(ctx, emoji, x, y, size) {
+    ctx.save();
+    resetDrawState(ctx);
+    ctx.font = (size || 32) + "px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(emoji, x, y);
     ctx.restore();
+    resetDrawState(ctx);
+  }
+
+  function drawCrispEmoji(ctx, emoji, x, y, size) {
+    drawGameEmoji(ctx, emoji, x, y, size);
+  }
+
+  function drawLanternSkyline(ctx, W, H, scroll, parallax) {
+    var rate = parallax == null ? 0.25 : parallax;
+    var off = (scroll * rate) % (W + 80);
+    var baseY = H * 0.36;
+    for (var i = -1; i < 4; i++) {
+      var bx = i * (W * 0.35) - off;
+      ctx.fillStyle = "#3D2817";
+      ctx.fillRect(bx + 10, baseY + 20, 56, 38);
+      ctx.fillStyle = "#5C3D1E";
+      ctx.beginPath();
+      ctx.moveTo(bx + 4, baseY + 20);
+      ctx.lineTo(bx + 38, baseY - 4);
+      ctx.lineTo(bx + 72, baseY + 20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#FBBF24";
+      ctx.fillRect(bx + 26, baseY + 32, 10, 12);
+      ctx.fillRect(bx + 42, baseY + 32, 10, 12);
+    }
   }
 
   function drawPickup(ctx, emoji, x, y, tick, seed) {
@@ -297,17 +329,14 @@
 
   function drawBrightPlayer(ctx, x, y, emoji, jumping, invincible, tick) {
     drawShadow(ctx, x, y + 18, jumping ? 12 : 16);
-    ctx.save();
-    ctx.globalAlpha = 1;
     if (invincible > 0 && Math.floor(tick / 4) % 2 === 0) {
       ctx.strokeStyle = "#FBBF24";
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(x, y, 24, 0, Math.PI * 2);
+      ctx.arc(x, y, 26, 0, Math.PI * 2);
       ctx.stroke();
     }
-    drawCrispEmoji(ctx, emoji, x, y, jumping ? 42 : 40);
-    ctx.restore();
+    drawGameEmoji(ctx, emoji, x, y, jumping ? 46 : 44);
   }
 
   function drawPuddle(ctx, x, y, w) {
@@ -441,34 +470,28 @@
     if (o.remove) return;
     var walk = Math.sin(tick * 0.18 + (o.x || 0) * 0.015) * (o.boss ? 4 : 2.5);
     var hop = Math.abs(Math.sin(tick * 0.22 + (o.x || 0) * 0.02)) * (o.boss ? 5 : 3);
-    var size = o.size || (o.boss ? 48 : 40);
+    var size = o.size || (o.boss ? 52 : 44);
     var ey = groundY - 36 - hop;
     var sx = ox + walk;
     if (o.dead && o.dying > 0) {
-      ctx.save();
-      ctx.globalAlpha = o.dying / 40;
-      ctx.font = (size * 0.6) + "px 'Segoe UI Emoji','Apple Color Emoji',sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("💫", sx, ey);
-      ctx.restore();
+      drawGameEmoji(ctx, "💫", sx, ey, 22);
       return;
     }
-    ctx.save();
     if (o.flash > 0) {
       ctx.fillStyle = "rgba(251,191,36,.35)";
       ctx.beginPath();
       ctx.arc(sx, ey, size * 0.45, 0, Math.PI * 2);
       ctx.fill();
+      resetDrawState(ctx);
     }
     drawShadow(ctx, sx, groundY - 6, o.boss ? 22 : 14);
-    drawCrispEmoji(ctx, o.emoji, sx, ey, size);
+    drawGameEmoji(ctx, o.emoji, sx, ey, size);
     if (o.label) {
-      ctx.font = "bold " + (o.boss ? 10 : 9) + "px Georgia,serif";
-      ctx.fillStyle = "#FFF8E7";
+      ctx.font = "bold " + (o.boss ? 11 : 10) + "px Georgia,serif";
+      ctx.fillStyle = "#FFFFFF";
       ctx.textAlign = "center";
-      ctx.fillText(o.label, sx, ey - size * 0.72);
+      ctx.fillText(o.label, sx, ey - size * 0.75);
     }
-    ctx.restore();
   }
 
   function drawSkyLanterns(ctx, W, H, lanterns, scroll, tick, parallax) {
@@ -492,7 +515,7 @@
       ctx.moveTo(sx, sy - 24 - L.size);
       ctx.lineTo(sx, sy - 10);
       ctx.stroke();
-      drawCrispEmoji(ctx, "🏮", sx, sy, 22 + L.size * 2);
+      drawCrispEmoji(ctx, "🏮", sx, sy, 24 + L.size * 2);
     });
   }
 
@@ -678,7 +701,8 @@
       ctx.fillStyle = "#FEE2E2";
       ctx.fillText(bf.label, sx, ey - bf.size * 0.68);
       drawShadow(ctx, sx, groundY - 6, 26);
-      drawCrispEmoji(ctx, bf.emoji, sx, ey, bf.size);
+      drawGameEmoji(ctx, bf.emoji, sx, ey, bf.size);
+      resetDrawState(ctx);
     }
 
     function resolveBossStomp(groundY) {
@@ -937,12 +961,13 @@
       }
 
       var activeTheme = state.bossPhase ? bossTheme : theme;
+      resetDrawState(ctx);
       drawSky(ctx, W, H, activeTheme.skyTop, activeTheme.skyBot);
       drawStars(ctx, W, H, state.spawnT);
       if (!state.bossPhase) drawMoon(ctx, W);
       if (!state.bossPhase) {
         drawSkyLanterns(ctx, W, H, state.skyLanterns, state.scroll, state.spawnT, 0.32);
-        drawVillageBg(ctx, W, H, state.scroll, groundY, 0.38);
+        drawLanternSkyline(ctx, W, H, state.scroll, 0.25);
       } else {
         ctx.fillStyle = "rgba(127,29,29,.35)";
         ctx.fillRect(0, groundY - 90, W, 90);
@@ -953,6 +978,9 @@
       }
       drawGround(ctx, W, H, activeTheme.ground, activeTheme.label, activeTheme.groundAccent,
         state.bossPhase ? 0 : state.scroll);
+      resetDrawState(ctx);
+      ctx.fillStyle = activeTheme.ground;
+      ctx.fillRect(0, groundY - 52, W, 52);
 
       if (!state.bossPhase) {
         state.obstacles.forEach(function (o) {
@@ -965,7 +993,7 @@
           var hx = fh.x - state.scroll;
           var hy = fh.y + Math.sin(fh.bob) * 14;
           if (hx > -50 && hx < W + 50) {
-            drawCrispEmoji(ctx, "💖", hx, hy, 30);
+            drawGameEmoji(ctx, "💖", hx, hy, 32);
             ctx.font = "9px Georgia,serif";
             ctx.fillStyle = "#FBCFE8";
             ctx.textAlign = "center";
