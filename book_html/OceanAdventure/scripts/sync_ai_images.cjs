@@ -6,21 +6,17 @@ const path = require("path");
 const SRC = path.join(process.env.USERPROFILE || "", ".cursor", "projects", "c-Users-65966-PracticeMadePerfect", "assets");
 const DST = path.join(__dirname, "..", "assets");
 
-const CHAPTERS = [
-  "sunlight",
-  "twilight",
-  "midnight",
-  "abyss",
-  "hadal",
-  "coral-reefs",
-  "marine-mammals",
-  "fish",
-];
+const vm = require("vm");
+const sandbox = { window: {}, console };
+vm.runInNewContext(fs.readFileSync(path.join(__dirname, "..", "_ocean-data.js"), "utf8"), sandbox);
+
+const CHAPTERS = sandbox.window.OCEAN_CHAPTERS.map((c) => c.id);
 const SLOTS = ["main-1", "main-2", "main-3", "explain-1", "explain-2", "explain-3"];
 
 if (!fs.existsSync(DST)) fs.mkdirSync(DST, { recursive: true });
 
 let copied = 0;
+let missing = 0;
 CHAPTERS.forEach((ch) => {
   SLOTS.forEach((slot) => {
     const name = `${ch}-${slot}.png`;
@@ -28,6 +24,7 @@ CHAPTERS.forEach((ch) => {
     const dst = path.join(DST, name);
     if (!fs.existsSync(src)) {
       console.warn("Missing:", name);
+      missing++;
       return;
     }
     fs.copyFileSync(src, dst);
@@ -35,4 +32,4 @@ CHAPTERS.forEach((ch) => {
     console.log("Copied", name);
   });
 });
-console.log("Done —", copied, "images synced (overview unchanged)");
+console.log("Done —", copied, "images synced,", missing, "missing");

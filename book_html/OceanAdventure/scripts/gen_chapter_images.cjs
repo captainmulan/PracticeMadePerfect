@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Embed chapter PNGs as data URIs (Solar System style — single HTML, no fetch) */
+/* Embed chapter PNGs as data URIs — full catalog + per-chapter standalone JS */
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -11,6 +11,8 @@ const OUT = path.join(DIR, "_ocean-chapter-images.js");
 const sandbox = { window: {}, console };
 vm.runInNewContext(fs.readFileSync(path.join(DIR, "_ocean-data.js"), "utf8"), sandbox);
 const IDS = sandbox.window.OCEAN_CHAPTERS.map((c) => c.id);
+
+const SLOTS = ["main-1", "main-2", "main-3", "explain-1", "explain-2", "explain-3", "view-1", "view-2", "view-3", "view-4"];
 
 function toDataUri(filePath) {
   const buf = fs.readFileSync(filePath);
@@ -27,18 +29,10 @@ function findImage(id, slot) {
   return null;
 }
 
-const images = {};
-IDS.forEach((id) => {
-  images[id] = {};
-  ["main-1", "main-2", "main-3", "explain-1", "explain-2", "explain-3", "view-1", "view-2", "view-3", "view-4"].forEach((slot) => {
-    const uri = findImage(id, slot);
-    if (uri) images[id][slot] = uri;
-  });
-});
-
-const js = `/* Chapter images — embedded PNG/JPG (generate: node scripts/gen_chapter_images.cjs) */
+function buildJs(chapterImages) {
+  return `/* Chapter images — embedded PNG/JPG (generate: node scripts/gen_chapter_images.cjs) */
 (function (w) {
-  w.OCEAN_CHAPTER_IMAGES = ${JSON.stringify(images)};
+  w.OCEAN_CHAPTER_IMAGES = ${JSON.stringify(chapterImages)};
 
   function imgTag(uri, alt) {
     return '<img class="chapter-hero-img" src="' + uri + '" alt="' + alt.replace(/"/g, "&quot;") + '" decoding="async">';
@@ -57,8 +51,28 @@ const js = `/* Chapter images — embedded PNG/JPG (generate: node scripts/gen_c
   };
 })(window);
 `;
+}
 
-fs.writeFileSync(OUT, js);
+const images = {};
+IDS.forEach((id) => {
+  images[id] = {};
+  SLOTS.forEach((slot) => {
+    const uri = findImage(id, slot);
+    if (uri) images[id][slot] = uri;
+  });
+});
+
+fs.writeFileSync(OUT, buildJs(images));
 const count = IDS.reduce((n, id) => n + Object.values(images[id]).filter(Boolean).length, 0);
 console.log("Wrote", path.basename(OUT), "(" + (fs.statSync(OUT).size / 1024 / 1024).toFixed(2) + " MB)");
+
+IDS.forEach((id) => {
+  const slice = { [id]: images[id] };
+  const perChapter = path.join(DIR, `_ocean-img-${id}.js`);
+  fs.writeFileSync(perChapter, buildJs(slice));
+  const mb = (fs.statSync(perChapter).size / 1024 / 1024).toFixed(2);
+  const n = Object.values(images[id]).filter(Boolean).length;
+  console.log("Wrote", path.basename(perChapter), `(${mb} MB, ${n} images)`);
+});
+
 console.log("Embedded", count, "images across", IDS.length, "chapters");
