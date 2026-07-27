@@ -171,18 +171,20 @@
     var off = (scroll * rate) % (W + 80);
     for (var i = -1; i < 4; i++) {
       var bx = i * (W * 0.35) - off;
+      ctx.globalAlpha = 0.45;
       ctx.fillStyle = "rgba(30,18,12,.55)";
-      ctx.fillRect(bx + 10, groundY - 58, 56, 58);
+      ctx.fillRect(bx + 10, groundY - 72, 56, 58);
       ctx.fillStyle = "rgba(120,53,15,.7)";
       ctx.beginPath();
-      ctx.moveTo(bx + 4, groundY - 58);
-      ctx.lineTo(bx + 38, groundY - 82);
-      ctx.lineTo(bx + 72, groundY - 58);
+      ctx.moveTo(bx + 4, groundY - 72);
+      ctx.lineTo(bx + 38, groundY - 96);
+      ctx.lineTo(bx + 72, groundY - 72);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = "rgba(255,200,80,.75)";
-      ctx.fillRect(bx + 26, groundY - 38, 12, 14);
-      ctx.fillRect(bx + 44, groundY - 38, 10, 12);
+      ctx.fillStyle = "rgba(255,200,80,.55)";
+      ctx.fillRect(bx + 26, groundY - 52, 12, 14);
+      ctx.fillRect(bx + 44, groundY - 52, 10, 12);
+      ctx.globalAlpha = 1;
     }
   }
 
@@ -222,10 +224,26 @@
   }
 
   function drawEmoji(ctx, emoji, x, y, size) {
-    ctx.font = (size || 28) + "px sans-serif";
+    ctx.font = (size || 28) + "px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(emoji, x, y);
+  }
+
+  function drawBrightEmoji(ctx, emoji, x, y, size, ring) {
+    var r = size * 0.52;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = ring || "#F59E0B";
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.fillStyle = "rgba(251,191,36,.18)";
+    ctx.beginPath();
+    ctx.arc(x, y, r + 5, 0, Math.PI * 2);
+    ctx.fill();
+    drawEmoji(ctx, emoji, x, y, size);
   }
 
   function drawPickup(ctx, emoji, x, y, tick, seed) {
@@ -281,23 +299,11 @@
   }
 
   function drawBrightPlayer(ctx, x, y, emoji, jumping, invincible, tick) {
-    var blink = invincible > 0 && Math.floor(tick / 6) % 2 === 0;
-    if (blink) return;
+    var blink = invincible > 0 && Math.floor(tick / 5) % 2 === 0;
     drawShadow(ctx, x, y + 18, jumping ? 12 : 16);
-    ctx.fillStyle = "#FFFFFF";
-    ctx.beginPath();
-    ctx.arc(x, y, 22, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#F59E0B";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(x, y, 22, 0, Math.PI * 2);
-    ctx.stroke();
-    var scale = jumping ? 1.1 : 1;
     ctx.save();
-    ctx.translate(x, y);
-    ctx.scale(scale, scale);
-    drawEmoji(ctx, emoji, 0, 0, 34);
+    if (blink) ctx.globalAlpha = 0.55;
+    drawBrightEmoji(ctx, emoji, x, y, jumping ? 36 : 34, "#F59E0B");
     ctx.restore();
   }
 
@@ -430,36 +436,37 @@
 
   function drawFamilyEnemy(ctx, o, ox, groundY, tick) {
     if (o.remove) return;
-    var walk = Math.sin(tick * 0.22 + (o.x || 0) * 0.015) * (o.boss ? 5 : 3);
-    var hop = Math.abs(Math.sin(tick * 0.28 + (o.x || 0) * 0.02)) * (o.boss ? 6 : 4);
-    var size = o.size || (o.boss ? 50 : 36);
-    var ey = groundY - 34 - hop;
+    var walk = Math.sin(tick * 0.18 + (o.x || 0) * 0.015) * (o.boss ? 4 : 2.5);
+    var hop = Math.abs(Math.sin(tick * 0.22 + (o.x || 0) * 0.02)) * (o.boss ? 5 : 3);
+    var size = o.size || (o.boss ? 48 : 40);
+    var ey = groundY - 36 - hop;
     var sx = ox + walk;
-    var alpha = 1;
     if (o.dead && o.dying > 0) {
-      alpha = o.dying / 40;
-      size *= 0.55 + (1 - o.dying / 40) * 0.2;
-      ey += (40 - o.dying) * 0.35;
+      ctx.save();
+      ctx.globalAlpha = o.dying / 40;
+      ctx.font = (size * 0.6) + "px 'Segoe UI Emoji','Apple Color Emoji',sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("💫", sx, ey);
+      ctx.restore();
+      return;
     }
     ctx.save();
-    ctx.globalAlpha = alpha;
     if (o.flash > 0) {
-      ctx.fillStyle = "rgba(251,191,36,.35)";
+      ctx.fillStyle = "rgba(251,191,36,.5)";
       ctx.beginPath();
-      ctx.arc(sx, ey, size * 0.45, 0, Math.PI * 2);
+      ctx.arc(sx, ey, size * 0.58, 0, Math.PI * 2);
       ctx.fill();
     }
-    if (!o.dead) drawShadow(ctx, sx, groundY - 6, o.boss ? 26 : 15);
-    drawEmoji(ctx, o.emoji, sx, ey, size);
-    if (o.dead && o.dying > 0) {
-      ctx.font = "16px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("💫", sx, ey - size * 0.8);
-    } else if (o.label) {
+    drawShadow(ctx, sx, groundY - 6, o.boss ? 24 : 16);
+    drawBrightEmoji(ctx, o.emoji, sx, ey, size, o.boss ? "#EF4444" : "#FB923C");
+    if (o.label) {
       ctx.font = "bold " + (o.boss ? 10 : 9) + "px Georgia,serif";
-      ctx.fillStyle = o.boss ? "#FDE68A" : "#FFF8E7";
+      ctx.fillStyle = "#FFF8E7";
+      ctx.strokeStyle = "rgba(49,46,129,.85)";
+      ctx.lineWidth = 3;
       ctx.textAlign = "center";
-      ctx.fillText(o.label, sx, ey - size * 0.58);
+      ctx.strokeText(o.label, sx, ey - size * 0.72);
+      ctx.fillText(o.label, sx, ey - size * 0.72);
     }
     ctx.restore();
   }
@@ -545,6 +552,7 @@
       skyLanterns: [],
       spawnT: 0,
       raf: null,
+      lastTs: 0,
       onJump: null,
       isBossLevel: false
     };
@@ -590,23 +598,25 @@
       return level % 4 === 0 || level === maxLevel;
     }
 
-    function levelConfig(level) {
+    function levelConfig(level, W) {
+      W = W || 760;
       var bossLevel = isBossLevel(level);
-      var dist = 1100 + level * 180 + (bossLevel ? 420 : 0);
-      var timeSec = 40 + level * 5 + (bossLevel ? 25 : 0);
-      var scrollSpeed = 2.8 + level * 0.38;
-      var enemyCount = bossLevel ? 2 + Math.floor(level / 4) : 3 + Math.floor(level * 0.45);
-      var gap = Math.max(130, 190 - level * 3);
+      var enemyCount = 10;
+      var gap = 170 + level * 7;
+      var startX = 520 + W * 1.15;
+      var scrollSpeed = 1.75 + level * 0.2;
+      var timeSec = 70 + level * 6 + (bossLevel ? 25 : 0);
       var obstacles = [];
-      var x = 220;
+      var x = startX;
       for (var i = 0; i < enemyCount; i++) {
         var e = familyEnemies[i % familyEnemies.length];
         obstacles.push({
           x: x, w: 44, type: e.type, emoji: e.emoji, label: e.label,
           boss: false, stompHp: 1, dead: false, dying: 0, flash: 0, remove: false
         });
-        x += gap + (i % 2 === 0 ? 30 : 0);
+        x += gap;
       }
+      var dist = x + 220;
       var boss = null;
       if (bossLevel && bossRoster[level]) {
         var b = bossRoster[level];
@@ -619,7 +629,7 @@
           patrolT: 0
         };
         obstacles.push({
-          x: dist - 680,
+          x: dist - 360,
           w: 70,
           type: "boss",
           emoji: b.emoji,
@@ -633,7 +643,7 @@
           remove: false
         });
         obstacles.push({
-          x: dist - 420,
+          x: dist - 180,
           w: 70,
           type: "boss",
           emoji: b.emoji,
@@ -646,6 +656,7 @@
           flash: 0,
           remove: false
         });
+        dist += 120;
       }
       return {
         dist: dist,
@@ -653,12 +664,13 @@
         scrollSpeed: scrollSpeed,
         obstacles: obstacles,
         boss: boss,
-        pickupX: dist - 140
+        pickupX: dist - 120
       };
     }
 
     function startLevel() {
-      var cfg = levelConfig(state.level);
+      cv.resize();
+      var cfg = levelConfig(state.level, cv.W);
       state.scroll = 0;
       state.levelDist = cfg.dist;
       state.scrollSpeed = cfg.scrollSpeed;
@@ -678,8 +690,10 @@
       state.spawnT = 0;
       state.levelBanner = 50;
       state.px = 70;
+      state.py = cv.H - 72;
       state.vy = 0;
       state.grounded = true;
+      state.lastTs = 0;
       syncHud();
     }
 
@@ -795,6 +809,7 @@
       var btn = document.getElementById("action-start-btn");
       if (btn) btn.textContent = "▶ Start game";
       state.running = true;
+      state.lastTs = 0;
       loop();
     }
 
@@ -805,18 +820,22 @@
       var W = cv.W;
       var H = cv.H;
       var groundY = H - 40;
+      var now = performance.now();
+      if (!state.lastTs) state.lastTs = now;
+      var dt = clamp((now - state.lastTs) / 16.667, 0.65, 2.2);
+      state.lastTs = now;
 
-      if (state.invincible > 0) state.invincible--;
-      if (state.levelBanner > 0) state.levelBanner--;
-      state.timeLeft--;
+      if (state.invincible > 0) state.invincible -= dt;
+      if (state.levelBanner > 0) state.levelBanner -= dt;
+      state.timeLeft -= dt;
       if (state.timeLeft <= 0) {
         timeExpired();
         if (!state.running) return;
       }
 
       if (state.keys.up && state.grounded) state.onJump();
-      state.vy += GRAVITY;
-      state.py += state.vy;
+      state.vy += GRAVITY * dt;
+      state.py += state.vy * dt;
       if (state.py >= groundY - 32) {
         state.py = groundY - 32;
         state.vy = 0;
@@ -825,12 +844,11 @@
         state.grounded = false;
       }
 
-      var speed = state.scrollSpeed;
-      state.scroll += speed;
-      state.spawnT++;
+      state.scroll += state.scrollSpeed * dt;
+      state.spawnT += dt;
 
       if (state.boss) {
-        state.boss.patrolT++;
+        state.boss.patrolT += dt;
       }
 
       state.obstacles.forEach(function (o) {
@@ -849,8 +867,8 @@
       drawSky(ctx, W, H, theme.skyTop, theme.skyBot);
       drawStars(ctx, W, H, state.spawnT);
       drawMoon(ctx, W);
-      drawSkyLanterns(ctx, W, H, state.skyLanterns, state.scroll, state.spawnT, 0.45);
-      drawVillageBg(ctx, W, H, state.scroll, groundY, 0.62);
+      drawSkyLanterns(ctx, W, H, state.skyLanterns, state.scroll, state.spawnT, 0.32);
+      drawVillageBg(ctx, W, H, state.scroll, groundY, 0.38);
       drawGround(ctx, W, H, theme.ground, theme.label, theme.groundAccent, state.scroll);
 
       state.obstacles.forEach(function (o) {
@@ -891,8 +909,8 @@
       }
 
       state.obstacles.forEach(function (o) {
-        if (o.flash > 0) o.flash--;
-        if (o.dead && o.dying > 0) o.dying--;
+        if (o.flash > 0) o.flash -= dt;
+        if (o.dead && o.dying > 0) o.dying -= dt;
         if (o.dead && o.dying <= 0) o.remove = true;
       });
       state.obstacles = state.obstacles.filter(function (o) { return !o.remove; });
