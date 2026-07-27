@@ -669,7 +669,7 @@
             seen.heart = true;
           }
         }
-      } else if (state.bossFight) {
+      } else if (state.bossFight && state.bossFight.phase !== "playerCenter") {
         var bf = state.bossFight;
         var bhop = bossHopY(bf);
         var bsx = bossScreenX(bf);
@@ -759,8 +759,8 @@
       };
     }
 
-    function bossTargetX(bf) {
-      return state.px + 88 + Math.sin(bf.patrolT * 0.08) * 18;
+    function bossStompSlotX(bf) {
+      return state.px + (bf.bossFromLeft ? -92 : 92);
     }
 
     function bossScreenX(bf) {
@@ -769,6 +769,13 @@
 
     function bossHopY(bf) {
       return Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
+    }
+
+    function startBossCharge(bf, W) {
+      bf.bossFromLeft = Math.random() < 0.5;
+      bf.sx = bf.bossFromLeft ? -90 : W + 90;
+      bf.phase = "bossEnter";
+      bf.stompReady = false;
     }
 
     function enterBossPhase(W) {
@@ -780,8 +787,12 @@
       state.bossFight = {
         hp: 5,
         maxHp: 5,
-        sx: W * 0.78,
-        approach: 0,
+        phase: "playerCenter",
+        centerX: W * 0.5,
+        bossFromLeft: Math.random() < 0.5,
+        sx: W + 120,
+        stompReady: false,
+        retreatT: 0,
         emoji: b.emoji,
         label: b.label,
         size: b.size || 56,
@@ -817,6 +828,7 @@
     function resolveBossStomp(groundY) {
       if (!state.bossFight || state.bossFight.hp <= 0) return;
       var bf = state.bossFight;
+      if (!bf.stompReady || bf.phase !== "fight") return;
       var hop = bossHopY(bf);
       var sx = bossScreenX(bf);
       var ey = groundY - 36 - hop;
@@ -834,6 +846,10 @@
           state.bossPhase = false;
           state.pickup.x = state.scroll + cv.W * 0.55;
           state.levelBanner = 70;
+        } else {
+          bf.stompReady = false;
+          bf.phase = "retreat";
+          bf.retreatT = 28;
         }
         return;
       }
@@ -1044,15 +1060,32 @@
         state.scroll = state.bossTriggerScroll;
         var bf = state.bossFight;
         bf.patrolT += dt;
-        var targetX = bossTargetX(bf);
-        if (bf.approach < 1) {
-          bf.approach = Math.min(1, bf.approach + dt * 0.028);
-          bf.sx += (targetX - bf.sx) * Math.min(1, dt * 0.14);
-        } else {
-          bf.sx = targetX;
+        if (bf.phase === "playerCenter") {
+          var cx = bf.centerX;
+          state.px += (cx - state.px) * Math.min(1, dt * 0.14);
+          if (Math.abs(state.px - cx) < 4) {
+            state.px = cx;
+            startBossCharge(bf, W);
+          }
+        } else if (bf.phase === "bossEnter") {
+          var slot = bossStompSlotX(bf);
+          bf.sx += (slot - bf.sx) * Math.min(1, dt * 0.11);
+          if (Math.abs(bf.sx - slot) < 6) {
+            bf.sx = slot;
+            bf.phase = "fight";
+            bf.stompReady = true;
+          }
+        } else if (bf.phase === "fight") {
+          var fightSlot = bossStompSlotX(bf) + Math.sin(bf.patrolT * 0.08) * 10;
+          bf.sx += (fightSlot - bf.sx) * Math.min(1, dt * 0.1);
+          if (bf.flash > 0) bf.flash -= dt;
+          resolveBossStomp(groundY);
+        } else if (bf.phase === "retreat") {
+          var offX = bf.bossFromLeft ? -120 : W + 120;
+          bf.sx += (offX - bf.sx) * Math.min(1, dt * 0.18);
+          bf.retreatT -= dt;
+          if (bf.retreatT <= 0) startBossCharge(bf, W);
         }
-        if (bf.flash > 0) bf.flash -= dt;
-        resolveBossStomp(groundY);
       } else {
         state.scroll += state.scrollSpeed * dt;
         if (state.isBossLevel && !state.bossDefeated && state.bossTriggerScroll &&
@@ -1095,7 +1128,16 @@
         ctx.font = "bold 13px Georgia,serif";
         ctx.fillStyle = "#FEE2E2";
         ctx.textAlign = "center";
-        ctx.fillText("⚔️ BOSS FIGHT — Stomp 5 times!", W / 2, 36);
+        var bossHint = "⚔️ BOSS FIGHT — Stomp 5 times!";
+        if (state.bossFight) {
+          if (state.bossFight.phase === "playerCenter") bossHint = "🏃 Step to the center!";
+          else if (state.bossFight.phase === "bossEnter") {
+            bossHint = state.bossFight.bossFromLeft ? "🐺 Boss charging from the left!" : "🐺 Boss charging from the right!";
+          } else if (state.bossFight.phase === "fight" && state.bossFight.stompReady) {
+            bossHint = "⬆️ Jump ON the boss now!";
+          } else if (state.bossFight.phase === "retreat") bossHint = "💨 Nice stomp! Boss is retreating…";
+          }
+        ctx.fillText(bossHint, W / 2, 36);
       }
       drawGround(ctx, W, H, activeTheme.ground, activeTheme.label, activeTheme.groundAccent,
         state.bossPhase ? 0 : state.scroll);
