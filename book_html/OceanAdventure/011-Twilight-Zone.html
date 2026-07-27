@@ -106,8 +106,8 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 <div class="container">
   <div class="header">
     <h1>🌅 Twilight Zone</h1>
-    <div class="subtitle">Picture · story · explanation · press words to hear × 3 · mini game</div>
-    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span><span class="pill">🎮 Game below</span></div>
+    <div class="subtitle">Picture · story · explanation · press words to hear × 3</div>
+    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span></div>
   </div>
   <p class="scroll-cue">↓ Scroll — each section has its own picture, story, explanation, and words to hear</p>
   
@@ -143,36 +143,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
       <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="migration" onclick="OceanSpeak.chip(this)">migration</button><button type="button" class="speak-chip" data-word="zooplankton" onclick="OceanSpeak.chip(this)">zooplankton</button><button type="button" class="speak-chip" data-word="surface" onclick="OceanSpeak.chip(this)">surface</button><button type="button" class="speak-chip" data-word="daily" onclick="OceanSpeak.chip(this)">daily</button></div></div>
     </div>
   </div>
-  
-  <div class="planet-game">
-    <h2>🌅 Glow Rhythm</h2>
-    <p class="game-desc">Tap glowing creatures when the pulse is brightest — not too early! Avoid sharks.</p>
-    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 55s</span><span id="ogLives">❤️❤️❤️</span></div>
-    <p id="ogHint" style="text-align:center;color:#80deea;font-size:12px;margin:0 0 8px;min-height:18px;"></p>
-    <div class="game-canvas" id="ogCanvasBox">
-      <canvas id="ogCanvas"></canvas>
-      <div class="game-overlay" id="ogStart"><h3>🌅 Glow Rhythm</h3><p>Tap glowing creatures when the pulse is brightest — not too early! Avoid sharks.</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
-      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
-    </div>
-    
-  </div>
-  <script src="_ocean-games.js"></script>
-  <script>OceanGame.boot({
-  "game": "glow-rhythm",
-  "goal": 55,
-  "time": 55,
-  "lives": 3,
-  "good": [
-    "✨",
-    "🦑",
-    "🔦"
-  ],
-  "bad": [
-    "🦈"
-  ],
-  "bgTop": "#1a4480",
-  "bgBot": "#051525"
-});</script>
   <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
 </div>
 <script>

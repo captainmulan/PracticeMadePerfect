@@ -55,6 +55,7 @@ Solar System VS bar + 5 questions + podium finish. Uses `OceanPlayer` for name/a
 | 11–13 | Twilight Zone | Activity → Explained → Quiz |
 | 14–16 | Midnight Zone | Activity → Explained → Quiz |
 | 17–19 | Abyss Zone | Activity → Explained → Quiz |
+| 19b | `019b-Ocean-Zone-Dive.html` | Mid-book game |
 | 20–22 | **Hadal Zone** | Activity → Explained → Quiz |
 | 23–25 | Coral Reefs | Activity → Explained → Quiz |
 | 26–28 | Marine Mammals | Activity → Explained → Quiz |
@@ -66,23 +67,28 @@ Solar System VS bar + 5 questions + podium finish. Uses `OceanPlayer` for name/a
 
 ---
 
-## Chapter minigames
+## Chapter minigames (3 quality games only)
 
-| File | Game | Mechanic |
-|------|------|----------|
-| `005-Ocean-Overview.html` | Zone Sort | Catch ☀️→🌅→🌙→🕳️→⛰️ in order |
-| `008-Sunlight-Zone.html` | Sunbeam Snap | Tap fish in the sunbeam |
-| `011-Twilight-Zone.html` | Glow Rhythm | Tap on pulse beat |
-| `014-Midnight-Zone.html` | Sonar Ping | Tap when sonar reveals creatures |
-| `017-Abyss-Zone.html` | Trench Pilot | ⬆️⬇️ steer through gaps |
-| `020-Hadal-Zone.html` | Trench Ping | Sonar ping in hadal darkness |
-| `023-Coral-Reefs.html` | Reef Match | Memory card pairs |
-| `026-Marine-Mammals.html` | Breath Dive | O₂ bar + surface to breathe |
-| `029-Fish.html` | School Run | 3-lane dodge runner |
+| File | Game | Type |
+|------|------|------|
+| `004-Intro-MyAquarium.html` | My Aquarium | Relaxing stamp sandbox (intro) |
+| `019b-Ocean-Zone-Dive.html` | Zone Dive | Mid-book stomp runner through all zones |
+| `034-Outro-OceanTreasureRush.html` | Treasure Rush | Final lane-collect mission |
+
+Chapter activity pages (008–031) have **no** embedded mini-games — picture · story · explanation · press words to hear only.
+
+### Overview (`005-Ocean-Overview.html`)
+
+**Hand-maintained** — four views (no mini-game): View1 painted depth chart image, View2 surface & depth canvas, View3 sonar cone scan, View4 sub porthole with swimming life.
 
 ---
 
-## Design concept
+## Chapter flow (excerpt)
+
+| # | File | Type |
+|---|------|------|
+| 04 | `004-Intro-MyAquarium.html` | Intro game — aquarium sandbox |
+| 05 | `005-Ocean-Overview.html` | Overview — 4 views (no game) |
 
 | Principle | Implementation |
 |-----------|----------------|
@@ -104,7 +110,8 @@ OceanAdventure/
   _ocean-scenes.js              # OceanScene.boot() — injects <img> into scene slots
   _ocean-speak.js               # OceanSpeak — press words to hear (TTS)
   _ocean-player.js              # OceanPlayer localStorage helper
-  _ocean-games.js               # Shared minigame engine (8 game types)
+  _ocean-action-games.js        # Zone Dive + Treasure Rush (mid/outro)
+  _ocean-games.js               # Legacy mini-game engine (unused by chapters)
   _ocean-draw.js                # Canvas emoji helpers (minigames only)
   _generate-book.cjs            # Regenerate activity / explained / quiz HTML
   _renumber-chapters.cjs        # One-time HTML renumber helper (Hadal insert)

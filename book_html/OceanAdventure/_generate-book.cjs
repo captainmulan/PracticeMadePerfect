@@ -209,12 +209,11 @@ function genActivity(ch) {
 <div class="container">
   <div class="header">
     <h1>${ch.emoji} ${ch.title}</h1>
-    <div class="subtitle">Picture · story · explanation · press words to hear × 3 · mini game</div>
-    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span><span class="pill">🎮 Game below</span></div>
+    <div class="subtitle">Picture · story · explanation · press words to hear × 3</div>
+    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span></div>
   </div>
   <p class="scroll-cue">↓ Scroll — each section has its own picture, story, explanation, and words to hear</p>
   ${segs}
-  ${gameBlock(ch)}
   ${navHint()}
 </div>
 ${bootScenesScript(ch, ch.mainSegments)}

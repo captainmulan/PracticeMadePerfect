@@ -10,14 +10,14 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628,#1a365d,#0f4c75);color:#e0f4ff;min-height:100vh;}
     .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
-    .title{text-align:center;font-size:24px;color:#64ffda;margin:6px 0 4px;}
-    .game-desc{text-align:center;color:#80deea;font-size:14px;margin-bottom:8px;line-height:1.5;padding:0 8px;}
-    .stamp-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px;padding:8px;background:rgba(0,0,0,.28);border-radius:14px;border:1px solid rgba(100,255,218,.25);}
-    .stamp-btn{width:52px;height:52px;border:2px solid rgba(100,255,218,.35);border-radius:14px;background:rgba(100,255,218,.08);font-size:28px;cursor:pointer;touch-action:manipulation;transition:.15s;}
+    .title{text-align:center;font-size:22px;color:#64ffda;margin:4px 0 2px;flex-shrink:0;}
+    .game-desc{text-align:center;color:#80deea;font-size:13px;margin-bottom:6px;line-height:1.45;padding:0 8px;flex-shrink:0;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:6px;padding:6px 8px;background:rgba(0,0,0,.28);border-radius:12px;border:1px solid rgba(100,255,218,.25);max-height:72px;overflow-y:auto;flex-shrink:0;}
+    .stamp-btn{width:40px;height:40px;border:2px solid rgba(100,255,218,.35);border-radius:10px;background:rgba(100,255,218,.08);font-size:22px;cursor:pointer;touch-action:manipulation;transition:.15s;flex-shrink:0;}
     .stamp-btn.selected{border-color:#ffeb3b;background:rgba(255,235,59,.18);box-shadow:0 0 16px rgba(255,235,59,.35);transform:scale(1.06);}
     .stamp-btn:active{transform:scale(.96);}
-    .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;}
-    .tool-btn{padding:8px 14px;border:none;border-radius:10px;background:rgba(255,255,255,.1);color:#cce7ff;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid rgba(100,255,218,.3);}
+    .tool-row{display:flex;gap:6px;justify-content:center;margin-bottom:6px;flex-wrap:wrap;flex-shrink:0;}
+    .tool-btn{padding:6px 12px;border:none;border-radius:10px;background:rgba(255,255,255,.1);color:#cce7ff;font-size:12px;font-weight:bold;cursor:pointer;border:1px solid rgba(100,255,218,.3);}
     .tool-btn:active{transform:scale(.97);}
     .stage-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;}
     .game-stage{position:relative;flex:1 1 auto;min-height:min(52vh,420px);border:2px solid rgba(100,255,218,.45);border-radius:16px;overflow:hidden;background:#062035;touch-action:none;cursor:crosshair;}
@@ -32,6 +32,13 @@
     body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
     body.big-game-page:has(.game-shell) .stage-wrap{flex:1 1 auto!important;min-height:0!important;}
     body.big-game-page:has(.game-shell) .game-stage{flex:1 1 auto!important;min-height:0!important;max-height:none!important;aspect-ratio:unset!important;}
+    @media(orientation:landscape){
+      body.big-game-page:has(.game-shell) .game-shell{max-width:none;padding:4px 10px;}
+      body.big-game-page:has(.game-shell) .stamp-row{max-height:52px;margin-bottom:4px;}
+      body.big-game-page:has(.game-shell) .title{font-size:18px;}
+      body.big-game-page:has(.game-shell) .game-desc{font-size:12px;margin-bottom:4px;}
+      body.big-game-page:has(.game-shell) .nav-hint{display:none;}
+    }
   </style>
 <script>
 (function (w) {
@@ -65,11 +72,21 @@
     <button type="button" class="stamp-btn" data-emoji="🐡" title="Pufferfish">🐡</button>
     <button type="button" class="stamp-btn" data-emoji="🦈" title="Shark">🦈</button>
     <button type="button" class="stamp-btn" data-emoji="🐙" title="Octopus">🐙</button>
+    <button type="button" class="stamp-btn" data-emoji="🦑" title="Squid">🦑</button>
     <button type="button" class="stamp-btn" data-emoji="🐢" title="Turtle">🐢</button>
+    <button type="button" class="stamp-btn" data-emoji="🐬" title="Dolphin">🐬</button>
+    <button type="button" class="stamp-btn" data-emoji="🐋" title="Whale">🐋</button>
+    <button type="button" class="stamp-btn" data-emoji="🐳" title="Whale">🐳</button>
+    <button type="button" class="stamp-btn" data-emoji="🧜‍♀️" title="Mermaid">🧜‍♀️</button>
+    <button type="button" class="stamp-btn" data-emoji="🦭" title="Seal">🦭</button>
+    <button type="button" class="stamp-btn" data-emoji="🦐" title="Shrimp">🦐</button>
+    <button type="button" class="stamp-btn" data-emoji="🪼" title="Jellyfish">🪼</button>
     <button type="button" class="stamp-btn" data-emoji="🪸" title="Coral">🪸</button>
     <button type="button" class="stamp-btn" data-emoji="🪨" title="Rock">🪨</button>
     <button type="button" class="stamp-btn" data-emoji="🐚" title="Shell">🐚</button>
     <button type="button" class="stamp-btn" data-emoji="🌿" title="Seaweed">🌿</button>
+    <button type="button" class="stamp-btn" data-emoji="⭐" title="Starfish">⭐</button>
+    <button type="button" class="stamp-btn" data-emoji="🦀" title="Crab">🦀</button>
   </div>
   <div class="tool-row">
     <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
@@ -146,7 +163,7 @@ function drawEmoji(emoji, x, y, size, flipX) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
-  const faceRe = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐/;
+  const faceRe = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐|🧜/;
   if (flipX && faceRe.test(emoji)) {
     ctx.translate(x, y);
     ctx.scale(-1, 1);
@@ -222,7 +239,7 @@ function placeAt(clientX, clientY) {
   const x = clientX - r.left;
   const y = clientY - r.top;
   if (y > r.height - 36) return;
-  const rockish = selectedEmoji === '🪨' || selectedEmoji === '🪸' || selectedEmoji === '🐚' || selectedEmoji === '🌿';
+  const rockish = selectedEmoji === '🪨' || selectedEmoji === '🪸' || selectedEmoji === '🐚' || selectedEmoji === '🌿' || selectedEmoji === '⭐';
   decorations.push({
     emoji: selectedEmoji,
     x: x,

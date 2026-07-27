@@ -18,6 +18,7 @@ const chapters = [
   ["017", "🕳️", "Abyss Zone", "Activity"],
   ["018", "📖", "Abyss Explained", "Reading"],
   ["019", "❓", "Abyss Quiz", "Quiz Time"],
+  ["019b", "🤿", "Zone Dive", "Mid-Book Game"],
   ["020", "⛰️", "Hadal Zone", "Activity"],
   ["021", "📖", "Hadal Explained", "Reading"],
   ["022", "❓", "Hadal Quiz", "Quiz Time"],

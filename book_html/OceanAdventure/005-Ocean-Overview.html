@@ -19,6 +19,8 @@
     .view-layer{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .32s ease,visibility .32s;pointer-events:none;z-index:1;}
     .view-layer.active{opacity:1;visibility:visible;pointer-events:auto;z-index:2;}
     .view-layer canvas{display:block;width:100%;height:100%;}
+    .view-photo{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;}
+    .view-tap-overlay{position:absolute;inset:0;cursor:pointer;z-index:3;}
     .ctrl-row{display:flex;flex-wrap:nowrap;gap:6px;justify-content:center;margin-top:8px;}
     .ctrl-btn{padding:8px 10px;border:none;border-radius:10px;background:linear-gradient(135deg,#0288d1,#01579b);color:#fff;font-family:inherit;font-size:12px;font-weight:bold;cursor:pointer;flex:1 1 0;min-width:0;white-space:nowrap;}
     .ctrl-btn:active{transform:scale(.96);}
@@ -71,6 +73,7 @@
   };
 })(window);
 </script>
+<script src="_ocean-chapter-images.js"></script>
 </head>
 <body class="all-zones-page">
 <div class="bubbles"></div>
@@ -82,8 +85,9 @@
 
   <div class="panel ocean-panel">
     <div class="view-stage" id="viewStage">
-      <div class="view-layer view-layer-vertical active" data-layer="vertical">
-        <canvas id="canvasVertical" aria-label="First-person view looking up from the seafloor to the surface"></canvas>
+      <div class="view-layer view-layer-hero active" data-layer="hero">
+        <img class="view-photo" id="viewHeroImg" alt="Painted ocean depth chart — five zones from surface to hadal trench" decoding="async">
+        <div class="view-tap-overlay" data-view="hero" aria-label="Tap each depth band to learn"></div>
       </div>
       <div class="view-layer view-layer-surface" data-layer="surface">
         <canvas id="canvasSurface" aria-label="Ocean surface split view"></canvas>
@@ -103,23 +107,8 @@
     </div>
     <div class="info-panel" id="infoPanel">
       <h2>🌊 Our Ocean</h2>
-      <p>Five depth zones from sunlight to the hadal trenches! Switch views: zone gallery, surface, sonar map, or sub porthole. Tap to learn.</p>
+      <p>Five depth zones from sunlight to the hadal trenches! View1: painted depth chart. View2: surface &amp; zones. View3: sonar scan. View4: sub porthole. Tap to learn.</p>
     </div>
-  </div>
-
-  <p class="scroll-cue">↓ Scroll for the Zone Sort mini-game</p>
-
-  <div class="panel minigame-panel">
-    <h2>🌊 Zone Sort</h2>
-    <p class="game-desc">Catch zones in order ☀️ → 🌅 → 🌙 → 🕳️ → ⛰️. Golden rings = correct next zone!</p>
-    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
-    <p id="ogHint" style="text-align:center;color:#80deea;font-size:12px;margin:0 0 8px;min-height:18px;line-height:1.4;"></p>
-    <div class="game-canvas" id="ogCanvasBox">
-      <canvas id="ogCanvas"></canvas>
-      <div class="game-overlay" id="ogStart"><h3>🌊 Zone Sort</h3><p>Catch zones in order ☀️ → 🌅 → 🌙 → 🕳️ → ⛰️. Golden rings = correct next zone!</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
-      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
-    </div>
-    <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
   </div>
 
   <div class="nav-hint">
@@ -147,10 +136,10 @@
   ];
   const ZONE_DEPTHS = ['0–200 m', '200–1,000 m', '1,000–4,000 m', '4,000–6,000 m', '6,000 m+'];
   const VIEW_MODES = [
-    { id: 'vertical', layer: 'vertical', label: 'Seafloor Look-Up', desc: 'First-person view from the ocean floor — lie back and watch sunlight, god rays, and sea life pass overhead. Tap the water above to learn each zone.' },
-    { id: 'surface', layer: 'surface', label: 'Surface & Depth', desc: 'Ships sail, seagulls fly, and waves roll — with all five ocean zones below the surface.' },
-    { id: 'reef', layer: 'reef', label: 'Sonar Map', desc: 'Top-down sonar scan — concentric depth rings from surface to hadal trenches. Tap a ring to learn.' },
-    { id: 'deep', layer: 'deep', label: 'Sub Porthole', desc: 'Look through a submarine window — one zone at a time, close up. Tap to peek at the next depth.' },
+    { id: 'hero', layer: 'hero', label: 'Depth Chart', desc: 'Painted ocean cross-section — a different concept from the live canvas scenes. Tap each band to learn its zone.' },
+    { id: 'surface', layer: 'surface', label: 'Surface & Depth', desc: 'Ships sail, seagulls fly, and waves roll — whale in the abyss zone, mermaid in the hadal zone only.' },
+    { id: 'reef', layer: 'reef', label: 'Sonar Map', desc: 'Submarine sonar cone scan — when the beam sweeps over deep rings, whales and mermaids appear!' },
+    { id: 'deep', layer: 'deep', label: 'Sub Porthole', desc: 'Look through a submarine window — sea life swims across the view. Tap to peek at the next depth.' },
   ];
   const FLEET_TEMPLATE = [
     { emoji: '🐠', zone: 0 }, { emoji: '🐟', zone: 0 }, { emoji: '🐢', zone: 0 }, { emoji: '🐡', zone: 0 },
@@ -181,6 +170,9 @@
     surfaceScene: null,
     portholeIdx: 0,
     portholeAccum: 0,
+    portholeSwimmers: null,
+    sonarReveals: null,
+    sonarSweep: 0,
     currentMode() { return VIEW_MODES[this.viewModeIdx] || VIEW_MODES[0]; },
     activeLayer() { return this.currentMode().layer; },
     speedMult() { return SPEEDS[this.speedIdx] || 1; },
@@ -461,7 +453,7 @@
       }
     },
     resizeAll() {
-      ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => this.resizeCanvas(id));
+      ['canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => this.resizeCanvas(id));
     },
     drawEmoji(ctx, emoji, x, y, size, flipX) {
       ctx.save();
@@ -1119,6 +1111,41 @@
         ctx.fill();
       });
     },
+    initSonarReveals(maxR) {
+      if (this.sonarReveals && this._sonarKey === maxR) return;
+      this._sonarKey = maxR;
+      this.sonarReveals = [
+        { emoji: '🐋', zone: 3, ang: 0.8, rRel: 0.72, alpha: 0, seen: false },
+        { emoji: '🧜‍♀️', zone: 4, ang: 2.4, rRel: 0.88, alpha: 0, seen: false },
+        { emoji: '🐋', zone: 3, ang: 4.5, rRel: 0.65, alpha: 0, seen: false },
+        { emoji: '🐬', zone: 0, ang: 1.2, rRel: 0.35, alpha: 0, seen: false },
+      ];
+    },
+    initPortholeSwimmers(w) {
+      if (this.portholeSwimmers && this._portholeKey === w) return;
+      this._portholeKey = w;
+      var emojis = ['🐠', '🐟', '🐡', '🦑', '🐙', '🦐', '🐢', '🐬'];
+      this.portholeSwimmers = emojis.map(function (e, i) {
+        return {
+          emoji: e,
+          x: Math.random(),
+          yR: 0.25 + (i % 5) * 0.12,
+          dir: Math.random() < 0.5 ? 1 : -1,
+          speed: 0.00045 + Math.random() * 0.00065,
+          size: 0.85 + Math.random() * 0.35,
+          phase: Math.random() * Math.PI * 2,
+        };
+      });
+    },
+    updatePortholeSwimmers(mult) {
+      if (!this.portholeSwimmers) return;
+      var self = this;
+      this.portholeSwimmers.forEach(function (s) {
+        s.x += s.dir * s.speed * mult;
+        if (s.x < -0.08) { s.x = 1.08; s.dir = Math.random() < 0.6 ? 1 : -1; }
+        else if (s.x > 1.08) { s.x = -0.08; s.dir = Math.random() < 0.6 ? -1 : 1; }
+      });
+    },
     updateSurfaceScene(w, horizon, mult) {
       if (!this.surfaceScene) return;
       var sc = this.surfaceScene;
@@ -1148,25 +1175,19 @@
       var self = this;
       var left = opts.left != null ? opts.left : 0;
       var bandW = opts.bandW != null ? opts.bandW : w;
-      var bd = this.backdrop || { volcanoX: 0.1, mermaidX: 0.74, whaleTwilightX: 0.68, whaleMidnightX: 0.22, shipWreckX: 0.62 };
       ZONES.forEach(function (z) {
         var y0 = top + z.top * height;
         var zh = z.h * height;
         if (z.id === 'sunlight' && opts.volcano !== false) {
-          self.drawVolcano(ctx, left + bandW * bd.volcanoX, y0 + zh * 0.94, zh * 0.62, self.t, true);
-          self.drawEmojiFloat(ctx, '🧜‍♀️', left + bandW * bd.mermaidX, y0 + zh * 0.52, Math.min(bandW, height) * 0.11, 1, self.t, 0);
-        }
-        if (z.id === 'twilight') {
-          self.drawEmojiFloat(ctx, '🐋', left + bandW * bd.whaleTwilightX, y0 + zh * 0.52, Math.min(bandW, height) * 0.13, -1, self.t, 1);
-        }
-        if (z.id === 'midnight') {
-          self.drawEmojiFloat(ctx, '🐋', left + bandW * bd.whaleMidnightX, y0 + zh * 0.5, Math.min(bandW, height) * 0.14, 1, self.t, 2);
+          self.drawVolcano(ctx, left + bandW * (self.backdrop ? self.backdrop.volcanoX : 0.1), y0 + zh * 0.94, zh * 0.62, self.t, true);
         }
         if (z.id === 'abyss') {
-          self.drawSunkenShip(ctx, left + bandW * bd.shipWreckX, y0 + zh * 0.68, Math.min(bandW, height) * 0.24);
+          self.drawEmojiFloat(ctx, '🐋', left + bandW * 0.55, y0 + zh * 0.48, Math.min(bandW, height) * 0.13, -1, self.t, 1);
+          self.drawSunkenShip(ctx, left + bandW * (self.backdrop ? self.backdrop.shipWreckX : 0.62), y0 + zh * 0.68, Math.min(bandW, height) * 0.24);
         }
         if (z.id === 'hadal') {
           self.drawHadalTrench(ctx, left + bandW * 0.5, y0 + zh, bandW * 0.55, zh * 0.48);
+          self.drawEmojiFloat(ctx, '🧜‍♀️', left + bandW * 0.48, y0 + zh * 0.42, Math.min(bandW, height) * 0.11, 1, self.t, 0);
           self.drawSnailfish(ctx, left + bandW * 0.38, y0 + zh * 0.55, Math.min(bandW, height) * 0.028, self.t);
         }
       });
@@ -1646,7 +1667,10 @@
       var cy = h * 0.52;
       var maxR = Math.min(w, h) * 0.44;
       var self = this;
+      var mult = this.speedMult();
       this.initEffects(w, h);
+      this.initSonarReveals(maxR);
+      if (this.playing) this.sonarSweep += 0.0018 * mult;
       ctx.fillStyle = '#010a08';
       ctx.fillRect(0, 0, w, h);
       var bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR * 1.1);
@@ -1671,16 +1695,8 @@
         ctx.beginPath();
         ctx.arc(cx, cy, rOut, 0, Math.PI * 2);
         ctx.stroke();
-        var midR = (rIn + rOut) * 0.5;
-        var la = -Math.PI / 2 + i * 0.4;
-        var lx = cx + Math.cos(la) * midR;
-        var ly = cy + Math.sin(la) * midR;
-        ctx.fillStyle = 'rgba(180,230,200,0.82)';
-        ctx.font = '600 9px ' + LABEL_FONT;
-        ctx.textAlign = 'center';
-        ctx.fillText(z.name.split(' ')[0], lx, ly);
       });
-      if (this.playing) this.updateFleet(w, this.speedMult());
+      if (this.playing) this.updateFleet(w, mult);
       else if (!this.fleet) this.initFleet(w);
       this.fleet.forEach(function (f, i) {
         var z = ZONES[f.zone];
@@ -1696,32 +1712,58 @@
         ctx.arc(bx, by, 3 + ping * 2, 0, Math.PI * 2);
         ctx.fill();
       });
-      var sweep = this.t * 0.0018 * this.speedMult();
-      var sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR);
-      sg.addColorStop(0, 'rgba(80,255,140,0.08)');
-      sg.addColorStop(0.85, 'rgba(80,255,140,0.02)');
-      sg.addColorStop(1, 'rgba(0,0,0,0)');
+      var sweep = this.sonarSweep;
+      var beamHalf = 0.38;
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(sweep);
-      ctx.fillStyle = sg;
+      var cone = ctx.createRadialGradient(0, 0, 0, 0, 0, maxR);
+      cone.addColorStop(0, 'rgba(255,250,220,0.22)');
+      cone.addColorStop(0.55, 'rgba(120,255,180,0.12)');
+      cone.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = cone;
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.arc(0, 0, maxR, -0.35, 0.35);
+      ctx.arc(0, 0, maxR, -beamHalf, beamHalf);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = 'rgba(120,255,180,0.55)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(120,255,180,0.65)';
+      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, 0);
       ctx.lineTo(maxR, 0);
       ctx.stroke();
       ctx.restore();
+      this.sonarReveals.forEach(function (rev) {
+        var z = ZONES[rev.zone];
+        var rIn = maxR * z.top;
+        var rOut = maxR * (z.top + z.h);
+        var rr = rIn + (rOut - rIn) * rev.rRel;
+        var bx = cx + Math.cos(rev.ang) * rr;
+        var by = cy + Math.sin(rev.ang) * rr;
+        var relAng = Math.atan2(by - cy, bx - cx);
+        var diff = relAng - sweep;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        if (Math.abs(diff) < beamHalf + 0.12) {
+          rev.alpha = Math.min(1, rev.alpha + 0.06 * mult);
+          rev.seen = true;
+        } else {
+          rev.alpha = Math.max(0, rev.alpha - 0.02 * mult);
+        }
+        if (rev.alpha > 0.05) {
+          var sz = (rev.emoji === '🐋' || rev.emoji === '🧜‍♀️') ? Math.min(w, h) * 0.11 : Math.min(w, h) * 0.07;
+          ctx.save();
+          ctx.globalAlpha = rev.alpha;
+          self.drawEmoji(ctx, rev.emoji, bx, by, sz, false);
+          ctx.restore();
+        }
+      });
       this.drawSubmarineSilhouette(ctx, cx, cy, 0.85, 1);
       ctx.fillStyle = 'rgba(100,255,180,0.7)';
       ctx.font = '600 10px ' + LABEL_FONT;
       ctx.textAlign = 'center';
-      ctx.fillText('SONAR — depth rings', cx, h - 14);
+      ctx.fillText('SONAR — cone scan (like sub spotlight)', cx, h - 14);
     },
     drawPorthole(w, h) {
       var ctx = this.ctxs.canvasDeep;
@@ -1739,6 +1781,8 @@
       }
       var zi = this.portholeIdx;
       var z = ZONES[zi];
+      this.initPortholeSwimmers(w);
+      if (this.playing) this.updatePortholeSwimmers(this.speedMult());
       ctx.fillStyle = '#010508';
       ctx.fillRect(0, 0, w, h);
       ctx.save();
@@ -1755,7 +1799,6 @@
       if (z.id === 'sunlight') {
         self.drawSandBed(ctx, R * 2, floorInView, R * 0.38, z.id);
         self.drawCaustics(ctx, R * 2, cy - R, R * 2, self.t, cx - R);
-        self.drawEmojiFloat(ctx, '🧜‍♀️', cx + R * 0.28, cy + R * 0.2, R * 0.14, 1, self.t, 0);
         self.terrain.corals.slice(0, 8).forEach(function (c) {
           self.drawCoral(ctx, cx - R + (c.x / w) * R * 2, floorInView - 4, c.h * 0.95, c.type, c.hue);
         });
@@ -1772,14 +1815,12 @@
       }
       if (z.id === 'twilight') {
         self.drawSandBed(ctx, R * 2, floorInView, R * 0.25, z.id);
-        self.drawEmojiFloat(ctx, '🐋', cx + R * 0.12, cy, R * 0.16, -1, self.t, 1);
         self.terrain.seaFans.slice(0, 3).forEach(function (f) {
           self.drawSeaFan(ctx, cx - R + (f.x / w) * R * 2, floorInView - 1, f.h * 0.6, f.hue, self.t, f.phase);
         });
       }
       if (z.id === 'midnight') {
         self.drawSandBed(ctx, R * 2, floorInView, R * 0.2, z.id);
-        self.drawEmojiFloat(ctx, '🐋', cx - R * 0.1, cy, R * 0.17, 1, self.t, 2);
         for (var bi = 0; bi < 14; bi++) {
           var bx = cx - R + ((bi * 47) % (R * 2));
           var by = cy - R * 0.45 + ((bi * 31) % (R * 1.1));
@@ -1812,13 +1853,15 @@
           ctx.fill();
         }
       }
-      if (this.playing) this.updateFleet(w, this.speedMult());
-      else if (!this.fleet) this.initFleet(w);
-      this.fleet.filter(function (f) { return f.zone === zi; }).forEach(function (f) {
-        var fy = cy + Math.sin(self.t * f.wobbleSp + f.wobblePh) * 12;
-        var fx = cx - R + (f.x / w) * R * 2;
-        self.drawEmoji(ctx, f.emoji, fx, fy, Math.min(w, h) * 0.09 * f.size, self.shouldFlip(f));
-      });
+      if (this.portholeSwimmers) {
+        this.portholeSwimmers.forEach(function (s) {
+          var sx = cx - R + s.x * R * 2;
+          var sy = cy - R * 0.35 + s.yR * R * 1.1;
+          var bob = Math.sin(self.t * 0.002 + s.phase) * 6;
+          var sz = Math.min(w, h) * 0.08 * s.size;
+          self.drawEmoji(ctx, s.emoji, sx, sy + bob, sz, s.dir > 0 && FACE_RE.test(s.emoji));
+        });
+      }
       self.drawBubbles(ctx, w, h, cy - R, cy + R);
       ctx.restore();
       ctx.fillStyle = 'rgba(2,6,10,0.97)';
@@ -1861,8 +1904,7 @@
       const w = stage.clientWidth;
       const h = stage.clientHeight;
       const layer = this.activeLayer();
-      if (layer === 'vertical') this.drawVertical(w, h);
-      else if (layer === 'surface') this.drawSurface(w, h);
+      if (layer === 'surface') this.drawSurface(w, h);
       else if (layer === 'reef') this.drawSonar(w, h);
       else if (layer === 'deep') this.drawPorthole(w, h);
     },
@@ -1880,10 +1922,10 @@
     },
     hitZoneAt(x, y, w, h) {
       var layer = this.activeLayer();
-      if (layer === 'vertical') {
+      if (layer === 'hero') {
         var rel = y / h;
-        for (var vi = ZONES.length - 1; vi >= 0; vi--) {
-          if (rel >= ZONES[vi].top) { this.showZone(ZONES[vi]); return; }
+        for (var hi = ZONES.length - 1; hi >= 0; hi--) {
+          if (rel >= ZONES[hi].top) { this.showZone(ZONES[hi]); return; }
         }
         return;
       }
@@ -1914,7 +1956,20 @@
     },
     bindTap() {
       var self = this;
-      var canvasIds = ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'];
+      var heroImg = document.getElementById('viewHeroImg');
+      if (heroImg && !heroImg._zoneTap) {
+        heroImg._zoneTap = true;
+        var heroLayer = heroImg.closest('.view-layer');
+        var hitHero = function (e) {
+          if (!heroLayer || !heroLayer.classList.contains('active')) return;
+          var r = heroImg.getBoundingClientRect();
+          var p = e.touches ? e.touches[0] : e;
+          self.hitZoneAt(p.clientX - r.left, p.clientY - r.top, r.width, r.height);
+        };
+        heroImg.addEventListener('click', hitHero);
+        heroImg.addEventListener('touchstart', function (e) { e.preventDefault(); hitHero(e); }, { passive: false });
+      }
+      var canvasIds = ['canvasSurface', 'canvasReef', 'canvasDeep'];
       canvasIds.forEach(function (id) {
         var c = self.canvases[id];
         if (!c || c._zoneTap) return;
@@ -1929,10 +1984,15 @@
       });
     },
     init() {
-      ['canvasVertical', 'canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => {
+      ['canvasSurface', 'canvasReef', 'canvasDeep'].forEach(id => {
         this.canvases[id] = document.getElementById(id);
         this.ctxs[id] = this.canvases[id].getContext('2d');
       });
+      var heroImg = document.getElementById('viewHeroImg');
+      if (heroImg && window.OceanChapterImage) {
+        var uri = OceanChapterImage.getUri('overview', 'view-1');
+        if (uri) heroImg.src = uri;
+      }
       this.info = document.getElementById('infoPanel');
       this.resizeAll();
       this.bindTap();
@@ -1964,7 +2024,9 @@
         this._fxKey = null;
         this.portholeIdx = 0;
         this.portholeAccum = 0;
-        this.lookUpPhase = 0;
+        this.portholeSwimmers = null;
+        this.sonarReveals = null;
+        this.sonarSweep = 0;
         document.getElementById('btnPlay').textContent = '⏸️ Pause';
         document.getElementById('btnSpeed').textContent = '🐠 0.5×';
         document.getElementById('btnViewMode').textContent = '👁️ View1';
@@ -1979,31 +2041,6 @@
 
   Ocean.init();
 })();
-</script>
-
-
-<script src="_ocean-games.js"></script>
-<script>
-OceanGame.boot({
-  "game": "zone-sort",
-  "goal": 60,
-  "time": 60,
-  "lives": 3,
-  "good": [
-    "☀️",
-    "🌅",
-    "🌙",
-    "🕳️",
-    "⛰️"
-  ],
-  "bad": [
-    "🗑️",
-    "🛢️"
-  ],
-  "player": "🤿",
-  "bgTop": "#1565c0",
-  "bgBot": "#002171"
-});
 </script>
 </body>
 </html>
