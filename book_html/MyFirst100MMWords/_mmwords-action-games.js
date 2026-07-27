@@ -2055,7 +2055,8 @@
     var scoreEl = document.getElementById(opts.scoreId || "action-score");
     var maxLevel = opts.target || 10;
     var maxLives = 3;
-    var levelTimes = [75, 72, 68, 65, 62, 58, 55, 52, 48, 45];
+    var giftsPerLevel = 5;
+    var levelTimes = [120, 115, 110, 105, 100, 95, 90, 85, 80, 75];
     var hero = playerEmoji();
     var overlayEl = document.getElementById("action-start-overlay");
     var state = {
@@ -2080,6 +2081,7 @@
       timeTotal: 0,
       lastTs: 0,
       levelBanner: 0,
+      giftsThisLevel: 0,
       finale: false,
       finaleT: 0,
       raf: null
@@ -2189,14 +2191,14 @@
 
     function walkBounds(W, H) {
       return {
-        minX: W * 0.08,
-        maxX: W * 0.92,
-        minY: H * 0.44,
-        maxY: H * 0.86,
+        minX: W * 0.06,
+        maxX: W * 0.94,
+        minY: H * 0.26,
+        maxY: H * 0.92,
         cx: W * 0.5,
-        cy: H * 0.64,
-        rx: W * 0.4,
-        ry: H * 0.17
+        cy: H * 0.56,
+        rx: W * 0.43,
+        ry: H * 0.24
       };
     }
 
@@ -2219,17 +2221,63 @@
 
     function houseSlots() {
       return [
-        { x: 0.2, y: 0.58 }, { x: 0.38, y: 0.52 }, { x: 0.55, y: 0.56 },
-        { x: 0.72, y: 0.54 }, { x: 0.32, y: 0.68 }, { x: 0.65, y: 0.7 }
+        { x: 0.18, y: 0.62 }, { x: 0.34, y: 0.54 }, { x: 0.52, y: 0.58 },
+        { x: 0.7, y: 0.55 }, { x: 0.26, y: 0.72 }, { x: 0.64, y: 0.74 }
       ];
     }
 
-    function layoutVillage(W, H, level) {
+    function addPatrolHazard(type, w, level) {
+      var fromLeft = Math.random() < 0.5;
+      var laneY = w.cy + (Math.random() - 0.5) * w.ry * 1.35;
+      laneY = clamp(laneY, w.minY + 10, w.maxY - 10);
+      var startX = fromLeft ? w.minX + 8 : w.maxX - 8;
+      var endX = fromLeft ? w.maxX - 8 : w.minX + 8;
+      var endY = w.cy + (Math.random() - 0.5) * w.ry * 1.1;
+      endY = clamp(endY, w.minY + 10, w.maxY - 10);
+      var start = clampToWalk(startX, laneY, w);
+      var end = clampToWalk(endX, endY, w);
+      state.hazards.push({
+        x: start.x, y: start.y, type: type, r: 22,
+        tx: end.x, ty: end.y,
+        speed: 2.6 + level * 0.14,
+        patrol: true
+      });
+    }
+
+    function setPatrolTarget(z, w) {
+      var fromLeft = z.x < w.cx;
+      var laneY = w.cy + (Math.random() - 0.5) * w.ry * 1.3;
+      laneY = clamp(laneY, w.minY + 10, w.maxY - 10);
+      var endX = fromLeft ? w.maxX - 8 : w.minX + 8;
+      var end = clampToWalk(endX, laneY, w);
+      z.tx = end.x;
+      z.ty = end.y;
+    }
+
+    function movePatrolHazard(z, w, dt) {
+      var dx = z.tx - z.x;
+      var dy = z.ty - z.y;
+      var d = Math.sqrt(dx * dx + dy * dy) || 1;
+      z.x += (dx / d) * z.speed * dt;
+      z.y += (dy / d) * z.speed * dt;
+      if (d < 14) setPatrolTarget(z, w);
+      var pos = clampToWalk(z.x, z.y, w);
+      z.x = pos.x;
+      z.y = pos.y;
+    }
+
+    function layoutVillage(W, H, level, keepPlayer) {
       var w = walkBounds(W, H);
       state.walk = w;
-      var pos = clampToWalk(w.cx, w.maxY - 16, w);
-      state.px = pos.x;
-      state.py = pos.y;
+      if (keepPlayer && state.px && state.py) {
+        var kept = clampToWalk(state.px, state.py, w);
+        state.px = kept.x;
+        state.py = kept.y;
+      } else {
+        var pos = clampToWalk(w.cx, w.maxY - 20, w);
+        state.px = pos.x;
+        state.py = pos.y;
+      }
       state.houses = [];
       var slots = houseSlots();
       var count = Math.min(4 + Math.floor(level / 3), slots.length);
@@ -2255,22 +2303,21 @@
         { type: "thief", count: level >= 6 ? 1 : 0 }
       ];
       hazardPlan.forEach(function (plan) {
-        var added = 0;
-        var tries = 0;
-        while (added < plan.count && tries++ < 24) {
-          var hx = w.minX + Math.random() * (w.maxX - w.minX);
-          var hy = w.minY + Math.random() * (w.maxY - w.minY);
-          if (!inWalkZone(hx, hy, w)) continue;
-          var clash = state.houses.some(function (h) { return dist(hx, hy, h.x, h.y) < 58; });
-          if (!clash) clash = state.hazards.some(function (z) { return dist(hx, hy, z.x, z.y) < 44; });
-          if (clash) continue;
-          var mobile = plan.type !== "puddle";
-          state.hazards.push({
-            x: hx, y: hy, type: plan.type, r: mobile ? 22 : 24,
-            vx: mobile ? (Math.random() < 0.5 ? -1 : 1) * (0.85 + level * 0.06) : 0,
-            vy: mobile ? (Math.random() < 0.5 ? -1 : 1) * (0.65 + level * 0.05) : 0
-          });
-          added++;
+        if (plan.type === "puddle") {
+          var added = 0;
+          var tries = 0;
+          while (added < plan.count && tries++ < 24) {
+            var hx = w.minX + Math.random() * (w.maxX - w.minX);
+            var hy = w.minY + Math.random() * (w.maxY - w.minY);
+            if (!inWalkZone(hx, hy, w)) continue;
+            var clash = state.houses.some(function (h) { return dist(hx, hy, h.x, h.y) < 58; });
+            if (!clash) clash = state.hazards.some(function (z) { return dist(hx, hy, z.x, z.y) < 44; });
+            if (clash) continue;
+            state.hazards.push({ x: hx, y: hy, type: "puddle", r: 24, patrol: false });
+            added++;
+          }
+        } else {
+          for (var pi = 0; pi < plan.count; pi++) addPatrolHazard(plan.type, w, level);
         }
       });
       state.villagers = [];
@@ -2289,6 +2336,29 @@
       state.houses.forEach(function (h, i) {
         h.glow = i === state.targetHouse ? 1 : 0;
       });
+    }
+
+    function spawnLanternNearPlayer() {
+      var w = state.walk;
+      if (!w) return;
+      var tries = 0;
+      while (tries++ < 20) {
+        var lx = state.px + (Math.random() - 0.5) * 140;
+        var ly = state.py + (Math.random() - 0.5) * 90;
+        if (!inWalkZone(lx, ly, w)) continue;
+        var ok = true;
+        state.houses.forEach(function (h) {
+          if (dist(lx, ly, h.x, h.y) < 48) ok = false;
+        });
+        state.hazards.forEach(function (z) {
+          if (dist(lx, ly, z.x, z.y) < 34) ok = false;
+        });
+        if (ok) {
+          state.lanterns.push({ x: lx, y: ly, bob: Math.random() * 6 });
+          return;
+        }
+      }
+      spawnLantern();
     }
 
     function spawnLantern() {
@@ -2315,20 +2385,22 @@
 
     function hudGoal() {
       if (state.finale) return "Celebrate!";
-      if (state.carrying) return "Deliver to the glowing house!";
-      return "Collect a lantern";
+      var n = state.giftsThisLevel + 1;
+      if (state.carrying) return "Gift " + n + "/" + giftsPerLevel + " — deliver!";
+      return "Gift " + n + "/" + giftsPerLevel + " — collect 🏮";
     }
 
     function syncHud() {
       updateLanternHud(scoreEl, state.level, maxLevel, state.lives, hudGoal(), state.timeLeft / 60);
     }
 
-    function startLevel() {
+    function startLevel(keepPlayer) {
       cv.resize();
-      layoutVillage(cv.W, cv.H, state.level);
-      var sec = levelTimes[Math.min(state.level - 1, levelTimes.length - 1)] || 45;
+      layoutVillage(cv.W, cv.H, state.level, !!keepPlayer);
+      var sec = levelTimes[Math.min(state.level - 1, levelTimes.length - 1)] || 75;
       state.timeTotal = sec * 60;
       state.timeLeft = sec * 60;
+      if (!keepPlayer) state.giftsThisLevel = 0;
       state.carrying = false;
       state.targetHouse = -1;
       state.stun = 0;
@@ -2336,6 +2408,24 @@
       spawnLantern();
       spawnLantern();
       syncHud();
+    }
+
+    function onGiftDelivered() {
+      state.giftsThisLevel++;
+      state.carrying = false;
+      state.targetHouse = -1;
+      addVillager();
+      spawnLanternNearPlayer();
+      if (state.lanterns.length < 2) spawnLantern();
+      syncHud();
+      if (state.giftsThisLevel >= giftsPerLevel) {
+        advanceLevel();
+        return;
+      }
+      state.houses.forEach(function (h) {
+        h.lit = false;
+        h.glow = 0;
+      });
     }
 
     function reset(full) {
@@ -2349,7 +2439,7 @@
       if (full && overlayEl) {
         var msg = overlayEl.querySelector("p");
         if (msg) {
-          msg.textContent = "10 levels! Collect lanterns on the path. Dodge 💧 puddles, 🐕 dogs, 🐺 wolves & 🥷 thieves. Deliver gifts before time runs out — 3 hearts!";
+          msg.textContent = "10 levels — deliver 5 gifts per level without resetting! Dogs & wolves cross the path. Dodge and keep moving from where you are — 3 hearts!";
         }
       }
     }
@@ -2385,14 +2475,18 @@
         return;
       }
       state.level++;
-      startLevel();
+      state.giftsThisLevel = 0;
+      startLevel(false);
     }
 
     function timeExpired() {
       state.lives--;
       syncHud();
       if (state.lives <= 0) gameOver();
-      else startLevel();
+      else {
+        state.giftsThisLevel = 0;
+        startLevel(false);
+      }
     }
 
     function addVillager() {
@@ -2449,13 +2543,13 @@
     }
 
     function drawWalkPath(ctx, W, H, w) {
-      ctx.fillStyle = "rgba(34,197,94,.65)";
-      ctx.fillRect(0, H * 0.38, W, H * 0.62);
-      ctx.fillStyle = "rgba(180,83,9,.45)";
+      ctx.fillStyle = "rgba(34,197,94,.72)";
+      ctx.fillRect(0, H * 0.2, W, H * 0.8);
+      ctx.fillStyle = "rgba(180,83,9,.5)";
       ctx.beginPath();
       ctx.ellipse(w.cx, w.cy, w.rx, w.ry, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(251,191,36,.55)";
+      ctx.strokeStyle = "rgba(251,191,36,.6)";
       ctx.lineWidth = 3;
       ctx.setLineDash([8, 6]);
       ctx.beginPath();
@@ -2497,15 +2591,7 @@
         state.py = clamped.y;
 
         state.hazards.forEach(function (z) {
-          if (z.type !== "puddle") {
-            z.x += z.vx * dt;
-            z.y += z.vy * dt;
-            if (z.x < w.minX || z.x > w.maxX) z.vx *= -1;
-            if (z.y < w.minY || z.y > w.maxY) z.vy *= -1;
-            var mobClamp = clampToWalk(z.x, z.y, w);
-            z.x = mobClamp.x;
-            z.y = mobClamp.y;
-          }
+          if (z.patrol) movePatrolHazard(z, w, dt);
           if (dist(state.px, state.py, z.x, z.y) < z.r + 16) bumpHazard();
         });
 
@@ -2524,15 +2610,9 @@
         if (state.carrying && state.targetHouse >= 0) {
           var th = state.houses[state.targetHouse];
           if (th && dist(state.px, state.py, th.x, th.y) < 50) {
-            state.carrying = false;
             th.lit = true;
             th.glow = 1;
-            state.targetHouse = -1;
-            addVillager();
-            if (state.villagers.length < 8) addVillager();
-            spawnLantern();
-            syncHud();
-            advanceLevel();
+            onGiftDelivered();
             if (!state.running) return;
           }
         }
@@ -2550,8 +2630,9 @@
 
       var sky = ctx.createLinearGradient(0, 0, 0, H);
       sky.addColorStop(0, "#1e1b4b");
-      sky.addColorStop(0.4, "#312e81");
-      sky.addColorStop(1, "#166534");
+      sky.addColorStop(0.18, "#312e81");
+      sky.addColorStop(0.24, "#166534");
+      sky.addColorStop(1, "#15803d");
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, W, H);
 
@@ -2611,7 +2692,7 @@
         ctx.font = "bold 14px Georgia,serif";
         ctx.fillStyle = "#FFF8E7";
         ctx.textAlign = "center";
-        ctx.fillText("Level " + state.level + " — deliver a gift before time runs out!", W / 2, H * 0.22 + 25);
+        ctx.fillText("Level " + state.level + " — deliver " + giftsPerLevel + " gifts in a row!", W / 2, H * 0.22 + 25);
       }
     }
 
