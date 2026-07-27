@@ -67,8 +67,12 @@ export function resolveImportBookHtmlFolder(
   return uploadFolderName ?? "Imported Book";
 }
 
+/** Relative book scripts/assets (e.g. _ocean-img-overview.js, assets/foo.png) need a base href in srcDoc. */
 function usesRelativeBookAssets(html: string): boolean {
-  return /(?:href|src)=["'](?:_mmwords-|assets\/)/i.test(html);
+  return (
+    /(?:href|src)=["'](?!https?:|\/|data:)(?:_|assets\/)/i.test(html) ||
+    /<script[^>]+src=["']_/i.test(html)
+  );
 }
 
 export function buildHtmlStepSrcDoc(contentHtml: string, bookHtmlFolder?: string | null): string {

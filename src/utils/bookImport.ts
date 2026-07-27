@@ -190,9 +190,17 @@ export function bookHtmlIframeContent(folderName: string, fileName: string): str
   return `<iframe src="/book_html/${folderName}/${fileName}" style="width:100%;height:100%;border:none;"></iframe>`;
 }
 
+export function usesExternalBookAssets(content: string): boolean {
+  return (
+    content.includes("data:image") ||
+    /<script[^>]+src=["']_/i.test(content) ||
+    /(?:href|src)=["']assets\//i.test(content)
+  );
+}
+
 export function shouldUseBookHtmlIframe(file: File, sample = ""): boolean {
   if (file.size > MAX_INLINE_HTML_BYTES) return true;
-  return sample.includes("data:image");
+  return usesExternalBookAssets(sample);
 }
 
 export function resolveStepContentHtml(
@@ -200,7 +208,7 @@ export function resolveStepContentHtml(
   fileName: string,
   content: string,
 ): string {
-  if (content.length > MAX_INLINE_HTML_BYTES || content.includes("data:image")) {
+  if (content.length > MAX_INLINE_HTML_BYTES || usesExternalBookAssets(content)) {
     return bookHtmlIframeContent(folderName, fileName);
   }
   return content;
