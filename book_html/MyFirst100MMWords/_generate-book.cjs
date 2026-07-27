@@ -48,26 +48,15 @@ function imgHtml(chapterId, slot, alt) {
   return `<img class="chapter-hero-img" src="${uri}" alt="${esc(alt)}" decoding="async">`;
 }
 
-const CHAPTER_CSS = `.container{max-width:680px;margin:0 auto;padding:22px 18px 36px;position:relative;z-index:1;}
-body.main-chapter-page{padding:8px;height:100dvh;max-height:100dvh;overflow:hidden;}
-.main-chapter-page .manuscript-bg,.main-chapter-page .container{
-  min-height:0;max-height:100%;display:flex;flex-direction:column;overflow:hidden;
-}
-.main-chapter-page .manuscript-bg{width:100%;height:100%;align-items:stretch;}
-.main-chapter-page .container{flex:1 1 auto;height:auto;max-width:100%;width:100%;margin:0;padding:8px 14px 10px;}
-@media(min-width:1024px){
-  body.main-chapter-page{height:auto;min-height:100dvh;max-height:none;overflow-y:auto;}
-  .main-chapter-page .manuscript-bg,.main-chapter-page .container{max-height:none;overflow:visible;}
-  .main-chapter-page .manuscript-bg{height:auto;min-height:100dvh;}
-}
-.explained-page{overflow:hidden;}
-body.explained-page{padding:8px;}
-@media(min-width:768px){body.explained-page{padding:10px 12px;}}
-.explained-page .manuscript-bg,.explained-page .container{
-  height:100dvh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;
-}
+const CHAPTER_CSS = `.container{width:100%;max-width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 28px;position:relative;z-index:1;}
+@media(min-width:1200px){.container{max-width:1400px;margin:0 auto;}}
+body.main-chapter-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
+.main-chapter-page .manuscript-bg,.main-chapter-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
+.explained-page{overflow-x:hidden;overflow-y:auto;}
+body.explained-page{padding:0;}
+.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:flex;flex-direction:column;overflow:visible;}
 .explained-page .manuscript-bg{width:100%;align-items:stretch;}
-.explained-page .container{max-width:100%;width:100%;margin:0;padding:10px 18px 8px;}`;
+.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 20px;}`;
 
 function pad(n) { return String(n).padStart(3, "0"); }
 function slug(title) { return title.replace(/\s+/g, "-"); }
@@ -718,16 +707,16 @@ function cleanPartTitle(title) {
     .trim();
 }
 
-function mainWizardPanelHtml(ch, idx, story, words, titles, active) {
+function mainScrollPartHtml(ch, idx, story, words, titles) {
   const slot = "seg" + (idx + 1);
   const pic = imgHtml(ch.id, slot, ch.title + " — part " + (idx + 1));
   return `
-    <div class="wizard-panel chapter-panel${active ? " active" : ""}" id="cw-part-${idx}" data-part="${idx + 1}">
-      <div class="chapter-panel-inner">
+    <section class="chapter-part" id="chapter-part-${idx}" aria-labelledby="chapter-part-title-${idx}">
+      <h2 class="chapter-part-title" id="chapter-part-title-${idx}">${esc(titles[idx])}</h2>
+      <div class="chapter-part-inner">
         <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
         <div class="story-row">
           <div class="card story-card">
-            <h2>${esc(titles[idx])}</h2>
             <div class="story-box">${esc(story)}</div>
           </div>
         </div>
@@ -736,7 +725,7 @@ function mainWizardPanelHtml(ch, idx, story, words, titles, active) {
           <div class="word-grid chapter-word-grid">${wordGridHtml(words, ch.id)}</div>
         </div>
       </div>
-    </div>`;
+    </section>`;
 }
 
 function mainGamePanelHtml(ch) {
@@ -769,102 +758,8 @@ function mainGamePanelHtml(ch) {
     </div>`;
 }
 
-function mainChapterWizardHtml(ch, panels) {
-  const dots = [0, 1, 2]
-    .map(
-      (i) =>
-        `<button type="button" class="wizard-dot chapter-wizard-dot" data-part="${i}" aria-label="Story part ${i + 1}"></button>`
-    )
-    .join("");
-
-  return `
-  <div class="wizard-shell chapter-wizard card" id="chapter-wizard" data-parts="3">
-    <div class="chapter-wizard-head">
-      <span class="wizard-progress-text" id="cw-progress">Story 1 of 3</span>
-      <div class="wizard-dots chapter-wizard-dots" id="cw-dots">${dots}</div>
-    </div>
-    <div class="chapter-wizard-stage">
-      ${panels}
-    </div>
-    <div class="chapter-wizard-foot">
-      <button type="button" class="wizard-btn wizard-btn-back" id="cw-back">← Back</button>
-      <button type="button" class="wizard-btn wizard-btn-next" id="cw-next">Next →</button>
-    </div>
-  </div>`;
-}
-
-function mainChapterWizardScript() {
-  return `
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var wizard = document.getElementById('chapter-wizard');
-  if (!wizard) return;
-  var panels = wizard.querySelectorAll('.chapter-panel');
-  var back = document.getElementById('cw-back');
-  var next = document.getElementById('cw-next');
-  var progress = document.getElementById('cw-progress');
-  var dots = wizard.querySelectorAll('.chapter-wizard-dot');
-  var stepIdx = 0;
-  var totalSteps = panels.length;
-
-  function fitPanel() {
-    var panel = wizard.querySelector('.chapter-panel.active .chapter-panel-inner');
-    var stage = wizard.querySelector('.chapter-wizard-stage');
-    if (!panel || !stage) return;
-    panel.style.transform = '';
-    if (window.matchMedia('(min-width: 1024px)').matches) return;
-    var available = stage.clientHeight - 2;
-    var needed = panel.scrollHeight;
-    if (needed > available && available > 0) {
-      var scale = Math.max(0.75, available / needed);
-      panel.style.transform = 'scale(' + scale + ')';
-      panel.style.transformOrigin = 'top center';
-    }
-  }
-
-  function scheduleFit() {
-    requestAnimationFrame(function() {
-      requestAnimationFrame(fitPanel);
-    });
-  }
-
-  function updateUI() {
-    panels.forEach(function(p, i) { p.classList.toggle('active', i === stepIdx); });
-    dots.forEach(function(d, i) {
-      d.classList.toggle('active', i === stepIdx);
-      d.classList.toggle('done', i < stepIdx);
-    });
-    back.disabled = stepIdx === 0;
-    progress.textContent = 'Story ' + (stepIdx + 1) + ' of ' + totalSteps;
-    next.textContent = stepIdx === totalSteps - 1 ? 'Finish ✓' : 'Next →';
-    scheduleFit();
-  }
-
-  back.addEventListener('click', function() {
-    if (stepIdx > 0) { stepIdx--; updateUI(); }
-  });
-
-  next.addEventListener('click', function() {
-    if (stepIdx < totalSteps - 1) { stepIdx++; updateUI(); }
-  });
-
-  dots.forEach(function(d, i) {
-    d.addEventListener('click', function() { stepIdx = i; updateUI(); });
-  });
-
-  updateUI();
-  window.addEventListener('resize', scheduleFit);
-  window.addEventListener('orientationchange', scheduleFit);
-  wizard.querySelectorAll('.chapter-hero-img').forEach(function(img) {
-    if (img.complete) scheduleFit();
-    else img.addEventListener('load', scheduleFit);
-  });
-  if (window.ResizeObserver) {
-    var ro = new ResizeObserver(scheduleFit);
-    ro.observe(wizard.querySelector('.chapter-wizard-stage'));
-  }
-});
-</script>`;
+function mainChapterScrollHtml(panels) {
+  return `<div class="chapter-scroll">${panels}</div>`;
 }
 
 function segmentTitles(ch, kind) {
@@ -881,9 +776,9 @@ function genActivity(ch) {
   const titles = segmentTitles(ch, "main");
   const wordGroups = splitWords(ch.words);
   const panels = [0, 1, 2]
-    .map((i) => mainWizardPanelHtml(ch, i, stories[i], wordGroups[i], titles, i === 0))
+    .map((i) => mainScrollPartHtml(ch, i, stories[i], wordGroups[i], titles))
     .join("");
-  const wizardHtml = mainChapterWizardHtml(ch, panels);
+  const scrollHtml = mainChapterScrollHtml(panels);
 
   const fname = `${pad(ch.num)}-${slug(ch.title)}.html`;
   const html = `${chapterHead(ch.title + " — Learn")}
@@ -893,10 +788,9 @@ function genActivity(ch) {
   <div class="top-bar">
     <h1>${ch.title}</h1>
   </div>
-  ${wizardHtml}
+  ${scrollHtml}
 </div>
 </div>
-${mainChapterWizardScript()}
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
