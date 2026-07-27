@@ -337,15 +337,15 @@ export default function AdminCourses() {
     if (saveImmediately) {
       try {
         await persistCourse(normalized);
-        const summary = toCourseSummary(normalized);
+        const courseSummary = toCourseSummary(normalized);
         setBooks((prev) => {
           const idx = prev.findIndex((book) => book.id === normalized.id);
           if (idx >= 0) {
             const next = prev.slice();
-            next[idx] = summary;
+            next[idx] = courseSummary;
             return next;
           }
-          return [...prev, summary];
+          return [...prev, courseSummary];
         });
         setLoadedBook(normalized);
         setDraftBook(null);
