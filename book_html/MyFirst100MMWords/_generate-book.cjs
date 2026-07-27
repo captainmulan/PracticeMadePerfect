@@ -12,6 +12,8 @@ vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-explained-groups.js"
 const EXPLAINED_GROUPS = sandbox.window.MM_EXPLAINED_GROUPS || {};
 vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-explained-stories.js"), "utf8"), sandbox);
 const EXPLAINED_STORIES = sandbox.window.MM_EXPLAINED_STORIES || {};
+vm.runInNewContext(fs.readFileSync(path.join(DIR, "_mmwords-sentence-lines.js"), "utf8"), sandbox);
+const SENTENCE_LINES = sandbox.window.MM_SENTENCE_LINES || {};
 const CHAPTERS = sandbox.window.MM_CHAPTERS.map((ch) => {
   if (EXPLAINED_GROUPS[ch.id]) {
     return Object.assign({}, ch, { explainedGroups: EXPLAINED_GROUPS[ch.id] });
@@ -27,7 +29,10 @@ const imgCache = {};
 function loadImageUri(chapterId, slot) {
   const key = chapterId + ":" + slot;
   if (imgCache[key] !== undefined) return imgCache[key];
-  const names = [`${chapterId}-${slot}.png`, `${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.svg`];
+  const isSent = /^sent\d+$/.test(slot);
+  const names = isSent
+    ? [`${chapterId}-${slot}.png`, `${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`]
+    : [`${chapterId}-${slot}.png`, `${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.svg`];
   if (LEGACY_IMG[chapterId] && LEGACY_IMG[chapterId][slot]) names.unshift(LEGACY_IMG[chapterId][slot]);
   const fallbacks = {
     seg2: ["seg1"],
@@ -121,6 +126,10 @@ function sentencePoolFor(ch) {
   };
   add(ch.explainedSentences);
   add(ch.practiceSentences);
+  (ch.explainedGroups || []).forEach((g) => {
+    const line = primarySentence(ch.id, g);
+    if (line && line.en && line.mm) add([line]);
+  });
   (ch.words || []).forEach((w) => {
     if (w.useEn && w.useMm) add([{ en: w.useEn, mm: w.useMm }]);
   });
@@ -557,19 +566,25 @@ function explainedSectionMeta(ch, idx, groups) {
   const titles = segmentTitles(ch, "main");
   return {
     title: (fromFile && fromFile.title) || titles[idx] || "Part " + (idx + 1),
-    story: (fromFile && fromFile.story) || defaultGroupTip(groups[0] || {}, ch)
+    story: (fromFile && fromFile.story) || defaultGroupTip(groups[0] || {}, ch),
+    storyLong: (fromFile && fromFile.storyLong) || null
   };
 }
 
-function primarySentence(group) {
+function primarySentence(chId, group) {
+  const fromFile = SENTENCE_LINES[chId] && SENTENCE_LINES[chId][group.title];
+  if (fromFile && fromFile.en) return fromFile;
   const list = group.sentences || [];
-  return list[0] || { en: "", mm: "" };
+  const skip = /^(This is|These are|That is|Look at)/i;
+  const rich = list.filter((s) => s.en && s.mm && !skip.test(s.en.trim()));
+  if (rich.length) return rich.sort((a, b) => b.en.length - a.en.length)[0];
+  return list[list.length - 1] || list[0] || { en: "", mm: "" };
 }
 
-function sentenceGroupsBlockHtml(groups) {
+function sentenceGroupsBlockHtml(chId, groups) {
   return groups
     .map((group) => {
-      const line = primarySentence(group);
+      const line = primarySentence(chId, group);
       const row = sentencePairHtml(line.en, line.mm);
       return `
     <div class="sentence-group-card">
@@ -584,6 +599,9 @@ function explainedScrollPartHtml(ch, idx, groups, titles) {
   const slot = "sent" + (idx + 1);
   const meta = explainedSectionMeta(ch, idx, groups);
   const pic = imgHtml(ch.id, slot, ch.title + " — " + meta.title);
+  const storyLongHtml = meta.storyLong
+    ? `<div class="story-box story-box-landscape">${esc(meta.storyLong)}</div>`
+    : "";
   return `
     <section class="chapter-part sentences-part" id="sentences-part-${idx}" aria-labelledby="sentences-part-title-${idx}">
       <h2 class="chapter-part-title" id="sentences-part-title-${idx}">${esc(meta.title)}</h2>
@@ -591,12 +609,13 @@ function explainedScrollPartHtml(ch, idx, groups, titles) {
         <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
         <div class="story-row">
           <div class="card story-card">
-            <div class="story-box">${esc(meta.story)}</div>
+            <div class="story-box story-box-default">${esc(meta.story)}</div>
+            ${storyLongHtml}
           </div>
         </div>
         <div class="chapter-sentences-block">
           <div class="section-head">Tap 🔊 to hear each sentence</div>
-          <div class="sentences-groups">${sentenceGroupsBlockHtml(groups)}</div>
+          <div class="sentences-groups">${sentenceGroupsBlockHtml(ch.id, groups)}</div>
         </div>
       </div>
     </section>`;
