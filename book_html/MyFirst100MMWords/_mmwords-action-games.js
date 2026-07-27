@@ -230,20 +230,17 @@
     ctx.fillText(emoji, x, y);
   }
 
-  function drawBrightEmoji(ctx, emoji, x, y, size, ring) {
-    var r = size * 0.52;
-    ctx.fillStyle = "#FFFFFF";
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = ring || "#F59E0B";
-    ctx.lineWidth = 2.5;
-    ctx.stroke();
-    ctx.fillStyle = "rgba(251,191,36,.18)";
-    ctx.beginPath();
-    ctx.arc(x, y, r + 5, 0, Math.PI * 2);
-    ctx.fill();
+  function drawCrispEmoji(ctx, emoji, x, y, size) {
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.shadowColor = "rgba(255,255,255,0.85)";
+    ctx.shadowBlur = 6;
     drawEmoji(ctx, emoji, x, y, size);
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "transparent";
+    drawEmoji(ctx, emoji, x, y, size);
+    ctx.restore();
   }
 
   function drawPickup(ctx, emoji, x, y, tick, seed) {
@@ -299,13 +296,17 @@
   }
 
   function drawBrightPlayer(ctx, x, y, emoji, jumping, invincible, tick) {
-    var blink = invincible > 0 && Math.floor(tick / 5) % 2 === 0;
     drawShadow(ctx, x, y + 18, jumping ? 12 : 16);
     ctx.save();
-    if (blink) ctx.globalAlpha = 0.5;
-    ctx.translate(x, y);
-    if (jumping) ctx.scale(1.06, 1.06);
-    drawEmoji(ctx, emoji, 0, 0, 38);
+    ctx.globalAlpha = 1;
+    if (invincible > 0 && Math.floor(tick / 4) % 2 === 0) {
+      ctx.strokeStyle = "#FBBF24";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(x, y, 24, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    drawCrispEmoji(ctx, emoji, x, y, jumping ? 42 : 40);
     ctx.restore();
   }
 
@@ -460,7 +461,7 @@
       ctx.fill();
     }
     drawShadow(ctx, sx, groundY - 6, o.boss ? 22 : 14);
-    drawEmoji(ctx, o.emoji, sx, ey, size);
+    drawCrispEmoji(ctx, o.emoji, sx, ey, size);
     if (o.label) {
       ctx.font = "bold " + (o.boss ? 10 : 9) + "px Georgia,serif";
       ctx.fillStyle = "#FFF8E7";
@@ -491,7 +492,7 @@
       ctx.moveTo(sx, sy - 24 - L.size);
       ctx.lineTo(sx, sy - 10);
       ctx.stroke();
-      drawEmoji(ctx, "🏮", sx, sy, 22 + L.size * 2);
+      drawCrispEmoji(ctx, "🏮", sx, sy, 22 + L.size * 2);
     });
   }
 
@@ -530,6 +531,10 @@
       skyTop: "#312E81", skyBot: "#C084FC", ground: "#6B4423", groundAccent: "#A16207",
       label: "🪔 Thadingyut lane"
     };
+    var bossTheme = {
+      skyTop: "#450a0a", skyBot: "#991b1b", ground: "#44403c", groundAccent: "#78716c",
+      label: "⚔️ Boss arena"
+    };
     var state = {
       running: false,
       keys: { left: false, right: false, up: false, down: false },
@@ -547,14 +552,19 @@
       timeLeft: 0,
       timeTotal: 0,
       obstacles: [],
-      boss: null,
       pickup: null,
       skyLanterns: [],
       spawnT: 0,
       raf: null,
       lastTs: 0,
       onJump: null,
-      isBossLevel: false
+      isBossLevel: false,
+      bossPhase: false,
+      bossDefeated: false,
+      bossFight: null,
+      bossTriggerScroll: 0,
+      flyingHeart: null,
+      heartBonusLevel: 5
     };
     state.onJump = function () {
       if (state.grounded && state.running) {
@@ -603,7 +613,7 @@
       var bossLevel = isBossLevel(level);
       var enemyCount = 10;
       var gap = 170 + level * 7;
-      var startX = 520 + W * 1.15;
+      var startX = 350 + W * 0.72;
       var scrollSpeed = 1.75 + level * 0.2;
       var timeSec = 70 + level * 6 + (bossLevel ? 25 : 0);
       var obstacles = [];
@@ -617,55 +627,98 @@
         x += gap;
       }
       var dist = x + 220;
-      var boss = null;
-      if (bossLevel && bossRoster[level]) {
-        var b = bossRoster[level];
-        boss = {
-          x: dist - 520,
-          emoji: b.emoji,
-          label: b.label,
-          size: b.size,
-          boss: true,
-          patrolT: 0
-        };
-        obstacles.push({
-          x: dist - 360,
-          w: 70,
-          type: "boss",
-          emoji: b.emoji,
-          label: b.label,
-          size: b.size,
-          boss: true,
-          stompHp: 2,
-          dead: false,
-          dying: 0,
-          flash: 0,
-          remove: false
-        });
-        obstacles.push({
-          x: dist - 180,
-          w: 70,
-          type: "boss",
-          emoji: b.emoji,
-          label: b.label,
-          size: b.size,
-          boss: true,
-          stompHp: 2,
-          dead: false,
-          dying: 0,
-          flash: 0,
-          remove: false
-        });
-        dist += 120;
-      }
+      var bossTriggerScroll = bossLevel ? dist - 80 : 0;
       return {
         dist: dist,
         timeSec: timeSec,
         scrollSpeed: scrollSpeed,
         obstacles: obstacles,
-        boss: boss,
-        pickupX: dist - 120
+        bossTriggerScroll: bossTriggerScroll,
+        pickupX: dist - 120,
+        startX: startX,
+        gap: gap
       };
+    }
+
+    function enterBossPhase(W) {
+      if (state.bossPhase || state.bossDefeated) return;
+      var b = bossRoster[state.level];
+      if (!b) return;
+      state.bossPhase = true;
+      state.scroll = state.bossTriggerScroll;
+      state.bossFight = {
+        hp: 5,
+        maxHp: 5,
+        sx: W * 0.62,
+        emoji: b.emoji,
+        label: b.label,
+        size: b.size || 56,
+        patrolT: 0,
+        flash: 0
+      };
+      state.levelBanner = 80;
+    }
+
+    function drawBossFight(ctx, bf, groundY, tick) {
+      var hop = Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
+      var sx = bf.sx + Math.sin(bf.patrolT * 0.08) * 48;
+      var ey = groundY - 36 - hop;
+      if (bf.flash > 0) {
+        ctx.fillStyle = "rgba(251,191,36,.4)";
+        ctx.beginPath();
+        ctx.arc(sx, ey, bf.size * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.font = "15px sans-serif";
+      ctx.textAlign = "center";
+      var hearts = "";
+      for (var i = 0; i < bf.maxHp; i++) hearts += i < bf.hp ? "❤️" : "🖤";
+      ctx.fillText(hearts, sx, ey - bf.size * 0.95);
+      ctx.font = "bold 11px Georgia,serif";
+      ctx.fillStyle = "#FEE2E2";
+      ctx.fillText(bf.label, sx, ey - bf.size * 0.68);
+      drawShadow(ctx, sx, groundY - 6, 26);
+      drawCrispEmoji(ctx, bf.emoji, sx, ey, bf.size);
+    }
+
+    function resolveBossStomp(groundY) {
+      if (!state.bossFight || state.bossFight.hp <= 0) return;
+      var bf = state.bossFight;
+      var hop = Math.abs(Math.sin(bf.patrolT * 0.22)) * 5;
+      var sx = bf.sx + Math.sin(bf.patrolT * 0.08) * 48;
+      var ey = groundY - 36 - hop;
+      var headTop = ey - bf.size * 0.52;
+      var playerBottom = state.py + 20;
+      var playerTop = state.py - 22;
+      if (Math.abs(sx - state.px) > 40) return;
+      if (state.vy > 1 && playerBottom >= headTop - 4 && playerTop < groundY - 34) {
+        bf.hp--;
+        bf.flash = 18;
+        state.vy = STOMP_BOUNCE;
+        state.grounded = false;
+        if (bf.hp <= 0) {
+          state.bossDefeated = true;
+          state.bossPhase = false;
+          state.pickup.x = state.scroll + cv.W * 0.55;
+          state.levelBanner = 70;
+        }
+        return;
+      }
+      if (state.invincible > 0) return;
+      if (playerBottom >= groundY - 34 && state.py >= groundY - 50) hurtPlayer();
+    }
+
+    function tryCollectFlyingHeart(groundY) {
+      var fh = state.flyingHeart;
+      if (!fh || fh.got) return;
+      var hx = fh.x - state.scroll;
+      fh.bob += 0.05;
+      var hy = fh.y + Math.sin(fh.bob) * 14;
+      if (Math.abs(hx - state.px) < 34 && state.py < hy + 20 && state.py > hy - 40) {
+        fh.got = true;
+        state.lives = Math.min(maxLives, state.lives + 1);
+        syncHud();
+      }
     }
 
     function startLevel() {
@@ -677,8 +730,20 @@
       state.timeTotal = cfg.timeSec * 60;
       state.timeLeft = cfg.timeSec * 60;
       state.obstacles = cfg.obstacles.slice();
-      state.boss = cfg.boss;
       state.isBossLevel = isBossLevel(state.level);
+      state.bossPhase = false;
+      state.bossDefeated = false;
+      state.bossFight = null;
+      state.bossTriggerScroll = cfg.bossTriggerScroll || 0;
+      state.flyingHeart = null;
+      if (state.level === state.heartBonusLevel && state.lives < maxLives) {
+        state.flyingHeart = {
+          x: cfg.startX + cfg.gap * 4.5,
+          y: cv.H * 0.3,
+          bob: Math.random() * 6,
+          got: false
+        };
+      }
       state.skyLanterns = initSkyLanterns(cv.W, cv.H, 12 + state.level);
       var w = levelWord();
       state.pickup = {
@@ -701,6 +766,7 @@
       state.level = 1;
       state.lives = maxLives;
       state.invincible = 0;
+      state.heartBonusLevel = 2 + Math.floor(Math.random() * 13);
       startLevel();
       if (full && overlayEl) {
         var msg = overlayEl.querySelector("p");
@@ -725,14 +791,12 @@
     function hurtPlayer() {
       if (state.invincible > 0) return;
       state.lives--;
-      state.invincible = 90;
-      state.vy = -9;
+      state.invincible = 120;
+      state.vy = -8;
       state.grounded = false;
       syncHud();
       if (state.lives <= 0) {
         gameOver("Out of lives! Stomp enemies from above or dodge from the side. Try all " + maxLevel + " levels again!");
-      } else {
-        startLevel();
       }
     }
 
@@ -756,11 +820,7 @@
     }
 
     function enemyOx(o) {
-      var ox = o.x - state.scroll;
-      if (state.boss && o.boss) {
-        ox += Math.sin(state.boss.patrolT * 0.09 + o.x * 0.01) * 42;
-      }
-      return ox;
+      return o.x - state.scroll;
     }
 
     function enemyHeadTop(o, groundY) {
@@ -773,7 +833,6 @@
       o.stompHp = (o.stompHp || 1) - 1;
       state.vy = STOMP_BOUNCE;
       state.grounded = false;
-      state.invincible = 26;
       if (o.stompHp <= 0) {
         o.dead = true;
         o.dying = 42;
@@ -844,38 +903,78 @@
         state.grounded = false;
       }
 
-      state.scroll += state.scrollSpeed * dt;
-      state.spawnT += dt;
-
-      if (state.boss) {
-        state.boss.patrolT += dt;
-      }
-
-      state.obstacles.forEach(function (o) {
-        resolveEnemyCollision(o, enemyOx(o), groundY);
-      });
-
-      if (state.pickup && !state.pickup.got) {
-        var px = state.pickup.x - state.scroll;
-        if (px > 38 && px < 102) {
-          state.pickup.got = true;
-          advanceLevel();
-          if (!state.running) return;
+      if (state.bossPhase) {
+        state.scroll = state.bossTriggerScroll;
+        state.bossFight.patrolT += dt;
+        if (state.bossFight.flash > 0) state.bossFight.flash -= dt;
+        resolveBossStomp(groundY);
+      } else {
+        state.scroll += state.scrollSpeed * dt;
+        if (state.isBossLevel && !state.bossDefeated && state.bossTriggerScroll &&
+            state.scroll >= state.bossTriggerScroll) {
+          enterBossPhase(W);
         }
       }
 
-      drawSky(ctx, W, H, theme.skyTop, theme.skyBot);
-      drawStars(ctx, W, H, state.spawnT);
-      drawMoon(ctx, W);
-      drawSkyLanterns(ctx, W, H, state.skyLanterns, state.scroll, state.spawnT, 0.32);
-      drawVillageBg(ctx, W, H, state.scroll, groundY, 0.38);
-      drawGround(ctx, W, H, theme.ground, theme.label, theme.groundAccent, state.scroll);
+      state.spawnT += dt;
 
-      state.obstacles.forEach(function (o) {
-        var ox = enemyOx(o);
-        if (ox < -80 || ox > W + 80) return;
-        drawFamilyEnemy(ctx, o, ox, groundY, state.spawnT);
-      });
+      if (!state.bossPhase) {
+        state.obstacles.forEach(function (o) {
+          resolveEnemyCollision(o, enemyOx(o), groundY);
+        });
+        tryCollectFlyingHeart(groundY);
+      }
+
+      if (state.pickup && !state.pickup.got) {
+        if (!state.isBossLevel || state.bossDefeated) {
+          var px = state.pickup.x - state.scroll;
+          if (px > 38 && px < 102) {
+            state.pickup.got = true;
+            advanceLevel();
+            if (!state.running) return;
+          }
+        }
+      }
+
+      var activeTheme = state.bossPhase ? bossTheme : theme;
+      drawSky(ctx, W, H, activeTheme.skyTop, activeTheme.skyBot);
+      drawStars(ctx, W, H, state.spawnT);
+      if (!state.bossPhase) drawMoon(ctx, W);
+      if (!state.bossPhase) {
+        drawSkyLanterns(ctx, W, H, state.skyLanterns, state.scroll, state.spawnT, 0.32);
+        drawVillageBg(ctx, W, H, state.scroll, groundY, 0.38);
+      } else {
+        ctx.fillStyle = "rgba(127,29,29,.35)";
+        ctx.fillRect(0, groundY - 90, W, 90);
+        ctx.font = "bold 13px Georgia,serif";
+        ctx.fillStyle = "#FEE2E2";
+        ctx.textAlign = "center";
+        ctx.fillText("⚔️ BOSS FIGHT — Stomp 5 times!", W / 2, 36);
+      }
+      drawGround(ctx, W, H, activeTheme.ground, activeTheme.label, activeTheme.groundAccent,
+        state.bossPhase ? 0 : state.scroll);
+
+      if (!state.bossPhase) {
+        state.obstacles.forEach(function (o) {
+          var ox = enemyOx(o);
+          if (ox < -80 || ox > W + 80) return;
+          drawFamilyEnemy(ctx, o, ox, groundY, state.spawnT);
+        });
+        if (state.flyingHeart && !state.flyingHeart.got) {
+          var fh = state.flyingHeart;
+          var hx = fh.x - state.scroll;
+          var hy = fh.y + Math.sin(fh.bob) * 14;
+          if (hx > -50 && hx < W + 50) {
+            drawCrispEmoji(ctx, "💖", hx, hy, 30);
+            ctx.font = "9px Georgia,serif";
+            ctx.fillStyle = "#FBCFE8";
+            ctx.textAlign = "center";
+            ctx.fillText("+1 ❤️", hx, hy - 28);
+          }
+        }
+      } else if (state.bossFight) {
+        drawBossFight(ctx, state.bossFight, groundY, state.spawnT);
+      }
 
       if (state.pickup && !state.pickup.got) {
         var sx = state.pickup.x - state.scroll;
@@ -898,9 +997,9 @@
         ctx.fillStyle = "#FFF8E7";
         ctx.textAlign = "center";
         if (state.isBossLevel) {
-          ctx.fillText("⚔️ BOSS — Level " + state.level + " · " + goalLabel(), W / 2, H * 0.28 + 22);
+          ctx.fillText("⚔️ BOSS — Level " + state.level + " · Stomp the boss 5 times!", W / 2, H * 0.28 + 22);
           ctx.font = "12px Georgia,serif";
-          ctx.fillText("Stomp the boss twice from above — then reach family!", W / 2, H * 0.28 + 42);
+          ctx.fillText("Lane stops at the arena — jump ON the boss to win!", W / 2, H * 0.28 + 42);
         } else {
           ctx.fillText("Level " + state.level + " · " + goalLabel(), W / 2, H * 0.28 + 22);
           ctx.font = "12px Georgia,serif";
