@@ -19,11 +19,13 @@
       .nav-hint{margin-top:6px;padding:8px;font-size:15px;}
     }
     @media(max-width:520px){
-      .stamp-btn{width:34px;height:34px;font-size:17px;border-radius:9px;}
-      .stamp-row{gap:4px;padding:4px 5px;}
+      .stamp-btn{width:30px;height:30px;font-size:15px;border-radius:8px;}
+      .stamp-row{gap:3px;padding:4px 5px;}
       .title{font-size:22px;}
-      .game-desc{font-size:15px;margin-bottom:6px;}
-      .tool-btn{padding:8px 12px;font-size:15px;}
+      .game-desc{font-size:14px;margin-bottom:4px;}
+      .tool-row{flex-wrap:nowrap;gap:4px;padding:0 2px;}
+      .tool-btn{padding:7px 6px;font-size:12px;white-space:nowrap;flex:1 1 0;min-width:0;}
+      .tool-btn#countLabel{flex:0 1 auto;font-size:11px;padding:7px 5px;}
       .nav-hint{font-size:14px;padding:8px;}
     }
     .title{flex-shrink:0;}
@@ -32,11 +34,11 @@
     .game-desc{text-align:center;color:#64748B;font-size:16px;margin-bottom:8px;line-height:1.5;padding:0 8px;}
     .book-game-subtitle{font-weight:700;color:#6D28D9;font-size:17px;}
     .stamp-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:6px;padding:6px;background:rgba(255,255,255,.55);border-radius:14px;border:2px solid rgba(56,189,248,.35);flex-shrink:0;}
-    .stamp-btn{width:46px;height:46px;border:2px solid rgba(56,189,248,.4);border-radius:12px;background:rgba(255,255,255,.9);font-size:24px;cursor:pointer;touch-action:manipulation;transition:.15s;}
+    .stamp-btn{width:42px;height:42px;border:2px solid rgba(56,189,248,.4);border-radius:11px;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;touch-action:manipulation;transition:.15s;}
     .stamp-btn.selected{border-color:#DB2777;background:rgba(244,114,182,.15);box-shadow:0 0 16px rgba(251,191,36,.45);transform:scale(1.06);}
     .stamp-btn:active{transform:scale(.96);}
-    .tool-row{display:flex;gap:8px;justify-content:center;margin-bottom:6px;flex-wrap:wrap;flex-shrink:0;}
-    .tool-btn{padding:10px 16px;border:none;border-radius:10px;background:rgba(255,255,255,.7);color:#1E293B;font-size:16px;font-weight:bold;cursor:pointer;border:1px solid rgba(56,189,248,.35);}
+    .tool-row{display:flex;gap:6px;justify-content:center;margin-bottom:6px;flex-wrap:nowrap;flex-shrink:0;align-items:stretch;}
+    .tool-btn{padding:9px 12px;border:none;border-radius:10px;background:rgba(255,255,255,.7);color:#1E293B;font-size:15px;font-weight:bold;cursor:pointer;border:1px solid rgba(56,189,248,.35);white-space:nowrap;}
     .tool-btn:active{transform:scale(.97);}
     .tool-btn.active{border-color:#8B5CF6;background:rgba(167,139,250,.2);box-shadow:0 0 10px rgba(139,92,246,.25);}
     .game-stage.eraser-mode{cursor:cell;}
@@ -60,7 +62,7 @@
 <div class="petals"></div>
 <div class="game-shell">
   <h1 class="title">🏘️ Build Myanmar Village</h1>
-  <p class="game-desc book-game-subtitle">Before we dive into chapters, let&apos;s play a fun game!</p>
+  <p class="game-desc book-game-subtitle">Let&apos;s play first!</p>
   <p class="game-desc">Pick items. Tap anywhere to build your village.</p>
 
   <div class="stamp-row" id="stampRow">
@@ -82,12 +84,11 @@
     <button type="button" class="stamp-btn" data-emoji="🐈" title="Cat">🐈</button>
     <button type="button" class="stamp-btn" data-emoji="🧍" title="Person">🧍</button>
     <button type="button" class="stamp-btn" data-emoji="🧍‍♀️" title="Woman">🧍‍♀️</button>
-    <button type="button" class="stamp-btn" data-emoji="🌤️" title="Cloudy sky">🌤️</button>
   </div>
   <div class="tool-row">
     <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
     <button type="button" class="tool-btn" id="btnEraser">🧽 Eraser</button>
-    <button type="button" class="tool-btn" id="btnClear">🧹 Clear Village</button>
+    <button type="button" class="tool-btn" id="btnClear">🧹 Clear All</button>
     <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
   </div>
 
@@ -112,7 +113,7 @@ const MOBILE = /🐘|🐃|🐄|🐕|🐈/;
 const BUILDING = /🏠|🛖|🛕/;
 const PEOPLE = /🧍|🧍‍♀️/;
 const SMALL = /🪵|🌸/;
-const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🌸|🌤️|🧍|🧍‍♀️|🎋|🌴|🌲/;
+const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🌸|🧍|🧍‍♀️|🎋|🌴|🌲/;
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🏠';
 let toolMode = 'stamp';
