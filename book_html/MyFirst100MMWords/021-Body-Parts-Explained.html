@@ -10,10 +10,10 @@
 body.main-chapter-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
 .main-chapter-page .manuscript-bg,.main-chapter-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
 .explained-page{overflow-x:hidden;overflow-y:auto;}
-body.explained-page{padding:0;}
-.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:flex;flex-direction:column;overflow:visible;}
-.explained-page .manuscript-bg{width:100%;align-items:stretch;}
-.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 20px;}</style>
+body.explained-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
+.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
+.explained-page .manuscript-bg{width:100%;}
+.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 28px;--chapter-pad-x:clamp(16px,3vw,40px);}</style>
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
@@ -23,26 +23,26 @@ body.explained-page{padding:0;}
 <div class="container">
   <div class="top-bar">
     <h1>Sentences</h1>
+    <div class="subtitle">Body Parts — scroll to practice</div>
   </div>
-  
-  <div class="wizard-shell pyramid-wizard card" id="pyramid-wizard" data-groups="10">
-    <div class="pyramid-wizard-head">
-      <span class="wizard-progress-text" id="pw-progress">Group 1 of 10</span>
-      <div class="wizard-dots pyramid-wizard-dots pyramid-group-dots" id="pw-group-dots"><button type="button" class="wizard-dot pyramid-group-dot" data-group="0" aria-label="Word group 1"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="1" aria-label="Word group 2"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="2" aria-label="Word group 3"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="3" aria-label="Word group 4"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="4" aria-label="Word group 5"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="5" aria-label="Word group 6"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="6" aria-label="Word group 7"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="7" aria-label="Word group 8"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="8" aria-label="Word group 9"></button><button type="button" class="wizard-dot pyramid-group-dot" data-group="9" aria-label="Word group 10"></button></div>
-    </div>
-    <div class="pyramid-wizard-stage">
-      <div class="classroom-scene">
-        <div class="classroom-room">
-          <div class="classroom-wall">
-            <div class="wb-frame-outer">
-              <span class="wb-screw wb-screw-l" aria-hidden="true"></span>
-              <span class="wb-screw wb-screw-r" aria-hidden="true"></span>
-              <div class="wb-frame-inner">
-                <div class="wb-surface">
-                  <div class="whiteboard-content-stack">
-        <div class="wizard-panel pyramid-group-panel active" id="pw-group-0" data-sentence="1" data-group="0" data-topic="Bow your head gently when greeting elders in Myanmar.">
-          <p class="whiteboard-heading">Head</p>
-          <div class="whiteboard-lines">
+  <div class="chapter-scroll sentences-scroll">
+    <section class="chapter-part sentences-part" id="sentences-part-0" aria-labelledby="sentences-part-title-0">
+      <h2 class="chapter-part-title" id="sentences-part-title-0">The Dancer's Hands</h2>
+      <div class="chapter-part-inner">
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/body-seg1.png" alt="Body Parts — sentences part 1" decoding="async"></div></div>
+        <div class="story-row">
+          <div class="card story-card">
+            <div class="story-box">Bow your head gently when greeting elders in Myanmar.</div>
+            <p class="sentence-part-words"><strong>Words in this section:</strong> Head, Eye, Ear, Nose</p>
+          </div>
+        </div>
+        <div class="chapter-sentences-block">
+          <div class="section-head">Tap 🔊 to hear each sentence</div>
+          <div class="sentences-groups">
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Head</h3>
+      <p class="sentence-group-tip">Bow your head gently when greeting elders in Myanmar.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -91,10 +91,11 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-1" data-sentence="2" data-group="1" data-topic="Open your eyes wide to see the world clearly.">
-          <p class="whiteboard-heading">Eye</p>
-          <div class="whiteboard-lines">
+    </div>
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Eye</h3>
+      <p class="sentence-group-tip">Open your eyes wide to see the world clearly.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -143,10 +144,11 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-2" data-sentence="3" data-group="2" data-topic="Listen with your ears when someone speaks to you.">
-          <p class="whiteboard-heading">Ear</p>
-          <div class="whiteboard-lines">
+    </div>
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Ear</h3>
+      <p class="sentence-group-tip">Listen with your ears when someone speaks to you.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -195,10 +197,11 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-3" data-sentence="4" data-group="3" data-topic="Smell flowers gently with your nose.">
-          <p class="whiteboard-heading">Nose</p>
-          <div class="whiteboard-lines">
+    </div>
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Nose</h3>
+      <p class="sentence-group-tip">Smell flowers gently with your nose.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -247,10 +250,27 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
+    </div></div>
         </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-4" data-sentence="5" data-group="4" data-topic="Speak kind words with your mouth every day.">
-          <p class="whiteboard-heading">Mouth</p>
-          <div class="whiteboard-lines">
+      </div>
+    </section>
+    <section class="chapter-part sentences-part" id="sentences-part-1" aria-labelledby="sentences-part-title-1">
+      <h2 class="chapter-part-title" id="sentences-part-title-1">The lesson deepens</h2>
+      <div class="chapter-part-inner">
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/body-seg2.png" alt="Body Parts — sentences part 2" decoding="async"></div></div>
+        <div class="story-row">
+          <div class="card story-card">
+            <div class="story-box">Speak kind words with your mouth every day.</div>
+            <p class="sentence-part-words"><strong>Words in this section:</strong> Mouth, Hand, Foot</p>
+          </div>
+        </div>
+        <div class="chapter-sentences-block">
+          <div class="section-head">Tap 🔊 to hear each sentence</div>
+          <div class="sentences-groups">
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Mouth</h3>
+      <p class="sentence-group-tip">Speak kind words with your mouth every day.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -299,10 +319,11 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-5" data-sentence="6" data-group="5" data-topic="Wash your hands before every meal.">
-          <p class="whiteboard-heading">Hand</p>
-          <div class="whiteboard-lines">
+    </div>
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Hand</h3>
+      <p class="sentence-group-tip">Wash your hands before every meal.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -351,10 +372,11 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-6" data-sentence="7" data-group="6" data-topic="Walk slowly and respectfully in sacred places.">
-          <p class="whiteboard-heading">Foot</p>
-          <div class="whiteboard-lines">
+    </div>
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Foot</h3>
+      <p class="sentence-group-tip">Walk slowly and respectfully in sacred places.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -403,10 +425,27 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
+    </div></div>
         </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-7" data-sentence="8" data-group="7" data-topic="Feelings live in the heart — name them with care.">
-          <p class="whiteboard-heading">Heart</p>
-          <div class="whiteboard-lines">
+      </div>
+    </section>
+    <section class="chapter-part sentences-part" id="sentences-part-2" aria-labelledby="sentences-part-title-2">
+      <h2 class="chapter-part-title" id="sentences-part-title-2">The moral</h2>
+      <div class="chapter-part-inner">
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/body-seg3.png" alt="Body Parts — sentences part 3" decoding="async"></div></div>
+        <div class="story-row">
+          <div class="card story-card">
+            <div class="story-box">Feelings live in the heart — name them with care.</div>
+            <p class="sentence-part-words"><strong>Words in this section:</strong> Heart, Hair, Teeth</p>
+          </div>
+        </div>
+        <div class="chapter-sentences-block">
+          <div class="section-head">Tap 🔊 to hear each sentence</div>
+          <div class="sentences-groups">
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Heart</h3>
+      <p class="sentence-group-tip">Feelings live in the heart — name them with care.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -455,10 +494,11 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-8" data-sentence="9" data-group="8" data-topic="Brush your hair gently each morning.">
-          <p class="whiteboard-heading">Hair</p>
-          <div class="whiteboard-lines">
+    </div>
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Hair</h3>
+      <p class="sentence-group-tip">Brush your hair gently each morning.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -507,10 +547,11 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div>
-        <div class="wizard-panel pyramid-group-panel" id="pw-group-9" data-sentence="10" data-group="9" data-topic="Clean teeth keep a bright smile.">
-          <p class="whiteboard-heading">Teeth</p>
-          <div class="whiteboard-lines">
+    </div>
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">Teeth</h3>
+      <p class="sentence-group-tip">Clean teeth keep a bright smile.</p>
+      <div class="sentence-pairs-list">
         <div class="wb-sentence-pair">
           
             <div class="wb-line wb-line-en">
@@ -559,99 +600,10 @@ body.explained-page{padding:0;}
               </button>
             </div>
         </div></div>
-        </div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="classroom-floor">
-            <div class="classroom-pots-row" aria-hidden="true"><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div><div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div></div>
-          </div>
+    </div></div>
         </div>
       </div>
-    </div>
-    <div class="pyramid-wizard-foot">
-      <div class="sentences-control-bar">
-        <button type="button" class="wizard-btn wizard-btn-back" id="pw-back">← Back</button>
-        <p class="sentences-hint">Tap 🔊 · Read aloud</p>
-        <button type="button" class="wizard-btn wizard-btn-next" id="pw-next">Next →</button>
-      </div>
-      <div class="wizard-topic-foot" id="pw-topic-foot">
-        <span class="topic-foot-emoji" aria-hidden="true">👂</span>
-        <p class="topic-foot-text" id="pw-topic-text">Bow your head gently when greeting elders in Myanmar.</p>
-      </div>
-    </div>
-  </div>
+    </section></div>
 </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var wizard = document.getElementById('pyramid-wizard');
-  if (!wizard) return;
-  var panels = wizard.querySelectorAll('.pyramid-group-panel');
-  var back = document.getElementById('pw-back');
-  var next = document.getElementById('pw-next');
-  var progress = document.getElementById('pw-progress');
-  var groupDots = wizard.querySelectorAll('.pyramid-group-dot');
-  var topicText = document.getElementById('pw-topic-text');
-  var groupIdx = 0;
-  var totalGroups = panels.length;
-
-  function fitWhiteboard() {
-    var surface = wizard.querySelector('.wb-surface');
-    var stack = wizard.querySelector('.whiteboard-content-stack');
-    if (!surface || !stack) return;
-    var panel = stack.querySelector('.pyramid-group-panel.active');
-    stack.style.transform = '';
-    if (!panel) return;
-    var available = surface.clientHeight - 12;
-    var needed = panel.scrollHeight;
-    if (needed > available && available > 0) {
-      var scale = Math.max(0.78, available / needed);
-      stack.style.transform = 'scale(' + scale + ')';
-      stack.style.transformOrigin = 'top center';
-    }
-  }
-
-  function updateUI() {
-    panels.forEach(function(p, i) { p.classList.toggle('active', i === groupIdx); });
-    groupDots.forEach(function(d, i) {
-      d.classList.toggle('active', i === groupIdx);
-      d.classList.toggle('done', i < groupIdx);
-    });
-    progress.textContent = 'Group ' + (groupIdx + 1) + ' of ' + totalGroups;
-    back.disabled = groupIdx === 0;
-    next.textContent = groupIdx === totalGroups - 1 ? 'Finish ✓' : 'Next →';
-    if (topicText && panels[groupIdx]) {
-      topicText.textContent = panels[groupIdx].getAttribute('data-topic') || '';
-    }
-    requestAnimationFrame(fitWhiteboard);
-  }
-
-  back.addEventListener('click', function() {
-    if (groupIdx > 0) {
-      groupIdx--;
-      updateUI();
-    }
-  });
-
-  next.addEventListener('click', function() {
-    if (groupIdx < totalGroups - 1) {
-      groupIdx++;
-      updateUI();
-    }
-  });
-
-  groupDots.forEach(function(d) {
-    d.addEventListener('click', function() {
-      groupIdx = parseInt(d.getAttribute('data-group'), 10);
-      updateUI();
-    });
-  });
-
-  updateUI();
-  window.addEventListener('resize', fitWhiteboard);
-});
-</script>
 </body></html>

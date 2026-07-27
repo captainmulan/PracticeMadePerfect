@@ -53,10 +53,10 @@ const CHAPTER_CSS = `.container{width:100%;max-width:100%;margin:0;padding:16px 
 body.main-chapter-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
 .main-chapter-page .manuscript-bg,.main-chapter-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
 .explained-page{overflow-x:hidden;overflow-y:auto;}
-body.explained-page{padding:0;}
-.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:flex;flex-direction:column;overflow:visible;}
-.explained-page .manuscript-bg{width:100%;align-items:stretch;}
-.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 20px;}`;
+body.explained-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
+.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
+.explained-page .manuscript-bg{width:100%;}
+.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 28px;--chapter-pad-x:clamp(16px,3vw,40px);}`;
 
 function pad(n) { return String(n).padStart(3, "0"); }
 function slug(title) { return title.replace(/\s+/g, "-"); }
@@ -534,148 +534,48 @@ function defaultGroupTip(group, ch) {
   return "Practice these sentences with someone at home.";
 }
 
-function pyramidGroupContentHtml(group, si, ch, activeClass) {
-  const sentences = (group.sentences || []).slice(0, 3);
-  const rows = sentences.map((line) => sentencePairHtml(line.en, line.mm)).join("");
-  const tip = defaultGroupTip(group, ch);
-
-  return `
-        <div class="wizard-panel pyramid-group-panel${activeClass}" id="pw-group-${si}" data-sentence="${si + 1}" data-group="${si}" data-topic="${esc(tip)}">
-          <p class="whiteboard-heading">${esc(group.title)}</p>
-          <div class="whiteboard-lines">${rows}</div>
-        </div>`;
+function sentenceGroupsBlockHtml(groups) {
+  return groups
+    .map((group) => {
+      const sentences = (group.sentences || []).slice(0, 3);
+      const rows = sentences.map((line) => sentencePairHtml(line.en, line.mm)).join("");
+      const tip = group.tip ? `<p class="sentence-group-tip">${esc(group.tip)}</p>` : "";
+      return `
+    <div class="sentence-group-card">
+      <h3 class="sentence-group-title">${esc(group.title)}</h3>
+      ${tip}
+      <div class="sentence-pairs-list">${rows}</div>
+    </div>`;
+    })
+    .join("");
 }
 
-function classroomShelfHtml() {
-  const pot = `<div class="classroom-pot"><img src="assets/flower-pot.png" alt="" decoding="async"></div>`;
-  return `<div class="classroom-pots-row" aria-hidden="true">${pot}${pot}${pot}${pot}</div>`;
-}
-
-function explainedWizardHtml(ch, groups) {
-  const contentPanels = groups
-    .map((group, si) => pyramidGroupContentHtml(group, si, ch, si === 0 ? " active" : ""))
-    .join("");
-
-  const groupDots = groups
-    .map(
-      (_, si) =>
-        `<button type="button" class="wizard-dot pyramid-group-dot" data-group="${si}" aria-label="Word group ${si + 1}"></button>`
-    )
-    .join("");
-
-  const firstTip = defaultGroupTip(groups[0] || {}, ch);
-
+function explainedScrollPartHtml(ch, idx, groups, titles) {
+  const slot = "exp" + (idx + 1);
+  const pic = imgHtml(ch.id, slot, ch.title + " — sentences part " + (idx + 1));
+  const intro = defaultGroupTip(groups[0] || {}, ch);
+  const wordsLabel = groups.map((g) => g.title).filter(Boolean).join(", ");
   return `
-  <div class="wizard-shell pyramid-wizard card" id="pyramid-wizard" data-groups="${groups.length}">
-    <div class="pyramid-wizard-head">
-      <span class="wizard-progress-text" id="pw-progress">Group 1 of ${groups.length}</span>
-      <div class="wizard-dots pyramid-wizard-dots pyramid-group-dots" id="pw-group-dots">${groupDots}</div>
-    </div>
-    <div class="pyramid-wizard-stage">
-      <div class="classroom-scene">
-        <div class="classroom-room">
-          <div class="classroom-wall">
-            <div class="wb-frame-outer">
-              <span class="wb-screw wb-screw-l" aria-hidden="true"></span>
-              <span class="wb-screw wb-screw-r" aria-hidden="true"></span>
-              <div class="wb-frame-inner">
-                <div class="wb-surface">
-                  <div class="whiteboard-content-stack">${contentPanels}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="classroom-floor">
-            ${classroomShelfHtml()}
+    <section class="chapter-part sentences-part" id="sentences-part-${idx}" aria-labelledby="sentences-part-title-${idx}">
+      <h2 class="chapter-part-title" id="sentences-part-title-${idx}">${esc(titles[idx])}</h2>
+      <div class="chapter-part-inner">
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static">${pic}</div></div>
+        <div class="story-row">
+          <div class="card story-card">
+            <div class="story-box">${esc(intro)}</div>
+            ${wordsLabel ? `<p class="sentence-part-words"><strong>Words in this section:</strong> ${esc(wordsLabel)}</p>` : ""}
           </div>
         </div>
+        <div class="chapter-sentences-block">
+          <div class="section-head">Tap 🔊 to hear each sentence</div>
+          <div class="sentences-groups">${sentenceGroupsBlockHtml(groups)}</div>
+        </div>
       </div>
-    </div>
-    <div class="pyramid-wizard-foot">
-      <div class="sentences-control-bar">
-        <button type="button" class="wizard-btn wizard-btn-back" id="pw-back">← Back</button>
-        <p class="sentences-hint">Tap 🔊 · Read aloud</p>
-        <button type="button" class="wizard-btn wizard-btn-next" id="pw-next">Next →</button>
-      </div>
-      <div class="wizard-topic-foot" id="pw-topic-foot">
-        <span class="topic-foot-emoji" aria-hidden="true">${ch.emoji || "📖"}</span>
-        <p class="topic-foot-text" id="pw-topic-text">${esc(firstTip)}</p>
-      </div>
-    </div>
-  </div>`;
+    </section>`;
 }
 
-function explainedWizardScript() {
-  return `
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var wizard = document.getElementById('pyramid-wizard');
-  if (!wizard) return;
-  var panels = wizard.querySelectorAll('.pyramid-group-panel');
-  var back = document.getElementById('pw-back');
-  var next = document.getElementById('pw-next');
-  var progress = document.getElementById('pw-progress');
-  var groupDots = wizard.querySelectorAll('.pyramid-group-dot');
-  var topicText = document.getElementById('pw-topic-text');
-  var groupIdx = 0;
-  var totalGroups = panels.length;
-
-  function fitWhiteboard() {
-    var surface = wizard.querySelector('.wb-surface');
-    var stack = wizard.querySelector('.whiteboard-content-stack');
-    if (!surface || !stack) return;
-    var panel = stack.querySelector('.pyramid-group-panel.active');
-    stack.style.transform = '';
-    if (!panel) return;
-    var available = surface.clientHeight - 12;
-    var needed = panel.scrollHeight;
-    if (needed > available && available > 0) {
-      var scale = Math.max(0.78, available / needed);
-      stack.style.transform = 'scale(' + scale + ')';
-      stack.style.transformOrigin = 'top center';
-    }
-  }
-
-  function updateUI() {
-    panels.forEach(function(p, i) { p.classList.toggle('active', i === groupIdx); });
-    groupDots.forEach(function(d, i) {
-      d.classList.toggle('active', i === groupIdx);
-      d.classList.toggle('done', i < groupIdx);
-    });
-    progress.textContent = 'Group ' + (groupIdx + 1) + ' of ' + totalGroups;
-    back.disabled = groupIdx === 0;
-    next.textContent = groupIdx === totalGroups - 1 ? 'Finish ✓' : 'Next →';
-    if (topicText && panels[groupIdx]) {
-      topicText.textContent = panels[groupIdx].getAttribute('data-topic') || '';
-    }
-    requestAnimationFrame(fitWhiteboard);
-  }
-
-  back.addEventListener('click', function() {
-    if (groupIdx > 0) {
-      groupIdx--;
-      updateUI();
-    }
-  });
-
-  next.addEventListener('click', function() {
-    if (groupIdx < totalGroups - 1) {
-      groupIdx++;
-      updateUI();
-    }
-  });
-
-  groupDots.forEach(function(d) {
-    d.addEventListener('click', function() {
-      groupIdx = parseInt(d.getAttribute('data-group'), 10);
-      updateUI();
-    });
-  });
-
-  updateUI();
-  window.addEventListener('resize', fitWhiteboard);
-});
-</script>`;
+function explainedChapterScrollHtml(panels) {
+  return `<div class="chapter-scroll sentences-scroll">${panels}</div>`;
 }
 
 function wordGridHtml(words, chapterId) {
@@ -797,7 +697,12 @@ function genActivity(ch) {
 
 function genExplained(ch) {
   const groups = explainedGroupsFor(ch);
-  const wizardHtml = explainedWizardHtml(ch, groups);
+  const groupParts = splitList(groups);
+  const titles = segmentTitles(ch, "explained");
+  const panels = [0, 1, 2]
+    .map((i) => explainedScrollPartHtml(ch, i, groupParts[i], titles))
+    .join("");
+  const scrollHtml = explainedChapterScrollHtml(panels);
 
   const fname = `${pad(ch.num + 1)}-${slug(ch.title)}-Explained.html`;
   const html = `${chapterHead(ch.title + " — Sentences")}
@@ -806,11 +711,11 @@ function genExplained(ch) {
 <div class="container">
   <div class="top-bar">
     <h1>Sentences</h1>
+    <div class="subtitle">${esc(ch.title)} — scroll to practice</div>
   </div>
-  ${wizardHtml}
+  ${scrollHtml}
 </div>
 </div>
-${explainedWizardScript()}
 </body></html>`;
   fs.writeFileSync(path.join(DIR, fname), html);
 }
