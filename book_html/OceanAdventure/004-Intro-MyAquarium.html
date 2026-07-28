@@ -10,7 +10,7 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628,#1a365d,#0f4c75);color:#e0f4ff;min-height:100vh;}
     .game-shell{width:100%;max-width:100%;margin:0;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
-    .stamp-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:6px;padding:6px 8px;background:rgba(0,0,0,.28);border-radius:12px;border:1px solid rgba(100,255,218,.25);max-height:72px;overflow-y:auto;flex-shrink:0;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:6px;padding:6px 8px;background:rgba(0,0,0,.28);border-radius:12px;border:1px solid rgba(100,255,218,.25);max-height:calc(2 * 46px + 5px);overflow-y:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;}
     .stamp-btn{width:40px;height:40px;border:2px solid rgba(100,255,218,.35);border-radius:10px;background:rgba(100,255,218,.08);font-size:22px;cursor:pointer;touch-action:manipulation;transition:.15s;flex-shrink:0;}
     .stamp-btn.selected{border-color:#ffeb3b;background:rgba(255,235,59,.18);box-shadow:0 0 16px rgba(255,235,59,.35);transform:scale(1.06);}
     .stamp-btn:active{transform:scale(.96);}
@@ -30,12 +30,12 @@
     body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
     body.big-game-page:has(.game-shell) .stage-wrap{flex:1 1 auto!important;min-height:0!important;}
     body.big-game-page:has(.game-shell) .game-stage{flex:1 1 auto!important;min-height:0!important;max-height:none!important;aspect-ratio:unset!important;}
-    body.intro-active .stamp-row,body.intro-active .tool-row,body.intro-active .nav-hint{display:none!important;}
-    body.intro-active .game-shell{padding:0!important;max-width:none!important;}
-    body.intro-active .stage-wrap{flex:1 1 auto!important;}
-    body.intro-active .game-stage{border-radius:0!important;border:none!important;min-height:100dvh!important;}
-    body.intro-active .overlay h3{font-size:26px;}
-    body.intro-active .overlay p{font-size:16px;max-width:380px;}
+    body.intro-active .tool-row,body.intro-active .nav-hint{display:none!important;}
+    body.intro-active .game-shell{padding:8px 10px 0!important;max-width:none!important;display:flex!important;flex-direction:column!important;height:100%!important;min-height:100%!important;}
+    body.intro-active .stage-wrap{flex:1 1 auto!important;min-height:0!important;display:flex!important;}
+    body.intro-active .game-stage{flex:1 1 auto!important;border-radius:12px!important;border:2px solid rgba(100,255,218,.45)!important;min-height:0!important;}
+    body.intro-active .overlay h3{font-size:24px;}
+    body.intro-active .overlay p{font-size:15px;max-width:360px;}
     body.big-game-page:not(.intro-active){overflow-y:auto!important;height:auto!important;min-height:100vh;}
     body.big-game-page:not(.intro-active) .game-shell{min-height:100vh;height:auto;max-width:720px;margin:0 auto;padding:10px;}
     @media(orientation:landscape){
@@ -88,11 +88,6 @@
     <button type="button" class="stamp-btn" data-emoji="⭐" title="Starfish">⭐</button>
     <button type="button" class="stamp-btn" data-emoji="🦀" title="Crab">🦀</button>
   </div>
-  <div class="tool-row">
-    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
-    <button type="button" class="tool-btn" id="btnClear">🧹 Clear Tank</button>
-    <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
-  </div>
 
   <div class="stage-wrap">
     <div class="game-stage" id="stage">
@@ -100,10 +95,16 @@
       <div class="overlay" id="startScreen">
         <h3>🐠 My Relaxing Aquarium</h3>
         <p>Pick fish, coral, or rocks — tap the tank to paint your underwater world. No timer, just calm ocean vibes.</p>
-        <p>Choose a stamp, then tap anywhere in the water to place it. Build a peaceful reef — take your time!</p>
+        <p>Pick a stamp above, then tap Start — your tank fills the screen below!</p>
         <button class="btn" type="button" id="btnStart">▶️ Start Decorating</button>
       </div>
     </div>
+  </div>
+
+  <div class="tool-row">
+    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnClear">🧹 Clear Tank</button>
+    <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
   </div>
 
   <div class="nav-hint">
