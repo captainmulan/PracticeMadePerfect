@@ -89,7 +89,6 @@
   };
 })(window);
 </script>
-<script src="_ocean-img-overview.js"></script>
 <script src="_ocean-data.js"></script>
 <script src="_ocean-scenes.js"></script>
 <script src="_ocean-speak.js"></script>
@@ -2072,7 +2071,7 @@
 </script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  OceanScene.boot({ containerId: "scene-main-1", chapterId: "overview", slot: "main-1", title: "Ocean Overview" });
+  OceanScene.boot({ containerId: "scene-main-1", chapterId: "overview", slot: "main-1", title: "Ocean Overview", eager: true });
   OceanScene.boot({ containerId: "scene-main-2", chapterId: "overview", slot: "main-2", title: "Ocean Overview" });
   OceanScene.boot({ containerId: "scene-main-3", chapterId: "overview", slot: "main-3", title: "Ocean Overview" });
 });

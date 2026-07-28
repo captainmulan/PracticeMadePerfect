@@ -96,7 +96,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 @media(max-width:639px){.game-canvas{height:min(44vh,300px)!important;}}
 </style>
 <script src="_ocean-player.js"></script>
-<script src="_ocean-img-hadal.js"></script>
 <script src="_ocean-data.js"></script>
 <script src="_ocean-scenes.js"></script>
 <script src="_ocean-speak.js"></script>
@@ -146,7 +145,7 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  OceanScene.boot({ containerId: "scene-explain-1", chapterId: "hadal", slot: "explain-1", title: "Hadal Zone" });
+  OceanScene.boot({ containerId: "scene-explain-1", chapterId: "hadal", slot: "explain-1", title: "Hadal Zone", eager: true });
   OceanScene.boot({ containerId: "scene-explain-2", chapterId: "hadal", slot: "explain-2", title: "Hadal Zone" });
   OceanScene.boot({ containerId: "scene-explain-3", chapterId: "hadal", slot: "explain-3", title: "Hadal Zone" });
 });

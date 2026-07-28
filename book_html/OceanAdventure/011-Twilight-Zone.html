@@ -96,7 +96,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 @media(max-width:639px){.game-canvas{height:min(44vh,300px)!important;}}
 </style>
 <script src="_ocean-player.js"></script>
-<script src="_ocean-img-twilight.js"></script>
 <script src="_ocean-data.js"></script>
 <script src="_ocean-scenes.js"></script>
 <script src="_ocean-speak.js"></script>
@@ -147,7 +146,7 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  OceanScene.boot({ containerId: "scene-main-1", chapterId: "twilight", slot: "main-1", title: "Twilight Zone" });
+  OceanScene.boot({ containerId: "scene-main-1", chapterId: "twilight", slot: "main-1", title: "Twilight Zone", eager: true });
   OceanScene.boot({ containerId: "scene-main-2", chapterId: "twilight", slot: "main-2", title: "Twilight Zone" });
   OceanScene.boot({ containerId: "scene-main-3", chapterId: "twilight", slot: "main-3", title: "Twilight Zone" });
 });

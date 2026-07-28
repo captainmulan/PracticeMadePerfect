@@ -96,7 +96,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 @media(max-width:639px){.game-canvas{height:min(44vh,300px)!important;}}
 </style>
 <script src="_ocean-player.js"></script>
-<script src="_ocean-img-midnight.js"></script>
 <script src="_ocean-data.js"></script>
 <script src="_ocean-scenes.js"></script>
 <script src="_ocean-speak.js"></script>
@@ -147,7 +146,7 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  OceanScene.boot({ containerId: "scene-main-1", chapterId: "midnight", slot: "main-1", title: "Midnight Zone" });
+  OceanScene.boot({ containerId: "scene-main-1", chapterId: "midnight", slot: "main-1", title: "Midnight Zone", eager: true });
   OceanScene.boot({ containerId: "scene-main-2", chapterId: "midnight", slot: "main-2", title: "Midnight Zone" });
   OceanScene.boot({ containerId: "scene-main-3", chapterId: "midnight", slot: "main-3", title: "Midnight Zone" });
 });

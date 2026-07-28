@@ -112,10 +112,9 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 function pad(n) { return String(n).padStart(3, "0"); }
 function esc(s) { return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " "); }
 
-function head(title, scripts, chapterId) {
+function head(title, scripts) {
   const list = [
     "_ocean-player.js",
-    ...(chapterId ? [`_ocean-img-${chapterId}.js`] : []),
     "_ocean-data.js",
     "_ocean-scenes.js",
     "_ocean-speak.js",
@@ -160,7 +159,7 @@ function segmentHtml(ch, seg, kind) {
 function bootScenesScript(ch, segments) {
   return `<script>
 document.addEventListener("DOMContentLoaded", function() {
-${segments.map((s) => `  OceanScene.boot({ containerId: "scene-${s.slot}", chapterId: "${ch.id}", slot: "${s.slot}", title: "${esc(ch.title)}" });`).join("\n")}
+${segments.map((s, i) => `  OceanScene.boot({ containerId: "scene-${s.slot}", chapterId: "${ch.id}", slot: "${s.slot}", title: "${esc(ch.title)}"${i === 0 ? ", eager: true" : ""} });`).join("\n")}
 });
 </script>`;
 }
@@ -203,7 +202,7 @@ function genActivity(ch) {
   if (ch.id === "overview") return null;
   const fname = `${pad(ch.num)}-${ch.slug}.html`;
   const segs = ch.mainSegments.map((s) => segmentHtml(ch, s, "main")).join("\n");
-  const html = `${head(ch.title, [], ch.id)}
+  const html = `${head(ch.title, [])}
 <body class="big-planet-page reading-page">
 <div class="bubbles"></div>
 <div class="container">
@@ -264,11 +263,13 @@ ${views}
   var zoneIdx = 0;
 
   function loadViewImages() {
-    VIEW_MODES.forEach(function(m) {
+    VIEW_MODES.forEach(function(m, idx) {
       var img = document.getElementById("viewImg-" + m.id);
-      if (!img || !window.OceanChapterImage) return;
-      var uri = OceanChapterImage.getUri("overview", m.slot);
-      if (uri) img.src = uri;
+      if (!img) return;
+      img.loading = idx === 0 ? "eager" : "lazy";
+      img.decoding = "async";
+      if (idx === 0) img.fetchPriority = "high";
+      img.src = "assets/overview-" + m.slot + ".png";
     });
   }
 
@@ -320,7 +321,7 @@ function genExplained(ch) {
   const num = ch.num + 1;
   const fname = `${pad(num)}-${explainedSlug(ch)}.html`;
   const segs = ch.explainedSegments.map((s) => segmentHtml(ch, s, "explained")).join("\n");
-  const html = `${head(ch.title + " Explained", [], ch.id)}
+  const html = `${head(ch.title + " Explained", [])}
 <body class="reading-page">
 <div class="bubbles"></div>
 <div class="container">
@@ -351,7 +352,7 @@ function genQuiz(ch) {
     <div class="feedback" id="feedback-${i + 1}"></div>
   </div>`).join("\n");
 
-  const html = `${head(ch.title + " Quiz", [], null)}
+  const html = `${head(ch.title + " Quiz", [])}
 <body class="reading-page">
 <div class="bubbles"></div>
 <div class="container">
