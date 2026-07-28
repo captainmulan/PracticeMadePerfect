@@ -1081,6 +1081,20 @@ html:has(body.explained-page){
   object-position:center center;
   display:block;
 }
+/* Words pages — full-width cover images (no white/blue letterboxing on iPad/mobile) */
+.main-chapter-page .chapter-scene .scene-card-hero,
+.main-chapter-page .chapter-scene .chapter-photo-hero{
+  background:transparent;
+  border-radius:var(--radius);
+  border:2px solid rgba(56,189,248,.28);
+  box-shadow:0 4px 16px rgba(30,41,59,.08);
+}
+.main-chapter-page .chapter-scene .chapter-hero-img{
+  min-height:160px;
+  max-height:min(48dvh,440px);
+  aspect-ratio:16/9;
+  object-fit:cover;
+}
 .story-row{min-height:0;}
 .story-row .card{
   padding:16px;
@@ -1266,6 +1280,11 @@ html:has(body.explained-page){
     max-height:min(72dvh,620px);
     width:100%;
     object-fit:contain;
+  }
+  .main-chapter-page .chapter-scene .chapter-hero-img{
+    aspect-ratio:16/9;
+    object-fit:cover;
+    max-height:min(56dvh,520px);
   }
   .explained-page .sentences-part .chapter-scene .chapter-hero-img{
     max-height:min(48dvh,440px);
