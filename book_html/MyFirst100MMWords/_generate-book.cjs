@@ -589,7 +589,6 @@ function sentenceGroupsBlockHtml(chId, groups) {
       const row = sentencePairHtml(line.en, line.mm);
       return `
     <div class="sentence-group-card">
-      <h3 class="sentence-group-title">${esc(group.title)}</h3>
       <div class="sentence-pairs-list">${row}</div>
     </div>`;
     })

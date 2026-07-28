@@ -8,7 +8,7 @@
         },
         "Father": {
             "en": "Father sweeps the yard each day.",
-            "mm": "အဖေက နေ့တိုင်း ဧရိယာ သန့်ရှင်းတယ်။"
+            "mm": "အဖေက နေ့တိုင်း ခြံ သန့်ရှင်းတယ်။"
         },
         "Grandmother": {
             "en": "Grandmother tells stories at bedtime.",
@@ -16,11 +16,11 @@
         },
         "Grandfather": {
             "en": "Grandfather drinks tea on the porch.",
-            "mm": "အဘိုးက ဧရိယာမှာ လက်ဖက်ရည်သောက်တယ်။"
+            "mm": "အဘိုးက ဆိပ်ခန်းမှာ လက်ဖက်ရည်သောက်တယ်။"
         },
         "Sister": {
             "en": "My sister helps me carry water.",
-            "mm": "ညီမက ရေသယ်ရာ ကျွန်မကို ကူညီပေးတယ်။"
+            "mm": "ညီမက ကျွန်မကို ရေသယ်ဖို့ ကူညီပေးတယ်။"
         },
         "Brother": {
             "en": "My brother plays football with cousins.",
@@ -36,15 +36,15 @@
         },
         "Uncle": {
             "en": "My uncle tells funny jokes at dinner.",
-            "mm": "ဦးလေးက ညစာ ညနေခင်း ရယ်စရာ ပြောပြတယ်။"
+            "mm": "ဦးလေးက ညစာ စားရင်း ရယ်စရာ ပြောပြတယ်။"
         },
         "Cousin": {
             "en": "I play hide-and-seek with my cousin.",
-            "mm": "ဝမ်းကွဲနဲ့ ပုန်းတမ်းကစားတယ်။"
+            "mm": "ကျွန်မက ဝမ်းကွဲနဲ့ ပုန်းတမ်းကစားတယ်။"
         },
         "Family": {
             "en": "My family eats together every evening.",
-            "mm": "မိသားစုလုံး ညနေတိုင်း အတူတူ ထမင်းစားကြတယ်။"
+            "mm": "ကျွန်မတို့ မိသားစုလုံး ညနေတိုင်း အတူတူ ထမင်းစားကြတယ်။"
         },
         "Parents": {
             "en": "My parents wake early each morning.",
@@ -78,7 +78,7 @@
         },
         "Noodle": {
             "en": "Hot noodles steam in the bowl.",
-            "mm": "ခေါက်ဆွဲ ပူပူက ပန်းကန်ထဲ အငွေ့တက်နေတယ်။"
+            "mm": "ပန်းကန်ထဲမှာ ခေါက်ဆွဲပူပူ အငွေ့တက်နေတယ်။"
         },
         "Egg": {
             "en": "Mother fries an egg with rice.",
@@ -100,7 +100,7 @@
         },
         "Cat": {
             "en": "The cat sleeps in the sunny porch.",
-            "mm": "ကြောင်က နေရောင်ထဲ ဧရိယာမှာ အိပ်နေတယ်။"
+            "mm": "ကြောင်က နေရောင်ထဲ ဆိပ်ခန်းမှာ အိပ်နေတယ်။"
         },
         "Dog": {
             "en": "Our dog barks at strangers passing by.",
@@ -116,7 +116,7 @@
         },
         "Cow": {
             "en": "The cow eats grass in the field.",
-            "mm": "နွားက မြက်စားနေတယ်။"
+            "mm": "နွားက မြက်ခင်းမှာ မြက်စားနေတယ်။"
         },
         "Chicken": {
             "en": "The chicken wakes the house each morning.",
@@ -230,11 +230,11 @@
         },
         "Ear": {
             "en": "Su listens with both ears in class.",
-            "mm": "စူးက နားနှစ်ဖက်နဲ့ နားထောင်တယ်။"
+            "mm": "စူးက စာသင်ခန်းမှာ နားထောင်တယ်။"
         },
         "Nose": {
             "en": "Su smells flowers with her nose.",
-            "mm": "စူးက နှာခေါင်းနဲ့ ပန်းကို အနံ့ခံကြည့်တယ်။"
+            "mm": "စူးက ပန်းကို နှာခေါင်းနဲ့ အနံ့ခံကြည့်တယ်။"
         },
         "Mouth": {
             "en": "Su speaks kind words at the table.",
@@ -356,7 +356,7 @@
         },
         "Angry": {
             "en": "Su breathes deep when she feels angry.",
-            "mm": "ဒေါ်တဲ့အခါ စူးက အသက်ရှူပြီး သုံးအထိ ရေတွက်တယ်။"
+            "mm": "စူးဒေါ်တဲ့အခါ အသက်ရှူပြီး သုံးအထိ ရေတွက်တယ်။"
         },
         "Scared": {
             "en": "Su feels scared until Mother holds her hand.",
