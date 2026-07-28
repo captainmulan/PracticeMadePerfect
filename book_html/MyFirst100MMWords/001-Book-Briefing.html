@@ -4,359 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My First 100 Myanmar Words - Book Briefing</title>
-<link rel="stylesheet" href="_mmwords-theme.css">
+<link rel="stylesheet" href="_mmwords-intro-solar.css">
 <script src="_mmwords-player.js"></script>
-<style>
-  .briefing-hero{
-    text-align:center;
-    padding:20px 16px 18px;
-    margin-bottom:18px;
-    border-radius:var(--radius);
-    background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(186,230,253,.35));
-    border:2px solid rgba(201,162,39,.45);
-    box-shadow:var(--shadow);
-  }
-  .briefing-hero-kicker{
-    display:inline-block;
-    font-size:14px;
-    font-weight:800;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:var(--lacquer);
-    background:rgba(251,191,36,.25);
-    padding:4px 10px;
-    border-radius:999px;
-    margin-bottom:10px;
-  }
-  .briefing-hero-stats{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:10px;
-    margin-top:14px;
-  }
-  .briefing-stat{
-    min-width:88px;
-    padding:8px 12px;
-    border-radius:var(--radius-sm);
-    background:rgba(255,255,255,.75);
-    border:1px solid rgba(56,189,248,.3);
-  }
-  .briefing-stat strong{display:block;font-size:24px;color:var(--lacquer-deep);line-height:1.1;}
-  .briefing-stat span{font-size:16px;color:var(--text-muted);}
-
-  .briefing-game-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
-    margin-top:10px;
-  }
-  .briefing-game-card{
-    border-radius:var(--radius-sm);
-    overflow:hidden;
-    border:2px solid rgba(56,189,248,.28);
-    background:#fff;
-    box-shadow:0 4px 14px rgba(30,41,59,.08);
-    display:flex;
-    flex-direction:column;
-  }
-  .briefing-preview-scene{
-    height:72px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-    position:relative;
-    overflow:hidden;
-  }
-  .briefing-preview-scene .scene-emoji{
-    font-size:26px;
-    line-height:1;
-    filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));
-    animation:briefFloat 3s ease-in-out infinite;
-  }
-  .briefing-preview-scene .scene-emoji:nth-child(2){animation-delay:.4s;font-size:30px;}
-  .briefing-preview-scene .scene-emoji:nth-child(3){animation-delay:.8s;}
-  @keyframes briefFloat{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-4px);}
-  }
-  .briefing-game-start .briefing-preview-scene{background:linear-gradient(180deg,#7DD3FC,#86EFAC 55%,#65A30D);}
-  .briefing-game-mid .briefing-preview-scene{background:linear-gradient(180deg,#312E81,#991b1b 70%,#44403c);}
-  .briefing-game-end .briefing-preview-scene{background:linear-gradient(180deg,#1e1b4b,#312e81 40%,#166534);}
-  .briefing-card-body{padding:10px 10px 12px;flex:1;}
-  .briefing-badge{
-    display:inline-block;
-    font-size:9px;
-    font-weight:800;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    padding:2px 7px;
-    border-radius:999px;
-    margin-bottom:5px;
-  }
-  .briefing-game-start .briefing-badge{background:#BAE6FD;color:#0369A1;}
-  .briefing-game-mid .briefing-badge{background:#FCA5A5;color:#7F1D1D;}
-  .briefing-game-end .briefing-badge{background:#FDE68A;color:#92400E;}
-  .briefing-card-body h3{font-size:19px;font-weight:800;color:var(--lacquer-deep);margin:0 0 4px;line-height:1.25;}
-  .briefing-card-body p{font-size:17px;line-height:1.55;color:var(--text-muted);margin:0;}
-
-  .briefing-chapter-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:8px;
-    margin-top:10px;
-  }
-  .briefing-chapter{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px;
-    border-radius:var(--radius-sm);
-    background:rgba(255,255,255,.88);
-    border:1px solid rgba(56,189,248,.22);
-    box-shadow:0 2px 8px rgba(30,41,59,.05);
-  }
-  .briefing-ch-thumb{
-    flex-shrink:0;
-    width:44px;
-    height:44px;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    line-height:1;
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.4);
-  }
-  .briefing-ch-family{background:linear-gradient(145deg,#FBCFE8,#FDE68A);}
-  .briefing-ch-food{background:linear-gradient(145deg,#FED7AA,#FEF3C7);}
-  .briefing-ch-animals{background:linear-gradient(145deg,#BBF7D0,#A7F3D0);}
-  .briefing-ch-colors{background:linear-gradient(145deg,#DDD6FE,#FBCFE8);}
-  .briefing-ch-numbers{background:linear-gradient(145deg,#BAE6FD,#E0E7FF);}
-  .briefing-ch-body{background:linear-gradient(145deg,#FECACA,#FED7AA);}
-  .briefing-ch-home{background:linear-gradient(145deg,#D9F99D,#FEF9C3);}
-  .briefing-ch-school{background:linear-gradient(145deg,#A5F3FC,#BFDBFE);}
-  .briefing-ch-feelings{background:linear-gradient(145deg,#F9A8D4,#FDE68A);}
-  .briefing-ch-festivals{background:linear-gradient(145deg,#C4B5FD,#F472B6);}
-  .briefing-ch-text strong{display:block;font-size:18px;color:var(--lacquer-deep);line-height:1.2;}
-  .briefing-ch-text span{display:block;font-size:16px;color:var(--text-muted);line-height:1.45;margin-top:2px;}
-
-  .briefing-cta{
-    text-align:center;
-    padding:14px;
-    margin-top:6px;
-    border-radius:var(--radius-sm);
-    background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(56,189,248,.15));
-    border:2px dashed rgba(139,92,246,.35);
-  }
-  .briefing-cta p{margin:0;font-size:14px;font-weight:700;color:var(--lacquer-deep);}
-  .briefing-cta small{display:block;margin-top:4px;font-size:14px;color:var(--text-muted);}
-
-  .briefing-checklist{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    margin-top:10px;
-    list-style:none;
-    padding:0;
-  }
-  .briefing-checklist li{
-    font-size:13px;
-    line-height:1.45;
-    color:var(--text-muted);
-    padding:8px 10px;
-    border-radius:var(--radius-sm);
-    background:rgba(186,230,253,.12);
-    border:1px solid rgba(186,230,253,.3);
-    margin:0;
-  }
-  .briefing-checklist li::before{content:'✓ ';color:var(--teal);font-weight:700;}
-
-  @media(max-width:640px){
-    .briefing-game-grid{grid-template-columns:1fr;}
-    .briefing-preview-scene{height:64px;}
-    .briefing-checklist{grid-template-columns:1fr;}
-  }
-</style>
 </head>
-<body class="intro-page">
-<div class="manuscript-bg">
-<div class="scroll-wrap">
+<body class="mm-solar-intro">
+<div class="mm-stars"></div>
+<div class="mm-container">
 
-  <header class="header">
-    <svg class="pagoda-deco" width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#C9A227" d="M24 4 L32 14 H16 Z"/>
-      <path fill="#8B5CF6" d="M24 14 L34 26 H14 Z"/>
-      <rect x="18" y="26" width="12" height="14" fill="#C9A227"/>
-      <circle cx="24" cy="3" r="2" fill="#E8C547"/>
-    </svg>
-    <div class="ornament-top">✦ ✦ ✦</div>
-    <h1 class="page-title">My First 100 Myanmar Words</h1>
-    <p class="page-subtitle">Parabaik briefing · Stories, games &amp; tap-to-hear for English-reading children</p>
-    <p class="page-tagline">Keep your child connected to Myanmar — even while growing up overseas.</p>
-  </header>
-
-  <div class="briefing-hero">
-    <div class="briefing-hero-kicker">Inside this book</div>
-    <p style="font-size:15px;line-height:1.6;color:var(--ink);margin:0;max-width:520px;margin-left:auto;margin-right:auto;">
-      Moral tales from Myanmar tradition, <strong>tap-to-hear</strong> word cards, story quizzes — and <strong>three big adventure games</strong> bookending the journey.
-    </p>
-    <div class="briefing-hero-stats">
-      <div class="briefing-stat"><strong>100</strong><span>first words</span></div>
-      <div class="briefing-stat"><strong>10</strong><span>word worlds</span></div>
-      <div class="briefing-stat"><strong>3</strong><span>hero games</span></div>
-      <div class="briefing-stat"><strong>38</strong><span>pages</span></div>
+  <div class="mm-cover">
+    <div class="mm-logo">📚</div>
+    <h1>My First 100 Myanmar Words</h1>
+    <div class="mm-tagline">Stories, games &amp; tap-to-hear for English-reading children</div>
+    <div class="mm-badges">
+      <div class="mm-pill">🎂 Age 4–10</div>
+      <div class="mm-pill">💬 100 Words</div>
+      <div class="mm-pill">🎮 3 Games</div>
     </div>
   </div>
 
-  <div class="section-block">
-    <div class="section-label"><span>Play first — three games</span></div>
-    <div class="card" style="padding:14px;">
-      <h2>Adventures that hook young learners</h2>
-      <p style="margin-bottom:4px;">Each game celebrates a milestone — start, middle, and finish. Badges await!</p>
-      <div class="briefing-game-grid">
-        <article class="briefing-game-card briefing-game-start">
-          <div class="briefing-preview-scene" aria-hidden="true">
-            <span class="scene-emoji">🏘️</span>
-            <span class="scene-emoji">🌳</span>
-            <span class="scene-emoji">🐘</span>
-          </div>
-          <div class="briefing-card-body">
-            <span class="briefing-badge">Page 4 · Start</span>
-            <h3>Build Myanmar Village</h3>
-            <p>Before chapter 1 — stamp houses, pagodas, trees &amp; animals on a green canvas. Your village, your way.</p>
-          </div>
-        </article>
-        <article class="briefing-game-card briefing-game-mid">
-          <div class="briefing-preview-scene" aria-hidden="true">
-            <span class="scene-emoji">🪔</span>
-            <span class="scene-emoji">🐺</span>
-            <span class="scene-emoji">👨‍👩‍👧</span>
-          </div>
-          <div class="briefing-card-body">
-            <span class="briefing-badge">Mid-book · Level 15</span>
-            <h3>Lantern Run</h3>
-            <p>15 timed levels, Mario stomps, boss fights every 4 levels — jump through Thadingyut to reach family!</p>
-          </div>
-        </article>
-        <article class="briefing-game-card briefing-game-end">
-          <div class="briefing-preview-scene" aria-hidden="true">
-            <span class="scene-emoji">🏮</span>
-            <span class="scene-emoji">🎁</span>
-            <span class="scene-emoji">🎆</span>
-          </div>
-          <div class="briefing-card-body">
-            <span class="briefing-badge">Page 37 · Finale</span>
-            <h3>Festival Parade</h3>
-            <p>10 levels — collect lanterns, dodge dogs &amp; wolves, deliver 5 gifts per level. Light up the whole village!</p>
-          </div>
-        </article>
+  <div class="mm-card">
+    <h2>📖 About This Book</h2>
+    <p><strong>My First 100 Myanmar Words</strong> helps overseas kids stay connected to Myanmar through <strong>hearing and speaking</strong> — not writing drills.</p>
+    <p>Each chapter has a short story, tap-to-hear word cards, a sentences page, and a quiz. Three big games bookend the journey!</p>
+  </div>
+
+  <div class="mm-card">
+    <h2>🎮 Three Hero Games</h2>
+    <div class="mm-game-grid">
+      <div class="mm-game-card">
+        <span class="mm-game-badge">Start · Page 4</span>
+        <strong>🏘️ Build Myanmar Village</strong>
+        <span>Stamp houses, pagodas &amp; animals on your canvas.</span>
+      </div>
+      <div class="mm-game-card">
+        <span class="mm-game-badge">Mid-book</span>
+        <strong>🪔 Lantern Run</strong>
+        <span>Jump through Thadingyut to reach family!</span>
+      </div>
+      <div class="mm-game-card">
+        <span class="mm-game-badge">Finale · Page 37</span>
+        <strong>🎆 Festival Parade</strong>
+        <span>Collect lanterns and light up the village!</span>
       </div>
     </div>
   </div>
 
-  <div class="section-block">
-    <div class="section-label"><span>Ten chapter worlds</span></div>
-    <div class="card" style="padding:14px;">
-      <h2>Every world: story → words → quiz</h2>
-      <p>Illustrated moral tales, English on the page, Myanmar you <strong>hear</strong> — no script reading required yet.</p>
-      <div class="briefing-chapter-grid">
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-family" aria-hidden="true">👨‍👩‍👧</div>
-          <div class="briefing-ch-text"><strong>Family</strong><span>Mother, Father, Grandmother… under one roof</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-food" aria-hidden="true">🍚</div>
-          <div class="briefing-ch-text"><strong>Food</strong><span>Rice, tea, mango — kitchen &amp; market words</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-animals" aria-hidden="true">🐘</div>
-          <div class="briefing-ch-text"><strong>Animals</strong><span>Elephant, buffalo, village friends</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-colors" aria-hidden="true">🎨</div>
-          <div class="briefing-ch-text"><strong>Colors</strong><span>Paint the festival with bright words</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-numbers" aria-hidden="true">🔢</div>
-          <div class="briefing-ch-text"><strong>Numbers</strong><span>Count lanterns, coins &amp; cousins</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-body" aria-hidden="true">👂</div>
-          <div class="briefing-ch-text"><strong>Body</strong><span>Head, hand, heart — how we move</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-home" aria-hidden="true">🏠</div>
-          <div class="briefing-ch-text"><strong>Home</strong><span>Room, door, bed — life indoors</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-school" aria-hidden="true">🎒</div>
-          <div class="briefing-ch-text"><strong>School</strong><span>Teacher, book, friend — classroom fun</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-feelings" aria-hidden="true">😊</div>
-          <div class="briefing-ch-text"><strong>Feelings</strong><span>Happy, shy, proud — name emotions</span></div>
-        </div>
-        <div class="briefing-chapter">
-          <div class="briefing-ch-thumb briefing-ch-festivals" aria-hidden="true">🎆</div>
-          <div class="briefing-ch-text"><strong>Festivals</strong><span>Thingyan, Thadingyut &amp; celebration words</span></div>
-        </div>
-      </div>
+  <div class="mm-card">
+    <h2>🌍 Ten Word Worlds</h2>
+    <div class="mm-concept-grid">
+      <div class="mm-concept-item"><span class="mm-emoji">👨‍👩‍👧</span> Family</div>
+      <div class="mm-concept-item"><span class="mm-emoji">🍚</span> Food</div>
+      <div class="mm-concept-item"><span class="mm-emoji">🐘</span> Animals</div>
+      <div class="mm-concept-item"><span class="mm-emoji">🎨</span> Colors</div>
+      <div class="mm-concept-item"><span class="mm-emoji">🔢</span> Numbers</div>
+      <div class="mm-concept-item"><span class="mm-emoji">👂</span> Body</div>
+      <div class="mm-concept-item"><span class="mm-emoji">🏠</span> Home</div>
+      <div class="mm-concept-item"><span class="mm-emoji">🎒</span> School</div>
+      <div class="mm-concept-item"><span class="mm-emoji">😊</span> Feelings</div>
+      <div class="mm-concept-item"><span class="mm-emoji">🎆</span> Festivals</div>
     </div>
   </div>
 
-  <div class="section-block">
-    <div class="section-label"><span>Why it works</span></div>
-    <div class="card">
-      <h2>How this book teaches</h2>
-      <div class="path">
-        <div class="path-step">👂 Hear</div>
-        <div class="path-step">👀 Recognize</div>
-        <div class="path-step">🗣️ Speak</div>
-        <div class="path-step">🎮 Play &amp; quiz</div>
-      </div>
-      <p>This book is <strong>hear-first</strong> — tap word cards to listen, repeat aloud, and learn through stories and games. It does <strong>not</strong> teach Myanmar writing or spelling. English stays on the page; Myanmar enters through the ears, the way many overseas families start at home.</p>
-      <ul class="briefing-checklist">
-        <li>English story + moral on every chapter</li>
-        <li>Tap <strong>Hear</strong> — Myanmar audio on every word</li>
-        <li>Encourage speaking along — no script drills</li>
-        <li>Quizzes, three games &amp; a congratulations finale</li>
-      </ul>
+  <div class="mm-card">
+    <h2>👂 How It Works</h2>
+    <div class="mm-steps">
+      <div class="mm-step"><div class="mm-step-num">1</div><p>Pick your learner on page 3.</p></div>
+      <div class="mm-step"><div class="mm-step-num">2</div><p>Tap <strong>🔊 Hear</strong> on any word or sentence.</p></div>
+      <div class="mm-step"><div class="mm-step-num">3</div><p>Repeat aloud — English on the page, Myanmar in your ears.</p></div>
+      <div class="mm-step"><div class="mm-step-num">4</div><p>Play games and quizzes to earn badges!</p></div>
+    </div>
+    <div class="mm-tip">This book is <strong>hear-first</strong>. It does not teach Myanmar writing or spelling.</div>
+  </div>
+
+  <div class="mm-card">
+    <h2>ℹ️ Book Details</h2>
+    <div class="mm-meta-row">
+      <div class="mm-meta-item"><div class="mm-meta-label">AUTHOR</div><div class="mm-meta-value">Jimmy Cooper</div></div>
+      <div class="mm-meta-item"><div class="mm-meta-label">AGE</div><div class="mm-meta-value">4–10 years</div></div>
+      <div class="mm-meta-item"><div class="mm-meta-label">PAGES</div><div class="mm-meta-value">38 pages</div></div>
+      <div class="mm-meta-item"><div class="mm-meta-label">FORMAT</div><div class="mm-meta-value">Tap-to-hear</div></div>
     </div>
   </div>
 
-  <div class="section-block">
-    <div class="section-label"><span>Details</span></div>
-    <div class="card">
-      <h2>Book details</h2>
-      <div class="info-grid">
-        <div class="info-item"><div class="info-label">Author</div><div class="info-value">Jimmy Cooper</div></div>
-        <div class="info-item"><div class="info-label">Age group</div><div class="info-value">4–10 years</div></div>
-        <div class="info-item"><div class="info-label">Format</div><div class="info-value">38 pages</div></div>
-        <div class="info-item"><div class="info-label">Style</div><div class="info-value">Parabaik scroll</div></div>
-      </div>
-    </div>
+  <div class="mm-card">
+    <h2>✍️ Author&apos;s Message</h2>
+    <p>&ldquo;Many overseas families worry their child is forgetting Myanmar. This book starts with hearing and speaking inside stories — three games, ten worlds, one hundred words. Let&apos;s keep your child&apos;s connection alive, one word at a time.&rdquo;</p>
+    <p style="margin-top:10px;font-size:15px;color:#c4b5fd;">— Jimmy Cooper</p>
   </div>
 
-  <div class="section-block">
-    <div class="section-label"><span>Author</span></div>
-    <div class="card">
-      <h2>Author&apos;s message</h2>
-      <p class="quote">&ldquo;Hello! I&apos;m Jimmy Cooper. Many overseas Myanmar families told me the same worry: &lsquo;My child is forgetting our language.&rsquo; This book starts with hearing and speaking inside stories — the way village children learned under banyan trees. Three games, ten worlds, one hundred words. No writing lessons here — just listen, recognize, and speak. Let&apos;s keep your child&apos;s connection to Myanmar alive, one word at a time.&rdquo;</p>
-    </div>
-  </div>
+  <div class="mm-nav-hint">Ready? Use ← → in the top bar · Next: Table of Contents</div>
 
-  <div class="briefing-cta">
-    <p>Ready? Turn the page → pick your learner → build your village!</p>
-    <small>Use ← → in the top bar · Home returns to the library</small>
-  </div>
-
-  <div class="nav-hint">
-    <div>Next: Table of Contents (page 2), then Character Selection &amp; your first game.</div>
-  </div>
-
-</div>
 </div>
 </body>
 </html>

@@ -578,7 +578,7 @@ function primarySentence(chId, group) {
   const list = group.sentences || [];
   const skip = /^(This is|These are|That is|Look at)/i;
   const rich = list.filter((s) => s.en && s.mm && !skip.test(s.en.trim()));
-  if (rich.length) return rich.sort((a, b) => b.en.length - a.en.length)[0];
+  if (rich.length) return rich.sort((a, b) => a.en.length - b.en.length)[0];
   return list[list.length - 1] || list[0] || { en: "", mm: "" };
 }
 
