@@ -31,8 +31,8 @@ function loadImageUri(chapterId, slot) {
   if (imgCache[key] !== undefined) return imgCache[key];
   const isSent = /^sent\d+$/.test(slot);
   const names = isSent
-    ? [`${chapterId}-${slot}.png`, `${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`]
-    : [`${chapterId}-${slot}.png`, `${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.svg`];
+    ? [`${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.png`]
+    : [`${chapterId}-${slot}.jpg`, `${chapterId}-${slot}.jpeg`, `${chapterId}-${slot}.png`, `${chapterId}-${slot}.svg`];
   if (LEGACY_IMG[chapterId] && LEGACY_IMG[chapterId][slot]) names.unshift(LEGACY_IMG[chapterId][slot]);
   const fallbacks = {
     seg2: ["seg1"],
@@ -56,12 +56,13 @@ function loadImageUri(chapterId, slot) {
   return null;
 }
 
-function imgHtml(chapterId, slot, alt) {
+function imgHtml(chapterId, slot, alt, lazy) {
   const uri = loadImageUri(chapterId, slot);
   if (!uri) {
     return `<div class="scene-placeholder">Add assets/${chapterId}-${slot}.jpg</div>`;
   }
-  return `<img class="chapter-hero-img" src="${uri}" alt="${esc(alt)}" decoding="async">`;
+  const lazyAttr = lazy ? ' loading="lazy" fetchpriority="low"' : ' fetchpriority="high"';
+  return `<img class="chapter-hero-img" src="${uri}" alt="${esc(alt)}" decoding="async"${lazyAttr}>`;
 }
 
 const CHAPTER_CSS = `.container{width:100%;max-width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 28px;position:relative;z-index:1;}
@@ -598,7 +599,7 @@ function sentenceGroupsBlockHtml(chId, groups) {
 function explainedScrollPartHtml(ch, idx, groups, titles) {
   const slot = "sent" + (idx + 1);
   const meta = explainedSectionMeta(ch, idx, groups);
-  const pic = imgHtml(ch.id, slot, ch.title + " — " + meta.title);
+  const pic = imgHtml(ch.id, slot, ch.title + " — " + meta.title, idx > 0);
   const storyLongHtml = meta.storyLong
     ? `<div class="story-box story-box-landscape">${esc(meta.storyLong)}</div>`
     : "";
@@ -658,7 +659,7 @@ function cleanPartTitle(title) {
 
 function mainScrollPartHtml(ch, idx, story, words, titles) {
   const slot = "seg" + (idx + 1);
-  const pic = imgHtml(ch.id, slot, ch.title + " — part " + (idx + 1));
+  const pic = imgHtml(ch.id, slot, ch.title + " — part " + (idx + 1), idx > 0);
   return `
     <section class="chapter-part" id="chapter-part-${idx}" aria-labelledby="chapter-part-title-${idx}">
       <h2 class="chapter-part-title" id="chapter-part-title-${idx}">${esc(titles[idx])}</h2>

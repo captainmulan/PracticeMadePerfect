@@ -10,10 +10,10 @@
 body.main-chapter-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
 .main-chapter-page .manuscript-bg,.main-chapter-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
 .explained-page{overflow-x:hidden;overflow-y:auto;}
-body.explained-page{padding:0;}
-.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:flex;flex-direction:column;overflow:visible;}
-.explained-page .manuscript-bg{width:100%;align-items:stretch;}
-.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 20px;}</style>
+body.explained-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;overflow-y:auto;}
+.explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
+.explained-page .manuscript-bg{width:100%;}
+.explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 28px;--chapter-pad-x:clamp(16px,3vw,40px);}</style>
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
@@ -28,7 +28,7 @@ body.explained-page{padding:0;}
     <section class="chapter-part" id="chapter-part-0" aria-labelledby="chapter-part-title-0">
       <h2 class="chapter-part-title" id="chapter-part-title-0">Mangoes at the Market</h2>
       <div class="chapter-part-inner">
-        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/numbers-seg1.png" alt="Numbers — part 1" decoding="async"></div></div>
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/numbers-seg1.png" alt="Numbers — part 1" decoding="async" fetchpriority="high"></div></div>
         <div class="story-row">
           <div class="card story-card">
             <div class="story-box">Hnin sold mangoes near old Bagan temples. She stacked them in groups — one, two, three, four, five — then counted too fast and gave one extra away. Her face turned red. &quot;Slow eyes,&quot; her brother teased with a grin.</div>
@@ -95,7 +95,7 @@ body.explained-page{padding:0;}
     <section class="chapter-part" id="chapter-part-1" aria-labelledby="chapter-part-title-1">
       <h2 class="chapter-part-title" id="chapter-part-title-1">Ten Coins on the Mat</h2>
       <div class="chapter-part-inner">
-        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/numbers-seg2.png" alt="Numbers — part 2" decoding="async"></div></div>
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/numbers-seg2.png" alt="Numbers — part 2" decoding="async" loading="lazy" fetchpriority="low"></div></div>
         <div class="story-row">
           <div class="card story-card">
             <div class="story-box">A kind traveler placed ten coins on her mat. &quot;Count again,&quot; he said. Hnin pointed to each mango and counted out loud — six, seven, eight, nine, ten. When she finished, she smiled. Zero mistakes this time.</div>
@@ -162,7 +162,7 @@ body.explained-page{padding:0;}
     <section class="chapter-part" id="chapter-part-2" aria-labelledby="chapter-part-title-2">
       <h2 class="chapter-part-title" id="chapter-part-title-2">Counting with Love</h2>
       <div class="chapter-part-inner">
-        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/numbers-seg3.png" alt="Numbers — part 3" decoding="async"></div></div>
+        <div class="scene-wrap chapter-scene"><div class="scene-card scene-card-hero chapter-photo-hero scene-static"><img class="chapter-hero-img" src="assets/numbers-seg3.png" alt="Numbers — part 3" decoding="async" loading="lazy" fetchpriority="low"></div></div>
         <div class="story-row">
           <div class="card story-card">
             <div class="story-box">That week Hnin taught her brother to count the world around them. Six eggs in a basket. Seven steps to the pagoda. Eight birds on the roof. Nine flowers for Grandma. Ten fingers on his hands. &quot;Many numbers,&quot; he laughed, &quot;many smiles.&quot;</div>

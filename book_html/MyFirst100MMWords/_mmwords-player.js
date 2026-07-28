@@ -185,10 +185,6 @@
     w.speechSynthesis.speak(u);
   }
 
-  function prefersSynthMyanmar() {
-    return /iPad|iPhone|iPod|Android/i.test(navigator.userAgent || "") ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  }
 
   function playMyanmar(text, hint, onend) {
     var gen = speakGen;
@@ -198,17 +194,19 @@
       else if (onend) onend();
       return;
     }
-    if (prefersSynthMyanmar() && myanmarVoice) {
-      speakSynth(text, "my-MM", myanmarVoice, gen, onend);
-      return;
-    }
     playGoogleTts(text, "my", 0, gen, function () {
       if (!isStale(gen) && onend) onend();
     }, function () {
       if (isStale(gen)) return;
-      speakSynth(text, "my-MM", myanmarVoice, gen, function () {
-        if (!isStale(gen) && onend) onend();
-      });
+      if (myanmarVoice) {
+        speakSynth(text, "my-MM", myanmarVoice, gen, function () {
+          if (!isStale(gen) && onend) onend();
+        });
+      } else if (hint) {
+        speakSynth(hint, "en-US", englishVoice, gen, onend);
+      } else if (onend) {
+        onend();
+      }
     });
   }
 
@@ -263,9 +261,9 @@
     speakFromBtn: function (btn, lang) {
       var card = btn.closest(".word-card") || btn.closest(".phrase-card") || btn.closest(".hero-word-card") || btn;
       if (!card) return;
-      var en = card.getAttribute("data-en");
-      var mm = card.getAttribute("data-mm");
-      var hint = card.getAttribute("data-hint");
+      var en = btn.getAttribute("data-en") || card.getAttribute("data-en");
+      var mm = btn.getAttribute("data-mm") || card.getAttribute("data-mm");
+      var hint = btn.getAttribute("data-hint") || card.getAttribute("data-hint");
       var root = card.closest(".word-card") || card;
       root.querySelectorAll(".speak-btn, .btn-speak").forEach(function (b) { b.classList.remove("pressed"); });
       btn.classList.add("pressed");
