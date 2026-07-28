@@ -3452,11 +3452,11 @@ textarea {
 /* Tabs styled as a shelf sub-menu - orange bar menu aesthetic */
 .home-tabs {
   display: flex;
-  gap: 12px;
-  margin-bottom: clamp(16px, 4vw, 28px);
-  padding: 8px;
+  gap: 6px;
+  margin-bottom: clamp(12px, 3vw, 20px);
+  padding: 5px;
   background: #fdf7f2;
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
   flex-wrap: nowrap;
   max-width: 100%;
@@ -3464,22 +3464,26 @@ textarea {
 }
 
 .home-tabs .home-tab-button {
+  flex: 1;
+  min-width: 0;
   background: #fb923c;
   border: 1px solid rgba(255, 255, 255, 0.35);
   color: white;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  padding: 12px 22px;
-  border-radius: 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
   transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
   white-space: nowrap;
-  box-shadow: 0 4px 8px rgba(251, 146, 60, 0.18);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 3px 6px rgba(251, 146, 60, 0.16);
 }
 
 .home-tabs .home-tab-button.active {
   background: #f97316;
-  box-shadow: 0 8px 16px rgba(249, 115, 22, 0.22);
+  box-shadow: 0 5px 10px rgba(249, 115, 22, 0.2);
 }
 
 .home-tabs .home-tab-button:hover:not(.active) {

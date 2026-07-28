@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getHomePageData } from "../utils/contentStore";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { createShelfItemFromCourse, getCourseShelfRowForCategory, getHomeCourseShelfRows, type CourseShelfRow } from "../utils/courseShelf";
+import { createShelfItemFromCourse, getCourseShelfRowForCategory, getHomeCourseShelfRows, pickRandomPopularCourse, type CourseShelfRow } from "../utils/courseShelf";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import HomeLoginPanel from "../components/HomeLoginPanel";
 import HomeSpaceDecor from "../components/HomeSpaceDecor";
@@ -27,6 +27,7 @@ function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["cour
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const [heroCollapsed, setHeroCollapsed] = useState(true);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
   const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<"Kid" | "IT" | "Fiction" | "Language">("IT");
@@ -53,6 +54,13 @@ export default function Home() {
     }
     return rows.find((row) => row.title === "Selection") || rows[0];
   }, [courses, isSearching, rows, searchQuery, selectedCategorySubTab, selectedTab]);
+
+  const handleStartReading = () => {
+    const course = pickRandomPopularCourse(courses);
+    if (course) {
+      navigate(`/courses/${course.id}`);
+    }
+  };
 
   return (
     <div className="page-content page-home">
@@ -86,9 +94,11 @@ export default function Home() {
               <p className="home-hero-description" style={{ color: style?.hero?.descriptionColor ?? "#475569" }}>{data.summary}</p>
               <div className="home-hero-features" style={{ color: style?.hero?.descriptionColor ?? "#475569" }} dangerouslySetInnerHTML={{ __html: data.featureHtml }} />
               <div className="home-hero-actions">
-                <Link
-                  to="/courses/react-crud"
+                <button
+                  type="button"
                   className="hero-cta"
+                  onClick={handleStartReading}
+                  disabled={!coursesLoaded || courses.length === 0}
                   style={{
                     background: style?.buttons?.usePrimaryBackgroundColorGradient
                       ? `linear-gradient(180deg, ${style.buttons.primaryBackgroundColorGradientStart} 0%, ${style.buttons.primaryBackgroundColorGradientEnd} 100%)`
@@ -96,10 +106,13 @@ export default function Home() {
                     color: style?.buttons?.primaryColor ?? "#ffffff",
                     fontFamily: style?.buttons?.primaryFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
                     fontWeight: style?.buttons?.primaryFontWeight ?? "700",
+                    border: "none",
+                    cursor: coursesLoaded && courses.length > 0 ? "pointer" : "not-allowed",
+                    opacity: coursesLoaded && courses.length > 0 ? 1 : 0.6,
                   }}
                 >
                   Start reading
-                </Link>
+                </button>
               </div>
             </>
           )}
@@ -124,15 +137,6 @@ export default function Home() {
                 type="button"
                 className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
                 onClick={() => setSelectedTab(tab.id)}
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  padding: "10px 8px",
-                  fontSize: "14px",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
               >
                 {tab.label}
               </button>

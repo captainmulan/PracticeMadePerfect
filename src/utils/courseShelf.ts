@@ -421,11 +421,23 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
   };
 }
 
-export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
-  const popularItems = courses
+export function getPopularCourses(courses: Course[]): Course[] {
+  return courses
     .filter((course) => typeof course.pIndex === "number" && (course.pIndex ?? 0) > 0)
     .slice()
-    .sort((a, b) => (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER))
+    .sort((a, b) => (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER));
+}
+
+export function pickRandomPopularCourse(courses: Course[]): Course | null {
+  const popular = getPopularCourses(courses);
+  if (popular.length === 0) {
+    return courses[0] ?? null;
+  }
+  return popular[Math.floor(Math.random() * popular.length)];
+}
+
+export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
+  const popularItems = getPopularCourses(courses)
     .map((course) => createShelfItemFromCourse(course, "Selection"));
 
   const kidItems = courses
