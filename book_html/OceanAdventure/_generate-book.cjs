@@ -269,7 +269,7 @@ ${views}
       img.loading = idx === 0 ? "eager" : "lazy";
       img.decoding = "async";
       if (idx === 0) img.fetchPriority = "high";
-      img.src = "assets/overview-" + m.slot + ".png";
+      img.src = "assets/overview-" + m.slot + ".jpg";
     });
   }
 

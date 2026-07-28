@@ -1,7 +1,12 @@
-/* Chapter scene slots — load PNG assets directly (no multi-MB JS embeds) */
+/* Chapter scene slots — load JPG/PNG assets directly (no multi-MB JS embeds) */
 (function (w) {
+  function assetCandidates(chapterId, slot) {
+    var base = "assets/" + chapterId + "-" + slot;
+    return [base + ".jpg", base + ".png"];
+  }
+
   function assetUrl(chapterId, slot) {
-    return "assets/" + chapterId + "-" + slot + ".png";
+    return assetCandidates(chapterId, slot)[0];
   }
 
   w.OceanChapterImage = {
@@ -13,15 +18,22 @@
       var alt = (title || id) + " — " + slot;
       var loading = opts.eager ? "eager" : "lazy";
       var priority = opts.eager ? ' fetchpriority="high"' : "";
+      var candidates = assetCandidates(id, slot);
+      var fallback = candidates[1]
+        ? ' onerror="if(this.dataset.fallback){this.src=this.dataset.fallback;this.dataset.fallback=\'\';}else{this.onerror=null;}" data-fallback="' +
+          candidates[1] +
+          '"'
+        : "";
       return (
         '<img class="chapter-hero-img" src="' +
-        assetUrl(id, slot) +
+        candidates[0] +
         '" alt="' +
         String(alt).replace(/"/g, "&quot;") +
         '" loading="' +
         loading +
         '" decoding="async"' +
         priority +
+        fallback +
         ">"
       );
     }
