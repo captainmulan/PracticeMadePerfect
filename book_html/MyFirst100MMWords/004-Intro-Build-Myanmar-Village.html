@@ -8,50 +8,49 @@
     .petals{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(4px 4px at 50px 70px,rgba(251,191,36,0.35),transparent),radial-gradient(3px 3px at 120px 40px,rgba(244,114,182,0.25),transparent);background-size:900px 150px;animation:drift 12s ease-in-out infinite;}
     @keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(145deg,#7DD3FC 0%,#A78BFA 50%,#F9A8D4 100%);color:#1E293B;min-height:100vh;overflow-x:hidden;overflow-y:auto;}
-    body.big-game-page{min-height:100vh;overflow-x:hidden;overflow-y:auto;}
-    .game-shell{width:100%;max-width:100%;margin:0;padding:12px clamp(12px,3vw,32px) 10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
-    .game-controls{flex-shrink:0;padding:0 0 8px;}
-    .stage-wrap{flex:1 1 auto;min-height:min(58vh,480px);width:100%;display:flex;align-items:stretch;}
-    .game-stage{position:relative;flex:1 1 auto;min-height:min(58vh,480px);border:2px solid #38BDF8;border-radius:16px;overflow:hidden;background:#7CB342;touch-action:none;cursor:crosshair;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(145deg,#7DD3FC 0%,#A78BFA 50%,#F9A8D4 100%);color:#1E293B;margin:0;overflow:hidden;}
+    body.big-game-page{height:100dvh;max-height:100dvh;overflow:hidden;}
+    html:has(body.big-game-page){height:100%;overflow:hidden;}
+    .game-shell{width:100%;max-width:100%;margin:0;padding:8px clamp(12px,3vw,32px) 8px;position:relative;z-index:1;display:flex;flex-direction:column;height:100dvh;max-height:100dvh;overflow:hidden;box-sizing:border-box;}
+    .pick-controls{flex-shrink:0;padding:0 0 6px;}
+    .stage-wrap{flex:1 1 auto;min-height:0;width:100%;display:flex;align-items:stretch;}
+    .game-stage{position:relative;flex:1 1 auto;min-height:0;border:2px solid #38BDF8;border-radius:16px;overflow:hidden;background:#7CB342;touch-action:none;cursor:crosshair;}
+    .action-row{display:flex;gap:6px;justify-content:center;flex-shrink:0;margin-top:8px;flex-wrap:nowrap;align-items:stretch;}
     @media(min-width:768px){
-      .game-shell{max-width:min(1400px,100%);margin:0 auto;padding:10px clamp(16px,3vw,40px) 8px;}
-      .stamp-row{margin-bottom:8px;padding:8px 10px;}
-      .tool-row{margin-bottom:8px;}
-      .nav-hint{margin-top:8px;padding:10px;font-size:16px;}
+      .game-shell{max-width:min(1400px,100%);margin:0 auto;padding:8px clamp(16px,3vw,40px) 8px;}
+      .stamp-row{margin-bottom:0;padding:8px 10px;}
+      .action-row{margin-top:8px;}
+      .nav-hint{margin-top:8px;padding:10px;font-size:15px;}
     }
     @media(max-width:520px){
       .stamp-btn{width:30px;height:30px;font-size:15px;border-radius:8px;}
       .stamp-row{gap:3px;padding:4px 5px;max-height:calc(2 * 30px + 3px + 8px);}
-      .tool-row{flex-wrap:nowrap;gap:4px;padding:0 2px;}
-      .tool-btn{padding:7px 6px;font-size:12px;white-space:nowrap;flex:1 1 0;min-width:0;}
-      .tool-btn#countLabel{flex:0 1 auto;font-size:11px;padding:7px 5px;}
-      .nav-hint{font-size:15px;padding:10px;}
+      .action-row{gap:4px;padding:0 2px;}
+      .tool-btn{padding:8px 8px;font-size:13px;flex:1 1 0;min-width:0;}
+      .nav-hint{font-size:14px;padding:8px;}
     }
-    .stamp-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.55);border-radius:14px;border:2px solid rgba(56,189,248,.35);max-height:calc(2 * 42px + 6px + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px 10px;background:rgba(255,255,255,.55);border-radius:14px;border:2px solid rgba(56,189,248,.35);max-height:calc(2 * 42px + 6px + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
     .stamp-btn{width:42px;height:42px;border:2px solid rgba(56,189,248,.4);border-radius:11px;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;touch-action:manipulation;transition:.15s;flex-shrink:0;}
     .stamp-btn.selected{border-color:#DB2777;background:rgba(244,114,182,.15);box-shadow:0 0 16px rgba(251,191,36,.45);transform:scale(1.06);}
     .stamp-btn:active{transform:scale(.96);}
-    .tool-row{display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:nowrap;align-items:stretch;}
-    .tool-btn{padding:9px 12px;border:none;border-radius:10px;background:rgba(255,255,255,.7);color:#1E293B;font-size:15px;font-weight:bold;cursor:pointer;border:1px solid rgba(56,189,248,.35);white-space:nowrap;}
+    .tool-btn{padding:10px 14px;border:none;border-radius:10px;background:rgba(255,255,255,.7);color:#1E293B;font-size:15px;font-weight:bold;cursor:pointer;border:1px solid rgba(56,189,248,.35);white-space:nowrap;}
     .tool-btn:active{transform:scale(.97);}
     .tool-btn.active{border-color:#8B5CF6;background:rgba(167,139,250,.2);box-shadow:0 0 10px rgba(139,92,246,.25);}
     .game-stage.eraser-mode{cursor:cell;}
     canvas{display:block;width:100%;height:100%;}
     .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,41,59,0.75);text-align:center;padding:18px;z-index:5;}
-    .overlay h3{color:#FDE68A;font-size:clamp(22px,5vw,28px);margin-bottom:12px;}
-    .overlay .overlay-lead{color:#FDE68A;font-size:clamp(18px,3.8vw,20px);font-weight:700;margin-bottom:8px;line-height:1.4;}
-    .overlay .overlay-sub{color:#F0F9FF;font-size:clamp(16px,3.2vw,18px);line-height:1.55;margin-bottom:14px;max-width:420px;}
-    .overlay p{color:#F0F9FF;font-size:clamp(17px,3.5vw,19px);line-height:1.65;margin-bottom:14px;max-width:420px;}
-    .btn{padding:12px 26px;border:none;border-radius:12px;background:linear-gradient(135deg,#DB2777,#8B5CF6);color:#fff;font-size:17px;font-weight:bold;cursor:pointer;}
-    .nav-hint{margin-top:8px;text-align:center;font-size:16px;color:#64748B;background:rgba(255,255,255,.65);padding:10px;border-radius:10px;}
+    .overlay h3{color:#FDE68A;font-size:clamp(20px,4.5vw,26px);margin-bottom:10px;}
+    .overlay .overlay-lead{color:#FDE68A;font-size:clamp(16px,3.5vw,18px);font-weight:700;margin-bottom:6px;line-height:1.4;}
+    .overlay .overlay-sub{color:#F0F9FF;font-size:clamp(14px,3vw,16px);line-height:1.5;margin-bottom:12px;max-width:420px;}
+    .btn{padding:10px 22px;border:none;border-radius:12px;background:linear-gradient(135deg,#DB2777,#8B5CF6);color:#fff;font-size:16px;font-weight:bold;cursor:pointer;}
+    .nav-hint{flex-shrink:0;margin-top:8px;text-align:center;font-size:15px;color:#64748B;background:rgba(255,255,255,.65);padding:8px 10px;border-radius:10px;line-height:1.45;}
   </style>
   <script src="_mmwords-player.js"></script>
 </head>
 <body class="big-game-page">
 <div class="petals"></div>
 <div class="game-shell">
-  <div class="game-controls">
+  <div class="pick-controls">
   <div class="stamp-row" id="stampRow">
     <button type="button" class="stamp-btn selected" data-emoji="🏠" title="House">🏠</button>
     <button type="button" class="stamp-btn" data-emoji="🛖" title="Hut">🛖</button>
@@ -72,12 +71,6 @@
     <button type="button" class="stamp-btn" data-emoji="🧍" title="Person">🧍</button>
     <button type="button" class="stamp-btn" data-emoji="🧍‍♀️" title="Woman">🧍‍♀️</button>
   </div>
-  <div class="tool-row">
-    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
-    <button type="button" class="tool-btn" id="btnEraser">🧽 Eraser</button>
-    <button type="button" class="tool-btn" id="btnClear">🧹 clear</button>
-    <span class="tool-btn" id="countLabel" style="cursor:default;">🎨 0 items</span>
-  </div>
   </div>
 
   <div class="stage-wrap">
@@ -90,6 +83,12 @@
         <button class="btn" type="button" id="btnStart">▶️ Start Building</button>
       </div>
     </div>
+  </div>
+
+  <div class="action-row">
+    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnEraser">Eraser</button>
+    <button type="button" class="tool-btn" id="btnClear">clear</button>
   </div>
 
   <div class="nav-hint">Press top nav: ← → next chapter. 🏠 Home page.</div>
@@ -305,8 +304,12 @@ function itemSizeRatio(emoji, kind) {
   return (26 + Math.random() * 10) / w;
 }
 
-function updateCount() {
-  document.getElementById('countLabel').textContent = '🎨 ' + decorations.length + ' item' + (decorations.length === 1 ? '' : 's');
+function updateToolUi() {
+  document.getElementById('btnEraser').classList.toggle('active', toolMode === 'eraser');
+  document.getElementById('stage').classList.toggle('eraser-mode', toolMode === 'eraser');
+  document.querySelectorAll('.stamp-btn').forEach(b => {
+    b.classList.toggle('selected', toolMode === 'stamp' && b.dataset.emoji === selectedEmoji);
+  });
 }
 
 function loop() {
@@ -337,17 +340,12 @@ function loop() {
   animId = requestAnimationFrame(loop);
 }
 
-function updateToolUi() {
-  document.getElementById('btnEraser').classList.toggle('active', toolMode === 'eraser');
-  document.getElementById('stage').classList.toggle('eraser-mode', toolMode === 'eraser');
-}
-
 function hitDecoration(x, y) {
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
   for (let i = decorations.length - 1; i >= 0; i--) {
     const p = itemPixels(decorations[i], w, h);
-    const r = p.size * 0.48;
+    const r = p.size * 0.55;
     const dx = x - p.x;
     const dy = y - p.y;
     if (dx * dx + dy * dy <= r * r) return i;
@@ -363,7 +361,6 @@ function eraseAt(clientX, clientY) {
   if (idx < 0) return;
   decorations.splice(idx, 1);
   saveVillage();
-  updateCount();
 }
 
 function placeAt(clientX, clientY) {
@@ -398,7 +395,6 @@ function placeAt(clientX, clientY) {
     });
   }
   saveVillage();
-  updateCount();
 }
 
 function startBuilding() {
@@ -429,13 +425,11 @@ document.getElementById('btnUndo').onclick = () => {
   if (!decorations.length) return;
   decorations.pop();
   saveVillage();
-  updateCount();
 };
 
 document.getElementById('btnClear').onclick = () => {
   decorations = [];
   saveVillage();
-  updateCount();
 };
 
 function bindTap() {
@@ -451,7 +445,6 @@ function bindTap() {
 
 loadVillage();
 resize();
-updateCount();
 updateToolUi();
 bindTap();
 window.addEventListener('resize', resize);
