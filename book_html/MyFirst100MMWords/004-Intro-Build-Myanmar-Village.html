@@ -100,7 +100,10 @@
 const STORAGE_KEY = 'book:myfirst100mmwords:intro-village';
 const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
 const GROUND_PAD = 48;
-const MOBILE = /🐘|🐃|🐄|🐕|🐈/;
+const MOBILE = /🐦|🐓|🦆/;
+const BIGGEST = /🐘/;
+const MED_BIG = /🐃|🐄/;
+const SMALL_ANIMAL = /🐕|🐈|🐦|🐓|🦆/;
 const BUILDING = /🏠|🛖|🛕/;
 const PEOPLE = /🧍|🧍‍♀️/;
 const SMALL = /🪵|🌸/;
@@ -301,7 +304,9 @@ function itemKind(emoji) {
 function itemSizeRatio(emoji, kind) {
   const w = canvasSize().w;
   if (BUILDING.test(emoji)) return (34 + Math.random() * 8) / w;
-  if (kind === 'mobile') return (22 + Math.random() * 8) / w;
+  if (BIGGEST.test(emoji)) return (40 + Math.random() * 8) / w;
+  if (MED_BIG.test(emoji)) return (28 + Math.random() * 8) / w;
+  if (SMALL_ANIMAL.test(emoji)) return (16 + Math.random() * 6) / w;
   if (PEOPLE.test(emoji)) return (20 + Math.random() * 6) / w;
   if (SMALL.test(emoji)) return (18 + Math.random() * 5) / w;
   return (26 + Math.random() * 10) / w;
