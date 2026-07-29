@@ -2,36 +2,37 @@
 
 **Author:** Jimmy Cooper  
 **Target age:** 7–8  
-**Chapters:** 25+ standalone HTML files (8 body topics complete)
+**Chapters:** 27+ standalone HTML files (8 body topics complete)
+
+Aligned with [Ocean Adventure](../OceanAdventure/README.md) and [My First 100 MM Words](../MyFirst100MMWords/README.md).
 
 Master template: [../README.md](../README.md)
 
 ---
 
-## Chapter template (every body topic)
+## Page structure (2026 refresh)
 
-### 1. Activity — `{num}-{Topic}-Activity.html`
+### Activity pages (`004`, `007`, …)
 
-| Section | Content |
-|---------|---------|
-| **Picture 1** | Embedded PNG (`{id}-main-1.png`) |
-| **Story 1** | Maya's short story |
-| **Explanation 1** | Kid-friendly science |
-| **Picture 2** | `{id}-main-2.png` |
-| **Story 2** | … |
-| **Explanation 2** | … |
-| **Picture 3** | `{id}-main-3.png` |
-| **Story 3** | … |
-| **Explanation 3** | … |
-| **Mini game** | Canvas game at bottom |
+**picture → story → explanation → press words to hear** (×3) + **parent tip**
 
-### 2. Explained — `{num+1}-{Topic}-Explained.html`
+| Block | What it shows |
+|-------|----------------|
+| **Picture** | 16:9 AI scene PNG (`assets/{id}-{slot}.png`) |
+| **Story** | Maya's narrative in `.story-box` |
+| **Explanation** | Science summary in `.explain-box` |
+| **Press words to hear** | `.speak-chip` buttons → `BodySpeak.chip()` |
+| **Parent tip** | `.tip-card` — try-at-home advice (MM Words style) |
 
-Three cycles of **picture · story · explanation** using `{id}-exp-1` … `{id}-exp-3` PNGs.
+> Chapter activity pages have **no** embedded canvas minigames (matches Ocean 2026 refresh).
 
-### 3. Quiz — `{num+2}-{Topic}-QuizTime.html`
+### Explained pages (`005`, `008`, …)
 
-Solar System style: VS bar, one question at a time, podium score card.
+**picture → story → explanation** (×3) — deeper content, no vocabulary chips.
+
+### Quiz pages (`006`, `009`, …)
+
+Solar System VS bar · **5 questions** · dynamic podium · `BodyPlayer` for name/avatar.
 
 ---
 
@@ -48,56 +49,41 @@ Solar System style: VS bar, one question at a time, podium score card.
 | 022–024 | Eyes | ✅ | ✅ | ✅ |
 | 025–027 | Ears | ✅ | ✅ | ✅ |
 
-Intro pages: `001` Briefing · `002` Index · `003` Character Selection
-
----
-
-## Images (PNG embedded — no emoji/SVG heroes)
-
-**Quality target:** same as [MyFirst100MMWords](../MyFirst100MMWords/) — rich AI-generated scene illustrations (`family-photo.png` style), embedded as base64 in `_body-chapter-images.js`.
-
-### Generate new images
-
-1. Edit prompts in `scripts/body-image-prompts.cjs`
-2. Generate PNGs (1600×900 or 16:9) into `assets/` — e.g. `heart-main-1.png`
-3. Re-embed and rebuild:
-
-```bash
-node scripts/gen_chapter_images.cjs
-node _generate-book.cjs
-```
-
-> Do **not** use `scripts/gen_body_art.py` for production art — that was a placeholder. Use AI scene illustrations like MM Words.
-
-### Naming
-
-| File | Used on |
-|------|---------|
-| `{id}-main-1.png` | Activity segment 1 |
-| `{id}-main-2.png` | Activity segment 2 |
-| `{id}-main-3.png` | Activity segment 3 |
-| `{id}-exp-1.png` | Explained segment 1 |
-| `{id}-exp-2.png` | Explained segment 2 |
-| `{id}-exp-3.png` | Explained segment 3 |
-
-**IDs:** `heart` · `brain` · `bones` · `muscles` · `lungs` · `stomach` · `eyes` · `ears`
-
-Replace any PNG with your own 960×540 (16:9) artwork — re-run embed + generate.
+Intro: `001` Briefing · `002` Index · `003` Character Selection
 
 ---
 
 ## Shared engine
 
-| File | Purpose |
-|------|---------|
-| `_body-data.js` | Stories, explanations, quiz questions |
-| `_body-chapter-images.js` | Embedded PNG data URIs *(generated)* |
-| `_body-scenes.js` | Loads images into scene slots |
-| `_body-games.js` | Canvas minigames |
-| `_body-player.js` | Character / localStorage |
-| `_generate-book.cjs` | Builds activity + explained + quiz HTML |
-| `scripts/gen_body_art.py` | PIL illustration generator |
-| `scripts/gen_chapter_images.cjs` | PNG → base64 embed |
+```
+explore my body/
+  _body-data.js           # Stories, explanations, quiz Q&A
+  _body-scenes.js         # BodyScene.boot() — loads assets/*.png directly
+  _body-speak.js          # BodySpeak — press words to hear (TTS)
+  _body-player.js         # Character / localStorage
+  _generate-book.cjs      # Regenerate activity / explained / quiz HTML
+  assets/                 # Source PNGs ({id}-main-1.png … {id}-exp-3.png)
+  scripts/
+    body-image-prompts.cjs  # AI generation prompts
+    gen_chapter_images.cjs  # Optional: embed PNGs as base64 (legacy)
+  *.html
+```
+
+### Build pipeline
+
+```bash
+cd "book_html/explore my body"
+
+# 1. Add/replace PNGs in assets/ (AI scenes, 16:9)
+#    heart-main-1.png … heart-exp-3.png per chapter
+
+# 2. Regenerate HTML from data + vocabulary map
+node _generate-book.cjs
+```
+
+Images load from `assets/` at runtime (Ocean pattern) — **no 150 MB JS embed required**.
+
+Optional embed (offline single-file): `node scripts/gen_chapter_images.cjs`
 
 ---
 
@@ -106,5 +92,22 @@ Replace any PNG with your own 960×540 (16:9) artwork — re-run embed + generat
 | What | Where |
 |------|--------|
 | Stories, explanations, quiz | `_body-data.js` |
+| Vocabulary chips (activity) | `_generate-book.cjs` → `BODY_WORDS` |
+| Parent tips | `_generate-book.cjs` → `BODY_TIPS` or `ch.tip` in data |
 | Layout / CSS | `_generate-book.cjs` |
 | Chapter PNGs | `assets/{id}-{slot}.png` |
+
+---
+
+## Quiz opponents
+
+| Topic | VS character |
+|-------|----------------|
+| Heart | Dr. Pulse 🩺 |
+| Brain | Professor Cortex 🔬 |
+| Bones | Skeletal Sam 💀 |
+| Muscles | Flex Fiona 🏋️ |
+| Lungs | Captain Air 🌬️ |
+| Stomach | Chef Digest 👨‍🍳 |
+| Eyes | Optic Ollie 👓 |
+| Ears | Sound Wave Sue 🎵 |

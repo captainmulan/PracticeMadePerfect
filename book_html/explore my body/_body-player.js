@@ -20,6 +20,16 @@
       localStorage.setItem("userName", name);
       localStorage.setItem("userCharacter", character);
       if (characterName != null) localStorage.setItem("characterName", characterName);
+    },
+    markWordHeard: function (chapterId, word) {
+      try {
+        var heard = JSON.parse(localStorage.getItem(key("heardWords")) || "[]");
+        var id = chapterId + ":" + word;
+        if (heard.indexOf(id) === -1) {
+          heard.push(id);
+          localStorage.setItem(key("heardWords"), JSON.stringify(heard));
+        }
+      } catch (e) { /* ignore */ }
     }
   };
 })(window);
