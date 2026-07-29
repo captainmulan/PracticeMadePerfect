@@ -1,12 +1,20 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getHomePageData } from "../utils/contentStore";
-import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { createShelfItemFromCourse, getCourseShelfRowForCategory, getHomeCourseShelfRows, pickRandomPopularCourse, type CourseShelfRow } from "../utils/courseShelf";
+import BookShowcase from "../components/showcase/BookShowcase";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import HomeLoginPanel from "../components/HomeLoginPanel";
 import HomeSpaceDecor from "../components/HomeSpaceDecor";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
+import { useBookShowcase } from "../hooks/useBookShowcase";
+import { getHomePageData } from "../utils/contentStore";
+import { useCourseCatalog } from "../utils/useCourseCatalog";
+import {
+  createShelfItemFromCourse,
+  getCourseShelfRowForCategory,
+  getHomeCourseShelfRows,
+  type CourseShelfRow,
+} from "../utils/courseShelf";
+import "../styles/home-test-showcase.css";
 
 const HOME_SHELF_TABS = [
   { id: "Search", label: "Search" },
@@ -28,7 +36,7 @@ function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["cour
 
 export default function Home() {
   const navigate = useNavigate();
-  const [heroCollapsed, setHeroCollapsed] = useState(true);
+  const [heroCollapsed, setHeroCollapsed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
   const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<"Kid" | "IT" | "Fiction" | "Language">("IT");
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,6 +45,14 @@ export default function Home() {
   const { courses, loaded: coursesLoaded } = useCourseCatalog();
   const rows = useMemo(() => getHomeCourseShelfRows(courses), [courses]);
   const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
+  const showcaseEnabled = !heroCollapsed && coursesLoaded && courses.length > 0;
+  const {
+    selection: showcaseSelection,
+    excerpt: showcaseExcerpt,
+    loading: showcaseLoading,
+    error: showcaseError,
+    setPaused: setShowcasePaused,
+  } = useBookShowcase(courses, showcaseEnabled);
 
   const selectedRow: CourseShelfRow | undefined = useMemo(() => {
     if (selectedTab === "Login") {
@@ -55,15 +71,19 @@ export default function Home() {
     return rows.find((row) => row.title === "Selection") || rows[0];
   }, [courses, isSearching, rows, searchQuery, selectedCategorySubTab, selectedTab]);
 
-  const handleStartReading = () => {
-    const course = pickRandomPopularCourse(courses);
-    if (course) {
-      navigate(`/courses/${course.id}`);
+  const openShowcasedBook = () => {
+    if (showcaseSelection?.course.id) {
+      navigate(`/courses/${showcaseSelection.course.id}`);
+      return;
+    }
+    const fallback = courses[0];
+    if (fallback) {
+      navigate(`/courses/${fallback.id}`);
     }
   };
 
   return (
-    <div className="page-content page-home">
+    <div className="page-content page-home page-home-showcase">
       <section
         className={`home-hero panel ${heroCollapsed ? "collapsed" : ""}`}
         style={{
@@ -80,41 +100,32 @@ export default function Home() {
         >
           {heroCollapsed ? "+" : "−"}
         </button>
-        <div
-          className="home-hero-copy"
-          style={{
-            color: style?.hero?.color ?? style?.main?.color ?? "#0f172a",
-            fontFamily: style?.hero?.fontFamily ?? style?.main?.fontFamily,
-          }}
-        >
-          <div className="home-eyebrow" style={{ color: style?.hero?.eyebrowColor ?? "#6b7280" }}>{data.title}</div>
-          <h1 className="home-hero-title" style={{ color: style?.hero?.titleColor ?? "#0f172a" }}>{data.headline}</h1>
+
+        <div className="home-hero-expanded-layout">
+          <div
+            className="home-hero-copy"
+            style={{
+              color: style?.hero?.color ?? style?.main?.color ?? "#0f172a",
+              fontFamily: style?.hero?.fontFamily ?? style?.main?.fontFamily,
+            }}
+          >
+            <div className="home-eyebrow" style={{ color: style?.hero?.eyebrowColor ?? "#6b7280" }}>
+              {data.title}
+            </div>
+            <h1 className="home-hero-title" style={{ color: style?.hero?.titleColor ?? "#0f172a" }}>
+              {data.headline}
+            </h1>
+          </div>
+
           {!heroCollapsed && (
-            <>
-              <p className="home-hero-description" style={{ color: style?.hero?.descriptionColor ?? "#475569" }}>{data.summary}</p>
-              <div className="home-hero-features" style={{ color: style?.hero?.descriptionColor ?? "#475569" }} dangerouslySetInnerHTML={{ __html: data.featureHtml }} />
-              <div className="home-hero-actions">
-                <button
-                  type="button"
-                  className="hero-cta"
-                  onClick={handleStartReading}
-                  disabled={!coursesLoaded || courses.length === 0}
-                  style={{
-                    background: style?.buttons?.usePrimaryBackgroundColorGradient
-                      ? `linear-gradient(180deg, ${style.buttons.primaryBackgroundColorGradientStart} 0%, ${style.buttons.primaryBackgroundColorGradientEnd} 100%)`
-                      : (style?.buttons?.primaryBackgroundColor ?? "#0f172a"),
-                    color: style?.buttons?.primaryColor ?? "#ffffff",
-                    fontFamily: style?.buttons?.primaryFontFamily ?? "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
-                    fontWeight: style?.buttons?.primaryFontWeight ?? "700",
-                    border: "none",
-                    cursor: coursesLoaded && courses.length > 0 ? "pointer" : "not-allowed",
-                    opacity: coursesLoaded && courses.length > 0 ? 1 : 0.6,
-                  }}
-                >
-                  Start reading
-                </button>
-              </div>
-            </>
+            <BookShowcase
+              excerpt={showcaseExcerpt}
+              loading={showcaseLoading}
+              error={showcaseError}
+              useAdminCover
+              onOpen={openShowcasedBook}
+              onPauseChange={setShowcasePaused}
+            />
           )}
         </div>
       </section>
@@ -172,10 +183,14 @@ export default function Home() {
                   style={{
                     padding: "6px 10px",
                     borderRadius: "999px",
-                    background: selectedCategorySubTab === category
-                      ? (style?.tabs?.activeBackgroundColor ?? "#0f172a")
-                      : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
-                    color: selectedCategorySubTab === category ? (style?.tabs?.activeColor ?? "#ffffff") : (style?.tabs?.color ?? "#334155"),
+                    background:
+                      selectedCategorySubTab === category
+                        ? (style?.tabs?.activeBackgroundColor ?? "#0f172a")
+                        : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
+                    color:
+                      selectedCategorySubTab === category
+                        ? (style?.tabs?.activeColor ?? "#ffffff")
+                        : (style?.tabs?.color ?? "#334155"),
                   }}
                 >
                   {category}
@@ -192,12 +207,12 @@ export default function Home() {
             <div className="home-course-loading">No books yet. Create one in Admin.</div>
           ) : isSearching ? (
             selectedRow && selectedRow.items.length > 0 ? (
-              <HomeCourseShelves row={selectedRow} />
+              <HomeCourseShelves row={selectedRow} useCoverImages />
             ) : (
               <div className="home-course-loading">No books matched your search.</div>
             )
           ) : (
-            selectedRow && <HomeCourseShelves row={selectedRow} />
+            selectedRow && <HomeCourseShelves row={selectedRow} useCoverImages />
           )}
         </div>
       </section>

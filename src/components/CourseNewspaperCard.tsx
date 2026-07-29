@@ -36,6 +36,7 @@ export default function CourseNewspaperCard({ item, useCoverImage = false }: Cou
         position: "relative",
         overflow: "hidden",
         boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        ["--book-title-font" as string]: `${item.titleFontSize ?? 24}px`,
       }}
     >
       <img
@@ -51,7 +52,26 @@ export default function CourseNewspaperCard({ item, useCoverImage = false }: Cou
           display: "block",
         }}
       />
-      <span className="book-cover-overlay-title">{item.title}</span>
+      <span
+        className="book-cover-title book-cover-title--on-image"
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 4,
+          zIndex: 3,
+          padding: "0 4px",
+          fontSize: "calc(var(--book-title-font, 24px) / 4)",
+          fontWeight: item.titleFontWeight ?? "bold",
+          color: item.titleColor ?? "#ffffff",
+          textAlign: (item.titleAlignment ?? item.titleTextAlign ?? "center") as React.CSSProperties["textAlign"],
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+          textShadow: "0 1px 3px rgba(0, 0, 0, 0.85), 0 0 8px rgba(0, 0, 0, 0.5)",
+        }}
+      >
+        {item.title}
+      </span>
     </div>
   ) : (
     <div

@@ -126,7 +126,19 @@ export default function CourseMagazineCard({ item, useCoverImage = false }: Cour
                 display: "block",
               }}
             />
-            <span className="book-cover-overlay-title">{displayTitle}</span>
+            <span
+              className="book-cover-title book-cover-title--on-image"
+              style={{
+                position: "absolute",
+                zIndex: 3,
+                ...titleContainerStyles,
+                ...coverTitleStyles,
+                color: titleColor ?? "#ffffff",
+                textShadow: "0 1px 3px rgba(0, 0, 0, 0.85), 0 0 8px rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              {displayTitle}
+            </span>
           </>
         ) : isEmpty ? (
           <span className="book-cover-title" style={{ 

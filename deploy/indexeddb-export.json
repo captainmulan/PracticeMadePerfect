@@ -10,6 +10,7 @@
       "coverColorEnd": "#61dafb",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/react-crud.webp",
       "icon": "React",
       "iconColorStart": "#68217a",
       "iconColorMiddle": "#68217a",
@@ -23,7 +24,7 @@
       "courseIndex": 0,
       "category": "IT",
       "pIndex": 4,
-      "stepCount": 0,
+      "stepCount": 19,
       "chapters": [
         {
           "id": "react-crud-premium-ch1",
@@ -680,6 +681,7 @@
       "coverColorEnd": "#b7b93c",
       "coverWidth": 100,
       "coverHeight": 152,
+      "coverImageUrl": "/book_covers/react-interview.webp",
       "icon": "React",
       "iconColorStart": "#68217a",
       "iconColorMiddle": "#68217a",
@@ -693,7 +695,7 @@
       "courseIndex": 1,
       "category": "IT",
       "pIndex": 5,
-      "stepCount": 0,
+      "stepCount": 7,
       "chapters": [
         {
           "id": "react-interview-ch1",
@@ -1102,6 +1104,7 @@
       "coverColorEnd": "#2c9b3e",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/tharapasa-nidana.webp",
       "icon": "⚔️",
       "iconColorStart": "#f2f2f3",
       "iconColorMiddle": "#fff",
@@ -1116,7 +1119,7 @@
       "courseIndex": 1,
       "category": "Fiction",
       "pIndex": 4,
-      "stepCount": 0,
+      "stepCount": 27,
       "chapters": [
         {
           "id": "tharapasa-nidana-ch-0",
@@ -1695,6 +1698,7 @@
       "coverColorEnd": "#4a90e2",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/solid-interview.webp",
       "icon": "SOLID",
       "iconColorStart": "#faf9fa",
       "iconColorMiddle": "#ffffff",
@@ -1708,7 +1712,7 @@
       "courseIndex": 2,
       "category": "IT",
       "pIndex": 6,
-      "stepCount": 0,
+      "stepCount": 4,
       "chapters": [
         {
           "id": "solid-interview-ch1",
@@ -1802,6 +1806,7 @@
       "coverColorEnd": "#dd0031",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/angular-interview.webp",
       "icon": "Angular",
       "iconColorStart": "#f7f6f9",
       "iconColorMiddle": "#ffffff",
@@ -1815,7 +1820,7 @@
       "courseIndex": 3,
       "category": "IT",
       "pIndex": 8,
-      "stepCount": 0,
+      "stepCount": 15,
       "chapters": [
         {
           "id": "angular-interview-ch1",
@@ -2226,6 +2231,7 @@
       "coverColorEnd": "#68217A",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/csharp-interview.webp",
       "icon": "C#",
       "iconColorStart": "#fafafa",
       "iconColorMiddle": "#ffffff",
@@ -2238,7 +2244,7 @@
       "iconPosition": "top-center",
       "courseIndex": 4,
       "category": "IT",
-      "stepCount": 0,
+      "stepCount": 12,
       "chapters": [
         {
           "id": "csharp-interview-ch1",
@@ -2703,6 +2709,7 @@
       "coverColorEnd": "#8c950e",
       "coverWidth": 102,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/little-programmer.webp",
       "icon": "🌈",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
@@ -2710,7 +2717,7 @@
       "iconSize": 80,
       "titleFontSize": 53,
       "titleFontWeight": "bolder",
-      "titleColor": "#ffffff",
+      "titleColor": "#f5f5f5",
       "titlePosition": "bottom-left",
       "titleTextAlign": "left",
       "iconPosition": "top-center",
@@ -2718,7 +2725,7 @@
       "category": "Kid",
       "pIndex": 2,
       "artifactType": "book",
-      "stepCount": 0,
+      "stepCount": 29,
       "chapters": [
         {
           "id": "little-programmer-ch-1783088886354",
@@ -3325,6 +3332,7 @@
       "coverColorEnd": "#d2691e",
       "coverWidth": 100,
       "coverHeight": 157,
+      "coverImageUrl": "/book_covers/sql-interview.webp",
       "icon": "SQL",
       "iconColorStart": "#fcfcfc",
       "iconColorMiddle": "#ffffff",
@@ -3337,7 +3345,7 @@
       "iconPosition": "top-center",
       "courseIndex": 5,
       "category": "IT",
-      "stepCount": 0,
+      "stepCount": 12,
       "chapters": [
         {
           "id": "sql-interview-ch1",
@@ -3706,6 +3714,7 @@
       "coverColorEnd": "#2563eb",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/myanmar-letters.webp",
       "icon": "ကခဂ",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
@@ -3719,7 +3728,7 @@
       "iconPosition": "top-center",
       "courseIndex": 7,
       "category": "Kid",
-      "stepCount": 0,
+      "stepCount": 1,
       "chapters": [
         {
           "id": "myanmar-letters-ch-1783923638762",
@@ -3762,6 +3771,7 @@
       "coverColorEnd": "#2563eb",
       "coverWidth": 100,
       "coverHeight": 160,
+      "coverImageUrl": "/book_covers/it-newspaper.webp",
       "icon": "📘",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
@@ -3777,7 +3787,7 @@
       "category": "IT",
       "pIndex": 3,
       "artifactType": "newspaper",
-      "stepCount": 0,
+      "stepCount": 1,
       "chapters": [
         {
           "id": "new-book-ch-1783656093762",
@@ -3812,6 +3822,7 @@
       "coverColorEnd": "#c084fc",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/solarsystem.webp",
       "icon": "🪐",
       "iconColorStart": "#020617",
       "iconColorMiddle": "#0f172a",
@@ -3827,7 +3838,7 @@
       "category": "Kid",
       "pIndex": 1,
       "artifactType": "book",
-      "stepCount": 0,
+      "stepCount": 43,
       "chapters": [
         {
           "id": "solarsystem-ch-import-1784351954791-1",
@@ -4701,6 +4712,7 @@
       "coverColorEnd": "#fbbf24",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/myfirst100mmwords.webp",
       "icon": "🏮",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
@@ -4709,7 +4721,7 @@
       "titleFontSize": 60,
       "titleFontWeight": "bolder",
       "titleColor": "#ffffff",
-      "titlePosition": "bottom-left",
+      "titlePosition": "top-left",
       "titleTextAlign": "left",
       "iconPosition": "top-center",
       "courseIndex": 11,
@@ -5491,6 +5503,7 @@
       "coverColorEnd": "#0f4c75",
       "coverWidth": 100,
       "coverHeight": 150,
+      "coverImageUrl": "/book_covers/oceanadventure.webp",
       "icon": "🐬",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
@@ -9325,5 +9338,5 @@
       "sortOrder": 0
     }
   ],
-  "exportedAt": "2026-07-28T14:52:44.275Z"
+  "exportedAt": "2026-07-29T16:14:42.100Z"
 }
