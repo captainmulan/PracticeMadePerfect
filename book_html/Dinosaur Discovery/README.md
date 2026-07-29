@@ -4,43 +4,80 @@
 **Target age:** 7–8  
 **Chapters:** 41 standalone HTML files  
 
+Aligned with [Ocean Adventure](../OceanAdventure/README.md) and [My First 100 Myanmar Words](../MyFirst100MMWords/README.md).
+
 Master template: [../README.md](../README.md)
 
 ---
 
-## Chapter template (all 12 topics)
+## Page structure (2026 refresh)
 
-Every topic uses the **same three-page pattern**:
+### Activity pages (`004`, `007`, …)
 
-### 1. Activity — `{num}-{Topic}-Activity.html`
+**picture → story → explanation → press words to hear** (×3) → **parent tip**
 
-| Section | Content |
-|---------|---------|
-| **Picture 1** | Embedded PNG (`{id}-main-1.png`) |
-| **Story 1** | Short tale |
-| **Explanation 1** | Kid-friendly facts |
-| **Picture 2–3** | Same pattern |
-| **Mini game** | Tap-the-true-fact canvas game |
+| Block | Content |
+|-------|---------|
+| **Picture** | 16:9 PNG from `assets/{id}-main-N.png` |
+| **Story** | Kai + Dr. Mara narrative in `.story-box` |
+| **Explanation** | Facts in `.explain-box` |
+| **Press words to hear** | `.speak-chip` → `DinoSpeak.chip()` (Web Speech API) |
+| **Parent tip** | MMWords-style `.tip-card` at bottom |
 
-### 2. Explained — `{num+1}-{Topic}-Explained.html`
+### Explained pages (`005`, `008`, …)
 
-| Section | Content |
-|---------|---------|
-| **Picture 1–3** | `{id}-explain-1/2/3.png` |
-| **Story + explanation** | Deeper reading per block |
+**picture → story → explanation** (×3) — deeper reading, no vocabulary chips.
 
-### 3. Quiz — `{num+2}-{Topic}-QuizTime.html`
+### Quiz pages (`006`, `009`, …)
 
-Solar System style: VS bar, one `.quiz-card.active` at a time, podium `.score-card`.
+Solar System / Ocean VS bar + questions + podium. Uses `DinoPlayer` for name/avatar.
 
 ---
 
-## Chapters (41 files)
+## Shared files
+
+```
+Dinosaur Discovery/
+  _dino-data.js           # Stories, words, quiz Q&A, parent tips
+  _dino-scenes.js         # DinoScene.boot() — loads assets/*.png
+  _dino-speak.js          # DinoSpeak — press words to hear
+  _dino-player.js         # Character localStorage
+  _generate-book.cjs      # Regenerate activity / explained / quiz HTML
+  _patch-dino-data.cjs    # Add words, segments, opponent fields
+  assets/                 # Source PNGs ({id}-main-1.png, {id}-explain-1.png, …)
+  scripts/
+    gen_chapter_images.cjs  # Optional: embed PNGs for offline single-file mode
+```
+
+Images load from **`assets/`** directly (Ocean pattern) — no 280 MB JS embed required.
+
+---
+
+## Build pipeline
+
+```bash
+cd "book_html/Dinosaur Discovery"
+
+# 1. Add/replace PNGs in assets/ (AI illustrated 16:9 scenes)
+
+# 2. Patch data if needed (words, segments)
+node _patch-dino-data.cjs
+
+# 3. Regenerate chapter HTML
+node _generate-book.cjs
+
+# Optional — embed all PNGs for offline (large _dino-chapter-images.js):
+node scripts/gen_chapter_images.cjs
+```
+
+---
+
+## Chapter map
 
 | # | Topic | Activity · Explained · Quiz |
 |---|--------|------------------------------|
-| 001–003 | Book intro | Briefing, Index, Character |
-| 004–006 | What are Dinosaurs | ✅ PNG scenes |
+| 001–003 | Intro | Briefing, Index, Character |
+| 004–006 | What are Dinosaurs | ✅ |
 | 007–009 | Triassic Period | ✅ |
 | 010–012 | Jurassic Period | ✅ |
 | 013–015 | Cretaceous Period | ✅ |
@@ -52,37 +89,10 @@ Solar System style: VS bar, one `.quiz-card.active` at a time, podium `.score-ca
 | 031–033 | Extinction | ✅ |
 | 034–036 | Famous Dinosaurs | ✅ |
 | 037–038 | Prehistoric World | Activity + Explained only |
-| 039–041 | Book end | Conclusion, Overall Quiz, Congratulations |
-
----
-
-## Shared engine
-
-| File | Purpose |
-|------|---------|
-| `_dino-data.js` | Stories, explanations, quiz questions |
-| `_dino-chapter-images.js` | Embedded PNG data URIs *(generated)* |
-| `_dino-scenes.js` | Loads images into page blocks |
-| `_dino-player.js` | Character / localStorage |
-| `_dino-games.js` | Tap-fact minigame |
-| `_generate-book.cjs` | Builds 004–038 topic files |
-| `scripts/gen_chapter_images.cjs` | PNG → base64 embed (Solar System style) |
-
----
-
-## Regenerate
-
-```bash
-cd "book_html/Dinosaur Discovery"
-# Add/replace PNGs in assets/ (AI illustrated scenes, 16:9)
-node scripts/gen_chapter_images.cjs
-node _generate-book.cjs
-```
+| 039–041 | End | Conclusion, Overall Quiz, Congratulations |
 
 ---
 
 ## Try it
 
-Open **`004-What-are-Dinosaurs-Activity.html`** — three picture/story/explanation blocks + minigame.
-
-Images are embedded in `_dino-chapter-images.js` like Solar System planet JPGs — no external fetch required.
+Open **`004-What-are-Dinosaurs-Activity.html`** — three painted scenes, tap-to-hear vocabulary, parent tip.
