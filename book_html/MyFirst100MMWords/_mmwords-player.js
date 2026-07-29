@@ -47,8 +47,12 @@
 
   var speakGen = 0;
   var currentAudio = null;
+  var sharedAudio = null;
+  var audioUnlocked = false;
   var myanmarVoice = null;
   var englishVoice = null;
+  /* Tiny silent WAV — unlocks HTMLAudioElement on iOS Safari (gesture chain). */
+  var SILENT_WAV = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
 
   function isFemaleVoice(v) {
     if (!v) return false;
@@ -109,6 +113,59 @@
     if (w.speechSynthesis && w.speechSynthesis.paused) w.speechSynthesis.resume();
   }
 
+  function ensureAudio() {
+    if (!sharedAudio) {
+      sharedAudio = new Audio();
+      sharedAudio.setAttribute("playsinline", "true");
+      sharedAudio.preload = "auto";
+    }
+    return sharedAudio;
+  }
+
+  function warmSynth() {
+    resumeSynth();
+    if (!w.speechSynthesis) return;
+    try {
+      var warm = new SpeechSynthesisUtterance(" ");
+      warm.volume = 0;
+      warm.rate = 10;
+      w.speechSynthesis.speak(warm);
+      w.speechSynthesis.cancel();
+    } catch (e) {}
+  }
+
+  /**
+   * Must run synchronously inside a user tap on iOS, or the first Google TTS /
+   * speechSynthesis call stays silent. Reuses one Audio element for the session.
+   */
+  function unlockMedia() {
+    warmSynth();
+    var a = ensureAudio();
+    if (audioUnlocked) return;
+    try {
+      a.muted = true;
+      a.src = SILENT_WAV;
+      var p = a.play();
+      if (p && p.then) {
+        p.then(function () {
+          audioUnlocked = true;
+          a.muted = false;
+          /* Only stop if we are still on the silent unlock clip */
+          if (a.src && a.src.indexOf("data:audio/wav") === 0) {
+            try { a.pause(); a.currentTime = 0; } catch (e) {}
+          }
+        }).catch(function () {
+          a.muted = false;
+        });
+      } else {
+        a.muted = false;
+        audioUnlocked = true;
+      }
+    } catch (e) {
+      a.muted = false;
+    }
+  }
+
   /** Stop current speech immediately (fast tap = new word replaces old) */
   function stopAll() {
     speakGen++;
@@ -117,8 +174,7 @@
         currentAudio.onended = null;
         currentAudio.onerror = null;
         currentAudio.pause();
-        currentAudio.src = "";
-        currentAudio.load();
+        /* Keep src — clearing it re-locks HTMLAudio on iOS. */
       } catch (e) {}
       currentAudio = null;
     }
@@ -131,36 +187,111 @@
 
   function googleTtsUrl(text, lang, mirror) {
     var q = encodeURIComponent(text);
+    var tl = lang || "my";
     if (mirror === 0) {
-      return "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + lang + "&q=" + q;
+      return "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + tl + "&q=" + q;
     }
-    return "https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=" + lang + "&q=" + q;
+    return "https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=" + tl + "&q=" + q;
+  }
+
+  /** Google TTS rejects long queries — split Myanmar by punctuation / length. */
+  function chunkForTts(text, maxLen) {
+    text = String(text || "").trim();
+    if (!text) return [];
+    maxLen = maxLen || 180;
+    if (text.length <= maxLen) return [text];
+    var parts = [];
+    var buf = "";
+    var tokens = text.split(/([။၊.!?\n]+|\s+)/);
+    for (var i = 0; i < tokens.length; i++) {
+      var t = tokens[i];
+      if (!t) continue;
+      if ((buf + t).length > maxLen && buf) {
+        parts.push(buf);
+        buf = t;
+      } else {
+        buf += t;
+      }
+    }
+    if (buf) parts.push(buf);
+    var out = [];
+    for (var j = 0; j < parts.length; j++) {
+      var p = parts[j].trim();
+      if (!p) continue;
+      while (p.length > maxLen) {
+        out.push(p.slice(0, maxLen));
+        p = p.slice(maxLen);
+      }
+      if (p) out.push(p);
+    }
+    return out.length ? out : [text.slice(0, maxLen)];
   }
 
   function playGoogleTts(text, lang, mirror, gen, onok, onfail) {
     if (isStale(gen)) return;
     var settled = false;
+    var watchdog = null;
+    function clearWatch() {
+      if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    }
     function doneOk() {
       if (settled || isStale(gen)) return;
       settled = true;
+      clearWatch();
       currentAudio = null;
       if (onok) onok();
     }
     function doneFail() {
       if (settled || isStale(gen)) return;
       settled = true;
+      clearWatch();
       currentAudio = null;
       if (mirror < 1) playGoogleTts(text, lang, mirror + 1, gen, onok, onfail);
       else if (onfail) onfail();
     }
-    var a = new Audio(googleTtsUrl(text, lang, mirror));
+    var a = ensureAudio();
+    try {
+      a.onended = null;
+      a.onerror = null;
+      a.pause();
+    } catch (e) {}
+    a.muted = false;
     a.playbackRate = 1.0;
     a.volume = 1;
+    a.src = googleTtsUrl(text, lang, mirror);
     currentAudio = a;
     a.onended = doneOk;
     a.onerror = doneFail;
     resumeSynth();
-    a.play().catch(doneFail);
+    watchdog = setTimeout(function () {
+      if (settled || isStale(gen)) return;
+      try {
+        if (a.paused && (!a.currentTime || a.currentTime < 0.05)) doneFail();
+      } catch (e2) {
+        doneFail();
+      }
+    }, 3500);
+    var playPromise = a.play();
+    if (playPromise && playPromise.then) {
+      playPromise.then(function () {
+        audioUnlocked = true;
+      }).catch(doneFail);
+    } else if (playPromise && playPromise.catch) {
+      playPromise.catch(doneFail);
+    }
+  }
+
+  function playGoogleChunks(chunks, lang, gen, onok, onfail) {
+    var i = 0;
+    function next() {
+      if (isStale(gen)) return;
+      if (i >= chunks.length) {
+        if (onok) onok();
+        return;
+      }
+      playGoogleTts(chunks[i++], lang, 0, gen, next, onfail);
+    }
+    next();
   }
 
   function speakSynth(text, lang, voice, gen, onend) {
@@ -185,25 +316,37 @@
     w.speechSynthesis.speak(u);
   }
 
-
+  /**
+   * Myanmar audio: Google TTS first (real Burmese voice).
+   * Never fall back to English romanization hints — that sounds like "awbar"
+   * letter-by-letter and teaches the wrong sound.
+   */
   function playMyanmar(text, hint, onend) {
     var gen = speakGen;
     loadVoices();
     if (!text) {
-      if (hint) speakSynth(hint, "en-US", englishVoice, gen, onend);
-      else if (onend) onend();
+      if (onend) onend();
       return;
     }
-    playGoogleTts(text, "my", 0, gen, function () {
+    var chunks = chunkForTts(text, 180);
+    playGoogleChunks(chunks, "my", gen, function () {
       if (!isStale(gen) && onend) onend();
     }, function () {
       if (isStale(gen)) return;
-      if (myanmarVoice) {
-        speakSynth(text, "my-MM", myanmarVoice, gen, function () {
+      /* Second host already tried per chunk; try my-MM once for short words. */
+      if (chunks.length === 1) {
+        playGoogleTts(chunks[0], "my-MM", 0, gen, function () {
           if (!isStale(gen) && onend) onend();
+        }, function () {
+          if (isStale(gen)) return;
+          if (myanmarVoice) {
+            speakSynth(text, "my-MM", myanmarVoice, gen, onend);
+          } else if (onend) {
+            onend();
+          }
         });
-      } else if (hint) {
-        speakSynth(hint, "en-US", englishVoice, gen, onend);
+      } else if (myanmarVoice) {
+        speakSynth(text, "my-MM", myanmarVoice, gen, onend);
       } else if (onend) {
         onend();
       }
@@ -218,8 +361,10 @@
         setTimeout(loadVoices, 300);
         setTimeout(loadVoices, 1200);
       }
-      document.addEventListener("click", resumeSynth, true);
-      document.addEventListener("touchstart", resumeSynth, true);
+      function onGesture() { unlockMedia(); }
+      document.addEventListener("click", onGesture, true);
+      document.addEventListener("touchend", onGesture, true);
+      document.addEventListener("pointerup", onGesture, true);
     },
 
     stop: stopAll,
@@ -228,6 +373,8 @@
     speakMyanmar: function (text, hint, onend) {
       if (!text) { if (onend) onend(); return; }
       stopAll();
+      warmSynth();
+      ensureAudio();
       loadVoices();
       playMyanmar(text, hint, onend);
     },
@@ -235,6 +382,7 @@
     speakEnglish: function (text, onend) {
       if (!text) { if (onend) onend(); return; }
       stopAll();
+      warmSynth();
       var gen = speakGen;
       loadVoices();
       speakSynth(text, "en-US", englishVoice, gen, onend);

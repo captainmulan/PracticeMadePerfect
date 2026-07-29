@@ -110,9 +110,10 @@ const PEOPLE = /🧍|🧍‍♀️/;
 const SMALL = /🪵/;
 const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🧍|🧍‍♀️|🎋|🌴|🌲/;
 let canvas, ctx, running = false, animId, lastFrame = 0;
-let bgCanvas, bgW = 0, bgH = 0, stageW = 0, stageH = 0;
-let staticCanvas, staticW = 0, staticH = 0, staticDirty = true;
+let bgCanvas, bgW = 0, bgH = 0, bgDpr = 0, stageW = 0, stageH = 0, stageDpr = 0;
+let staticCanvas, staticW = 0, staticH = 0, staticDpr = 0, staticDirty = true;
 let movers = [];
+let canvasDpr = 1;
 const fontCache = {};
 let selectedEmoji = '🏠';
 let toolMode = 'stamp';
@@ -297,20 +298,30 @@ function resizeCanvas() {
   const w = stage.clientWidth;
   const h = stage.clientHeight;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvasDpr = dpr;
   canvas.width = Math.floor(w * dpr);
   canvas.height = Math.floor(h * dpr);
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   migrateToNormalized(w, h);
-  if (w !== stageW || h !== stageH) {
+  if (w !== stageW || h !== stageH || dpr !== stageDpr) {
     stageW = w;
     stageH = h;
+    stageDpr = dpr;
     bgW = 0;
     markSceneDirty();
     decorations.forEach(d => { delete d.px; });
     refreshItemsLayout();
   }
+}
+
+function offscreenCtx(c, w, h, dpr) {
+  c.width = Math.floor(w * dpr);
+  c.height = Math.floor(h * dpr);
+  const cctx = c.getContext('2d');
+  cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return cctx;
 }
 
 function fitShell() {
@@ -355,13 +366,12 @@ function drawEmoji(emoji, x, y, size, flipX, targetCtx) {
 }
 
 function rebuildStaticLayer(w, h) {
-  if (!staticDirty && staticCanvas && staticW === w && staticH === h) return;
+  if (!staticDirty && staticCanvas && staticW === w && staticH === h && staticDpr === canvasDpr) return;
   if (!staticCanvas) staticCanvas = document.createElement('canvas');
-  staticCanvas.width = w;
-  staticCanvas.height = h;
   staticW = w;
   staticH = h;
-  const sctx = staticCanvas.getContext('2d');
+  staticDpr = canvasDpr;
+  const sctx = offscreenCtx(staticCanvas, w, h, canvasDpr);
   sctx.clearRect(0, 0, w, h);
   const ref = layoutRef(w, h);
   for (let i = 0; i < decorations.length; i++) {
@@ -444,13 +454,12 @@ function paintVillageBg(targetCtx, w, h) {
 }
 
 function ensureBg(w, h) {
-  if (bgCanvas && bgW === w && bgH === h) return;
+  if (bgCanvas && bgW === w && bgH === h && bgDpr === canvasDpr) return;
   if (!bgCanvas) bgCanvas = document.createElement('canvas');
-  bgCanvas.width = w;
-  bgCanvas.height = h;
   bgW = w;
   bgH = h;
-  paintVillageBg(bgCanvas.getContext('2d'), w, h);
+  bgDpr = canvasDpr;
+  paintVillageBg(offscreenCtx(bgCanvas, w, h, canvasDpr), w, h);
 }
 
 function drawVillageBg(w, h) {
