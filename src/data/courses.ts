@@ -63,6 +63,8 @@ export interface Course {
   coverColorEnd: string;
   coverWidth?: number;
   coverHeight?: number;
+  /** Shelf / showcase cover art — static URL or admin-uploaded data URL. */
+  coverImageUrl?: string;
   icon: string;
   iconColorStart: string;
   iconColorMiddle: string;

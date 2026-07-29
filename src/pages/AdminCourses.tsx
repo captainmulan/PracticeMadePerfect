@@ -696,6 +696,84 @@ export default function AdminCourses() {
                         />
                       </label>
                     </div>
+                    <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #e2e8f0" }}>
+                      <h4 style={{ marginTop: 0, marginBottom: "8px" }}>Cover Image</h4>
+                      <p style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "12px" }}>
+                        Upload a cover image for Home_Test live preview (and future shelf). Max 800 KB. JPG, PNG, or WebP.
+                      </p>
+                      {activeBook.coverImageUrl ? (
+                        <div style={{ marginBottom: "12px" }}>
+                          <img
+                            src={activeBook.coverImageUrl}
+                            alt="Cover preview"
+                            style={{
+                              maxWidth: "160px",
+                              maxHeight: "220px",
+                              borderRadius: "8px",
+                              border: "1px solid #e2e8f0",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                      <div className="admin-search-row" style={{ alignItems: "center" }}>
+                        <label className="admin-task-editor-field">
+                          <span className="admin-task-editor-label">Upload image</span>
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp,image/gif"
+                            className="admin-grid-input"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              if (!file.type.startsWith("image/")) {
+                                setMessage("Please choose an image file.");
+                                return;
+                              }
+                              if (file.size > 800_000) {
+                                setMessage("Cover image too large (max 800 KB).");
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                updateActiveBook((c) => ({
+                                  ...c,
+                                  coverImageUrl: String(reader.result),
+                                }));
+                                setMessage("Cover image loaded — save the book to keep it.");
+                              };
+                              reader.readAsDataURL(file);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                        <label className="admin-task-editor-field">
+                          <span className="admin-task-editor-label">Or image URL</span>
+                          <input
+                            type="text"
+                            value={activeBook.coverImageUrl?.startsWith("data:") ? "" : (activeBook.coverImageUrl ?? "")}
+                            placeholder="/book_covers/my-book.webp"
+                            onChange={(e) =>
+                              updateActiveBook((c) => ({
+                                ...c,
+                                coverImageUrl: e.target.value.trim() || undefined,
+                              }))
+                            }
+                            className="admin-grid-input"
+                          />
+                        </label>
+                      </div>
+                      {activeBook.coverImageUrl ? (
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-book secondary small"
+                          style={{ marginTop: "8px" }}
+                          onClick={() => updateActiveBook((c) => ({ ...c, coverImageUrl: undefined }))}
+                        >
+                          Remove cover image
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 )}
 

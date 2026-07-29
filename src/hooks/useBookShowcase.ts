@@ -1,0 +1,150 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Course } from "../data/courses";
+import {
+  buildShowcaseExcerpt,
+  getShowcaseCoursePool,
+  getShowcaseEligibleSteps,
+  isRichShowcaseExcerpt,
+  pickRandomEligibleStep,
+  shuffleCourses,
+  type ShowcaseExcerpt,
+  type ShowcaseSelection,
+} from "../utils/showcasePicker";
+import { loadCourseOutlineById, loadCourseStepById } from "../utils/sqliteBrowserCourses";
+
+export interface BookShowcaseState {
+  selection: ShowcaseSelection | null;
+  excerpt: ShowcaseExcerpt | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const MAX_STEP_TRIES_PER_BOOK = 4;
+
+export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateMs = 10000) {
+  const [state, setState] = useState<BookShowcaseState>({
+    selection: null,
+    excerpt: null,
+    loading: false,
+    error: null,
+  });
+  const [paused, setPaused] = useState(false);
+  const requestIdRef = useRef(0);
+
+  const loadShowcase = useCallback(async () => {
+    if (!enabled || courses.length === 0) {
+      return;
+    }
+
+    const requestId = ++requestIdRef.current;
+    setState((prev) => ({ ...prev, loading: true, error: null }));
+
+    try {
+      const pool = shuffleCourses(getShowcaseCoursePool(courses));
+      let best: { selection: ShowcaseSelection; excerpt: ShowcaseExcerpt } | null = null;
+
+      for (const summary of pool) {
+        if (requestId !== requestIdRef.current) {
+          return;
+        }
+
+        const outline = await loadCourseOutlineById(summary.id);
+        if (!outline) {
+          continue;
+        }
+
+        const eligible = getShowcaseEligibleSteps(outline);
+        if (eligible.length === 0) {
+          continue;
+        }
+
+        const tried = new Set<string>();
+        for (let attempt = 0; attempt < Math.min(MAX_STEP_TRIES_PER_BOOK, eligible.length); attempt += 1) {
+          if (requestId !== requestIdRef.current) {
+            return;
+          }
+
+          const outlineStep = pickRandomEligibleStep(outline);
+          if (!outlineStep || tried.has(outlineStep.id)) {
+            continue;
+          }
+          tried.add(outlineStep.id);
+
+          const fullStep = await loadCourseStepById(outlineStep.id);
+          const step = fullStep ?? outlineStep;
+          const selection = { course: outline, step };
+          const excerpt = await buildShowcaseExcerpt(outline, step);
+
+          if (isRichShowcaseExcerpt(excerpt)) {
+            best = { selection, excerpt };
+            break;
+          }
+
+          if (!best) {
+            best = { selection, excerpt };
+          }
+        }
+
+        if (best && isRichShowcaseExcerpt(best.excerpt)) {
+          break;
+        }
+      }
+
+      if (!best) {
+        if (requestId !== requestIdRef.current) return;
+        setState({ selection: null, excerpt: null, loading: false, error: "No showcase pages found." });
+        return;
+      }
+
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
+      setState({
+        selection: best.selection,
+        excerpt: best.excerpt,
+        loading: false,
+        error: null,
+      });
+    } catch (err) {
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+      setState({
+        selection: null,
+        excerpt: null,
+        loading: false,
+        error: String(err),
+      });
+    }
+  }, [courses, enabled]);
+
+  const shuffle = useCallback(() => {
+    void loadShowcase();
+  }, [loadShowcase]);
+
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+    void loadShowcase();
+  }, [enabled, loadShowcase]);
+
+  useEffect(() => {
+    if (!enabled || paused || autoRotateMs <= 0) {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      void loadShowcase();
+    }, autoRotateMs);
+
+    return () => window.clearInterval(timer);
+  }, [autoRotateMs, enabled, loadShowcase, paused]);
+
+  return {
+    ...state,
+    shuffle,
+    setPaused,
+  };
+}

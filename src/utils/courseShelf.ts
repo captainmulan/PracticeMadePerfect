@@ -1,4 +1,5 @@
 import type { Course } from "../data/courses";
+import { resolveBookCoverUrl } from "./bookCoverSeeds";
 
 export interface CourseShelfItem {
   id: string;
@@ -10,6 +11,7 @@ export interface CourseShelfItem {
   coverColorEnd: string;
   coverWidth?: number;
   coverHeight?: number;
+  coverImageUrl?: string;
   icon: string;
   iconColorStart: string;
   iconColorMiddle: string;
@@ -402,6 +404,7 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
     coverColorEnd: course.coverColorEnd ?? course.color,
     coverWidth: course.coverWidth ?? undefined,
     coverHeight: course.coverHeight ?? undefined,
+    coverImageUrl: resolveBookCoverUrl(course),
     icon: course.icon,
     iconColorStart: course.iconColorStart ?? "#fff",
     iconColorMiddle: course.iconColorEnd ?? "#fff",

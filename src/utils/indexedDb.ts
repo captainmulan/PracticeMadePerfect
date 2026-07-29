@@ -1,6 +1,7 @@
 import type { Course, CourseChapter, CourseStep, CourseStepOutline } from "../data/courses";
 import type { PracticeTask } from "../data/tasks";
 import type { Announcement } from "../types/announcement";
+import { BOOK_COVER_SEEDS } from "./bookCoverSeeds";
 
 const DB_NAME = "magic-library-db";
 const DB_VERSION = 2;
@@ -214,6 +215,7 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     coverColorEnd: raw.coverColorEnd,
     coverWidth: raw.coverWidth,
     coverHeight: raw.coverHeight,
+    coverImageUrl: raw.coverImageUrl,
     icon: raw.icon,
     iconColorStart: raw.iconColorStart,
     iconColorMiddle: raw.iconColorMiddle,
@@ -570,12 +572,28 @@ function ensureMigrated(): Promise<void> {
   return migrationPromise;
 }
 
+async function applyBookCoverSeeds(): Promise<void> {
+  const summaries = await getCourseSummaries();
+  for (const summary of summaries) {
+    const seedUrl = BOOK_COVER_SEEDS[summary.id];
+    if (!seedUrl || summary.coverImageUrl) {
+      continue;
+    }
+    const full = await getCourseById(summary.id);
+    if (!full) {
+      continue;
+    }
+    await saveCourse({ ...full, coverImageUrl: seedUrl });
+  }
+}
+
 async function runInitialMigration(): Promise<void> {
   console.log("migrateFromSqlJs called");
   const summaries = await getCourseSummaries();
 
   if (summaries.length > 0) {
     console.log("Courses already exist, skipping initialization");
+    await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
     return;
   }
@@ -584,6 +602,7 @@ async function runInitialMigration(): Promise<void> {
   const loadedFromExport = await loadFromIndexedDbExport();
   if (loadedFromExport) {
     console.log("Initialization complete (from indexeddb-export.json)");
+    await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
     return;
   }
@@ -607,6 +626,7 @@ async function runInitialMigration(): Promise<void> {
     }
   }
   await ensureAnnouncementsSeeded();
+  await applyBookCoverSeeds();
   console.log("Initialization complete!");
 }
 

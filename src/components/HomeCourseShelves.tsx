@@ -6,6 +6,8 @@ import CourseNewspaperCard from "./CourseNewspaperCard";
 
 interface HomeCourseShelvesProps {
   row: CourseShelfRow;
+  /** Home_Test only: show admin/seed cover images on shelf cards. */
+  useCoverImages?: boolean;
 }
 
 function createPlaceholderItem(category: string, index: number): CourseShelfItem {
@@ -33,7 +35,7 @@ function createPlaceholderItem(category: string, index: number): CourseShelfItem
   };
 }
 
-export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
+export default function HomeCourseShelves({ row, useCoverImages = false }: HomeCourseShelvesProps) {
   const BOOKS_PER_ROW = 3;
   const DEFAULT_SHELF_ROWS = 4;
   const minSlots = DEFAULT_SHELF_ROWS * BOOKS_PER_ROW;
@@ -52,12 +54,12 @@ export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
 
   const renderCard = (item: CourseShelfItem) => {
     if (item.artifactType === "magazine") {
-      return <CourseMagazineCard key={item.id} item={item} />;
+      return <CourseMagazineCard key={item.id} item={item} useCoverImage={useCoverImages} />;
     }
     if (item.artifactType === "newspaper") {
-      return <CourseNewspaperCard key={item.id} item={item} />;
+      return <CourseNewspaperCard key={item.id} item={item} useCoverImage={useCoverImages} />;
     }
-    return <CourseBookCard key={item.id} item={item} />;
+    return <CourseBookCard key={item.id} item={item} useCoverImage={useCoverImages} />;
   };
 
   return (
@@ -70,6 +72,7 @@ export default function HomeCourseShelves({ row }: HomeCourseShelvesProps) {
               <CourseBookCard
                 key={`empty-${rowIndex}-${emptyIndex}`}
                 item={createPlaceholderItem(row.title, rowIndex * BOOKS_PER_ROW + group.length + emptyIndex)}
+                useCoverImage={useCoverImages}
               />
             ))}
           </div>

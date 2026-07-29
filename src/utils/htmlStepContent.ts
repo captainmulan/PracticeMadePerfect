@@ -5,6 +5,7 @@ const BOOK_HTML_FOLDER_ALIASES: Record<string, string> = {
   "little-programmer": "LittleProgrammer",
   solarsystem: "SolarSystem",
   oceanadventure: "OceanAdventure",
+  continents: "Continents",
 };
 
 export function extractBookHtmlIframeSrc(contentHtml: string): string | null {

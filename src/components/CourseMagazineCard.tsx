@@ -5,11 +5,13 @@ import { getHomePageData } from "../utils/contentStore";
 
 interface CourseMagazineCardProps {
   item: CourseShelfItem;
+  useCoverImage?: boolean;
 }
 
-export default function CourseMagazineCard({ item }: CourseMagazineCardProps) {
+export default function CourseMagazineCard({ item, useCoverImage = false }: CourseMagazineCardProps) {
   const homePageData = getHomePageData();
   const isEmpty = !item.link || item.placeholder;
+  const showCoverImage = Boolean(useCoverImage && item.coverImageUrl && !isEmpty);
   
   const iconSize = item.iconSize ?? 60; // smaller for magazine
   const iconFont = Math.round(iconSize * 0.9);
@@ -93,16 +95,40 @@ export default function CourseMagazineCard({ item }: CourseMagazineCardProps) {
 
   const content = (
     <>
-      {item.link && <span className="book-title" style={bookTitleStyles}>{displayTitle}</span>}
+      {!showCoverImage && item.link ? (
+        <span className="book-title" style={bookTitleStyles}>{displayTitle}</span>
+      ) : null}
       <div className="book-cover" style={{ 
-        background: `linear-gradient(135deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
+        background: showCoverImage
+          ? undefined
+          : `linear-gradient(135deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
         position: "relative",
         width: `${coverWidth}px`,
         height: `${coverHeight}px`,
         borderRadius: "4px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        overflow: "hidden",
       }}>
-        {isEmpty ? (
+        {showCoverImage ? (
+          <>
+            <img
+              className="book-cover-image"
+              src={item.coverImageUrl}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            />
+            <span className="book-cover-overlay-title">{displayTitle}</span>
+          </>
+        ) : isEmpty ? (
           <span className="book-cover-title" style={{ 
             position: "absolute",
             width: "100%",
@@ -145,14 +171,14 @@ export default function CourseMagazineCard({ item }: CourseMagazineCardProps) {
 
   if (item.link) {
     return (
-      <Link to={item.link} className="book" style={bookStyles}>
+      <Link to={item.link} className={`book${showCoverImage ? " book--cover-image" : ""}`} style={bookStyles}>
         {content}
       </Link>
     );
   }
 
   return (
-    <div className="book" style={bookStyles} aria-hidden={!displayTitle}>
+    <div className={`book${showCoverImage ? " book--cover-image" : ""}`} style={bookStyles} aria-hidden={!displayTitle}>
       {content}
     </div>
   );

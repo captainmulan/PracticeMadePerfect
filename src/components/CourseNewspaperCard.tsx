@@ -5,11 +5,13 @@ import { getHomePageData } from "../utils/contentStore";
 
 interface CourseNewspaperCardProps {
   item: CourseShelfItem;
+  useCoverImage?: boolean;
 }
 
-export default function CourseNewspaperCard({ item }: CourseNewspaperCardProps) {
+export default function CourseNewspaperCard({ item, useCoverImage = false }: CourseNewspaperCardProps) {
   const homePageData = getHomePageData();
   const isEmpty = !item.link || item.placeholder;
+  const showCoverImage = Boolean(useCoverImage && item.coverImageUrl && !isEmpty);
   const today = new Date();
   const dateStr = today.toLocaleDateString("en-US", {
     weekday: "long",
@@ -25,7 +27,33 @@ export default function CourseNewspaperCard({ item }: CourseNewspaperCardProps) 
     ? ((homePageData.style?.emptyBook as any)?.coverHeight ?? (item.coverHeight ?? 160))
     : (item.coverHeight ?? 160);
 
-  const content = (
+  const content = showCoverImage ? (
+    <div
+      style={{
+        width: `${coverWidth}px`,
+        height: `${coverHeight}px`,
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        position: "relative",
+        overflow: "hidden",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+      }}
+    >
+      <img
+        className="book-cover-image"
+        src={item.coverImageUrl}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+        }}
+      />
+      <span className="book-cover-overlay-title">{item.title}</span>
+    </div>
+  ) : (
     <div
       style={{
         width: `${coverWidth}px`,
@@ -145,14 +173,14 @@ export default function CourseNewspaperCard({ item }: CourseNewspaperCardProps) 
 
   if (item.link) {
     return (
-      <Link to={item.link} className="newspaper" aria-label={`Open ${item.title}`}>
+      <Link to={item.link} className={`newspaper${showCoverImage ? " book--cover-image" : ""}`} aria-label={`Open ${item.title}`}>
         {content}
       </Link>
     );
   }
 
   return (
-    <div className="newspaper" aria-hidden={!item.title}>
+    <div className={`newspaper${showCoverImage ? " book--cover-image" : ""}`} aria-hidden={!item.title}>
       {content}
     </div>
   );
