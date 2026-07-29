@@ -97,7 +97,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </style>
 <script src="_continents-player.js"></script>
 <script src="_continents-data.js"></script>
-<script src="_continents-chapter-images.js"></script>
 <script src="_continents-scenes.js"></script>
 <script src="_continents-speak.js"></script>
 </head>
@@ -106,7 +105,7 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 <div class="container">
   <div class="header">
     <h1>❓ Continents Overview Quiz</h1>
-    <div class="subtitle">Beat Captain Compass!</div>
+    <div class="subtitle">Beat Professor Globe!</div>
   </div>
   <div class="competition-bar" id="liveScoreBar">
     <div class="competitor">
@@ -116,8 +115,8 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
     </div>
     <div class="vs-divider">VS</div>
     <div class="competitor">
-      <div class="competitor-icon">🧭</div>
-      <div class="competitor-name">Captain Compass</div>
+      <div class="competitor-icon">🌍</div>
+      <div class="competitor-name">Professor Globe</div>
       <div class="competitor-score" id="opponentScore">0</div>
     </div>
   </div>
@@ -186,7 +185,7 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </div>
 <script>
 var playerScore = 0, opponentScore = 0, currentQ = 1, totalQ = 5, answered = false;
-var playerName = "Explorer", playerIcon = "🧭", opponentName = "Captain Compass", opponentIcon = "🧭";
+var playerName = "Explorer", playerIcon = "🧭", opponentName = "Professor Globe", opponentIcon = "🌍";
 
 function loadPlayerInfo() {
   if (window.ContinentPlayer) {

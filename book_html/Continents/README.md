@@ -2,33 +2,29 @@
 
 **Author:** Jimmy Cooper  
 **Target age:** 7–8  
-**Chapters:** 35 standalone HTML files  
+**Chapters:** 35 standalone HTML files + mid-book game (`019b`)
 
-Follows the same flow as **Ocean Adventure** ([../OceanAdventure/README.md](../OceanAdventure/README.md)), with painted PNG scenes embedded in each HTML file (Solar System data-URI pattern — no external image fetch).
-
-Master template: [../README.md](../README.md)
+Follows **Ocean Adventure** structure (Activity → Explained → Quiz) and **My First 100 Myanmar Words** briefing / 3-hero-games pattern.
 
 ---
 
 ## Page structure
 
-### Activity pages (`008`, `011`, … + overview `005`)
-
-Each topic activity follows:
+### Activity pages
 
 **picture → story → explanation → press words to hear** (×3) → **mini-game**
 
-### Explained pages (`006`, `009`, …)
+### Explained pages
 
-**picture → story → explanation** (×3) — deeper content, no vocabulary chips, no game.
+**picture → story · explanation** (×3) — deeper content, no vocabulary chips, no game.
 
-### Quiz pages (`007`, `010`, …)
+### Quiz pages
 
-VS bar + 5 questions + podium finish. Uses `ContinentPlayer` for name/avatar.
+VS bar + 5 questions + podium. Uses `ContinentPlayer`.
 
 ### Overview (`005-Continents-Overview.html`)
 
-Four interactive views (World Map, Globe Spin, Plate Puzzle, Climate Zones) plus Continent Sort mini-game.
+Four painted views (World Map, Globe Spin, Plate Puzzle, Climate Zones) + **3 lesson segments** with speak chips + Continent Sort mini-game.
 
 ---
 
@@ -36,35 +32,39 @@ Four interactive views (World Map, Globe Spin, Plate Puzzle, Climate Zones) plus
 
 | # | File | Type |
 |---|------|------|
-| 01 | `001-Book-Briefing.html` | Briefing + author speech |
+| 01 | `001-Book-Briefing.html` | Briefing (MM-style: hero games + worlds grid) |
 | 02 | `002-Index.html` | Table of contents |
-| 03 | `003-Character-Selection.html` | Choose explorer name + avatar |
-| 04 | `004-Intro-MapExplorer.html` | Intro game — catch continent emojis |
-| 05 | `005-Continents-Overview.html` | Overview — 4 views + Continent Sort |
-| 06–07 | Continents Overview | Explained + Quiz |
-| 08–10 | Africa | Activity → Explained → Quiz |
-| 11–13 | Asia | Activity → Explained → Quiz |
-| 14–16 | Europe | Activity → Explained → Quiz |
-| 17–19 | North America | Activity → Explained → Quiz |
-| 20–22 | South America | Activity → Explained → Quiz |
-| 23–25 | Antarctica | Activity → Explained → Quiz |
-| 26–28 | Australia | Activity → Explained → Quiz |
-| 29–31 | Landforms | Activity → Explained → Quiz |
+| 03 | `003-Character-Selection.html` | Choose explorer |
+| 04 | `004-Intro-MapExplorer.html` | **World Map Maker** stamp sandbox |
+| 05–07 | Continents Overview | Views + lessons + Explained + Quiz |
+| 08–16 | Africa → Europe | Activity → Explained → Quiz |
+| **019b** | `019b-Continent-Trek.html` | **Mid-book action game** |
+| 17–31 | N. America → Landforms | Activity → Explained → Quiz |
 | 32 | `032-Conclusion.html` | Conclusion |
 | 33 | `033-Continents-Overall-Quiz.html` | Overall quiz |
-| 34 | `034-Outro-GlobeRush.html` | Outro game |
+| 34 | `034-Outro-GlobeRush.html` | **Globe Rush** finale |
 | 35 | `035-Congratulations.html` | Congratulations |
 
 ---
 
-## Design concept
+## Three hero games (Ocean / MM pattern)
+
+| Game | File | Engine |
+|------|------|--------|
+| World Map Maker | `004` | Stamp sandbox (place continents & landmarks) |
+| Continent Trek | `019b` | `ContinentActionGame` → `continent-trek` |
+| Globe Rush | `034` | `ContinentActionGame` → `globe-rush` |
+
+---
+
+## Design
 
 | Principle | Implementation |
 |-----------|----------------|
-| Theme | Earth gradient (sky → forest → earth), `.clouds` animated background |
+| Theme | Earth gradient `#1a237e → #33691e → #5d4037`, `.clouds` |
 | Accents | Green `#aed581`, gold `#ffe082` |
-| Illustrations | Quality PNG embedded as base64 in `_continents-chapter-images.js` |
-| Vocabulary | **Press words to hear** via `_continents-speak.js` |
+| Illustrations | PNG in `assets/` loaded by URL (Ocean style — no multi-MB embed) |
+| Vocabulary | `ContinentSpeak` with EN voice scoring |
 | Explorer | Maya + continent guide characters |
 
 ---
@@ -73,42 +73,57 @@ Four interactive views (World Map, Globe Spin, Plate Puzzle, Climate Zones) plus
 
 ```
 Continents/
-  _continents-data.js                # Chapter stories, words, quiz Q&A, game configs
-  _continents-chapter-images.js      # Embedded PNG scenes (generated)
-  _continents-scenes.js              # ContinentScene.boot()
-  _continents-speak.js               # ContinentSpeak — TTS vocabulary
-  _continents-player.js              # ContinentPlayer localStorage helper
-  _continents-games.js               # Shared minigame engine
-  _generate-book.cjs                 # Regenerate activity / explained / quiz HTML
-  _gen-index-grid.cjs                # Refresh index grid
+  _continents-data.js
+  _continents-scenes.js          # loads assets/{id}-{slot}.png
+  _continents-speak.js
+  _continents-player.js
+  _continents-games.js           # chapter mini-games
+  _continents-action-games.js    # mid + outro quality games
+  _generate-book.cjs
+  _gen-index-grid.cjs
   scripts/
-    sync_ai_images.cjs               # Copy AI chapter PNGs into assets/
-    gen_chapter_images.cjs           # PNG → _continents-chapter-images.js
-  assets/                            # Source PNGs ({chapter}-{slot}.png)
-  *.html                             # Standalone chapters
+    sync_ai_images.cjs
+    check-images.cjs
+    setup-action-games.cjs
+  assets/                        # 58 chapter PNGs
 ```
 
 ### Build pipeline
 
 ```bash
-# 1. Place / sync quality chapter PNGs
-node book_html/Continents/scripts/sync_ai_images.cjs
-
-# 2. Embed all PNGs as data URIs
-node book_html/Continents/scripts/gen_chapter_images.cjs
-
-# 3. Regenerate activity, explained, and quiz HTML
+node book_html/Continents/scripts/check-images.cjs
 node book_html/Continents/_generate-book.cjs
-
-# 4. Refresh index grid
 node book_html/Continents/_gen-index-grid.cjs
 ```
 
-**Chapter art (58 images):** overview (10 slots) + 8 chapters × 6 slots (`main-1`…`main-3`, `explain-1`…`explain-3`).
+Scenes load `assets/*.png` directly — no need to regenerate a chapter-images embed file.
+
+---
+
+## App registration
+
+- `src/utils/htmlStepContent.ts` → `continents: "Continents"`
+- `src/utils/bookCoverSeeds.ts` → `/book_covers/continents.webp`
+
+---
+
+## Quiz opponents
+
+| Quiz | VS |
+|------|-----|
+| Overview | Professor Globe 🌍 |
+| Africa | Savanna Sam 🦒 |
+| Asia | Tiger Tia 🐯 |
+| Europe | Knight Nora ⚔️ |
+| North America | Bison Ben 🦬 |
+| South America | Jaguar Jax 🐆 |
+| Antarctica | Seal Sam 🦭 |
+| Australia | Kangaroo Kate 🦘 |
+| Landforms | Volcano Val 🌋 |
 
 ---
 
 ## Related
 
-- Reference structure: [../OceanAdventure/README.md](../OceanAdventure/README.md)
-- Scene pattern: [../Dinosaur Discovery/README.md](../Dinosaur%20Discovery/README.md)
+- [../OceanAdventure/README.md](../OceanAdventure/README.md)
+- [../MyFirst100MMWords/README.md](../MyFirst100MMWords/README.md)

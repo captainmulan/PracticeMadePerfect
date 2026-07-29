@@ -6,7 +6,7 @@
   'use strict';
 
   var FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
-  var FACE_RE = /🐠|🐟|🐡|🦈|🐙|🦑|🐢|🐬|🐳|🦭|🐋|🦐|🤿/;
+  var FACE_RE = /🦁|🐼|🏰|🦅|🦙|🐧|🦘|🧭|🗺️|🌍|🦒|🐯|🦓|🐨|🐘|🦜|🐆|🦥|🧗/;
 
   var S = {
     cfg: null,
@@ -140,7 +140,7 @@
       items: [],
       spawn: 18,
       step: 0,
-      hintText: 'Next: ☀️ Sunlight',
+      hintText: 'Next: ' + zoneOrder()[0],
     };
   }
 
@@ -190,9 +190,9 @@
     });
     drawBg(vs);
     S.state.items.forEach(function (it) {
-      drawRingIcon(it.x, it.y, it.icon, 32, it.bad ? 'rgba(120,20,20,0.75)' : (it.need ? 'rgba(255,193,7,0.5)' : 'rgba(0,40,80,0.78)'), false);
+      drawRingIcon(it.x, it.y, it.icon, 32, it.bad ? 'rgba(120,20,20,0.75)' : (it.need ? 'rgba(255,193,7,0.5)' : 'rgba(60,40,20,0.78)'), false);
     });
-    drawRingIcon(p.x, p.y, p.icon, 36, 'rgba(0,60,100,0.85)', p.vx < -0.4);
+    drawRingIcon(p.x, p.y, p.icon, 36, 'rgba(40,80,20,0.85)', p.vx < -0.4);
   }
 
   /* ── Game: sunbeam-snap (008) — tap fish in the sunbeam ── */
@@ -202,7 +202,7 @@
       spawn: 0,
       beamX: vs.w * 0.38,
       beamW: vs.w * 0.24,
-      hintText: 'Tap creatures in the ☀️ beam!',
+      hintText: S.cfg.hint || 'Tap creatures in the bright beam!',
     };
   }
 

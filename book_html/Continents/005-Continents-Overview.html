@@ -97,17 +97,17 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </style>
 <script src="_continents-player.js"></script>
 <script src="_continents-data.js"></script>
-<script src="_continents-chapter-images.js"></script>
 <script src="_continents-scenes.js"></script>
 <script src="_continents-speak.js"></script>
 <script src="_continents-games.js"></script>
 </head>
-<body class="all-zones-page big-planet-page">
+<body class="all-zones-page big-planet-page reading-page">
 <div class="clouds"></div>
 <div class="container">
   <div class="header">
     <h1>🌍 Our Continents</h1>
-    <div class="subtitle">Four painted views — world map, globe spin, plate puzzle, and climate zones</div>
+    <div class="subtitle">Four painted views · three lessons · Continent Sort game</div>
+    <div class="pill-row"><span class="pill">🗺️ Explore views</span><span class="pill">📖 Lessons</span><span class="pill">🎮 Mini game</span></div>
   </div>
   <div class="panel">
     <div class="view-stage" id="viewStage">
@@ -136,6 +136,42 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
       <h2>🌍 World Map</h2>
       <p>Flat painted map of all seven continents — tap each landmass to learn its name, size, and place on Earth.</p>
     </div>
+  </div>
+  <div class="lessons-block">
+    <p class="scroll-cue">↓ Scroll — picture · story · explanation · press words to hear × 3</p>
+    
+  <div class="segment">
+    <div class="segment-label">Picture · Seven Great Landmasses</div>
+    <div class="scene-wrap"><div id="scene-main-1" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Seven Great Landmasses</h2>
+      <div class="story-box">Maya spread her map across the classroom table and traced the colored shapes with her finger. Professor Globe adjusted his round glasses and smiled. "Earth has seven continents," he said, spinning a desktop globe. "Each one is a giant puzzle piece of land where billions of people and animals live."</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Continents are the largest areas of land on Earth: Africa, Asia, Europe, North America, South America, Antarctica, Australia, plus many islands grouped with them. Together they cover about 29% of Earth's surface.</div>
+      <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="continents" onclick="ContinentSpeak.chip(this)">continents</button><button type="button" class="speak-chip" data-word="landmass" onclick="ContinentSpeak.chip(this)">landmass</button><button type="button" class="speak-chip" data-word="Earth" onclick="ContinentSpeak.chip(this)">Earth</button><button type="button" class="speak-chip" data-word="surface" onclick="ContinentSpeak.chip(this)">surface</button></div></div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-label">Picture · Oceans Between, Life Within</div>
+    <div class="scene-wrap"><div id="scene-main-2" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Oceans Between, Life Within</h2>
+      <div class="story-box">Professor Globe pointed to the blue spaces between the continents. "Oceans separate land, but they also connect it," he explained. "Ships, birds, and even wind carry seeds and stories from one shore to another. Continents are neighbors across the water."</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Continents are surrounded and linked by five oceans. People have traveled between continents for thousands of years, sharing food, languages, animals, and ideas — making our world one big connected home.</div>
+      <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="oceans" onclick="ContinentSpeak.chip(this)">oceans</button><button type="button" class="speak-chip" data-word="connected" onclick="ContinentSpeak.chip(this)">connected</button><button type="button" class="speak-chip" data-word="travel" onclick="ContinentSpeak.chip(this)">travel</button><button type="button" class="speak-chip" data-word="neighbors" onclick="ContinentSpeak.chip(this)">neighbors</button></div></div>
+    </div>
+  </div>
+
+  <div class="segment">
+    <div class="segment-label">Picture · Land on the Move</div>
+    <div class="scene-wrap"><div id="scene-main-3" class="scene-card scene-card-hero chapter-photo-hero"></div></div>
+    <div class="card">
+      <h2>📖 Land on the Move</h2>
+      <div class="story-box">Maya watched puzzle pieces slide on Professor Globe's screen — South America nestled into Africa like matching jigsaw edges. "Continents drift slowly," he whispered. "Millions of years ago they were joined. They're still moving today — about as fast as your fingernails grow!"</div>
+      <div class="explain-box"><strong>💡 Explanation:</strong> Earth's outer shell is broken into tectonic plates that slowly move. This continental drift shapes mountains, earthquakes, and volcanoes, and explains why matching fossils appear on continents now far apart.</div>
+      <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="tectonic" onclick="ContinentSpeak.chip(this)">tectonic</button><button type="button" class="speak-chip" data-word="drift" onclick="ContinentSpeak.chip(this)">drift</button><button type="button" class="speak-chip" data-word="plates" onclick="ContinentSpeak.chip(this)">plates</button><button type="button" class="speak-chip" data-word="fossils" onclick="ContinentSpeak.chip(this)">fossils</button></div></div>
+    </div>
+  </div>
   </div>
   <p class="scroll-cue">↓ Scroll for the Continent Sort mini-game</p>
   
@@ -177,6 +213,13 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 });</script>
   <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  ContinentScene.boot({ containerId: "scene-main-1", chapterId: "overview", slot: "main-1", title: "Continents Overview" });
+  ContinentScene.boot({ containerId: "scene-main-2", chapterId: "overview", slot: "main-2", title: "Continents Overview" });
+  ContinentScene.boot({ containerId: "scene-main-3", chapterId: "overview", slot: "main-3", title: "Continents Overview" });
+});
+</script>
 <script>
 (function() {
   var VIEW_MODES = [{"id":"map","slot":"view-1","label":"World Map","desc":"Flat painted map of all seven continents — tap each landmass to learn its name, size, and place on Earth."},{"id":"globe","slot":"view-2","label":"Globe Spin","desc":"Spin a 3D globe and watch continents rotate — see how land and ocean fit together from every angle."},{"id":"plates","slot":"view-3","label":"Plate Puzzle","desc":"Sliding tectonic puzzle — move the pieces to see how continents once fit together and still drift today."},{"id":"climate","slot":"view-4","label":"Climate Zones","desc":"Color bands from icy poles to steamy equator — tap each zone to learn how latitude shapes weather and life."}];

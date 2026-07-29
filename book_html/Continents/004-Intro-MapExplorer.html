@@ -3,86 +3,206 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Continents Adventure - Map Explorer</title>
+  <title>Continents Adventure - World Map Maker</title>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a237e 0%,#33691e 45%,#5d4037 100%);color:#fff8e1;min-height:100vh;}
     .clouds{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(40px 18px at 60px 40px,rgba(255,255,255,0.22),transparent),radial-gradient(50px 20px at 200px 80px,rgba(255,255,255,0.18),transparent),radial-gradient(35px 16px at 380px 50px,rgba(255,255,255,0.2),transparent);background-size:600px 120px;animation:drift 12s ease-in-out infinite;}
-    @keyframes drift{0%,100%{transform:translateX(0);}50%{transform:translateX(24px);}}
-    .game-shell{max-width:720px;margin:0 auto;padding:10px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
-    .title{text-align:center;font-size:24px;color:#aed581;margin:6px 0 4px;}
-    .game-desc{text-align:center;color:#ffe082;font-size:14px;margin-bottom:8px;line-height:1.5;padding:0 8px;}
-    .hud{display:flex;justify-content:space-between;background:rgba(0,0,0,0.35);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-weight:bold;color:#ffd54f;}
+    @keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(24px)}}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a237e,#33691e,#5d4037);color:#fff8e1;}
+    .game-shell{width:100%;max-width:100%;margin:0;position:relative;z-index:1;display:flex;flex-direction:column;height:100%;max-height:100%;overflow:hidden;padding:6px 10px 6px;box-sizing:border-box;}
+    .stamp-row{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:4px;padding:5px 6px;background:rgba(0,0,0,.28);border-radius:12px;border:1px solid rgba(174,213,129,.35);max-height:calc(2 * 38px + 4px);overflow-y:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;}
+    .stamp-btn{width:36px;height:36px;border:2px solid rgba(174,213,129,.4);border-radius:10px;background:rgba(174,213,129,.1);font-size:20px;cursor:pointer;touch-action:manipulation;transition:.15s;flex-shrink:0;}
+    .stamp-btn.selected{border-color:#ffe082;background:rgba(255,224,130,.2);box-shadow:0 0 16px rgba(255,224,130,.35);transform:scale(1.06);}
+    .stamp-btn:active{transform:scale(.96);}
+    .tool-row{display:flex;gap:6px;justify-content:center;margin-bottom:4px;flex-wrap:nowrap;flex-shrink:0;}
+    .tool-btn{padding:6px 10px;border:none;border-radius:10px;background:rgba(255,255,255,.1);color:#fff8e1;font-size:12px;font-weight:bold;cursor:pointer;border:1px solid rgba(174,213,129,.35);flex:1 1 0;min-width:0;white-space:nowrap;}
+    .tool-btn:active{transform:scale(.97);}
+    .tool-btn.active{border-color:#ffe082;background:rgba(255,224,130,.18);box-shadow:0 0 10px rgba(255,224,130,.25);}
+    .game-stage.eraser-mode{cursor:cell;}
     .stage-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:stretch;}
-    .game-stage{position:relative;flex:1 1 auto;min-height:min(52vh,420px);border:2px solid rgba(174,213,129,0.45);border-radius:16px;overflow:hidden;background:#2e1a0e;touch-action:none;cursor:pointer;}
+    .game-stage{position:relative;flex:1 1 auto;min-height:0;border:2px solid rgba(174,213,129,.5);border-radius:16px;overflow:hidden;background:#2e1a0e;touch-action:none;cursor:crosshair;}
     canvas{display:block;width:100%;height:100%;}
-    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,20,10,0.92);text-align:center;padding:18px;z-index:5;}
-    .overlay h3{color:#aed581;font-size:22px;margin-bottom:8px;}
-    .overlay p{color:#fff3e0;font-size:14px;line-height:1.55;margin-bottom:14px;max-width:320px;}
-    .btn{padding:11px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#aed581,#689f38);color:#1b2e0a;font-size:15px;font-weight:bold;cursor:pointer;font-family:inherit;}
-    .nav-hint{margin-top:10px;text-align:center;font-size:13px;color:#ffe082;background:rgba(255,224,130,0.1);padding:10px;border-radius:10px;flex-shrink:0;line-height:1.5;}
-    body.big-game-page:has(.game-shell){overflow:hidden!important;height:100%!important;}
-    html:has(body.big-game-page){height:100%!important;overflow:hidden!important;}
-    body.big-game-page:has(.game-shell) .game-shell{min-height:100%!important;height:100%!important;display:flex!important;flex-direction:column!important;}
-    body.big-game-page:has(.game-shell) .stage-wrap{flex:1 1 auto!important;min-height:0!important;}
-    body.big-game-page:has(.game-shell) .game-stage{flex:1 1 auto!important;min-height:0!important;max-height:none!important;aspect-ratio:unset!important;}
-  </style>
-<script>
-(function (w) {
-  var BOOK = "continents";
-  function key(name) { return "book:" + BOOK + ":" + name; }
-  w.ContinentPlayer = {
-    getUserName: function () { return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer"; },
-    getCharacter: function () { return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🧭"; },
-    getCharacterName: function () { return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Explorer"; },
-    save: function (name, character, characterName) {
-      localStorage.setItem(key("userName"), name);
-      localStorage.setItem(key("userCharacter"), character);
-      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
-      localStorage.setItem("userName", name);
-      localStorage.setItem("userCharacter", character);
-      if (characterName != null) localStorage.setItem("characterName", characterName);
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,20,10,.9);text-align:center;padding:18px;z-index:5;}
+    .overlay h3{color:#aed581;font-size:20px;margin-bottom:8px;}
+    .overlay p{color:#fff3e0;font-size:14px;line-height:1.5;margin-bottom:12px;max-width:300px;}
+    .btn{padding:10px 22px;border:none;border-radius:12px;background:linear-gradient(135deg,#aed581,#689f38);color:#1b2e0a;font-size:15px;font-weight:bold;cursor:pointer;}
+    .nav-hint{margin-top:4px;text-align:center;font-size:11px;color:#ffe082;background:rgba(255,224,130,.1);padding:6px 8px;border-radius:10px;flex-shrink:0;line-height:1.4;}
+    html,body{height:100%;overflow:hidden;}
+    body.big-game-page{height:100%;max-height:100%;overflow:hidden;}
+    @media(min-width:768px){
+      .stamp-row{gap:6px;padding:6px 8px;max-height:calc(2 * 48px + 6px);}
+      .stamp-btn{width:46px;height:46px;font-size:26px;}
+      .tool-btn{font-size:14px;padding:8px 12px;}
+      .nav-hint{font-size:13px;padding:8px 10px;}
     }
-  };
-})(window);
-</script>
+    @media(orientation:landscape){
+      .stamp-row{max-height:52px;margin-bottom:3px;}
+      .nav-hint{font-size:10px;padding:5px 6px;}
+      .tool-btn{font-size:11px;padding:5px 8px;}
+    }
+    @media(orientation:landscape) and (min-width:900px){
+      .stamp-row{max-height:58px;gap:6px;}
+      .stamp-btn{width:48px;height:48px;font-size:28px;}
+      .tool-btn{font-size:13px;padding:7px 12px;}
+      .nav-hint{font-size:12px;padding:6px 8px;}
+    }
+  </style>
+  <script src="_continents-player.js"></script>
 </head>
 <body class="big-game-page">
 <div class="clouds"></div>
 <div class="game-shell">
-  <h1 class="title">🗺️ Map Explorer</h1>
-  <p class="game-desc">Tap falling continent icons — 🌍 🦁 🐼 🏰 🦅 🦙 🐧 🦘 — before they hit the bottom! Reach 40 points to win.</p>
-  <div class="hud">
-    <span id="hudScore">⭐ 0 / 40</span>
-    <span id="hudMissed">💨 Missed: 0</span>
+  <div class="stamp-row" id="stampRow">
+    <button type="button" class="stamp-btn selected" data-emoji="🌍" title="Earth">🌍</button>
+    <button type="button" class="stamp-btn" data-emoji="🗺️" title="Map">🗺️</button>
+    <button type="button" class="stamp-btn" data-emoji="🧭" title="Compass">🧭</button>
+    <button type="button" class="stamp-btn" data-emoji="🦁" title="Lion">🦁</button>
+    <button type="button" class="stamp-btn" data-emoji="🐼" title="Panda">🐼</button>
+    <button type="button" class="stamp-btn" data-emoji="🏰" title="Castle">🏰</button>
+    <button type="button" class="stamp-btn" data-emoji="🦅" title="Eagle">🦅</button>
+    <button type="button" class="stamp-btn" data-emoji="🦙" title="Llama">🦙</button>
+    <button type="button" class="stamp-btn" data-emoji="🐧" title="Penguin">🐧</button>
+    <button type="button" class="stamp-btn" data-emoji="🦘" title="Kangaroo">🦘</button>
+    <button type="button" class="stamp-btn" data-emoji="🦒" title="Giraffe">🦒</button>
+    <button type="button" class="stamp-btn" data-emoji="🐯" title="Tiger">🐯</button>
+    <button type="button" class="stamp-btn" data-emoji="🦓" title="Zebra">🦓</button>
+    <button type="button" class="stamp-btn" data-emoji="🐨" title="Koala">🐨</button>
+    <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
+    <button type="button" class="stamp-btn" data-emoji="🏔️" title="Mountain">🏔️</button>
+    <button type="button" class="stamp-btn" data-emoji="🌋" title="Volcano">🌋</button>
+    <button type="button" class="stamp-btn" data-emoji="🏜️" title="Desert">🏜️</button>
+    <button type="button" class="stamp-btn" data-emoji="🌴" title="Palm">🌴</button>
+    <button type="button" class="stamp-btn" data-emoji="🌊" title="Ocean">🌊</button>
+    <button type="button" class="stamp-btn" data-emoji="🏞️" title="Park">🏞️</button>
+    <button type="button" class="stamp-btn" data-emoji="⛺" title="Tent">⛺</button>
+    <button type="button" class="stamp-btn" data-emoji="🏕️" title="Camp">🏕️</button>
+    <button type="button" class="stamp-btn" data-emoji="✈️" title="Plane">✈️</button>
+    <button type="button" class="stamp-btn" data-emoji="🚢" title="Ship">🚢</button>
+    <button type="button" class="stamp-btn" data-emoji="🎒" title="Backpack">🎒</button>
+    <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
+    <button type="button" class="stamp-btn" data-emoji="🌲" title="Evergreen">🌲</button>
+    <button type="button" class="stamp-btn" data-emoji="🌺" title="Flower">🌺</button>
+    <button type="button" class="stamp-btn" data-emoji="☀️" title="Sun">☀️</button>
+    <button type="button" class="stamp-btn" data-emoji="❄️" title="Snow">❄️</button>
+    <button type="button" class="stamp-btn" data-emoji="🔥" title="Fire">🔥</button>
+    <button type="button" class="stamp-btn" data-emoji="💧" title="Water">💧</button>
+    <button type="button" class="stamp-btn" data-emoji="⭐" title="Star">⭐</button>
   </div>
+
   <div class="stage-wrap">
     <div class="game-stage" id="stage">
       <canvas id="gameCanvas"></canvas>
       <div class="overlay" id="startScreen">
-        <h3>🌍 Welcome, Explorer!</h3>
-        <p>Continent symbols are falling from the sky! Tap each one before it lands. Collect 40 points to start your journey!</p>
-        <button class="btn" type="button" id="btnStart">▶️ Start Exploring</button>
-      </div>
-      <div class="overlay" id="endScreen" style="display:none;">
-        <h3 id="endTitle">🏆 Map Master!</h3>
-        <p id="endStats"></p>
-        <button class="btn" type="button" id="btnRetry">🔄 Play Again</button>
+        <h3>🗺️ World Map Maker</h3>
+        <p>Pick animals, landmarks, or travel stamps — tap the parchment to build your world map.</p>
+        <button class="btn" type="button" id="btnStart">▶️ Start Mapping</button>
       </div>
     </div>
   </div>
-  <div class="nav-hint">
-    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
-    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+
+  <div class="tool-row">
+    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnEraser">🧽 Eraser</button>
+    <button type="button" class="tool-btn" id="btnClear">🧹 Clear Map</button>
   </div>
+
+  <div class="nav-hint">Press top nav: ← → next chapter. 🏠 Home page.</div>
 </div>
 <script>
-const GOAL = 40;
-const ICONS = ['🌍', '🦁', '🐼', '🏰', '🦅', '🦙', '🐧', '🦘'];
+const STORAGE_KEY = 'book:continents:intro-map-maker';
 const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+const LANDMARK = /🌍|🗺️|🧭|🏰|🏔️|🌋|🏜️|🌴|🌊|🏞️|⛺|🏕️|✈️|🚢|🎒|🌳|🌲|🌺|☀️|❄️|🔥|💧|⭐/;
+const BIG_LANDMARK = /🏔️|🌋|🏜️|🏞️|🏰|🌍/;
+const BIG_ANIMAL = /🦁|🐘|🦒|🐯/;
+const REF_DIM = 360;
 let canvas, ctx, running = false, animId;
-let score = 0, missed = 0, maxMiss = 8;
-let items = [], spawnTimer = 0;
+let selectedEmoji = '🌍';
+let toolMode = 'stamp';
+let decorations = [];
+let sparkles = [];
+let savedRefDim = null;
+let needsSizeMigrate = false;
+
+function loadMap() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (Array.isArray(data)) {
+      decorations = data;
+      needsSizeMigrate = true;
+    } else {
+      decorations = data.items || [];
+      savedRefDim = data.ref || null;
+      if (decorations.some(d => d.size != null && d.sr == null)) needsSizeMigrate = true;
+    }
+  } catch (e) { decorations = []; }
+  decorations.forEach(normalizeItem);
+}
+
+function normalizeItem(d) {
+  if (d.kind === 'fish') d.kind = 'wanderer';
+  if (d.kind === 'coral' || d.kind === 'rock' || d.kind === 'plant') d.kind = 'landmark';
+  if (d.kind === 'swimmer') d.kind = 'wanderer';
+  if (!d.kind) d.kind = isLandmarkEmoji(d.emoji) ? 'landmark' : 'wanderer';
+  if (d.kind === 'wanderer') {
+    if (typeof d.dir !== 'number') d.dir = Math.random() > 0.5 ? 1 : -1;
+    if (typeof d.sp !== 'number') {
+      if (typeof d.speed === 'number') d.sp = d.speed / REF_DIM;
+      else d.sp = 0.0006 + Math.random() * 0.0008;
+      delete d.speed;
+    }
+  }
+}
+
+function isLandmarkEmoji(emoji) {
+  return LANDMARK.test(emoji);
+}
+
+function mapDim() {
+  if (!canvas) return REF_DIM;
+  return Math.max(220, Math.min(canvas.clientWidth, canvas.clientHeight));
+}
+
+function itemSizeRatio(emoji) {
+  let px;
+  if (BIG_LANDMARK.test(emoji)) px = 48 + Math.random() * 14;
+  else if (isLandmarkEmoji(emoji)) px = 36 + Math.random() * 12;
+  else if (BIG_ANIMAL.test(emoji)) px = 44 + Math.random() * 12;
+  else px = 32 + Math.random() * 12;
+  return px / REF_DIM;
+}
+
+function itemPxSize(d) {
+  if (typeof d.sr === 'number') return d.sr * mapDim();
+  return d.size || 32;
+}
+
+function migrateSizes() {
+  if (!needsSizeMigrate) return;
+  const ref = savedRefDim || REF_DIM;
+  decorations.forEach(d => {
+    if (typeof d.sr === 'number') return;
+    if (typeof d.size === 'number') {
+      d.sr = d.size / ref;
+      delete d.size;
+    } else {
+      d.sr = itemSizeRatio(d.emoji);
+    }
+  });
+  needsSizeMigrate = false;
+  saveMap();
+}
+
+function saveMap() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      v: 3,
+      ref: mapDim(),
+      items: decorations
+    }));
+  } catch (e) {}
+}
 
 function resize() {
   const stage = document.getElementById('stage');
@@ -96,154 +216,272 @@ function resize() {
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  migrateSizes();
 }
 
-function spawnItem() {
-  const w = canvas.clientWidth;
-  items.push({
-    x: 30 + Math.random() * (w - 60),
-    y: -20,
-    emoji: ICONS[Math.floor(Math.random() * ICONS.length)],
-    speed: 1.4 + Math.random() * 1.6,
-    size: 28 + Math.random() * 8,
-    pts: 5,
-    hit: false
-  });
-}
-
-function drawBg(w, h, t) {
-  const g = ctx.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, '#1a237e');
-  g.addColorStop(0.45, '#33691e');
-  g.addColorStop(1, '#3e2723');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = 'rgba(255,255,255,0.06)';
-  for (let i = 0; i < 4; i++) {
-    const cx = (w * 0.2) + i * (w * 0.2);
-    const cy = 30 + Math.sin(t * 0.001 + i) * 8;
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, 36 + i * 4, 14, 0, 0, Math.PI * 2);
-    ctx.fill();
+function initSparkles(count) {
+  sparkles = [];
+  for (let i = 0; i < count; i++) {
+    sparkles.push({
+      x: Math.random() * 400,
+      y: Math.random() * 400,
+      r: 1 + Math.random() * 2.2,
+      twinkle: Math.random() * Math.PI * 2,
+    });
   }
-  ctx.fillStyle = 'rgba(174,213,129,0.25)';
-  ctx.fillRect(0, h - 4, w, 4);
 }
 
-function drawEmoji(emoji, x, y, size) {
+function drawEmoji(emoji, x, y, size, flipX) {
   ctx.save();
+  ctx.globalAlpha = 1;
   ctx.font = 'bold ' + size + 'px ' + FONT;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText(emoji, x, y);
+  if (flipX) {
+    ctx.translate(x, y);
+    ctx.scale(-1, 1);
+    ctx.fillText(emoji, 0, 0);
+  } else {
+    ctx.fillText(emoji, x, y);
+  }
   ctx.restore();
 }
 
-function updateHud() {
-  document.getElementById('hudScore').textContent = '⭐ ' + score + ' / ' + GOAL;
-  document.getElementById('hudMissed').textContent = '💨 Missed: ' + missed;
+function drawLandBlob(cx, cy, rx, ry, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
 }
 
-function endGame(won) {
-  running = false;
-  cancelAnimationFrame(animId);
-  document.getElementById('endTitle').textContent = won ? '🏆 Map Master!' : '💫 Keep Practicing!';
-  document.getElementById('endStats').textContent = won
-    ? 'You caught ' + score + ' points! Ready to explore all seven continents?'
-    : 'Score: ' + score + ' / ' + GOAL + ' — too many symbols landed. Try again!';
-  document.getElementById('endScreen').style.display = 'flex';
+function drawMapBg(w, h, t) {
+  // Parchment base
+  const parch = ctx.createLinearGradient(0, 0, w, h);
+  parch.addColorStop(0, '#d7c4a3');
+  parch.addColorStop(0.45, '#cbb892');
+  parch.addColorStop(1, '#b89b6a');
+  ctx.fillStyle = parch;
+  ctx.fillRect(0, 0, w, h);
+
+  // Ocean washes
+  const ocean = ctx.createRadialGradient(w * 0.55, h * 0.45, 20, w * 0.5, h * 0.5, Math.max(w, h) * 0.7);
+  ocean.addColorStop(0, 'rgba(33, 150, 243, 0.55)');
+  ocean.addColorStop(0.55, 'rgba(21, 101, 192, 0.5)');
+  ocean.addColorStop(1, 'rgba(13, 71, 161, 0.45)');
+  ctx.fillStyle = ocean;
+  ctx.fillRect(0, 0, w, h);
+
+  // Painted continents (green-brown land)
+  drawLandBlob(w * 0.22, h * 0.42, w * 0.16, h * 0.22, '#6d4c41');
+  drawLandBlob(w * 0.22, h * 0.42, w * 0.13, h * 0.18, '#7cb342');
+  drawLandBlob(w * 0.48, h * 0.35, w * 0.2, h * 0.16, '#5d4037');
+  drawLandBlob(w * 0.48, h * 0.35, w * 0.16, h * 0.13, '#8bc34a');
+  drawLandBlob(w * 0.72, h * 0.38, w * 0.18, h * 0.2, '#6d4c41');
+  drawLandBlob(w * 0.72, h * 0.38, w * 0.14, h * 0.16, '#9ccc65');
+  drawLandBlob(w * 0.35, h * 0.68, w * 0.12, h * 0.14, '#795548');
+  drawLandBlob(w * 0.35, h * 0.68, w * 0.09, h * 0.11, '#aed581');
+  drawLandBlob(w * 0.62, h * 0.72, w * 0.1, h * 0.1, '#8d6e63');
+  drawLandBlob(w * 0.62, h * 0.72, w * 0.08, h * 0.08, '#c5e1a5');
+  drawLandBlob(w * 0.82, h * 0.7, w * 0.07, h * 0.06, '#a1887f');
+  drawLandBlob(w * 0.82, h * 0.7, w * 0.055, h * 0.045, '#dce775');
+
+  // Soft grid / map lines
+  ctx.strokeStyle = 'rgba(93, 64, 55, 0.18)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 8; i++) {
+    const y = (h / 8) * i + Math.sin(t * 0.0004 + i) * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+  for (let i = 1; i < 10; i++) {
+    const x = (w / 10) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+    ctx.stroke();
+  }
+
+  // Parchment edge vignette
+  const vig = ctx.createRadialGradient(w * 0.5, h * 0.5, Math.min(w, h) * 0.35, w * 0.5, h * 0.5, Math.max(w, h) * 0.75);
+  vig.addColorStop(0, 'rgba(0,0,0,0)');
+  vig.addColorStop(1, 'rgba(62, 39, 35, 0.35)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, w, h);
+
+  sparkles.forEach(s => {
+    const a = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 0.003 + s.twinkle));
+    ctx.fillStyle = 'rgba(255, 224, 130, ' + a + ')';
+    ctx.beginPath();
+    ctx.arc(s.x % w, s.y % h, s.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+function decorationRenderPos(d, t) {
+  const size = itemPxSize(d);
+  const bob = Math.sin(t * 0.002 + d.phase) * (d.kind === 'wanderer' ? Math.max(2, size * 0.06) : Math.max(1, size * 0.02));
+  return { x: d.x, y: d.y + bob, size: size };
+}
+
+function tickWanderer(d, w) {
+  if (typeof d.dir !== 'number') d.dir = 1;
+  if (typeof d.sp !== 'number') d.sp = 0.0008;
+  const size = itemPxSize(d);
+  d.x += d.sp * w * d.dir;
+  const margin = size * 0.5;
+  if (d.x <= margin) {
+    d.x = margin;
+    d.dir = 1;
+  } else if (d.x >= w - margin) {
+    d.x = w - margin;
+    d.dir = -1;
+  }
+}
+
+function updateToolUi() {
+  document.getElementById('btnEraser').classList.toggle('active', toolMode === 'eraser');
+  document.getElementById('stage').classList.toggle('eraser-mode', toolMode === 'eraser');
+  document.querySelectorAll('.stamp-btn').forEach(b => {
+    b.classList.toggle('selected', toolMode === 'stamp' && b.dataset.emoji === selectedEmoji);
+  });
+}
+
+function hitDecoration(x, y) {
+  const t = performance.now();
+  for (let i = decorations.length - 1; i >= 0; i--) {
+    const p = decorationRenderPos(decorations[i], t);
+    const r = p.size * 0.55;
+    const dx = x - p.x;
+    const dy = y - p.y;
+    if (dx * dx + dy * dy <= r * r) return i;
+  }
+  return -1;
+}
+
+function eraseAt(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  const x = clientX - r.left;
+  const y = clientY - r.top;
+  const idx = hitDecoration(x, y);
+  if (idx < 0) return;
+  decorations.splice(idx, 1);
+  saveMap();
 }
 
 function loop(t) {
   if (!running) return;
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
-  drawBg(w, h, t);
+  drawMapBg(w, h, t);
 
-  spawnTimer++;
-  if (spawnTimer > 38 - Math.min(score, 20)) {
-    spawnItem();
-    spawnTimer = 0;
-  }
-
-  items.forEach(it => {
-    if (!it.hit) it.y += it.speed;
-    drawEmoji(it.emoji, it.x, it.y, it.size);
+  decorations.forEach(d => {
+    if (d.kind === 'wanderer') tickWanderer(d, w);
+    const p = decorationRenderPos(d, t);
+    const flip = d.kind === 'wanderer' && d.dir > 0;
+    drawEmoji(d.emoji, p.x, p.y, p.size, flip);
   });
-
-  for (let i = items.length - 1; i >= 0; i--) {
-    const it = items[i];
-    if (!it.hit && it.y > h + 24) {
-      items.splice(i, 1);
-      missed++;
-      updateHud();
-      if (missed >= maxMiss) endGame(false);
-    }
-  }
 
   animId = requestAnimationFrame(loop);
 }
 
-function tapAt(clientX, clientY) {
-  if (!running) return;
+function placeAt(clientX, clientY) {
   const r = canvas.getBoundingClientRect();
-  const tx = clientX - r.left;
-  const ty = clientY - r.top;
-  for (let i = items.length - 1; i >= 0; i--) {
-    const it = items[i];
-    if (it.hit) continue;
-    if (Math.hypot(tx - it.x, ty - it.y) < it.size * 0.7) {
-      it.hit = true;
-      score += it.pts;
-      updateHud();
-      items.splice(i, 1);
-      if (score >= GOAL) endGame(true);
-      return;
-    }
+  const x = clientX - r.left;
+  const y = clientY - r.top;
+  const sr = itemSizeRatio(selectedEmoji);
+  const size = sr * mapDim();
+  if (y > r.height - Math.max(36, size * 0.35)) return;
+  const landmark = isLandmarkEmoji(selectedEmoji);
+  const item = {
+    emoji: selectedEmoji,
+    x: Math.max(size * 0.5, Math.min(r.width - size * 0.5, x)),
+    y: Math.max(size * 0.5, Math.min(r.height - size * 0.5, y)),
+    sr: sr,
+    phase: Math.random() * Math.PI * 2,
+    kind: landmark ? 'landmark' : 'wanderer',
+  };
+  if (!landmark) {
+    item.dir = Math.random() > 0.5 ? 1 : -1;
+    item.sp = 0.0006 + Math.random() * 0.0008;
   }
+  decorations.push(item);
+  saveMap();
 }
 
-function startGame() {
-  resize();
-  running = true;
-  score = 0;
-  missed = 0;
-  items = [];
-  spawnTimer = 0;
+function startDecorating() {
   document.getElementById('startScreen').style.display = 'none';
-  document.getElementById('endScreen').style.display = 'none';
-  updateHud();
+  running = true;
+  resize();
   loop(0);
 }
 
-document.getElementById('btnStart').onclick = startGame;
-document.getElementById('btnRetry').onclick = startGame;
+document.getElementById('btnStart').onclick = startDecorating;
+
+document.querySelectorAll('.stamp-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    toolMode = 'stamp';
+    selectedEmoji = btn.dataset.emoji;
+    updateToolUi();
+  });
+});
+
+document.getElementById('btnEraser').onclick = () => {
+  toolMode = 'eraser';
+  updateToolUi();
+};
+
+document.getElementById('btnUndo').onclick = () => {
+  if (!decorations.length) return;
+  decorations.pop();
+  saveMap();
+};
+
+document.getElementById('btnClear').onclick = () => {
+  decorations = [];
+  saveMap();
+};
 
 function bindTap() {
   const hit = e => {
     if (document.getElementById('startScreen').style.display !== 'none') return;
     const p = e.touches ? e.touches[0] : e;
-    tapAt(p.clientX, p.clientY);
+    if (toolMode === 'eraser') eraseAt(p.clientX, p.clientY);
+    else placeAt(p.clientX, p.clientY);
   };
   canvas.addEventListener('click', hit);
   canvas.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
 }
 
+loadMap();
 resize();
+initSparkles(18);
+updateToolUi();
 bindTap();
 window.addEventListener('resize', resize);
+window.addEventListener('orientationchange', () => { setTimeout(resize, 120); });
 
 (function fitGameFrame() {
   function fit() {
     const h = window.innerHeight + 'px';
     document.documentElement.style.height = h;
+    document.documentElement.style.minHeight = h;
     document.body.style.height = h;
+    document.body.style.minHeight = h;
     const shell = document.querySelector('.game-shell');
-    if (shell) shell.style.minHeight = h;
+    if (shell) {
+      shell.style.height = h;
+      shell.style.maxHeight = h;
+    }
+    resize();
   }
   fit();
   window.addEventListener('resize', fit);
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(fit).observe(document.documentElement);
+  }
 })();
 </script>
 </body>

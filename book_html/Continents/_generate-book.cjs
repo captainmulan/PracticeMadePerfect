@@ -119,7 +119,6 @@ function head(title, scripts) {
   const list = [
     "_continents-player.js",
     "_continents-data.js",
-    "_continents-chapter-images.js",
     "_continents-scenes.js",
     "_continents-speak.js",
     ...(scripts || [])
@@ -234,13 +233,15 @@ function genOverview(ch) {
       </div>`;
   }).join("\n");
 
+  const lessons = ch.mainSegments.map((s) => segmentHtml(ch, s, "main")).join("\n");
   const html = `${head("Continents Overview", ["_continents-games.js"])}
-<body class="all-zones-page big-planet-page">
+<body class="all-zones-page big-planet-page reading-page">
 <div class="clouds"></div>
 <div class="container">
   <div class="header">
     <h1>🌍 Our Continents</h1>
-    <div class="subtitle">Four painted views — world map, globe spin, plate puzzle, and climate zones</div>
+    <div class="subtitle">Four painted views · three lessons · Continent Sort game</div>
+    <div class="pill-row"><span class="pill">🗺️ Explore views</span><span class="pill">📖 Lessons</span><span class="pill">🎮 Mini game</span></div>
   </div>
   <div class="panel">
     <div class="view-stage" id="viewStage">
@@ -255,10 +256,15 @@ ${views}
       <p>${ch.viewLabels[0].desc}</p>
     </div>
   </div>
+  <div class="lessons-block">
+    <p class="scroll-cue">↓ Scroll — picture · story · explanation · press words to hear × 3</p>
+    ${lessons}
+  </div>
   <p class="scroll-cue">↓ Scroll for the Continent Sort mini-game</p>
   ${gameBlock(ch)}
   ${navHint()}
 </div>
+${bootScenesScript(ch, ch.mainSegments)}
 <script>
 (function() {
   var VIEW_MODES = ${JSON.stringify(ch.viewLabels.map((v, i) => ({ id: v.id, slot: "view-" + (i + 1), label: v.label, desc: v.desc })))};

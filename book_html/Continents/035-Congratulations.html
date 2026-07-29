@@ -33,25 +33,7 @@
     body.reading-page .container{height:auto!important;max-height:none!important;overflow:visible!important;display:block;}
     @media(max-width:480px){.achievement-grid{grid-template-columns:repeat(2,1fr);}}
   </style>
-<script>
-(function (w) {
-  var BOOK = "continents";
-  function key(name) { return "book:" + BOOK + ":" + name; }
-  w.ContinentPlayer = {
-    getUserName: function () { return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer"; },
-    getCharacter: function () { return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "🧭"; },
-    getCharacterName: function () { return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Explorer"; },
-    save: function (name, character, characterName) {
-      localStorage.setItem(key("userName"), name);
-      localStorage.setItem(key("userCharacter"), character);
-      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
-      localStorage.setItem("userName", name);
-      localStorage.setItem("userCharacter", character);
-      if (characterName != null) localStorage.setItem("characterName", characterName);
-    }
-  };
-})(window);
-</script>
+  <script src="_continents-player.js"></script>
 </head>
 <body class="reading-page">
 <div class="clouds"></div>
@@ -72,6 +54,15 @@
     <p>
       You are now a certified Geography Explorer! 🎓
     </p>
+  </div>
+
+  <div class="card">
+    <h2>🎮 Badges Earned</h2>
+    <div class="achievement-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="achievement-item"><div class="achievement-emoji">🗺️</div><div class="achievement-label">Map Maker</div></div>
+      <div class="achievement-item"><div class="achievement-emoji">🧭</div><div class="achievement-label">Continent Trekker</div></div>
+      <div class="achievement-item"><div class="achievement-emoji">🌍</div><div class="achievement-label">Globe Master</div></div>
+    </div>
   </div>
 
   <div class="card">
