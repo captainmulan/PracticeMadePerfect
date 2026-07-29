@@ -97,7 +97,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </style>
 <script src="_global-player.js"></script>
 <script src="_global-data.js"></script>
-<script src="_global-chapter-images.js"></script>
 <script src="_global-scenes.js"></script>
 <script src="_global-speak.js"></script>
 </head>
@@ -106,8 +105,8 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 <div class="container">
   <div class="header">
     <h1>⛽ Fossil Fuels</h1>
-    <div class="subtitle">Picture · story · explanation · press words to hear × 3 · mini game</div>
-    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span><span class="pill">🎮 Game below</span></div>
+    <div class="subtitle">Picture · story · explanation · press words to hear × 3</div>
+    <div class="pill-row"><span class="pill">🖼️ Painted scenes</span><span class="pill">🔊 Tap vocabulary</span></div>
   </div>
   <p class="scroll-cue">↓ Scroll — each section has its own picture, story, explanation, and words to hear</p>
   
@@ -143,42 +142,11 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
       <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="emissions" onclick="GlobalSpeak.chip(this)">emissions</button><button type="button" class="speak-chip" data-word="pollution" onclick="GlobalSpeak.chip(this)">pollution</button><button type="button" class="speak-chip" data-word="overheats" onclick="GlobalSpeak.chip(this)">overheats</button><button type="button" class="speak-chip" data-word="cleaner" onclick="GlobalSpeak.chip(this)">cleaner</button></div></div>
     </div>
   </div>
-  
-  <div class="planet-game">
-    <h2>⛽ Fuel Finder</h2>
-    <p class="game-desc">Dark screen! Tap fossil fuel icons the moment sonar reveals them. Avoid green energy decoys!</p>
-    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 55s</span><span id="ogLives">❤️❤️❤️</span></div>
-    <p id="ogHint" style="text-align:center;color:#a5d6a7;font-size:12px;margin:0 0 8px;min-height:18px;"></p>
-    <div class="game-canvas" id="ogCanvasBox">
-      <canvas id="ogCanvas"></canvas>
-      <div class="game-overlay" id="ogStart"><h3>⛽ Fuel Finder</h3><p>Dark screen! Tap fossil fuel icons the moment sonar reveals them. Avoid green energy decoys!</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
-      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
-    </div>
-    
-  </div>
-  <script src="_global-games.js"></script>
-  <script>GlobalGame.boot({
-  "game": "sonar-ping",
-  "goal": 48,
-  "time": 55,
-  "lives": 3,
-  "good": [
-    "⛽",
-    "🛢️",
-    "🏭"
-  ],
-  "bad": [
-    "🌱",
-    "♻️"
-  ],
-  "bgTop": "#37474f",
-  "bgBot": "#263238"
-});</script>
   <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  GlobalScene.boot({ containerId: "scene-main-1", chapterId: "fossil-fuels", slot: "main-1", title: "Fossil Fuels" });
+  GlobalScene.boot({ containerId: "scene-main-1", chapterId: "fossil-fuels", slot: "main-1", title: "Fossil Fuels", eager: true });
   GlobalScene.boot({ containerId: "scene-main-2", chapterId: "fossil-fuels", slot: "main-2", title: "Fossil Fuels" });
   GlobalScene.boot({ containerId: "scene-main-3", chapterId: "fossil-fuels", slot: "main-3", title: "Fossil Fuels" });
 });

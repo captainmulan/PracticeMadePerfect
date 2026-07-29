@@ -63,6 +63,11 @@
   </div>
 
   <div class="card">
+    <h2>🏅 Your Eco Badges</h2>
+    <p id="badgeList">Complete the three hero games to earn badges!</p>
+  </div>
+
+  <div class="card">
     <h2>🔬 The Science of Hope</h2>
     <p>Scientists around the world are studying climate every day — measuring temperatures, tracking ice, and testing new clean technologies. Every discovery helps us protect Earth better.</p>
     <p>Young explorers like you are part of the solution. When you learn, share, and act, you join a global team working for a healthier planet.</p>
@@ -107,5 +112,16 @@
     <div>💡 Go to the next chapter for your overall quiz!</div>
   </div>
 </div>
+<script>
+(function () {
+  if (!window.GlobalPlayer) return;
+  var badges = GlobalPlayer.getBadges();
+  var el = document.getElementById('badgeList');
+  if (!el) return;
+  if (badges.length) {
+    el.innerHTML = badges.map(function (b) { return '🏅 ' + b; }).join('<br>');
+  }
+})();
+</script>
 </body>
 </html>

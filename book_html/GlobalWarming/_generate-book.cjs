@@ -116,7 +116,6 @@ function head(title, scripts) {
   const list = [
     "_global-player.js",
     "_global-data.js",
-    "_global-chapter-images.js",
     "_global-scenes.js",
     "_global-speak.js",
     ...(scripts || [])
@@ -160,7 +159,7 @@ function segmentHtml(ch, seg, kind) {
 function bootScenesScript(ch, segments) {
   return `<script>
 document.addEventListener("DOMContentLoaded", function() {
-${segments.map((s) => `  GlobalScene.boot({ containerId: "scene-${s.slot}", chapterId: "${ch.id}", slot: "${s.slot}", title: "${esc(ch.title)}" });`).join("\n")}
+${segments.map((s, i) => `  GlobalScene.boot({ containerId: "scene-${s.slot}", chapterId: "${ch.id}", slot: "${s.slot}", title: "${esc(ch.title)}"${i === 0 ? ", eager: true" : ""} });`).join("\n")}
 });
 </script>`;
 }
@@ -209,12 +208,11 @@ function genActivity(ch) {
 <div class="container">
   <div class="header">
     <h1>${ch.emoji} ${ch.title}</h1>
-    <div class="subtitle">Picture · story · explanation · press words to hear × 3 · mini game</div>
-    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span><span class="pill">🎮 Game below</span></div>
+    <div class="subtitle">Picture · story · explanation · press words to hear × 3</div>
+    <div class="pill-row"><span class="pill">🖼️ Painted scenes</span><span class="pill">🔊 Tap vocabulary</span></div>
   </div>
   <p class="scroll-cue">↓ Scroll — each section has its own picture, story, explanation, and words to hear</p>
   ${segs}
-  ${gameBlock(ch)}
   ${navHint()}
 </div>
 ${bootScenesScript(ch, ch.mainSegments)}

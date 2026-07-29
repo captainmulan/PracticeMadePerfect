@@ -97,7 +97,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </style>
 <script src="_global-player.js"></script>
 <script src="_global-data.js"></script>
-<script src="_global-chapter-images.js"></script>
 <script src="_global-scenes.js"></script>
 <script src="_global-speak.js"></script>
 </head>
@@ -146,7 +145,7 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  GlobalScene.boot({ containerId: "scene-explain-1", chapterId: "melting-ice", slot: "explain-1", title: "Melting Ice" });
+  GlobalScene.boot({ containerId: "scene-explain-1", chapterId: "melting-ice", slot: "explain-1", title: "Melting Ice", eager: true });
   GlobalScene.boot({ containerId: "scene-explain-2", chapterId: "melting-ice", slot: "explain-2", title: "Melting Ice" });
   GlobalScene.boot({ containerId: "scene-explain-3", chapterId: "melting-ice", slot: "explain-3", title: "Melting Ice" });
 });

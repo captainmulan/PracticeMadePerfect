@@ -97,7 +97,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </style>
 <script src="_global-player.js"></script>
 <script src="_global-data.js"></script>
-<script src="_global-chapter-images.js"></script>
 <script src="_global-scenes.js"></script>
 <script src="_global-speak.js"></script>
 </head>
@@ -106,8 +105,8 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 <div class="container">
   <div class="header">
     <h1>🌱 Green Future</h1>
-    <div class="subtitle">Picture · story · explanation · press words to hear × 3 · mini game</div>
-    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span><span class="pill">🎮 Game below</span></div>
+    <div class="subtitle">Picture · story · explanation · press words to hear × 3</div>
+    <div class="pill-row"><span class="pill">🖼️ Painted scenes</span><span class="pill">🔊 Tap vocabulary</span></div>
   </div>
   <p class="scroll-cue">↓ Scroll — each section has its own picture, story, explanation, and words to hear</p>
   
@@ -143,45 +142,11 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
       <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="cooperation" onclick="GlobalSpeak.chip(this)">cooperation</button><button type="button" class="speak-chip" data-word="sustainable" onclick="GlobalSpeak.chip(this)">sustainable</button><button type="button" class="speak-chip" data-word="action" onclick="GlobalSpeak.chip(this)">action</button><button type="button" class="speak-chip" data-word="future" onclick="GlobalSpeak.chip(this)">future</button></div></div>
     </div>
   </div>
-  
-  <div class="planet-game">
-    <h2>🌱 Green Sort</h2>
-    <p class="game-desc">Move ← → to catch green action icons in order ♻️ → 🚲 → 🌱 → 💡 → 🌍. Avoid trash! Reach 60 points.</p>
-    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 60s</span><span id="ogLives">❤️❤️❤️</span></div>
-    <p id="ogHint" style="text-align:center;color:#a5d6a7;font-size:12px;margin:0 0 8px;min-height:18px;"></p>
-    <div class="game-canvas" id="ogCanvasBox">
-      <canvas id="ogCanvas"></canvas>
-      <div class="game-overlay" id="ogStart"><h3>🌱 Green Sort</h3><p>Move ← → to catch green action icons in order ♻️ → 🚲 → 🌱 → 💡 → 🌍. Avoid trash! Reach 60 points.</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
-      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
-    </div>
-    <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
-  </div>
-  <script src="_global-games.js"></script>
-  <script>GlobalGame.boot({
-  "game": "zone-sort",
-  "goal": 60,
-  "time": 60,
-  "lives": 3,
-  "good": [
-    "♻️",
-    "🚲",
-    "🌱",
-    "💡",
-    "🌍"
-  ],
-  "bad": [
-    "🗑️",
-    "🏭"
-  ],
-  "player": "🌱",
-  "bgTop": "#43a047",
-  "bgBot": "#2e7d32"
-});</script>
   <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  GlobalScene.boot({ containerId: "scene-main-1", chapterId: "green-future", slot: "main-1", title: "Green Future" });
+  GlobalScene.boot({ containerId: "scene-main-1", chapterId: "green-future", slot: "main-1", title: "Green Future", eager: true });
   GlobalScene.boot({ containerId: "scene-main-2", chapterId: "green-future", slot: "main-2", title: "Green Future" });
   GlobalScene.boot({ containerId: "scene-main-3", chapterId: "green-future", slot: "main-3", title: "Green Future" });
 });

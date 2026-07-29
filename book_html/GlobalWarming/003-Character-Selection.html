@@ -23,6 +23,8 @@
     .preview-character{font-size:56px;margin-bottom:8px;}
     .preview-name{font-size:18px;color:#ffeb3b;font-weight:bold;}
     .nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#a5d6a7;background:rgba(129,199,132,0.1);padding:10px;border-radius:10px;}
+    .start-btn{display:block;width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#66bb6a,#43a047);color:#fff;font-family:inherit;font-size:17px;font-weight:bold;cursor:pointer;margin-bottom:12px;}
+    .start-btn:active{transform:scale(0.98);}
     @media (max-width:480px){h1{font-size:22px}.character-option{font-size:28px;padding:8px 2px}}
   </style>
   <script src="_global-player.js"></script>
@@ -47,6 +49,7 @@
     <div class="character-option" onclick="selectCharacter(this, '🐧', 'Penguin')">🐧<div class="character-name">Penguin</div></div>
     <div class="character-option" onclick="selectCharacter(this, '☀️', 'Sun')">☀️<div class="character-name">Sun</div></div>
   </div>
+  <button type="button" class="start-btn" onclick="persistPlayer()">▶️ Start Adventure!</button>
   <div class="nav-hint">
     <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
     <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
@@ -55,6 +58,20 @@
 <script>
 let selectedCharacter = '🌍';
 let selectedCharacterName = 'Earth';
+function loadSavedPlayer() {
+  if (!window.GlobalPlayer) return;
+  var name = GlobalPlayer.getUserName();
+  var char = GlobalPlayer.getCharacter();
+  var charName = GlobalPlayer.getCharacterName();
+  if (name && name !== 'Explorer') document.getElementById('userName').value = name;
+  selectedCharacter = char || selectedCharacter;
+  selectedCharacterName = charName || selectedCharacterName;
+  document.querySelectorAll('.character-option').forEach(function (opt) {
+    var match = opt.textContent.indexOf(selectedCharacter) >= 0;
+    opt.classList.toggle('selected', match);
+  });
+  updatePreview();
+}
 function persistPlayer() {
   const userName = document.getElementById('userName').value.trim() || 'Eco Hero';
   GlobalPlayer.save(userName, selectedCharacter, selectedCharacterName);
@@ -71,7 +88,7 @@ function updatePreview() {
   document.getElementById('previewCharacter').textContent = selectedCharacter;
   document.getElementById('previewName').textContent = document.getElementById('userName').value.trim() || 'Eco Hero';
 }
-updatePreview();
+loadSavedPlayer();
 </script>
 </body>
 </html>

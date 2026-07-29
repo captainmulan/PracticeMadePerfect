@@ -97,7 +97,6 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 </style>
 <script src="_global-player.js"></script>
 <script src="_global-data.js"></script>
-<script src="_global-chapter-images.js"></script>
 <script src="_global-scenes.js"></script>
 <script src="_global-speak.js"></script>
 </head>
@@ -106,8 +105,8 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
 <div class="container">
   <div class="header">
     <h1>🧊 Melting Ice</h1>
-    <div class="subtitle">Picture · story · explanation · press words to hear × 3 · mini game</div>
-    <div class="pill-row"><span class="pill">🖼️ PNG scenes</span><span class="pill">🔊 Tap vocabulary</span><span class="pill">🎮 Game below</span></div>
+    <div class="subtitle">Picture · story · explanation · press words to hear × 3</div>
+    <div class="pill-row"><span class="pill">🖼️ Painted scenes</span><span class="pill">🔊 Tap vocabulary</span></div>
   </div>
   <p class="scroll-cue">↓ Scroll — each section has its own picture, story, explanation, and words to hear</p>
   
@@ -143,40 +142,11 @@ body.reading-page .container{height:auto!important;max-height:none!important;}
       <div class="hear-row"><span class="hear-label">🔊 Press words to hear:</span><div class="speak-chips"><button type="button" class="speak-chip" data-word="albedo" onclick="GlobalSpeak.chip(this)">albedo</button><button type="button" class="speak-chip" data-word="reflect" onclick="GlobalSpeak.chip(this)">reflect</button><button type="button" class="speak-chip" data-word="feedback" onclick="GlobalSpeak.chip(this)">feedback</button><button type="button" class="speak-chip" data-word="absorb" onclick="GlobalSpeak.chip(this)">absorb</button></div></div>
     </div>
   </div>
-  
-  <div class="planet-game">
-    <h2>🧊 Ice Pilot</h2>
-    <p class="game-desc">Steer ⬆️⬇️ through melting ice gaps. Travel far to win!</p>
-    <div class="game-hud-row"><span id="ogScore">⭐ 0</span><span id="ogTimer">⏱ 45s</span><span id="ogLives">❤️❤️❤️</span></div>
-    <p id="ogHint" style="text-align:center;color:#a5d6a7;font-size:12px;margin:0 0 8px;min-height:18px;"></p>
-    <div class="game-canvas" id="ogCanvasBox">
-      <canvas id="ogCanvas"></canvas>
-      <div class="game-overlay" id="ogStart"><h3>🧊 Ice Pilot</h3><p>Steer ⬆️⬇️ through melting ice gaps. Travel far to win!</p><button class="overlay-btn" type="button" onclick="ogStartGame()">▶️ Start</button></div>
-      <div class="game-overlay" id="ogEnd" style="display:none;"><h3 id="ogEndTitle">🎉 Great job!</h3><p id="ogEndStats"></p><button class="overlay-btn" type="button" onclick="ogStartGame()">🔄 Play Again</button></div>
-    </div>
-    <div class="touch-controls"><button class="touch-btn" id="ogLeftBtn" type="button">⬅️</button><button class="touch-btn" id="ogRightBtn" type="button">➡️</button></div>
-  </div>
-  <script src="_global-games.js"></script>
-  <script>GlobalGame.boot({
-  "game": "trench-pilot",
-  "goal": 50,
-  "time": 45,
-  "lives": 3,
-  "good": [],
-  "bad": [
-    "🧊",
-    "🏔️",
-    "❄️"
-  ],
-  "winText": "Distance goal: 50",
-  "bgTop": "#b3e5fc",
-  "bgBot": "#0288d1"
-});</script>
   <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
 </div>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  GlobalScene.boot({ containerId: "scene-main-1", chapterId: "melting-ice", slot: "main-1", title: "Melting Ice" });
+  GlobalScene.boot({ containerId: "scene-main-1", chapterId: "melting-ice", slot: "main-1", title: "Melting Ice", eager: true });
   GlobalScene.boot({ containerId: "scene-main-2", chapterId: "melting-ice", slot: "main-2", title: "Melting Ice" });
   GlobalScene.boot({ containerId: "scene-main-3", chapterId: "melting-ice", slot: "main-3", title: "Melting Ice" });
 });

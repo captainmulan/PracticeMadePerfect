@@ -52,6 +52,7 @@
     <button type="button" class="stamp-btn" data-emoji="🍃" title="Leaf">🍃</button>
     <button type="button" class="stamp-btn" data-emoji="🌍" title="Earth">🌍</button>
     <button type="button" class="stamp-btn" data-emoji="♻️" title="Recycle">♻️</button>
+    <button type="button" class="stamp-btn" data-mode="erase" title="Eraser">🧽</button>
   </div>
   <div class="tool-row">
     <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
@@ -80,6 +81,7 @@ const STORAGE_KEY = 'book:globalwarming:intro-garden';
 const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
 let canvas, ctx, running = false, animId;
 let selectedEmoji = '🌱';
+let eraserMode = false;
 let decorations = [];
 let leafParticles = [];
 
@@ -190,6 +192,15 @@ function placeAt(clientX, clientY) {
   const x = clientX - r.left;
   const y = clientY - r.top;
   if (y > r.height - 32) return;
+  if (eraserMode) {
+    let best = -1, bestD = 36;
+    decorations.forEach(function (d, i) {
+      var dist = Math.hypot(d.x - x, d.y - y);
+      if (dist < bestD) { bestD = dist; best = i; }
+    });
+    if (best >= 0) { decorations.splice(best, 1); saveGarden(); updateCount(); }
+    return;
+  }
   const plantish = /🌱|🌳|🌻|🪴|🌿|🍃/.test(selectedEmoji);
   decorations.push({
     emoji: selectedEmoji,
@@ -201,6 +212,7 @@ function placeAt(clientX, clientY) {
   });
   saveGarden();
   updateCount();
+  if (window.GlobalPlayer) GlobalPlayer.earnBadge('Eco Garden Builder');
 }
 
 function startPlanting() {
@@ -215,7 +227,14 @@ document.querySelectorAll('.stamp-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
-    selectedEmoji = btn.dataset.emoji;
+    if (btn.dataset.mode === 'erase') {
+      eraserMode = true;
+      canvas.style.cursor = 'not-allowed';
+    } else {
+      eraserMode = false;
+      canvas.style.cursor = 'crosshair';
+      selectedEmoji = btn.dataset.emoji;
+    }
   });
 });
 

@@ -12,6 +12,19 @@
       localStorage.setItem("userName", name);
       localStorage.setItem("userCharacter", character);
       if (characterName != null) localStorage.setItem("characterName", characterName);
+    },
+    getBadges: function () {
+      try { return JSON.parse(localStorage.getItem(key("badges")) || "[]"); }
+      catch (e) { return []; }
+    },
+    earnBadge: function (badge) {
+      var badges = this.getBadges();
+      if (badges.indexOf(badge) === -1) {
+        badges.push(badge);
+        localStorage.setItem(key("badges"), JSON.stringify(badges));
+        return true;
+      }
+      return false;
     }
   };
 })(window);
