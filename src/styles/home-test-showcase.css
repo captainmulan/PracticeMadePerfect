@@ -7,7 +7,7 @@
 .book3d {
   position: relative;
   width: 100%;
-  padding: 6px 4px 18px;
+  padding: 2px 2px 0;
   touch-action: none;
   cursor: pointer;
   user-select: none;
@@ -32,25 +32,24 @@
   aspect-ratio: 16 / 10;
   min-height: 190px;
   max-height: 300px;
-  transform: rotateX(9deg);
+  transform: rotateX(6deg);
   transform-style: preserve-3d;
   transform-origin: center bottom;
 }
 
 .book3d-cover-board {
   position: absolute;
-  inset: 4% 1% 0;
-  border-radius: 4px 4px 10px 10px;
-  background: linear-gradient(180deg, #4b5563 0%, #1f2937 55%, #111827 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 10px 18px rgba(0, 0, 0, 0.28);
+  /* Transparent under the spread — no light/gray slab showing through */
+  inset: 5% 2.5% 6%;
+  border-radius: 4px 4px 8px 8px;
+  background: transparent;
+  box-shadow: none;
   z-index: 0;
 }
 
 .book3d-spread {
   position: absolute;
-  inset: 3% 3.5% 9%;
+  inset: 3% 3.5% 5%;
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
@@ -244,19 +243,20 @@
   position: absolute;
   z-index: 1;
   pointer-events: none;
+  /* Soft dark page-thickness only — no white fill */
   background-image: repeating-linear-gradient(
     to bottom,
-    rgba(226, 232, 240, 0.95) 0 1px,
-    rgba(148, 163, 184, 0.55) 1px 2px
+    rgba(148, 163, 184, 0.35) 0 1px,
+    transparent 1px 2px
   );
-  box-shadow: inset 0 0 4px rgba(15, 23, 42, 0.2);
+  box-shadow: none;
 }
 
 .book3d-edge--left {
   left: 2.2%;
   top: 8%;
-  bottom: 11%;
-  width: 1.6%;
+  bottom: 7%;
+  width: 1.4%;
   border-radius: 2px 0 0 2px;
   transform: skewY(-2deg);
 }
@@ -264,34 +264,33 @@
 .book3d-edge--right {
   right: 2.2%;
   top: 8%;
-  bottom: 11%;
-  width: 1.6%;
+  bottom: 7%;
+  width: 1.4%;
   border-radius: 0 2px 2px 0;
   transform: skewY(2deg);
 }
 
 .book3d-edge--bottom {
+  /* Let hero background show through — no white page-block slab */
   left: 8%;
   right: 8%;
-  bottom: 4.5%;
-  height: 4.5%;
+  bottom: 1.5%;
+  height: 3.5%;
   border-radius: 0 0 8px 8px;
-  background-image: repeating-linear-gradient(
-    to right,
-    rgba(226, 232, 240, 0.95) 0 2px,
-    rgba(148, 163, 184, 0.5) 2px 3px
-  );
-  opacity: 0.9;
+  background: transparent;
+  background-image: none;
+  opacity: 1;
+  box-shadow: none;
 }
 
 .book3d-shadow {
   position: absolute;
-  left: 10%;
-  right: 10%;
-  bottom: 2px;
-  height: 16px;
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  height: 10px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.38) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.28) 0%, transparent 72%);
   z-index: 0;
   pointer-events: none;
 }
@@ -315,13 +314,14 @@
 
 .page-home-showcase .home-hero:not(.collapsed),
 .page-home-test .home-hero:not(.collapsed) {
-  padding: 10px 12px 0 !important;
+  padding: 8px 12px 4px !important;
+  margin-bottom: 4px;
 }
 
 .page-home-showcase .home-hero-expanded-layout,
 .page-home-test .home-hero-expanded-layout {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   align-items: stretch;
   margin-bottom: 0;
   padding-bottom: 0;
@@ -367,7 +367,8 @@
 @media (max-width: 899px) {
   .page-home-showcase .home-hero:not(.collapsed),
   .page-home-test .home-hero:not(.collapsed) {
-    padding: 8px 8px 0 !important;
+    padding: 6px 8px 2px !important;
+    margin-bottom: 4px;
   }
 
   .page-home-showcase .home-hero:not(.collapsed) .home-hero-title,
@@ -382,19 +383,19 @@
   }
 
   .book3d {
-    padding: 4px 0 14px;
+    padding: 0;
   }
 
   .book3d-scene {
     aspect-ratio: 15 / 10;
     min-height: 180px;
     max-height: 240px;
-    transform: rotateX(7deg);
+    transform: rotateX(5deg);
   }
 
   .book3d-spread {
     grid-template-columns: minmax(0, 1fr) 10px minmax(0, 1fr);
-    inset: 3% 3% 10%;
+    inset: 3% 3% 4%;
   }
 
   .book3d-page--left {
