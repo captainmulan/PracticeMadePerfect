@@ -33,7 +33,6 @@ export default function BookShowcase({
     excerpt?.coverImageUrl ||
     excerpt?.heroImageUrl ||
     null;
-  const previewUrl = excerpt?.previewImageUrl || excerpt?.heroImageUrl || null;
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     pointerStart.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
@@ -87,19 +86,23 @@ export default function BookShowcase({
       onBlur={() => onPauseChange?.(false)}
     >
       {loading && !excerpt ? (
-        <div className="book-open book-open--loading" aria-busy="true">
-          <div className="book-open-spread">
-            <div className="book-open-page book-open-page--left" />
-            <div className="book-open-spine" aria-hidden="true" />
-            <div className="book-open-page book-open-page--right" />
+        <div className="book3d book3d--loading" aria-busy="true">
+          <div className="book3d-scene">
+            <div className="book3d-cover-board" aria-hidden="true" />
+            <div className="book3d-spread">
+              <div className="book3d-page book3d-page--left" />
+              <div className="book3d-gutter" aria-hidden="true" />
+              <div className="book3d-page book3d-page--right" />
+            </div>
+            <div className="book3d-edge book3d-edge--bottom" aria-hidden="true" />
           </div>
-          <div className="book-open-shadow" aria-hidden="true" />
+          <div className="book3d-shadow" aria-hidden="true" />
         </div>
       ) : error && !excerpt ? (
         <div className="book-showcase-error">{error}</div>
       ) : excerpt ? (
         <div
-          className={`book-open ${loading ? "is-refreshing" : ""}`}
+          className={`book3d ${loading ? "is-refreshing" : ""}`}
           role="button"
           tabIndex={0}
           aria-label={`${excerpt.bookTitle}. Swipe for next book, tap to open.`}
@@ -117,57 +120,65 @@ export default function BookShowcase({
             }
           }}
         >
-          <div className="book-open-spread">
-            <div className="book-open-page book-open-page--left">
-              {coverUrl ? (
-                <img
-                  className="book-open-cover"
-                  src={coverUrl}
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority="high"
-                  draggable={false}
-                />
-              ) : (
-                <div
-                  className="book-open-cover-fallback"
-                  style={{
-                    background: `linear-gradient(160deg, ${excerpt.coverColorStart} 0%, ${excerpt.coverColorMiddle} 50%, ${excerpt.coverColorEnd} 100%)`,
-                  }}
-                >
-                  <span className="book-open-emoji">{excerpt.pageEmoji || excerpt.icon}</span>
-                  <span className="book-open-fallback-title">{excerpt.bookTitle}</span>
-                </div>
-              )}
-            </div>
+          <div className="book3d-scene">
+            <div className="book3d-cover-board" aria-hidden="true" />
 
-            <div className="book-open-spine" aria-hidden="true" />
-
-            <div className="book-open-page book-open-page--right">
-              {previewUrl ? (
-                <div className="book-open-preview-art">
-                  <img
-                    className="book-open-preview-img"
-                    src={previewUrl}
-                    alt=""
-                    loading="eager"
-                    decoding="async"
-                    draggable={false}
-                  />
+            <div className="book3d-spread">
+              <div className="book3d-page book3d-page--left">
+                <div className="book3d-sheet">
+                  <div className="book3d-plate book3d-plate--cover">
+                    {coverUrl ? (
+                      <img
+                        className="book3d-cover-img"
+                        src={coverUrl}
+                        alt=""
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
+                        draggable={false}
+                      />
+                    ) : (
+                      <div
+                        className="book3d-cover-fallback"
+                        style={{
+                          background: `linear-gradient(160deg, ${excerpt.coverColorStart} 0%, ${excerpt.coverColorMiddle} 50%, ${excerpt.coverColorEnd} 100%)`,
+                        }}
+                      >
+                        <span>{excerpt.pageEmoji || excerpt.icon}</span>
+                        <strong>{excerpt.bookTitle}</strong>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ) : null}
-              <div className="book-open-copy">
-                <p className="book-open-kicker">{excerpt.bookTitle}</p>
-                <h3 className="book-open-heading">
-                  {excerpt.previewPageTitle || excerpt.pageTitle}
-                </h3>
-                <p className="book-open-excerpt">{excerpt.excerpt}</p>
-                <p className="book-open-hint">Tap to read · Swipe for next</p>
+              </div>
+
+              <div className="book3d-gutter" aria-hidden="true" />
+
+              <div className="book3d-page book3d-page--right">
+                <div className="book3d-sheet">
+                  <div className="book3d-plate book3d-plate--crawl">
+                    <div className="book3d-crawl-stars" aria-hidden="true" />
+                    <div className="book3d-crawl-stage">
+                      <div className="book3d-crawl-copy">
+                        <p className="book3d-crawl-intro">A long time ago in a library far, far away…</p>
+                        <p className="book3d-crawl-episode">
+                          {(excerpt.previewPageTitle || excerpt.pageTitle || excerpt.chapterTitle).toUpperCase()}
+                        </p>
+                        <p className="book3d-crawl-body">{excerpt.excerpt}</p>
+                      </div>
+                      <h2 className="book3d-crawl-logo">{excerpt.bookTitle}</h2>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            <div className="book3d-edge book3d-edge--left" aria-hidden="true" />
+            <div className="book3d-edge book3d-edge--right" aria-hidden="true" />
+            <div className="book3d-edge book3d-edge--bottom" aria-hidden="true" />
           </div>
-          <div className="book-open-shadow" aria-hidden="true" />
+
+          <div className="book3d-shadow" aria-hidden="true" />
         </div>
       ) : null}
     </div>
