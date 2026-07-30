@@ -8,7 +8,7 @@
         },
         "Father": {
             "en": "Father sweeps the yard each day.",
-            "mm": "အဖေက နေ့တိုင်း ခြံ သန့်ရှင်းတယ်။"
+            "mm": "အဖေက နေ့တိုင်း ခြံသန့်ရှင်းရေးလုပ်တယ်။"
         },
         "Grandmother": {
             "en": "Grandmother tells stories at bedtime.",
@@ -16,7 +16,7 @@
         },
         "Grandfather": {
             "en": "Grandfather drinks tea on the porch.",
-            "mm": "အဘိုးက ဆိပ်ခန်းမှာ လက်ဖက်ရည်သောက်တယ်။"
+            "mm": "အဘိုးက အိမ်ရှေ့မှာ လက်ဖက်ရည်သောက်တယ်။"
         },
         "Sister": {
             "en": "My sister helps me carry water.",
@@ -28,19 +28,19 @@
         },
         "Baby": {
             "en": "The baby laughs at the little bell.",
-            "mm": "ကလေးလေးက ခေါင်းလောင်းလေး လှုပ်ရင် ရယ်မောတယ်။"
+            "mm": "ကလေးလေးက ခေါင်းလောင်းသံကြားရင် ရယ်တယ်။"
         },
         "Aunt": {
             "en": "My aunt brings sweet cakes from Yangon.",
-            "mm": "အဒေါ်က ရန်ကုန်က မုန့်လုံးချို ယူလာတယ်။"
+            "mm": "အဒေါ်က ရန်ကုန်က မုန့်တွေ ယူလာတယ်။"
         },
         "Uncle": {
             "en": "My uncle tells funny jokes at dinner.",
-            "mm": "ဦးလေးက ညစာ စားရင်း ရယ်စရာ ပြောပြတယ်။"
+            "mm": "ဦးလေးက ရယ်စရာတွေ ပြောပြတယ်။"
         },
         "Cousin": {
             "en": "I play hide-and-seek with my cousin.",
-            "mm": "ကျွန်မက ဝမ်းကွဲနဲ့ ပုန်းတမ်းကစားတယ်။"
+            "mm": "ကျွန်မက ဝမ်းကွဲအစ်ကိုနဲ့ အတူ ပုန်းတမ်းကစားတယ်။"
         },
         "Family": {
             "en": "My family eats together every evening.",
@@ -48,7 +48,7 @@
         },
         "Parents": {
             "en": "My parents wake early each morning.",
-            "mm": "မိဘတွေက မနက်တိုင်း စောစောထတယ်။"
+            "mm": "ကျွန်မရဲ့ မိဘတွေက မနက်တိုင်း စောစောထကြတယ်။"
         }
     },
     "food": {
@@ -70,11 +70,11 @@
         },
         "Fish": {
             "en": "We eat fresh fish from the river.",
-            "mm": "ကျွန်မတို့ မြစ်ကနေ လတ်တဲ့ ငါးစားကြတယ်။"
+            "mm": "ကျွန်မတို့ မြစ်ကဖမ်းတဲ့ ငါးကို စားကြတယ်။"
         },
         "Mango": {
             "en": "This ripe mango is very sweet.",
-            "mm": "ဒီသရက်သီး ရင့်လို့ အရမ်းချိုတယ်။"
+            "mm": "ဒီသရက်သီးက အရမ်းချိုတယ်။"
         },
         "Noodle": {
             "en": "Hot noodles steam in the bowl.",
@@ -82,7 +82,7 @@
         },
         "Egg": {
             "en": "Mother fries an egg with rice.",
-            "mm": "အမေက ဥကြော်ပြီး ထမင်းနဲ့ ပေးတယ်။"
+            "mm": "အမေက ကြက်ဥကြော် ချက်ပေးတယ်။"
         },
         "Bread": {
             "en": "I eat bread with tea before school.",
@@ -104,7 +104,7 @@
         },
         "Dog": {
             "en": "Our dog barks at strangers passing by.",
-            "mm": "ကျွန်မတို့ ခွေးက မသိတဲ့သူ လျှောက်သွားရင် ဟောင်တယ်။"
+            "mm": "ကျွန်မတို့ ခွေးက သူစိမ်းတွေ ဖြတ်သွားရင် ဟောင်တယ်။"
         },
         "Bird": {
             "en": "Birds sing in the tree each morning.",
@@ -120,7 +120,7 @@
         },
         "Chicken": {
             "en": "The chicken wakes the house each morning.",
-            "mm": "ကြက်က မနက်တိုင်း အိမ်ကို နိုးစေတယ်။"
+            "mm": "ကြက်ဖက မနက်တိုင်း အိမ်သားတွေကို နှိုးပေးတယ်။"
         },
         "Tiger": {
             "en": "The tiger lives deep in the forest.",
@@ -146,15 +146,15 @@
         },
         "Green": {
             "en": "Green rice fields stretch beyond our village.",
-            "mm": "အစိမ်းရောင် စပါးခင်းတွေ ကျေးရွာကနေ တိုးနေတယ်။"
+            "mm": "အစိမ်းရောင် စပါးခင်းတွေ ကျေးရွာအနှံ့ လှပနေတယ်။"
         },
         "Yellow": {
             "en": "Yellow mangoes hang on the tree.",
-            "mm": "အဝါရောင် သရက်သီးတွေ သစ်ပေါ်မှာ ဝိုင်းနေတယ်။"
+            "mm": "အဝါရောင် သရက်သီးတွေ သစ်ပင်မှာ တွဲလောင်းကျနေတယ်။"
         },
         "White": {
             "en": "White flowers smell sweet in her hair.",
-            "mm": "အဖြူရောင် ပန်းတွေ ဆံပင်မှာ ချိုလှတယ်။"
+            "mm": "အဖြူရောင် ပန်းတွေ မွှေးနေတယ်။"
         },
         "Black": {
             "en": "Black clouds gather before the storm.",
@@ -174,7 +174,7 @@
         },
         "Purple": {
             "en": "Purple flowers smell sweet after rain.",
-            "mm": "မိုးရပ်ပြီးရင် ခရမ်းရောင် ပန်းတွေ ချိုလှတယ်။"
+            "mm": "မိုးရပ်ပြီးရင် ခရမ်းရောင် ပန်းတွေ မွှေးနေတယ်။"
         }
     },
     "numbers": {
@@ -192,15 +192,15 @@
         },
         "Four": {
             "en": "Four chairs wait around the table.",
-            "mm": "ထိုင်ခုံ လေးခု စားပွဲပတ်လည် စောင့်နေတယ်။"
+            "mm": "စားပွဲပတ်လည်မှာ ထိုင်ခုံ လေးလုံး ရှိတယ်။"
         },
         "Five": {
             "en": "Su lights five candles for Grandmother.",
-            "mm": "စူးက အဘွားအတွက် ဖယောင်းတိုင် ငါးတိုင်း လင်းစေတယ်။"
+            "mm": "စူးက အဘွားအတွက် ဖယောင်းတိုင် ငါးတိုင် ထွန်းတယ်။"
         },
         "Six": {
             "en": "Six eggs sit in Mother's basket.",
-            "mm": "အမေ ခြင်းထဲမှာ ဥ ခြောက်လုံး ထားရှိတယ်။"
+            "mm": "အမေရဲ့ ခြင်းထဲမှာ ကြက်ဥ ခြောက်လုံး ရှိတယ်။"
         },
         "Seven": {
             "en": "There are seven days in one week.",
@@ -226,7 +226,7 @@
         },
         "Eye": {
             "en": "Su opens her eyes to watch the parade.",
-            "mm": "စူးက လှည့်လည် ကြည့်ဖို့ မျက်လုံး ချဲ့ဖွင့်တယ်။"
+            "mm": "စူးက မျက်လုံးဖွင့်ပြီး ချီတက်ပွဲကို ကြည့်တယ်။"
         },
         "Ear": {
             "en": "Su listens with both ears in class.",
@@ -238,7 +238,7 @@
         },
         "Mouth": {
             "en": "Su speaks kind words at the table.",
-            "mm": "စူးက စားပွဲမှာ ကောင်းကောင်း စကားပြောတယ်။"
+            "mm": "စူးက စားပွဲမှာ ယဉ်ယဉ်ကျေးကျေး စကားပြောတယ်။"
         },
         "Hand": {
             "en": "Su washes her hands before every meal.",
@@ -246,7 +246,7 @@
         },
         "Foot": {
             "en": "Su walks slowly on bare feet.",
-            "mm": "စူးက ချာချာ လျှောက်သွားတယ်။"
+            "mm": "စူးက ခြေဗလာနဲ့ ဖြည်းဖြည်း လမ်းလျှောက်တယ်။"
         },
         "Heart": {
             "en": "Su's heart beats fast at the pagoda.",
@@ -300,7 +300,7 @@
         },
         "Bathroom": {
             "en": "Su washes her face in the bathroom.",
-            "mm": "စူးက ရေချိုးခန်းမှာ မျက်နှာ သန့်ရှင်းတယ်။"
+            "mm": "စူးက ရေချိုးခန်းမှာ မျက်နှာသစ်တယ်။"
         }
     },
     "school": {
@@ -380,17 +380,17 @@
         },
         "Sorry": {
             "en": "Su says sorry after bumping her sister.",
-            "mm": "ညီမနဲ့ တိုက်မိရင် စူးက တောင်းပန်ပါတယ်။"
+            "mm": "ညီမနဲ့ တိုက်မိရင် စူးက \"တောင်းပန်ပါတယ်\" လို့ ပြောတယ်။"
         },
         "Please": {
             "en": "Su says please when she asks for help.",
-            "mm": "ကူညီဖို့ မေးတဲ့အခါ စူးက ကျေးဇူးပြုပြီး ပြောတယ်။"
+            "mm": "ကူညီပေးဖို့ တောင်းတဲ့အခါ စူးက \"ကျေးဇူးပြုပြီး\" လို့ ပြောတယ်။"
         }
     },
     "festivals": {
         "Thingyan": {
             "en": "During Thingyan, Su splashes water with friends.",
-            "mm": "သင်္ကြန်မှာ စူးက သူငယ်ချင်းတွေနဲ့ ရေလောင်းကြတယ်။"
+            "mm": "သင်္ကြန်မှာ စူးက သူငယ်ချင်းတွေနဲ့ ရေကစားတယ်။"
         },
         "Water": {
             "en": "Friends pour water and everyone laughs.",
@@ -418,7 +418,7 @@
         },
         "Celebrate": {
             "en": "The whole village celebrates the New Year.",
-            "mm": "နှစ်သစ်ကူး ရောက်တဲ့အခါ ကျေးရွာတစ်ရွာ ပျော်ကြတယ်။"
+            "mm": "နှစ်သစ်ကူးရောက်တဲ့အခါ ကျေးရွာတစ်ရွာလုံး အတူတူ ပျော်ပွဲကျင်းပကြတယ်။"
         },
         "New Year": {
             "en": "Happy New Year — Su wishes everyone peace.",

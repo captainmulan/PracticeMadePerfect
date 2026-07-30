@@ -285,6 +285,7 @@
       if (type !== "hear" && type !== "hear-sentence") return;
       var mm = card.getAttribute("data-mm");
       var hint = card.getAttribute("data-hint");
+      if (w.MMAudio.unlock) w.MMAudio.unlock();
       if (mm) w.MMAudio.speakMyanmar(mm, hint || null);
     }
 
@@ -382,7 +383,7 @@
         options.forEach(function (opt) {
           if (opt.dataset.correct === "1") opt.classList.add("correct");
         });
-        if (isHear) setTimeout(function () { playHearCard(card); }, 400);
+        /* Do not auto-replay audio here — setTimeout is outside the iOS gesture window. */
       }
       setTimeout(nextQuestion, 1500);
     }
@@ -418,10 +419,25 @@
     loadPlayerInfo();
     if (retryBtn) retryBtn.addEventListener("click", retryQuiz);
 
+    var lastHearTap = 0;
+    function hearFromGesture(card) {
+      var now = Date.now();
+      if (now - lastHearTap < 350) return;
+      lastHearTap = now;
+      playHearCard(card);
+    }
+
+    /* pointerdown keeps Google TTS inside the iOS user-gesture window */
+    document.addEventListener("pointerdown", function (e) {
+      var replay = e.target.closest(".hear-replay-btn");
+      if (!replay) return;
+      hearFromGesture(replay.closest(".quiz-card"));
+    }, true);
+
     document.addEventListener("click", function (e) {
       var replay = e.target.closest(".hear-replay-btn");
       if (replay) {
-        playHearCard(replay.closest(".quiz-card"));
+        hearFromGesture(replay.closest(".quiz-card"));
         return;
       }
       var option = e.target.closest(".quiz-card .option");

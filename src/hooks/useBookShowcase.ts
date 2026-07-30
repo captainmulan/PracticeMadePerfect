@@ -6,6 +6,7 @@ import {
   getShowcaseEligibleSteps,
   isRichShowcaseExcerpt,
   pickRandomEligibleStep,
+  pickRelatedPreviewStep,
   shuffleCourses,
   type ShowcaseExcerpt,
   type ShowcaseSelection,
@@ -72,10 +73,35 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
 
           const fullStep = await loadCourseStepById(outlineStep.id);
           const step = fullStep ?? outlineStep;
-          const selection = { course: outline, step };
-          const excerpt = await buildShowcaseExcerpt(outline, step);
 
-          if (isRichShowcaseExcerpt(excerpt)) {
+          let relatedFull: typeof step | null = null;
+          const relatedTried = new Set<string>([step.id]);
+          for (let p = 0; p < 3; p += 1) {
+            const relatedOutline = pickRelatedPreviewStep(outline, step);
+            if (!relatedOutline || relatedTried.has(relatedOutline.id)) {
+              continue;
+            }
+            relatedTried.add(relatedOutline.id);
+            const loaded = await loadCourseStepById(relatedOutline.id);
+            const candidate = loaded ?? relatedOutline;
+            const probe = await buildShowcaseExcerpt(outline, candidate);
+            if (probe.heroImageUrl) {
+              relatedFull = candidate;
+              break;
+            }
+            if (!relatedFull) {
+              relatedFull = candidate;
+            }
+          }
+
+          const selection = { course: outline, step };
+          const excerpt = await buildShowcaseExcerpt(outline, step, relatedFull);
+
+          const rich =
+            isRichShowcaseExcerpt(excerpt) &&
+            Boolean(excerpt.coverImageUrl || excerpt.previewImageUrl || excerpt.heroImageUrl);
+
+          if (rich) {
             best = { selection, excerpt };
             break;
           }
@@ -85,7 +111,11 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
           }
         }
 
-        if (best && isRichShowcaseExcerpt(best.excerpt)) {
+        if (
+          best &&
+          isRichShowcaseExcerpt(best.excerpt) &&
+          (best.excerpt.coverImageUrl || best.excerpt.previewImageUrl || best.excerpt.heroImageUrl)
+        ) {
           break;
         }
       }

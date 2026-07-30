@@ -12,8 +12,13 @@ export interface ShowcaseExcerpt {
   bookTitle: string;
   chapterTitle: string;
   pageTitle: string;
+  /** Image from the featured chapter page (legacy / fallback). */
   heroImageUrl: string | null;
+  /** Book cover — fills the left open page. */
   coverImageUrl: string | null;
+  /** Random related chapter page image — fills the right open page. */
+  previewImageUrl: string | null;
+  previewPageTitle: string;
   pageEmoji: string | null;
   excerpt: string;
   artifactType: Course["artifactType"];
@@ -90,10 +95,31 @@ export function pickRandomEligibleStep(course: Course): CourseStep | null {
 }
 
 export function isRichShowcaseExcerpt(excerpt: ShowcaseExcerpt): boolean {
-  if (excerpt.heroImageUrl) {
-    return excerpt.excerpt.trim().length >= 24;
+  if (excerpt.coverImageUrl || excerpt.previewImageUrl || excerpt.heroImageUrl) {
+    return true;
   }
   return excerpt.excerpt.trim().length >= 80;
+}
+
+/** Pick a different eligible step in the same book for the right-page preview. */
+export function pickRelatedPreviewStep(
+  course: Course,
+  primaryStep: CourseStep,
+): CourseStep | null {
+  const eligible = getShowcaseEligibleSteps(course).filter((step) => step.id !== primaryStep.id);
+  if (eligible.length === 0) {
+    return null;
+  }
+  const weights = eligible.map(stepShowcaseWeight);
+  const total = weights.reduce((sum, w) => sum + w, 0);
+  let roll = Math.random() * total;
+  for (let i = 0; i < eligible.length; i += 1) {
+    roll -= weights[i];
+    if (roll <= 0) {
+      return eligible[i];
+    }
+  }
+  return eligible[eligible.length - 1];
 }
 
 /** Catalog summaries have empty chapters — pick a course id first, then load outline. */
@@ -162,7 +188,11 @@ export function parseShowcaseExcerptFromHtml(
     doc.querySelector(".chapter-hero-img") ||
     doc.querySelector(".chapter-photo-hero img") ||
     doc.querySelector(".scene-card img") ||
-    doc.querySelector('img[src*="assets/"]');
+    doc.querySelector(".hero-art img") ||
+    doc.querySelector(".story-art img") ||
+    doc.querySelector(".word-card img") ||
+    doc.querySelector('img[src*="assets/"]') ||
+    doc.querySelector("img[src]");
 
   let heroImageUrl: string | null = null;
   const imgSrc = imgEl?.getAttribute("src");
@@ -206,6 +236,8 @@ export function parseShowcaseExcerptFromHtml(
     pageTitle,
     heroImageUrl,
     coverImageUrl: resolveBookCoverUrl(course) ?? null,
+    previewImageUrl: null,
+    previewPageTitle: pageTitle,
     pageEmoji,
     excerpt: excerpt || "Open this book to explore more pages.",
     artifactType: course.artifactType ?? "book",
@@ -219,6 +251,7 @@ export function parseShowcaseExcerptFromHtml(
 export async function buildShowcaseExcerpt(
   course: Course,
   step: CourseStep,
+  relatedStep?: CourseStep | null,
 ): Promise<ShowcaseExcerpt> {
   const bookHtmlFolder = resolveBookHtmlFolder({
     bookHtmlFolder: course.bookHtmlFolder,
@@ -226,10 +259,43 @@ export async function buildShowcaseExcerpt(
     contentHtml: step.contentHtml,
   });
 
+  let excerpt: ShowcaseExcerpt;
   try {
     const html = await loadStepPageHtml(step, bookHtmlFolder);
-    return parseShowcaseExcerptFromHtml(html, course, step, bookHtmlFolder);
+    excerpt = parseShowcaseExcerptFromHtml(html, course, step, bookHtmlFolder);
   } catch {
-    return parseShowcaseExcerptFromHtml("", course, step, bookHtmlFolder);
+    excerpt = parseShowcaseExcerptFromHtml("", course, step, bookHtmlFolder);
   }
+
+  const previewSource = relatedStep ?? null;
+  if (previewSource) {
+    const previewFolder = resolveBookHtmlFolder({
+      bookHtmlFolder: course.bookHtmlFolder,
+      courseId: course.id,
+      contentHtml: previewSource.contentHtml,
+    });
+    try {
+      const previewHtml = await loadStepPageHtml(previewSource, previewFolder);
+      const preview = parseShowcaseExcerptFromHtml(previewHtml, course, previewSource, previewFolder);
+      excerpt = {
+        ...excerpt,
+        previewImageUrl: preview.heroImageUrl,
+        previewPageTitle: preview.pageTitle,
+        /* Prefer related page copy on the right when we have a related step */
+        excerpt: preview.excerpt || excerpt.excerpt,
+        pageTitle: preview.pageTitle,
+        chapterTitle: preview.chapterTitle || excerpt.chapterTitle,
+        heroImageUrl: preview.heroImageUrl ?? excerpt.heroImageUrl,
+      };
+    } catch {
+      /* keep primary excerpt */
+    }
+  }
+
+  /* Right page should show a page preview image when possible */
+  if (!excerpt.previewImageUrl) {
+    excerpt.previewImageUrl = excerpt.heroImageUrl;
+  }
+
+  return excerpt;
 }

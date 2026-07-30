@@ -51,6 +51,7 @@ export default function Home() {
     excerpt: showcaseExcerpt,
     loading: showcaseLoading,
     error: showcaseError,
+    shuffle: shuffleShowcase,
     setPaused: setShowcasePaused,
   } = useBookShowcase(courses, showcaseEnabled);
 
@@ -124,6 +125,7 @@ export default function Home() {
               error={showcaseError}
               useAdminCover
               onOpen={openShowcasedBook}
+              onShuffle={shuffleShowcase}
               onPauseChange={setShowcasePaused}
             />
           )}

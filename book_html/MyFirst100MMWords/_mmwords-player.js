@@ -117,6 +117,8 @@
     if (!sharedAudio) {
       sharedAudio = new Audio();
       sharedAudio.setAttribute("playsinline", "true");
+      sharedAudio.setAttribute("webkit-playsinline", "true");
+      try { sharedAudio.playsInline = true; } catch (e) {}
       sharedAudio.preload = "auto";
     }
     return sharedAudio;
@@ -135,34 +137,40 @@
   }
 
   /**
-   * Must run synchronously inside a user tap on iOS, or the first Google TTS /
-   * speechSynthesis call stays silent. Reuses one Audio element for the session.
+   * Must run synchronously inside a user tap on iOS (esp. inside app iframes),
+   * or the first Google TTS / speechSynthesis call stays silent.
+   * Reuses one Audio element for the session.
    */
   function unlockMedia() {
     warmSynth();
     var a = ensureAudio();
-    if (audioUnlocked) return;
     try {
-      a.muted = true;
-      a.src = SILENT_WAV;
-      var p = a.play();
-      if (p && p.then) {
-        p.then(function () {
+      /* Keep element eligible for play(); do not await — stay in gesture stack. */
+      if (!audioUnlocked) {
+        a.muted = true;
+        if (!a.src || a.src.indexOf("data:audio/wav") !== 0) {
+          a.src = SILENT_WAV;
+        }
+        var p = a.play();
+        if (p && p.then) {
+          p.then(function () {
+            audioUnlocked = true;
+            a.muted = false;
+            if (a.src && a.src.indexOf("data:audio/wav") === 0) {
+              try { a.pause(); a.currentTime = 0; } catch (e) {}
+            }
+          }).catch(function () {
+            a.muted = false;
+          });
+        } else {
+          a.muted = false;
           audioUnlocked = true;
-          a.muted = false;
-          /* Only stop if we are still on the silent unlock clip */
-          if (a.src && a.src.indexOf("data:audio/wav") === 0) {
-            try { a.pause(); a.currentTime = 0; } catch (e) {}
-          }
-        }).catch(function () {
-          a.muted = false;
-        });
+        }
       } else {
         a.muted = false;
-        audioUnlocked = true;
       }
     } catch (e) {
-      a.muted = false;
+      try { a.muted = false; } catch (e2) {}
     }
   }
 
@@ -259,6 +267,7 @@
     a.playbackRate = 1.0;
     a.volume = 1;
     a.src = googleTtsUrl(text, lang, mirror);
+    try { a.load(); } catch (e3) {}
     currentAudio = a;
     a.onended = doneOk;
     a.onerror = doneFail;
@@ -270,7 +279,7 @@
       } catch (e2) {
         doneFail();
       }
-    }, 3500);
+    }, 2800);
     var playPromise = a.play();
     if (playPromise && playPromise.then) {
       playPromise.then(function () {
@@ -362,6 +371,9 @@
         setTimeout(loadVoices, 1200);
       }
       function onGesture() { unlockMedia(); }
+      /* pointerdown/touchstart unlock earlier in the iOS gesture chain than click */
+      document.addEventListener("pointerdown", onGesture, true);
+      document.addEventListener("touchstart", onGesture, true);
       document.addEventListener("click", onGesture, true);
       document.addEventListener("touchend", onGesture, true);
       document.addEventListener("pointerup", onGesture, true);
@@ -369,9 +381,13 @@
 
     stop: stopAll,
 
+    unlock: unlockMedia,
+
     /** Myanmar only — cancels any in-progress speech and plays immediately */
     speakMyanmar: function (text, hint, onend) {
       if (!text) { if (onend) onend(); return; }
+      /* Unlock BEFORE stopAll so iOS keeps the shared Audio eligible to play. */
+      unlockMedia();
       stopAll();
       warmSynth();
       ensureAudio();
@@ -381,6 +397,7 @@
 
     speakEnglish: function (text, onend) {
       if (!text) { if (onend) onend(); return; }
+      unlockMedia();
       stopAll();
       warmSynth();
       var gen = speakGen;
@@ -467,9 +484,55 @@
     if (mmBtn) tapMm(mmBtn, chapterId);
   };
 
+  var lastPointerSpeak = 0;
+  function speakFromPointer(btn) {
+    var now = Date.now();
+    if (now - lastPointerSpeak < 320) return true;
+    lastPointerSpeak = now;
+    var oc = btn.getAttribute("onclick") || "";
+    var mMm = oc.match(/tapMm\s*\(\s*this\s*,\s*['"]([^'"]*)['"]\s*\)/);
+    if (mMm) { tapMm(btn, mMm[1]); return true; }
+    var mEn = oc.match(/tapEn\s*\(\s*this\s*,\s*['"]([^'"]*)['"]\s*\)/);
+    if (mEn) { tapEn(btn, mEn[1]); return true; }
+    var mPh = oc.match(/tapPhrase\s*\(\s*this\s*,\s*['"]([^'"]*)['"]\s*\)/);
+    if (mPh) { tapPhrase(btn, mPh[1]); return true; }
+    if (btn.classList.contains("speak-btn-mm")) {
+      tapMm(btn, null);
+      return true;
+    }
+    if (btn.classList.contains("speak-btn-en")) {
+      tapEn(btn, null);
+      return true;
+    }
+    if (btn.classList.contains("speak-btn-mm") || (btn.getAttribute("data-mm") && btn.classList.contains("btn-speak"))) {
+      tapPhrase(btn, "mm");
+      return true;
+    }
+    if (btn.getAttribute("data-en") && btn.classList.contains("btn-speak")) {
+      tapPhrase(btn, "en");
+      return true;
+    }
+    return false;
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () { MMAudio.init(); });
   } else {
     MMAudio.init();
   }
+
+  /* Start audio on pointerdown so Google TTS stays inside the iOS gesture window
+     (onclick alone is often too late after touchend → click). */
+  document.addEventListener("pointerdown", function (e) {
+    var btn = e.target.closest(".speak-btn, .wb-speak-btn, .btn-speak");
+    if (!btn || btn.classList.contains("hear-replay-btn")) return;
+    if (speakFromPointer(btn)) {
+      /* Swallow the synthetic click that would double-fire speak */
+      btn.addEventListener("click", function swallow(ev) {
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+        btn.removeEventListener("click", swallow, true);
+      }, true);
+    }
+  }, true);
 })(window);
