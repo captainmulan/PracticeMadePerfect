@@ -47,7 +47,9 @@
 
   var speakGen = 0;
   var currentAudio = null;
+  var currentEnAudio = null;
   var sharedAudio = null;
+  var enAudio = null;
   var unlockAudioEl = null;
   var audioUnlocked = false;
   var myanmarVoice = null;
@@ -125,6 +127,18 @@
     return sharedAudio;
   }
 
+  /** Separate element for English — never shares src/state with Myanmar MP3 playback. */
+  function ensureEnAudio() {
+    if (!enAudio) {
+      enAudio = new Audio();
+      enAudio.setAttribute("playsinline", "true");
+      enAudio.setAttribute("webkit-playsinline", "true");
+      try { enAudio.playsInline = true; } catch (e) {}
+      enAudio.preload = "auto";
+    }
+    return enAudio;
+  }
+
   /** Text nodes have no .closest — normalize event targets inside buttons. */
   function eventEl(e) {
     var t = e && e.target;
@@ -184,6 +198,14 @@
       } catch (e) {}
       currentAudio = null;
     }
+    if (currentEnAudio) {
+      try {
+        currentEnAudio.onended = null;
+        currentEnAudio.onerror = null;
+        currentEnAudio.pause();
+      } catch (eEn) {}
+      currentEnAudio = null;
+    }
     if (w.speechSynthesis) w.speechSynthesis.cancel();
   }
 
@@ -221,6 +243,15 @@
     var file = map[text];
     if (!file) return null;
     return audioScriptBase() + "assets/audio/" + file;
+  }
+
+  function localEnUrl(text) {
+    text = String(text || "").trim();
+    if (!text) return null;
+    var map = w.MM_EN_AUDIO_MAP || {};
+    var file = map[text];
+    if (!file) return null;
+    return audioScriptBase() + "assets/audio-en/" + file;
   }
 
   function playLocalUrl(url, gen, onok, onfail) {
@@ -279,6 +310,122 @@
     } else if (playPromise && playPromise.catch) {
       playPromise.catch(doneFail);
     }
+  }
+
+  /** English-only local/network playback on dedicated Audio element. */
+  function playEnUrl(url, gen, onok, onfail) {
+    if (isStale(gen) || !url) {
+      if (onfail) onfail();
+      return;
+    }
+    var settled = false;
+    var watchdog = null;
+    function clearWatch() {
+      if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    }
+    function doneOk() {
+      if (settled || isStale(gen)) return;
+      settled = true;
+      clearWatch();
+      currentEnAudio = null;
+      audioUnlocked = true;
+      if (onok) onok();
+    }
+    function doneFail() {
+      if (settled || isStale(gen)) return;
+      settled = true;
+      clearWatch();
+      currentEnAudio = null;
+      if (onfail) onfail();
+    }
+    var a = ensureEnAudio();
+    try {
+      a.onended = null;
+      a.onerror = null;
+      a.pause();
+    } catch (e) {}
+    a.muted = false;
+    a.playbackRate = 1;
+    a.volume = 1;
+    a.src = url;
+    currentEnAudio = a;
+    a.onended = doneOk;
+    a.onerror = doneFail;
+    watchdog = setTimeout(function () {
+      if (settled || isStale(gen)) return;
+      try {
+        if (!a.paused && a.currentTime > 0.02) return;
+        if (a.readyState >= 2 && !a.paused) return;
+        if (a.paused && (!a.currentTime || a.currentTime < 0.05)) doneFail();
+      } catch (e2) {
+        doneFail();
+      }
+    }, 4000);
+    var playPromise = a.play();
+    if (playPromise && playPromise.then) {
+      playPromise.then(function () {
+        audioUnlocked = true;
+      }).catch(doneFail);
+    } else if (playPromise && playPromise.catch) {
+      playPromise.catch(doneFail);
+    }
+  }
+
+  /**
+   * English audio: local EN MP3 first (same-origin), then Google TTS on enAudio,
+   * then speechSynthesis. Never uses the Myanmar sharedAudio element.
+   */
+  function playEnglish(text, onend) {
+    var gen = speakGen;
+    loadVoices();
+    text = String(text || "").trim();
+    if (!text) {
+      if (onend) onend();
+      return;
+    }
+    function finishOk() {
+      if (!isStale(gen) && onend) onend();
+    }
+    function trySynth() {
+      if (isStale(gen)) return;
+      if (!w.speechSynthesis) {
+        if (onend) onend();
+        return;
+      }
+      /* Chrome drops speak() if called in the same tick as cancel(). */
+      setTimeout(function () {
+        if (isStale(gen)) return;
+        speakSynth(text, "en-US", englishVoice, gen, onend);
+      }, 40);
+    }
+    function tryGoogle() {
+      if (isStale(gen)) return;
+      var chunks = chunkForTts(text, 180);
+      var i = 0;
+      function next() {
+        if (isStale(gen)) return;
+        if (i >= chunks.length) {
+          finishOk();
+          return;
+        }
+        var url = googleTtsUrl(chunks[i++], "en", 0);
+        playEnUrl(url, gen, next, function () {
+          if (isStale(gen)) return;
+          if (i === 1) {
+            playEnUrl(googleTtsUrl(chunks[0], "en", 1), gen, finishOk, trySynth);
+          } else {
+            trySynth();
+          }
+        });
+      }
+      next();
+    }
+    var local = localEnUrl(text);
+    if (local) {
+      playEnUrl(local, gen, finishOk, tryGoogle);
+      return;
+    }
+    tryGoogle();
   }
 
   /** Warm browser HTTP cache so the next play() starts faster. */
@@ -514,14 +661,13 @@
       playMyanmar(text, hint, onend);
     },
 
+    /** English — separate Audio element + local EN MP3s; does not touch MM pipeline */
     speakEnglish: function (text, onend) {
       if (!text) { if (onend) onend(); return; }
       unlockMedia();
       stopAll();
-      resumeSynth();
-      var gen = speakGen;
-      loadVoices();
-      speakSynth(text, "en-US", englishVoice, gen, onend);
+      ensureEnAudio();
+      playEnglish(text, onend);
     },
 
     prefetch: prefetchMm,

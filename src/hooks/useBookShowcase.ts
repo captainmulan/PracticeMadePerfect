@@ -87,14 +87,14 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
             const candidate = loaded ?? relatedOutline;
             const probe = await buildShowcaseExcerpt(outline, candidate);
             const score =
-              Math.min(probe.excerpt.length, 520) +
-              (probe.heroImageUrl ? 80 : 0) +
-              (/explained/i.test(candidate.title) ? 60 : 0);
+              Math.min(probe.excerpt.length, 680) +
+              (probe.previewImageUrl ? 40 : 0) +
+              (/explained/i.test(candidate.title) ? 80 : 0);
             if (score > relatedScore) {
               relatedScore = score;
               relatedFull = candidate;
             }
-            if (probe.excerpt.length >= 180) {
+            if (probe.excerpt.length >= 220) {
               break;
             }
           }

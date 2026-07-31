@@ -87,10 +87,22 @@ export function isRichShowcaseExcerpt(excerpt: ShowcaseExcerpt): boolean {
   return excerpt.excerpt.trim().length >= 80;
 }
 
-/** Prefer stopping only when the right page has art + enough copy to fill. */
+/** Prefer stopping when the right page has enough copy to fill (image optional). */
 export function isFilledShowcaseExcerpt(excerpt: ShowcaseExcerpt): boolean {
-  const hasArt = Boolean(excerpt.coverImageUrl || excerpt.previewImageUrl || excerpt.heroImageUrl);
-  return hasArt && excerpt.excerpt.trim().length >= 160;
+  const pageArt = Boolean(excerpt.previewImageUrl);
+  const textLen = excerpt.excerpt.trim().length;
+  if (pageArt && textLen >= 80) {
+    return true;
+  }
+  return textLen >= 200;
+}
+
+function urlsLookSame(a: string | null | undefined, b: string | null | undefined): boolean {
+  if (!a || !b) {
+    return false;
+  }
+  const norm = (u: string) => u.trim().split("?")[0].replace(/\/+$/, "").toLowerCase();
+  return norm(a) === norm(b);
 }
 
 function pickWeightedStep(steps: CourseStep[]): CourseStep | null {
@@ -241,7 +253,7 @@ export function parseShowcaseExcerptFromHtml(
     .filter((text) => text.length >= 24)
     .filter((text, index, arr) => arr.indexOf(text) === index);
 
-  let rawExcerpt = paragraphs.slice(0, 6).join(" ");
+  let rawExcerpt = paragraphs.slice(0, 8).join(" ");
   if (rawExcerpt.length < 80) {
     const textSource =
       doc.querySelector(".story-box.story-box-default") ||
@@ -256,7 +268,7 @@ export function parseShowcaseExcerptFromHtml(
       || course.description
       || "";
   }
-  const excerpt = rawExcerpt.length > 520 ? `${rawExcerpt.slice(0, 517).trim()}…` : rawExcerpt;
+  const excerpt = rawExcerpt.length > 680 ? `${rawExcerpt.slice(0, 677).trim()}…` : rawExcerpt;
 
   const logoText = doc.querySelector(".logo")?.textContent?.trim() ?? "";
   const pageEmojiMatch = logoText.match(/\p{Extended_Pictographic}/u);
@@ -311,24 +323,31 @@ export async function buildShowcaseExcerpt(
       const preview = parseShowcaseExcerptFromHtml(previewHtml, course, previewSource, previewFolder);
       const usePreviewCopy =
         preview.excerpt.trim().length >= Math.max(excerpt.excerpt.trim().length, 80);
+      /* Page-only art for the right side — never the book cover */
+      let pageArt = preview.heroImageUrl;
+      if (urlsLookSame(pageArt, excerpt.coverImageUrl)) {
+        pageArt = null;
+      }
       excerpt = {
         ...excerpt,
-        previewImageUrl: preview.heroImageUrl || excerpt.previewImageUrl,
+        previewImageUrl: pageArt,
         previewPageTitle: usePreviewCopy ? preview.pageTitle : excerpt.previewPageTitle,
         excerpt: usePreviewCopy ? preview.excerpt : excerpt.excerpt,
         pageTitle: usePreviewCopy ? preview.pageTitle : excerpt.pageTitle,
         chapterTitle: preview.chapterTitle || excerpt.chapterTitle,
-        heroImageUrl: preview.heroImageUrl ?? excerpt.heroImageUrl,
+        heroImageUrl: pageArt ?? excerpt.heroImageUrl,
       };
     } catch {
       /* keep primary excerpt */
     }
   }
 
-  /* Right page always has a fill image (page art, else cover) */
-  if (!excerpt.previewImageUrl) {
-    excerpt.previewImageUrl = excerpt.heroImageUrl || excerpt.coverImageUrl;
+  /* Right page: only in-page images — never fall back to cover */
+  let pageArt = excerpt.previewImageUrl || excerpt.heroImageUrl;
+  if (urlsLookSame(pageArt, excerpt.coverImageUrl)) {
+    pageArt = null;
   }
+  excerpt.previewImageUrl = pageArt;
 
   return excerpt;
 }
