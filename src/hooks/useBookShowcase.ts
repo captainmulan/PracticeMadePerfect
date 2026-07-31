@@ -4,7 +4,7 @@ import {
   buildShowcaseExcerpt,
   getShowcaseCoursePool,
   getShowcaseEligibleSteps,
-  isRichShowcaseExcerpt,
+  isFilledShowcaseExcerpt,
   pickRandomEligibleStep,
   pickRelatedPreviewStep,
   shuffleCourses,
@@ -75,8 +75,9 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
           const step = fullStep ?? outlineStep;
 
           let relatedFull: typeof step | null = null;
+          let relatedScore = -1;
           const relatedTried = new Set<string>([step.id]);
-          for (let p = 0; p < 3; p += 1) {
+          for (let p = 0; p < 5; p += 1) {
             const relatedOutline = pickRelatedPreviewStep(outline, step);
             if (!relatedOutline || relatedTried.has(relatedOutline.id)) {
               continue;
@@ -85,37 +86,33 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
             const loaded = await loadCourseStepById(relatedOutline.id);
             const candidate = loaded ?? relatedOutline;
             const probe = await buildShowcaseExcerpt(outline, candidate);
-            if (probe.heroImageUrl) {
+            const score =
+              Math.min(probe.excerpt.length, 520) +
+              (probe.heroImageUrl ? 80 : 0) +
+              (/explained/i.test(candidate.title) ? 60 : 0);
+            if (score > relatedScore) {
+              relatedScore = score;
               relatedFull = candidate;
-              break;
             }
-            if (!relatedFull) {
-              relatedFull = candidate;
+            if (probe.excerpt.length >= 180) {
+              break;
             }
           }
 
           const selection = { course: outline, step };
           const excerpt = await buildShowcaseExcerpt(outline, step, relatedFull);
 
-          const rich =
-            isRichShowcaseExcerpt(excerpt) &&
-            Boolean(excerpt.coverImageUrl || excerpt.previewImageUrl || excerpt.heroImageUrl);
-
-          if (rich) {
+          if (isFilledShowcaseExcerpt(excerpt)) {
             best = { selection, excerpt };
             break;
           }
 
-          if (!best) {
+          if (!best || excerpt.excerpt.length > best.excerpt.excerpt.length) {
             best = { selection, excerpt };
           }
         }
 
-        if (
-          best &&
-          isRichShowcaseExcerpt(best.excerpt) &&
-          (best.excerpt.coverImageUrl || best.excerpt.previewImageUrl || best.excerpt.heroImageUrl)
-        ) {
+        if (best && isFilledShowcaseExcerpt(best.excerpt)) {
           break;
         }
       }

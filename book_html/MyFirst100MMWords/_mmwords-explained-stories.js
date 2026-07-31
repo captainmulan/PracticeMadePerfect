@@ -19,9 +19,9 @@
         {
           title: "Every Name Has a Place",
           story:
-            "Uncle tells funny jokes at dinner and the whole table laughs. Su and Cousin say each family name aloud — Mother, Father, Aunt, and Baby. Grandmother nods when they remember Grandfather too. After the meal Su helps clear the bowls. She falls asleep happy and whispers thank you to her Parents for a kind day.",
+            "After dinner Grandfather opens the old family photo album. Su and Cousin look at each face and say the names aloud — Mother, Father, Aunt, Uncle, and Baby. Grandmother smiles when they find Grandfather's young photo too. Su falls asleep happy, knowing every family member has a place in her heart.",
           storyLong:
-            "Uncle tells funny jokes at dinner and the whole table laughs. Su and Cousin say each family name aloud — Mother, Father, Aunt, Uncle, and Baby. Grandmother nods when they remember Grandfather too. After the meal Su helps clear the bowls while Sister wipes the table. Father smiles and says every name has a place in the heart. Su falls asleep happy under her soft blanket. She whispers thank you to her Parents for a kind day filled with love."
+            "After dinner Grandfather opens the old family photo album on the mat. Su and Cousin look at each face and say the names aloud — Mother, Father, Aunt, Uncle, and Baby. Grandmother smiles when they find Grandfather's young photo too. Sister points to Cousin and laughs. Father says every name has a place in the heart. Su falls asleep happy under her soft blanket, thankful for her whole family."
         },
       ],
       food: [
@@ -58,9 +58,9 @@
         {
           title: "The Rainy Day",
           story:
-            "Rain drums on the roof while Su watches from the window. Fish swim in the muddy pond below. The Cat curls on Su's lap and purrs. Outside, a Monkey steals a Mango from the stall and runs. Su laughs and waits for the sky to clear again.",
+            "One rainy day, water filled Su's yard and the sky rumbled. Su held a big umbrella while Dog shook wet fur. Cat hid under the porch. Chicken ran into the dry kitchen. When the rain stopped, a rainbow came out and Su laughed with all her animal friends.",
           storyLong:
-            "Rain drums on the roof while Su watches from the window with a warm drink. Fish swim in the muddy pond below the house. The Cat curls on Su's lap and purrs through the storm. Outside, a Monkey steals a Mango from the stall and runs up a wet tree. A Dog shakes water from its fur near the gate. When the rain softens, Birds return to the branches. Su laughs and waits for the sky to clear so she can visit her animal friends again."
+            "One rainy day, water filled Su's yard and the sky rumbled over the village. Su held a big umbrella while Dog shook wet fur by the steps. Cat hid under the porch and watched the puddles. Chicken ran into the dry kitchen. Fish swam happily in the pond. When the rain stopped, a bright rainbow came out and Su laughed with all her animal friends."
         },
         {
           title: "A Lesson for the Village",
@@ -104,9 +104,9 @@
         {
           title: "Ten Coins on the Mat",
           story:
-            "Su lays coins on a mat in the quiet room. Father teaches her to count from One to Ten slowly. Grandmother quizzes her, and Su answers with a clear voice. When she reaches Ten she claps. Numbers become friends she knows by name.",
+            "At home Father put ten coins on a woven mat. \"Count with your eyes and your voice,\" he said. Su pointed to each coin — six, seven, eight, nine, ten. Zero mistakes! Grandmother clapped and gave Su a sweet mango.",
           storyLong:
-            "Su lays coins on a mat in the quiet room after dinner. Father teaches her to count from One to Ten slowly and clearly. Grandmother quizzes her, and Su answers with a brave voice. Baby claps when she says Five and Six. Sister joins for Seven and Eight. When Su reaches Nine and Ten she smiles wide. Numbers become friends she knows by name in English and in Myanmar."
+            "At home Father put ten shiny coins on a woven mat. \"Count with your eyes and your voice,\" he said gently. Su pointed to each coin — six, seven, eight, nine, ten. Zero mistakes! Baby clapped along. Grandmother smiled and gave Su a sweet mango for being careful."
         },
         {
           title: "Counting with Love",
@@ -120,16 +120,16 @@
         {
           title: "Dance Class Begins",
           story:
-            "Su stretches her Hand and lifts her Head in dance class. She touches her Nose and Ears in the mirror and giggles. She points to her Eyes, Mouth, and Hair as the teacher names each part. Her Foot taps the floor to the drum. Body words are like a map of herself.",
+            "Su joined dance class in a bright teak hall open to the garden. Teacher showed soft hand flowers and a calm smile. Su lifted her head, watched with kind eyes, and listened with both ears as the drum began.",
           storyLong:
-            "Su stretches her Hand and lifts her Head in dance class on a sunny morning. She touches her Nose and Ears in the mirror and giggles at her reflection. She points to her Eyes, Mouth, and Hair as the teacher names each part. Her Foot taps the floor to the drum while her Heart beats with excitement. She bends and reaches until every part feels awake. Body words are like a map of herself, and Su is learning to read it with joy."
+            "Su joined dance class in a bright teak hall open to the garden. Teacher showed soft hand flowers and a calm smile. Su lifted her head, watched with kind eyes, and listened with both ears as the drum began. Her friends practiced beside her, and everyone giggled when they made flower hands together."
         },
         {
           title: "Respect for the Body",
           story:
-            "Grandmother tells Su to wash her Hands before every meal. Su brushes her Teeth after sweet mango in the afternoon. Mother reminds her to rest her tired Foot after a long walk. Su listens and cares for each part gently. Every part of the body deserves respect and kindness.",
+            "Before practice Su washed her hands and brushed her teeth. She never pointed her feet at the Buddha image or her teacher. \"Your head, heart, and hands feel better when you are respectful,\" Teacher said gently.",
           storyLong:
-            "Grandmother tells Su to wash her Hands before every meal. Su brushes her Teeth after sweet mango in the afternoon. Mother reminds her to rest her tired Foot after a long walk to school. Su cools her Face with clean water and combs her Hair. Father says a strong Heart needs rest and kind words too. Su listens and cares for each part gently. Every part of the body deserves respect, kindness, and daily care."
+            "Before practice Su washed her hands and brushed her teeth. She never pointed her feet at the Buddha image or her teacher. Mother combed Su's hair neatly. \"Your head, heart, and hands feel better when you are respectful,\" Teacher said gently. Su bowed and felt proud inside."
         },
         {
           title: "Show Day Smiles",
@@ -196,9 +196,9 @@
         {
           title: "Feelings Like Visitors",
           story:
-            "Su feels Angry when her favorite toy breaks on the floor. She feels Scared during the big storm at night. Mother hugs her close and she feels Love again. Father says feelings visit like guests and then go. Su learns she can welcome them and let them leave.",
+            "Aunt put a warm hand on Su's heart. \"Feelings come and go,\" she said. \"You can feel angry, then choose sorry and please.\" Su whispered an apology. Her angry heart grew quiet, like rain stopping after a storm.",
           storyLong:
-            "Su feels Angry when her favorite toy breaks on the floor after play. She feels Scared during the big storm that shakes the windows at night. Mother hugs her close and she feels Love again in the quiet room. Father says feelings visit like guests — some stay long, some pass quickly. Su names Happy, Tired, and Sorry from her day. She learns she can welcome each feeling and let it leave. Her heart feels lighter when she speaks the truth."
+            "Aunt put a warm hand on Su's heart after a hard afternoon. \"Feelings come and go,\" she said softly. \"You can feel angry, then choose sorry and please.\" Su whispered an apology to Sister. Mother smiled. Her angry heart grew quiet, like rain stopping after a storm, and Love filled the room again."
         },
         {
           title: "Thank You Under the Lights",

@@ -318,6 +318,7 @@ function chapterHead(title) {
 <title>My First 100 Myanmar Words - ${esc(title)}</title>
 <link rel="stylesheet" href="_mmwords-theme.css">
 <style>${CHAPTER_CSS}</style>
+<script src="_mmwords-audio-map.js"></script>
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>

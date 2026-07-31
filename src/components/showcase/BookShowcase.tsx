@@ -34,6 +34,12 @@ export default function BookShowcase({
     excerpt?.heroImageUrl ||
     null;
 
+  const previewUrl =
+    excerpt?.previewImageUrl ||
+    excerpt?.heroImageUrl ||
+    excerpt?.coverImageUrl ||
+    null;
+
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     pointerStart.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
     didSwipe.current = false;
@@ -158,18 +164,17 @@ export default function BookShowcase({
                 <div className="book3d-sheet">
                   <div className="book3d-plate book3d-plate--preview">
                     <div className="book3d-crawl-stars" aria-hidden="true" />
-                    {(excerpt.previewImageUrl || excerpt.heroImageUrl) ? (
-                      <div className="book3d-preview-art">
-                        <img
-                          className="book3d-preview-img"
-                          src={excerpt.previewImageUrl || excerpt.heroImageUrl || ""}
-                          alt=""
-                          loading="eager"
-                          decoding="async"
-                          draggable={false}
-                        />
-                      </div>
+                    {previewUrl ? (
+                      <img
+                        className="book3d-preview-fill"
+                        src={previewUrl}
+                        alt=""
+                        loading="eager"
+                        decoding="async"
+                        draggable={false}
+                      />
                     ) : null}
+                    <div className="book3d-scrim" aria-hidden="true" />
                     <div className="book3d-copy">
                       <p className="book3d-kicker">{excerpt.bookTitle}</p>
                       <h3 className="book3d-heading">

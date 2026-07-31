@@ -48,6 +48,7 @@
   var speakGen = 0;
   var currentAudio = null;
   var sharedAudio = null;
+  var unlockAudioEl = null;
   var audioUnlocked = false;
   var myanmarVoice = null;
   var englishVoice = null;
@@ -124,6 +125,14 @@
     return sharedAudio;
   }
 
+  /** Text nodes have no .closest — normalize event targets inside buttons. */
+  function eventEl(e) {
+    var t = e && e.target;
+    if (!t) return null;
+    if (t.nodeType !== 1) t = t.parentElement;
+    return t;
+  }
+
   function warmSynth() {
     resumeSynth();
     if (!w.speechSynthesis) return;
@@ -137,41 +146,30 @@
   }
 
   /**
-   * Must run synchronously inside a user tap on iOS (esp. inside app iframes),
-   * or the first Google TTS / speechSynthesis call stays silent.
-   * Reuses one Audio element for the session.
+   * Must run synchronously inside a user tap on iOS (esp. inside app iframes).
+   * Uses a dedicated unlock element so we never steal the playback Audio's src.
    */
   function unlockMedia() {
     warmSynth();
-    var a = ensureAudio();
-    if (audioUnlocked) {
-      try { a.muted = false; } catch (e0) {}
-      return;
-    }
+    if (audioUnlocked) return;
     try {
-      /* Keep element eligible for play(); do not await — stay in gesture stack. */
-      a.muted = true;
-      if (!a.src || a.src.indexOf("data:audio/wav") !== 0) {
-        a.src = SILENT_WAV;
+      if (!unlockAudioEl) {
+        unlockAudioEl = new Audio(SILENT_WAV);
+        unlockAudioEl.setAttribute("playsinline", "true");
+        unlockAudioEl.setAttribute("webkit-playsinline", "true");
+        try { unlockAudioEl.playsInline = true; } catch (e1) {}
       }
-      var p = a.play();
+      unlockAudioEl.muted = true;
+      var p = unlockAudioEl.play();
       if (p && p.then) {
         p.then(function () {
           audioUnlocked = true;
-          a.muted = false;
-          if (a.src && a.src.indexOf("data:audio/wav") === 0) {
-            try { a.pause(); a.currentTime = 0; } catch (e) {}
-          }
-        }).catch(function () {
-          a.muted = false;
-        });
+          try { unlockAudioEl.pause(); unlockAudioEl.currentTime = 0; } catch (e2) {}
+        }).catch(function () {});
       } else {
-        a.muted = false;
         audioUnlocked = true;
       }
-    } catch (e) {
-      try { a.muted = false; } catch (e2) {}
-    }
+    } catch (e) {}
   }
 
   /** Stop current speech immediately (fast tap = new word replaces old) */
@@ -203,6 +201,86 @@
     return "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + tl + "&q=" + q;
   }
 
+  function audioScriptBase() {
+    try {
+      var scripts = document.getElementsByTagName("script");
+      for (var i = scripts.length - 1; i >= 0; i--) {
+        var src = scripts[i].src || "";
+        if (/_mmwords-player\.js(\?|$)/.test(src)) {
+          return src.replace(/_mmwords-player\.js(\?.*)?$/, "");
+        }
+      }
+    } catch (e) {}
+    return "";
+  }
+
+  function localMmUrl(text) {
+    text = String(text || "").trim();
+    if (!text) return null;
+    var map = w.MM_AUDIO_MAP || {};
+    var file = map[text];
+    if (!file) return null;
+    return audioScriptBase() + "assets/audio/" + file;
+  }
+
+  function playLocalUrl(url, gen, onok, onfail) {
+    if (isStale(gen) || !url) {
+      if (onfail) onfail();
+      return;
+    }
+    var settled = false;
+    var watchdog = null;
+    function clearWatch() {
+      if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    }
+    function doneOk() {
+      if (settled || isStale(gen)) return;
+      settled = true;
+      clearWatch();
+      currentAudio = null;
+      audioUnlocked = true;
+      if (onok) onok();
+    }
+    function doneFail() {
+      if (settled || isStale(gen)) return;
+      settled = true;
+      clearWatch();
+      currentAudio = null;
+      if (onfail) onfail();
+    }
+    var a = ensureAudio();
+    try {
+      a.onended = null;
+      a.onerror = null;
+      a.pause();
+    } catch (e) {}
+    a.muted = false;
+    a.playbackRate = 1;
+    a.volume = 1;
+    a.src = url;
+    currentAudio = a;
+    a.onended = doneOk;
+    a.onerror = doneFail;
+    watchdog = setTimeout(function () {
+      if (settled || isStale(gen)) return;
+      try {
+        if (!a.paused && a.currentTime > 0.02) return;
+        if (a.readyState >= 2 && !a.paused) return;
+        if (a.paused && (!a.currentTime || a.currentTime < 0.05)) doneFail();
+      } catch (e2) {
+        doneFail();
+      }
+    }, 4000);
+    var playPromise = a.play();
+    if (playPromise && playPromise.then) {
+      playPromise.then(function () {
+        audioUnlocked = true;
+      }).catch(doneFail);
+    } else if (playPromise && playPromise.catch) {
+      playPromise.catch(doneFail);
+    }
+  }
+
   /** Warm browser HTTP cache so the next play() starts faster. */
   var prefetchDone = {};
   function prefetchMm(text) {
@@ -210,9 +288,10 @@
     if (!text || prefetchDone[text]) return;
     prefetchDone[text] = true;
     try {
+      var local = localMmUrl(text);
       var a = new Audio();
       a.preload = "auto";
-      a.src = googleTtsUrl(text, "my", 0);
+      a.src = local || googleTtsUrl(text, "my", 0);
     } catch (e) {}
   }
 
@@ -272,6 +351,7 @@
       settled = true;
       clearWatch();
       currentAudio = null;
+      audioUnlocked = true;
       if (onok) onok();
     }
     function doneFail() {
@@ -292,17 +372,12 @@
     a.playbackRate = 1.05;
     a.volume = 1;
     var url = googleTtsUrl(text, lang, mirror);
-    /* Reuse same URL when possible so HTTP cache can hit instantly */
-    if (a.src !== url) {
-      a.src = url;
-    } else {
-      try { a.currentTime = 0; } catch (e4) {}
-    }
+    /* Do not removeAttribute("src") — that re-locks HTMLAudio on iOS Safari. */
+    a.src = url;
     currentAudio = a;
     a.onended = doneOk;
     a.onerror = doneFail;
     resumeSynth();
-    /* Fail over quickly — don't wait 2.8s before trying the other host */
     watchdog = setTimeout(function () {
       if (settled || isStale(gen)) return;
       try {
@@ -310,7 +385,7 @@
       } catch (e2) {
         doneFail();
       }
-    }, 1100);
+    }, 2500);
     var playPromise = a.play();
     if (playPromise && playPromise.then) {
       playPromise.then(function () {
@@ -357,40 +432,44 @@
   }
 
   /**
-   * Myanmar audio: Google TTS first (real Burmese voice).
-   * Never fall back to English romanization hints — that sounds like "awbar"
-   * letter-by-letter and teaches the wrong sound.
+   * Myanmar audio: local MP3 first (same-origin, works in app iframes),
+   * then Google TTS, then device Myanmar voice if available.
    */
   function playMyanmar(text, hint, onend) {
     var gen = speakGen;
     loadVoices();
+    text = String(text || "").trim();
     if (!text) {
       if (onend) onend();
       return;
     }
-    var chunks = chunkForTts(text, 180);
-    playGoogleChunks(chunks, "my", gen, function () {
+    function finishOk() {
       if (!isStale(gen) && onend) onend();
-    }, function () {
+    }
+    function tryGoogle() {
       if (isStale(gen)) return;
-      /* Second host already tried per chunk; try my-MM once for short words. */
-      if (chunks.length === 1) {
-        playGoogleTts(chunks[0], "my-MM", 0, gen, function () {
-          if (!isStale(gen) && onend) onend();
-        }, function () {
-          if (isStale(gen)) return;
-          if (myanmarVoice) {
-            speakSynth(text, "my-MM", myanmarVoice, gen, onend);
-          } else if (onend) {
-            onend();
-          }
-        });
-      } else if (myanmarVoice) {
-        speakSynth(text, "my-MM", myanmarVoice, gen, onend);
-      } else if (onend) {
-        onend();
-      }
-    });
+      var chunks = chunkForTts(text, 180);
+      playGoogleChunks(chunks, "my", gen, finishOk, function () {
+        if (isStale(gen)) return;
+        if (chunks.length === 1) {
+          playGoogleTts(chunks[0], "my-MM", 0, gen, finishOk, function () {
+            if (isStale(gen)) return;
+            if (myanmarVoice) speakSynth(text, "my-MM", myanmarVoice, gen, onend);
+            else if (onend) onend();
+          });
+        } else if (myanmarVoice) {
+          speakSynth(text, "my-MM", myanmarVoice, gen, onend);
+        } else if (onend) {
+          onend();
+        }
+      });
+    }
+    var local = localMmUrl(text);
+    if (local) {
+      playLocalUrl(local, gen, finishOk, tryGoogle);
+      return;
+    }
+    tryGoogle();
   }
 
   w.MMAudio = {
@@ -401,16 +480,15 @@
         setTimeout(loadVoices, 300);
         setTimeout(loadVoices, 1200);
       }
-      function onGesture() { unlockMedia(); }
-      /* pointerdown/touchstart unlock earlier in the iOS gesture chain than click */
+      function onGesture(e) {
+        unlockMedia();
+      }
       document.addEventListener("pointerdown", onGesture, true);
       document.addEventListener("touchstart", onGesture, true);
-      document.addEventListener("click", onGesture, true);
-      /* Prefetch MM clips so taps are not waiting on a cold network fetch */
       setTimeout(prefetchPageMm, 80);
       setTimeout(prefetchPageMm, 600);
       document.addEventListener("pointerenter", function (e) {
-        var btn = e.target && e.target.closest && e.target.closest(".speak-btn-mm, .speak-btn-mm .speak-label, [data-mm].btn-speak, .wb-speak-btn.speak-btn-mm");
+        var btn = e.target && e.target.closest && e.target.closest(".speak-btn-mm, [data-mm].btn-speak, .wb-speak-btn.speak-btn-mm");
         if (!btn) return;
         var card = btn.closest(".word-card, .wb-sentence-pair, .wb-line") || btn;
         var mm = btn.getAttribute("data-mm") || (card.getAttribute && card.getAttribute("data-mm"));
@@ -426,14 +504,13 @@
 
     unlock: unlockMedia,
 
-    /** Myanmar only — cancels any in-progress speech and plays immediately */
+    /** Myanmar — local MP3 preferred; keep play() inside user gesture */
     speakMyanmar: function (text, hint, onend) {
       if (!text) { if (onend) onend(); return; }
-      prefetchMm(text);
-      /* Unlock BEFORE stopAll so iOS keeps the shared Audio eligible to play. */
       unlockMedia();
       stopAll();
       ensureAudio();
+      resumeSynth();
       playMyanmar(text, hint, onend);
     },
 
@@ -441,6 +518,7 @@
       if (!text) { if (onend) onend(); return; }
       unlockMedia();
       stopAll();
+      resumeSynth();
       var gen = speakGen;
       loadVoices();
       speakSynth(text, "en-US", englishVoice, gen, onend);
@@ -568,8 +646,16 @@
   /* Start audio on pointerdown so Google TTS stays inside the iOS gesture window
      (onclick alone is often too late after touchend → click). */
   document.addEventListener("pointerdown", function (e) {
-    var btn = e.target.closest(".speak-btn, .wb-speak-btn, .btn-speak");
+    var t = eventEl(e);
+    if (!t || !t.closest) return;
+    var btn = t.closest(".speak-btn, .wb-speak-btn, .btn-speak, #hearBtn");
     if (!btn || btn.classList.contains("hear-replay-btn")) return;
+    if (btn.id === "hearBtn") {
+      /* Congrats page — keep gesture chain for EN + MM */
+      warmSynth();
+      unlockMedia();
+      return;
+    }
     if (speakFromPointer(btn)) {
       /* Swallow the synthetic click that would double-fire speak */
       btn.addEventListener("click", function swallow(ev) {

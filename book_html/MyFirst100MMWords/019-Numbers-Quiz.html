@@ -14,6 +14,7 @@ body.explained-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;ov
 .explained-page .manuscript-bg,.explained-page .container{min-height:100dvh;height:auto;max-height:none;display:block;overflow:visible;}
 .explained-page .manuscript-bg{width:100%;}
 .explained-page .container{width:100%;margin:0;padding:16px clamp(16px,3vw,40px) 28px;--chapter-pad-x:clamp(16px,3vw,40px);}</style>
+<script src="_mmwords-audio-map.js"></script>
 <script src="_mmwords-player.js"></script>
 <script src="_mmwords-data.js"></script>
 <script src="_mmwords-games.js"></script>
@@ -40,64 +41,64 @@ body.explained-page{padding:0;min-height:100dvh;height:auto;overflow-x:hidden;ov
     </div>
   </div>
   <div id="quizArea">
-  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="ခြောက်" data-hint="chauk">
+  <div class="quiz-card active" id="quizCard-1" data-quiz-type="hear" data-mm="ငါး" data-hint="nga">
     <div class="question">1. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
     <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
-    <div class="options"><div class="option" data-correct="1">Six <span class="option-mm">(ခြောက်)</span></div><div class="option" data-correct="0">One <span class="option-mm">(တစ်)</span></div><div class="option" data-correct="0">Ten <span class="option-mm">(တဆယ်)</span></div><div class="option" data-correct="0">Seven <span class="option-mm">(ခုနစ်)</span></div></div>
+    <div class="options"><div class="option" data-correct="0">Three <span class="option-mm">(သုံး)</span></div><div class="option" data-correct="0">Ten <span class="option-mm">(တဆယ်)</span></div><div class="option" data-correct="0">Four <span class="option-mm">(လေး)</span></div><div class="option" data-correct="1">Five <span class="option-mm">(ငါး)</span></div></div>
     <div class="feedback" id="feedback-1"></div>
   </div>
-  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="တဆယ်" data-hint="ta-ze">
+  <div class="quiz-card" id="quizCard-2" data-quiz-type="hear" data-mm="လေး" data-hint="lay">
     <div class="question">2. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
     <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
-    <div class="options"><div class="option" data-correct="1">Ten <span class="option-mm">(တဆယ်)</span></div><div class="option" data-correct="0">Zero <span class="option-mm">(သုည)</span></div><div class="option" data-correct="0">Four <span class="option-mm">(လေး)</span></div><div class="option" data-correct="0">Eight <span class="option-mm">(ရှစ်)</span></div></div>
+    <div class="options"><div class="option" data-correct="0">Nine <span class="option-mm">(ကိုး)</span></div><div class="option" data-correct="0">Zero <span class="option-mm">(သုည)</span></div><div class="option" data-correct="0">Many <span class="option-mm">(အများကြီး)</span></div><div class="option" data-correct="1">Four <span class="option-mm">(လေး)</span></div></div>
     <div class="feedback" id="feedback-2"></div>
   </div>
-  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="ရှစ်" data-hint="shit">
+  <div class="quiz-card" id="quizCard-3" data-quiz-type="hear" data-mm="သုံး" data-hint="thone">
     <div class="question">3. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
     <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
-    <div class="options"><div class="option" data-correct="1">Eight <span class="option-mm">(ရှစ်)</span></div><div class="option" data-correct="0">Four <span class="option-mm">(လေး)</span></div><div class="option" data-correct="0">Two <span class="option-mm">(နှစ်)</span></div><div class="option" data-correct="0">Many <span class="option-mm">(အများကြီး)</span></div></div>
+    <div class="options"><div class="option" data-correct="0">Six <span class="option-mm">(ခြောက်)</span></div><div class="option" data-correct="0">Five <span class="option-mm">(ငါး)</span></div><div class="option" data-correct="1">Three <span class="option-mm">(သုံး)</span></div><div class="option" data-correct="0">Zero <span class="option-mm">(သုည)</span></div></div>
     <div class="feedback" id="feedback-3"></div>
   </div>
-  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="နှစ်" data-hint="hni">
+  <div class="quiz-card" id="quizCard-4" data-quiz-type="hear" data-mm="ခြောက်" data-hint="chauk">
     <div class="question">4. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
     <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
-    <div class="options"><div class="option" data-correct="0">Ten <span class="option-mm">(တဆယ်)</span></div><div class="option" data-correct="0">Five <span class="option-mm">(ငါး)</span></div><div class="option" data-correct="1">Two <span class="option-mm">(နှစ်)</span></div><div class="option" data-correct="0">Zero <span class="option-mm">(သုည)</span></div></div>
+    <div class="options"><div class="option" data-correct="0">Three <span class="option-mm">(သုံး)</span></div><div class="option" data-correct="0">Eight <span class="option-mm">(ရှစ်)</span></div><div class="option" data-correct="0">Four <span class="option-mm">(လေး)</span></div><div class="option" data-correct="1">Six <span class="option-mm">(ခြောက်)</span></div></div>
     <div class="feedback" id="feedback-4"></div>
   </div>
-  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="လေး" data-hint="lay">
+  <div class="quiz-card" id="quizCard-5" data-quiz-type="hear" data-mm="ရှစ်" data-hint="shit">
     <div class="question">5. Which word did you hear?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">🔊</span>
       <button type="button" class="hear-replay-btn">🔊 Hear word</button>
     </div>
     <p class="hear-hint-text">Tap 🔊 to hear Myanmar — then pick the matching English word and Myanmar spelling.</p>
-    <div class="options"><div class="option" data-correct="0">Nine <span class="option-mm">(ကိုး)</span></div><div class="option" data-correct="0">Seven <span class="option-mm">(ခုနစ်)</span></div><div class="option" data-correct="0">Two <span class="option-mm">(နှစ်)</span></div><div class="option" data-correct="1">Four <span class="option-mm">(လေး)</span></div></div>
+    <div class="options"><div class="option" data-correct="1">Eight <span class="option-mm">(ရှစ်)</span></div><div class="option" data-correct="0">Zero <span class="option-mm">(သုည)</span></div><div class="option" data-correct="0">Six <span class="option-mm">(ခြောက်)</span></div><div class="option" data-correct="0">One <span class="option-mm">(တစ်)</span></div></div>
     <div class="feedback" id="feedback-5"></div>
   </div>
-  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="တစ်ပတ်မှာ ခုနစ်ရက်။" data-hint="">
+  <div class="quiz-card" id="quizCard-6" data-quiz-type="hear-sentence" data-mm="စားပွဲပတ်လည်မှာ ထိုင်ခုံ လေးလုံး ရှိတယ်။" data-hint="">
     <div class="question">6. What is this sentence about?</div>
     <div class="hear-panel">
       <span class="hear-emoji" aria-hidden="true">💬</span>
       <button type="button" class="hear-replay-btn">🔊 Hear sentence</button>
     </div>
     <p class="hear-hint-text">Listen to the full Myanmar sentence — then pick what it is about (Mom, Aunt, Family…).</p>
-    <div class="options"><div class="option" data-correct="1">This is about Seven</div><div class="option" data-correct="0">This is about Many</div><div class="option" data-correct="0">This is about Two</div><div class="option" data-correct="0">This is about Nine</div></div>
+    <div class="options"><div class="option" data-correct="0">This is about Three</div><div class="option" data-correct="0">This is about Zero</div><div class="option" data-correct="0">This is about Seven</div><div class="option" data-correct="1">This is about Four</div></div>
     <div class="feedback" id="feedback-6"></div>
   </div></div>
   

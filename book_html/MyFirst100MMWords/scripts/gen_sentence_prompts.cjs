@@ -16,7 +16,7 @@ const SCENES = {
   family: [
     "Dawn in a Myanmar teak wooden house: Burmese mother stirring rice over a clay stove, father sweeping the yard, grandmother feeding chickens near a fence, grandfather with tea on the porch, roosters and misty green hills, multigenerational family morning",
     "Thadingyut full-moon festival night at a Myanmar home: paper lanterns glowing, young Burmese girl bowing and offering a candle to smiling grandmother, aunt carrying sweet rice cakes, baby watching colored lights, warm family candlelight indoors",
-    "Evening Myanmar family feast under a thatched roof: uncle laughing at table, grandfather unrolling a hand-drawn family tree chart, parents clearing dishes, cousins playing nearby, oil lamps and happy multi-generational gathering"
+    "Evening Myanmar family feast under a thatched roof: uncle laughing at table, grandfather opening a thick family photo album on the mat, parents and children pointing at old printed photos of relatives, oil lamps and happy multi-generational gathering"
   ],
   food: [
     "Sunrise Myanmar village gate: mother scooping rice into alms bowls, father pouring water for barefoot monks in maroon robes walking past, steam from soup pot, misty morning kindness and sharing",

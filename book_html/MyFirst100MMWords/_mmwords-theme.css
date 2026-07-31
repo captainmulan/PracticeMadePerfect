@@ -1322,7 +1322,7 @@ html:has(body.explained-page){
 .word-card-emoji{font-size:28px;line-height:1.2;font-weight:400;}
 .chapter-word-grid .word-card-emoji{font-size:24px;padding:10px 6px 8px;}
 .word-bridge{display:flex;align-items:stretch;}
-.speak-btn{flex:1;border:none;padding:12px 8px;cursor:pointer;font-family:inherit;transition:transform .1s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:64px;}
+.speak-btn{flex:1;border:none;padding:12px 8px;cursor:pointer;font-family:inherit;transition:transform .1s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;min-width:0;}
 .speak-btn:active,.speak-btn.pressed{transform:scale(.96);}
 .speak-btn-en{background:rgba(56,189,248,.08);color:var(--lacquer-deep);border-right:1px solid var(--border);}
 .speak-btn-mm{background:rgba(186,230,253,.15);color:var(--lacquer);}
@@ -1335,13 +1335,25 @@ html:has(body.explained-page){
   opacity:1;
   line-height:1.25;
   text-align:center;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:normal;
 }
 .speak-word-mm{font-family:'Padauk','Myanmar Text',sans-serif;font-size:18px;}
 .chapter-word-grid .speak-word-en{font-size:16px;}
 .chapter-word-grid .speak-word-mm{font-size:17px;}
 .speak-icon{font-size:14px;font-weight:700;}
 .challenge-box{background:rgba(186,230,253,.15);border-radius:var(--radius-sm);padding:12px;margin-top:12px;text-align:center;font-size:14px;color:var(--lacquer-deep);border:1px solid rgba(186,230,253,.35);}
-@media(max-width:480px){.word-grid{gap:8px;}.speak-btn{min-height:58px;padding:10px 6px;}}
+/* Phone & narrow tablets: stack EN above MM so both hear buttons share equal full width */
+@media(max-width:768px){
+  .word-bridge{flex-direction:column;}
+  .speak-btn{min-height:56px;width:100%;flex:none;padding:12px 10px;}
+  .speak-btn-en{border-right:none;border-bottom:1px solid var(--border);}
+  .speak-word-en,.speak-word-mm,
+  .chapter-word-grid .speak-word-en,
+  .chapter-word-grid .speak-word-mm{font-size:18px;white-space:normal;}
+}
+@media(max-width:480px){.word-grid{gap:8px;}.speak-btn{min-height:54px;padding:10px 8px;}}
 @media(max-width:360px){.word-grid{grid-template-columns:1fr;}}
 
 /* Mobile & tablet — keep text large and readable */
@@ -1354,8 +1366,8 @@ html:has(body.explained-page){
   .section-head{font-size:14px;}
   .legend{font-size:14px;}
   .speak-label{font-size:12px;}
-  .speak-word-en,.speak-word-mm{font-size:17px;}
-  .chapter-word-grid .speak-word-en,.chapter-word-grid .speak-word-mm{font-size:17px;}
+  .speak-word-en,.speak-word-mm{font-size:18px;}
+  .chapter-word-grid .speak-word-en,.chapter-word-grid .speak-word-mm{font-size:18px;}
   .chapter-word-grid .word-card-emoji{font-size:28px;}
   .word-card-emoji{font-size:32px;}
   .question{font-size:22px;}

@@ -29,10 +29,10 @@ export interface ShowcaseExcerpt {
 }
 
 const PAGE_BLOCKLIST =
-  /quiz|activity|character[- ]selection|overall[- ]quiz|overview\.html$|intro[- ]?build|village\.html|index\.html|character[- ]select|big-game|stamp-row/i;
+  /quiz|activity|character[- ]selection|overall[- ]quiz|overview\.html$|intro[- ]?build|village\.html|index\.html|character[- ]select|big-game|stamp-row|allplanets|all-planets|defender|globerush|mapexplorer|continent[- ]trek|eco[- ]?garden|ecoplanetrush/i;
 
 const TITLE_BLOCKLIST =
-  /quiz|activity|character selection|overall quiz|book briefing|build myanmar village|intro build|index|let'?s play|character select/i;
+  /quiz|activity|character selection|overall quiz|book briefing|build myanmar village|intro build|index|let'?s play|character select|all planets|order the planets/i;
 
 export function isShowcaseEligibleStep(step: CourseStep): boolean {
   if (step.stepType !== "html") {
@@ -77,21 +77,7 @@ export function getShowcaseEligibleSteps(course: Course): CourseStep[] {
 
 /** Weighted random among eligible steps (prefers Explained / story pages). */
 export function pickRandomEligibleStep(course: Course): CourseStep | null {
-  const eligible = getShowcaseEligibleSteps(course);
-  if (eligible.length === 0) {
-    return null;
-  }
-
-  const weights = eligible.map(stepShowcaseWeight);
-  const total = weights.reduce((sum, w) => sum + w, 0);
-  let roll = Math.random() * total;
-  for (let i = 0; i < eligible.length; i += 1) {
-    roll -= weights[i];
-    if (roll <= 0) {
-      return eligible[i];
-    }
-  }
-  return eligible[eligible.length - 1];
+  return pickWeightedStep(getShowcaseEligibleSteps(course));
 }
 
 export function isRichShowcaseExcerpt(excerpt: ShowcaseExcerpt): boolean {
@@ -99,6 +85,28 @@ export function isRichShowcaseExcerpt(excerpt: ShowcaseExcerpt): boolean {
     return true;
   }
   return excerpt.excerpt.trim().length >= 80;
+}
+
+/** Prefer stopping only when the right page has art + enough copy to fill. */
+export function isFilledShowcaseExcerpt(excerpt: ShowcaseExcerpt): boolean {
+  const hasArt = Boolean(excerpt.coverImageUrl || excerpt.previewImageUrl || excerpt.heroImageUrl);
+  return hasArt && excerpt.excerpt.trim().length >= 160;
+}
+
+function pickWeightedStep(steps: CourseStep[]): CourseStep | null {
+  if (steps.length === 0) {
+    return null;
+  }
+  const weights = steps.map(stepShowcaseWeight);
+  const total = weights.reduce((sum, w) => sum + w, 0);
+  let roll = Math.random() * total;
+  for (let i = 0; i < steps.length; i += 1) {
+    roll -= weights[i];
+    if (roll <= 0) {
+      return steps[i];
+    }
+  }
+  return steps[steps.length - 1];
 }
 
 /** Pick a different eligible step in the same book for the right-page preview. */
@@ -110,16 +118,31 @@ export function pickRelatedPreviewStep(
   if (eligible.length === 0) {
     return null;
   }
-  const weights = eligible.map(stepShowcaseWeight);
-  const total = weights.reduce((sum, w) => sum + w, 0);
-  let roll = Math.random() * total;
-  for (let i = 0; i < eligible.length; i += 1) {
-    roll -= weights[i];
-    if (roll <= 0) {
-      return eligible[i];
-    }
+
+  const sameChapter = eligible.filter(
+    (step) =>
+      (step.chapterTitle || "") !== "" &&
+      (step.chapterTitle || "") === (primaryStep.chapterTitle || ""),
+  );
+  const explainedSame = sameChapter.filter((step) => {
+    const title = step.title.toLowerCase();
+    const src = (step.contentHtml ? extractBookHtmlIframeSrc(step.contentHtml) : "") ?? "";
+    return /explained/i.test(title) || /explained/i.test(src);
+  });
+  if (explainedSame.length > 0) {
+    return pickWeightedStep(explainedSame);
   }
-  return eligible[eligible.length - 1];
+
+  const explainedAny = eligible.filter((step) => {
+    const title = step.title.toLowerCase();
+    const src = (step.contentHtml ? extractBookHtmlIframeSrc(step.contentHtml) : "") ?? "";
+    return /explained/i.test(title) || /explained/i.test(src);
+  });
+  if (explainedAny.length > 0 && Math.random() < 0.75) {
+    return pickWeightedStep(explainedAny);
+  }
+
+  return pickWeightedStep(sameChapter.length > 0 ? sameChapter : eligible);
 }
 
 /** Catalog summaries have empty chapters — pick a course id first, then load outline. */
@@ -190,8 +213,10 @@ export function parseShowcaseExcerptFromHtml(
     doc.querySelector(".scene-card img") ||
     doc.querySelector(".hero-art img") ||
     doc.querySelector(".story-art img") ||
+    doc.querySelector(".planet-img") ||
     doc.querySelector(".word-card img") ||
     doc.querySelector('img[src*="assets/"]') ||
+    doc.querySelector('img[src*="planets/"]') ||
     doc.querySelector("img[src]");
 
   let heroImageUrl: string | null = null;
@@ -199,32 +224,39 @@ export function parseShowcaseExcerptFromHtml(
   if (imgSrc) {
     heroImageUrl = resolveAssetUrl(imgSrc, bookHtmlFolder);
   } else {
-    const assetMatch = html.match(/src=["'](assets\/[^"']+\.(?:png|jpg|jpeg|webp|gif))["']/i);
+    const assetMatch = html.match(
+      /src=["']((?:assets\/|planets\/|\.?\.\/)?[^"']+\.(?:png|jpg|jpeg|webp|gif))["']/i,
+    );
     if (assetMatch) {
       heroImageUrl = resolveAssetUrl(assetMatch[1], bookHtmlFolder);
     }
   }
 
-  const textSource =
-    doc.querySelector(".story-box.story-box-default") ||
-    doc.querySelector(".story-box") ||
-    doc.querySelector(".explain-box") ||
-    doc.querySelector(".card p") ||
-    doc.querySelector("p");
+  const paragraphs = Array.from(
+    doc.querySelectorAll(
+      ".story-box p, .explain-box p, .card p, .fact-card p, .fact-box p, .info-panel p, .game-desc, article p, .content p, .card li, p",
+    ),
+  )
+    .map((el) => (el.textContent ?? "").replace(/\s+/g, " ").trim())
+    .filter((text) => text.length >= 24)
+    .filter((text, index, arr) => arr.indexOf(text) === index);
 
-  let rawExcerpt = textSource?.textContent?.trim() || step.description || course.description;
-  // Skip ultra-short overlay / CTA copy like "Let's Play First!"
-  if (rawExcerpt.length < 28) {
-    const longer =
-      Array.from(doc.querySelectorAll(".story-box, .explain-box, .card p, p"))
-        .map((el) => el.textContent?.trim() ?? "")
-        .filter((text) => text.length >= 40)
-        .sort((a, b) => b.length - a.length)[0] ?? "";
-    if (longer) {
-      rawExcerpt = longer;
-    }
+  let rawExcerpt = paragraphs.slice(0, 6).join(" ");
+  if (rawExcerpt.length < 80) {
+    const textSource =
+      doc.querySelector(".story-box.story-box-default") ||
+      doc.querySelector(".story-box") ||
+      doc.querySelector(".explain-box") ||
+      doc.querySelector(".card") ||
+      doc.querySelector("article") ||
+      doc.querySelector(".info-panel") ||
+      doc.querySelector("p");
+    rawExcerpt = textSource?.textContent?.replace(/\s+/g, " ").trim()
+      || step.description
+      || course.description
+      || "";
   }
-  const excerpt = rawExcerpt.length > 240 ? `${rawExcerpt.slice(0, 237).trim()}…` : rawExcerpt;
+  const excerpt = rawExcerpt.length > 520 ? `${rawExcerpt.slice(0, 517).trim()}…` : rawExcerpt;
 
   const logoText = doc.querySelector(".logo")?.textContent?.trim() ?? "";
   const pageEmojiMatch = logoText.match(/\p{Extended_Pictographic}/u);
@@ -277,13 +309,14 @@ export async function buildShowcaseExcerpt(
     try {
       const previewHtml = await loadStepPageHtml(previewSource, previewFolder);
       const preview = parseShowcaseExcerptFromHtml(previewHtml, course, previewSource, previewFolder);
+      const usePreviewCopy =
+        preview.excerpt.trim().length >= Math.max(excerpt.excerpt.trim().length, 80);
       excerpt = {
         ...excerpt,
-        previewImageUrl: preview.heroImageUrl,
-        previewPageTitle: preview.pageTitle,
-        /* Prefer related page copy on the right when we have a related step */
-        excerpt: preview.excerpt || excerpt.excerpt,
-        pageTitle: preview.pageTitle,
+        previewImageUrl: preview.heroImageUrl || excerpt.previewImageUrl,
+        previewPageTitle: usePreviewCopy ? preview.pageTitle : excerpt.previewPageTitle,
+        excerpt: usePreviewCopy ? preview.excerpt : excerpt.excerpt,
+        pageTitle: usePreviewCopy ? preview.pageTitle : excerpt.pageTitle,
         chapterTitle: preview.chapterTitle || excerpt.chapterTitle,
         heroImageUrl: preview.heroImageUrl ?? excerpt.heroImageUrl,
       };
@@ -292,9 +325,9 @@ export async function buildShowcaseExcerpt(
     }
   }
 
-  /* Right page should show a page preview image when possible */
+  /* Right page always has a fill image (page art, else cover) */
   if (!excerpt.previewImageUrl) {
-    excerpt.previewImageUrl = excerpt.heroImageUrl;
+    excerpt.previewImageUrl = excerpt.heroImageUrl || excerpt.coverImageUrl;
   }
 
   return excerpt;
