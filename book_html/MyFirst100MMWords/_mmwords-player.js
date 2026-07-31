@@ -144,30 +144,30 @@
   function unlockMedia() {
     warmSynth();
     var a = ensureAudio();
+    if (audioUnlocked) {
+      try { a.muted = false; } catch (e0) {}
+      return;
+    }
     try {
       /* Keep element eligible for play(); do not await — stay in gesture stack. */
-      if (!audioUnlocked) {
-        a.muted = true;
-        if (!a.src || a.src.indexOf("data:audio/wav") !== 0) {
-          a.src = SILENT_WAV;
-        }
-        var p = a.play();
-        if (p && p.then) {
-          p.then(function () {
-            audioUnlocked = true;
-            a.muted = false;
-            if (a.src && a.src.indexOf("data:audio/wav") === 0) {
-              try { a.pause(); a.currentTime = 0; } catch (e) {}
-            }
-          }).catch(function () {
-            a.muted = false;
-          });
-        } else {
-          a.muted = false;
+      a.muted = true;
+      if (!a.src || a.src.indexOf("data:audio/wav") !== 0) {
+        a.src = SILENT_WAV;
+      }
+      var p = a.play();
+      if (p && p.then) {
+        p.then(function () {
           audioUnlocked = true;
-        }
+          a.muted = false;
+          if (a.src && a.src.indexOf("data:audio/wav") === 0) {
+            try { a.pause(); a.currentTime = 0; } catch (e) {}
+          }
+        }).catch(function () {
+          a.muted = false;
+        });
       } else {
         a.muted = false;
+        audioUnlocked = true;
       }
     } catch (e) {
       try { a.muted = false; } catch (e2) {}
@@ -196,10 +196,35 @@
   function googleTtsUrl(text, lang, mirror) {
     var q = encodeURIComponent(text);
     var tl = lang || "my";
+    /* googleapis is usually faster; translate.google.com is fallback */
     if (mirror === 0) {
-      return "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + tl + "&q=" + q;
+      return "https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=" + tl + "&q=" + q;
     }
-    return "https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=" + tl + "&q=" + q;
+    return "https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=" + tl + "&q=" + q;
+  }
+
+  /** Warm browser HTTP cache so the next play() starts faster. */
+  var prefetchDone = {};
+  function prefetchMm(text) {
+    text = String(text || "").trim();
+    if (!text || prefetchDone[text]) return;
+    prefetchDone[text] = true;
+    try {
+      var a = new Audio();
+      a.preload = "auto";
+      a.src = googleTtsUrl(text, "my", 0);
+    } catch (e) {}
+  }
+
+  function prefetchPageMm() {
+    try {
+      var nodes = document.querySelectorAll("[data-mm], .speak-word-mm, .wb-text-mm");
+      for (var i = 0; i < nodes.length; i++) {
+        var el = nodes[i];
+        var mm = el.getAttribute("data-mm") || (el.textContent || "").trim();
+        if (mm && mm.length < 220) prefetchMm(mm);
+      }
+    } catch (e) {}
   }
 
   /** Google TTS rejects long queries — split Myanmar by punctuation / length. */
@@ -264,14 +289,20 @@
       a.pause();
     } catch (e) {}
     a.muted = false;
-    a.playbackRate = 1.0;
+    a.playbackRate = 1.05;
     a.volume = 1;
-    a.src = googleTtsUrl(text, lang, mirror);
-    try { a.load(); } catch (e3) {}
+    var url = googleTtsUrl(text, lang, mirror);
+    /* Reuse same URL when possible so HTTP cache can hit instantly */
+    if (a.src !== url) {
+      a.src = url;
+    } else {
+      try { a.currentTime = 0; } catch (e4) {}
+    }
     currentAudio = a;
     a.onended = doneOk;
     a.onerror = doneFail;
     resumeSynth();
+    /* Fail over quickly — don't wait 2.8s before trying the other host */
     watchdog = setTimeout(function () {
       if (settled || isStale(gen)) return;
       try {
@@ -279,7 +310,7 @@
       } catch (e2) {
         doneFail();
       }
-    }, 2800);
+    }, 1100);
     var playPromise = a.play();
     if (playPromise && playPromise.then) {
       playPromise.then(function () {
@@ -375,8 +406,20 @@
       document.addEventListener("pointerdown", onGesture, true);
       document.addEventListener("touchstart", onGesture, true);
       document.addEventListener("click", onGesture, true);
-      document.addEventListener("touchend", onGesture, true);
-      document.addEventListener("pointerup", onGesture, true);
+      /* Prefetch MM clips so taps are not waiting on a cold network fetch */
+      setTimeout(prefetchPageMm, 80);
+      setTimeout(prefetchPageMm, 600);
+      document.addEventListener("pointerenter", function (e) {
+        var btn = e.target && e.target.closest && e.target.closest(".speak-btn-mm, .speak-btn-mm .speak-label, [data-mm].btn-speak, .wb-speak-btn.speak-btn-mm");
+        if (!btn) return;
+        var card = btn.closest(".word-card, .wb-sentence-pair, .wb-line") || btn;
+        var mm = btn.getAttribute("data-mm") || (card.getAttribute && card.getAttribute("data-mm"));
+        if (!mm) {
+          var label = (btn.closest(".speak-btn-mm") || btn).querySelector(".speak-word-mm, .wb-text-mm");
+          mm = label && label.textContent;
+        }
+        if (mm) prefetchMm(mm.trim());
+      }, true);
     },
 
     stop: stopAll,
@@ -386,12 +429,11 @@
     /** Myanmar only — cancels any in-progress speech and plays immediately */
     speakMyanmar: function (text, hint, onend) {
       if (!text) { if (onend) onend(); return; }
+      prefetchMm(text);
       /* Unlock BEFORE stopAll so iOS keeps the shared Audio eligible to play. */
       unlockMedia();
       stopAll();
-      warmSynth();
       ensureAudio();
-      loadVoices();
       playMyanmar(text, hint, onend);
     },
 
@@ -399,11 +441,13 @@
       if (!text) { if (onend) onend(); return; }
       unlockMedia();
       stopAll();
-      warmSynth();
       var gen = speakGen;
       loadVoices();
       speakSynth(text, "en-US", englishVoice, gen, onend);
     },
+
+    prefetch: prefetchMm,
+    prefetchPage: prefetchPageMm,
 
     speak: function (text, lang, onend) {
       if (!text) { if (onend) onend(); return; }

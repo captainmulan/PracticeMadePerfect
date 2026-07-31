@@ -156,17 +156,27 @@ export default function BookShowcase({
 
               <div className="book3d-page book3d-page--right">
                 <div className="book3d-sheet">
-                  <div className="book3d-plate book3d-plate--crawl">
+                  <div className="book3d-plate book3d-plate--preview">
                     <div className="book3d-crawl-stars" aria-hidden="true" />
-                    <div className="book3d-crawl-stage">
-                      <div className="book3d-crawl-copy">
-                        <p className="book3d-crawl-intro">A long time ago in a library far, far away…</p>
-                        <p className="book3d-crawl-episode">
-                          {(excerpt.previewPageTitle || excerpt.pageTitle || excerpt.chapterTitle).toUpperCase()}
-                        </p>
-                        <p className="book3d-crawl-body">{excerpt.excerpt}</p>
+                    {(excerpt.previewImageUrl || excerpt.heroImageUrl) ? (
+                      <div className="book3d-preview-art">
+                        <img
+                          className="book3d-preview-img"
+                          src={excerpt.previewImageUrl || excerpt.heroImageUrl || ""}
+                          alt=""
+                          loading="eager"
+                          decoding="async"
+                          draggable={false}
+                        />
                       </div>
-                      <h2 className="book3d-crawl-logo">{excerpt.bookTitle}</h2>
+                    ) : null}
+                    <div className="book3d-copy">
+                      <p className="book3d-kicker">{excerpt.bookTitle}</p>
+                      <h3 className="book3d-heading">
+                        {excerpt.previewPageTitle || excerpt.pageTitle}
+                      </h3>
+                      <p className="book3d-excerpt">{excerpt.excerpt}</p>
+                      <p className="book3d-hint">Tap to read · Swipe for next</p>
                     </div>
                   </div>
                 </div>
