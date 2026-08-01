@@ -1584,13 +1584,13 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
             <p>Colors and chrome for the in-book reading / practice workspace.</p>
           </div>
           <nav className="admin-tabs admin-system-subnav" aria-label="System settings">
-            <button type="button" className={`admin-tab ${systemSubTab === "database" ? "active" : ""}`} onClick={() => setSystemSubTab("database")}>
+            <button type="button" className="admin-tab" onClick={() => setSystemSubTab("database")}>
               Database
             </button>
-            <button type="button" className={`admin-tab ${systemSubTab === "data-sync" ? "active" : ""}`} onClick={() => setSystemSubTab("data-sync")}>
+            <button type="button" className="admin-tab" onClick={() => setSystemSubTab("data-sync")}>
               Data Sync
             </button>
-            <button type="button" className={`admin-tab ${systemSubTab === "reading-style" ? "active" : ""}`} onClick={() => setSystemSubTab("reading-style")}>
+            <button type="button" className="admin-tab active" onClick={() => setSystemSubTab("reading-style")}>
               Reading Page Style
             </button>
           </nav>
@@ -2234,13 +2234,13 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
             <p>Export and sync catalog data for deploy.</p>
           </div>
           <nav className="admin-tabs admin-system-subnav" aria-label="System settings">
-            <button type="button" className={`admin-tab ${systemSubTab === "database" ? "active" : ""}`} onClick={() => setSystemSubTab("database")}>
+            <button type="button" className="admin-tab" onClick={() => setSystemSubTab("database")}>
               Database
             </button>
-            <button type="button" className={`admin-tab ${systemSubTab === "data-sync" ? "active" : ""}`} onClick={() => setSystemSubTab("data-sync")}>
+            <button type="button" className="admin-tab active" onClick={() => setSystemSubTab("data-sync")}>
               Data Sync
             </button>
-            <button type="button" className={`admin-tab ${systemSubTab === "reading-style" ? "active" : ""}`} onClick={() => setSystemSubTab("reading-style")}>
+            <button type="button" className="admin-tab" onClick={() => setSystemSubTab("reading-style")}>
               Reading Page Style
             </button>
           </nav>
@@ -2255,13 +2255,13 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
             <p>Import, export, and restore admin theme data and local databases.</p>
           </div>
           <nav className="admin-tabs admin-system-subnav" aria-label="System settings">
-            <button type="button" className={`admin-tab ${systemSubTab === "database" ? "active" : ""}`} onClick={() => setSystemSubTab("database")}>
+            <button type="button" className="admin-tab active" onClick={() => setSystemSubTab("database")}>
               Database
             </button>
-            <button type="button" className={`admin-tab ${systemSubTab === "data-sync" ? "active" : ""}`} onClick={() => setSystemSubTab("data-sync")}>
+            <button type="button" className="admin-tab" onClick={() => setSystemSubTab("data-sync")}>
               Data Sync
             </button>
-            <button type="button" className={`admin-tab ${systemSubTab === "reading-style" ? "active" : ""}`} onClick={() => setSystemSubTab("reading-style")}>
+            <button type="button" className="admin-tab" onClick={() => setSystemSubTab("reading-style")}>
               Reading Page Style
             </button>
           </nav>

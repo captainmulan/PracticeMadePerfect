@@ -5,6 +5,7 @@ import { loadCourseSummariesFromBrowserDb, loadFullCourseById, persistCourse, re
 import { MAX_INLINE_HTML_BYTES } from "../utils/bookImport";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import AdminBookUploadPanel from "../components/AdminBookUploadPanel";
+import AdminPdfUploadPanel from "../components/AdminPdfUploadPanel";
 
 function slugify(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -39,8 +40,8 @@ export default function AdminCourses() {
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
-  const [bookSection, setBookSection] = useState<"new" | "existing" | "empty">("existing");
-  const [bookMethod, setBookMethod] = useState<"upload" | "manual">("manual");
+  const [bookSection, setBookSection] = useState<"new" | "existing" | "empty">("new");
+  const [bookMethod, setBookMethod] = useState<"upload" | "manual">("upload");
   const [uploadKind, setUploadKind] = useState<"html" | "pdf">("html");
   const [bookSubTab, setBookSubTab] = useState<"general" | "pages" | "title" | "cover" | "logo">("general");
   const [adminData, setAdminData] = useState<any>(null);
@@ -174,7 +175,7 @@ export default function AdminCourses() {
 
   function goToExistingBookSection() {
     setBookSection("existing");
-    setBookMethod("manual");
+    setBookMethod("upload");
     setUploadKind("html");
     setBookSubTab("general");
     if (draftBook) {
@@ -456,28 +457,30 @@ export default function AdminCourses() {
 
   return (
     <div className="admin-courses">
-      <div className="admin-tabs admin-tabs-page admin-books-section-tabs" style={{ marginBottom: "12px" }}>
-        <button
-          type="button"
-          className={`admin-btn admin-btn-page ${bookSection === "new" ? "active" : ""}`}
-          onClick={goToNewBookSection}
-        >
-          New Book
-        </button>
-        <button
-          type="button"
-          className={`admin-btn admin-btn-page ${bookSection === "existing" ? "active" : ""}`}
-          onClick={goToExistingBookSection}
-        >
-          Existing Book
-        </button>
-        <button
-          type="button"
-          className={`admin-btn admin-btn-page ${bookSection === "empty" ? "active" : ""}`}
-          onClick={goToEmptyBookSection}
-        >
-          Empty Book
-        </button>
+      <div className="admin-book-section-nav" role="tablist" aria-label="Book section">
+        <div className="admin-book-section-tabs">
+          <button
+            type="button"
+            className={`admin-btn admin-btn-page ${bookSection === "new" ? "active" : ""}`}
+            onClick={goToNewBookSection}
+          >
+            New Book
+          </button>
+          <button
+            type="button"
+            className={`admin-btn admin-btn-page ${bookSection === "existing" ? "active" : ""}`}
+            onClick={goToExistingBookSection}
+          >
+            Existing Book
+          </button>
+          <button
+            type="button"
+            className={`admin-btn admin-btn-page ${bookSection === "empty" ? "active" : ""}`}
+            onClick={goToEmptyBookSection}
+          >
+            Empty Book
+          </button>
+        </div>
       </div>
 
       {message && <div className="admin-course-message">{message}</div>}
@@ -632,66 +635,79 @@ export default function AdminCourses() {
       ) : (
         <>
           <div className="admin-courses-toolbar">
-            {bookSection === "existing" ? (
-              <select
-                value={selectedBookId ?? ""}
-                onChange={(e) => {
-                  setDraftBook(null);
-                  setSelectedBookId(e.target.value);
-                  setSelectedStepId(null);
-                }}
-                disabled={!!draftBook}
-              >
-                {books.length === 0 ? <option value="">No books yet</option> : null}
-                {books.map((book) => (
-                  <option key={book.id} value={book.id}>{book.title}</option>
-                ))}
-              </select>
-            ) : (
+            {bookSection !== "existing" ? (
               <div className="admin-book-section-label">
                 {draftBook ? `Draft: ${draftBook.title || "New book"}` : "Create a new book"}
               </div>
-            )}
-            <div className="admin-book-actions">
-              {bookMethod === "manual" || bookMethod === "upload" ? (
-                <button
-                  type="button"
-                  className="admin-btn admin-btn-book small"
-                  onClick={handleSaveBook}
-                  disabled={bookLoading || !activeBook}
-                >
-                  Save Book
-                </button>
-              ) : null}
-              {bookSection === "existing" && !draftBook && activeBook ? (
-                <button
-                  type="button"
-                  className="admin-btn admin-btn-book danger small"
-                  onClick={handleDeleteBook}
-                  disabled={isDeletingBook || bookLoading}
-                >
-                  {isDeletingBook ? "Deleting..." : "Delete Entire Book"}
-                </button>
-              ) : null}
+            ) : null}
+          </div>
+
+          <div className="admin-book-mode-toolbar" style={{ marginBottom: "12px" }}>
+            <div className="admin-tabs admin-tabs-book">
+              <button
+                type="button"
+                className={`admin-btn admin-btn-book secondary ${bookMethod === "upload" ? "active" : ""}`}
+                onClick={() => openUpload(uploadKind)}
+              >
+                Upload
+              </button>
+              <button
+                type="button"
+                className={`admin-btn admin-btn-book secondary ${bookMethod === "manual" ? "active" : ""}`}
+                onClick={openManualCreate}
+              >
+                Manual update
+              </button>
+            </div>
+            <div className="admin-book-action-group" aria-label="Book actions">
+              <span className="admin-book-action-label">Actions</span>
+              <div className="admin-book-actions">
+                {bookMethod === "manual" || bookMethod === "upload" ? (
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-book small"
+                    onClick={handleSaveBook}
+                    disabled={bookLoading || !activeBook}
+                  >
+                    Save Book
+                  </button>
+                ) : null}
+                {bookSection === "existing" && !draftBook && activeBook ? (
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-book danger small"
+                    onClick={handleDeleteBook}
+                    disabled={isDeletingBook || bookLoading}
+                  >
+                    {isDeletingBook ? "Deleting..." : "Delete Entire Book"}
+                  </button>
+                ) : null}
+              </div>
             </div>
           </div>
 
-          <div className="admin-tabs admin-tabs-book" style={{ marginBottom: "12px" }}>
-            <button
-              type="button"
-              className={`admin-btn admin-btn-book secondary ${bookMethod === "upload" ? "active" : ""}`}
-              onClick={() => openUpload(uploadKind)}
-            >
-              Upload
-            </button>
-            <button
-              type="button"
-              className={`admin-btn admin-btn-book secondary ${bookMethod === "manual" ? "active" : ""}`}
-              onClick={openManualCreate}
-            >
-              Manual create
-            </button>
-          </div>
+          {bookMethod === "manual" && bookSection === "existing" ? (
+            <div className="admin-book-target-selector" style={{ marginBottom: "12px" }}>
+              <label className="admin-task-editor-field admin-task-editor-full">
+                <span className="admin-task-editor-label">Target book</span>
+                <select
+                  value={selectedBookId ?? ""}
+                  onChange={(e) => {
+                    setDraftBook(null);
+                    setSelectedBookId(e.target.value);
+                    setSelectedStepId(null);
+                  }}
+                  disabled={!!draftBook}
+                  className="admin-grid-select"
+                >
+                  {books.length === 0 ? <option value="">No books yet</option> : null}
+                  {books.map((book) => (
+                    <option key={book.id} value={book.id}>{book.title}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          ) : null}
 
           {bookMethod === "upload" ? (
             <>
@@ -721,12 +737,14 @@ export default function AdminCourses() {
                   onCancel={openManualCreate}
                 />
               ) : (
-                <div className="admin-book-upload panel-bordered">
-                  <h3 style={{ marginTop: 0 }}>PDF upload</h3>
-                  <p className="admin-book-upload-help">
-                    Coming soon — we can design PDF import later. Use HTML upload or Manual create for now.
-                  </p>
-                </div>
+                <AdminPdfUploadPanel
+                  books={books}
+                  selectedBookId={selectedBookId}
+                  loadedBook={loadedBook}
+                  forcedMode={bookSection === "new" ? "new" : "existing"}
+                  onImported={handleImportedBook}
+                  onCancel={openManualCreate}
+                />
               )}
             </>
           ) : null}

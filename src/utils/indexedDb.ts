@@ -640,17 +640,18 @@ async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Prom
     return false;
   }
 
+  // Preserve local admin data. Only use the deployed catalog when the local database is still empty.
+  if (existingCourseCount > 0) {
+    return false;
+  }
+
   const localStamp = readLocalCatalogStamp();
   if (!localStamp) {
-    // Returning users with data but no stamp yet: refresh once to align with deploy.
+    // First load with an empty local database: seed from the deploy catalog.
     return true;
   }
   if (localStamp !== remote.exportedAt) {
     console.log("Catalog export changed:", localStamp, "->", remote.exportedAt);
-    return true;
-  }
-  if (remote.courseCount > 0 && existingCourseCount > 0 && remote.courseCount !== existingCourseCount) {
-    console.log("Catalog course count mismatch:", existingCourseCount, "vs", remote.courseCount);
     return true;
   }
   return false;

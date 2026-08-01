@@ -9,6 +9,7 @@ export interface ParsedHtmlPage {
   sortOrder: number;
   title: string;
   content: string;
+  assets?: Array<{ fileName: string; mimeType: string; dataUrl: string }>;
 }
 
 export interface BookImportPreview {
