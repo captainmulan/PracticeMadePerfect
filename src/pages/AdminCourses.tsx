@@ -39,11 +39,12 @@ export default function AdminCourses() {
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loaded, setLoaded] = useState(false);
-  const [bookBuilderTab, setBookBuilderTab] = useState<"book" | "page" | "empty-book">("book");
-  const [bookSubTab, setBookSubTab] = useState<"general" | "title" | "cover" | "logo">("general");
+  const [bookSection, setBookSection] = useState<"new" | "existing" | "empty">("existing");
+  const [bookMethod, setBookMethod] = useState<"upload" | "manual">("manual");
+  const [uploadKind, setUploadKind] = useState<"html" | "pdf">("html");
+  const [bookSubTab, setBookSubTab] = useState<"general" | "pages" | "title" | "cover" | "logo">("general");
   const [adminData, setAdminData] = useState<any>(null);
   const [isDeletingBook, setIsDeletingBook] = useState(false);
-  const [showUploadPanel, setShowUploadPanel] = useState(false);
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
   const skipBookReloadRef = useRef<string | null>(null);
 
@@ -162,6 +163,42 @@ export default function AdminCourses() {
     setSelectedBookId(null);
     setSelectedStepId(null);
     setMessage("");
+  }
+
+  function goToNewBookSection() {
+    setBookSection("new");
+    setBookMethod("upload");
+    setUploadKind("html");
+    setBookSubTab("general");
+  }
+
+  function goToExistingBookSection() {
+    setBookSection("existing");
+    setBookMethod("manual");
+    setUploadKind("html");
+    setBookSubTab("general");
+    if (draftBook) {
+      setDraftBook(null);
+      if (!selectedBookId && books[0]) {
+        setSelectedBookId(books[0].id);
+      }
+    }
+  }
+
+  function goToEmptyBookSection() {
+    setBookSection("empty");
+  }
+
+  function openManualCreate() {
+    setBookMethod("manual");
+    if (bookSection === "new" && !draftBook) {
+      startNewBook();
+    }
+  }
+
+  function openUpload(kind: "html" | "pdf") {
+    setBookMethod("upload");
+    setUploadKind(kind);
   }
 
   function updateActiveBook(updater: (book: Course) => Course) {
@@ -298,6 +335,8 @@ export default function AdminCourses() {
       setDraftBook(null);
       skipBookReloadRef.current = trimmedId;
       setSelectedBookId(trimmedId);
+      setBookSection("existing");
+      setBookMethod("manual");
       const largePages = flattenCourseSteps(normalized).filter(
         (step) => (step.contentHtml?.length ?? 0) > MAX_INLINE_HTML_BYTES,
       ).length;
@@ -352,8 +391,9 @@ export default function AdminCourses() {
         skipBookReloadRef.current = normalized.id;
         setSelectedBookId(normalized.id);
         setSelectedStepId(firstStepId(normalized));
-        setShowUploadPanel(false);
-        setBookBuilderTab("page");
+        setBookSection("existing");
+        setBookMethod("manual");
+        setBookSubTab("pages");
         setMessage(summary);
       } catch (err) {
         setMessage(String(err));
@@ -364,8 +404,9 @@ export default function AdminCourses() {
     setDraftBook(normalized);
     setSelectedBookId(null);
     setSelectedStepId(firstStepId(normalized));
-    setShowUploadPanel(false);
-    setBookBuilderTab("page");
+    setBookSection("new");
+    setBookMethod("manual");
+    setBookSubTab("pages");
     setMessage(summary);
   }
 
@@ -415,67 +456,297 @@ export default function AdminCourses() {
 
   return (
     <div className="admin-courses">
-      <div className="admin-courses-toolbar">
-        <select
-          value={draftBook ? "__draft__" : selectedBookId ?? ""}
-          onChange={(e) => {
-            if (e.target.value === "__draft__") return;
-            setDraftBook(null);
-            setSelectedBookId(e.target.value);
-            setSelectedStepId(null);
-          }}
+      <div className="admin-tabs admin-tabs-page admin-books-section-tabs" style={{ marginBottom: "12px" }}>
+        <button
+          type="button"
+          className={`admin-btn admin-btn-page ${bookSection === "new" ? "active" : ""}`}
+          onClick={goToNewBookSection}
         >
-          {draftBook ? <option value="__draft__">New book (draft)</option> : null}
-          {books.map((book) => (
-            <option key={book.id} value={book.id}>{book.title}</option>
-          ))}
-        </select>
-        <div className="admin-book-actions">
-          <button type="button" className="admin-btn admin-btn-book secondary small" onClick={startNewBook}>New Book</button>
-          <button type="button" className="admin-btn admin-btn-book secondary small" onClick={() => setShowUploadPanel(true)}>Upload Book</button>
-          <button type="button" className="admin-btn admin-btn-book small" onClick={handleSaveBook} disabled={bookLoading || !activeBook}>Save Book</button>
-          {!draftBook && activeBook ? (
-            <button type="button" className="admin-btn admin-btn-book danger small" onClick={handleDeleteBook} disabled={isDeletingBook || bookLoading}>
-              {isDeletingBook ? "Deleting..." : "Delete Entire Book"}
-            </button>
-          ) : null}
-        </div>
+          New Book
+        </button>
+        <button
+          type="button"
+          className={`admin-btn admin-btn-page ${bookSection === "existing" ? "active" : ""}`}
+          onClick={goToExistingBookSection}
+        >
+          Existing Book
+        </button>
+        <button
+          type="button"
+          className={`admin-btn admin-btn-page ${bookSection === "empty" ? "active" : ""}`}
+          onClick={goToEmptyBookSection}
+        >
+          Empty Book
+        </button>
       </div>
 
       {message && <div className="admin-course-message">{message}</div>}
 
-      {bookLoading && !draftBook ? (
-        <div className="admin-section-body">Loading book pages...</div>
-      ) : null}
-
-      {!bookLoading && showUploadPanel ? (
-        <AdminBookUploadPanel
-          books={books}
-          selectedBookId={selectedBookId}
-          loadedBook={loadedBook}
-          onImported={handleImportedBook}
-          onCancel={() => setShowUploadPanel(false)}
-        />
-      ) : null}
-
-      {!bookLoading && activeBook ? (
-        <div className={`admin-courses-grid ${bookBuilderTab === "book" || bookBuilderTab === "empty-book" ? "admin-courses-grid-book-only" : ""}`}>
-          <section className="admin-course-meta panel-bordered">
-            <div className="admin-tabs admin-tabs-page" style={{ marginBottom: "16px" }}>
-              <button type="button" className={`admin-btn admin-btn-page ${bookBuilderTab === "book" ? "active" : ""}`} onClick={() => setBookBuilderTab("book")}>Book</button>
-              <button type="button" className={`admin-btn admin-btn-page ${bookBuilderTab === "page" ? "active" : ""}`} onClick={() => setBookBuilderTab("page")}>Page</button>
-              <button type="button" className={`admin-btn admin-btn-page ${bookBuilderTab === "empty-book" ? "active" : ""}`} onClick={() => setBookBuilderTab("empty-book")}>Empty Book</button>
+      {bookSection === "empty" ? (
+        <section className="admin-course-meta panel-bordered">
+          <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+            <h4 style={{ marginTop: 0 }}>Empty Book</h4>
+            <p className="admin-book-upload-help" style={{ marginTop: 0 }}>
+              Shelf placeholder shown when a category has no books yet. Style only — not a real book record.
+            </p>
+            <label className="admin-task-editor-field admin-task-editor-full">
+              <span className="admin-task-editor-label">Title</span>
+              <input
+                value={adminData?.homePageData?.style?.emptyBook?.title ?? "Coming soon"}
+                onChange={(e) => updateStyleConfig("title", e.target.value)}
+                className="admin-grid-input"
+              />
+            </label>
+            <div className="admin-search-row">
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Font size</span>
+                <input
+                  type="number"
+                  min={12}
+                  max={48}
+                  value={adminData?.homePageData?.style?.emptyBook?.titleFontSize ?? 24}
+                  onChange={(e) => updateStyleConfig("titleFontSize", Number(e.target.value))}
+                  className="admin-grid-input"
+                />
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Font weight</span>
+                <select
+                  value={adminData?.homePageData?.style?.emptyBook?.titleFontWeight ?? "bold"}
+                  onChange={(e) => updateStyleConfig("titleFontWeight", e.target.value)}
+                  className="admin-grid-select"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="bold">Bold</option>
+                  <option value="lighter">Lighter</option>
+                  <option value="bolder">Bolder</option>
+                  <option value="100">100</option>
+                  <option value="200">200</option>
+                  <option value="300">300</option>
+                  <option value="400">400</option>
+                  <option value="500">500</option>
+                  <option value="600">600</option>
+                  <option value="700">700</option>
+                  <option value="800">800</option>
+                  <option value="900">900</option>
+                </select>
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Color</span>
+                <input
+                  type="color"
+                  value={adminData?.homePageData?.style?.emptyBook?.titleColor ?? "#0f172a"}
+                  onChange={(e) => updateStyleConfig("titleColor", e.target.value)}
+                  className="admin-grid-input"
+                />
+              </label>
             </div>
-            {bookBuilderTab === "book" ? (
-              <>
-                <div className="admin-tabs admin-tabs-book" style={{ marginBottom: "16px" }}>
-                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "general" ? "active" : ""}`} onClick={() => setBookSubTab("general")}>General</button>
-                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "title" ? "active" : ""}`} onClick={() => setBookSubTab("title")}>Title</button>
-                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "cover" ? "active" : ""}`} onClick={() => setBookSubTab("cover")}>Cover</button>
-                  <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "logo" ? "active" : ""}`} onClick={() => setBookSubTab("logo")}>Logo</button>
-                </div>
+            <div className="admin-search-row" style={{ marginTop: "12px" }}>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Position</span>
+                <select
+                  value={adminData?.homePageData?.style?.emptyBook?.titlePosition ?? "center-center"}
+                  onChange={(e) => updateStyleConfig("titlePosition", e.target.value)}
+                  className="admin-grid-select"
+                >
+                  <option value="top-left">Top Left</option>
+                  <option value="top-center">Top Center</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="center-left">Center Left</option>
+                  <option value="center-center">Center Center</option>
+                  <option value="center-right">Center Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-center">Bottom Center</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Alignment</span>
+                <select
+                  value={adminData?.homePageData?.style?.emptyBook?.titleAlignment ?? adminData?.homePageData?.style?.emptyBook?.titleTextAlign ?? "center"}
+                  onChange={(e) => updateStyleConfig("titleAlignment", e.target.value)}
+                  className="admin-grid-select"
+                >
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Cover width</span>
+                <input
+                  type="number"
+                  min={40}
+                  max={240}
+                  value={adminData?.homePageData?.style?.emptyBook?.coverWidth ?? 100}
+                  onChange={(e) => updateStyleConfig("coverWidth", Number(e.target.value))}
+                  className="admin-grid-input"
+                />
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Cover height</span>
+                <input
+                  type="number"
+                  min={60}
+                  max={320}
+                  value={adminData?.homePageData?.style?.emptyBook?.coverHeight ?? 150}
+                  onChange={(e) => updateStyleConfig("coverHeight", Number(e.target.value))}
+                  className="admin-grid-input"
+                />
+              </label>
+            </div>
+          </div>
+          <div className="panel panel-bordered" style={{ padding: "16px" }}>
+            <h4 style={{ marginTop: 0 }}>Cover Colors</h4>
+            <div className="admin-search-row">
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Cover Color Start</span>
+                <input
+                  type="color"
+                  value={adminData?.homePageData?.style?.emptyBook?.coverColorStart ?? "#f1f5f9"}
+                  onChange={(e) => updateStyleConfig("coverColorStart", e.target.value)}
+                  className="admin-grid-input"
+                />
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Cover Color Middle</span>
+                <input
+                  type="color"
+                  value={adminData?.homePageData?.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9"}
+                  onChange={(e) => updateStyleConfig("coverColorMiddle", e.target.value)}
+                  className="admin-grid-input"
+                />
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Cover Color End</span>
+                <input
+                  type="color"
+                  value={adminData?.homePageData?.style?.emptyBook?.coverColorEnd ?? "#f1f5f9"}
+                  onChange={(e) => updateStyleConfig("coverColorEnd", e.target.value)}
+                  className="admin-grid-input"
+                />
+              </label>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <>
+          <div className="admin-courses-toolbar">
+            {bookSection === "existing" ? (
+              <select
+                value={selectedBookId ?? ""}
+                onChange={(e) => {
+                  setDraftBook(null);
+                  setSelectedBookId(e.target.value);
+                  setSelectedStepId(null);
+                }}
+                disabled={!!draftBook}
+              >
+                {books.length === 0 ? <option value="">No books yet</option> : null}
+                {books.map((book) => (
+                  <option key={book.id} value={book.id}>{book.title}</option>
+                ))}
+              </select>
+            ) : (
+              <div className="admin-book-section-label">
+                {draftBook ? `Draft: ${draftBook.title || "New book"}` : "Create a new book"}
+              </div>
+            )}
+            <div className="admin-book-actions">
+              {bookMethod === "manual" || bookMethod === "upload" ? (
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-book small"
+                  onClick={handleSaveBook}
+                  disabled={bookLoading || !activeBook}
+                >
+                  Save Book
+                </button>
+              ) : null}
+              {bookSection === "existing" && !draftBook && activeBook ? (
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-book danger small"
+                  onClick={handleDeleteBook}
+                  disabled={isDeletingBook || bookLoading}
+                >
+                  {isDeletingBook ? "Deleting..." : "Delete Entire Book"}
+                </button>
+              ) : null}
+            </div>
+          </div>
 
-                {bookSubTab === "general" && (
+          <div className="admin-tabs admin-tabs-book" style={{ marginBottom: "12px" }}>
+            <button
+              type="button"
+              className={`admin-btn admin-btn-book secondary ${bookMethod === "upload" ? "active" : ""}`}
+              onClick={() => openUpload(uploadKind)}
+            >
+              Upload
+            </button>
+            <button
+              type="button"
+              className={`admin-btn admin-btn-book secondary ${bookMethod === "manual" ? "active" : ""}`}
+              onClick={openManualCreate}
+            >
+              Manual create
+            </button>
+          </div>
+
+          {bookMethod === "upload" ? (
+            <>
+              <div className="admin-tabs admin-tabs-book" style={{ marginBottom: "12px" }}>
+                <button
+                  type="button"
+                  className={`admin-btn admin-btn-book secondary ${uploadKind === "html" ? "active" : ""}`}
+                  onClick={() => openUpload("html")}
+                >
+                  HTML upload
+                </button>
+                <button
+                  type="button"
+                  className={`admin-btn admin-btn-book secondary ${uploadKind === "pdf" ? "active" : ""}`}
+                  onClick={() => openUpload("pdf")}
+                >
+                  PDF upload
+                </button>
+              </div>
+              {uploadKind === "html" ? (
+                <AdminBookUploadPanel
+                  books={books}
+                  selectedBookId={selectedBookId}
+                  loadedBook={loadedBook}
+                  forcedMode={bookSection === "new" ? "new" : "existing"}
+                  onImported={handleImportedBook}
+                  onCancel={openManualCreate}
+                />
+              ) : (
+                <div className="admin-book-upload panel-bordered">
+                  <h3 style={{ marginTop: 0 }}>PDF upload</h3>
+                  <p className="admin-book-upload-help">
+                    Coming soon — we can design PDF import later. Use HTML upload or Manual create for now.
+                  </p>
+                </div>
+              )}
+            </>
+          ) : null}
+
+          {bookMethod === "manual" && bookLoading && !draftBook ? (
+            <div className="admin-section-body">Loading book pages...</div>
+          ) : null}
+
+          {bookMethod === "manual" && !bookLoading && activeBook ? (
+        <div className={`admin-courses-grid ${bookSubTab !== "pages" ? "admin-courses-grid-book-only" : ""}`}>
+          <section className="admin-course-meta panel-bordered">
+            <div className="admin-tabs admin-tabs-book" style={{ marginBottom: "16px" }}>
+              <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "general" ? "active" : ""}`} onClick={() => setBookSubTab("general")}>General</button>
+              <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "pages" ? "active" : ""}`} onClick={() => setBookSubTab("pages")}>Pages</button>
+              <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "title" ? "active" : ""}`} onClick={() => setBookSubTab("title")}>Title</button>
+              <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "cover" ? "active" : ""}`} onClick={() => setBookSubTab("cover")}>Cover</button>
+              <button type="button" className={`admin-btn admin-btn-book secondary ${bookSubTab === "logo" ? "active" : ""}`} onClick={() => setBookSubTab("logo")}>Logo</button>
+            </div>
+
+            {bookSubTab === "general" && (
                   <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                     <h4 style={{ marginTop: 0 }}>General</h4>
                     <label className="admin-task-editor-field admin-task-editor-full">
@@ -848,152 +1119,7 @@ export default function AdminCourses() {
                     </div>
                   </div>
                 )}
-              </>
-            ) : bookBuilderTab === "empty-book" ? (
-              <>
-                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Empty Book</h4>
-                  <label className="admin-task-editor-field admin-task-editor-full">
-                    <span className="admin-task-editor-label">Title</span>
-                    <input
-                      value={adminData?.homePageData?.style?.emptyBook?.title ?? "Coming soon"}
-                      onChange={(e) => updateStyleConfig("title", e.target.value)}
-                      className="admin-grid-input"
-                    />
-                  </label>
-                  <div className="admin-search-row">
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Font size</span>
-                      <input
-                        type="number"
-                        min={12}
-                        max={48}
-                        value={adminData?.homePageData?.style?.emptyBook?.titleFontSize ?? 24}
-                        onChange={(e) => updateStyleConfig("titleFontSize", Number(e.target.value))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Font weight</span>
-                      <select
-                        value={adminData?.homePageData?.style?.emptyBook?.titleFontWeight ?? "bold"}
-                        onChange={(e) => updateStyleConfig("titleFontWeight", e.target.value)}
-                        className="admin-grid-select"
-                      >
-                        <option value="normal">Normal</option>
-                        <option value="bold">Bold</option>
-                        <option value="lighter">Lighter</option>
-                        <option value="bolder">Bolder</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="300">300</option>
-                        <option value="400">400</option>
-                        <option value="500">500</option>
-                        <option value="600">600</option>
-                        <option value="700">700</option>
-                        <option value="800">800</option>
-                        <option value="900">900</option>
-                      </select>
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Color</span>
-                      <input
-                        type="color"
-                        value={adminData?.homePageData?.style?.emptyBook?.titleColor ?? "#0f172a"}
-                        onChange={(e) => updateStyleConfig("titleColor", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
-                  <div className="admin-search-row" style={{ marginTop: "12px" }}>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Position</span>
-                      <select
-                        value={adminData?.homePageData?.style?.emptyBook?.titlePosition ?? "center-center"}
-                        onChange={(e) => updateStyleConfig("titlePosition", e.target.value)}
-                        className="admin-grid-select"
-                      >
-                        <option value="top-left">Top Left</option>
-                        <option value="top-center">Top Center</option>
-                        <option value="top-right">Top Right</option>
-                        <option value="center-left">Center Left</option>
-                        <option value="center-center">Center Center</option>
-                        <option value="center-right">Center Right</option>
-                        <option value="bottom-left">Bottom Left</option>
-                        <option value="bottom-center">Bottom Center</option>
-                        <option value="bottom-right">Bottom Right</option>
-                      </select>
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Alignment</span>
-                      <select
-                        value={adminData?.homePageData?.style?.emptyBook?.titleAlignment ?? adminData?.homePageData?.style?.emptyBook?.titleTextAlign ?? "center"}
-                        onChange={(e) => updateStyleConfig("titleAlignment", e.target.value)}
-                        className="admin-grid-select"
-                      >
-                        <option value="left">Left</option>
-                        <option value="center">Center</option>
-                        <option value="right">Right</option>
-                      </select>
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover width</span>
-                      <input
-                        type="number"
-                        min={40}
-                        max={240}
-                        value={adminData?.homePageData?.style?.emptyBook?.coverWidth ?? 100}
-                        onChange={(e) => updateStyleConfig("coverWidth", Number(e.target.value))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover height</span>
-                      <input
-                        type="number"
-                        min={60}
-                        max={320}
-                        value={adminData?.homePageData?.style?.emptyBook?.coverHeight ?? 150}
-                        onChange={(e) => updateStyleConfig("coverHeight", Number(e.target.value))}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
-                </div>
-                <div className="panel panel-bordered" style={{ padding: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Cover Colors</h4>
-                  <div className="admin-search-row">
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Color Start</span>
-                      <input
-                        type="color"
-                        value={adminData?.homePageData?.style?.emptyBook?.coverColorStart ?? "#f1f5f9"}
-                        onChange={(e) => updateStyleConfig("coverColorStart", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Color Middle</span>
-                      <input
-                        type="color"
-                        value={adminData?.homePageData?.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9"}
-                        onChange={(e) => updateStyleConfig("coverColorMiddle", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                    <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Cover Color End</span>
-                      <input
-                        type="color"
-                        value={adminData?.homePageData?.style?.emptyBook?.coverColorEnd ?? "#f1f5f9"}
-                        onChange={(e) => updateStyleConfig("coverColorEnd", e.target.value)}
-                        className="admin-grid-input"
-                      />
-                    </label>
-                  </div>
-                </div>
-              </>
-            ) : (
+            {bookSubTab === "pages" && (
               <>
                 <div className="admin-course-step-actions" style={{ marginBottom: "16px" }}>
                   <div className="add-step-group">
@@ -1037,7 +1163,7 @@ export default function AdminCourses() {
             )}
           </section>
 
-          {bookBuilderTab === "page" && (
+          {bookSubTab === "pages" && (
             <section className="admin-course-step-editor panel-bordered">
               {selectedStep ? (
                 <>
@@ -1181,9 +1307,11 @@ export default function AdminCourses() {
             </section>
           )}
         </div>
-      ) : !bookLoading ? (
-        <div className="admin-empty-state">No books yet. Create one in Admin.</div>
-      ) : null}
+          ) : bookMethod === "manual" && !bookLoading && bookSection === "existing" && books.length === 0 ? (
+            <div className="admin-empty-state">No books yet. Switch to New Book to create one.</div>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }

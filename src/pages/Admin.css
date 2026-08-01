@@ -775,7 +775,20 @@
 
 .admin-book-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
+}
+
+.admin-book-section-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--admin-text, #1e293b);
+  min-width: 180px;
+}
+
+.admin-books-section-tabs {
+  flex-wrap: wrap;
 }
 
 .admin-book-actions .footer-button.small {

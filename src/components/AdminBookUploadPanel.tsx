@@ -17,6 +17,8 @@ interface AdminBookUploadPanelProps {
   books: Course[];
   selectedBookId: string | null;
   loadedBook?: Course | null;
+  /** When set, locks New/Existing and hides the mode switcher (UI only). */
+  forcedMode?: UploadMode;
   onImported: (course: Course, summary: string, saveImmediately: boolean) => void;
   onCancel: () => void;
 }
@@ -25,12 +27,13 @@ export default function AdminBookUploadPanel({
   books,
   selectedBookId,
   loadedBook = null,
+  forcedMode,
   onImported,
   onCancel,
 }: AdminBookUploadPanelProps) {
   const folderInputRef = useRef<HTMLInputElement>(null);
   const selectedFilesRef = useRef<File[]>([]);
-  const [uploadMode, setUploadMode] = useState<UploadMode>("new");
+  const [uploadMode, setUploadMode] = useState<UploadMode>(forcedMode ?? "new");
   const [targetBookId, setTargetBookId] = useState(selectedBookId ?? "");
   const [targetBookFull, setTargetBookFull] = useState<Course | null>(null);
   const [targetBookLoading, setTargetBookLoading] = useState(false);
@@ -44,6 +47,16 @@ export default function AdminBookUploadPanel({
     () => books.find((book) => book.id === targetBookId) ?? null,
     [books, targetBookId],
   );
+
+  useEffect(() => {
+    if (forcedMode && forcedMode !== uploadMode) {
+      setUploadMode(forcedMode);
+      if (forcedMode === "existing") {
+        setTargetBookId(selectedBookId ?? books[0]?.id ?? "");
+      }
+      setError("");
+    }
+  }, [forcedMode, uploadMode, selectedBookId, books]);
 
   useEffect(() => {
     if (uploadMode !== "existing" || !targetBookId) {
@@ -186,41 +199,43 @@ export default function AdminBookUploadPanel({
   return (
     <div className="admin-book-upload panel-bordered">
       <div className="admin-book-upload-header">
-        <h3>Upload Book</h3>
+        <h3>HTML Upload</h3>
         <button type="button" className="admin-btn admin-btn-book secondary small" onClick={onCancel}>
           Close
         </button>
       </div>
 
-      <div className="admin-book-upload-mode">
-        <label className="admin-book-upload-mode-option">
-          <input
-            type="radio"
-            name="upload-mode"
-            value="new"
-            checked={uploadMode === "new"}
-            onChange={() => {
-              setUploadMode("new");
-              setError("");
-            }}
-          />
-          <span>New</span>
-        </label>
-        <label className="admin-book-upload-mode-option">
-          <input
-            type="radio"
-            name="upload-mode"
-            value="existing"
-            checked={uploadMode === "existing"}
-            onChange={() => {
-              setUploadMode("existing");
-              setTargetBookId(selectedBookId ?? books[0]?.id ?? "");
-              setError("");
-            }}
-          />
-          <span>Existing</span>
-        </label>
-      </div>
+      {!forcedMode ? (
+        <div className="admin-book-upload-mode">
+          <label className="admin-book-upload-mode-option">
+            <input
+              type="radio"
+              name="upload-mode"
+              value="new"
+              checked={uploadMode === "new"}
+              onChange={() => {
+                setUploadMode("new");
+                setError("");
+              }}
+            />
+            <span>New</span>
+          </label>
+          <label className="admin-book-upload-mode-option">
+            <input
+              type="radio"
+              name="upload-mode"
+              value="existing"
+              checked={uploadMode === "existing"}
+              onChange={() => {
+                setUploadMode("existing");
+                setTargetBookId(selectedBookId ?? books[0]?.id ?? "");
+                setError("");
+              }}
+            />
+            <span>Existing</span>
+          </label>
+        </div>
+      ) : null}
 
       {uploadMode === "existing" ? (
         <label className="admin-task-editor-field admin-task-editor-full">
