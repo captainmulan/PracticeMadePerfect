@@ -49,9 +49,9 @@ const QUIZ = {
     { q: "How is the body described in Myanmar teaching?", options: ["A guesthouse for the soul — wash it and use it to help", "A machine to ignore", "Only for running races", "Something to fear"], correct: 0 }
   ],
   home: [
-    { q: "Why did water not enter Nwe's house during the monsoon?", options: ["The floor stood on strong teak stilts", "The house could fly", "It was made of ice", "There was no rain"], correct: 0 },
-    { q: "What welcomes guests according to Nwe's father?", options: ["The door", "The television", "The closet", "The roof only"], correct: 0 },
-    { q: "What did Nwe's family offer wet travelers?", options: ["Lamp light, boiled water, and rice", "Nothing — they locked the door", "Only jokes", "A map to Mars"], correct: 0 },
+    { q: "Why did water not enter Theint's house during the monsoon?", options: ["The floor stood on strong teak stilts", "The house could fly", "It was made of ice", "There was no rain"], correct: 0 },
+    { q: "What welcomes guests according to Theint's father?", options: ["The door", "The television", "The closet", "The roof only"], correct: 0 },
+    { q: "What did Theint's family offer wet travelers?", options: ["Lamp light, boiled water, and rice", "Nothing — they locked the door", "Only jokes", "A map to Mars"], correct: 0 },
     { q: "In folk wisdom, a house with a clean kitchen feeds what?", options: ["The spirit", "Only insects", "Nothing at all", "The moon"], correct: 0 },
     { q: "What is a house beyond wood and nails?", options: ["How people inside treat those who arrive", "Only the color of paint", "The number of windows", "A shopping list"], correct: 0 }
   ],

@@ -154,11 +154,38 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
     if (!enabled) {
       return;
     }
-    void loadShowcase();
+
+    let cancelled = false;
+    const start = () => {
+      if (!cancelled) {
+        void loadShowcase();
+      }
+    };
+
+    // Let shelves paint first — showcase does several IndexedDB + HTML fetches.
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
+    const ric = window.requestIdleCallback?.bind(window);
+    const cic = window.cancelIdleCallback?.bind(window);
+    if (ric) {
+      idleId = ric(start, { timeout: 900 });
+    } else {
+      timeoutId = window.setTimeout(start, 180);
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleId != null) {
+        cic?.(idleId);
+      }
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId);
+      }
+    };
   }, [enabled, loadShowcase]);
 
   useEffect(() => {
-    if (!enabled || paused || autoRotateMs <= 0) {
+    if (!enabled || paused || autoRotateMs <= 0 || !state.excerpt) {
       return;
     }
 
@@ -167,7 +194,7 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
     }, autoRotateMs);
 
     return () => window.clearInterval(timer);
-  }, [autoRotateMs, enabled, loadShowcase, paused]);
+  }, [autoRotateMs, enabled, loadShowcase, paused, state.excerpt]);
 
   return {
     ...state,

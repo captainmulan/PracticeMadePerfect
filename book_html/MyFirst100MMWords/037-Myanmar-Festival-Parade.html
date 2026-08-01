@@ -12,7 +12,12 @@
 <script src="_mmwords-games.js"></script>
 <script src="_mmwords-action-games.js"></script>
 <style>
-  .book-game-page .scroll-wrap{max-width:980px;}
+  .book-game-page .scroll-wrap{
+    max-width:min(1100px,100%);
+    width:100%;
+    margin:0 auto;
+    box-sizing:border-box;
+  }
   .book-game-page .game-section{max-width:none;padding-left:8px;padding-right:8px;}
   .book-game-page .action-game-stage{width:100%;}
   .book-game-page .action-canvas{
@@ -24,6 +29,33 @@
   .book-game-lead{font-size:15px;color:var(--lacquer-deep);font-weight:700;line-height:1.5;margin:0 0 6px;}
   @media (min-width:900px){
     .book-game-page .action-canvas{height:min(52vh,520px);min-height:400px;}
+  }
+  /* iPad / tablet landscape: center and fit height */
+  @media (orientation:landscape) and (max-height:900px){
+    .book-game-page .scroll-wrap{
+      max-width:min(1100px,96vw);
+      margin:0 auto;
+      padding:8px 16px 12px;
+    }
+    .book-game-page .ornament-top{display:none;}
+    .book-game-page .header{margin-bottom:4px;}
+    .book-game-page .page-title{font-size:clamp(1.15rem,2.6vh,1.55rem);margin:2px 0 4px;}
+    .book-game-page .page-subtitle{font-size:13px;line-height:1.35;margin:2px 0;}
+    .book-game-page .game-meta{font-size:13px;margin:4px 0;}
+    .book-game-page .action-canvas{
+      height:min(32vh,240px)!important;
+      min-height:150px!important;
+      max-height:260px!important;
+    }
+    .book-game-page .action-controls{gap:8px;margin-top:6px;}
+    .book-game-page .action-controls button,
+    .book-game-page .action-btn{
+      padding:10px 12px;
+      font-size:14px;
+      min-height:44px;
+    }
+    .book-game-page .game-start-btn{padding:12px 18px;font-size:16px;}
+    .book-game-page .nav-hint{margin-top:6px;font-size:12px;}
   }
 </style>
 </head>

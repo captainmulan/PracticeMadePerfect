@@ -180,7 +180,9 @@ export default function BookShowcase({
                       <h3 className="book3d-heading">
                         {excerpt.previewPageTitle || excerpt.pageTitle}
                       </h3>
-                      <p className="book3d-excerpt">{excerpt.excerpt}</p>
+                      <div className="book3d-excerpt-slot">
+                        <p className="book3d-excerpt">{excerpt.excerpt}</p>
+                      </div>
                       <p className="book3d-hint">Tap to read · Swipe for next</p>
                     </div>
                   </div>

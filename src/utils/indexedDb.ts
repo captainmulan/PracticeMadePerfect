@@ -541,7 +541,7 @@ async function loadCoursesFromOldSqlite(): Promise<Course[]> {
 async function loadFromIndexedDbExport(): Promise<boolean> {
   try {
     console.log("Attempting to load from indexeddb-export.json");
-    const response = await fetch("/data/indexeddb-export.json");
+    const response = await fetch("/data/indexeddb-export.json", { cache: "no-store" });
     if (!response.ok) {
       console.log("indexeddb-export.json not found");
       return false;
@@ -587,21 +587,104 @@ async function applyBookCoverSeeds(): Promise<void> {
   }
 }
 
+const CATALOG_STAMP_KEY = "pmp-catalog-exported-at";
+
+type CatalogVersion = {
+  exportedAt: string;
+  courseCount: number;
+};
+
+function readLocalCatalogStamp(): string | null {
+  try {
+    return localStorage.getItem(CATALOG_STAMP_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function rememberCatalogStamp(version: CatalogVersion): void {
+  if (!version.exportedAt) {
+    return;
+  }
+  try {
+    localStorage.setItem(CATALOG_STAMP_KEY, version.exportedAt);
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
+/** Tiny version file — avoids re-downloading the full export on every visit. */
+async function fetchDeployedCatalogVersion(): Promise<CatalogVersion | null> {
+  try {
+    const response = await fetch("/data/catalog-version.json", { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+    const data = (await response.json()) as Partial<CatalogVersion>;
+    if (typeof data.exportedAt !== "string" || !data.exportedAt) {
+      return null;
+    }
+    return {
+      exportedAt: data.exportedAt,
+      courseCount: typeof data.courseCount === "number" ? data.courseCount : 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Promise<boolean> {
+  const remote = await fetchDeployedCatalogVersion();
+  if (!remote) {
+    // Old deploys without catalog-version.json — keep current IndexedDB.
+    return false;
+  }
+
+  const localStamp = readLocalCatalogStamp();
+  if (!localStamp) {
+    // Returning users with data but no stamp yet: refresh once to align with deploy.
+    return true;
+  }
+  if (localStamp !== remote.exportedAt) {
+    console.log("Catalog export changed:", localStamp, "->", remote.exportedAt);
+    return true;
+  }
+  if (remote.courseCount > 0 && existingCourseCount > 0 && remote.courseCount !== existingCourseCount) {
+    console.log("Catalog course count mismatch:", existingCourseCount, "vs", remote.courseCount);
+    return true;
+  }
+  return false;
+}
+
 async function runInitialMigration(): Promise<void> {
   console.log("migrateFromSqlJs called");
   const summaries = await getCourseSummaries();
+  const refreshFromDeploy =
+    summaries.length > 0 ? await shouldRefreshCatalogFromDeploy(summaries.length) : false;
 
-  if (summaries.length > 0) {
+  if (summaries.length > 0 && !refreshFromDeploy) {
     console.log("Courses already exist, skipping initialization");
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
     return;
   }
 
+  if (refreshFromDeploy) {
+    console.log("Refreshing catalog from deployed indexeddb-export.json");
+  }
+
   // Try to load from indexeddb-export.json first (new format)
   const loadedFromExport = await loadFromIndexedDbExport();
   if (loadedFromExport) {
     console.log("Initialization complete (from indexeddb-export.json)");
+    await applyBookCoverSeeds();
+    await ensureAnnouncementsSeeded();
+    return;
+  }
+
+  if (summaries.length > 0) {
+    // Refresh failed (offline / missing export) — keep existing local books.
+    console.log("Catalog refresh failed; keeping existing IndexedDB courses");
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
     return;
@@ -678,6 +761,13 @@ export async function importIndexedDb(jsonData: string): Promise<void> {
       }
     } else {
       await ensureAnnouncementsSeeded();
+    }
+
+    if (typeof data.exportedAt === "string" && data.exportedAt) {
+      rememberCatalogStamp({
+        exportedAt: data.exportedAt,
+        courseCount: data.courses.length,
+      });
     }
     
     console.log(`Imported ${data.courses.length} courses and ${data.tasks.length} tasks`);

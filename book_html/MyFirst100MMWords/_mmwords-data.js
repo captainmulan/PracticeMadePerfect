@@ -252,7 +252,7 @@
         "When the flood came, each friend helped in a different way.",
         "Help one another, and the forest protects you too."
       ],
-      story: "Su watched animals near her Myanmar village. Elephant walked slowly through the green field. Cat slept in the warm sun. Dog chased a bright butterfly. Birds sang in the tree above, and Su named each friend with a happy smile.\n\nOne rainy day, water filled the yard and the sky rumbled. Su held a big umbrella while Dog shook wet fur. Cat hid under the porch. Chicken ran into the dry kitchen. When the rain stopped, a rainbow came out and Su laughed with all her animal friends.\n\nSu told her friends to be kind to every creature. She fed Fish in the pond and waved to Monkey in the tree. The whole village smiled — caring for animals is caring for life.",
+      story: "Su watched animals near her Myanmar village. Elephant walked slowly through the green field beyond the fence. Cat slept in the warm sun near the wooden steps. Dog chased a bright butterfly across the yard and then ran back to Su. Birds sang in the tree above her head, and Su named each friend with a happy smile that made the whole afternoon feel gentle.\n\nClouds gathered over the village and warm rain danced on the roof. Su and Sister raced outside with one shared umbrella while Dog shook wet fur and Cat watched from the porch. Chicken hurried into the dry kitchen. After the storm, puddles shone like mirrors and a rainbow arched over the stilts — Su clapped for every animal friend who stayed safe.\n\nThe next morning Su invited her friends to the village pond with their teacher. They fed Fish, waved to Monkey in the tree, and watched Elephant and Cow rest in the shade. Su named each kind creature aloud and promised to care for them. The teacher smiled: caring for animals is caring for life.",
       explainedStory: "Long before cities of glass and steel, kings of Burma kept white elephants as signs of a righteous reign. A cruel king, people said, could never keep such an animal — it would walk away into the hills.\n\nOne legend tells of a young prince who found a wounded elephant calf and nursed it with banana leaves and river water. Years later, when enemies surrounded the palace, the grown elephant appeared at dawn and led the prince through hidden paths. The prince remembered the calf and whispered, \"You saved me because I saved you.\" That is why Myanmar children learn the elephant first — not only as an animal, but as a reminder that gentleness and strength can live in the same heart.\n\nFrom tigers in the tall grass to ducks on the village pond, every creature has a place in Myanmar stories.",
       tip: "Walk outside or look at picture books and name animals in English first. Then tap the Myanmar button on each card — animal sounds are fun to repeat together.",
       explainedTip: "Tell the Four Friends tale at bedtime and ask your child which animal they would be. Link each answer to a new animal word from this chapter.",
@@ -363,7 +363,7 @@
         "Monks wear saffron; markets show red, green, white, and blue.",
         "Colors are feelings — gold is thankfulness, green is hope after rain."
       ],
-      story: "May climbed Shwedagon Hill with her father at dawn. The pagoda shone gold in the morning light. White clouds floated above a blue sky. May felt small and happy at the same time.\n\nMonks walked by in orange robes. The market was full of color — red tomatoes, green bananas, yellow mangoes, pink flowers, brown baskets, and black pans. May pointed at each color and said its name aloud. Her father laughed and bought white jasmine for her hair.\n\nAt home, May painted everything she saw. Gold for thankfulness. Green for new leaves after rain. Purple flowers. Red for festival lights. Grandmother hugged her tight. \"You see Myanmar with a kind heart,\" she said.",
+      story: "May climbed Shwedagon Hill with her father at dawn. The pagoda shone gold in the morning light. White clouds floated above a blue sky. Orange robes of monks moved softly past. May whispered each color she saw and felt small and happy at the same time, holding Father's hand on the cool stone steps.\n\nOn the walk home the market glowed with red tomatoes, green bananas, yellow mangoes, pink flowers, brown baskets, and black pans. May pointed and named every color aloud. Father laughed and bought white jasmine for her hair. Purple shadows stretched under the trees as evening began.\n\nAt home Grandmother opened a tin of paints on the low table. May painted a gold pagoda roof, green leaves, and pink petals while they said each color in English and Myanmar together. They hung the picture by the door. Grandmother hugged her tight. \"You see Myanmar with a kind heart,\" she said.",
       explainedStory: "There is a temple tale about a poor girl who wanted to offer something beautiful to the pagoda but owned only white flowers from the roadside. She stayed all night arranging them while richer visitors placed gold and jewels.\n\nAt dawn the flowers shimmered like gold in the sun, and the head monk said, \"The gift is not measured by weight but by sincerity.\" The girl learned that white can be pure and gold can live in a humble heart.\n\nMyanmar festivals paint the world in every hue — red lanterns at Thadingyut, yellow robes at ordination, pink blossoms in the hot season. Learning colors is learning to see the country the way poets and painters have seen it for centuries.",
       tip: "Pick one color each day from clothes, toys, or fruit. Say the English name, then tap Myanmar on the card. Gold and green connect easily to pagodas and forests.",
       explainedTip: "Draw a pagoda together and talk about gold, red, and white — the colors children see in Myanmar art. Let your child name each part aloud before coloring.",
@@ -471,7 +471,7 @@
         "Count with your eyes and voice together. Do not rush.",
         "Numbers order daily life: steps, candles, fingers, festival days."
       ],
-      story: "Su counted mangoes at the busy market with Mother. One, two, three yellow mangoes glowed in a basket. The seller smiled when Su paid six coins carefully and said thank you.\n\nAt home Father put ten coins on a woven mat. \"Count with your eyes and your voice,\" he said. Su pointed to each coin — six, seven, eight, nine, ten. Zero mistakes! Grandmother clapped and gave Su a sweet mango.\n\nThat night Su counted stars and family smiles. Numbers felt like friendly faces she could hold in her hands — and she fell asleep happy.",
+      story: "Su counted mangoes at the busy market with Mother. One, two, three yellow mangoes glowed in a basket. Four more waited for Father, and five for Grandmother. The seller smiled when Su paid six coins carefully, counted again on her fingers, and said thank you with a bright polite voice.\n\nAfter dinner Father spread a woven mat and laid ten shiny coins in a neat line. \"Count with your eyes and your voice — do not rush,\" he said. Su pointed slowly from one to ten. Baby clapped at five. Grandmother checked nine and ten. Zero mistakes! Father nodded proudly and Grandmother gave Su a sweet mango.\n\nThat night on the porch Su counted stars, then family smiles — Mother, Father, Grandmother, Grandfather, Sister, Baby, Aunt, Uncle, Cousin, and herself. Numbers felt like warm faces she could hold in her hands. She whispered thank you and fell asleep happy under the cool Myanmar night.",
       explainedStory: "Legend says the first king of Bagan asked his builders how many temples would stand on the plain. One wise monk answered with a handful of sand. \"As many as grains you cannot hold,\" he said, \"for merit has no final number.\"\n\nStill, children learned to count — one lamp, two bowls, three birds on the wall, four oxen in the field, five monks at dawn. Numbers ordered the world: seasons, festivals, ages, and gifts for elders.\n\nWhen you learn one through ten in Myanmar, you join a chain of market sellers, temple caretakers, and mothers measuring rice that stretches back longer than memory.",
       tip: "Count everyday objects aloud — fingers, stairs, spoons. Say the English number first, then tap Myanmar on the card. Keep it playful, never a test.",
       explainedTip: "Use snack time: count five grapes or ten raisins in English, then hear the Myanmar number on each card. Slow counting builds confidence.",
@@ -580,7 +580,7 @@
         "Do not point feet at a Buddha image or teacher. Bow with respect.",
         "Head, hands, and heart belong to a body that shows kindness."
       ],
-      story: "Su joined dance class in a bright teak hall open to the garden. Teacher showed soft hand flowers and a calm smile. Su lifted her head, watched with kind eyes, and listened with both ears as the drum began.\n\nBefore practice Su washed her hands and brushed her teeth. She never pointed her feet at the Buddha image or her teacher. \"Your head, heart, and hands feel better when you are respectful,\" Teacher said gently.\n\nOn show day Su danced with a bright smile. Her hands told a kind story. Her feet moved softly. The village clapped, and Su touched her heart — proud, polite, and happy.",
+      story: "Su joined dance class in a bright teak hall open to the garden. Teacher showed soft flower hands and a calm smile. Su lifted her head, watched with kind eyes, and listened with both ears as the drum began. Friends practiced beside her, giggling when their wrists curved like petals in the warm morning light.\n\nBefore practice Su washed her hands at the clay water jar and brushed her teeth. Mother combed her hair neatly. Su never pointed her feet at the small Buddha image or at her teacher. \"Your head, heart, and hands feel better when you are respectful,\" Teacher said gently, and Su bowed with care.\n\nOn show day Su danced with a bright smile. Her hands told a kind story. Her feet moved softly across the teak floor. The village clapped, Mother waved, and Su touched her heart — proud, polite, and happy to share what she had learned.",
       explainedStory: "There is an old tale about a giant who had strong arms and legs but never listened. Birds spoke into his ears; he ignored them. Friends looked into his eyes; he turned away. When he fell ill, only small hands — a child's hands — could feed him spoon by spoon until he learned to care.\n\nThe giant wept and said, \"I used my mouth too much and my heart too little.\" From then on he washed his hands before meals and touched his chest when he apologized.\n\nMyanmar parents teach children that the body is a guesthouse for the soul. Wash it, rest it, and use it to help — not to frighten or shame others.",
       tip: "Play Simon Says with body parts in English, then tap the Myanmar button on each card. Include wash your hands — a daily habit with a clear word.",
       explainedTip: "Before bedtime, name three body parts you used today — hands that drew, feet that ran, eyes that read. Hear the Myanmar word for each one together.",
@@ -676,8 +676,8 @@
       storyTitle: "The House on Stilts",
       segmentTitles: [
         "Rain Under the House",
-        "Every Room Helps",
-        "Guests at the Door"
+        "Guests at the Door",
+        "Every Room Helps"
       ],
       heritage: {
         title: "Teak houses and open windows",
@@ -685,10 +685,10 @@
       },
       segmentExplanations: [
         "Teak houses on stilts stay dry when monsoon water rises.",
-        "Every room has a duty — door, lamp, bed, kitchen.",
-        "A home is how people treat those who arrive at the door."
+        "A home is how people treat those who arrive at the door.",
+        "Every room has a duty — door, lamp, bed, kitchen."
       ],
-      story: "Nwe lived in a house on tall teak stilts. When monsoon rain came, water flowed under the floor but her family stayed dry upstairs. The kitchen smelled warm, and Nwe felt safe with the people she loved.\n\nFather showed her each room in their home. The door welcomes friends. The window lets in gentle light. The bed gives rest. The table and chairs hold shared meals. The lamp glows when the night is dark.\n\nOne evening, wet travelers knocked at the door. Mother opened it with a smile. They sat down, ate rice from the kitchen, and called family on the phone. Grandmother said, \"A home is how we treat people who arrive.\" Nwe never forgot those kind words.",
+      story: "Theint lived in a house on tall teak stilts. When monsoon rain came, water flowed under the floor but her family stayed dry upstairs. The kitchen smelled of ginger and warm rice. Cool air drifted through the window, and Theint felt safe with the people she loved in their strong Myanmar home.\n\nOne evening, wet travelers knocked at the door. Mother opened it with a kind smile. They sat down, ate rice from the kitchen, and called family on the phone. Grandmother said, \"A home is how we treat people who arrive.\" Theint never forgot those warm words.\n\nFather showed her each room with care. The door welcomes friends. The window lets in gentle light. The bed gives rest after play. The table and chairs hold shared meals. The lamp glows when the night is dark. Theint whispered each home word and smiled.",
       explainedStory: "Folk wisdom says a house with a clean kitchen feeds the spirit, a house with a bright window feeds the mind, and a house with a soft bed feeds the body. A lazy son in an old tale left his room messy and his lamp unlit. Guests thought the family had moved away.\n\nWhen his sister returned from the convent, she cleaned each room in silence. The neighbors said the house looked alive again, as if light had remembered where to sit. The brother learned to care for table, chair, and window — not for praise, but because a neglected house forgets its own name.\n\nLearning words like room, door, and kitchen is learning the grammar of hospitality Myanmar families have practiced for generations.",
       tip: "Walk through your home naming one object per room in English, then tap Myanmar on the matching card. Start with bed, door, and kitchen — words children use every day.",
       explainedTip: "Give your child one small home task — closing a window, placing a chair back, switching on a lamp — and say the word together before and after doing it.",
@@ -707,7 +707,7 @@
       parentPhrase: { en: "Go to your room.", mm: "မင်းအခန်းကို သွားပါ။" },
       quizQuestions: [
             {
-                  "q": "Why did water not enter Nwe's house during the monsoon?",
+                  "q": "Why did water not enter Theint's house during the monsoon?",
                   "options": [
                         "The floor stood on strong teak stilts",
                         "The house could fly",
@@ -717,7 +717,7 @@
                   "correct": 0
             },
             {
-                  "q": "What welcomes guests according to Nwe's father?",
+                  "q": "What welcomes guests according to Theint's father?",
                   "options": [
                         "The door",
                         "The television",
@@ -727,7 +727,7 @@
                   "correct": 0
             },
             {
-                  "q": "What did Nwe's family offer wet travelers?",
+                  "q": "What did Theint's family offer wet travelers?",
                   "options": [
                         "Rice from the kitchen and a warm welcome",
                         "Nothing — they locked the door",
@@ -904,7 +904,7 @@
         "Feelings are visitors — greet them, but do not let them stay forever.",
         "Thank you, please, and sorry lighten the heart like lamp oil."
       ],
-      story: "Su felt happy at the loud festival, then tired after dancing all day. Naming her feelings helped her slow down and breathe beside Mother.\n\nWhen her toy broke she felt angry. In the storm she felt a little scared. Aunt put a warm hand on Su's heart. \"Feelings are visitors,\" Aunt said. \"You can feel angry, then choose sorry and please.\" Su whispered an apology and love came back like sunshine.\n\nWalking home under Thadingyut lights, Su said thank you and please. Kind words made her hungry heart feel full — and she fell asleep peaceful.",
+      story: "Su felt happy at the loud Thingyan festival with drums, water, and bright lights. After dancing all afternoon in the sun she felt tired. Mother held her hand and helped her name each feeling. Su breathed slowly, smiled again, and watched lanterns sway above the crowded village street.\n\nWhen her toy broke she felt angry. In the storm she felt a little scared. Aunt put a warm hand on Su's heart. \"Feelings are visitors,\" Aunt said. \"You can feel angry, then choose sorry and please.\" Su whispered an apology to Sister, and love came back like sunshine after rain.\n\nWalking home under soft Thadingyut lights, Su said thank you and please. Kind words made her hungry heart feel full. Sister held her hand, Father carried a small lamp, and Su fell asleep peaceful and proud.",
       explainedStory: "There is a tale about a prince who owned every toy yet always felt sad. A wandering monk asked to share his meal. The prince refused at first, then watched the monk thank the cook, the farmer, and the rain with equal warmth.\n\nThe prince tried the same words — please, thank you, sorry — and discovered his chest felt lighter. He learned that love and gratitude are feelings you can practice like a dance step until they become natural.\n\nMyanmar children are taught to name what they feel instead of hiding it. Hungry, scared, excited, tired — each word is a bridge between the heart and the people who care.",
       tip: "At day’s end, ask your child to name one feeling in English. Tap the Myanmar button together. Model saying thank you and sorry when feelings run strong.",
       explainedTip: "When your child is upset, name the feeling calmly — angry, sad, tired — then breathe once before speaking. This mirrors how elders teach emotional patience.",

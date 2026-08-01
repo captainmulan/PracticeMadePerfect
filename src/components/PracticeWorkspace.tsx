@@ -1,6 +1,7 @@
-import type { ChangeEvent, ReactNode } from "react";
+import type { ChangeEvent, ReactNode, RefObject } from "react";
 import { Link } from "react-router-dom";
 import PracticeCodeEditor from "./PracticeCodeEditor";
+import { usePageSwipeNavigation } from "../hooks/usePageSwipeNavigation";
 import { getHomePageData } from "../utils/contentStore";
 import "../styles/course.css";
 
@@ -34,6 +35,9 @@ interface PracticeWorkspaceProps {
   onChange?: (value: string) => void;
   peekCode?: string;
   children?: ReactNode;
+  /** Same-origin book iframe — swipe inside page content also changes steps. */
+  contentIframeRef?: RefObject<HTMLIFrameElement | null>;
+  contentIframeBindKey?: string | number | null;
 }
 
 export default function PracticeWorkspace({
@@ -66,10 +70,20 @@ export default function PracticeWorkspace({
   onChange,
   peekCode = "",
   children,
+  contentIframeRef,
+  contentIframeBindKey,
 }: PracticeWorkspaceProps) {
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
   const style = homeData.style;
+  const swipe = usePageSwipeNavigation({
+    canPrevious,
+    canNext,
+    onPrevious,
+    onNext,
+    iframeRef: contentIframeRef,
+    iframeBindKey: contentIframeBindKey,
+  });
 
   const buildGradient = (start?: string, middle?: string, end?: string, fallback?: string) => {
     const s = start ?? fallback ?? "#ffffff";
@@ -90,7 +104,11 @@ export default function PracticeWorkspace({
           style?.wizardWorkspace?.panelBackgroundColor ?? "#ffffff",
         ),
         borderColor: style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0",
+        touchAction: "pan-y",
       }}
+      onPointerDown={swipe.onPointerDown}
+      onPointerUp={swipe.onPointerUp}
+      onPointerCancel={swipe.onPointerCancel}
     >
       {/* Top Bar: Chapter Info + Book Name + Toolbar */}
       <div 

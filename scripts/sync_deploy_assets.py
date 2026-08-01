@@ -36,12 +36,31 @@ if DEPLOY_INDEXEDDB_SRC.exists():
     public_indexeddb.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(DEPLOY_INDEXEDDB_SRC, public_indexeddb)
     print(f'Copied IndexedDB export: {DEPLOY_INDEXEDDB_SRC} -> {public_indexeddb}')
-    
+
+    # Tiny version stamp so clients can detect catalog updates without downloading ~5MB
+    try:
+        export_meta = json.loads(DEPLOY_INDEXEDDB_SRC.read_text(encoding='utf-8'))
+        version_payload = {
+            'exportedAt': export_meta.get('exportedAt') or '',
+            'courseCount': len(export_meta.get('courses') or []),
+        }
+    except Exception as exc:
+        print(f'Warning: could not read export metadata ({exc}); writing empty catalog-version.json')
+        version_payload = {'exportedAt': '', 'courseCount': 0}
+
+    version_json = json.dumps(version_payload, separators=(',', ':'))
+    public_version = ROOT / 'public' / 'data' / 'catalog-version.json'
+    public_version.write_text(version_json, encoding='utf-8')
+    print(f'Wrote catalog version: {public_version} ({version_payload})')
+
     if DIST_DIR.exists():
         dist_indexeddb = DIST_DIR / 'data' / 'indexeddb-export.json'
         dist_indexeddb.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(DEPLOY_INDEXEDDB_SRC, dist_indexeddb)
         print(f'Copied IndexedDB export: {DEPLOY_INDEXEDDB_SRC} -> {dist_indexeddb}')
+        dist_version = DIST_DIR / 'data' / 'catalog-version.json'
+        dist_version.write_text(version_json, encoding='utf-8')
+        print(f'Wrote catalog version: {dist_version}')
 
 # If a deploy/admin.json exists, copy it into public and dist and inject into index.html
 if ADMIN_SRC.exists():

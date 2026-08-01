@@ -137,9 +137,12 @@
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.55) 100%);
 }
 
+.book3d-plate--preview.is-text-only {
+  --book3d-excerpt-lines: 16;
+}
+
 .book3d-plate--preview.is-text-only .book3d-excerpt {
-  -webkit-line-clamp: 16;
-  font-size: 0.56rem;
+  font-size: 0.7rem;
   line-height: 1.35;
 }
 
@@ -199,6 +202,7 @@
 }
 
 .book3d-copy {
+  --book3d-excerpt-lines: 6;
   position: relative;
   z-index: 1;
   flex: 1 1 auto;
@@ -207,12 +211,14 @@
   flex-direction: column;
   gap: 3px;
   padding: 8px 9px 8px;
+  overflow: hidden;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.72) 100%);
 }
 
 .book3d-kicker {
   margin: 0;
-  font-size: 0.5rem;
+  flex-shrink: 0;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -221,7 +227,8 @@
 
 .book3d-heading {
   margin: 0;
-  font-size: 0.76rem;
+  flex-shrink: 0;
+  font-size: 0.94rem;
   font-weight: 800;
   line-height: 1.25;
   color: #fff;
@@ -229,24 +236,46 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  /* Keep emoji/title glyphs fully inside the clamp box on narrow pages */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Flex slot absorbs leftover height; inner text floors to whole lines */
+.book3d-excerpt-slot {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  container-type: size;
 }
 
 .book3d-excerpt {
   margin: 0;
-  font-size: 0.58rem;
+  font-size: 0.76rem;
   line-height: 1.4;
   color: rgba(241, 245, 249, 0.95);
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: var(--book3d-excerpt-lines, 4);
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex: 1 1 auto;
+  max-height: 100%;
+}
+
+@supports (max-height: round(down, 1cqh, 1lh)) {
+  .book3d-excerpt {
+    /* Hide mid-glyph "tops of letters" when slot height falls between lines */
+    max-height: min(
+      calc(var(--book3d-excerpt-lines, 4) * 1lh),
+      round(down, 100cqh, 1lh)
+    );
+  }
 }
 
 .book3d-hint {
   margin: 0;
   margin-top: auto;
-  font-size: 0.44rem;
+  flex-shrink: 0;
+  font-size: 0.5rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -378,17 +407,23 @@
   }
 
   .book3d-heading {
-    font-size: 0.88rem;
+    font-size: 1.04rem;
+  }
+
+  .book3d-copy {
+    --book3d-excerpt-lines: 7;
   }
 
   .book3d-excerpt {
-    font-size: 0.68rem;
-    -webkit-line-clamp: 5;
+    font-size: 0.84rem;
+  }
+
+  .book3d-plate--preview.is-text-only {
+    --book3d-excerpt-lines: 16;
   }
 
   .book3d-plate--preview.is-text-only .book3d-excerpt {
-    font-size: 0.62rem;
-    -webkit-line-clamp: 14;
+    font-size: 0.78rem;
   }
 }
 
@@ -461,25 +496,30 @@
   }
 
   .book3d-preview-art {
-    flex-basis: 42%;
+    flex-basis: 34%;
   }
 
   .book3d-copy {
+    --book3d-excerpt-lines: 8;
     padding: 6px 7px 7px;
   }
 
   .book3d-heading {
-    font-size: 0.66rem;
+    font-size: 0.82rem;
+    line-height: 1.3;
   }
 
   .book3d-excerpt {
-    font-size: 0.52rem;
-    -webkit-line-clamp: 3;
+    font-size: 0.68rem;
+  }
+
+  .book3d-plate--preview.is-text-only {
+    --book3d-excerpt-lines: 12;
   }
 
   .book3d-plate--preview.is-text-only .book3d-excerpt {
-    font-size: 0.5rem;
-    -webkit-line-clamp: 14;
+    font-size: 0.66rem;
+    line-height: 1.35;
   }
 }
 

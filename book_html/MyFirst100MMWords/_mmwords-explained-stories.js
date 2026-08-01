@@ -58,16 +58,16 @@
         {
           title: "The Rainy Day",
           story:
-            "One rainy day, water filled Su's yard and the sky rumbled. Su held a big umbrella while Dog shook wet fur. Cat hid under the porch. Chicken ran into the dry kitchen. When the rain stopped, a rainbow came out and Su laughed with all her animal friends.",
+            "After the rain, Su carries a bowl of rice to the wet yard. Duck waddles through shiny puddles. Cow stands under the mango tree chewing quietly. Butterfly rests on a leaf that still drips. Su names each animal she sees and feels thankful the storm has passed.",
           storyLong:
-            "One rainy day, water filled Su's yard and the sky rumbled over the village. Su held a big umbrella while Dog shook wet fur by the steps. Cat hid under the porch and watched the puddles. Chicken ran into the dry kitchen. Fish swam happily in the pond. When the rain stopped, a bright rainbow came out and Su laughed with all her animal friends."
+            "After the rain, Su carries a small bowl of rice to the wet yard. Duck waddles through shiny puddles and shakes its feathers. Cow stands under the mango tree chewing quietly. Butterfly rests on a leaf that still drips with raindrops. Bird hops along the fence rail. Su names each animal she sees and feels thankful the storm has passed and her village friends are safe."
         },
         {
           title: "A Lesson for the Village",
           story:
-            "Children visit the pond with their teacher on a bright morning. They feed the Fish and draw a Tiger in their notebooks. Su names each animal aloud so her friends can learn too. She promises to care for every creature in the village. Kindness to animals, she learns, is kindness to life.",
+            "Su and her classmates draw kind village animals in their notebooks beside the pond — Elephant, Fish, Bird, and Cow. They feed Fish with soft rice and listen while the teacher explains how each creature helps the village. Su promises to share food and gentle words. Kindness to animals, she learns, is kindness to life.",
           storyLong:
-            "Children visit the pond with their teacher on a bright morning. They feed the Fish and draw a Tiger in their notebooks with careful lines. Su names each animal aloud so her friends can learn too — Bird, Cat, Dog, and Elephant. A Buffalo stands quiet in the field nearby. She promises to care for every creature in the village. The teacher smiles and says kindness to animals is kindness to life. Su carries that lesson home like a treasure."
+            "Su and her classmates sit beside the village pond with open notebooks. They draw kind village animals — Elephant, Fish, Bird, and Cow — with careful lines. They feed Fish with soft rice and wave when Monkey peeks from a branch. The teacher explains how each creature helps the village stay peaceful. Su promises to share food and gentle words. Kindness to animals, she learns, is kindness to life, and she carries that lesson home like a treasure."
         },
       ],
       colors: [
@@ -88,48 +88,48 @@
         {
           title: "Grandmother's Painting",
           story:
-            "Grandmother opens a tin of paints on the low table. Su paints the Gold pagoda roof with careful strokes. They label each color in English and Myanmar together. Pink petals and Green leaves dry beside the paper. The finished picture hangs like a rainbow for every guest to see.",
+            "May helps Grandmother mix soft paints in small bowls — gold, green, pink, and blue. They paint side by side on two papers. May adds white clouds while Grandmother paints brown earth under a pagoda. When both pictures dry, they hang them together and clap. Color words feel like a happy game.",
           storyLong:
-            "Grandmother opens a tin of paints on the low table and smiles at Su. Su paints the Gold pagoda roof with careful strokes. They label each color in English and Myanmar together — Red, Blue, Yellow, and White. Pink petals and Green leaves dry beside the paper. Purple shadows go under the painted trees. When the picture is done, they hang it where every guest can see. It looks like a rainbow of Myanmar and English words side by side."
+            "May helps Grandmother mix soft paints in small bowls — gold, green, pink, blue, and white. They paint side by side on two papers at the low table. May adds white clouds while Grandmother paints brown earth under a shining pagoda. They say each color aloud as they work. When both pictures dry, they hang them together near the window and clap. Color words feel like a happy game shared between two artists."
         },
       ],
       numbers: [
         {
           title: "Mangoes at the Market",
           story:
-            "Su counts One, Two, Three mangoes in a neat row. The seller piles Ten fruit high in a tall basket. Mother gives her Six coins to pay with a polite voice. Su counts again to be sure. Numbers help her shop with care and confidence.",
+            "At the busy Myanmar market Su and Mother stand before a tall basket of yellow mangoes. Su counts one, two, three in a neat row, then pays six coins to the smiling seller. She checks again on her fingers and says thank you. Numbers help her shop with care and confidence.",
           storyLong:
-            "Su counts One, Two, Three mangoes in a neat row at the busy market. The seller piles Ten fruit high in a tall basket and smiles. Mother gives her Six coins to pay with a polite voice. Su counts Four more for Father and Five for Grandmother. She checks Seven, Eight, and Nine on her fingers before she finishes. Numbers help her shop with care and confidence. She thanks the seller and carries the fruit home proudly."
+            "At the busy Myanmar market Su and Mother stand before a tall basket of yellow mangoes glowing in the sun. Su counts one, two, three in a neat row, then four and five for family. She pays six coins to the smiling seller with a polite voice, checks again on her fingers, and says thank you. The seller nods. Numbers help her shop with care and confidence as they carry the fruit home."
         },
         {
           title: "Ten Coins on the Mat",
           story:
-            "At home Father put ten coins on a woven mat. \"Count with your eyes and your voice,\" he said. Su pointed to each coin — six, seven, eight, nine, ten. Zero mistakes! Grandmother clapped and gave Su a sweet mango.",
+            "Sister joins Su on the woven mat for a counting game. Father covers the coins with a cloth, then lifts it. Su and Sister take turns pointing from one to ten. When they finish together, Grandmother gives each girl a mango slice. Careful counting feels like a family sport.",
           storyLong:
-            "At home Father put ten shiny coins on a woven mat. \"Count with your eyes and your voice,\" he said gently. Su pointed to each coin — six, seven, eight, nine, ten. Zero mistakes! Baby clapped along. Grandmother smiled and gave Su a sweet mango for being careful."
+            "Sister joins Su on the woven mat for a counting game after dinner. Father covers ten shiny coins with a cloth, then lifts it with a smile. Su and Sister take turns pointing from one to ten in clear voices. Baby watches and claps at five. When they finish together without a rush, Grandmother gives each girl a mango slice. Careful counting feels like a family sport filled with laughter."
         },
         {
           title: "Counting with Love",
           story:
-            "Su counts stars until her eyes grow heavy on the porch. She whispers thanks for Mother and Father. She counts her family one by one in her heart. Then she falls asleep happy under the cool night. She can count love in any language.",
+            "Before sleep Su sits with Grandmother and counts prayer beads one by one. Soft lamp light warms the room. They count ten gentle beads, then whisper thank you for family. Numbers and love share the same quiet rhythm. Su falls asleep peaceful and full of gratitude.",
           storyLong:
-            "Su counts stars until her eyes grow heavy on the porch. She whispers thanks for Mother and Father beside her. She counts her family one by one in her heart — Grandmother, Grandfather, Sister, and Baby. Aunt and Uncle live nearby, and that makes Eight. Cousin makes Nine, and Su herself is Ten. Then she falls asleep happy under the cool night. She can count her family, and her love, in any language."
+            "Before sleep Su sits with Grandmother and counts prayer beads one by one. Soft lamp light warms the quiet room. They count ten gentle beads, naming a family smile for each one. Grandmother kisses Su's forehead. Numbers and love share the same quiet rhythm. Su falls asleep peaceful, proud, and full of gratitude in English and in Myanmar."
         },
       ],
       body: [
         {
           title: "Dance Class Begins",
           story:
-            "Su joined dance class in a bright teak hall open to the garden. Teacher showed soft hand flowers and a calm smile. Su lifted her head, watched with kind eyes, and listened with both ears as the drum began.",
+            "In the garden outside the teak hall, Su practices flower hands with Sister before class. A soft drum beats from inside. Teacher nods from the doorway. Su lifts her head, watches with kind eyes, and listens with both ears. Morning practice feels bright and full of hope.",
           storyLong:
-            "Su joined dance class in a bright teak hall open to the garden. Teacher showed soft hand flowers and a calm smile. Su lifted her head, watched with kind eyes, and listened with both ears as the drum began. Her friends practiced beside her, and everyone giggled when they made flower hands together."
+            "In the garden outside the teak hall, Su practices flower hands with Sister before class begins. A soft drum beats from inside the open pavilion. Teacher nods from the doorway with a calm smile. Su lifts her head, watches with kind eyes, and listens with both ears as birds sing nearby. Friends stretch on the grass. Morning practice feels bright, gentle, and full of hope."
         },
         {
           title: "Respect for the Body",
           story:
-            "Before practice Su washed her hands and brushed her teeth. She never pointed her feet at the Buddha image or her teacher. \"Your head, heart, and hands feel better when you are respectful,\" Teacher said gently.",
+            "Su stands before a small mirror and washes her face with cool water. She brushes her teeth, combs her hair, and bows to a flower shelf. Mother reminds her to keep feet polite and hands clean. Respect begins with small daily care. Su feels ready for dance with a quiet heart.",
           storyLong:
-            "Before practice Su washed her hands and brushed her teeth. She never pointed her feet at the Buddha image or her teacher. Mother combed Su's hair neatly. \"Your head, heart, and hands feel better when you are respectful,\" Teacher said gently. Su bowed and felt proud inside."
+            "Su stands before a small mirror and washes her face with cool water from a bowl. She brushes her teeth, combs her hair, and bows to a flower shelf with a tiny Buddha image. Mother reminds her to keep feet polite and hands clean before class. Respect begins with small daily care. Su feels ready for dance with a quiet, thankful heart."
         },
         {
           title: "Show Day Smiles",
@@ -143,23 +143,23 @@
         {
           title: "Rain Under the House",
           story:
-            "Rain taps the Roof while Su reads a book in her Room. The Kitchen smells of ginger and warm rice. Cool air drifts through the Window beside her Bed. Father checks that the Door is closed against the wind. Su feels safe and dry under one strong house.",
+            "Theint lives in a house on tall teak stilts. Monsoon rain taps the roof while water flows safely under the floor. The kitchen smells of ginger and warm rice. Cool air drifts through the window beside her bed. Father checks the door, and Theint feels safe and dry with her family upstairs.",
           storyLong:
-            "Rain taps the Roof while Su reads a book in her Room on the upper floor. The Kitchen smells of ginger and warm rice downstairs. Cool air drifts through the Window beside her Bed. Father checks that the Door is closed against the wind. Mother lights the Lamp when the sky grows dark. Water flows under the stilts, but the family stays dry above. Su feels safe and thankful under one strong house."
+            "Theint lives in a house on tall teak stilts above the wet ground. Monsoon rain taps the roof while water flows safely under the floor. The kitchen smells of ginger and warm rice downstairs. Cool air drifts through the window beside her bed. Father checks that the door is closed against the wind. Mother lights the lamp when the sky grows dark. Theint feels safe, dry, and thankful under one strong Myanmar house."
         },
         {
           title: "Every Room Helps",
           story:
-            "Su folds blankets on the Bed until they look neat. Father fixes a sticky Window that will not open. Mother arranges chairs at the Table for dinner. Su wipes the Door handle and smiles. Every room in the house has a job that helps the family.",
+            "Theint helps Mother tidy the kitchen first — cups on the shelf, chairs under the table, lamp wiped clean. Then she folds a blanket on the bed and opens the window for fresh air. Father smiles at the neat rooms. Every corner of the house has a helpful job.",
           storyLong:
-            "Su folds blankets on the Bed until they look neat and soft. Father fixes a sticky Window that will not open on the first try. Mother arranges chairs at the Table for dinner guests. Su wipes the Door handle and sweeps near the Kitchen. Sister sets cups by the Lamp. Grandfather says every room in the house has a job. Together they make the home ready for a peaceful evening."
+            "Theint helps Mother tidy the kitchen first — cups on the shelf, chairs under the table, lamp wiped clean, and rice bowls stacked. Then she folds a blanket on the bed and opens the window for fresh monsoon air. Father smiles at the neat rooms and pats her shoulder. Sister places flowers by the door. Every corner of the house has a helpful job that keeps the family ready and kind."
         },
         {
           title: "Guests at the Door",
           story:
-            "Su opens the Door wide when wet travelers knock. She offers Water in the Kitchen with a kind smile. Guests sit at the Table and rest their feet. Su turns on the Lamp as dark clouds gather. The house feels big, warm, and full of welcome.",
+            "Rain starts again as neighbors arrive with wet sandals. Theint brings towels and warm tea while Mother sets extra plates. Guests sit near the lamp and share quiet news. The teak house feels open and kind. Welcome lives in every room.",
           storyLong:
-            "Su opens the Door wide when wet travelers knock in the evening rain. She offers Water in the Kitchen with a kind smile. Guests sit at the Table and rest their tired feet. Mother brings Rice while Father finds dry seats near the Window. Su turns on the Lamp as dark clouds gather outside. Baby watches from the Bed with curious eyes. The house feels big, warm, and full of welcome for everyone who arrives."
+            "Rain starts again as neighbors arrive with wet sandals and soft laughs. Theint brings towels and warm tea while Mother sets extra plates on the table. Guests sit near the lamp and share quiet news from the village. Father finds dry seats by the window. Baby waves from the bed. The teak house feels open and kind. Welcome lives in every room when people arrive."
         },
       ],
       school: [
@@ -189,16 +189,16 @@
         {
           title: "A Busy Festival Day",
           story:
-            "Su feels Happy at the loud festival with music and lights. She feels Tired after dancing all afternoon in the sun. Naming her feelings helps her slow down and breathe. She says Sorry when she bumps her sister by mistake. Then they hold hands and laugh again.",
+            "At Thingyan, Su dances in the street with drums, water splashes, and bright clothes. She feels happy, then tired in the warm sun. Mother holds her hand and helps her name each feeling. Su breathes, smiles again, and watches lanterns sway above the crowded Myanmar festival path.",
           storyLong:
-            "Su feels Happy at the loud festival with music, drums, and bright lights. She feels Tired after dancing all afternoon in the warm sun. Naming her feelings helps her slow down and breathe beside Mother. She says Sorry when she bumps her sister by mistake in the crowd. Sister forgives her at once. They hold hands and laugh again. Su learns that feelings can change, and kind words help them pass gently."
+            "At Thingyan, Su dances in the street with drums, water splashes, and bright clothes. She feels happy, then tired after dancing all afternoon in the warm sun. Mother holds her hand and helps her name each feeling. Su says sorry when she bumps Sister by mistake, and they laugh again. Lanterns sway above the crowded Myanmar festival path as Su learns that feelings can change, and kind words help them pass gently."
         },
         {
           title: "Feelings Like Visitors",
           story:
-            "Aunt put a warm hand on Su's heart. \"Feelings come and go,\" she said. \"You can feel angry, then choose sorry and please.\" Su whispered an apology. Her angry heart grew quiet, like rain stopping after a storm.",
+            "After a quarrel, Su sits with Aunt on the wooden steps. Aunt places a warm hand over Su's heart and waits. Su names angry, then sorry, then please. Sister comes close for a hug. Feelings visit and leave, and love stays like sunshine after rain.",
           storyLong:
-            "Aunt put a warm hand on Su's heart after a hard afternoon. \"Feelings come and go,\" she said softly. \"You can feel angry, then choose sorry and please.\" Su whispered an apology to Sister. Mother smiled. Her angry heart grew quiet, like rain stopping after a storm, and Love filled the room again."
+            "After a quarrel over a toy, Su sits with Aunt on the wooden steps outside. Aunt places a warm hand over Su's heart and waits without rushing. Su names angry, then sorry, then please in a soft voice. Sister comes close for a hug. Mother watches with a gentle smile. Feelings visit and leave, and love stays like sunshine after rain."
         },
         {
           title: "Thank You Under the Lights",

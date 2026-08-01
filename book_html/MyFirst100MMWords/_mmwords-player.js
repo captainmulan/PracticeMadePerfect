@@ -54,6 +54,9 @@
   var audioUnlocked = false;
   var myanmarVoice = null;
   var englishVoice = null;
+  var mmAudioCtx = null;
+  var mmGainNode = null;
+  var mmMediaSource = null;
   /* Tiny silent WAV — unlocks HTMLAudioElement on iOS Safari (gesture chain). */
   var SILENT_WAV = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
 
@@ -123,8 +126,30 @@
       sharedAudio.setAttribute("webkit-playsinline", "true");
       try { sharedAudio.playsInline = true; } catch (e) {}
       sharedAudio.preload = "auto";
+      wireMmGain(sharedAudio);
     }
+    resumeMmAudioCtx();
     return sharedAudio;
+  }
+
+  /** Boost Myanmar MP3 loudness (HTMLAudio volume maxes at 1). EN path untouched. */
+  function wireMmGain(mediaEl) {
+    try {
+      var AC = w.AudioContext || w.webkitAudioContext;
+      if (!AC || mmMediaSource) return;
+      mmAudioCtx = mmAudioCtx || new AC();
+      mmGainNode = mmAudioCtx.createGain();
+      mmGainNode.gain.value = 2.2;
+      mmGainNode.connect(mmAudioCtx.destination);
+      mmMediaSource = mmAudioCtx.createMediaElementSource(mediaEl);
+      mmMediaSource.connect(mmGainNode);
+    } catch (e) {}
+  }
+
+  function resumeMmAudioCtx() {
+    try {
+      if (mmAudioCtx && mmAudioCtx.state === "suspended") mmAudioCtx.resume();
+    } catch (e) {}
   }
 
   /** Separate element for English — never shares src/state with Myanmar MP3 playback. */
@@ -165,6 +190,7 @@
    */
   function unlockMedia() {
     warmSynth();
+    resumeMmAudioCtx();
     if (audioUnlocked) return;
     try {
       if (!unlockAudioEl) {
@@ -516,7 +542,7 @@
       a.pause();
     } catch (e) {}
     a.muted = false;
-    a.playbackRate = 1.05;
+    a.playbackRate = 1;
     a.volume = 1;
     var url = googleTtsUrl(text, lang, mirror);
     /* Do not removeAttribute("src") — that re-locks HTMLAudio on iOS Safari. */

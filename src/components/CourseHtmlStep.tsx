@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import type { CourseStep } from "../data/courses";
 import PracticeWorkspace from "./PracticeWorkspace";
 import { buildHtmlStepSrcDoc, extractBookHtmlIframeSrc, resolveBookHtmlFolder } from "../utils/htmlStepContent";
@@ -36,6 +37,7 @@ export default function CourseHtmlStep({
   canPrevious = false,
   canNext = false,
 }: CourseHtmlStepProps) {
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const contentHtml = step.contentHtml ?? "<p><em>No lesson content yet.</em></p>";
   const frameSrc = extractBookHtmlIframeSrc(contentHtml);
   const resolvedFolder = resolveBookHtmlFolder({
@@ -61,8 +63,11 @@ export default function CourseHtmlStep({
       onNext={onNext}
       canPrevious={canPrevious}
       canNext={canNext}
+      contentIframeRef={iframeRef}
+      contentIframeBindKey={step.id}
     >
       <iframe
+        ref={iframeRef}
         key={frameSrc ?? `${step.id}-${(step.contentHtml ?? "").length}`}
         title={step.title}
         className="practice-html-iframe"

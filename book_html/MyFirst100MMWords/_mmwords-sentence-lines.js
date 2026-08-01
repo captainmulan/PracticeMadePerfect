@@ -306,23 +306,23 @@
     "school": {
         "School": {
             "en": "Su walks to school with her bag.",
-            "mm": "စူးက အိတ်နဲ့ ကျောင်းသွားတယ်။"
+            "mm": "စုက အိတ်နဲ့ ကျောင်းသွားတယ်။"
         },
         "Teacher": {
             "en": "Su thanks her teacher after reading aloud.",
-            "mm": "စူးက အသံထွက်ဖတ်ပြီးရင် ဆရာမကို ကျေးဇူးတင်တယ်။"
+            "mm": "စုက အသံထွက်ဖတ်ပြီးရင် ဆရာမကို ကျေးဇူးတင်တယ်။"
         },
         "Book": {
             "en": "Su opens her book and reads the story.",
-            "mm": "စူးက စာအုပ်ဖွင့်ပြီး ပုံပြင်ကို ဖတ်တယ်။"
+            "mm": "စုက စာအုပ်ဖွင့်ပြီး ပုံပြင်ကို ဖတ်တယ်။"
         },
         "Pencil": {
             "en": "Su writes her name with a pencil.",
-            "mm": "စူးက ခဲတံနဲ့ နာမည် ရေးတယ်။"
+            "mm": "စုက ခဲတံနဲ့ နာမည် ရေးတယ်။"
         },
         "Bag": {
             "en": "Su packs her bag the night before.",
-            "mm": "စူးက ညဘက် အိတ်ကို ပြင်ဆင်ထားတယ်။"
+            "mm": "စုက ညဘက် အိတ်ကို ပြင်ဆင်ထားတယ်။"
         },
         "Friend": {
             "en": "Su's friend shares a pencil in class.",
@@ -334,57 +334,57 @@
         },
         "Homework": {
             "en": "Su finishes her homework at the table.",
-            "mm": "စူးက စားပွဲပေါ်မှာ အိမ်စာ ပြီးအောင်လုပ်တယ်။"
+            "mm": "စုက စားပွဲပေါ်မှာ အိမ်စာ ပြီးအောင်လုပ်တယ်။"
         },
         "Pen": {
             "en": "Su writes neat lines with her pen.",
-            "mm": "စူးက ဘောပင်နဲ့ စာကြောင်း ရှင်းရှင်းလင်း ရေးတယ်။"
+            "mm": "စုက ဘောပင်နဲ့ စာကြောင်း ရှင်းရှင်းလင်း ရေးတယ်။"
         },
         "Eraser": {
             "en": "Su uses an eraser for small mistakes.",
-            "mm": "အမှား နည်းနည်းလုပ်မိရင် စူးက ခဲဖျက်သုံးတယ်။"
+            "mm": "အမှား နည်းနည်းလုပ်မိရင် စုက ခဲဖျက်သုံးတယ်။"
         }
     },
     "feelings": {
         "Happy": {
             "en": "Su feels happy when the family laughs.",
-            "mm": "မိသားစု ရယ်ရင် စူးက ပျော်ရွှင်တယ်။"
+            "mm": "မိသားစု ရယ်ရင် စုက ပျော်ရွှင်တယ်။"
         },
         "Sad": {
             "en": "Su feels sad when her cousin leaves.",
-            "mm": "ဝမ်းကွဲ ပြန်သွားရင် စူးက ဝမ်းနည်းတယ်။"
+            "mm": "ဝမ်းကွဲ ပြန်သွားရင် စုက ဝမ်းနည်းတယ်။"
         },
         "Angry": {
             "en": "Su breathes deep when she feels angry.",
-            "mm": "စူးဒေါ်တဲ့အခါ အသက်ရှူပြီး သုံးအထိ ရေတွက်တယ်။"
+            "mm": "စုဒေါ်တဲ့အခါ အသက်ရှူပြီး သုံးအထိ ရေတွက်တယ်။"
         },
         "Scared": {
             "en": "Su feels scared until Mother holds her hand.",
-            "mm": "အမေ လက်ကို ကိုင်ပေးမှ စူးက ကြောက်မှုနည်းသွားတယ်။"
+            "mm": "အမေ လက်ကို ကိုင်ပေးမှ စုက ကြောက်မှုနည်းသွားတယ်။"
         },
         "Tired": {
             "en": "Su feels tired after dancing all day.",
-            "mm": "တစ်နေ့လုံး ကပြီးရင် စူးက ပင်ပန်းတယ်။"
+            "mm": "တစ်နေ့လုံး ကပြီးရင် စုက ပင်ပန်းတယ်။"
         },
         "Hungry": {
             "en": "Su feels hungry when rice is cooking.",
-            "mm": "ထမင်းချက်နေတဲ့အနံ့ကို ရတဲ့အခါ စူးက ဗိုက်ဆာတယ်။"
+            "mm": "ထမင်းချက်နေတဲ့အနံ့ကို ရတဲ့အခါ စုက ဗိုက်ဆာတယ်။"
         },
         "Love": {
             "en": "Su whispers that she loves Grandmother.",
-            "mm": "စူးက အဘွားကို ချစ်တယ်လို့ တိုးတိုးပြောတယ်။"
+            "mm": "စုက အဘွားကို ချစ်တယ်လို့ တိုးတိုးပြောတယ်။"
         },
         "Thank you": {
             "en": "Su says thank you when Aunt brings cakes.",
-            "mm": "အဒေါ်က မုန့်လုံးချို ယူလာရင် စူးက ကျေးဇူးတင်တယ်။"
+            "mm": "အဒေါ်က မုန့်လုံးချို ယူလာရင် စုက ကျေးဇူးတင်တယ်။"
         },
         "Sorry": {
             "en": "Su says sorry after bumping her sister.",
-            "mm": "ညီမနဲ့ တိုက်မိရင် စူးက \"တောင်းပန်ပါတယ်\" လို့ ပြောတယ်။"
+            "mm": "ညီမနဲ့ တိုက်မိရင် စုက \"တောင်းပန်ပါတယ်\" လို့ ပြောတယ်။"
         },
         "Please": {
             "en": "Su says please when she asks for help.",
-            "mm": "ကူညီပေးဖို့ တောင်းတဲ့အခါ စူးက \"ကျေးဇူးပြုပြီး\" လို့ ပြောတယ်။"
+            "mm": "ကူညီပေးဖို့ တောင်းတဲ့အခါ စုက \"ကျေးဇူးပြုပြီး\" လို့ ပြောတယ်။"
         }
     },
     "festivals": {
