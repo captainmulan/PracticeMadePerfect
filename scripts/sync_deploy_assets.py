@@ -53,6 +53,44 @@ if DEPLOY_INDEXEDDB_SRC.exists():
     public_version.write_text(version_json, encoding='utf-8')
     print(f'Wrote catalog version: {public_version} ({version_payload})')
 
+    # Tiny home shelf catalog (summaries only, popular first) for cold-start paint
+    try:
+        export_courses = export_meta.get('courses') or []
+        summary_keys = (
+            'id', 'title', 'description', 'color', 'coverColorStart', 'coverColorMiddle',
+            'coverColorEnd', 'coverWidth', 'coverHeight', 'coverImageUrl', 'icon',
+            'iconColorStart', 'iconColorMiddle', 'iconColorEnd', 'iconSize', 'iconPosition',
+            'courseIndex', 'category', 'pIndex', 'artifactType', 'bookHtmlFolder', 'stepCount',
+        )
+
+        def pick_summary(course: dict) -> dict:
+            return {k: course[k] for k in summary_keys if k in course and course[k] is not None}
+
+        def is_popular(course: dict) -> bool:
+            p = course.get('pIndex')
+            return isinstance(p, (int, float)) and p > 0
+
+        summaries = [pick_summary(c) for c in export_courses if isinstance(c, dict)]
+        popular = sorted(
+            [c for c in summaries if is_popular(c)],
+            key=lambda c: (c.get('pIndex', 0), c.get('courseIndex', 0)),
+        )
+        rest = sorted(
+            [c for c in summaries if not is_popular(c)],
+            key=lambda c: c.get('courseIndex', 0),
+        )
+        home_catalog = {
+            'exportedAt': version_payload.get('exportedAt') or '',
+            'courses': popular + rest,
+        }
+        home_json = json.dumps(home_catalog, ensure_ascii=False, indent=2) + '\n'
+        public_home = ROOT / 'public' / 'data' / 'home-catalog.json'
+        public_home.write_text(home_json, encoding='utf-8')
+        print(f'Wrote home catalog: {public_home} ({len(home_catalog["courses"])} courses)')
+    except Exception as exc:
+        print(f'Warning: could not write home-catalog.json ({exc})')
+        home_json = None
+
     if DIST_DIR.exists():
         dist_indexeddb = DIST_DIR / 'data' / 'indexeddb-export.json'
         dist_indexeddb.parent.mkdir(parents=True, exist_ok=True)
@@ -61,6 +99,10 @@ if DEPLOY_INDEXEDDB_SRC.exists():
         dist_version = DIST_DIR / 'data' / 'catalog-version.json'
         dist_version.write_text(version_json, encoding='utf-8')
         print(f'Wrote catalog version: {dist_version}')
+        if home_json:
+            dist_home = DIST_DIR / 'data' / 'home-catalog.json'
+            dist_home.write_text(home_json, encoding='utf-8')
+            print(f'Wrote home catalog: {dist_home}')
 
 # If a deploy/admin.json exists, copy it into public and dist and inject into index.html
 if ADMIN_SRC.exists():

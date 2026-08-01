@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Course } from "../data/courses";
 import {
+  buildQuickShowcaseExcerpt,
   buildShowcaseExcerpt,
   getShowcaseCoursePool,
   getShowcaseEligibleSteps,
@@ -11,6 +12,7 @@ import {
   type ShowcaseExcerpt,
   type ShowcaseSelection,
 } from "../utils/showcasePicker";
+import { readShowcaseCache, writeShowcaseCache } from "../utils/homeCatalog";
 import { loadCourseOutlineById, loadCourseStepById } from "../utils/sqliteBrowserCourses";
 
 export interface BookShowcaseState {
@@ -20,15 +22,47 @@ export interface BookShowcaseState {
   error: string | null;
 }
 
-const MAX_STEP_TRIES_PER_BOOK = 4;
+/** Two popular books: show first ASAP, enrich / fall back lazily. */
+const MAX_BOOKS_TO_TRY = 2;
 
-export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateMs = 10000) {
-  const [state, setState] = useState<BookShowcaseState>({
-    selection: null,
-    excerpt: null,
+function initialFromCache(): BookShowcaseState {
+  const cached = readShowcaseCache();
+  if (!cached) {
+    return { selection: null, excerpt: null, loading: false, error: null };
+  }
+  return {
+    selection: {
+      course: { id: cached.courseId, title: cached.excerpt.bookTitle } as Course,
+      step: { id: "", title: cached.excerpt.pageTitle } as ShowcaseSelection["step"],
+    },
+    excerpt: cached.excerpt,
     loading: false,
     error: null,
+  };
+}
+
+function publish(
+  requestId: number,
+  requestIdRef: { current: number },
+  setState: (value: BookShowcaseState | ((prev: BookShowcaseState) => BookShowcaseState)) => void,
+  selection: ShowcaseSelection,
+  excerpt: ShowcaseExcerpt,
+  loading: boolean,
+) {
+  if (requestId !== requestIdRef.current) {
+    return;
+  }
+  writeShowcaseCache(selection.course.id, excerpt);
+  setState({
+    selection,
+    excerpt,
+    loading,
+    error: null,
   });
+}
+
+export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateMs = 10000) {
+  const [state, setState] = useState<BookShowcaseState>(initialFromCache);
   const [paused, setPaused] = useState(false);
   const requestIdRef = useRef(0);
 
@@ -38,17 +72,49 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
     }
 
     const requestId = ++requestIdRef.current;
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({
+      ...prev,
+      loading: !prev.excerpt,
+      error: null,
+    }));
 
     try {
-      const pool = shuffleCourses(getShowcaseCoursePool(courses));
-      let best: { selection: ShowcaseSelection; excerpt: ShowcaseExcerpt } | null = null;
+      const pool = shuffleCourses(getShowcaseCoursePool(courses)).slice(0, MAX_BOOKS_TO_TRY);
+      if (pool.length === 0) {
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: prev.excerpt ? null : "No showcase pages found.",
+        }));
+        return;
+      }
 
-      for (const summary of pool) {
+      /* 1) Instant frame from first popular summary (cover + blurb). */
+      const lead = pool[0];
+      const quickSelection: ShowcaseSelection = {
+        course: lead,
+        step: {
+          id: `${lead.id}-quick`,
+          courseId: lead.id,
+          chapterId: "",
+          chapterTitle: "",
+          chapterIndex: 0,
+          stepIndex: 0,
+          stepType: "html",
+          title: lead.title,
+          description: lead.description ?? "",
+        },
+      };
+      publish(requestId, requestIdRef, setState, quickSelection, buildQuickShowcaseExcerpt(lead), true);
+
+      let shownRich = false;
+
+      for (let bookIndex = 0; bookIndex < pool.length; bookIndex += 1) {
         if (requestId !== requestIdRef.current) {
           return;
         }
 
+        const summary = pool[bookIndex];
         const outline = await loadCourseOutlineById(summary.id);
         if (!outline) {
           continue;
@@ -59,90 +125,81 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
           continue;
         }
 
-        const tried = new Set<string>();
-        for (let attempt = 0; attempt < Math.min(MAX_STEP_TRIES_PER_BOOK, eligible.length); attempt += 1) {
-          if (requestId !== requestIdRef.current) {
-            return;
-          }
-
-          const outlineStep = pickRandomEligibleStep(outline);
-          if (!outlineStep || tried.has(outlineStep.id)) {
-            continue;
-          }
-          tried.add(outlineStep.id);
-
-          const fullStep = await loadCourseStepById(outlineStep.id);
-          const step = fullStep ?? outlineStep;
-
-          let relatedFull: typeof step | null = null;
-          let relatedScore = -1;
-          const relatedTried = new Set<string>([step.id]);
-          for (let p = 0; p < 5; p += 1) {
-            const relatedOutline = pickRelatedPreviewStep(outline, step);
-            if (!relatedOutline || relatedTried.has(relatedOutline.id)) {
-              continue;
-            }
-            relatedTried.add(relatedOutline.id);
-            const loaded = await loadCourseStepById(relatedOutline.id);
-            const candidate = loaded ?? relatedOutline;
-            const probe = await buildShowcaseExcerpt(outline, candidate);
-            const score =
-              Math.min(probe.excerpt.length, 680) +
-              (probe.previewImageUrl ? 40 : 0) +
-              (/explained/i.test(candidate.title) ? 80 : 0);
-            if (score > relatedScore) {
-              relatedScore = score;
-              relatedFull = candidate;
-            }
-            if (probe.excerpt.length >= 220) {
-              break;
-            }
-          }
-
-          const selection = { course: outline, step };
-          const excerpt = await buildShowcaseExcerpt(outline, step, relatedFull);
-
-          if (isFilledShowcaseExcerpt(excerpt)) {
-            best = { selection, excerpt };
-            break;
-          }
-
-          if (!best || excerpt.excerpt.length > best.excerpt.excerpt.length) {
-            best = { selection, excerpt };
-          }
+        const outlineStep = pickRandomEligibleStep(outline);
+        if (!outlineStep) {
+          continue;
         }
 
-        if (best && isFilledShowcaseExcerpt(best.excerpt)) {
+        const fullStep = await loadCourseStepById(outlineStep.id);
+        const step = fullStep ?? outlineStep;
+        const selection = { course: outline, step };
+
+        /* 2) Fast page excerpt (no related) — show as soon as ready. */
+        const fastExcerpt = await buildShowcaseExcerpt(outline, step, null);
+        if (requestId !== requestIdRef.current) {
+          return;
+        }
+
+        const usable =
+          isFilledShowcaseExcerpt(fastExcerpt) ||
+          fastExcerpt.excerpt.trim().length >= 40 ||
+          Boolean(fastExcerpt.coverImageUrl);
+        if (usable) {
+          publish(requestId, requestIdRef, setState, selection, fastExcerpt, true);
+          shownRich = true;
+
+          /* 3) Lazy enrich with one related Explained page (same book). */
+          const relatedOutline = pickRelatedPreviewStep(outline, step);
+          if (relatedOutline) {
+            const relatedLoaded = await loadCourseStepById(relatedOutline.id);
+            const related = relatedLoaded ?? relatedOutline;
+            const richExcerpt = await buildShowcaseExcerpt(outline, step, related);
+            if (requestId !== requestIdRef.current) {
+              return;
+            }
+            if (
+              richExcerpt.excerpt.length > fastExcerpt.excerpt.length ||
+              (richExcerpt.previewImageUrl && !fastExcerpt.previewImageUrl)
+            ) {
+              publish(requestId, requestIdRef, setState, selection, richExcerpt, false);
+            } else {
+              setState((prev) =>
+                requestId === requestIdRef.current ? { ...prev, loading: false } : prev,
+              );
+            }
+          } else {
+            setState((prev) =>
+              requestId === requestIdRef.current ? { ...prev, loading: false } : prev,
+            );
+          }
+
+          /* First successful book is enough — rest stay for rotate later. */
           break;
         }
+
+        /* First book weak — try second popular book. */
+        if (bookIndex === 0 && pool.length > 1) {
+          continue;
+        }
       }
 
-      if (!best) {
-        if (requestId !== requestIdRef.current) return;
-        setState({ selection: null, excerpt: null, loading: false, error: "No showcase pages found." });
-        return;
+      if (!shownRich && requestId === requestIdRef.current) {
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: prev.excerpt ? null : "No showcase pages found.",
+        }));
       }
-
-      if (requestId !== requestIdRef.current) {
-        return;
-      }
-
-      setState({
-        selection: best.selection,
-        excerpt: best.excerpt,
-        loading: false,
-        error: null,
-      });
     } catch (err) {
       if (requestId !== requestIdRef.current) {
         return;
       }
-      setState({
-        selection: null,
-        excerpt: null,
+      setState((prev) => ({
+        selection: prev.selection,
+        excerpt: prev.excerpt,
         loading: false,
-        error: String(err),
-      });
+        error: prev.excerpt ? null : String(err),
+      }));
     }
   }, [courses, enabled]);
 
@@ -162,15 +219,15 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
       }
     };
 
-    // Let shelves paint first — showcase does several IndexedDB + HTML fetches.
+    /* Short defer so shelf paints; featured work is now light. */
     let idleId: number | undefined;
     let timeoutId: number | undefined;
     const ric = window.requestIdleCallback?.bind(window);
     const cic = window.cancelIdleCallback?.bind(window);
     if (ric) {
-      idleId = ric(start, { timeout: 900 });
+      idleId = ric(start, { timeout: 500 });
     } else {
-      timeoutId = window.setTimeout(start, 180);
+      timeoutId = window.setTimeout(start, 80);
     }
 
     return () => {

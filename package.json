@@ -17,7 +17,8 @@
     "audit:solar-ui:static": "node book_html/SolarSystem/_audit-solar-ui-static.mjs",
     "audit:solar-ui:visual": "node book_html/SolarSystem/_audit-solar-ui-headless.mjs",
     "compress:book-assets": "node scripts/compress-book-assets.cjs",
-    "compress:book-assets:all": "node scripts/compress-book-assets.cjs --all"
+    "compress:book-assets:all": "node scripts/compress-book-assets.cjs --all",
+    "generate:home-catalog": "node scripts/generate-home-catalog.cjs"
   },
   "dependencies": {
     "react": "^19.0.0",

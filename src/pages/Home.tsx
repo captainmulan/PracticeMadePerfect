@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BookShowcase from "../components/showcase/BookShowcase";
 import HomeCourseShelves from "../components/HomeCourseShelves";
@@ -8,10 +8,12 @@ import ExchangeRatePanel from "../components/ExchangeRatePanel";
 import { useBookShowcase } from "../hooks/useBookShowcase";
 import { getHomePageData } from "../utils/contentStore";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
+import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import {
   createShelfItemFromCourse,
   getCourseShelfRowForCategory,
   getHomeCourseShelfRows,
+  getPopularCourses,
   type CourseShelfRow,
 } from "../utils/courseShelf";
 import "../styles/home-test-showcase.css";
@@ -32,6 +34,20 @@ function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["cour
       String(value).toLowerCase().includes(normalized)
     )
   );
+}
+
+function preloadPopularCovers(courses: ReturnType<typeof useCourseCatalog>["courses"]) {
+  const popular = getPopularCourses(courses);
+  const targets = (popular.length > 0 ? popular : courses).slice(0, 6);
+  for (const course of targets) {
+    const url = resolveBookCoverUrl(course);
+    if (!url) {
+      continue;
+    }
+    const img = new Image();
+    img.decoding = "async";
+    img.src = url;
+  }
 }
 
 export default function Home() {
@@ -55,6 +71,13 @@ export default function Home() {
     setPaused: setShowcasePaused,
   } = useBookShowcase(courses, showcaseEnabled);
 
+  useEffect(() => {
+    if (!coursesLoaded || courses.length === 0) {
+      return;
+    }
+    preloadPopularCovers(courses);
+  }, [courses, coursesLoaded]);
+
   const selectedRow: CourseShelfRow | undefined = useMemo(() => {
     if (selectedTab === "Login") {
       return undefined;
@@ -77,7 +100,8 @@ export default function Home() {
       navigate(`/courses/${showcaseSelection.course.id}`);
       return;
     }
-    const fallback = courses[0];
+    const popular = getPopularCourses(courses);
+    const fallback = popular[0] ?? courses[0];
     if (fallback) {
       navigate(`/courses/${fallback.id}`);
     }

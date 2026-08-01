@@ -1,12 +1,17 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { StageNavProvider } from "./context/StageNavContext";
 import Home from "./pages/Home";
-import Home_Test from "./pages/Home_Test";
-import Practice from "./pages/Practice";
-import CourseWizard from "./pages/CourseWizard";
-import AdminAuth from "./pages/AdminAuth";
 import { getHomePageData } from "./utils/contentStore";
+
+const Home_Test = lazy(() => import("./pages/Home_Test"));
+const Practice = lazy(() => import("./pages/Practice"));
+const CourseWizard = lazy(() => import("./pages/CourseWizard"));
+const AdminAuth = lazy(() => import("./pages/AdminAuth"));
+
+function RouteFallback() {
+  return <div className="page-content panel"><div className="panel-body">Loading…</div></div>;
+}
 
 function AppContent() {
   const homeData = getHomePageData();
@@ -41,15 +46,17 @@ function AppContent() {
       }}
     >
       <main className="app-main">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/home_test" element={<Home_Test />} />
-          <Route path="/practice" element={<Navigate to="/" replace />} />
-          <Route path="/practice/:categoryKey" element={<Practice />} />
-          <Route path="/courses/:courseId" element={<CourseWizard />} />
-          <Route path="/admin" element={<AdminAuth />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/home_test" element={<Home_Test />} />
+            <Route path="/practice" element={<Navigate to="/" replace />} />
+            <Route path="/practice/:categoryKey" element={<Practice />} />
+            <Route path="/courses/:courseId" element={<CourseWizard />} />
+            <Route path="/admin" element={<AdminAuth />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </main>
     </div>
   );

@@ -157,10 +157,36 @@ export function pickRelatedPreviewStep(
   return pickWeightedStep(sameChapter.length > 0 ? sameChapter : eligible);
 }
 
-/** Catalog summaries have empty chapters — pick a course id first, then load outline. */
+/** Catalog summaries — prefer popular (pIndex) for featured / cold start. */
 export function getShowcaseCoursePool(courses: Course[]): Course[] {
   const popular = getPopularCourses(courses);
-  return (popular.length > 0 ? popular : courses).slice();
+  const pool = popular.length > 0 ? popular : courses;
+  /* Featured only needs a couple of popular books. */
+  return pool.slice(0, 2);
+}
+
+/** Instant featured frame from summary meta (no HTML fetch). */
+export function buildQuickShowcaseExcerpt(course: Course): ShowcaseExcerpt {
+  const cover = resolveBookCoverUrl(course) ?? null;
+  const blurb =
+    (course.description || "").replace(/\s+/g, " ").trim() ||
+    "Open this book to explore more pages.";
+  return {
+    bookTitle: course.title,
+    chapterTitle: "Featured",
+    pageTitle: course.title,
+    heroImageUrl: null,
+    coverImageUrl: cover,
+    previewImageUrl: null,
+    previewPageTitle: course.title,
+    pageEmoji: null,
+    excerpt: blurb.length > 320 ? `${blurb.slice(0, 317).trim()}…` : blurb,
+    artifactType: course.artifactType ?? "book",
+    coverColorStart: course.coverColorStart ?? course.color,
+    coverColorMiddle: course.coverColorMiddle ?? course.color,
+    coverColorEnd: course.coverColorEnd ?? course.color,
+    icon: course.icon,
+  };
 }
 
 export function shuffleCourses(courses: Course[]): Course[] {
