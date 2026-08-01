@@ -26,6 +26,9 @@
     "react-router-dom": "^7.17.0",
     "sql.js": "^1.8.0"
   },
+  "optionalDependencies": {
+    "firebase": "^11.10.0"
+  },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

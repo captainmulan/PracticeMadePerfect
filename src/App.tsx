@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
+import { AccountProvider } from "./context/AccountContext";
 import { StageNavProvider } from "./context/StageNavContext";
 import Home from "./pages/Home";
 import { getHomePageData } from "./utils/contentStore";
@@ -64,11 +65,13 @@ function AppContent() {
 
 function App() {
   return (
-    <StageNavProvider>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </StageNavProvider>
+    <AccountProvider>
+      <StageNavProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </StageNavProvider>
+    </AccountProvider>
   );
 }
 

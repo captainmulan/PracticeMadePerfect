@@ -5,13 +5,15 @@ import CourseHtmlStep from "../components/CourseHtmlStep";
 import CourseQuizStep from "../components/CourseQuizStep";
 import type { CourseStep } from "../data/courses";
 import { courseStepLabel } from "../data/courses";
+import { useAccountOptional } from "../context/AccountContext";
 import { useCourseReader } from "../hooks/useCourseReader";
-import { loadCourseProgress, saveCourseProgress } from "../utils/courseUtils";
+import { loadCourseProgressForUser, saveCourseProgress } from "../utils/courseUtils";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
+  const account = useAccountOptional();
   const {
     outline,
     steps,
@@ -26,9 +28,15 @@ export default function CourseWizard() {
 
   useEffect(() => {
     if (!courseId) return;
-    const saved = loadCourseProgress(courseId);
-    setStepIndex(Math.min(saved, Math.max(steps.length - 1, 0)));
-  }, [courseId, steps.length]);
+    let active = true;
+    loadCourseProgressForUser(courseId, account?.user?.userId).then((saved) => {
+      if (!active) return;
+      setStepIndex(Math.min(saved, Math.max(steps.length - 1, 0)));
+    });
+    return () => {
+      active = false;
+    };
+  }, [account?.user?.userId, courseId, steps.length]);
 
   useEffect(() => {
     if (!courseId) return;
