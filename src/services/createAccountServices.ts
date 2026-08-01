@@ -2,7 +2,6 @@ import type { AuthPort } from "./ports/authPort";
 import type { BillingPort } from "./ports/billingPort";
 import type { ProgressPort } from "./ports/progressPort";
 import { createFirebaseAuthAdapter, type FirebaseWebConfig } from "./adapters/firebaseAuthAdapter";
-import { createLocalAuthAdapter } from "./adapters/localAuthAdapter";
 import { createLocalBillingAdapter } from "./adapters/localBillingAdapter";
 import { createLocalProgressAdapter } from "./adapters/localProgressAdapter";
 
@@ -32,12 +31,21 @@ function readFirebaseConfig(): FirebaseWebConfig | null {
   };
 }
 
+/** Public client config for this Hosting project (safe to ship; restricted by Auth domains). */
+const MAGIC_LIBRARY_FIREBASE: FirebaseWebConfig = {
+  apiKey: "AIzaSyAldVOSqUCO41TUQ6kR5VTK3U-aAWQqGMU",
+  authDomain: "magiclibrary-143b7.firebaseapp.com",
+  projectId: "magiclibrary-143b7",
+  appId: "1:64804616100:web:e0499bde2744d0da567331",
+  storageBucket: "magiclibrary-143b7.firebasestorage.app",
+  messagingSenderId: "64804616100",
+};
+
 let cached: AccountServices | null = null;
 
 /**
  * Single composition root — swap adapters here without touching UI.
- * Default: local auth/progress/billing so the app works with zero cloud config.
- * Set VITE_FIREBASE_* to plug in Firebase Auth (Google + email).
+ * Auth: Firebase (Google + email). Progress/billing stay behind ports (local today).
  * Set VITE_BILLING_CHECKOUT_URL to enable Stripe checkout redirects.
  */
 export function getAccountServices(): AccountServices {
@@ -45,8 +53,8 @@ export function getAccountServices(): AccountServices {
     return cached;
   }
 
-  const firebaseConfig = readFirebaseConfig();
-  const auth = firebaseConfig ? createFirebaseAuthAdapter(firebaseConfig) : createLocalAuthAdapter();
+  const firebaseConfig = readFirebaseConfig() ?? MAGIC_LIBRARY_FIREBASE;
+  const auth = createFirebaseAuthAdapter(firebaseConfig);
   const progress = createLocalProgressAdapter();
   const billing = createLocalBillingAdapter({
     checkoutEndpoint: import.meta.env.VITE_BILLING_CHECKOUT_URL?.trim() || undefined,
@@ -56,7 +64,7 @@ export function getAccountServices(): AccountServices {
     auth,
     progress,
     billing,
-    authBackend: firebaseConfig ? "firebase" : "local",
+    authBackend: "firebase",
   };
   return cached;
 }

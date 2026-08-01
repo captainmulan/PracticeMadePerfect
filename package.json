@@ -21,13 +21,11 @@
     "generate:home-catalog": "node scripts/generate-home-catalog.cjs"
   },
   "dependencies": {
+    "firebase": "11.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.17.0",
     "sql.js": "^1.8.0"
-  },
-  "optionalDependencies": {
-    "firebase": "^11.10.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

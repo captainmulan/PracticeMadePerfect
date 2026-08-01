@@ -3633,6 +3633,13 @@ textarea {
   cursor: pointer;
 }
 
+.home-login-divider {
+  margin: 2px 0 0;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
 .home-login-google {
   border: 1px solid rgba(148, 163, 184, 0.45);
   background: #ffffff;

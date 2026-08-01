@@ -229,8 +229,10 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
   const [dbError, setDbError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
-  const [adminTab, setAdminTab] = useState<"home" | "wizard-style" | "books" | "data-sync">("home");
-  const [homeStyleTab, setHomeStyleTab] = useState<"json" | "main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs" | "announcements">("main");
+  const [adminTab, setAdminTab] = useState<"home" | "books" | "system">("home");
+  const [systemSubTab, setSystemSubTab] = useState<"database" | "data-sync" | "reading-style">("database");
+  const [homeSection, setHomeSection] = useState<"style" | "json" | "announcements">("announcements");
+  const [homeStyleTab, setHomeStyleTab] = useState<"main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
   const [wizardStyleTab, setWizardStyleTab] = useState<"topinfo" | "workspace" | "buttons">("topinfo");
   const [wizardTopInfoSubTab, setWizardTopInfoSubTab] = useState<"background" | "navButtons" | "homeButton" | "chapterLabel" | "label" | "number" | "bookname" | "title" | "description">("background");
   const [isRestoringDb, setIsRestoringDb] = useState(false);
@@ -777,125 +779,117 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
 
   return (
     <div className="page-content page-admin">
-      <div className="admin-top-toolbar">
-        <div className="admin-top-group">
-          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "home" ? "active" : ""}`} onClick={() => setAdminTab("home")}>
-            Home Page
-          </button>
-          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "wizard-style" ? "active" : ""}`} onClick={() => setAdminTab("wizard-style")}>
-            Page Style
-          </button>
-          <button type="button" className={`admin-btn admin-btn-nav ${adminTab === "books" ? "active" : ""}`} onClick={() => setAdminTab("books")}>
-            Book Builder
-          </button>
+      <header className="admin-shell-header">
+        <div className="admin-shell-brand">
+          <strong>Admin</strong>
+          <span>Manage home, books, and system</span>
         </div>
+        <button type="button" className="admin-btn admin-btn-logout" onClick={onLogout}>
+          Logout
+        </button>
+      </header>
 
-        <div className="admin-top-divider" aria-hidden="true" />
-
-        <div className="admin-top-group">
-          <button
-            type="button"
-            className="admin-btn admin-btn-data"
-            onClick={() => dbFileInputRef.current?.click()}
-            disabled={isImportingDb}
-          >
-            {isImportingDb ? "Importing..." : "Import DB"}
-          </button>
-          <input
-            ref={dbFileInputRef}
-            type="file"
-            accept=".db"
-            onChange={handleImportDb}
-            style={{ display: "none" }}
-          />
-          <button
-            type="button"
-            className="admin-btn admin-btn-data"
-            onClick={() => jsonDbFileInputRef.current?.click()}
-            disabled={isImportingJsonDb}
-          >
-            {isImportingJsonDb ? "Importing..." : "Import JSON DB"}
-          </button>
-          <input
-            ref={jsonDbFileInputRef}
-            type="file"
-            accept=".json"
-            onChange={handleImportJsonDb}
-            style={{ display: "none" }}
-          />
-          <button type="button" className="admin-btn admin-btn-data" onClick={handleRestoreBundledDb} disabled={isRestoringDb}>
-            {isRestoringDb ? "Restoring..." : "Restore Bundled Database"}
-          </button>
-          <button type="button" className={`admin-btn admin-btn-data ${adminTab === "data-sync" ? "active" : ""}`} onClick={() => setAdminTab("data-sync")}>
-            Data Sync
-          </button>
-        </div>
-
-        <div className="admin-top-divider" aria-hidden="true" />
-
-        <div className="admin-top-group admin-top-group-auth">
-          <button type="button" className="admin-btn admin-btn-logout" onClick={onLogout}>
-            Logout
-          </button>
-        </div>
-      </div>
+      <nav className="admin-primary-nav" aria-label="Admin sections">
+        <button
+          type="button"
+          className={`admin-primary-tab ${adminTab === "home" ? "active" : ""}`}
+          onClick={() => setAdminTab("home")}
+        >
+          <span className="admin-primary-tab-title">Home Page</span>
+          <span className="admin-primary-tab-desc">Layout, theme, announcements</span>
+        </button>
+        <button
+          type="button"
+          className={`admin-primary-tab ${adminTab === "books" ? "active" : ""}`}
+          onClick={() => setAdminTab("books")}
+        >
+          <span className="admin-primary-tab-title">Books</span>
+          <span className="admin-primary-tab-desc">Build and edit book courses</span>
+        </button>
+        <button
+          type="button"
+          className={`admin-primary-tab ${adminTab === "system" ? "active" : ""}`}
+          onClick={() => setAdminTab("system")}
+        >
+          <span className="admin-primary-tab-title">System</span>
+          <span className="admin-primary-tab-desc">Database, sync, reading UI</span>
+        </button>
+      </nav>
 
       {message && <div className="admin-course-message">{message}</div>}
 
       {adminTab === "home" ? (
         <section className="panel admin-editor admin-section">
+          <div className="admin-section-heading">
+            <h2>Home Page</h2>
+            <p>Controls the public home hero, shelves, and theme.</p>
+          </div>
           <div className="admin-section-body">
-            <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
-              <div className="admin-search-actions-end">
-                <button type="button" className="footer-button" onClick={() => fileInputRef.current?.click()} style={{ marginRight: 8 }}>
-                  Import admin.json
-                </button>
-                <button type="button" className="footer-button" onClick={handleExport} style={{ marginRight: 8 }}>
-                  Export Admin
-                </button>
-                <button type="button" className="footer-button" onClick={handleExportDb} style={{ marginRight: 8 }}>
-                  Export DB
-                </button>
-                <button type="button" className="footer-button" onClick={handleSave}>
-                  Save
-                </button>
-              </div>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="application/json"
-              onChange={handleImportAdminJson}
-              style={{ display: "none" }}
-            />
             <div className="admin-tabs" style={{ marginBottom: "16px" }}>
-              <button type="button" className={`admin-tab ${homeStyleTab === "json" ? "active" : ""}`} onClick={() => setHomeStyleTab("json")}>
-                Data (JSON)
-              </button>
-              <button type="button" className={`admin-tab ${homeStyleTab === "main" ? "active" : ""}`} onClick={() => setHomeStyleTab("main")}>
-                Main Page
-              </button>
-              <button type="button" className={`admin-tab ${homeStyleTab === "hero" ? "active" : ""}`} onClick={() => setHomeStyleTab("hero")}> 
-                Hero Section
-              </button>
-              <button type="button" className={`admin-tab ${homeStyleTab === "topmenu" ? "active" : ""}`} onClick={() => setHomeStyleTab("topmenu")}>
-                Top Main Menu
-              </button>
-              <button type="button" className={`admin-tab ${homeStyleTab === "buttons" ? "active" : ""}`} onClick={() => setHomeStyleTab("buttons")}>
-                Buttons
-              </button>
-              <button type="button" className={`admin-tab ${homeStyleTab === "bookshelf" ? "active" : ""}`} onClick={() => setHomeStyleTab("bookshelf")}>
-                Bookshelf
-              </button>
-              <button type="button" className={`admin-tab ${homeStyleTab === "tabs" ? "active" : ""}`} onClick={() => setHomeStyleTab("tabs")}>
-                Tabs / Submenu
-              </button>
-              <button type="button" className={`admin-tab ${homeStyleTab === "announcements" ? "active" : ""}`} onClick={() => setHomeStyleTab("announcements")}>
+              <button
+                type="button"
+                className={`admin-tab ${homeSection === "announcements" ? "active" : ""}`}
+                onClick={() => setHomeSection("announcements")}
+              >
                 Announcements
               </button>
+              <button
+                type="button"
+                className={`admin-tab ${homeSection === "json" ? "active" : ""}`}
+                onClick={() => setHomeSection("json")}
+              >
+                Data (JSON)
+              </button>
+              <button
+                type="button"
+                className={`admin-tab ${homeSection === "style" ? "active" : ""}`}
+                onClick={() => setHomeSection("style")}
+              >
+                Style
+              </button>
             </div>
-            {homeStyleTab === "json" && (
+
+            {homeSection === "style" && (
+              <>
+                <div className="admin-search-actions" style={{ marginBottom: "12px" }}>
+                  <div className="admin-search-actions-end">
+                    <button type="button" className="footer-button" onClick={handleSave}>
+                      Save
+                    </button>
+                  </div>
+                </div>
+                <div className="admin-tabs admin-home-style-subnav" style={{ marginBottom: "16px" }}>
+                  <button type="button" className={`admin-tab ${homeStyleTab === "main" ? "active" : ""}`} onClick={() => setHomeStyleTab("main")}>
+                    Main Page
+                  </button>
+                  <button type="button" className={`admin-tab ${homeStyleTab === "hero" ? "active" : ""}`} onClick={() => setHomeStyleTab("hero")}>
+                    Hero Section
+                  </button>
+                  <button type="button" className={`admin-tab ${homeStyleTab === "topmenu" ? "active" : ""}`} onClick={() => setHomeStyleTab("topmenu")}>
+                    Top Main Menu
+                  </button>
+                  <button type="button" className={`admin-tab ${homeStyleTab === "buttons" ? "active" : ""}`} onClick={() => setHomeStyleTab("buttons")}>
+                    Buttons
+                  </button>
+                  <button type="button" className={`admin-tab ${homeStyleTab === "bookshelf" ? "active" : ""}`} onClick={() => setHomeStyleTab("bookshelf")}>
+                    Bookshelf
+                  </button>
+                  <button type="button" className={`admin-tab ${homeStyleTab === "tabs" ? "active" : ""}`} onClick={() => setHomeStyleTab("tabs")}>
+                    Tabs / Submenu
+                  </button>
+                </div>
+              </>
+            )}
+
+            {homeSection === "json" && (
               <div style={{ marginBottom: "24px" }}>
+                <div className="admin-search-actions" style={{ marginBottom: "12px" }}>
+                  <div className="admin-search-actions-end">
+                    <button type="button" className="footer-button" onClick={handleSave}>
+                      Save
+                    </button>
+                  </div>
+                </div>
                 <label className="admin-task-editor-field admin-task-editor-full">
                   <span className="admin-task-editor-label">Home Page Data (JSON)</span>
                   <textarea
@@ -907,7 +901,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </label>
               </div>
             )}
-            {homeStyleTab === "main" && (
+            {homeSection === "style" && homeStyleTab === "main" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Main Page</h4>
                 <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -965,7 +959,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </div>
               </div>
             )}
-            {homeStyleTab === "hero" && (
+            {homeSection === "style" && homeStyleTab === "hero" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Hero Section</h4>
                 <div style={{ marginBottom: "16px" }}>
@@ -1094,7 +1088,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </div>
               </div>
             )}
-            {homeStyleTab === "topmenu" && (
+            {homeSection === "style" && homeStyleTab === "topmenu" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Top Main Menu</h4>
                 <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1227,7 +1221,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </div>
               </div>
             )}
-            {homeStyleTab === "buttons" && (
+            {homeSection === "style" && homeStyleTab === "buttons" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Buttons</h4>
                 <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1356,7 +1350,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </div>
               </div>
             )}
-            {homeStyleTab === "bookshelf" && (
+            {homeSection === "style" && homeStyleTab === "bookshelf" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Bookshelf</h4>
                 <div style={{ marginBottom: "16px" }}>
@@ -1469,7 +1463,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </label>
               </div>
             )}
-            {homeStyleTab === "tabs" && (
+            {homeSection === "style" && homeStyleTab === "tabs" && (
               <div className="panel panel-bordered" style={{ padding: "16px" }}>
                 <h4 style={{ marginTop: 0 }}>Tabs / Submenu</h4>
                 <div style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1578,13 +1572,28 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </label>
               </div>
             )}
-            {homeStyleTab === "announcements" && (
+            {homeSection === "announcements" && (
               <AdminAnnouncements />
             )}
           </div>
         </section>
-      ) : adminTab === "wizard-style" ? (
+      ) : adminTab === "system" && systemSubTab === "reading-style" ? (
         <section className="panel admin-editor admin-section">
+          <div className="admin-section-heading">
+            <h2>Reading Page Style</h2>
+            <p>Colors and chrome for the in-book reading / practice workspace.</p>
+          </div>
+          <nav className="admin-tabs admin-system-subnav" aria-label="System settings">
+            <button type="button" className={`admin-tab ${systemSubTab === "database" ? "active" : ""}`} onClick={() => setSystemSubTab("database")}>
+              Database
+            </button>
+            <button type="button" className={`admin-tab ${systemSubTab === "data-sync" ? "active" : ""}`} onClick={() => setSystemSubTab("data-sync")}>
+              Data Sync
+            </button>
+            <button type="button" className={`admin-tab ${systemSubTab === "reading-style" ? "active" : ""}`} onClick={() => setSystemSubTab("reading-style")}>
+              Reading Page Style
+            </button>
+          </nav>
           <div className="admin-section-body">
             <div className="admin-search-actions" style={{ marginBottom: "16px" }}>
               <div className="admin-search-actions-end">
@@ -2218,13 +2227,140 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
             )}
           </div>
         </section>
-      ) : adminTab === "data-sync" ? (
+      ) : adminTab === "system" && systemSubTab === "data-sync" ? (
         <section className="panel admin-editor admin-section">
-          <AdminDataSync />
+          <div className="admin-section-heading">
+            <h2>Data Sync</h2>
+            <p>Export and sync catalog data for deploy.</p>
+          </div>
+          <nav className="admin-tabs admin-system-subnav" aria-label="System settings">
+            <button type="button" className={`admin-tab ${systemSubTab === "database" ? "active" : ""}`} onClick={() => setSystemSubTab("database")}>
+              Database
+            </button>
+            <button type="button" className={`admin-tab ${systemSubTab === "data-sync" ? "active" : ""}`} onClick={() => setSystemSubTab("data-sync")}>
+              Data Sync
+            </button>
+            <button type="button" className={`admin-tab ${systemSubTab === "reading-style" ? "active" : ""}`} onClick={() => setSystemSubTab("reading-style")}>
+              Reading Page Style
+            </button>
+          </nav>
+          <div className="admin-section-body">
+            <AdminDataSync />
+          </div>
+        </section>
+      ) : adminTab === "system" ? (
+        <section className="panel admin-editor admin-section">
+          <div className="admin-section-heading">
+            <h2>Database</h2>
+            <p>Import, export, and restore admin theme data and local databases.</p>
+          </div>
+          <nav className="admin-tabs admin-system-subnav" aria-label="System settings">
+            <button type="button" className={`admin-tab ${systemSubTab === "database" ? "active" : ""}`} onClick={() => setSystemSubTab("database")}>
+              Database
+            </button>
+            <button type="button" className={`admin-tab ${systemSubTab === "data-sync" ? "active" : ""}`} onClick={() => setSystemSubTab("data-sync")}>
+              Data Sync
+            </button>
+            <button type="button" className={`admin-tab ${systemSubTab === "reading-style" ? "active" : ""}`} onClick={() => setSystemSubTab("reading-style")}>
+              Reading Page Style
+            </button>
+          </nav>
+          <div className="admin-section-body">
+            <div className="admin-system-card-grid">
+              <div className="admin-system-card">
+                <h3>Import admin.json</h3>
+                <p>Load home/theme admin settings from a JSON file.</p>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-data"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Import admin.json
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/json"
+                  onChange={handleImportAdminJson}
+                  style={{ display: "none" }}
+                />
+              </div>
+              <div className="admin-system-card">
+                <h3>Export Admin</h3>
+                <p>Download current admin theme settings as <code>admin.json</code>.</p>
+                <button type="button" className="admin-btn admin-btn-data" onClick={handleExport}>
+                  Export Admin
+                </button>
+              </div>
+              <div className="admin-system-card">
+                <h3>Export DB</h3>
+                <p>Download the IndexedDB catalog export for backup or deploy.</p>
+                <button type="button" className="admin-btn admin-btn-data" onClick={handleExportDb}>
+                  Export DB
+                </button>
+              </div>
+              <div className="admin-system-card">
+                <h3>Import SQLite DB</h3>
+                <p>Load a <code>.db</code> file into this browser.</p>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-data"
+                  onClick={() => dbFileInputRef.current?.click()}
+                  disabled={isImportingDb}
+                >
+                  {isImportingDb ? "Importing..." : "Import DB"}
+                </button>
+                <input
+                  ref={dbFileInputRef}
+                  type="file"
+                  accept=".db"
+                  onChange={handleImportDb}
+                  style={{ display: "none" }}
+                />
+              </div>
+              <div className="admin-system-card">
+                <h3>Import JSON DB</h3>
+                <p>Load an IndexedDB export <code>.json</code> file.</p>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-data"
+                  onClick={() => jsonDbFileInputRef.current?.click()}
+                  disabled={isImportingJsonDb}
+                >
+                  {isImportingJsonDb ? "Importing..." : "Import JSON DB"}
+                </button>
+                <input
+                  ref={jsonDbFileInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportJsonDb}
+                  style={{ display: "none" }}
+                />
+              </div>
+              <div className="admin-system-card">
+                <h3>Restore Bundled Database</h3>
+                <p>Reset to the app’s packaged database (password required).</p>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-data"
+                  onClick={handleRestoreBundledDb}
+                  disabled={isRestoringDb}
+                >
+                  {isRestoringDb ? "Restoring..." : "Restore Bundled Database"}
+                </button>
+              </div>
+            </div>
+          </div>
         </section>
       ) : (
         <section className="panel admin-editor admin-section">
-          <AdminCourses />
+          <div className="admin-section-heading">
+            <h2>Books</h2>
+            <p>Create, import, and edit interactive book courses.</p>
+          </div>
+          <div className="admin-section-body">
+            <AdminCourses />
+          </div>
         </section>
       )}
     </div>

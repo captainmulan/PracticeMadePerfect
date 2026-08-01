@@ -118,10 +118,6 @@ export default function HomeLoginPanel() {
               Plan: {entitlement?.plan ?? "free"}
               {entitlement?.stripeCustomerId ? " · Stripe linked" : ""}
             </p>
-            <p className="home-login-backend-hint">
-              Auth: {authBackend === "firebase" ? "Firebase" : "Local (device)"}
-              {!paymentsEnabled ? " · Payments not configured" : ""}
-            </p>
             {paymentsEnabled && (
               <button
                 type="button"
@@ -144,6 +140,19 @@ export default function HomeLoginPanel() {
           </div>
         ) : (
           <form className="home-login-form" onSubmit={(event) => void handleSubmit(event)}>
+            {supportsGoogle && (
+              <>
+                <button
+                  type="button"
+                  className="home-login-google"
+                  disabled={busy}
+                  onClick={() => void handleGoogle()}
+                >
+                  {busy ? "Please wait…" : "Continue with Google"}
+                </button>
+                <p className="home-login-divider">or use email</p>
+              </>
+            )}
             {mode === "register" && (
               <label className="home-login-field">
                 <span>Name</span>
@@ -183,19 +192,9 @@ export default function HomeLoginPanel() {
             <button type="submit" className="home-login-submit" disabled={busy}>
               {busy ? "Please wait…" : mode === "register" ? "Register" : "Login"}
             </button>
-            {supportsGoogle && (
-              <button
-                type="button"
-                className="home-login-google"
-                disabled={busy}
-                onClick={() => void handleGoogle()}
-              >
-                Continue with Google
-              </button>
-            )}
             {authBackend === "local" && (
               <p className="home-login-backend-hint">
-                Local accounts on this device. Add Firebase env vars to enable Google + cloud Auth.
+                Local accounts on this device. Cloud Google sign-in activates after Firebase Auth is enabled.
               </p>
             )}
           </form>
