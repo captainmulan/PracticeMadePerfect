@@ -231,8 +231,12 @@ document.addEventListener("DOMContentLoaded", function() {
     VIEW_MODES.forEach(function(m) {
       var img = document.getElementById("viewImg-" + m.id);
       if (!img || !window.ContinentChapterImage) return;
-      var uri = ContinentChapterImage.getUri("overview", m.slot);
-      if (uri) img.src = uri;
+      if (ContinentChapterImage.applySrc) {
+        ContinentChapterImage.applySrc(img, "overview", m.slot);
+      } else {
+        var uri = ContinentChapterImage.getUri("overview", m.slot);
+        if (uri) img.src = uri;
+      }
     });
   }
 

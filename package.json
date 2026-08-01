@@ -15,7 +15,9 @@
     "rebuild-tasks": "python scripts/migrate_taskdefs_to_sqlite.py && python scripts/generate_tasks_bundle.py",
     "audit:solar-ui": "node book_html/SolarSystem/_audit-solar-ui-loop.mjs",
     "audit:solar-ui:static": "node book_html/SolarSystem/_audit-solar-ui-static.mjs",
-    "audit:solar-ui:visual": "node book_html/SolarSystem/_audit-solar-ui-headless.mjs"
+    "audit:solar-ui:visual": "node book_html/SolarSystem/_audit-solar-ui-headless.mjs",
+    "compress:book-assets": "node scripts/compress-book-assets.cjs",
+    "compress:book-assets:all": "node scripts/compress-book-assets.cjs --all"
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -27,6 +29,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "sharp": "^0.35.3",
     "typescript": "^5.5.4",
     "vite": "^5.4.1"
   }

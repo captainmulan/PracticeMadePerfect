@@ -45,6 +45,15 @@
         ]
       },
       {
+        "source": "/book_html/**/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=2592000,must-revalidate"
+          }
+        ]
+      },
+      {
         "source": "/book_covers/**",
         "headers": [
           {

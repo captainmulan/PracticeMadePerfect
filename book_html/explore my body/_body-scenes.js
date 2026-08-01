@@ -1,44 +1,53 @@
-/* Chapter scene slots — load PNG/JPG from assets/ (Ocean Adventure pattern) */
+/* Chapter scene slots — WebP → JPG → PNG; also tries exp-* alias for explain-* */
 (function (w) {
   function assetCandidates(chapterId, slot) {
-    var alt = slot.replace(/^explain-/, "exp-");
-    var bases = ["assets/" + chapterId + "-" + slot, "assets/" + chapterId + "-" + alt];
+    var alt = String(slot).replace(/^explain-/, "exp-");
+    var bases = ["assets/" + chapterId + "-" + slot];
+    if (alt !== slot) {
+      bases.push("assets/" + chapterId + "-" + alt);
+    }
     var out = [];
     bases.forEach(function (base) {
-      out.push(base + ".jpg", base + ".png");
+      out.push(base + ".webp", base + ".jpg", base + ".png");
     });
     return out;
   }
 
+  function fallbackAttrs(candidates) {
+    if (candidates.length < 2) return "";
+    return (
+      ' onerror="var f=(this.dataset.fallbacks||\'\').split(\'|\').filter(Boolean);if(f.length){this.src=f.shift();this.dataset.fallbacks=f.join(\'|\');}else{this.onerror=null;}" data-fallbacks="' +
+      candidates.slice(1).join("|") +
+      '"'
+    );
+  }
+
+  function renderImg(id, slot, title, opts) {
+    opts = opts || {};
+    var alt = (title || id) + " — " + slot;
+    var loading = opts.eager ? "eager" : "lazy";
+    var priority = opts.eager ? ' fetchpriority="high"' : "";
+    var candidates = assetCandidates(id, slot);
+    return (
+      '<img class="chapter-hero-img" src="' +
+      candidates[0] +
+      '" alt="' +
+      String(alt).replace(/"/g, "&quot;") +
+      '" loading="' +
+      loading +
+      '" decoding="async"' +
+      priority +
+      fallbackAttrs(candidates) +
+      ">"
+    );
+  }
+
   w.BodyChapterImage = {
+    getUri: function (id, slot) {
+      return assetCandidates(id, slot)[0];
+    },
     render: function (id, slot, title, opts) {
-      opts = opts || {};
-      var alt = (title || id) + " — " + slot;
-      var loading = opts.eager ? "eager" : "lazy";
-      var priority = opts.eager ? ' fetchpriority="high"' : "";
-      var candidates = assetCandidates(id, slot);
-      var rest = candidates.slice(1);
-      var fallback = rest.length
-        ? ' onerror="var n=this.dataset.n?+this.dataset.n+1:1;if(window.__bodyImgFallback&&window.__bodyImgFallback(this,n))return;this.onerror=null;" data-n="0"'
-        : "";
-      w.__bodyImgFallback = function (img, n) {
-        if (n >= candidates.length) return false;
-        img.dataset.n = String(n);
-        img.src = candidates[n];
-        return true;
-      };
-      return (
-        '<img class="chapter-hero-img" src="' +
-        candidates[0] +
-        '" alt="' +
-        String(alt).replace(/"/g, "&quot;") +
-        '" loading="' +
-        loading +
-        '" decoding="async"' +
-        priority +
-        fallback +
-        ">"
-      );
+      return renderImg(id, slot, title, opts);
     }
   };
 
@@ -47,7 +56,7 @@
       var container = document.getElementById(opts.containerId);
       if (!container) return;
       container.className = "scene-card scene-card-hero chapter-photo-hero";
-      container.innerHTML = w.BodyChapterImage.render(opts.chapterId, opts.slot || "main-1", opts.title || opts.chapterId, {
+      container.innerHTML = renderImg(opts.chapterId, opts.slot || "main-1", opts.title || opts.chapterId, {
         eager: !!opts.eager
       });
     }
