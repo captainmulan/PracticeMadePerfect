@@ -3205,12 +3205,125 @@ textarea {
   transform: translateY(-6px) rotate(-1.5deg);
 }
 
-.book img,
-.book-cover {
-  object-fit: cover;
-  border-radius: 2px 6px 6px 2px;
-  box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.3), 0 0 3px rgba(0, 0, 0, 0.2);
+  .author-card-button,
+  .author-profile-button {
+    position: relative;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    align-self: flex-end;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .author-profile-button:hover,
+  .author-card-button:hover .author-profile-content {
+    transform: translateY(-6px);
+  }
+
+  .author-profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 0 !important;
+    box-sizing: border-box;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .author-browse-row .author-profile-content,
+  .author-browse-row .author-card-button,
+  .author-profile-button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .author-profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    border: 3px solid rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 0 2px rgba(15,23,42,0.08);
+  }
+
+  .author-profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .author-profile-icon {
+    font-size: 34px;
+    line-height: 1;
+  }
+
+  .author-profile-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+    max-width: 100px;
+  }
+
+  .author-browse-row {
+    gap: clamp(16px, 4vw, 32px);
+    justify-content: flex-start;
+  }
+
+/* Theme overrides: the global "space" theme styles make all buttons appear as purple cards.
+   Authors use a plain circular avatar button — explicitly opt-out here. */
+body[data-bookshelf-theme="space"] .author-profile-button,
+body[data-bookshelf-theme="space"] .author-profile-button:hover,
+body[data-bookshelf-theme="space"] .author-profile-button:active {
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  border: none !important;
+  text-transform: none !important;
+  padding: 0 !important;
 }
+
+body[data-bookshelf-theme="space"] .author-profile-content {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+  .author-browse-row .author-card,
+  .author-browse-row .author-card-button {
+    align-self: flex-start;
+  }
+
+  .author-shelf-board {
+    height: 16px;
+    background: linear-gradient(180deg, #d5d7e8 0%, #b7b9cc 52%, #9b9dc0 100%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.65), inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .author-card.placeholder {
+    opacity: 0.5;
+    cursor: default;
+  }
 
 .book-spine {
   position: absolute;

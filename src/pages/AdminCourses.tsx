@@ -155,6 +155,7 @@ export default function AdminCourses() {
       titlePosition: "bottom-left",
       titleTextAlign: "left",
       iconPosition: "center-center",
+      isPublished: true,
       courseIndex: books.length,
       category: "IT",
       artifactType: "book",
@@ -787,6 +788,24 @@ export default function AdminCourses() {
                       </select>
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Author Name</span>
+                      <input
+                        value={activeBook.authorName ?? ""}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, authorName: e.target.value || undefined }))}
+                        className="admin-grid-input"
+                        placeholder="Author display name"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Author Picture</span>
+                      <input
+                        value={activeBook.authorPicture ?? ""}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, authorPicture: e.target.value || undefined }))}
+                        className="admin-grid-input"
+                        placeholder="Emoji or image URL / data URL"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Book Index</span>
                       <input
                         type="number"
@@ -810,6 +829,17 @@ export default function AdminCourses() {
                         className="admin-grid-input"
                         placeholder="Leave empty to exclude from Popular"
                       />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Visible on Home</span>
+                      <select
+                        value={activeBook.isPublished === false ? "false" : "true"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, isPublished: e.target.value === "true" }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="true">Published</option>
+                        <option value="false">Unpublished (Beta only)</option>
+                      </select>
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Description</span>

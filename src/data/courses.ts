@@ -57,6 +57,9 @@ export interface Course {
   id: string;
   title: string;
   description: string;
+  isPublished?: boolean;
+  authorName?: string;
+  authorPicture?: string;
   color: string; // deprecated, but kept for backward compatibility
   coverColorStart: string;
   coverColorMiddle: string;

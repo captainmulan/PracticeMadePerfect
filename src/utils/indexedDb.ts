@@ -4,7 +4,7 @@ import type { Announcement } from "../types/announcement";
 import { BOOK_COVER_SEEDS } from "./bookCoverSeeds";
 
 const DB_NAME = "magic-library-db";
-const DB_VERSION = 2;
+const DB_VERSION = 4;
 
 // Define our store names
 const STORE_TASKS = "tasks";
@@ -46,7 +46,21 @@ async function openDb(): Promise<IDBDatabase> {
       console.log("creating courses store");
       const courseStore = db.createObjectStore(STORE_COURSES, { keyPath: "id" });
       courseStore.createIndex("courseIndex", "courseIndex", { unique: false });
+      courseStore.createIndex("isPublished", "isPublished", { unique: false });
+      courseStore.createIndex("authorName", "authorName", { unique: false });
+      courseStore.createIndex("authorPicture", "authorPicture", { unique: false });
     } else {
+      console.log("courses store already exists");
+      const existingStore = request.transaction?.objectStore(STORE_COURSES);
+      if (existingStore && !existingStore.indexNames.contains("isPublished")) {
+        existingStore.createIndex("isPublished", "isPublished", { unique: false });
+      }
+      if (existingStore && !existingStore.indexNames.contains("authorName")) {
+        existingStore.createIndex("authorName", "authorName", { unique: false });
+      }
+      if (existingStore && !existingStore.indexNames.contains("authorPicture")) {
+        existingStore.createIndex("authorPicture", "authorPicture", { unique: false });
+      }
       console.log("courses store already exists");
     }
 
@@ -209,6 +223,9 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     id: raw.id,
     title: raw.title,
     description: raw.description,
+    isPublished: raw.isPublished ?? true,
+    authorName: raw.authorName,
+    authorPicture: raw.authorPicture,
     color: raw.color,
     coverColorStart: raw.coverColorStart,
     coverColorMiddle: raw.coverColorMiddle,

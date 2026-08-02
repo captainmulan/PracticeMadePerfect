@@ -28,6 +28,7 @@ export interface CourseShelfItem {
   link?: string;
   placeholder?: boolean;
   category?: string;
+  actionType?: "book" | "author";
   artifactType?: "book" | "magazine" | "newspaper" | "game";
 }
 
@@ -367,6 +368,13 @@ function buildShelfRow(title: string, items: CourseShelfItem[]): CourseShelfRow 
     ? items
     : placeholder?.items.map((it, i) => ({ ...it, id: `${it.id}-placeholder-${i}`, placeholder: true, category: title })) ?? [];
 
+  if (title === "Author") {
+    return {
+      title,
+      items: base,
+    };
+  }
+
   const completedItems = [...base];
   while (completedItems.length < CHUNK) {
     completedItems.push({
@@ -439,6 +447,13 @@ export function pickRandomPopularCourse(courses: Course[]): Course | null {
   return popular[Math.floor(Math.random() * popular.length)];
 }
 
+export function getUnpublishedBooksRow(courses: Course[]): CourseShelfRow {
+  const unpublishedItems = courses
+    .map((course) => createShelfItemFromCourse(course, "Unpublished Books"));
+
+  return buildShelfRow("Unpublished Books", unpublishedItems);
+}
+
 export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
   const popularItems = getPopularCourses(courses)
     .map((course) => createShelfItemFromCourse(course, "Selection"));
@@ -457,6 +472,39 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     buildShelfRow("Fiction", fictionItems),
     { title: "Other", items: [] },
   ];
+}
+
+export function getAuthorShelfRow(authorGroups: Array<{ authorName: string; authorPicture?: string }>): CourseShelfRow {
+  const items = authorGroups.map((author, index) => ({
+    id: `author-${index}-${author.authorName}`,
+    title: author.authorName,
+    description: `Browse ${author.authorName}'s books`,
+    color: "#e0e7ff",
+    coverColorStart: "#e0e7ff",
+    coverColorMiddle: "#c7d2fe",
+    coverColorEnd: "#a5b4fc",
+    coverWidth: 100,
+    coverHeight: 150,
+    coverImageUrl: author.authorPicture?.trim(),
+    icon: author.authorPicture?.trim() || "👤",
+    iconColorStart: "#fff",
+    iconColorMiddle: "#fff",
+    iconColorEnd: "#fff",
+    meta: "Author",
+    category: "Author",
+    actionType: "author" as const,
+    artifactType: "book" as const,
+  }));
+
+  return buildShelfRow("Author", items);
+}
+
+export function getCourseShelfRowForAuthor(courses: Course[], authorName: string): CourseShelfRow {
+  const items = courses
+    .filter((course) => (course.authorName ?? "Unknown").trim() === authorName)
+    .map((course) => createShelfItemFromCourse(course, "Author"));
+
+  return buildShelfRow("Author", items);
 }
 
 export function getCourseShelfRowForCategory(courses: Course[], category: string): CourseShelfRow {

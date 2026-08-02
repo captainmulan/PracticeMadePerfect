@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-01T02:41:49.379Z",
+  "exportedAt": "2026-08-02T04:14:27.819Z",
   "courses": [
     {
       "id": "solarsystem",
@@ -117,28 +117,6 @@
       "pIndex": 3,
       "artifactType": "newspaper",
       "stepCount": 1
-    },
-    {
-      "id": "react-crud",
-      "title": "CRUD",
-      "description": "A premium teacher-led React CRUD course with real business scenarios, quizzes, and hands-on code exams.",
-      "color": "#61dafb",
-      "coverColorStart": "#61dafb",
-      "coverColorMiddle": "#61dafb",
-      "coverColorEnd": "#61dafb",
-      "coverWidth": 100,
-      "coverHeight": 150,
-      "coverImageUrl": "/book_covers/react-crud.webp",
-      "icon": "React",
-      "iconColorStart": "#68217a",
-      "iconColorMiddle": "#68217a",
-      "iconColorEnd": "#68217a",
-      "iconSize": 45,
-      "iconPosition": "top-center",
-      "courseIndex": 0,
-      "category": "IT",
-      "pIndex": 4,
-      "stepCount": 19
     },
     {
       "id": "tharapasa-nidana",
@@ -290,6 +268,28 @@
       "courseIndex": 7,
       "category": "Kid",
       "stepCount": 1
+    },
+    {
+      "id": "programming-for-kids",
+      "title": "Programming-for-Kids",
+      "description": "",
+      "color": "#2563eb",
+      "coverColorStart": "#2563eb",
+      "coverColorMiddle": "#2563eb",
+      "coverColorEnd": "#2563eb",
+      "coverWidth": 100,
+      "coverHeight": 150,
+      "icon": "📘",
+      "iconColorStart": "#fff",
+      "iconColorMiddle": "#fff",
+      "iconColorEnd": "#fff",
+      "iconSize": 80,
+      "iconPosition": "center-center",
+      "courseIndex": 12,
+      "category": "IT",
+      "artifactType": "book",
+      "bookHtmlFolder": "Programming-for-Kids",
+      "stepCount": 125
     }
   ]
 }

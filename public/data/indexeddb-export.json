@@ -1,680 +1,10 @@
 {
   "courses": [
     {
-      "id": "react-crud",
-      "title": "CRUD",
-      "description": "A premium teacher-led React CRUD course with real business scenarios, quizzes, and hands-on code exams.",
-      "color": "#61dafb",
-      "coverColorStart": "#61dafb",
-      "coverColorMiddle": "#61dafb",
-      "coverColorEnd": "#61dafb",
-      "coverWidth": 100,
-      "coverHeight": 150,
-      "coverImageUrl": "/book_covers/react-crud.webp",
-      "icon": "React",
-      "iconColorStart": "#68217a",
-      "iconColorMiddle": "#68217a",
-      "iconColorEnd": "#68217a",
-      "iconSize": 45,
-      "titleFontSize": 60,
-      "titleFontWeight": "bolder",
-      "titleColor": "#fafafa",
-      "titlePosition": "bottom-center",
-      "iconPosition": "top-center",
-      "courseIndex": 0,
-      "category": "IT",
-      "pIndex": 4,
-      "stepCount": 19,
-      "chapters": [
-        {
-          "id": "react-crud-premium-ch1",
-          "courseId": "react-crud",
-          "chapterIndex": 0,
-          "title": "Introduction",
-          "steps": [
-            {
-              "id": "react-crud-premium-step0",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch1",
-              "chapterTitle": "Introduction",
-              "chapterIndex": 0,
-              "stepIndex": 1,
-              "stepType": "html",
-              "title": "Course introduction",
-              "description": "",
-              "contentHtml": "<h2>Welcome to React CRUD Development</h2>\n\n<p>\nEvery modern web application allows users to create, view, update, or delete information. Whether you're posting on social media, managing customers, tracking inventory, or maintaining employee records, you're using CRUD operations.\n</p>\n\n<p>\nIn this course, you'll build a complete React CRUD application step by step while learning the core concepts behind React development. Instead of memorizing code, you'll understand why each piece of code exists and when to use it.\n</p>\n\n<h3>What is CRUD?</h3>\n\n<p>\nCRUD stands for four basic operations used in almost every application:\n</p>\n\n<ul>\n<li><strong>Create</strong> — Add new data.</li>\n<li><strong>Read</strong> — Display existing data.</li>\n<li><strong>Update</strong> — Edit existing data.</li>\n<li><strong>Delete</strong> — Remove data.</li>\n</ul>\n\n<h3>Real-World Examples</h3>\n\n<ul>\n<li>Employee Management System</li>\n<li>Student Registration System</li>\n<li>Online Shopping Cart</li>\n<li>Hospital Patient Records</li>\n<li>Library Management System</li>\n<li>Task Management Application</li>\n<li>Inventory Management System</li>\n</ul>\n\n<h3>Why React?</h3>\n\n<p>\nReact is one of the world's most popular JavaScript libraries for building modern user interfaces. It allows developers to create reusable components, efficiently update the screen, and build fast, interactive web applications.\n</p>\n\n<p>\nReact is widely used by startups, enterprises, and technology companies because it makes large applications easier to build and maintain.\n</p>\n\n<h3>What You Will Learn</h3>\n\n<ul>\n<li>React fundamentals</li>\n<li>Components and JSX</li>\n<li>Props and State</li>\n<li>Event handling</li>\n<li>Lists and rendering</li>\n<li>CRUD application design</li>\n<li>Reusable coding patterns</li>\n<li>Best practices</li>\n</ul>\n\n<h3>Course Structure</h3>\n\n<ol>\n<li>\n<strong>Real-World CRUD Introduction</strong><br>\nUnderstand where CRUD is used in real applications.\n</li>\n\n<li>\n<strong>Why React?</strong><br>\nLearn why React is the preferred choice for modern web development.\n</li>\n\n<li>\n<strong>React Fundamentals</strong><br>\nLearn the core concepts required before building CRUD applications.\n</li>\n\n<li>\n<strong>React Fundamentals Quiz</strong><br>\nTest your understanding before moving forward.\n</li>\n\n<li>\n<strong>Create Pattern</strong><br>\nBuild the Create operation with guided coding practice and a quiz.\n</li>\n\n<li>\n<strong>Read Pattern</strong><br>\nDisplay data using React with hands-on practice and a quiz.\n</li>\n\n<li>\n<strong>Update Pattern</strong><br>\nModify existing records while learning reusable coding techniques.\n</li>\n\n<li>\n<strong>Delete Pattern</strong><br>\nSafely remove records with confirmation and best practices.\n</li>\n\n<li>\n<strong>Real-World CRUD Recap</strong><br>\nCombine all CRUD operations into a complete application.\n</li>\n\n<li>\n<strong>Course Closure</strong><br>\nReview everything you've learned and prepare for more advanced React topics.\n</li>\n</ol>\n\n<h3>Learning Style</h3>\n\n<p>\nEach chapter follows the same simple learning path:\n</p>\n\n<ul>\n<li>📖 Concept Explanation</li>\n<li>💻 Code Practice</li>\n<li>🧠 Quiz</li>\n</ul>\n\n<p>\nBy the end of this course, you'll understand how real React applications perform CRUD operations and you'll be able to build your own projects with confidence.\n</p>",
-              "detailedInstructions": [
-                "Instructor: Welcome learners — explain that this workshop covers CRUD fundamentals in React with real examples and hands-on exercises.",
-                "Explain the course flow: short lesson, code exam, then a quiz to confirm understanding. Encourage questions and live experimentation.",
-                "Class tip: emphasize immutability early — it's the key to predictable UI updates in React."
-              ]
-            },
-            {
-              "id": "react-crud-premium-step1",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch1",
-              "chapterTitle": "Introduction",
-              "chapterIndex": 0,
-              "stepIndex": 2,
-              "stepType": "html",
-              "title": "Real-world scenario",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n  <h2>CRUD in the real world</h2>\n  <p>CRUD workflows appear in many business applications. Examples include:</p>\n  <ul>\n    <li><strong>Point-of-sale systems</strong> where clerks add customers, products, and transactions.</li>\n    <li><strong>Logistics dashboards</strong> that track orders, shipments, and inventory status.</li>\n    <li><strong>Admin portals</strong> used to manage users, settings, and support tickets.</li>\n  </ul>\n  <p>These apps need reliable create, read, update, and delete behavior to keep data consistent and easy to manage.</p>\n</div>"
-            }
-          ]
-        },
-        {
-          "id": "react-crud-premium-ch2",
-          "courseId": "react-crud",
-          "chapterIndex": 0,
-          "title": "Why React",
-          "steps": [
-            {
-              "id": "react-crud-premium-step2",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch2",
-              "chapterTitle": "Why React",
-              "chapterIndex": 0,
-              "stepIndex": 3,
-              "stepType": "html",
-              "title": "Why React for CRUD",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n\n  <div class=\"slide-card\">\n\n    <div class=\"slide-text\">\n      <h2>Why React?</h2>\n\n      <p>\n        React helps developers build modern web applications by breaking the UI\n        into reusable components. Instead of updating the entire page, React\n        updates only the parts that change, making applications fast and easy\n        to maintain.\n      </p>\n\n      <ul>\n        <li>Reusable UI components</li>\n        <li>Fast rendering with Virtual DOM</li>\n        <li>Simple state management</li>\n        <li>Easy integration with REST APIs</li>\n        <li>Large ecosystem and community</li>\n      </ul>\n    </div>\n\n    <div class=\"slide-diagram\">\n\n      <svg viewBox=\"0 0 900 520\" width=\"100%\" height=\"auto\">\n\n        <!-- Browser -->\n        <rect x=\"315\" y=\"20\" width=\"270\" height=\"60\"\n              rx=\"12\"\n              fill=\"#2563eb\"/>\n\n        <text x=\"450\" y=\"58\"\n              text-anchor=\"middle\"\n              fill=\"white\"\n              font-size=\"24\"\n              font-weight=\"bold\">\n          Browser\n        </text>\n\n        <!-- React -->\n        <rect x=\"315\" y=\"140\" width=\"270\" height=\"70\"\n              rx=\"12\"\n              fill=\"#06b6d4\"/>\n\n        <text x=\"450\" y=\"170\"\n              text-anchor=\"middle\"\n              fill=\"white\"\n              font-size=\"24\"\n              font-weight=\"bold\">\n          React Application\n        </text>\n\n        <text x=\"450\"\n              y=\"196\"\n              text-anchor=\"middle\"\n              fill=\"white\"\n              font-size=\"16\">\n          Components + State + Routing\n        </text>\n\n        <!-- Components -->\n        <rect x=\"40\" y=\"300\"\n              width=\"220\"\n              height=\"70\"\n              rx=\"12\"\n              fill=\"#10b981\"/>\n\n        <text x=\"150\"\n              y=\"340\"\n              text-anchor=\"middle\"\n              fill=\"white\"\n              font-size=\"22\"\n              font-weight=\"bold\">\n          UI Components\n        </text>\n\n        <!-- API -->\n        <rect x=\"340\"\n              y=\"300\"\n              width=\"220\"\n              height=\"70\"\n              rx=\"12\"\n              fill=\"#f59e0b\"/>\n\n        <text x=\"450\"\n              y=\"340\"\n              text-anchor=\"middle\"\n              fill=\"white\"\n              font-size=\"22\"\n              font-weight=\"bold\">\n          REST API\n        </text>\n\n        <!-- Database -->\n        <rect x=\"640\"\n              y=\"300\"\n              width=\"220\"\n              height=\"70\"\n              rx=\"12\"\n              fill=\"#8b5cf6\"/>\n\n        <text x=\"750\"\n              y=\"340\"\n              text-anchor=\"middle\"\n              fill=\"white\"\n              font-size=\"22\"\n              font-weight=\"bold\">\n          Database\n        </text>\n\n        <!-- Arrows -->\n        <defs>\n          <marker id=\"arrow\"\n                  markerWidth=\"10\"\n                  markerHeight=\"10\"\n                  refX=\"6\"\n                  refY=\"3\"\n                  orient=\"auto\">\n            <path d=\"M0,0 L6,3 L0,6\"\n                  fill=\"#555\"/>\n          </marker>\n        </defs>\n\n        <line x1=\"450\"\n              y1=\"80\"\n              x2=\"450\"\n              y2=\"140\"\n              stroke=\"#555\"\n              stroke-width=\"3\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line x1=\"340\"\n              y1=\"210\"\n              x2=\"180\"\n              y2=\"300\"\n              stroke=\"#555\"\n              stroke-width=\"3\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line x1=\"450\"\n              y1=\"210\"\n              x2=\"450\"\n              y2=\"300\"\n              stroke=\"#555\"\n              stroke-width=\"3\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line x1=\"560\"\n              y1=\"210\"\n              x2=\"720\"\n              y2=\"300\"\n              stroke=\"#555\"\n              stroke-width=\"3\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line x1=\"560\"\n              y1=\"335\"\n              x2=\"640\"\n              y2=\"335\"\n              stroke=\"#555\"\n              stroke-width=\"3\"\n              marker-end=\"url(#arrow)\"/>\n\n        <!-- Bottom -->\n        <text x=\"450\"\n              y=\"460\"\n              text-anchor=\"middle\"\n              font-size=\"20\"\n              font-weight=\"bold\"\n              fill=\"#1f2937\">\n          User → React UI → REST API → Database\n        </text>\n\n      </svg>\n\n    </div>\n\n  </div>\n\n</div>",
-              "detailedInstructions": [
-                "Instructor notes: Explain component boundaries and when to lift state up vs. using context. Use the diagram to show how state, UI and actions interact.",
-                "Demo: Show a tiny function component that renders a list and updates it with setState — explain re-rendering behavior."
-              ]
-            },
-            {
-              "id": "react-crud-premium-step3",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch2",
-              "chapterTitle": "Why React",
-              "chapterIndex": 0,
-              "stepIndex": 4,
-              "stepType": "quiz",
-              "title": "React fundamentals quiz",
-              "description": "Confirm your understanding of React basics before coding.",
-              "quizQuestions": [
-                {
-                  "id": "react-crud-premium-q1",
-                  "prompt": "Which hook is used to store simple state in a function component?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "useState"
-                    },
-                    {
-                      "id": "b",
-                      "text": "useEffect"
-                    },
-                    {
-                      "id": "c",
-                      "text": "useCallback"
-                    },
-                    {
-                      "id": "d",
-                      "text": "useMemo"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "useState is the standard hook for local component state such as form values and lists."
-                },
-                {
-                  "id": "react-crud-premium-q2",
-                  "prompt": "What happens when React state changes?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "The component re-renders with updated UI"
-                    },
-                    {
-                      "id": "b",
-                      "text": "The browser reloads the page"
-                    },
-                    {
-                      "id": "c",
-                      "text": "The network request restarts"
-                    },
-                    {
-                      "id": "d",
-                      "text": "The component stops responding"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "React updates the component output and applies the changed UI to the DOM."
-                }
-              ]
-            },
-            {
-              "id": "react-crud-premium-step4",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch2",
-              "chapterTitle": "Why React",
-              "chapterIndex": 0,
-              "stepIndex": 10,
-              "stepType": "code-exam",
-              "title": "Code exam: render a list",
-              "description": "Build the first React component that displays a list of items.",
-              "codeType": "code",
-              "checklist": [
-                "Defines a function component",
-                "Uses useState to hold list data",
-                "Renders items with map() and provides a key"
-              ],
-              "starterCode": "// import React, { useState } from 'react';\n\n// function ManageList() {\n//   const [items, setItems] = useState([\"Apple\", \"Banana\", \"Cherry\"]);\n//\n//   return (\n//     <div>\n//       <h2>Item list</h2>\n//       <ul>\n//         {items.map((item, index) => (\n//           <li key={index}>{item}</li>\n//         ))}\n//       </ul>\n//     </div>\n//   );\n// }\n//\n// export default ManageList;",
-              "verificationKeywords": [
-                [
-                  "useState",
-                  "items.map("
-                ],
-                [
-                  "key=",
-                  "li"
-                ],
-                [
-                  "function ManageList",
-                  "return ("
-                ]
-              ]
-            }
-          ]
-        },
-        {
-          "id": "react-crud-premium-ch3",
-          "courseId": "react-crud",
-          "chapterIndex": 0,
-          "title": "Create Pattern",
-          "steps": [
-            {
-              "id": "react-crud-premium-step5",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch3",
-              "chapterTitle": "Create Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 5,
-              "stepType": "html",
-              "title": "Create pattern",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n  <div class=\"slide-card\">\n\n    <div class=\"slide-text\">\n      <h2>Create with Controlled Inputs</h2>\n\n      <p>\n        In React, form inputs are usually <strong>controlled components</strong>.\n        The input value is stored in React state, making it easy to validate,\n        update, and submit new data.\n      </p>\n\n      <ul>\n        <li>User enters a new book.</li>\n        <li><code>onChange</code> updates the React state.</li>\n        <li>Clicking <strong>Add</strong> inserts a new book into the list.</li>\n        <li>React automatically re-renders the UI.</li>\n      </ul>\n    </div>\n\n    <div class=\"slide-diagram\">\n\n      <svg viewBox=\"0 0 760 210\" xmlns=\"http://www.w3.org/2000/svg\">\n\n        <style>\n          .box{\n            fill:#f8fbff;\n            stroke:#3b82f6;\n            stroke-width:2;\n          }\n\n          .title{\n            font-size:15px;\n            font-weight:700;\n            fill:#0f172a;\n            text-anchor:middle;\n            font-family:Arial,sans-serif;\n          }\n\n          .text{\n            font-size:12px;\n            fill:#64748b;\n            text-anchor:middle;\n            font-family:Arial,sans-serif;\n          }\n\n          .arrow{\n            stroke:#64748b;\n            stroke-width:2.5;\n            fill:none;\n          }\n        </style>\n\n        <defs>\n          <marker id=\"arrow\"\n                  markerWidth=\"10\"\n                  markerHeight=\"10\"\n                  refX=\"9\"\n                  refY=\"3\"\n                  orient=\"auto\">\n            <path d=\"M0,0 L10,3 L0,6 Z\" fill=\"#64748b\"/>\n          </marker>\n        </defs>\n\n        <!-- User -->\n        <rect class=\"box\" x=\"20\" y=\"40\" width=\"120\" height=\"70\" rx=\"10\"/>\n        <text class=\"title\" x=\"80\" y=\"68\">👤 User</text>\n        <text class=\"text\" x=\"80\" y=\"92\">Types Book</text>\n\n        <!-- Form -->\n        <rect class=\"box\" x=\"180\" y=\"40\" width=\"150\" height=\"70\" rx=\"10\"/>\n        <text class=\"title\" x=\"255\" y=\"68\">Book Form</text>\n        <text class=\"text\" x=\"255\" y=\"92\">Controlled Input</text>\n\n        <!-- State -->\n        <rect class=\"box\" x=\"370\" y=\"40\" width=\"160\" height=\"70\" rx=\"10\"/>\n        <text class=\"title\" x=\"450\" y=\"68\">React State</text>\n        <text class=\"text\" x=\"450\" y=\"92\">useState()</text>\n\n        <!-- List -->\n        <rect class=\"box\" x=\"570\" y=\"40\" width=\"170\" height=\"70\" rx=\"10\"/>\n        <text class=\"title\" x=\"655\" y=\"68\">Book List</text>\n        <text class=\"text\" x=\"655\" y=\"92\">Updated UI</text>\n\n        <!-- Arrows -->\n        <line class=\"arrow\"\n              x1=\"140\"\n              y1=\"75\"\n              x2=\"180\"\n              y2=\"75\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"330\"\n              y1=\"75\"\n              x2=\"370\"\n              y2=\"75\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"530\"\n              y1=\"75\"\n              x2=\"570\"\n              y2=\"75\"\n              marker-end=\"url(#arrow)\"/>\n\n        <!-- Bottom Feedback -->\n        <path class=\"arrow\"\n              d=\"\n              M655 110\n              L655 165\n              L255 165\n              L255 110\"\n              marker-end=\"url(#arrow)\"/>\n\n        <text class=\"text\"\n              x=\"455\"\n              y=\"193\"\n              style=\"font-size:13px;font-weight:600;\">\n          React detects state changes and automatically re-renders the UI.\n        </text>\n\n      </svg>\n\n    </div>\n\n  </div>\n</div>",
-              "detailedInstructions": [
-                "Instructor script: Walk through a controlled input example line-by-line: useState hook, value binding, onChange handler, and submit handler.",
-                "Tip: Validate input and trim whitespace before adding to the list. Encourage students to test corner cases (empty input, duplicates)."
-              ]
-            },
-            {
-              "id": "react-crud-premium-step7",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch3",
-              "chapterTitle": "Create Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 6,
-              "stepType": "code-exam",
-              "title": "Code exam: add items",
-              "description": "Implement a form that adds new items to the list.",
-              "codeType": "code",
-              "checklist": [
-                "Uses useState for the draft input",
-                "Handles input changes with onChange",
-                "Adds a new item and clears the input"
-              ],
-              "starterCode": "// import React, { useState } from 'react';\n\n// function ManageList() {\n//   const [items, setItems] = useState([\"Apple\", \"Banana\"]);\n//   const [draft, setDraft] = useState(\"\");\n//\n//   function addItem() {\n//     const trimmed = draft.trim();\n//     if (!trimmed) return;\n//     setItems((prev) => [...prev, trimmed]);\n//     setDraft(\"\");\n//   }\n//\n//   return (\n//     <div>\n//       <input value={draft} onChange={(event) => setDraft(event.target.value)} />\n//       <button onClick={addItem}>Add item</button>\n//       <ul>\n//         {items.map((item, index) => (\n//           <li key={index}>{item}</li>\n//         ))}\n//       </ul>\n//     </div>\n//   );\n// }\n//\n// export default ManageList;",
-              "verificationKeywords": [
-                [
-                  "setDraft",
-                  "onChange"
-                ],
-                [
-                  "setItems",
-                  "trim()"
-                ],
-                [
-                  "map(",
-                  "key="
-                ]
-              ]
-            },
-            {
-              "id": "react-crud-premium-step6",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch3",
-              "chapterTitle": "Create Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 7,
-              "stepType": "quiz",
-              "title": "Create workflow quiz",
-              "description": "Review the create pattern and controlled input behavior.",
-              "quizQuestions": [
-                {
-                  "id": "react-crud-premium-q3",
-                  "prompt": "What is a controlled input in React?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "An input whose value is stored in state"
-                    },
-                    {
-                      "id": "b",
-                      "text": "An input that cannot be edited"
-                    },
-                    {
-                      "id": "c",
-                      "text": "An input that submits automatically"
-                    },
-                    {
-                      "id": "d",
-                      "text": "An input that only accepts numbers"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "Controlled inputs are driven by React state, so the component controls the input value."
-                },
-                {
-                  "id": "react-crud-premium-q4",
-                  "prompt": "Which update is best when adding an item to list state?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "setItems(prev => [...prev, newItem])"
-                    },
-                    {
-                      "id": "b",
-                      "text": "prev.push(newItem)"
-                    },
-                    {
-                      "id": "c",
-                      "text": "setItems(items)"
-                    },
-                    {
-                      "id": "d",
-                      "text": "items.pop()"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "Using a new array preserves immutable state updates in React."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "react-crud-premium-ch4",
-          "courseId": "react-crud",
-          "chapterIndex": 0,
-          "title": "Read Pattern",
-          "steps": [
-            {
-              "id": "react-crud-premium-step10",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch4",
-              "chapterTitle": "Read Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 8,
-              "stepType": "code-exam",
-              "title": "Code exam: add filtering",
-              "description": "Implement a simple filter so users can search the list.",
-              "codeType": "code",
-              "checklist": [
-                "Uses state for filter text",
-                "Filters items before rendering",
-                "Shows matching items only"
-              ],
-              "starterCode": "// import React, { useState } from 'react';\n\n// function ManageList() {\n//   const [items] = useState([\"Apple\", \"Banana\", \"Cherry\"]);\n//   const [filter, setFilter] = useState(\"\");\n//\n//   const visibleItems = items.filter((item) =>\n//     item.toLowerCase().includes(filter.toLowerCase()),\n//   );\n//\n//   return (\n//     <div>\n//       <input value={filter} onChange={(event) => setFilter(event.target.value)} />\n//       <ul>\n//         {visibleItems.map((item, index) => (\n//           <li key={index}>{item}</li>\n//         ))}\n//       </ul>\n//     </div>\n//   );\n// }\n//\n// export default ManageList;",
-              "verificationKeywords": [
-                [
-                  "setFilter",
-                  "filter.toLowerCase"
-                ],
-                [
-                  "items.filter",
-                  "includes("
-                ],
-                [
-                  "map(",
-                  "key="
-                ]
-              ]
-            },
-            {
-              "id": "react-crud-premium-step8",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch4",
-              "chapterTitle": "Read Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 9,
-              "stepType": "html",
-              "title": "Read pattern",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n\n  <div class=\"slide-card\">\n\n    <div class=\"slide-text\">\n\n      <h2>Read Data in React</h2>\n\n      <p>\n        Learn how React reads data from component state and renders it on the screen.\n        When the state changes, React automatically updates only the affected parts\n        of the UI without refreshing the page.\n      </p>\n\n      <ul>\n        <li>Store data using <code>useState()</code>.</li>\n        <li>Render collections with <code>map()</code>.</li>\n        <li>Assign unique <code>key</code> values.</li>\n        <li>Display state values directly in JSX.</li>\n        <li>See the UI update automatically after state changes.</li>\n      </ul>\n\n    </div>\n\n    <div class=\"slide-diagram\">\n\n      <svg viewBox=\"0 0 760 210\" xmlns=\"http://www.w3.org/2000/svg\">\n\n        <style>\n          .box{\n            fill:#f8fbff;\n            stroke:#2563eb;\n            stroke-width:2;\n          }\n\n          .title{\n            font:700 15px Arial,sans-serif;\n            fill:#0f172a;\n            text-anchor:middle;\n          }\n\n          .text{\n            font:12px Arial,sans-serif;\n            fill:#64748b;\n            text-anchor:middle;\n          }\n\n          .arrow{\n            stroke:#64748b;\n            stroke-width:2.5;\n            fill:none;\n        }\n        </style>\n\n        <defs>\n          <marker id=\"arrow\"\n                  markerWidth=\"10\"\n                  markerHeight=\"10\"\n                  refX=\"9\"\n                  refY=\"3\"\n                  orient=\"auto\">\n            <path d=\"M0,0 L10,3 L0,6 Z\"\n                  fill=\"#64748b\"/>\n          </marker>\n        </defs>\n\n        <!-- State -->\n        <rect class=\"box\"\n              x=\"20\"\n              y=\"45\"\n              width=\"150\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"95\"\n              y=\"72\">\n          React State\n        </text>\n\n        <text class=\"text\"\n              x=\"95\"\n              y=\"94\">\n          Book Array\n        </text>\n\n        <!-- map -->\n        <rect class=\"box\"\n              x=\"220\"\n              y=\"45\"\n              width=\"150\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"295\"\n              y=\"72\">\n          map()\n        </text>\n\n        <text class=\"text\"\n              x=\"295\"\n              y=\"94\">\n          Loop Each Book\n        </text>\n\n        <!-- JSX -->\n        <rect class=\"box\"\n              x=\"420\"\n              y=\"45\"\n              width=\"150\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"495\"\n              y=\"72\">\n          JSX\n        </text>\n\n        <text class=\"text\"\n              x=\"495\"\n              y=\"94\">\n          Create UI Elements\n        </text>\n\n        <!-- Browser -->\n        <rect class=\"box\"\n              x=\"620\"\n              y=\"45\"\n              width=\"120\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"680\"\n              y=\"72\">\n          Browser\n        </text>\n\n        <text class=\"text\"\n              x=\"680\"\n              y=\"94\">\n          Updated List\n        </text>\n\n        <!-- arrows -->\n\n        <line class=\"arrow\"\n              x1=\"170\"\n              y1=\"80\"\n              x2=\"220\"\n              y2=\"80\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"370\"\n              y1=\"80\"\n              x2=\"420\"\n              y2=\"80\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"570\"\n              y1=\"80\"\n              x2=\"620\"\n              y2=\"80\"\n              marker-end=\"url(#arrow)\"/>\n\n        <!-- Bottom note -->\n\n        <path class=\"arrow\"\n              d=\"M680 115\n                 L680 165\n                 L95 165\n                 L95 115\"\n              marker-end=\"url(#arrow)\"/>\n\n        <text class=\"text\"\n              x=\"388\"\n              y=\"193\"\n              style=\"font-size:13px;font-weight:600;\">\n          State changes → React re-renders → Browser updates automatically\n        </text>\n\n      </svg>\n\n    </div>\n\n  </div>\n\n</div>"
-            },
-            {
-              "id": "react-crud-premium-step9",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch4",
-              "chapterTitle": "Read Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 11,
-              "stepType": "quiz",
-              "title": "Read workflow quiz",
-              "description": "Confirm that you understand React list rendering.",
-              "quizQuestions": [
-                {
-                  "id": "react-crud-premium-q5",
-                  "prompt": "What does items.map(item => <li key={index}>{item}</li>) do?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "Creates rendered JSX list items from data"
-                    },
-                    {
-                      "id": "b",
-                      "text": "Edits the list data"
-                    },
-                    {
-                      "id": "c",
-                      "text": "Sends a request to the server"
-                    },
-                    {
-                      "id": "d",
-                      "text": "Deletes the list"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "map() transforms each data item into JSX elements for rendering."
-                },
-                {
-                  "id": "react-crud-premium-q6",
-                  "prompt": "Why are keys important when rendering lists?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "They help React identify items during renders"
-                    },
-                    {
-                      "id": "b",
-                      "text": "They sort the list"
-                    },
-                    {
-                      "id": "c",
-                      "text": "They make the list editable"
-                    },
-                    {
-                      "id": "d",
-                      "text": "They validate the data"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "Keys help React match array items between renders and update only changed nodes."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "react-crud-premium-ch5",
-          "courseId": "react-crud",
-          "chapterIndex": 0,
-          "title": "Update Pattern",
-          "steps": [
-            {
-              "id": "react-crud-premium-step11",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch5",
-              "chapterTitle": "Update Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 12,
-              "stepType": "html",
-              "title": "Update pattern",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n\n  <div class=\"slide-card\">\n\n    <div class=\"slide-text\">\n\n      <h2>Update Items Immutably</h2>\n\n      <p>\n        Learn how React updates an existing item without changing the original\n        state. Instead of modifying the array directly, create a new array and\n        replace only the updated item.\n      </p>\n\n      <ul>\n        <li>Select the item to edit.</li>\n        <li>Use <code>map()</code> to create a new array.</li>\n        <li>Replace only the matching item.</li>\n        <li>Call <code>setItems(updatedItems)</code>.</li>\n        <li>React automatically re-renders the updated list.</li>\n      </ul>\n\n    </div>\n\n    <div class=\"slide-diagram\">\n\n      <svg viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\">\n\n        <style>\n          .box{\n            fill:#f8fbff;\n            stroke:#2563eb;\n            stroke-width:2;\n          }\n\n          .title{\n            font:700 15px Arial,sans-serif;\n            fill:#0f172a;\n            text-anchor:middle;\n          }\n\n          .text{\n            font:12px Arial,sans-serif;\n            fill:#64748b;\n            text-anchor:middle;\n          }\n\n          .arrow{\n            stroke:#64748b;\n            stroke-width:2.5;\n            fill:none;\n          }\n\n          .highlight{\n            fill:#dbeafe;\n            stroke:#2563eb;\n            stroke-width:2;\n          }\n        </style>\n\n        <defs>\n          <marker id=\"arrow\"\n                  markerWidth=\"10\"\n                  markerHeight=\"10\"\n                  refX=\"9\"\n                  refY=\"3\"\n                  orient=\"auto\">\n            <path d=\"M0,0 L10,3 L0,6 Z\"\n                  fill=\"#64748b\"/>\n          </marker>\n        </defs>\n\n        <!-- Existing List -->\n\n        <rect class=\"box\"\n              x=\"20\"\n              y=\"40\"\n              width=\"140\"\n              height=\"80\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"90\"\n              y=\"65\">\n          Book List\n        </text>\n\n        <text class=\"text\"\n              x=\"90\"\n              y=\"90\">\n          React State\n        </text>\n\n        <text class=\"text\"\n              x=\"90\"\n              y=\"108\">\n          Book A, B, C\n        </text>\n\n        <!-- Edit Form -->\n\n        <rect class=\"highlight\"\n              x=\"210\"\n              y=\"40\"\n              width=\"140\"\n              height=\"80\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"280\"\n              y=\"65\">\n          Edit Form\n        </text>\n\n        <text class=\"text\"\n              x=\"280\"\n              y=\"90\">\n          Update Book B\n        </text>\n\n        <!-- map() -->\n\n        <rect class=\"box\"\n              x=\"400\"\n              y=\"40\"\n              width=\"140\"\n              height=\"80\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"470\"\n              y=\"65\">\n          map()\n        </text>\n\n        <text class=\"text\"\n              x=\"470\"\n              y=\"90\">\n          Create New Array\n        </text>\n\n        <text class=\"text\"\n              x=\"470\"\n              y=\"108\">\n          Replace One Item\n        </text>\n\n        <!-- Updated List -->\n\n        <rect class=\"box\"\n              x=\"590\"\n              y=\"40\"\n              width=\"150\"\n              height=\"80\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"665\"\n              y=\"65\">\n          Updated UI\n        </text>\n\n        <text class=\"text\"\n              x=\"665\"\n              y=\"90\">\n          Book A\n        </text>\n\n        <text class=\"text\"\n              x=\"665\"\n              y=\"106\">\n          ✅ Updated Book B\n        </text>\n\n        <text class=\"text\"\n              x=\"665\"\n              y=\"122\">\n          Book C\n        </text>\n\n        <!-- Flow -->\n\n        <line class=\"arrow\"\n              x1=\"160\"\n              y1=\"80\"\n              x2=\"210\"\n              y2=\"80\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"350\"\n              y1=\"80\"\n              x2=\"400\"\n              y2=\"80\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"540\"\n              y1=\"80\"\n              x2=\"590\"\n              y2=\"80\"\n              marker-end=\"url(#arrow)\"/>\n\n        <!-- React Render -->\n\n        <path class=\"arrow\"\n              d=\"M665 120\n                 L665 175\n                 L90 175\n                 L90 120\"\n              marker-end=\"url(#arrow)\"/>\n\n        <text class=\"text\"\n              x=\"380\"\n              y=\"205\"\n              style=\"font-size:13px;font-weight:600;\">\n          Original array remains unchanged → React detects the new state and re-renders the UI\n        </text>\n\n      </svg>\n\n    </div>\n\n  </div>\n\n</div>",
-              "detailedInstructions": [
-                "Instructor notes: Explain why mutating arrays can fail to update the UI — show splice() example versus returning a new array using map().",
-                "Live exercise: Ask learners to change one item in the list and observe the UI behavior when using mutable vs immutable updates."
-              ]
-            },
-            {
-              "id": "react-crud-premium-step13",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch5",
-              "chapterTitle": "Update Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 13,
-              "stepType": "code-exam",
-              "title": "Code exam: edit items",
-              "description": "Implement a button that updates one item in the list.",
-              "codeType": "code",
-              "checklist": [
-                "Uses map() to update the selected item",
-                "Calls setItems with a new array",
-                "Preserves unchanged items"
-              ],
-              "starterCode": "// import React, { useState } from 'react';\n\n// function ManageList() {\n//   const [items, setItems] = useState([\"Apple\", \"Banana\"]);\n//\n//   function editItem(indexToEdit, value) {\n//     setItems((prev) =>\n//       prev.map((item, index) =>\n//         index === indexToEdit ? value : item,\n//       ),\n//     );\n//   }\n//\n//   return (\n//     <div>\n//       <ul>\n//         {items.map((item, index) => (\n//           <li key={index}>\n//             {item}\n//             <button onClick={() => editItem(index, item + ' (edited)')}>Edit</button>\n//           </li>\n//         ))}\n//       </ul>\n//     </div>\n//   );\n// }\n//\n// export default ManageList;",
-              "verificationKeywords": [
-                [
-                  "map(",
-                  "setItems"
-                ],
-                [
-                  "index === indexToEdit"
-                ],
-                [
-                  "editItem("
-                ]
-              ]
-            },
-            {
-              "id": "react-crud-premium-step12",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch5",
-              "chapterTitle": "Update Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 14,
-              "stepType": "quiz",
-              "title": "Update workflow quiz",
-              "description": "Confirm the right way to update list state.",
-              "quizQuestions": [
-                {
-                  "id": "react-crud-premium-q7",
-                  "prompt": "Which approach is best to update one item in an array?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "map() and return a new array"
-                    },
-                    {
-                      "id": "b",
-                      "text": "splice() the original array"
-                    },
-                    {
-                      "id": "c",
-                      "text": "push() the updated item"
-                    },
-                    {
-                      "id": "d",
-                      "text": "setItems(items)"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "map() creates a new array with the updated item while preserving immutability."
-                },
-                {
-                  "id": "react-crud-premium-q8",
-                  "prompt": "Why avoid mutating the original list in React?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "React may not detect the change"
-                    },
-                    {
-                      "id": "b",
-                      "text": "The list becomes read-only"
-                    },
-                    {
-                      "id": "c",
-                      "text": "The browser crashes"
-                    },
-                    {
-                      "id": "d",
-                      "text": "The UI disappears"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "React detects updates based on new state references, so mutations can be missed."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "react-crud-premium-ch6",
-          "courseId": "react-crud",
-          "chapterIndex": 0,
-          "title": "Delete Pattern",
-          "steps": [
-            {
-              "id": "react-crud-premium-step14",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch6",
-              "chapterTitle": "Delete Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 15,
-              "stepType": "html",
-              "title": "Delete pattern",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n\n  <div class=\"slide-card\">\n\n    <div class=\"slide-text\">\n\n      <h2>Delete Items Safely</h2>\n\n      <p>\n        Learn how React removes items without modifying the original state.\n        Instead of changing the existing array, create a new array that excludes\n        the deleted item. React then updates the interface automatically.\n      </p>\n\n      <ul>\n        <li>Select the item to delete.</li>\n        <li>Use <code>filter()</code> to create a new array.</li>\n        <li>Exclude the matching item from the result.</li>\n        <li>Call <code>setItems(filteredItems)</code>.</li>\n        <li>React automatically re-renders the updated list.</li>\n      </ul>\n\n    </div>\n\n    <div class=\"slide-diagram\">\n\n      <svg viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\">\n\n        <style>\n          .box{\n            fill:#f8fbff;\n            stroke:#2563eb;\n            stroke-width:2;\n          }\n\n          .danger{\n            fill:#fee2e2;\n            stroke:#dc2626;\n            stroke-width:2;\n          }\n\n          .title{\n            font:700 15px Arial,sans-serif;\n            fill:#0f172a;\n            text-anchor:middle;\n          }\n\n          .text{\n            font:12px Arial,sans-serif;\n            fill:#64748b;\n            text-anchor:middle;\n          }\n\n          .arrow{\n            stroke:#64748b;\n            stroke-width:2.5;\n            fill:none;\n          }\n        </style>\n\n        <defs>\n          <marker id=\"arrow\"\n                  markerWidth=\"10\"\n                  markerHeight=\"10\"\n                  refX=\"9\"\n                  refY=\"3\"\n                  orient=\"auto\">\n            <path d=\"M0,0 L10,3 L0,6 Z\"\n                  fill=\"#64748b\"/>\n          </marker>\n        </defs>\n\n        <!-- Current List -->\n\n        <rect class=\"box\"\n              x=\"20\"\n              y=\"40\"\n              width=\"150\"\n              height=\"90\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"95\"\n              y=\"65\">\n          Book List\n        </text>\n\n        <text class=\"text\"\n              x=\"95\"\n              y=\"90\">\n          Book A\n        </text>\n\n        <text class=\"text\"\n              x=\"95\"\n              y=\"108\">\n          Book B\n        </text>\n\n        <text class=\"text\"\n              x=\"95\"\n              y=\"126\">\n          Book C\n        </text>\n\n        <!-- Delete -->\n\n        <rect class=\"danger\"\n              x=\"210\"\n              y=\"40\"\n              width=\"140\"\n              height=\"90\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"280\"\n              y=\"65\">\n          Delete\n        </text>\n\n        <text class=\"text\"\n              x=\"280\"\n              y=\"92\">\n          Remove Book B\n        </text>\n\n        <text class=\"text\"\n              x=\"280\"\n              y=\"112\">\n          Click Button\n        </text>\n\n        <!-- Filter -->\n\n        <rect class=\"box\"\n              x=\"390\"\n              y=\"40\"\n              width=\"150\"\n              height=\"90\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"465\"\n              y=\"65\">\n          filter()\n        </text>\n\n        <text class=\"text\"\n              x=\"465\"\n              y=\"92\">\n          Create New Array\n        </text>\n\n        <text class=\"text\"\n              x=\"465\"\n              y=\"112\">\n          Exclude Book B\n        </text>\n\n        <!-- Updated UI -->\n\n        <rect class=\"box\"\n              x=\"580\"\n              y=\"40\"\n              width=\"160\"\n              height=\"90\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"660\"\n              y=\"65\">\n          Updated UI\n        </text>\n\n        <text class=\"text\"\n              x=\"660\"\n              y=\"92\">\n          Book A\n        </text>\n\n        <text class=\"text\"\n              x=\"660\"\n              y=\"110\">\n          Book C\n        </text>\n\n        <text class=\"text\"\n              x=\"660\"\n              y=\"128\">\n          ✓ Book B Removed\n        </text>\n\n        <!-- Flow -->\n\n        <line class=\"arrow\"\n              x1=\"170\"\n              y1=\"85\"\n              x2=\"210\"\n              y2=\"85\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"350\"\n              y1=\"85\"\n              x2=\"390\"\n              y2=\"85\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"540\"\n              y1=\"85\"\n              x2=\"580\"\n              y2=\"85\"\n              marker-end=\"url(#arrow)\"/>\n\n        <!-- React Render -->\n\n        <path class=\"arrow\"\n              d=\"M660 130\n                 L660 180\n                 L95 180\n                 L95 130\"\n              marker-end=\"url(#arrow)\"/>\n\n        <text class=\"text\"\n              x=\"380\"\n              y=\"205\"\n              style=\"font-size:13px;font-weight:600;\">\n          Original array remains unchanged → React detects the new state and automatically re-renders the UI\n        </text>\n\n      </svg>\n\n    </div>\n\n  </div>\n\n</div>"
-            },
-            {
-              "id": "react-crud-premium-step16",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch6",
-              "chapterTitle": "Delete Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 16,
-              "stepType": "code-exam",
-              "title": "Code exam: delete items",
-              "description": "Implement a delete button to remove items from the list.",
-              "codeType": "code",
-              "checklist": [
-                "Uses filter() to remove the selected item",
-                "Updates state with a new array",
-                "Renders the remaining items correctly"
-              ],
-              "starterCode": "// import React, { useState } from 'react';\n\n// function ManageList() {\n//   const [items, setItems] = useState([\"Apple\", \"Banana\"]);\n//\n//   function deleteItem(indexToRemove) {\n//     setItems((prev) => prev.filter((_, index) => index !== indexToRemove));\n//   }\n//\n//   return (\n//     <div>\n//       <ul>\n//         {items.map((item, index) => (\n//           <li key={index}>\n//             {item}\n//             <button onClick={() => deleteItem(index)}>Delete</button>\n//           </li>\n//         ))}\n//       </ul>\n//     </div>\n//   );\n// }\n//\n// export default ManageList;",
-              "verificationKeywords": [
-                [
-                  "filter(",
-                  "setItems"
-                ],
-                [
-                  "deleteItem("
-                ],
-                [
-                  "map(",
-                  "key="
-                ]
-              ]
-            },
-            {
-              "id": "react-crud-premium-step15",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch6",
-              "chapterTitle": "Delete Pattern",
-              "chapterIndex": 0,
-              "stepIndex": 17,
-              "stepType": "quiz",
-              "title": "Delete workflow quiz",
-              "description": "Verify your understanding of delete patterns in React.",
-              "quizQuestions": [
-                {
-                  "id": "react-crud-premium-q9",
-                  "prompt": "Which function is best for removing an item from an array immutably?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "filter()"
-                    },
-                    {
-                      "id": "b",
-                      "text": "splice()"
-                    },
-                    {
-                      "id": "c",
-                      "text": "push()"
-                    },
-                    {
-                      "id": "d",
-                      "text": "pop()"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "filter() creates a new array without the removed item."
-                },
-                {
-                  "id": "react-crud-premium-q10",
-                  "prompt": "Why is a new array reference important after delete?",
-                  "options": [
-                    {
-                      "id": "a",
-                      "text": "React can detect the changed state"
-                    },
-                    {
-                      "id": "b",
-                      "text": "The list gets sorted"
-                    },
-                    {
-                      "id": "c",
-                      "text": "The button becomes active"
-                    },
-                    {
-                      "id": "d",
-                      "text": "CSS is applied correctly"
-                    }
-                  ],
-                  "correctOptionId": "a",
-                  "explanation": "React compares references and re-renders when the state object changes."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "id": "react-crud-premium-ch7",
-          "courseId": "react-crud",
-          "chapterIndex": 0,
-          "title": "Wrap-up",
-          "steps": [
-            {
-              "id": "react-crud-premium-step17",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch7",
-              "chapterTitle": "Wrap-up",
-              "chapterIndex": 0,
-              "stepIndex": 18,
-              "stepType": "html",
-              "title": "Real-world recap",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n\n  <div class=\"slide-card\">\n\n    <div class=\"slide-text\">\n\n      <h2>Real-World CRUD Applications</h2>\n\n      <p>\n        CRUD (Create, Read, Update, Delete) is the foundation of most modern web\n        applications. The same React patterns you learned are used every day in\n        business systems around the world.\n      </p>\n\n      <ul>\n        <li>Create new records such as customers, products, or orders.</li>\n        <li>Read and display information in tables and dashboards.</li>\n        <li>Update existing data quickly and safely.</li>\n        <li>Delete records when they are no longer needed.</li>\n        <li>React keeps the user interface synchronized with application data.</li>\n      </ul>\n\n    </div>\n\n    <div class=\"slide-diagram\">\n\n      <svg viewBox=\"0 0 760 260\" xmlns=\"http://www.w3.org/2000/svg\">\n\n        <style>\n          .center{\n            fill:#2563eb;\n            stroke:#1d4ed8;\n            stroke-width:2;\n          }\n\n          .box{\n            fill:#f8fbff;\n            stroke:#2563eb;\n            stroke-width:2;\n          }\n\n          .title{\n            font:700 15px Arial,sans-serif;\n            fill:#0f172a;\n            text-anchor:middle;\n          }\n\n          .small{\n            font:12px Arial,sans-serif;\n            fill:#64748b;\n            text-anchor:middle;\n          }\n\n          .arrow{\n            stroke:#64748b;\n            stroke-width:2.5;\n            fill:none;\n          }\n\n          .white{\n            fill:white;\n            font:700 16px Arial,sans-serif;\n            text-anchor:middle;\n          }\n        </style>\n\n        <defs>\n          <marker id=\"arrow\"\n                  markerWidth=\"10\"\n                  markerHeight=\"10\"\n                  refX=\"9\"\n                  refY=\"3\"\n                  orient=\"auto\">\n            <path d=\"M0,0 L10,3 L0,6 Z\" fill=\"#64748b\"/>\n          </marker>\n        </defs>\n\n        <!-- Center -->\n\n        <circle class=\"center\"\n                cx=\"380\"\n                cy=\"125\"\n                r=\"60\"/>\n\n        <text class=\"white\"\n              x=\"380\"\n              y=\"118\">\n          React\n        </text>\n\n        <text class=\"white\"\n              x=\"380\"\n              y=\"140\">\n          CRUD\n        </text>\n\n        <!-- Customer -->\n\n        <rect class=\"box\"\n              x=\"40\"\n              y=\"30\"\n              width=\"150\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"115\"\n              y=\"58\">\n          Customer System\n        </text>\n\n        <text class=\"small\"\n              x=\"115\"\n              y=\"82\">\n          Users & Profiles\n        </text>\n\n        <!-- Inventory -->\n\n        <rect class=\"box\"\n              x=\"570\"\n              y=\"30\"\n              width=\"150\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"645\"\n              y=\"58\">\n          Inventory\n        </text>\n\n        <text class=\"small\"\n              x=\"645\"\n              y=\"82\">\n          Products & Stock\n        </text>\n\n        <!-- Orders -->\n\n        <rect class=\"box\"\n              x=\"40\"\n              y=\"170\"\n              width=\"150\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"115\"\n              y=\"198\">\n          Order System\n        </text>\n\n        <text class=\"small\"\n              x=\"115\"\n              y=\"222\">\n          Sales & Shipping\n        </text>\n\n        <!-- Admin -->\n\n        <rect class=\"box\"\n              x=\"570\"\n              y=\"170\"\n              width=\"150\"\n              height=\"70\"\n              rx=\"10\"/>\n\n        <text class=\"title\"\n              x=\"645\"\n              y=\"198\">\n          Admin Portal\n        </text>\n\n        <text class=\"small\"\n              x=\"645\"\n              y=\"222\">\n          Reports & Settings\n        </text>\n\n        <!-- Arrows -->\n\n        <line class=\"arrow\"\n              x1=\"190\"\n              y1=\"65\"\n              x2=\"325\"\n              y2=\"105\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"570\"\n              y1=\"65\"\n              x2=\"435\"\n              y2=\"105\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"190\"\n              y1=\"205\"\n              x2=\"325\"\n              y2=\"145\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"570\"\n              y1=\"205\"\n              x2=\"435\"\n              y2=\"145\"\n              marker-end=\"url(#arrow)\"/>\n\n      </svg>\n\n    </div>\n\n  </div>\n\n</div>"
-            },
-            {
-              "id": "react-crud-premium-step18",
-              "courseId": "react-crud",
-              "chapterId": "react-crud-premium-ch7",
-              "chapterTitle": "Wrap-up",
-              "chapterIndex": 0,
-              "stepIndex": 19,
-              "stepType": "html",
-              "title": "Course closing message",
-              "description": "",
-              "contentHtml": "<div class=\"course-lesson\">\n\n  <div class=\"slide-card\">\n\n    <div class=\"slide-text\">\n\n      <h2>🎉 Congratulations!</h2>\n\n      <p>\n        You have completed the React CRUD course and learned the core skills\n        needed to build modern, data-driven web applications.\n      </p>\n\n      <ul>\n        <li>✅ Create new records with controlled forms.</li>\n        <li>✅ Read and display data using React components.</li>\n        <li>✅ Update items with immutable state changes.</li>\n        <li>✅ Delete records safely using <code>filter()</code>.</li>\n        <li>✅ Build reusable, maintainable React components.</li>\n      </ul>\n\n      <h3>What's Next?</h3>\n\n      <ul>\n        <li>Learn React Router for multi-page applications.</li>\n        <li>Connect to REST APIs using <code>fetch()</code> or Axios.</li>\n        <li>Store data in databases with Node.js or Firebase.</li>\n        <li>Add form validation and error handling.</li>\n        <li>Deploy your React application to the cloud.</li>\n      </ul>\n\n      <p>\n        Keep building projects, experiment with new ideas, and continue learning.\n        Every real-world React application is built from the same CRUD\n        fundamentals you've mastered in this course.\n      </p>\n\n    </div>\n\n    <div class=\"slide-diagram\">\n\n      <svg viewBox=\"0 0 760 260\" xmlns=\"http://www.w3.org/2000/svg\">\n\n        <style>\n          .box{\n            fill:#f8fbff;\n            stroke:#2563eb;\n            stroke-width:2;\n          }\n\n          .done{\n            fill:#dcfce7;\n            stroke:#16a34a;\n            stroke-width:2;\n          }\n\n          .future{\n            fill:#fef9c3;\n            stroke:#ca8a04;\n            stroke-width:2;\n          }\n\n          .title{\n            font:700 15px Arial,sans-serif;\n            fill:#0f172a;\n            text-anchor:middle;\n          }\n\n          .text{\n            font:12px Arial,sans-serif;\n            fill:#64748b;\n            text-anchor:middle;\n          }\n\n          .arrow{\n            stroke:#64748b;\n            stroke-width:2.5;\n            fill:none;\n          }\n        </style>\n\n        <defs>\n          <marker id=\"arrow\"\n                  markerWidth=\"10\"\n                  markerHeight=\"10\"\n                  refX=\"9\"\n                  refY=\"3\"\n                  orient=\"auto\">\n            <path d=\"M0,0 L10,3 L0,6 Z\"\n                  fill=\"#64748b\"/>\n          </marker>\n        </defs>\n\n        <!-- CRUD -->\n\n        <rect class=\"done\"\n              x=\"30\"\n              y=\"90\"\n              width=\"150\"\n              height=\"90\"\n              rx=\"12\"/>\n\n        <text class=\"title\"\n              x=\"105\"\n              y=\"120\">\n          React CRUD\n        </text>\n\n        <text class=\"text\"\n              x=\"105\"\n              y=\"145\">\n          ✓ Create\n        </text>\n\n        <text class=\"text\"\n              x=\"105\"\n              y=\"162\">\n          ✓ Read • Update • Delete\n        </text>\n\n        <!-- Project -->\n\n        <rect class=\"box\"\n              x=\"300\"\n              y=\"90\"\n              width=\"160\"\n              height=\"90\"\n              rx=\"12\"/>\n\n        <text class=\"title\"\n              x=\"380\"\n              y=\"120\">\n          Real Projects\n        </text>\n\n        <text class=\"text\"\n              x=\"380\"\n              y=\"145\">\n          Admin Panels\n        </text>\n\n        <text class=\"text\"\n              x=\"380\"\n              y=\"162\">\n          Dashboards • Apps\n        </text>\n\n        <!-- Future -->\n\n        <rect class=\"future\"\n              x=\"580\"\n              y=\"90\"\n              width=\"150\"\n              height=\"90\"\n              rx=\"12\"/>\n\n        <text class=\"title\"\n              x=\"655\"\n              y=\"120\">\n          Next Skills\n        </text>\n\n        <text class=\"text\"\n              x=\"655\"\n              y=\"145\">\n          Router • APIs\n        </text>\n\n        <text class=\"text\"\n              x=\"655\"\n              y=\"162\">\n          Database • Deploy\n        </text>\n\n        <!-- Arrows -->\n\n        <line class=\"arrow\"\n              x1=\"180\"\n              y1=\"135\"\n              x2=\"300\"\n              y2=\"135\"\n              marker-end=\"url(#arrow)\"/>\n\n        <line class=\"arrow\"\n              x1=\"460\"\n              y1=\"135\"\n              x2=\"580\"\n              y2=\"135\"\n              marker-end=\"url(#arrow)\"/>\n\n        <!-- Bottom -->\n\n        <text class=\"title\"\n              x=\"380\"\n              y=\"235\"\n              style=\"font-size:18px;\">\n          🚀 Keep Building. Keep Learning. Keep Creating.\n        </text>\n\n      </svg>\n\n    </div>\n\n  </div>\n\n</div>"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "id": "react-interview-practice",
       "title": "Interview FAQ",
       "description": "React practice tasks commonly asked in interviews.",
+      "isPublished": true,
       "color": "#61dafb",
       "coverColorStart": "#b2831f",
       "coverColorMiddle": "#c9ae26",
@@ -1098,6 +428,7 @@
       "id": "tharapasa-nidana",
       "title": "သံပါးစပ်",
       "description": "စစ်ပွဲကိုမှတ်တမ်းတင်ထားသောရာဇဝင်တွေမှာ၊ မဟာဗျဘညီတွေရဲ့အောင်ပွဲတွေကိုသာ ရေးသားထားတာတွေ့ရတတ်တယ်။ ဒါပေမယ့် ရာဇဝင်တွေမှာ မပါဝင်တဲ့၊ အရေးပါတဲ့လူတစ်ယောက် သီဟန် ရဲ့ဇာတ်လမ်းကို ဒီစာအုပ်ထဲမှာ ဖတ်ရှုနိုင်မှာ ဖြစ်ပါတယ်။",
+      "isPublished": true,
       "color": "#ef4444",
       "coverColorStart": "#6ab988",
       "coverColorMiddle": "#32808b",
@@ -1692,6 +1023,7 @@
       "id": "solid-interview-practice",
       "title": "Interview FAQ",
       "description": "SOLID principles and design patterns practice for interviews.",
+      "isPublished": true,
       "color": "#4a90e2",
       "coverColorStart": "#4a90e2",
       "coverColorMiddle": "#4a90e2",
@@ -1800,6 +1132,7 @@
       "id": "angular-interview-practice",
       "title": "Interview FAQ",
       "description": "Angular concept interview questions and answers.",
+      "isPublished": true,
       "color": "#dd0031",
       "coverColorStart": "#dd0031",
       "coverColorMiddle": "#dd0031",
@@ -2225,6 +1558,7 @@
       "id": "csharp-interview-practice",
       "title": "Interview FAQ",
       "description": "C# concept and coding interview practice (code exams).",
+      "isPublished": true,
       "color": "#68217A",
       "coverColorStart": "#68217A",
       "coverColorMiddle": "#68217A",
@@ -2703,6 +2037,7 @@
       "id": "little-programmer",
       "title": "Little Programmer",
       "description": "Kid",
+      "isPublished": true,
       "color": "#2563eb",
       "coverColorStart": "#ead4a4",
       "coverColorMiddle": "#b6ac3e",
@@ -3326,6 +2661,7 @@
       "id": "sql-interview-practice",
       "title": "Interview FAQ",
       "description": "SQL concept and coding interview practice (code exams).",
+      "isPublished": true,
       "color": "#d2691e",
       "coverColorStart": "#d2691e",
       "coverColorMiddle": "#d2691e",
@@ -3708,6 +3044,7 @@
       "id": "myanmar-letters",
       "title": "Myanmar Letters",
       "description": "",
+      "isPublished": true,
       "color": "#2563eb",
       "coverColorStart": "#2563eb",
       "coverColorMiddle": "#2563eb",
@@ -3765,6 +3102,7 @@
       "id": "new-book",
       "title": "IT Newspaper",
       "description": "IT magzine",
+      "isPublished": true,
       "color": "#2563eb",
       "coverColorStart": "#2563eb",
       "coverColorMiddle": "#2563eb",
@@ -3816,6 +3154,7 @@
       "id": "solarsystem",
       "title": "Solar System",
       "description": "",
+      "isPublished": true,
       "color": "#2563eb",
       "coverColorStart": "#7dd3fc",
       "coverColorMiddle": "#818cf8",
@@ -4706,6 +4045,7 @@
       "id": "myfirst100mmwords",
       "title": "100 Myanmar Words",
       "description": "",
+      "isPublished": true,
       "color": "#2563eb",
       "coverColorStart": "#1e1b4b",
       "coverColorMiddle": "#7c3aed",
@@ -5497,6 +4837,7 @@
       "id": "oceanadventure",
       "title": "Ocean Adventure",
       "description": "",
+      "isPublished": true,
       "color": "#2563eb",
       "coverColorStart": "#0a1628",
       "coverColorMiddle": "#1a365d",
@@ -6219,6 +5560,2536 @@
               "title": "Sunlight Zone Explained",
               "description": "",
               "contentHtml": "<iframe src=\"/book_html/OceanAdventure/009-Sunlight-Zone-Explained.html\" style=\"width:100%;height:100%;border:none;\"></iframe>"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "programming-for-kids",
+      "title": "Programming-for-Kids",
+      "description": "",
+      "isPublished": false,
+      "color": "#2563eb",
+      "coverColorStart": "#2563eb",
+      "coverColorMiddle": "#2563eb",
+      "coverColorEnd": "#2563eb",
+      "coverWidth": 100,
+      "coverHeight": 150,
+      "icon": "📘",
+      "iconColorStart": "#fff",
+      "iconColorMiddle": "#fff",
+      "iconColorEnd": "#fff",
+      "iconSize": 80,
+      "titleFontSize": 24,
+      "titleFontWeight": "bold",
+      "titleColor": "#ffffff",
+      "titlePosition": "bottom-left",
+      "titleTextAlign": "left",
+      "iconPosition": "center-center",
+      "courseIndex": 12,
+      "category": "IT",
+      "artifactType": "book",
+      "bookHtmlFolder": "Programming-for-Kids",
+      "stepCount": 125,
+      "chapters": [
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-1",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 1",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-1-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-1",
+              "chapterTitle": "Page 1",
+              "chapterIndex": 0,
+              "stepIndex": 1,
+              "stepType": "pdf",
+              "title": "Page 1",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=1"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-10",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 10",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-10-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-10",
+              "chapterTitle": "Page 10",
+              "chapterIndex": 0,
+              "stepIndex": 10,
+              "stepType": "pdf",
+              "title": "Page 10",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=10"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-100",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 100",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-100-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-100",
+              "chapterTitle": "Page 100",
+              "chapterIndex": 0,
+              "stepIndex": 100,
+              "stepType": "pdf",
+              "title": "Page 100",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=100"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-101",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 101",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-101-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-101",
+              "chapterTitle": "Page 101",
+              "chapterIndex": 0,
+              "stepIndex": 101,
+              "stepType": "pdf",
+              "title": "Page 101",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=101"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-102",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 102",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-102-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-102",
+              "chapterTitle": "Page 102",
+              "chapterIndex": 0,
+              "stepIndex": 102,
+              "stepType": "pdf",
+              "title": "Page 102",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=102"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-103",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 103",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-103-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-103",
+              "chapterTitle": "Page 103",
+              "chapterIndex": 0,
+              "stepIndex": 103,
+              "stepType": "pdf",
+              "title": "Page 103",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=103"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-104",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 104",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-104-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-104",
+              "chapterTitle": "Page 104",
+              "chapterIndex": 0,
+              "stepIndex": 104,
+              "stepType": "pdf",
+              "title": "Page 104",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=104"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-105",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 105",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-105-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-105",
+              "chapterTitle": "Page 105",
+              "chapterIndex": 0,
+              "stepIndex": 105,
+              "stepType": "pdf",
+              "title": "Page 105",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=105"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-106",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 106",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-106-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-106",
+              "chapterTitle": "Page 106",
+              "chapterIndex": 0,
+              "stepIndex": 106,
+              "stepType": "pdf",
+              "title": "Page 106",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=106"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-107",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 107",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-107-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-107",
+              "chapterTitle": "Page 107",
+              "chapterIndex": 0,
+              "stepIndex": 107,
+              "stepType": "pdf",
+              "title": "Page 107",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=107"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-108",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 108",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-108-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-108",
+              "chapterTitle": "Page 108",
+              "chapterIndex": 0,
+              "stepIndex": 108,
+              "stepType": "pdf",
+              "title": "Page 108",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=108"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-109",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 109",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-109-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-109",
+              "chapterTitle": "Page 109",
+              "chapterIndex": 0,
+              "stepIndex": 109,
+              "stepType": "pdf",
+              "title": "Page 109",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=109"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-11",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 11",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-11-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-11",
+              "chapterTitle": "Page 11",
+              "chapterIndex": 0,
+              "stepIndex": 11,
+              "stepType": "pdf",
+              "title": "Page 11",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=11"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-110",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 110",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-110-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-110",
+              "chapterTitle": "Page 110",
+              "chapterIndex": 0,
+              "stepIndex": 110,
+              "stepType": "pdf",
+              "title": "Page 110",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=110"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-111",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 111",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-111-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-111",
+              "chapterTitle": "Page 111",
+              "chapterIndex": 0,
+              "stepIndex": 111,
+              "stepType": "pdf",
+              "title": "Page 111",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=111"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-112",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 112",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-112-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-112",
+              "chapterTitle": "Page 112",
+              "chapterIndex": 0,
+              "stepIndex": 112,
+              "stepType": "pdf",
+              "title": "Page 112",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=112"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-113",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 113",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-113-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-113",
+              "chapterTitle": "Page 113",
+              "chapterIndex": 0,
+              "stepIndex": 113,
+              "stepType": "pdf",
+              "title": "Page 113",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=113"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-114",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 114",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-114-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-114",
+              "chapterTitle": "Page 114",
+              "chapterIndex": 0,
+              "stepIndex": 114,
+              "stepType": "pdf",
+              "title": "Page 114",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=114"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-115",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 115",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-115-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-115",
+              "chapterTitle": "Page 115",
+              "chapterIndex": 0,
+              "stepIndex": 115,
+              "stepType": "pdf",
+              "title": "Page 115",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=115"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-116",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 116",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-116-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-116",
+              "chapterTitle": "Page 116",
+              "chapterIndex": 0,
+              "stepIndex": 116,
+              "stepType": "pdf",
+              "title": "Page 116",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=116"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-117",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 117",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-117-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-117",
+              "chapterTitle": "Page 117",
+              "chapterIndex": 0,
+              "stepIndex": 117,
+              "stepType": "pdf",
+              "title": "Page 117",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=117"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-118",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 118",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-118-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-118",
+              "chapterTitle": "Page 118",
+              "chapterIndex": 0,
+              "stepIndex": 118,
+              "stepType": "pdf",
+              "title": "Page 118",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=118"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-119",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 119",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-119-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-119",
+              "chapterTitle": "Page 119",
+              "chapterIndex": 0,
+              "stepIndex": 119,
+              "stepType": "pdf",
+              "title": "Page 119",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=119"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-12",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 12",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-12-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-12",
+              "chapterTitle": "Page 12",
+              "chapterIndex": 0,
+              "stepIndex": 12,
+              "stepType": "pdf",
+              "title": "Page 12",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=12"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-120",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 120",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-120-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-120",
+              "chapterTitle": "Page 120",
+              "chapterIndex": 0,
+              "stepIndex": 120,
+              "stepType": "pdf",
+              "title": "Page 120",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=120"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-121",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 121",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-121-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-121",
+              "chapterTitle": "Page 121",
+              "chapterIndex": 0,
+              "stepIndex": 121,
+              "stepType": "pdf",
+              "title": "Page 121",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=121"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-122",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 122",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-122-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-122",
+              "chapterTitle": "Page 122",
+              "chapterIndex": 0,
+              "stepIndex": 122,
+              "stepType": "pdf",
+              "title": "Page 122",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=122"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-123",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 123",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-123-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-123",
+              "chapterTitle": "Page 123",
+              "chapterIndex": 0,
+              "stepIndex": 123,
+              "stepType": "pdf",
+              "title": "Page 123",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=123"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-124",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 124",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-124-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-124",
+              "chapterTitle": "Page 124",
+              "chapterIndex": 0,
+              "stepIndex": 124,
+              "stepType": "pdf",
+              "title": "Page 124",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=124"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-125",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 125",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-125-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-125",
+              "chapterTitle": "Page 125",
+              "chapterIndex": 0,
+              "stepIndex": 125,
+              "stepType": "pdf",
+              "title": "Page 125",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=125"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-13",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 13",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-13-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-13",
+              "chapterTitle": "Page 13",
+              "chapterIndex": 0,
+              "stepIndex": 13,
+              "stepType": "pdf",
+              "title": "Page 13",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=13"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-14",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 14",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-14-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-14",
+              "chapterTitle": "Page 14",
+              "chapterIndex": 0,
+              "stepIndex": 14,
+              "stepType": "pdf",
+              "title": "Page 14",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=14"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-15",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 15",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-15-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-15",
+              "chapterTitle": "Page 15",
+              "chapterIndex": 0,
+              "stepIndex": 15,
+              "stepType": "pdf",
+              "title": "Page 15",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=15"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-16",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 16",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-16-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-16",
+              "chapterTitle": "Page 16",
+              "chapterIndex": 0,
+              "stepIndex": 16,
+              "stepType": "pdf",
+              "title": "Page 16",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=16"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-17",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 17",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-17-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-17",
+              "chapterTitle": "Page 17",
+              "chapterIndex": 0,
+              "stepIndex": 17,
+              "stepType": "pdf",
+              "title": "Page 17",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=17"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-18",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 18",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-18-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-18",
+              "chapterTitle": "Page 18",
+              "chapterIndex": 0,
+              "stepIndex": 18,
+              "stepType": "pdf",
+              "title": "Page 18",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=18"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-19",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 19",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-19-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-19",
+              "chapterTitle": "Page 19",
+              "chapterIndex": 0,
+              "stepIndex": 19,
+              "stepType": "pdf",
+              "title": "Page 19",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=19"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-2",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 2",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-2-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-2",
+              "chapterTitle": "Page 2",
+              "chapterIndex": 0,
+              "stepIndex": 2,
+              "stepType": "pdf",
+              "title": "Page 2",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=2"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-20",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 20",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-20-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-20",
+              "chapterTitle": "Page 20",
+              "chapterIndex": 0,
+              "stepIndex": 20,
+              "stepType": "pdf",
+              "title": "Page 20",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=20"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-21",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 21",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-21-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-21",
+              "chapterTitle": "Page 21",
+              "chapterIndex": 0,
+              "stepIndex": 21,
+              "stepType": "pdf",
+              "title": "Page 21",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=21"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-22",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 22",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-22-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-22",
+              "chapterTitle": "Page 22",
+              "chapterIndex": 0,
+              "stepIndex": 22,
+              "stepType": "pdf",
+              "title": "Page 22",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=22"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-23",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 23",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-23-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-23",
+              "chapterTitle": "Page 23",
+              "chapterIndex": 0,
+              "stepIndex": 23,
+              "stepType": "pdf",
+              "title": "Page 23",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=23"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-24",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 24",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-24-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-24",
+              "chapterTitle": "Page 24",
+              "chapterIndex": 0,
+              "stepIndex": 24,
+              "stepType": "pdf",
+              "title": "Page 24",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=24"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-25",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 25",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-25-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-25",
+              "chapterTitle": "Page 25",
+              "chapterIndex": 0,
+              "stepIndex": 25,
+              "stepType": "pdf",
+              "title": "Page 25",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=25"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-26",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 26",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-26-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-26",
+              "chapterTitle": "Page 26",
+              "chapterIndex": 0,
+              "stepIndex": 26,
+              "stepType": "pdf",
+              "title": "Page 26",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=26"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-27",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 27",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-27-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-27",
+              "chapterTitle": "Page 27",
+              "chapterIndex": 0,
+              "stepIndex": 27,
+              "stepType": "pdf",
+              "title": "Page 27",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=27"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-28",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 28",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-28-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-28",
+              "chapterTitle": "Page 28",
+              "chapterIndex": 0,
+              "stepIndex": 28,
+              "stepType": "pdf",
+              "title": "Page 28",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=28"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-29",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 29",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-29-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-29",
+              "chapterTitle": "Page 29",
+              "chapterIndex": 0,
+              "stepIndex": 29,
+              "stepType": "pdf",
+              "title": "Page 29",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=29"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-3",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 3",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-3-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-3",
+              "chapterTitle": "Page 3",
+              "chapterIndex": 0,
+              "stepIndex": 3,
+              "stepType": "pdf",
+              "title": "Page 3",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=3"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-30",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 30",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-30-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-30",
+              "chapterTitle": "Page 30",
+              "chapterIndex": 0,
+              "stepIndex": 30,
+              "stepType": "pdf",
+              "title": "Page 30",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=30"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-31",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 31",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-31-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-31",
+              "chapterTitle": "Page 31",
+              "chapterIndex": 0,
+              "stepIndex": 31,
+              "stepType": "pdf",
+              "title": "Page 31",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=31"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-32",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 32",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-32-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-32",
+              "chapterTitle": "Page 32",
+              "chapterIndex": 0,
+              "stepIndex": 32,
+              "stepType": "pdf",
+              "title": "Page 32",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=32"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-33",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 33",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-33-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-33",
+              "chapterTitle": "Page 33",
+              "chapterIndex": 0,
+              "stepIndex": 33,
+              "stepType": "pdf",
+              "title": "Page 33",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=33"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-34",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 34",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-34-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-34",
+              "chapterTitle": "Page 34",
+              "chapterIndex": 0,
+              "stepIndex": 34,
+              "stepType": "pdf",
+              "title": "Page 34",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=34"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-35",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 35",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-35-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-35",
+              "chapterTitle": "Page 35",
+              "chapterIndex": 0,
+              "stepIndex": 35,
+              "stepType": "pdf",
+              "title": "Page 35",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=35"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-36",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 36",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-36-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-36",
+              "chapterTitle": "Page 36",
+              "chapterIndex": 0,
+              "stepIndex": 36,
+              "stepType": "pdf",
+              "title": "Page 36",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=36"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-37",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 37",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-37-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-37",
+              "chapterTitle": "Page 37",
+              "chapterIndex": 0,
+              "stepIndex": 37,
+              "stepType": "pdf",
+              "title": "Page 37",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=37"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-38",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 38",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-38-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-38",
+              "chapterTitle": "Page 38",
+              "chapterIndex": 0,
+              "stepIndex": 38,
+              "stepType": "pdf",
+              "title": "Page 38",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=38"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-39",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 39",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-39-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-39",
+              "chapterTitle": "Page 39",
+              "chapterIndex": 0,
+              "stepIndex": 39,
+              "stepType": "pdf",
+              "title": "Page 39",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=39"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-4",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 4",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-4-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-4",
+              "chapterTitle": "Page 4",
+              "chapterIndex": 0,
+              "stepIndex": 4,
+              "stepType": "pdf",
+              "title": "Page 4",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=4"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-40",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 40",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-40-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-40",
+              "chapterTitle": "Page 40",
+              "chapterIndex": 0,
+              "stepIndex": 40,
+              "stepType": "pdf",
+              "title": "Page 40",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=40"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-41",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 41",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-41-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-41",
+              "chapterTitle": "Page 41",
+              "chapterIndex": 0,
+              "stepIndex": 41,
+              "stepType": "pdf",
+              "title": "Page 41",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=41"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-42",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 42",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-42-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-42",
+              "chapterTitle": "Page 42",
+              "chapterIndex": 0,
+              "stepIndex": 42,
+              "stepType": "pdf",
+              "title": "Page 42",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=42"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-43",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 43",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-43-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-43",
+              "chapterTitle": "Page 43",
+              "chapterIndex": 0,
+              "stepIndex": 43,
+              "stepType": "pdf",
+              "title": "Page 43",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=43"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-44",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 44",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-44-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-44",
+              "chapterTitle": "Page 44",
+              "chapterIndex": 0,
+              "stepIndex": 44,
+              "stepType": "pdf",
+              "title": "Page 44",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=44"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-45",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 45",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-45-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-45",
+              "chapterTitle": "Page 45",
+              "chapterIndex": 0,
+              "stepIndex": 45,
+              "stepType": "pdf",
+              "title": "Page 45",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=45"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-46",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 46",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-46-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-46",
+              "chapterTitle": "Page 46",
+              "chapterIndex": 0,
+              "stepIndex": 46,
+              "stepType": "pdf",
+              "title": "Page 46",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=46"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-47",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 47",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-47-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-47",
+              "chapterTitle": "Page 47",
+              "chapterIndex": 0,
+              "stepIndex": 47,
+              "stepType": "pdf",
+              "title": "Page 47",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=47"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-48",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 48",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-48-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-48",
+              "chapterTitle": "Page 48",
+              "chapterIndex": 0,
+              "stepIndex": 48,
+              "stepType": "pdf",
+              "title": "Page 48",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=48"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-49",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 49",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-49-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-49",
+              "chapterTitle": "Page 49",
+              "chapterIndex": 0,
+              "stepIndex": 49,
+              "stepType": "pdf",
+              "title": "Page 49",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=49"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-5",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 5",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-5-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-5",
+              "chapterTitle": "Page 5",
+              "chapterIndex": 0,
+              "stepIndex": 5,
+              "stepType": "pdf",
+              "title": "Page 5",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=5"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-50",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 50",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-50-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-50",
+              "chapterTitle": "Page 50",
+              "chapterIndex": 0,
+              "stepIndex": 50,
+              "stepType": "pdf",
+              "title": "Page 50",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=50"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-51",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 51",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-51-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-51",
+              "chapterTitle": "Page 51",
+              "chapterIndex": 0,
+              "stepIndex": 51,
+              "stepType": "pdf",
+              "title": "Page 51",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=51"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-52",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 52",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-52-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-52",
+              "chapterTitle": "Page 52",
+              "chapterIndex": 0,
+              "stepIndex": 52,
+              "stepType": "pdf",
+              "title": "Page 52",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=52"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-53",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 53",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-53-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-53",
+              "chapterTitle": "Page 53",
+              "chapterIndex": 0,
+              "stepIndex": 53,
+              "stepType": "pdf",
+              "title": "Page 53",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=53"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-54",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 54",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-54-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-54",
+              "chapterTitle": "Page 54",
+              "chapterIndex": 0,
+              "stepIndex": 54,
+              "stepType": "pdf",
+              "title": "Page 54",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=54"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-55",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 55",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-55-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-55",
+              "chapterTitle": "Page 55",
+              "chapterIndex": 0,
+              "stepIndex": 55,
+              "stepType": "pdf",
+              "title": "Page 55",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=55"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-56",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 56",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-56-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-56",
+              "chapterTitle": "Page 56",
+              "chapterIndex": 0,
+              "stepIndex": 56,
+              "stepType": "pdf",
+              "title": "Page 56",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=56"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-57",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 57",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-57-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-57",
+              "chapterTitle": "Page 57",
+              "chapterIndex": 0,
+              "stepIndex": 57,
+              "stepType": "pdf",
+              "title": "Page 57",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=57"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-58",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 58",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-58-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-58",
+              "chapterTitle": "Page 58",
+              "chapterIndex": 0,
+              "stepIndex": 58,
+              "stepType": "pdf",
+              "title": "Page 58",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=58"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-59",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 59",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-59-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-59",
+              "chapterTitle": "Page 59",
+              "chapterIndex": 0,
+              "stepIndex": 59,
+              "stepType": "pdf",
+              "title": "Page 59",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=59"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-6",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 6",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-6-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-6",
+              "chapterTitle": "Page 6",
+              "chapterIndex": 0,
+              "stepIndex": 6,
+              "stepType": "pdf",
+              "title": "Page 6",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=6"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-60",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 60",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-60-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-60",
+              "chapterTitle": "Page 60",
+              "chapterIndex": 0,
+              "stepIndex": 60,
+              "stepType": "pdf",
+              "title": "Page 60",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=60"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-61",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 61",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-61-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-61",
+              "chapterTitle": "Page 61",
+              "chapterIndex": 0,
+              "stepIndex": 61,
+              "stepType": "pdf",
+              "title": "Page 61",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=61"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-62",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 62",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-62-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-62",
+              "chapterTitle": "Page 62",
+              "chapterIndex": 0,
+              "stepIndex": 62,
+              "stepType": "pdf",
+              "title": "Page 62",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=62"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-63",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 63",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-63-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-63",
+              "chapterTitle": "Page 63",
+              "chapterIndex": 0,
+              "stepIndex": 63,
+              "stepType": "pdf",
+              "title": "Page 63",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=63"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-64",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 64",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-64-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-64",
+              "chapterTitle": "Page 64",
+              "chapterIndex": 0,
+              "stepIndex": 64,
+              "stepType": "pdf",
+              "title": "Page 64",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=64"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-65",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 65",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-65-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-65",
+              "chapterTitle": "Page 65",
+              "chapterIndex": 0,
+              "stepIndex": 65,
+              "stepType": "pdf",
+              "title": "Page 65",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=65"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-66",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 66",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-66-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-66",
+              "chapterTitle": "Page 66",
+              "chapterIndex": 0,
+              "stepIndex": 66,
+              "stepType": "pdf",
+              "title": "Page 66",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=66"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-67",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 67",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-67-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-67",
+              "chapterTitle": "Page 67",
+              "chapterIndex": 0,
+              "stepIndex": 67,
+              "stepType": "pdf",
+              "title": "Page 67",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=67"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-68",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 68",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-68-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-68",
+              "chapterTitle": "Page 68",
+              "chapterIndex": 0,
+              "stepIndex": 68,
+              "stepType": "pdf",
+              "title": "Page 68",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=68"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-69",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 69",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-69-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-69",
+              "chapterTitle": "Page 69",
+              "chapterIndex": 0,
+              "stepIndex": 69,
+              "stepType": "pdf",
+              "title": "Page 69",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=69"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-7",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 7",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-7-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-7",
+              "chapterTitle": "Page 7",
+              "chapterIndex": 0,
+              "stepIndex": 7,
+              "stepType": "pdf",
+              "title": "Page 7",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=7"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-70",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 70",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-70-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-70",
+              "chapterTitle": "Page 70",
+              "chapterIndex": 0,
+              "stepIndex": 70,
+              "stepType": "pdf",
+              "title": "Page 70",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=70"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-71",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 71",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-71-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-71",
+              "chapterTitle": "Page 71",
+              "chapterIndex": 0,
+              "stepIndex": 71,
+              "stepType": "pdf",
+              "title": "Page 71",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=71"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-72",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 72",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-72-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-72",
+              "chapterTitle": "Page 72",
+              "chapterIndex": 0,
+              "stepIndex": 72,
+              "stepType": "pdf",
+              "title": "Page 72",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=72"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-73",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 73",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-73-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-73",
+              "chapterTitle": "Page 73",
+              "chapterIndex": 0,
+              "stepIndex": 73,
+              "stepType": "pdf",
+              "title": "Page 73",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=73"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-74",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 74",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-74-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-74",
+              "chapterTitle": "Page 74",
+              "chapterIndex": 0,
+              "stepIndex": 74,
+              "stepType": "pdf",
+              "title": "Page 74",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=74"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-75",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 75",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-75-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-75",
+              "chapterTitle": "Page 75",
+              "chapterIndex": 0,
+              "stepIndex": 75,
+              "stepType": "pdf",
+              "title": "Page 75",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=75"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-76",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 76",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-76-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-76",
+              "chapterTitle": "Page 76",
+              "chapterIndex": 0,
+              "stepIndex": 76,
+              "stepType": "pdf",
+              "title": "Page 76",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=76"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-77",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 77",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-77-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-77",
+              "chapterTitle": "Page 77",
+              "chapterIndex": 0,
+              "stepIndex": 77,
+              "stepType": "pdf",
+              "title": "Page 77",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=77"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-78",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 78",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-78-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-78",
+              "chapterTitle": "Page 78",
+              "chapterIndex": 0,
+              "stepIndex": 78,
+              "stepType": "pdf",
+              "title": "Page 78",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=78"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-79",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 79",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-79-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-79",
+              "chapterTitle": "Page 79",
+              "chapterIndex": 0,
+              "stepIndex": 79,
+              "stepType": "pdf",
+              "title": "Page 79",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=79"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-8",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 8",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-8-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-8",
+              "chapterTitle": "Page 8",
+              "chapterIndex": 0,
+              "stepIndex": 8,
+              "stepType": "pdf",
+              "title": "Page 8",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=8"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-80",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 80",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-80-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-80",
+              "chapterTitle": "Page 80",
+              "chapterIndex": 0,
+              "stepIndex": 80,
+              "stepType": "pdf",
+              "title": "Page 80",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=80"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-81",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 81",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-81-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-81",
+              "chapterTitle": "Page 81",
+              "chapterIndex": 0,
+              "stepIndex": 81,
+              "stepType": "pdf",
+              "title": "Page 81",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=81"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-82",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 82",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-82-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-82",
+              "chapterTitle": "Page 82",
+              "chapterIndex": 0,
+              "stepIndex": 82,
+              "stepType": "pdf",
+              "title": "Page 82",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=82"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-83",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 83",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-83-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-83",
+              "chapterTitle": "Page 83",
+              "chapterIndex": 0,
+              "stepIndex": 83,
+              "stepType": "pdf",
+              "title": "Page 83",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=83"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-84",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 84",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-84-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-84",
+              "chapterTitle": "Page 84",
+              "chapterIndex": 0,
+              "stepIndex": 84,
+              "stepType": "pdf",
+              "title": "Page 84",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=84"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-85",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 85",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-85-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-85",
+              "chapterTitle": "Page 85",
+              "chapterIndex": 0,
+              "stepIndex": 85,
+              "stepType": "pdf",
+              "title": "Page 85",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=85"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-86",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 86",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-86-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-86",
+              "chapterTitle": "Page 86",
+              "chapterIndex": 0,
+              "stepIndex": 86,
+              "stepType": "pdf",
+              "title": "Page 86",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=86"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-87",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 87",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-87-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-87",
+              "chapterTitle": "Page 87",
+              "chapterIndex": 0,
+              "stepIndex": 87,
+              "stepType": "pdf",
+              "title": "Page 87",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=87"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-88",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 88",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-88-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-88",
+              "chapterTitle": "Page 88",
+              "chapterIndex": 0,
+              "stepIndex": 88,
+              "stepType": "pdf",
+              "title": "Page 88",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=88"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-89",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 89",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-89-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-89",
+              "chapterTitle": "Page 89",
+              "chapterIndex": 0,
+              "stepIndex": 89,
+              "stepType": "pdf",
+              "title": "Page 89",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=89"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-9",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 9",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-9-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-9",
+              "chapterTitle": "Page 9",
+              "chapterIndex": 0,
+              "stepIndex": 9,
+              "stepType": "pdf",
+              "title": "Page 9",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=9"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-90",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 90",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-90-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-90",
+              "chapterTitle": "Page 90",
+              "chapterIndex": 0,
+              "stepIndex": 90,
+              "stepType": "pdf",
+              "title": "Page 90",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=90"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-91",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 91",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-91-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-91",
+              "chapterTitle": "Page 91",
+              "chapterIndex": 0,
+              "stepIndex": 91,
+              "stepType": "pdf",
+              "title": "Page 91",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=91"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-92",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 92",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-92-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-92",
+              "chapterTitle": "Page 92",
+              "chapterIndex": 0,
+              "stepIndex": 92,
+              "stepType": "pdf",
+              "title": "Page 92",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=92"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-93",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 93",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-93-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-93",
+              "chapterTitle": "Page 93",
+              "chapterIndex": 0,
+              "stepIndex": 93,
+              "stepType": "pdf",
+              "title": "Page 93",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=93"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-94",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 94",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-94-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-94",
+              "chapterTitle": "Page 94",
+              "chapterIndex": 0,
+              "stepIndex": 94,
+              "stepType": "pdf",
+              "title": "Page 94",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=94"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-95",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 95",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-95-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-95",
+              "chapterTitle": "Page 95",
+              "chapterIndex": 0,
+              "stepIndex": 95,
+              "stepType": "pdf",
+              "title": "Page 95",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=95"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-96",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 96",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-96-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-96",
+              "chapterTitle": "Page 96",
+              "chapterIndex": 0,
+              "stepIndex": 96,
+              "stepType": "pdf",
+              "title": "Page 96",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=96"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-97",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 97",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-97-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-97",
+              "chapterTitle": "Page 97",
+              "chapterIndex": 0,
+              "stepIndex": 97,
+              "stepType": "pdf",
+              "title": "Page 97",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=97"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-98",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 98",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-98-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-98",
+              "chapterTitle": "Page 98",
+              "chapterIndex": 0,
+              "stepIndex": 98,
+              "stepType": "pdf",
+              "title": "Page 98",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=98"
+            }
+          ]
+        },
+        {
+          "id": "programming-for-kids-ch-import-1785592278302-99",
+          "courseId": "programming-for-kids",
+          "chapterIndex": 0,
+          "title": "Page 99",
+          "steps": [
+            {
+              "id": "programming-for-kids-ch-import-1785592278302-99-step-0",
+              "courseId": "programming-for-kids",
+              "chapterId": "programming-for-kids-ch-import-1785592278302-99",
+              "chapterTitle": "Page 99",
+              "chapterIndex": 0,
+              "stepIndex": 99,
+              "stepType": "pdf",
+              "title": "Page 99",
+              "description": "",
+              "contentHtml": "/book_html/Programming-for-Kids/Programming-for-Kids.pdf#page=99"
             }
           ]
         }
@@ -9338,5 +11209,5 @@
       "sortOrder": 0
     }
   ],
-  "exportedAt": "2026-08-01T02:41:49.379Z"
+  "exportedAt": "2026-08-02T04:14:27.819Z"
 }

@@ -1,17 +1,35 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { AccountProvider } from "./context/AccountContext";
 import { StageNavProvider } from "./context/StageNavContext";
 import Home from "./pages/Home";
 import { getHomePageData } from "./utils/contentStore";
 
-const Home_Test = lazy(() => import("./pages/Home_Test"));
 const Practice = lazy(() => import("./pages/Practice"));
 const CourseWizard = lazy(() => import("./pages/CourseWizard"));
 const AdminAuth = lazy(() => import("./pages/AdminAuth"));
 
 function RouteFallback() {
   return <div className="page-content panel"><div className="panel-body">Loading…</div></div>;
+}
+
+function BetaHomeRoute() {
+  const [authorized, setAuthorized] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const enteredPassword = window.prompt("Enter admin password to browse beta books:", "");
+    setAuthorized(enteredPassword === "admin123");
+  }, []);
+
+  if (authorized === null) {
+    return <RouteFallback />;
+  }
+
+  if (!authorized) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Home showUnpublishedOnly />;
 }
 
 function AppContent() {
@@ -50,7 +68,9 @@ function AppContent() {
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/home_test" element={<Home_Test />} />
+            <Route path="/beta_home" element={<BetaHomeRoute />} />
+            <Route path="/home_test" element={<Navigate to="/beta_home" replace />} />
+            <Route path="/beta_book" element={<Navigate to="/beta_home" replace />} />
             <Route path="/practice" element={<Navigate to="/" replace />} />
             <Route path="/practice/:categoryKey" element={<Practice />} />
             <Route path="/courses/:courseId" element={<CourseWizard />} />

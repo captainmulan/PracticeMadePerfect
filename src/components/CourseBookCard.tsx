@@ -7,12 +7,16 @@ interface CourseBookCardProps {
   item: CourseShelfItem;
   /** When true, prefer admin/seed cover image over gradient+icon. */
   useCoverImage?: boolean;
+  onItemClick?: (item: CourseShelfItem) => void;
 }
 
-export default function CourseBookCard({ item, useCoverImage = false }: CourseBookCardProps) {
+export default function CourseBookCard({ item, useCoverImage = false, onItemClick }: CourseBookCardProps) {
   const homePageData = getHomePageData();
-  const isEmpty = !item.link || item.placeholder;
-  const showCoverImage = Boolean(useCoverImage && item.coverImageUrl && !isEmpty);
+  const isEmpty = Boolean(item.placeholder);
+  const isAuthor = item.actionType === "author";
+  const authorAvatarUrl = isAuthor ? item.coverImageUrl?.trim() : undefined;
+  const isImageAvatar = Boolean(authorAvatarUrl && /^https?:\/\//i.test(authorAvatarUrl));
+  const showCoverImage = Boolean(useCoverImage && item.coverImageUrl && !isEmpty && !item.actionType);
   
   const iconSize = item.iconSize ?? 80; // default admin-configurable
   const iconFont = Math.round(iconSize * 0.9);
@@ -68,6 +72,16 @@ export default function CourseBookCard({ item, useCoverImage = false }: CourseBo
     width: coverWidth ? `${coverWidth}px` : undefined,
   };
 
+  const authorCoverStyles: CSSProperties = isAuthor
+    ? {
+        background: "transparent",
+        borderRadius: 0,
+        boxShadow: "none",
+        border: "none",
+        padding: 0,
+      }
+    : {};
+
   const bookTitleStyles: CSSProperties = {
     fontSize: `calc(var(--book-title-font) / 4)`, // scale down for book card size
     fontWeight: titleFontWeight,
@@ -101,6 +115,7 @@ export default function CourseBookCard({ item, useCoverImage = false }: CourseBo
         <span className="book-title" style={bookTitleStyles}>{displayTitle}</span>
       ) : null}
       <div className="book-cover" style={{ 
+        ...authorCoverStyles,
         background: showCoverImage
           ? undefined
           : `linear-gradient(180deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
@@ -109,7 +124,66 @@ export default function CourseBookCard({ item, useCoverImage = false }: CourseBo
         height: coverHeight ? `${coverHeight}px` : undefined,
         overflow: "hidden",
       }}>
-        {showCoverImage ? (
+        {isAuthor ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: "10px",
+              width: "100%",
+              height: "100%",
+              paddingBottom: "6px",
+              background: "transparent",
+            }}
+          >
+            <div
+              style={{
+                width: "72px",
+                height: "72px",
+                borderRadius: "999px",
+                border: "3px solid rgba(255,255,255,0.85)",
+                background: "rgba(255,255,255,0.16)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+                boxShadow: "0 0 0 2px rgba(15,23,42,0.08)",
+                marginBottom: "8px",
+              }}
+            >
+              {isImageAvatar ? (
+                <img
+                  src={authorAvatarUrl}
+                  alt={item.title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              ) : (
+                <span style={{ fontSize: 34, lineHeight: 1 }}>{item.icon || "👤"}</span>
+              )}
+            </div>
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: "#f8fafc",
+                textAlign: "center",
+                lineHeight: 1.2,
+                whiteSpace: "normal",
+                wordBreak: "break-word",
+                textShadow: "0 1px 2px rgba(0,0,0,0.45)",
+              }}
+            >
+              {item.title}
+            </span>
+          </div>
+        ) : showCoverImage ? (
           <>
             <img
               className="book-cover-image"
@@ -181,6 +255,20 @@ export default function CourseBookCard({ item, useCoverImage = false }: CourseBo
       </div>
     </>
   );
+
+  if (item.actionType === "author") {
+    return (
+      <button
+        type="button"
+        className={`book${showCoverImage ? " book--cover-image" : ""}`}
+        style={{ ...bookStyles, border: "none", cursor: "pointer", padding: 0 }}
+        onClick={() => onItemClick?.(item)}
+        aria-label={`View books by ${item.title}`}
+      >
+        {content}
+      </button>
+    );
+  }
 
   if (item.link) {
     return (

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BookShowcase from "../components/showcase/BookShowcase";
 import HomeCourseShelves from "../components/HomeCourseShelves";
+import AuthorShelfRow from "../components/AuthorShelfRow";
 import HomeLoginPanel from "../components/HomeLoginPanel";
 import HomeSpaceDecor from "../components/HomeSpaceDecor";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
@@ -11,9 +12,12 @@ import { useCourseCatalog } from "../utils/useCourseCatalog";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import {
   createShelfItemFromCourse,
+  getAuthorShelfRow,
+  getCourseShelfRowForAuthor,
   getCourseShelfRowForCategory,
   getHomeCourseShelfRows,
   getPopularCourses,
+  getUnpublishedBooksRow,
   type CourseShelfRow,
 } from "../utils/courseShelf";
 import "../styles/home-test-showcase.css";
@@ -50,18 +54,42 @@ function preloadPopularCovers(courses: ReturnType<typeof useCourseCatalog>["cour
   }
 }
 
-export default function Home() {
+type HomeProps = {
+  showUnpublishedOnly?: boolean;
+};
+
+export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const navigate = useNavigate();
   const [heroCollapsed, setHeroCollapsed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
-  const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<"Kid" | "IT" | "Fiction" | "Language">("IT");
+  const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<"Kid" | "IT" | "Fiction" | "Author">("IT");
+  const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const data = getHomePageData();
   const style = data.style;
-  const { courses, loaded: coursesLoaded } = useCourseCatalog();
-  const rows = useMemo(() => getHomeCourseShelfRows(courses), [courses]);
+  const { courses, loaded: coursesLoaded } = useCourseCatalog({
+    publishedMode: showUnpublishedOnly ? "unpublished" : "published",
+  });
+  const rows = useMemo(
+    () => (showUnpublishedOnly ? [getUnpublishedBooksRow(courses)] : getHomeCourseShelfRows(courses)),
+    [courses, showUnpublishedOnly]
+  );
+  const authorGroups = useMemo(() => {
+    const groups = new Map<string, { authorName: string; authorPicture?: string }>();
+    for (const course of courses) {
+      const authorName = (course.authorName ?? "Unknown").trim();
+      if (!authorName) {
+        continue;
+      }
+      if (!groups.has(authorName)) {
+        groups.set(authorName, { authorName, authorPicture: course.authorPicture });
+      }
+    }
+    return [...groups.values()].sort((a, b) => a.authorName.localeCompare(b.authorName));
+  }, [courses]);
   const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
-  const showcaseEnabled = !heroCollapsed && coursesLoaded && courses.length > 0;
+  const isAuthorBrowseCategory = selectedTab === "Category" && selectedCategorySubTab === "Author" && !selectedAuthorName;
+  const showcaseEnabled = !showUnpublishedOnly && !heroCollapsed && coursesLoaded && courses.length > 0;
   const {
     selection: showcaseSelection,
     excerpt: showcaseExcerpt,
@@ -82,7 +110,23 @@ export default function Home() {
     if (selectedTab === "Login") {
       return undefined;
     }
+    if (showUnpublishedOnly) {
+      if (isSearching) {
+        const searchItems = filterCoursesByQuery(courses, searchQuery)
+          .slice()
+          .sort((a, b) => a.title.localeCompare(b.title))
+          .map((course) => createShelfItemFromCourse(course, "Unpublished Books"));
+        return { title: "Unpublished Books", items: searchItems };
+      }
+      return rows[0];
+    }
     if (selectedTab === "Category") {
+      if (selectedCategorySubTab === "Author") {
+        if (selectedAuthorName) {
+          return getCourseShelfRowForAuthor(courses, selectedAuthorName);
+        }
+        return getAuthorShelfRow(authorGroups);
+      }
       return getCourseShelfRowForCategory(courses, selectedCategorySubTab);
     }
     if (isSearching) {
@@ -93,7 +137,7 @@ export default function Home() {
       return { title: "Selection", items: searchItems };
     }
     return rows.find((row) => row.title === "Selection") || rows[0];
-  }, [courses, isSearching, rows, searchQuery, selectedCategorySubTab, selectedTab]);
+  }, [authorGroups, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedCategorySubTab, selectedTab, showUnpublishedOnly]);
 
   const openShowcasedBook = () => {
     if (showcaseSelection?.course.id) {
@@ -138,7 +182,7 @@ export default function Home() {
               {data.title}
             </div>
             <h1 className="home-hero-title" style={{ color: style?.hero?.titleColor ?? "#0f172a" }}>
-              {data.headline}
+              {showUnpublishedOnly ? "Unpublished Books" : data.headline}
             </h1>
           </div>
 
@@ -200,12 +244,15 @@ export default function Home() {
 
           {selectedTab === "Category" && (
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
-              {(["Kid", "IT", "Fiction", "Language"] as const).map((category) => (
+              {(["Kid", "IT", "Fiction", "Author"] as const).map((category) => (
                 <button
                   key={category}
                   type="button"
                   className={`tab ${selectedCategorySubTab === category ? "active" : ""}`}
-                  onClick={() => setSelectedCategorySubTab(category)}
+                  onClick={() => {
+                    setSelectedCategorySubTab(category);
+                    setSelectedAuthorName(null);
+                  }}
                   style={{
                     padding: "6px 10px",
                     borderRadius: "999px",
@@ -227,18 +274,44 @@ export default function Home() {
 
           {selectedTab === "Login" ? (
             <HomeLoginPanel />
+          ) : selectedTab === "Category" && selectedCategorySubTab === "Author" && selectedAuthorName ? (
+            <div style={{ marginBottom: "12px", color: "#334155", fontWeight: 700 }}>
+              Showing books for {selectedAuthorName}
+            </div>
+          ) : null}
+
+          {selectedTab === "Login" ? (
+            <HomeLoginPanel />
           ) : !coursesLoaded ? (
             <div className="home-course-loading">Loading books...</div>
           ) : courses.length === 0 ? (
             <div className="home-course-loading">No books yet. Create one in Admin.</div>
           ) : isSearching ? (
             selectedRow && selectedRow.items.length > 0 ? (
-              <HomeCourseShelves row={selectedRow} useCoverImages />
+              selectedRow.title === "Author" ? (
+                <AuthorShelfRow row={selectedRow} onItemClick={(item) => setSelectedAuthorName(item.title)} />
+              ) : (
+                <HomeCourseShelves row={selectedRow} useCoverImages />
+              )
             ) : (
               <div className="home-course-loading">No books matched your search.</div>
             )
           ) : (
-            selectedRow && <HomeCourseShelves row={selectedRow} useCoverImages />
+            selectedRow && (
+              selectedRow.title === "Author" ? (
+                <AuthorShelfRow row={selectedRow} onItemClick={(item) => setSelectedAuthorName(item.title)} />
+              ) : (
+                <HomeCourseShelves
+                  row={selectedRow}
+                  useCoverImages
+                  onItemClick={(item) => {
+                    if (item.actionType === "author") {
+                      setSelectedAuthorName(item.title);
+                    }
+                  }}
+                />
+              )
+            )
           )}
         </div>
       </section>
