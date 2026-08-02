@@ -38,8 +38,9 @@ export default function AuthorShelfCard({ item, onItemClick }: AuthorShelfCardPr
         ) : (
           <span className="author-profile-icon">{item.icon || "👤"}</span>
         )}
+        {/* Title above avatar for both real authors and placeholders */}
+        <div className="author-profile-title author-profile-title--above">{item.title}</div>
       </div>
-      <div className="author-profile-title">{item.title}</div>
     </div>
   );
 
