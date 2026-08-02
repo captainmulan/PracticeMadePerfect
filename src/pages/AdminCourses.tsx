@@ -321,17 +321,8 @@ export default function AdminCourses() {
     };
     try {
       await persistCourse(normalized);
-      const summary = toCourseSummary(normalized);
-      setBooks((prev) => {
-        const withoutIds = prev.filter((book) => book.id !== activeBook.id && book.id !== trimmedId);
-        const idx = prev.findIndex((book) => book.id === activeBook.id || book.id === trimmedId);
-        if (idx >= 0) {
-          const next = prev.slice();
-          next[idx] = summary;
-          return next;
-        }
-        return [...withoutIds, summary];
-      });
+      const reloadedBooks = await loadCourseSummariesFromBrowserDb();
+      setBooks(reloadedBooks);
       setLoadedBook(normalized);
       setDraftBook(null);
       skipBookReloadRef.current = trimmedId;
@@ -377,16 +368,9 @@ export default function AdminCourses() {
     if (saveImmediately) {
       try {
         await persistCourse(normalized);
+        const reloadedBooks = await loadCourseSummariesFromBrowserDb();
         const courseSummary = toCourseSummary(normalized);
-        setBooks((prev) => {
-          const idx = prev.findIndex((book) => book.id === normalized.id);
-          if (idx >= 0) {
-            const next = prev.slice();
-            next[idx] = courseSummary;
-            return next;
-          }
-          return [...prev, courseSummary];
-        });
+        setBooks(reloadedBooks);
         setLoadedBook(normalized);
         setDraftBook(null);
         skipBookReloadRef.current = normalized.id;
@@ -1155,6 +1139,7 @@ export default function AdminCourses() {
                     >
                       <option value="" disabled>Select Type...</option>
                       <option value="html">Plain HTML</option>
+                      <option value="pdf">PDF Viewer</option>
                       <option value="code-exam">Code Editor</option>
                       <option value="quiz">Quiz</option>
                     </select>
@@ -1218,6 +1203,7 @@ export default function AdminCourses() {
                       className="admin-grid-select"
                     >
                       <option value="html">html</option>
+                      <option value="pdf">pdf</option>
                       <option value="code-exam">code-exam</option>
                       <option value="quiz">quiz</option>
                     </select>
@@ -1263,6 +1249,16 @@ export default function AdminCourses() {
                         </label>
                       );
                     })()
+                  ) : null}
+                  {selectedStep.stepType === "pdf" ? (
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">PDF iframe source</span>
+                      <input
+                        value={selectedStep.contentHtml ?? ""}
+                        onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })}
+                        className="admin-grid-input"
+                      />
+                    </label>
                   ) : null}
                   {selectedStep.stepType === "code-exam" ? (
                     <>

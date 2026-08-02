@@ -3,7 +3,7 @@ import type { Course, CourseChapter, CourseStep } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
 import { resolveImportBookHtmlFolder } from "../utils/htmlStepContent";
 import { buildCourseFromPreview, type BookImportPreview, type ParsedHtmlPage } from "../utils/bookImport";
-import { buildPdfImportPreview, resolvePdfAssetDirectory, writePdfPageAssetsToDirectory } from "../utils/pdfImport";
+import { buildPdfImportPreview, resolvePdfAssetDirectory, writePdfAssetToDirectory, type PdfAssetExportProgress, type PdfImportPreview } from "../utils/pdfImport";
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 
 type UploadMode = "new" | "existing";
@@ -92,11 +92,13 @@ export default function AdminPdfUploadPanel({
   const [targetBookId, setTargetBookId] = useState(selectedBookId ?? "");
   const [targetBookFull, setTargetBookFull] = useState<Course | null>(null);
   const [targetBookLoading, setTargetBookLoading] = useState(false);
-  const [preview, setPreview] = useState<BookImportPreview | null>(null);
+  const [preview, setPreview] = useState<PdfImportPreview | null>(null);
   const [category, setCategory] = useState("IT");
   const [bookId, setBookId] = useState("");
   const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const [isExportingAssets, setIsExportingAssets] = useState(false);
+  const [assetExportProgress, setAssetExportProgress] = useState<PdfAssetExportProgress | null>(null);
   const [error, setError] = useState("");
 
   const targetBookSummary = useMemo(
@@ -168,7 +170,7 @@ export default function AdminPdfUploadPanel({
         setPreview(null);
         return;
       }
-      setPreview(nextPreview);
+      setPreview(nextPreview as PdfImportPreview);
       setBookId(nextPreview.bookId);
     } catch (err) {
       setError(String(err));
@@ -185,11 +187,23 @@ export default function AdminPdfUploadPanel({
     }
 
     setError("");
+    setIsExportingAssets(true);
+    setAssetExportProgress(null);
 
     try {
       const assetDirectory = await resolvePdfAssetDirectory();
+      const assetCount = 1;
+      setAssetExportProgress({ completed: 0, total: assetCount });
       if (assetDirectory) {
-        await writePdfPageAssetsToDirectory(assetDirectory.directoryHandle, preview.folderName, preview.pages);
+        await writePdfAssetToDirectory(
+          assetDirectory.directoryHandle,
+          preview.folderName,
+          preview.pdfFileName,
+          selectedPdf,
+          (progress: PdfAssetExportProgress) => {
+            setAssetExportProgress(progress);
+          },
+        );
       }
 
       if (uploadMode === "existing") {
@@ -232,6 +246,8 @@ export default function AdminPdfUploadPanel({
       onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
     } catch (err) {
       setError(String(err));
+    } finally {
+      setIsExportingAssets(false);
     }
   }
 
@@ -294,8 +310,8 @@ export default function AdminPdfUploadPanel({
 
       <p className="admin-book-upload-help">
         {uploadMode === "new"
-          ? "Choose a PDF file. Each page becomes a book page with text converted into raw HTML paragraphs and extracted page images stored under the chosen book_html folder."
-          : "Choose a PDF file to update an existing book. Pages will be matched by page number and their HTML content will be replaced with the PDF text."}
+          ? "Choose a PDF file. The original PDF is stored in the book folder and rendered through the built-in browser PDF viewer."
+          : "Choose a PDF file to update an existing book. The selected book will keep the original PDF asset and open it through the built-in PDF viewer."}
       </p>
 
       <div className="admin-book-upload-actions">
@@ -353,8 +369,20 @@ export default function AdminPdfUploadPanel({
           )}
 
           <div className="admin-book-upload-summary">
-            {preview.pages.length} PDF page(s) prepared
+            PDF ready for built-in viewer
           </div>
+
+          {isExportingAssets && assetExportProgress ? (
+            <div className="admin-book-upload-progress" style={{ marginBottom: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", marginBottom: "6px" }}>
+                <span>Saving original PDF asset</span>
+                <span>{assetExportProgress.completed}/{assetExportProgress.total}</span>
+              </div>
+              <div style={{ width: "100%", height: "8px", borderRadius: "999px", background: "#e2e8f0", overflow: "hidden" }}>
+                <div style={{ width: `${assetExportProgress.total ? Math.round((assetExportProgress.completed / assetExportProgress.total) * 100) : 0}%`, height: "100%", background: "#2563eb", transition: "width 0.2s ease" }} />
+              </div>
+            </div>
+          ) : null}
 
           <ul className="admin-book-upload-page-list">
             {preview.pages.slice(0, 12).map((page, index) => (

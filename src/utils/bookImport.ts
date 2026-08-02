@@ -1,4 +1,4 @@
-import type { Course, CourseChapter, CourseStep } from "../data/courses";
+import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
 import { resolveImportBookHtmlFolder } from "./htmlStepContent";
 
@@ -9,6 +9,7 @@ export interface ParsedHtmlPage {
   sortOrder: number;
   title: string;
   content: string;
+  stepType?: CourseStepType;
   assets?: Array<{ fileName: string; mimeType: string; dataUrl: string }>;
 }
 
@@ -304,6 +305,7 @@ function makeHtmlPageChapter(
   const chapterId = `${courseId}-ch-import-${stamp}-${pageNumber}`;
   const stepId = `${chapterId}-step-0`;
   const pageLabel = `Page ${pageNumber}`;
+  const stepType = page.stepType ?? "html";
 
   const step: CourseStep = {
     id: stepId,
@@ -312,7 +314,7 @@ function makeHtmlPageChapter(
     chapterTitle: pageLabel,
     chapterIndex: 0,
     stepIndex: pageNumber,
-    stepType: "html",
+    stepType,
     title: page.title,
     description: "",
     contentHtml: page.content,

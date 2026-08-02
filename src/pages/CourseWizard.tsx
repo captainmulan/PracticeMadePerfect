@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CourseCodeStep from "../components/CourseCodeStep";
 import CourseHtmlStep from "../components/CourseHtmlStep";
+import CoursePdfStep from "../components/CoursePdfStep";
 import CourseQuizStep from "../components/CourseQuizStep";
 import type { CourseStep } from "../data/courses";
 import { courseStepLabel } from "../data/courses";
@@ -112,6 +113,24 @@ export default function CourseWizard() {
     <div className="page-content course-wizard-page practice-page practice-wizard practice-code-page">
       {currentStep.stepType === "html" && (
         <CourseHtmlStep
+          step={currentStep}
+          bookName={bookName}
+          chapterName={chapterName}
+          chapterNumber={chapterNumber}
+          pageType={pageType}
+          pageIndex={pageIndex}
+          totalPages={totalPages}
+          pageBrief={pageBrief}
+          bookHtmlFolder={outline.bookHtmlFolder}
+          courseId={outline.id}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canPrevious={stepIndex > 0}
+          canNext={stepIndex < steps.length - 1}
+        />
+      )}
+      {currentStep.stepType === "pdf" && (
+        <CoursePdfStep
           step={currentStep}
           bookName={bookName}
           chapterName={chapterName}

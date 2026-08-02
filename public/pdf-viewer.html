@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Viewer</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #f3f6fb;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      body {
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+      }
+      .pdf-shell {
+        flex: 1;
+        display: flex;
+        min-height: 100%;
+        height: 100%;
+        background: #f7f9fd;
+      }
+      .pdf-canvas-wrap {
+        flex: 1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        overflow: hidden;
+        padding: 12px 12px 16px;
+        box-sizing: border-box;
+      }
+      canvas {
+        display: block;
+        margin: 0 auto 8px;
+        max-width: 100%;
+        background: white;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+        image-rendering: auto;
+      }
+
+      @media (max-width: 767px) {
+        .pdf-shell {
+          background: #ffffff;
+        }
+        .pdf-canvas-wrap {
+          padding: 8px 8px 12px;
+        }
+      }
+
+      @media (min-width: 768px) and (max-width: 1024px) {
+        .pdf-canvas-wrap {
+          padding: 16px 16px 22px;
+        }
+      }
+
+      @media (min-width: 1025px) {
+        .pdf-canvas-wrap {
+          padding: 18px 18px 24px;
+        }
+      }
+      .pdf-error {
+        margin: auto;
+        padding: 24px;
+        color: #7a1f1f;
+        background: #fff1f0;
+        border: 1px solid #f3c6c4;
+        border-radius: 12px;
+        max-width: 640px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="pdf-shell">
+      <div class="pdf-canvas-wrap">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        const fileUrl = params.get("file");
+        const canvas = document.getElementById("pdf-canvas");
+        const shell = document.querySelector(".pdf-shell");
+
+        if (!fileUrl) {
+          shell.innerHTML = '<div class="pdf-error">No PDF file source was provided.</div>';
+          return;
+        }
+
+        const pageMatch = fileUrl.match(/#page=(\d+)/i) ?? fileUrl.match(/\?page=(\d+)/i);
+        const initialPage = Number.parseInt(pageMatch?.[1] ?? "1", 10);
+        const resolvedFileUrl = fileUrl.replace(/#page=\d+/i, "").replace(/\?page=\d+/i, "");
+
+        if (!window.pdfjsLib || !window.pdfjsLib.getDocument) {
+          shell.innerHTML = '<div class="pdf-error">PDF.js failed to load. Please retry.</div>';
+          return;
+        }
+
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+        let pdfDoc = null;
+        let currentPage = Math.max(1, Number.isFinite(initialPage) ? initialPage : 1);
+
+        const renderPage = async (pageNumber) => {
+          if (!pdfDoc) return;
+          const page = await pdfDoc.getPage(pageNumber);
+          const isMobile = window.matchMedia("(max-width: 767px)").matches;
+          const isTablet = window.matchMedia("(min-width: 768px) and (max-width: 1024px)").matches;
+          const baseViewport = page.getViewport({ scale: 1 });
+
+          const targetWidth = (() => {
+            if (isMobile) {
+              return Math.min(shell.clientWidth - 18, 420);
+            }
+            if (isTablet) {
+              return Math.min(shell.clientWidth - 32, 740);
+            }
+            return Math.min(shell.clientWidth - 36, 840);
+          })();
+
+          const targetHeight = (() => {
+            if (isMobile) {
+              return Math.min(window.innerHeight - 150, 720);
+            }
+            if (isTablet) {
+              return Math.min(window.innerHeight - 120, 980);
+            }
+            return Math.min(window.innerHeight - 115, 1100);
+          })();
+
+          const widthScale = targetWidth / baseViewport.width;
+          const heightScale = targetHeight / baseViewport.height;
+          const fitScale = Math.min(widthScale, heightScale);
+
+          const scaleCaps = isMobile ? 1.16 : isTablet ? 1.28 : 1.38;
+          const renderScale = Math.max(1.0, Math.min(scaleCaps, fitScale));
+          const viewport = page.getViewport({ scale: renderScale });
+          const context = canvas.getContext("2d", { alpha: false, desynchronized: true });
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          canvas.style.width = `${Math.round(viewport.width)}px`;
+          canvas.style.height = `${Math.round(viewport.height)}px`;
+          await page.render({ canvasContext: context, viewport }).promise;
+        };
+
+        const loadPdf = async () => {
+          try {
+            pdfDoc = await window.pdfjsLib.getDocument(resolvedFileUrl).promise;
+            currentPage = Math.min(Math.max(1, currentPage), pdfDoc.numPages);
+            await renderPage(currentPage);
+          } catch {
+            shell.innerHTML = '<div class="pdf-error">Unable to load the PDF in the browser viewer.</div>';
+          }
+        };
+
+        loadPdf();
+      })();
+    </script>
+  </body>
+</html>
