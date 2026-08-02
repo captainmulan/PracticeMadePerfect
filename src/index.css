@@ -3325,12 +3325,35 @@ textarea {
   .author-browse-row {
     gap: clamp(16px, 4vw, 32px);
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .author-browse-row .author-profile-content {
     width: 140px;
     margin: 0 auto;
     text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .author-browse-row {
+      gap: 14px;
+      justify-content: center;
+    }
+
+    .author-browse-row .author-profile-content {
+      width: 112px;
+    }
+
+    .author-profile-avatar {
+      width: 96px;
+      height: 96px;
+    }
+
+    .author-profile-title--above {
+      top: -30px;
+      font-size: 13px;
+      padding: 4px 10px;
+    }
   }
 
 /* Theme overrides: the global "space" theme styles make all buttons appear as purple cards.
