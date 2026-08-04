@@ -6,6 +6,12 @@ const BOOK_HTML_FOLDER_ALIASES: Record<string, string> = {
   solarsystem: "SolarSystem",
   oceanadventure: "OceanAdventure",
   continents: "Continents",
+  "let-s-speak-myanmar-story": "Mudra holiday trip to Myanmar",
+  letsspeakmyanmarstory: "Mudra holiday trip to Myanmar",
+  "mudra-holiday-trip-to-myanmar": "Mudra holiday trip to Myanmar",
+  mudraholidaytriptomyanmar: "Mudra holiday trip to Myanmar",
+  "mudra-goes-to-bagan": "Mudra goes to Bagan",
+  mudragoestobagan: "Mudra goes to Bagan",
 };
 
 export function extractBookHtmlIframeSrc(contentHtml: string): string | null {

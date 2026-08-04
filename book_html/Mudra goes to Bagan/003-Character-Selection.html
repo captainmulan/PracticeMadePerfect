@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mudra goes to Bagan — Choose learner</title>
+<link rel="stylesheet" href="_speak-intro.css">
+<script src="_speak-audio-map.js"></script>
+<script src="_speak-en-audio-map.js"></script>
+<script src="_speak-player.js"></script>
+<script src="_speak-data.js"></script>
+</head>
+<body class="mm-solar-intro">
+<div class="mm-container">
+  <div class="mm-cover"><h1>Who is reading with Mudra?</h1></div>
+  <div class="mm-card">
+    <label>Name</label>
+    <input id="nm" value="Mudra" style="width:100%;padding:12px;border-radius:12px;border:2px solid #ddd;margin:8px 0 16px;font:inherit;">
+    <div id="avs" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+    <button id="go" class="mm-pill" style="margin-top:16px;border:none;cursor:pointer;padding:12px 18px;">Save</button>
+  </div>
+</div>
+<script>
+var selected='👧';
+['👧','🧒','🐯','🦋'].forEach(function(e){
+  var b=document.createElement('button'); b.textContent=e; b.style.cssText='font-size:2rem;padding:10px;border-radius:14px;border:2px solid #ddd;background:#fff;cursor:pointer';
+  b.onclick=function(){ selected=e; };
+  document.getElementById('avs').appendChild(b);
+});
+document.getElementById('go').onclick=function(){
+  if(window.MMPlayer) MMPlayer.save(document.getElementById('nm').value||'Mudra', selected, 'Learner');
+  alert('Saved! Turn the page to Chapter 1.');
+};
+</script>
+</body></html>
