@@ -110,8 +110,7 @@ body.main-chapter-page,body.explained-page,body.quiz-page{padding:0;min-height:1
     <div class="quiz-options"><button type="button" class="quiz-option" data-correct="0">Father sweeps the yard. (အဖေက ခြံကို တံမြက်လှည်းတယ်။)</button><button type="button" class="quiz-option" data-correct="1">Mother cooks rice in the kitchen. (အမေက မီးဖိုချောင်မှာ ထမင်းချက်တယ်။)</button><button type="button" class="quiz-option" data-correct="0">Mudra greets Grandfather first. (မုဒြာက အဘိုးကို အရင် နှုတ်ဆက်တယ်။)</button><button type="button" class="quiz-option" data-correct="0">Sister hangs Mudra's dress. (ညီမက မုဒြာရဲ့ အင်္ကျီကို ချိတ်ပေးတယ်။)</button></div>
   </div></div>
   <p id="quizMsg" style="font-weight:800;margin-top:12px;"></p>
-  <button type="button" class="retry-btn" id="nextBtn" style="margin-top:8px;padding:12px 18px;border:none;border-radius:999px;background:#0ea5e9;color:#fff;font-weight:800;cursor:pointer;">Next ▶</button>
-</div>
+  </div>
 </div>
 <script>
 (function(){
@@ -126,11 +125,9 @@ body.main-chapter-page,body.explained-page,body.quiz-page{padding:0;min-height:1
     btn.classList.add(ok?'correct':'wrong');
     if(ok) score++;
     else { var right=card.querySelector('[data-correct="1"]'); if(right) right.classList.add('correct'); }
-  });
-  document.getElementById('nextBtn').onclick=function(){
     if(i<cards.length-1){ i++; show(); }
-    else { document.getElementById('quizMsg').textContent='You scored '+score+' / '+cards.length+' — Mudra is proud!'; this.disabled=true; }
-  };
+    else { document.getElementById('quizMsg').textContent='You scored '+score+' / '+cards.length+' — Mudra is proud!'; }
+  });
   show();
 })();
 </script>

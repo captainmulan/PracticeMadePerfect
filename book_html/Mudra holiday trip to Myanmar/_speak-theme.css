@@ -347,7 +347,8 @@ body.intro-page .pagoda-deco{
 .chapter-label span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--lacquer);}
 .chapter-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);}
 .picture-frame{border:2px solid var(--sky-deep);border-radius:var(--radius);overflow:hidden;box-shadow:0 8px 24px rgba(56,189,248,.25);margin-bottom:14px;background:#0EA5E9;}
-.overview-hero-img,.chapter-hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
+.overview-hero-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;}
+.chapter-hero-img{width:100%;aspect-ratio:16/9;object-fit:contain;display:block;background:rgba(255,255,255,.55);} 
 .story-box{font-size:15px;line-height:1.75;color:var(--ink);white-space:pre-line;}
 .story-box-landscape{display:none;}
 @media(orientation:landscape) and (min-width:768px){
@@ -378,7 +379,7 @@ body.intro-page .pagoda-deco{
     min-height:0;
     width:100%;
     aspect-ratio:16/9;
-    object-fit:cover;
+    object-fit:contain;
     object-position:center center;
   }
   .explained-page .sentences-part .story-row,
@@ -1094,7 +1095,7 @@ html:has(body.explained-page){
   min-height:160px;
   max-height:min(48dvh,440px);
   aspect-ratio:16/9;
-  object-fit:cover;
+  object-fit:contain;
 }
 .story-row{min-height:0;}
 .story-row .card{
@@ -1275,7 +1276,7 @@ html:has(body.explained-page){
   .explained-page .chapter-scene .chapter-hero-img{
     max-height:min(48dvh,440px);
     width:100%;
-    object-fit:cover;
+    object-fit:contain;
   }
   .main-chapter-page .chapter-scene .chapter-hero-img{
     aspect-ratio:16/9;
@@ -1284,7 +1285,7 @@ html:has(body.explained-page){
   .explained-page .sentences-part .chapter-scene .chapter-hero-img{
     max-height:min(42dvh,380px);
     aspect-ratio:16/9;
-    object-fit:cover;
+    object-fit:contain;
   }
 }
 @media(orientation:landscape) and (min-width:768px){
@@ -1299,7 +1300,7 @@ html:has(body.explained-page){
 .scene-card{position:relative;width:100%;border-radius:var(--radius);border:2px solid var(--gold);background:var(--surface);box-shadow:var(--shadow-lg);overflow:hidden;}
 .scene-card-hero{aspect-ratio:16/9;max-height:min(56vw,420px);background:#1a1008;}
 .chapter-photo-hero{aspect-ratio:16/9;max-height:min(calc(100svh - 140px),480px);}
-.chapter-hero-img{width:100%;height:100%;object-fit:cover;display:block;}
+.chapter-hero-img{width:100%;height:100%;object-fit:contain;display:block;background:rgba(255,255,255,.55);} 
 .scene-static{pointer-events:none;}
 .scene-placeholder{display:flex;align-items:center;justify-content:center;min-height:180px;padding:20px;text-align:center;font-size:13px;color:var(--text-muted);font-style:italic;}
 .tip-card{background:rgba(186,230,253,.14);border:1px solid rgba(186,230,253,.4);}

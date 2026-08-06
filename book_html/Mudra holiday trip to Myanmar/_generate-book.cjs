@@ -90,16 +90,15 @@ function storyHtml(text) {
 function storyTwoCellsHtml(text) {
   const paras = storyParagraphsHtml(text);
   if (!paras.length) {
-    return `<div class="story-block"><div class="section-head">Story</div><div class="story-cells"><div class="card story-card story-cell"><div class="story-box story-novel"></div></div></div></div>`;
+    return `<div class="story-block"><div class="story-cells"><div class="card story-card story-cell"><div class="story-box story-novel"></div></div></div></div>`;
   }
   if (paras.length === 1) {
-    return `<div class="story-block"><div class="section-head">Story</div><div class="story-cells"><div class="card story-card story-cell story-cell-full"><div class="story-box story-novel">${paras[0]}</div></div></div></div>`;
+    return `<div class="story-block"><div class="story-cells"><div class="card story-card story-cell story-cell-full"><div class="story-box story-novel">${paras[0]}</div></div></div></div>`;
   }
   const mid = Math.ceil(paras.length / 2);
   const left = paras.slice(0, mid).join("\n");
   const right = paras.slice(mid).join("\n");
   return `<div class="story-block">
-    <div class="section-head">Story</div>
     <div class="story-cells">
       <div class="card story-card story-cell"><div class="story-box story-novel">${left}</div></div>
       <div class="card story-card story-cell"><div class="story-box story-novel">${right}</div></div>

@@ -169,7 +169,6 @@ function learnHtml(ch) {
         imageHtml: imgHtml(ch.id, imageSlot, `${ch.title} — story art ${idx + 1}`, idx > 0),
         copyHtml: `
           <div class="card story-card">
-            <div class="section-head">Story</div>
             <div class="story-box story-novel">${storyHtml(chunks[idx] || "")}</div>
           </div>
           <div class="chapter-words-block">
@@ -230,7 +229,6 @@ function explainedHtml(ch) {
         imageHtml: imgHtml(ch.id, imageSlot, `${ch.title} — sentences art ${idx + 1}`, idx > 0),
         copyHtml: `
           <div class="card story-card">
-            <div class="section-head">Story</div>
             <div class="story-box story-novel">${storyHtml(sceneStory)}</div>
           </div>
           <div class="chapter-sentences-block">
