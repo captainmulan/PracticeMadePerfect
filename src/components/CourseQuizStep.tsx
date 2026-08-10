@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../styles/course.css";
 import type { CourseStep, QuizQuestion } from "../data/courses";
+import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
 
 interface CourseQuizStepProps {
@@ -16,6 +17,12 @@ interface CourseQuizStepProps {
   onNext?: () => void;
   canPrevious?: boolean;
   canNext?: boolean;
+  bookId?: string | null;
+  bookmarked?: boolean;
+  bookmarks?: BookBookmark[];
+  onToggleBookmark?: () => void;
+  onRemoveBookmark?: (bookmarkId: string) => void;
+  onJumpToBookmark?: (stepIndex: number) => void;
 }
 
 export default function CourseQuizStep({
@@ -31,6 +38,12 @@ export default function CourseQuizStep({
   onNext,
   canPrevious = false,
   canNext = false,
+  bookId,
+  bookmarked,
+  bookmarks,
+  onToggleBookmark,
+  onRemoveBookmark,
+  onJumpToBookmark,
 }: CourseQuizStepProps) {
   const questions = step.quizQuestions ?? [];
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -61,6 +74,14 @@ export default function CourseQuizStep({
       onNext={onNext}
       canPrevious={canPrevious}
       canNext={canNext}
+      bookId={bookId}
+      stepIndex={pageIndex - 1}
+      stepTitle={step.title}
+      bookmarked={bookmarked}
+      bookmarks={bookmarks}
+      onToggleBookmark={onToggleBookmark}
+      onRemoveBookmark={onRemoveBookmark}
+      onJumpToBookmark={onJumpToBookmark}
     >
       <div className="course-step-quiz-body practice-workspace-content">
         {questions.map((question) => (

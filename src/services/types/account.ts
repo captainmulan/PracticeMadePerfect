@@ -21,10 +21,20 @@ export type BookProgress = {
   updatedAt: string;
 };
 
+export type BookBookmark = {
+  id: string;
+  bookId: string;
+  stepIndex: number;
+  stepTitle?: string | null;
+  note?: string | null;
+  createdAt: string;
+};
+
 export type UserProgressSnapshot = {
   userId: string;
   favorites: string[];
   books: Record<string, BookProgress>;
+  bookmarks: BookBookmark[];
   updatedAt: string;
 };
 

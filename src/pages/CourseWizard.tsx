@@ -8,7 +8,15 @@ import type { CourseStep } from "../data/courses";
 import { courseStepLabel } from "../data/courses";
 import { useAccountOptional } from "../context/AccountContext";
 import { useCourseReader } from "../hooks/useCourseReader";
-import { loadCourseProgressForUser, saveCourseProgress } from "../utils/courseUtils";
+import {
+  getBookmarksForCurrentUser,
+  isCurrentStepBookmarked,
+  loadCourseProgressForUser,
+  removeBookmarkForCurrentUser,
+  saveCourseProgress,
+  toggleCurrentBookmark,
+} from "../utils/courseUtils";
+import type { BookBookmark } from "../services/types/account";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 
@@ -26,6 +34,8 @@ export default function CourseWizard() {
   const [stepIndex, setStepIndex] = useState(0);
   const [currentStep, setCurrentStep] = useState<CourseStep | null>(null);
   const placeholder = getPracticePageData().placeholder;
+  const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarks, setBookmarks] = useState<BookBookmark[]>([]);
 
   useEffect(() => {
     if (!courseId) return;
@@ -63,12 +73,61 @@ export default function CourseWizard() {
     };
   }, [stepIndex, steps, loadStep]);
 
+  useEffect(() => {
+    const bookId = outline?.id;
+    if (!bookId || stepIndex < 0) {
+      setBookmarked(false);
+      setBookmarks([]);
+      return;
+    }
+    let active = true;
+    void Promise.all([
+      getBookmarksForCurrentUser(bookId),
+      isCurrentStepBookmarked(bookId, stepIndex),
+    ]).then(([list, isBookmarked]) => {
+      if (!active) return;
+      setBookmarks(list);
+      setBookmarked(isBookmarked);
+    });
+    return () => {
+      active = false;
+    };
+  }, [outline?.id, stepIndex, account?.user?.userId]);
+
   const handlePrevious = useCallback(() => {
     setStepIndex((value) => Math.max(0, value - 1));
   }, []);
 
   const handleNext = useCallback(() => {
     setStepIndex((value) => Math.min(steps.length - 1, value + 1));
+  }, [steps.length]);
+
+  const handleToggleBookmark = useCallback(async () => {
+    const bookId = outline?.id;
+    if (!bookId || !currentStep) return;
+    const result = await toggleCurrentBookmark({
+      bookId,
+      stepIndex,
+      stepTitle: currentStep.title ?? null,
+      note: null,
+    });
+    setBookmarks(result.list);
+    setBookmarked(Boolean(result.created));
+  }, [outline?.id, currentStep, stepIndex]);
+
+  const handleRemoveBookmark = useCallback(async (bookmarkId: string) => {
+    const bookId = outline?.id;
+    if (!bookId) return;
+    const list = await removeBookmarkForCurrentUser(bookId, bookmarkId);
+    setBookmarks(list);
+    if (list.findIndex((item) => item.stepIndex === stepIndex) < 0) {
+      setBookmarked(false);
+    }
+  }, [outline?.id, stepIndex]);
+
+  const handleJumpToBookmark = useCallback((targetStepIndex: number) => {
+    const clamped = Math.max(0, Math.min(steps.length - 1, targetStepIndex));
+    setStepIndex(clamped);
   }, [steps.length]);
 
   useStageNavRegistration(
@@ -109,6 +168,15 @@ export default function CourseWizard() {
     ? `<div><strong>Chapter ${currentStep.chapterIndex + 1}</strong></div>${currentStep.description ?? ""}`
     : (currentStep.description ?? "");
 
+  const bookmarkProps = {
+    bookId: outline.id,
+    bookmarked,
+    bookmarks,
+    onToggleBookmark: handleToggleBookmark,
+    onRemoveBookmark: handleRemoveBookmark,
+    onJumpToBookmark: handleJumpToBookmark,
+  };
+
   return (
     <div className="page-content course-wizard-page practice-page practice-wizard practice-code-page">
       {currentStep.stepType === "html" && (
@@ -127,6 +195,7 @@ export default function CourseWizard() {
           onNext={handleNext}
           canPrevious={stepIndex > 0}
           canNext={stepIndex < steps.length - 1}
+          {...bookmarkProps}
         />
       )}
       {currentStep.stepType === "pdf" && (
@@ -145,6 +214,7 @@ export default function CourseWizard() {
           onNext={handleNext}
           canPrevious={stepIndex > 0}
           canNext={stepIndex < steps.length - 1}
+          {...bookmarkProps}
         />
       )}
       {currentStep.stepType === "code-exam" && (
@@ -162,6 +232,7 @@ export default function CourseWizard() {
           onNext={handleNext}
           canPrevious={stepIndex > 0}
           canNext={stepIndex < steps.length - 1}
+          {...bookmarkProps}
         />
       )}
       {currentStep.stepType === "quiz" && (
@@ -178,6 +249,7 @@ export default function CourseWizard() {
           onNext={handleNext}
           canPrevious={stepIndex > 0}
           canNext={stepIndex < steps.length - 1}
+          {...bookmarkProps}
         />
       )}
     </div>

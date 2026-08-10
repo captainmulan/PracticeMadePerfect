@@ -11,7 +11,7 @@ import { getAccountServices, type AccountServices } from "../services/createAcco
 import type { AuthPort, EmailPasswordCredentials } from "../services/ports/authPort";
 import type { BillingPort } from "../services/ports/billingPort";
 import type { ProgressPort } from "../services/ports/progressPort";
-import type { AuthUser, CheckoutResult, Entitlement } from "../services/types/account";
+import type { AuthUser, BookBookmark, CheckoutResult, Entitlement } from "../services/types/account";
 import { bindProgressBridge } from "../utils/courseUtils";
 
 type AccountContextValue = {
@@ -32,6 +32,14 @@ type AccountContextValue = {
   startCheckout: (input?: { priceId?: string; bookId?: string }) => Promise<CheckoutResult>;
   toggleFavorite: (bookId: string) => Promise<string[]>;
   favorites: string[];
+  getBookmarks: (bookId?: string | null) => Promise<BookBookmark[]>;
+  toggleBookmark: (input: {
+    bookId: string;
+    stepIndex: number;
+    stepTitle?: string | null;
+    note?: string | null;
+  }) => Promise<{ created: BookBookmark | null; deleted: boolean; list: BookBookmark[] }>;
+  removeBookmark: (bookmarkId: string) => Promise<BookBookmark[]>;
 };
 
 const AccountContext = createContext<AccountContextValue | null>(null);
@@ -141,6 +149,56 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     [favorites, services, user],
   );
 
+  const getBookmarks = useCallback(
+    async (bookId?: string | null) => {
+      if (!user) {
+        return [];
+      }
+      try {
+        return await services.progress.getBookmarks(user.userId, bookId ?? null);
+      } catch (error) {
+        console.warn("Failed to load bookmarks:", error);
+        return [];
+      }
+    },
+    [services, user],
+  );
+
+  const toggleBookmark = useCallback(
+    async (input: {
+      bookId: string;
+      stepIndex: number;
+      stepTitle?: string | null;
+      note?: string | null;
+    }) => {
+      if (!user) {
+        return { created: null, deleted: false, list: [] };
+      }
+      try {
+        return await services.progress.toggleBookmark(user.userId, input);
+      } catch (error) {
+        console.warn("Failed to toggle bookmark:", error);
+        return { created: null, deleted: false, list: [] };
+      }
+    },
+    [services, user],
+  );
+
+  const removeBookmark = useCallback(
+    async (bookmarkId: string) => {
+      if (!user) {
+        return [];
+      }
+      try {
+        return await services.progress.removeBookmark(user.userId, bookmarkId);
+      } catch (error) {
+        console.warn("Failed to remove bookmark:", error);
+        return [];
+      }
+    },
+    [services, user],
+  );
+
   const value = useMemo<AccountContextValue>(
     () => ({
       user,
@@ -160,6 +218,9 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       startCheckout,
       toggleFavorite,
       favorites,
+      getBookmarks,
+      toggleBookmark,
+      removeBookmark,
     }),
     [
       entitlement,
@@ -174,6 +235,9 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       startCheckout,
       toggleFavorite,
       user,
+      getBookmarks,
+      toggleBookmark,
+      removeBookmark,
     ],
   );
 

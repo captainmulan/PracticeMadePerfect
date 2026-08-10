@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import type { CourseStep } from "../data/courses";
 import PracticeWorkspace from "./PracticeWorkspace";
+import type { BookBookmark } from "../services/types/account";
 import { buildHtmlStepSrcDoc, extractBookHtmlIframeSrc, resolveBookHtmlFolder } from "../utils/htmlStepContent";
 import "../styles/course.css";
 
@@ -19,6 +20,12 @@ interface CourseHtmlStepProps {
   onNext?: () => void;
   canPrevious?: boolean;
   canNext?: boolean;
+  bookId?: string | null;
+  bookmarked?: boolean;
+  bookmarks?: BookBookmark[];
+  onToggleBookmark?: () => void;
+  onRemoveBookmark?: (bookmarkId: string) => void;
+  onJumpToBookmark?: (stepIndex: number) => void;
 }
 
 export default function CourseHtmlStep({
@@ -36,6 +43,12 @@ export default function CourseHtmlStep({
   onNext,
   canPrevious = false,
   canNext = false,
+  bookId,
+  bookmarked,
+  bookmarks,
+  onToggleBookmark,
+  onRemoveBookmark,
+  onJumpToBookmark,
 }: CourseHtmlStepProps) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const contentHtml = step.contentHtml ?? "<p><em>No lesson content yet.</em></p>";
@@ -65,6 +78,14 @@ export default function CourseHtmlStep({
       canNext={canNext}
       contentIframeRef={iframeRef}
       contentIframeBindKey={step.id}
+      bookId={bookId}
+      stepIndex={pageIndex - 1}
+      stepTitle={step.title}
+      bookmarked={bookmarked}
+      bookmarks={bookmarks}
+      onToggleBookmark={onToggleBookmark}
+      onRemoveBookmark={onRemoveBookmark}
+      onJumpToBookmark={onJumpToBookmark}
     >
       <iframe
         ref={iframeRef}

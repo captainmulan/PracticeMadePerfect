@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CourseStep } from "../data/courses";
+import type { BookBookmark } from "../services/types/account";
 import { courseStepToPracticeTask } from "../utils/courseUtils";
 import { runCompileCheck } from "../utils/compileVerifier";
 import { buildEditorContent, getFullExampleCode, verifyTaskFull } from "../utils/taskHints";
@@ -19,6 +20,12 @@ interface CourseCodeStepProps {
   onNext?: () => void;
   canPrevious?: boolean;
   canNext?: boolean;
+  bookId?: string | null;
+  bookmarked?: boolean;
+  bookmarks?: BookBookmark[];
+  onToggleBookmark?: () => void;
+  onRemoveBookmark?: (bookmarkId: string) => void;
+  onJumpToBookmark?: (stepIndex: number) => void;
 }
 
 export default function CourseCodeStep({
@@ -35,6 +42,12 @@ export default function CourseCodeStep({
   onNext,
   canPrevious = false,
   canNext = false,
+  bookId,
+  bookmarked,
+  bookmarks,
+  onToggleBookmark,
+  onRemoveBookmark,
+  onJumpToBookmark,
 }: CourseCodeStepProps) {
   const practiceTask = useMemo(() => courseStepToPracticeTask(step), [step]);
   const hintsText = buildEditorContent(practiceTask, false);
@@ -100,6 +113,14 @@ export default function CourseCodeStep({
         onNext={onNext}
         canPrevious={canPrevious}
         canNext={canNext}
+        bookId={bookId}
+        stepIndex={pageIndex - 1}
+        stepTitle={step.title}
+        bookmarked={bookmarked}
+        bookmarks={bookmarks}
+        onToggleBookmark={onToggleBookmark}
+        onRemoveBookmark={onRemoveBookmark}
+        onJumpToBookmark={onJumpToBookmark}
       />
 
       {showResults && (

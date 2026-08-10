@@ -94,7 +94,7 @@
         }
 
         const pageMatch = fileUrl.match(/#page=(\d+)/i) ?? fileUrl.match(/\?page=(\d+)/i);
-        const initialPage = Number.parseInt(pageMatch?.[1] ?? "1", 10);
+        let currentPage = Number.parseInt(pageMatch?.[1] ?? "1", 10);
         const resolvedFileUrl = fileUrl.replace(/#page=\d+/i, "").replace(/\?page=\d+/i, "");
 
         if (!window.pdfjsLib || !window.pdfjsLib.getDocument) {
@@ -105,11 +105,14 @@
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
         let pdfDoc = null;
-        let currentPage = Math.max(1, Number.isFinite(initialPage) ? initialPage : 1);
+        let renderToken = 0;
+        currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
         const renderPage = async (pageNumber) => {
           if (!pdfDoc) return;
+          const myToken = ++renderToken;
           const page = await pdfDoc.getPage(pageNumber);
+          if (myToken !== renderToken) return;
           const isMobile = window.matchMedia("(max-width: 767px)").matches;
           const isTablet = window.matchMedia("(min-width: 768px) and (max-width: 1024px)").matches;
           const baseViewport = page.getViewport({ scale: 1 });
@@ -146,20 +149,49 @@
           canvas.height = viewport.height;
           canvas.style.width = `${Math.round(viewport.width)}px`;
           canvas.style.height = `${Math.round(viewport.height)}px`;
+          if (myToken !== renderToken) return;
           await page.render({ canvasContext: context, viewport }).promise;
         };
 
-        const loadPdf = async () => {
+        const showError = (msg) => {
+          shell.innerHTML = `<div class="pdf-error">${msg}</div>`;
+        };
+
+        const loadPdfFromSource = async (source) => {
           try {
-            pdfDoc = await window.pdfjsLib.getDocument(resolvedFileUrl).promise;
+            pdfDoc = await window.pdfjsLib.getDocument(source).promise;
             currentPage = Math.min(Math.max(1, currentPage), pdfDoc.numPages);
             await renderPage(currentPage);
+            try {
+              window.parent?.postMessage({ type: "pdf-viewer:ready", numPages: pdfDoc.numPages, url: resolvedFileUrl }, "*");
+            } catch {}
           } catch {
-            shell.innerHTML = '<div class="pdf-error">Unable to load the PDF in the browser viewer.</div>';
+            showError("Unable to load the PDF in the browser viewer.");
           }
         };
 
-        loadPdf();
+        window.addEventListener(
+          "message",
+          (event) => {
+            const data = event.data && typeof event.data === "object" ? event.data : null;
+            if (!data || data.target !== "pdf-viewer") return;
+            if (data.type === "load-buffer") {
+              if (data.url && data.url !== resolvedFileUrl) return;
+              if (data.buffer instanceof ArrayBuffer) {
+                loadPdfFromSource({ data: data.buffer.slice(0) });
+              } else if (typeof data.url === "string") {
+                loadPdfFromSource(data.url);
+              }
+            } else if (data.type === "goto-page") {
+              const n = Math.floor(Number(data.page));
+              if (!Number.isFinite(n) || !pdfDoc) return;
+              currentPage = Math.min(Math.max(1, n), pdfDoc.numPages);
+              void renderPage(currentPage);
+            }
+          },
+        );
+
+        loadPdfFromSource(resolvedFileUrl);
       })();
     </script>
   </body>

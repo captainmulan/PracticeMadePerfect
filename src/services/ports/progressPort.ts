@@ -1,7 +1,7 @@
-import type { BookProgress, UserProgressSnapshot } from "../types/account";
+import type { BookBookmark, BookProgress, UserProgressSnapshot } from "../types/account";
 
 /**
- * Reading progress / favorites — cloud-ready shape, any storage behind the port.
+ * Reading progress / favorites / bookmarks — cloud-ready shape, any storage behind the port.
  */
 export interface ProgressPort {
   readonly id: string;
@@ -15,4 +15,15 @@ export interface ProgressPort {
   ): Promise<BookProgress>;
   getFavorites(userId: string): Promise<string[]>;
   setFavorite(userId: string, bookId: string, favorite: boolean): Promise<string[]>;
+  getBookmarks(userId: string, bookId?: string | null): Promise<BookBookmark[]>;
+  toggleBookmark(
+    userId: string,
+    input: {
+      bookId: string;
+      stepIndex: number;
+      stepTitle?: string | null;
+      note?: string | null;
+    },
+  ): Promise<{ created: BookBookmark | null; deleted: boolean; list: BookBookmark[] }>;
+  removeBookmark(userId: string, bookmarkId: string): Promise<BookBookmark[]>;
 }
