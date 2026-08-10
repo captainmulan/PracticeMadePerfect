@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
-import { extractPdfPageNumber, getCachedPdfBuffer, getPdfBuffer, normalizePdfFileUrl } from "../utils/pdfCache";
+import { extractPdfPageNumber, getPdfBuffer, normalizePdfFileUrl } from "../utils/pdfCache";
 import "../styles/course.css";
 
 interface CoursePdfStepProps {
@@ -86,31 +86,27 @@ export default function CoursePdfStep({
       }
     };
 
-    const cached = getCachedPdfBuffer(fileUrl);
-    if (cached) {
-      setBufferReady("ready");
-      const frame = iframeRef.current;
-      if (frame?.contentWindow) {
-        sendToIframe(cached);
-      } else {
-        const onLoad = () => {
-          if (keyRef.current !== myKey) return;
-          sendToIframe(cached);
-          frame?.removeEventListener("load", onLoad);
-        };
-        frame?.addEventListener("load", onLoad);
-        return () => frame?.removeEventListener("load", onLoad);
-      }
-      return;
-    }
-
+    // Start loading the buffer immediately.
+    // getPdfBuffer() handles the 3-level cache internally:
+    //   1. In-memory (fastest)
+    //   2. IndexedDB (persists across reloads)
+    //   3. Network (only on miss)
     setBufferReady("loading");
     let active = true;
-    getPdfBuffer(fileUrl)
+    const bufferPromise = getPdfBuffer(fileUrl);
+
+    bufferPromise
       .then((buffer) => {
         if (!active || keyRef.current !== myKey) return;
         setBufferReady("ready");
-        sendToIframe(buffer);
+        // If iframe is already loaded, send now. Otherwise send in the iframe onload handler.
+        const frame = iframeRef.current;
+        if (frame?.contentWindow && (frame as any)._ready) {
+          sendToIframe(buffer);
+        }
+        if (iframeRef.current) {
+          (iframeRef.current as any)._pendingBuffer = buffer.slice(0);
+        }
       })
       .catch((err) => {
         if (!active || keyRef.current !== myKey) return;
@@ -118,16 +114,31 @@ export default function CoursePdfStep({
         setLoadError(err instanceof Error ? err.message : "Failed to fetch PDF.");
       });
 
-    const onLoadFallback = () => {
+    const onIframeLoad = () => {
       if (!active || keyRef.current !== myKey) return;
-      const fallback = getCachedPdfBuffer(fileUrl);
-      if (fallback) sendToIframe(fallback);
+      const frame = iframeRef.current;
+      if (!frame) return;
+      (frame as any)._ready = true;
+      // Check if buffer is already ready (stored on iframe ref as pending)
+      const pending = (frame as any)._pendingBuffer as ArrayBuffer | undefined;
+      if (pending) {
+        sendToIframe(pending);
+        return;
+      }
+      // Otherwise wait for bufferPromise to resolve (it'll send via the .then handler above)
+      bufferPromise.then((buffer) => {
+        if (!active || keyRef.current !== myKey) return;
+        if ((frame as any)._ready) sendToIframe(buffer);
+      }).catch(() => {
+        /* already handled above */
+      });
     };
-    iframeRef.current?.addEventListener("load", onLoadFallback);
+
+    iframeRef.current?.addEventListener("load", onIframeLoad);
 
     return () => {
       active = false;
-      iframeRef.current?.removeEventListener("load", onLoadFallback);
+      iframeRef.current?.removeEventListener("load", onIframeLoad);
     };
   }, [fileUrl, pageIndex]);
 

@@ -106,6 +106,7 @@
 
         let pdfDoc = null;
         let renderToken = 0;
+        let loaded = false;
         currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
         const renderPage = async (pageNumber) => {
@@ -158,6 +159,8 @@
         };
 
         const loadPdfFromSource = async (source) => {
+          if (loaded) return;
+          loaded = true;
           try {
             pdfDoc = await window.pdfjsLib.getDocument(source).promise;
             currentPage = Math.min(Math.max(1, currentPage), pdfDoc.numPages);
@@ -165,7 +168,8 @@
             try {
               window.parent?.postMessage({ type: "pdf-viewer:ready", numPages: pdfDoc.numPages, url: resolvedFileUrl }, "*");
             } catch {}
-          } catch {
+          } catch (err) {
+            loaded = false;
             showError("Unable to load the PDF in the browser viewer.");
           }
         };
@@ -179,7 +183,7 @@
               if (data.url && data.url !== resolvedFileUrl) return;
               if (data.buffer instanceof ArrayBuffer) {
                 loadPdfFromSource({ data: data.buffer.slice(0) });
-              } else if (typeof data.url === "string") {
+              } else if (typeof data.url === "string" && !loaded) {
                 loadPdfFromSource(data.url);
               }
             } else if (data.type === "goto-page") {
@@ -191,7 +195,9 @@
           },
         );
 
-        loadPdfFromSource(resolvedFileUrl);
+        // Note: The parent component (CoursePdfStep.tsx) is responsible for fetching
+        // and sending the PDF buffer via postMessage. This eliminates double-downloads
+        // and enables client-side caching (memory + IndexedDB).
       })();
     </script>
   </body>

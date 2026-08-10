@@ -5,7 +5,10 @@ type CacheEntry =
 const bufferCache = new Map<string, CacheEntry>();
 
 const MAX_CACHE_SIZE = 8;
-const CACHE_TTL_MS = 10 * 60 * 1000;
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours (now with IndexedDB persistence, keep longer)
+const IDB_NAME = "magic-library-pdf-cache";
+const IDB_VERSION = 1;
+const IDB_STORE = "pdf-buffers";
 
 function pruneCache() {
   const now = Date.now();
@@ -39,6 +42,77 @@ function pruneCache() {
   }
 }
 
+// --- IndexedDB helpers for persistent PDF cache ---
+let idbPromise: Promise<IDBDatabase> | null = null;
+function openPdfIdb(): Promise<IDBDatabase> {
+  if (idbPromise) return idbPromise;
+  idbPromise = new Promise<IDBDatabase>((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        const store = db.createObjectStore(IDB_STORE, { keyPath: "url" });
+        store.createIndex("fetchedAt", "fetchedAt", { unique: false });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  return idbPromise;
+}
+
+async function idbGet(url: string): Promise<{ url: string; buffer: ArrayBuffer; fetchedAt: number } | null> {
+  try {
+    const db = await openPdfIdb();
+    const tx = db.transaction(IDB_STORE, "readonly");
+    const store = tx.objectStore(IDB_STORE);
+    const req = store.get(url);
+    return await new Promise<{ url: string; buffer: ArrayBuffer; fetchedAt: number } | null>((resolve, reject) => {
+      req.onsuccess = () => {
+        const result = req.result ?? null;
+        if (result && Date.now() - result.fetchedAt > CACHE_TTL_MS) {
+          // Expired — remove from IDB lazily
+          const delTx = db.transaction(IDB_STORE, "readwrite");
+          delTx.objectStore(IDB_STORE).delete(url);
+          resolve(null);
+        } else {
+          resolve(result);
+        }
+      };
+      req.onerror = () => reject(req.error);
+    });
+  } catch {
+    return null;
+  }
+}
+
+async function idbPut(url: string, buffer: ArrayBuffer, fetchedAt: number): Promise<void> {
+  try {
+    const db = await openPdfIdb();
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    const store = tx.objectStore(IDB_STORE);
+    store.put({ url, buffer: buffer.slice(0), fetchedAt });
+    // Lazy prune old IndexedDB entries
+    try {
+      const idx = store.index("fetchedAt");
+      const allReq = idx.openCursor();
+      const cutoff = Date.now() - CACHE_TTL_MS;
+      allReq.onsuccess = () => {
+        const cursor = allReq.result;
+        if (!cursor) return;
+        if (cursor.value.fetchedAt < cutoff) {
+          cursor.delete();
+        }
+        cursor.continue();
+      };
+    } catch {
+      /* ignore prune errors */
+    }
+  } catch {
+    /* ignore idb put errors — memory cache is enough */
+  }
+}
+
 /**
  * Normalize a PDF step source like `/folder/book.pdf#page=3` or `/folder/book.pdf`
  * down to the canonical file URL (stripped of `#page=` / `?page=` fragments).
@@ -60,13 +134,18 @@ export function extractPdfPageNumber(source: string): number {
 }
 
 /**
- * Fetch a PDF file once per URL, cache the raw ArrayBuffer in memory
- * for the lifetime of the tab (up to MAX_CACHE_SIZE entries / CACHE_TTL_MS).
+ * Fetch a PDF file once per URL.
+ * 1. Try in-memory cache first (instant).
+ * 2. Try IndexedDB persistent cache next (survives page reloads).
+ * 3. Fetch from network only if missing.
+ *
  * This eliminates the delay when navigating from one PDF page to the next,
  * because PDF.js no longer re-downloads the file per iframe/page navigation.
  */
 export async function getPdfBuffer(fileUrl: string): Promise<ArrayBuffer> {
   const key = normalizePdfFileUrl(fileUrl);
+
+  // 1. Check memory cache first
   const existing = bufferCache.get(key);
   if (existing) {
     if (existing.status === "ready") {
@@ -81,6 +160,15 @@ export async function getPdfBuffer(fileUrl: string): Promise<ArrayBuffer> {
     }
   }
 
+  // 2. Check persistent IndexedDB cache (survives page reloads)
+  const idbHit = await idbGet(key);
+  if (idbHit) {
+    bufferCache.set(key, { status: "ready", buffer: idbHit.buffer.slice(0), fetchedAt: idbHit.fetchedAt });
+    pruneCache();
+    return idbHit.buffer.slice(0);
+  }
+
+  // 3. Network fetch
   const promise = (async () => {
     const response = await fetch(key, { credentials: "same-origin" });
     if (!response.ok) {
@@ -88,9 +176,12 @@ export async function getPdfBuffer(fileUrl: string): Promise<ArrayBuffer> {
       throw new Error(`PDF fetch failed: ${response.status} ${response.statusText}`);
     }
     const buffer = await response.arrayBuffer();
-    bufferCache.set(key, { status: "ready", buffer, fetchedAt: Date.now() });
+    const fetchedAt = Date.now();
+    bufferCache.set(key, { status: "ready", buffer: buffer.slice(0), fetchedAt });
     pruneCache();
-    return buffer;
+    // Persist to IndexedDB in the background (don't await, so first load is not blocked)
+    void idbPut(key, buffer, fetchedAt);
+    return buffer.slice(0);
   })();
 
   bufferCache.set(key, { status: "loading", promise });
@@ -100,6 +191,7 @@ export async function getPdfBuffer(fileUrl: string): Promise<ArrayBuffer> {
 
 /**
  * Return cached buffer without triggering a fetch, or `null` if not cached.
+ * Checks both in-memory cache first, then IndexedDB.
  */
 export function getCachedPdfBuffer(fileUrl: string): ArrayBuffer | null {
   const key = normalizePdfFileUrl(fileUrl);
@@ -116,10 +208,28 @@ export function getCachedPdfBuffer(fileUrl: string): ArrayBuffer | null {
 
 /** Clear a single PDF cache entry (useful for tests / explicit invalidation). */
 export function evictPdfBuffer(fileUrl: string) {
-  bufferCache.delete(normalizePdfFileUrl(fileUrl));
+  const key = normalizePdfFileUrl(fileUrl);
+  bufferCache.delete(key);
+  // Also remove from IndexedDB (fire-and-forget)
+  openPdfIdb()
+    .then((db) => {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).delete(key);
+    })
+    .catch(() => {
+      /* ignore */
+    });
 }
 
-/** Wipe the whole cache. */
+/** Wipe the whole cache (memory + IndexedDB). */
 export function clearPdfCache() {
   bufferCache.clear();
+  openPdfIdb()
+    .then((db) => {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).clear();
+    })
+    .catch(() => {
+      /* ignore */
+    });
 }
