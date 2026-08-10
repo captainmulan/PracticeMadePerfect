@@ -748,7 +748,7 @@ export async function exportIndexedDb(): Promise<Blob> {
   return blob;
 }
 
-export async function importIndexedDb(jsonData: string): Promise<void> {
+export async function importIndexedDb(jsonData: string, merge: boolean = true): Promise<void> {
   try {
     const data = JSON.parse(jsonData);
     
@@ -760,35 +760,68 @@ export async function importIndexedDb(jsonData: string): Promise<void> {
       throw new Error("Invalid export data: missing tasks array");
     }
     
-    // Clear existing data
-    await clearDatabase();
-    
-    // Import courses
-    for (const course of data.courses) {
-      await saveCourse(course);
-    }
-    
-    // Import tasks
-    if (data.tasks.length > 0) {
-      await saveTasks(data.tasks);
+    // In merge mode: keep existing local data (admin edits always win) and only add NEW items
+    // In non-merge mode (explicit clear): wipe everything first
+    if (!merge) {
+      await clearDatabase();
     }
 
-    if (Array.isArray(data.announcements)) {
-      for (const announcement of data.announcements) {
-        await saveAnnouncement(announcement);
+    const existingSummaries = merge ? await getCourseSummaries() : [];
+    const existingCourseIds = new Set(existingSummaries.map((c) => c.id));
+    const existingTasks = merge ? await getTasks() : [];
+    const existingTaskIds = new Set(existingTasks.map((t) => t.id));
+    const existingAnnouncements = merge ? await getAnnouncements() : [];
+    const existingAnnouncementIds = new Set(existingAnnouncements.map((a) => a.id));
+
+    let importedCourses = 0;
+    let importedTasks = 0;
+    let importedAnnouncements = 0;
+    
+    // Import courses — only if courseId doesn't already exist locally!
+    for (const course of data.courses) {
+      if (merge && existingCourseIds.has(course.id)) {
+        continue; // Preserve local admin version
       }
-    } else {
+      await saveCourse(course);
+      importedCourses += 1;
+    }
+    
+    // Import tasks — only if taskId doesn't already exist locally!
+    if (data.tasks.length > 0) {
+      const newTasks = merge
+        ? data.tasks.filter((t: any) => !existingTaskIds.has(t.id))
+        : data.tasks;
+      if (newTasks.length > 0) {
+        await saveTasks(newTasks);
+        importedTasks = newTasks.length;
+      }
+    }
+
+    // Import announcements — only if announcementId doesn't already exist locally!
+    if (Array.isArray(data.announcements)) {
+      const newAnnouncements = merge
+        ? data.announcements.filter((a: any) => !existingAnnouncementIds.has(a.id))
+        : data.announcements;
+      for (const announcement of newAnnouncements) {
+        await saveAnnouncement(announcement);
+        importedAnnouncements += 1;
+      }
+    } else if (!merge || existingAnnouncements.length === 0) {
       await ensureAnnouncementsSeeded();
     }
 
     if (typeof data.exportedAt === "string" && data.exportedAt) {
       rememberCatalogStamp({
         exportedAt: data.exportedAt,
-        courseCount: data.courses.length,
+        courseCount: (existingCourseIds.size ?? 0) + importedCourses,
       });
     }
     
-    console.log(`Imported ${data.courses.length} courses and ${data.tasks.length} tasks`);
+    console.log(
+      merge
+        ? `Merged catalog: +${importedCourses} new courses, +${importedTasks} new tasks, +${importedAnnouncements} new announcements (${existingCourseIds.size} local courses preserved)`
+        : `Imported ${data.courses.length} courses and ${data.tasks.length} tasks (full replace)`,
+    );
   } catch (e) {
     console.error("Failed to import IndexedDB data:", e);
     throw e;
