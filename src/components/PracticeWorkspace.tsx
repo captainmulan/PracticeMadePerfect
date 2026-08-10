@@ -40,6 +40,8 @@ interface PracticeWorkspaceProps {
   /** Same-origin book iframe — swipe inside page content also changes steps. */
   contentIframeRef?: RefObject<HTMLIFrameElement | null>;
   contentIframeBindKey?: string | number | null;
+  /** Navigate to a specific page index (for bookmark navigation) */
+  onNavigateToPage?: (pageIndex: number) => void;
 }
 
 export default function PracticeWorkspace({
@@ -74,6 +76,7 @@ export default function PracticeWorkspace({
   children,
   contentIframeRef,
   contentIframeBindKey,
+  onNavigateToPage,
 }: PracticeWorkspaceProps) {
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
@@ -203,8 +206,8 @@ export default function PracticeWorkspace({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: showSettingsBar ? (style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0") : "transparent",
-              border: showSettingsBar ? style?.wizardTopInfo?.navButton?.border ?? "none" : "none",
+              background: "transparent",
+              border: "none",
               cursor: "pointer",
               color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               marginLeft: "6px",
@@ -258,7 +261,20 @@ export default function PracticeWorkspace({
               type="button"
               className="practice-settings-btn"
               onClick={() => {
-                setShowBookmarkHistory(!showBookmarkHistory);
+                // Save current page to bookmark history
+                if (typeof pageIndex === "number") {
+                  const bookmark = {
+                    id: Date.now().toString(),
+                    bookId: bookName ?? "",
+                    stepIndex: pageIndex,
+                    stepTitle: title,
+                    createdAt: new Date().toISOString(),
+                  };
+                  const existingBookmarks = JSON.parse(localStorage.getItem("bookmarkHistory") || "[]");
+                  const updatedBookmarks = [bookmark, ...existingBookmarks.filter((b: any) => b.stepIndex !== pageIndex)];
+                  localStorage.setItem("bookmarkHistory", JSON.stringify(updatedBookmarks));
+                  setShowBookmarkHistory(true);
+                }
                 setDictionaryMode(false);
               }}
               style={{
@@ -274,7 +290,7 @@ export default function PracticeWorkspace({
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
             >
-              📑 Bookmark
+              📑 Save
             </button>
             <button
               type="button"
@@ -296,7 +312,7 @@ export default function PracticeWorkspace({
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
             >
-              📚 Bookmark History
+              📚 History
             </button>
             <button
               type="button"
@@ -318,7 +334,7 @@ export default function PracticeWorkspace({
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
             >
-              🔍 Dictionary
+              🔍 Dict
             </button>
           </div>
         </div>
@@ -475,16 +491,127 @@ export default function PracticeWorkspace({
                 ✕
               </button>
             </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.9rem",
-                color: "#64748b",
-                opacity: 0.75,
-              }}
-            >
-              Bookmark history will be populated from your saved bookmarks.
-            </p>
+            {(() => {
+              const bookmarks = JSON.parse(localStorage.getItem("bookmarkHistory") || "[]");
+              if (bookmarks.length === 0) {
+                return (
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.9rem",
+                      color: "#64748b",
+                      opacity: 0.75,
+                    }}
+                  >
+                    No saved bookmarks yet. Tap "Save" to bookmark this page.
+                  </p>
+                );
+              }
+              return (
+                <ul
+                  style={{
+                    listStyle: "none",
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                  }}
+                >
+                  {bookmarks.map((b: any) => {
+                    const isCurrent = b.stepIndex === pageIndex;
+                    return (
+                      <li
+                        key={b.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: "8px",
+                          padding: "10px 12px",
+                          background: isCurrent
+                            ? "#fef3c7"
+                            : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
+                          border: `1px solid ${isCurrent ? "#f59e0b" : "rgba(15,23,42,0.08)"}`,
+                          borderRadius: "10px",
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            // Navigate to saved page index
+                            if (onNavigateToPage && typeof b.stepIndex === "number") {
+                              onNavigateToPage(b.stepIndex);
+                              setShowBookmarkHistory(false);
+                            }
+                          }}
+                          style={{
+                            flex: 1,
+                            textAlign: "left",
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                            color: style?.wizardTopInfo?.descriptionColor ?? "#0f172a",
+                            minWidth: 0,
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "0.9rem",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {isCurrent ? "📍 " : ""}
+                            {b.stepTitle?.trim() ? b.stepTitle : `Page ${b.stepIndex + 1}`}
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "0.75rem",
+                              opacity: 0.7,
+                              marginTop: "3px",
+                            }}
+                          >
+                            {`Page ${b.stepIndex + 1}${b.createdAt ? ` · ${new Date(b.createdAt).toLocaleDateString()}` : ""}`}
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updatedBookmarks = bookmarks.filter((item: any) => item.id !== b.id);
+                            localStorage.setItem("bookmarkHistory", JSON.stringify(updatedBookmarks));
+                          }}
+                          aria-label="Remove bookmark"
+                          title="Remove bookmark"
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#991b1b",
+                            fontSize: "15px",
+                            lineHeight: 1,
+                            padding: "6px 10px",
+                            borderRadius: "8px",
+                            flexShrink: 0,
+                          }}
+                          onMouseOver={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = "rgba(153, 27, 27, 0.08)";
+                          }}
+                          onMouseOut={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                          }}
+                        >
+                          🗑
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              );
+            })()}
           </div>
         </>
       )}
