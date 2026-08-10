@@ -189,6 +189,29 @@ export default function PracticeWorkspace({
           >
             {`Page ${pageIndex ?? ""}/${totalPages ?? ""}`}
           </span>
+          <button
+            type="button"
+            className="chapter-settings-gear"
+            onClick={() => setShowSettingsBar(!showSettingsBar)}
+            aria-label="Settings"
+            style={{
+              fontSize: "16px",
+              fontWeight: "normal",
+              width: "28px",
+              height: "28px",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: showSettingsBar ? (style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0") : "transparent",
+              border: showSettingsBar ? style?.wizardTopInfo?.navButton?.border ?? "none" : "none",
+              cursor: "pointer",
+              color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
+              marginLeft: "6px",
+            }}
+          >
+            ⚙️
+          </button>
         </div>
 
         <div className="chapter-nav-side chapter-nav-side-right">
@@ -214,29 +237,6 @@ export default function PracticeWorkspace({
           }}
         >
           →
-        </button>
-        <button
-          type="button"
-          className="chapter-nav-button chapter-settings-gear"
-          onClick={() => setShowSettingsBar(!showSettingsBar)}
-          aria-label="Settings"
-          style={{
-            fontSize: "18px",
-            fontWeight: "normal",
-            width: "36px",
-            height: "36px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: showSettingsBar ? (style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0") : "transparent",
-            border: showSettingsBar ? style?.wizardTopInfo?.navButton?.border ?? "none" : "none",
-            cursor: "pointer",
-            color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
-            marginLeft: "8px",
-          }}
-        >
-          ⚙️
         </button>
         </div>
       </div>
