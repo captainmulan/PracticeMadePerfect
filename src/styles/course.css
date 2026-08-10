@@ -327,19 +327,79 @@
 }
 
 .practice-settings-btn {
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: transform 0.1s ease;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .practice-settings-btn:hover {
-  background: rgba(15, 23, 42, 0.06) !important;
   transform: translateY(-1px);
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .practice-settings-btn:active {
   transform: translateY(0) scale(0.98);
-  background: rgba(15, 23, 42, 0.1) !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.practice-settings-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.chapter-settings-gear {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.chapter-settings-gear:hover {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.chapter-settings-gear:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Override theme button styles for settings buttons */
+body[data-bookshelf-theme="space"] .practice-settings-btn,
+body[data-bookshelf-theme="space"] .chapter-settings-gear {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+body[data-bookshelf-theme="space"] .practice-settings-btn:hover,
+body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transform: translateY(-1px);
 }
 
 /* ----------  Bookmark History Right-Side Drawer (20% overlap)  ---------- */

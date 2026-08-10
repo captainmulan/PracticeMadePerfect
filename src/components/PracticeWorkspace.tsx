@@ -200,14 +200,15 @@ export default function PracticeWorkspace({
             style={{
               fontSize: "16px",
               fontWeight: "normal",
-              width: "28px",
-              height: "28px",
-              borderRadius: "50%",
+              width: "32px",
+              height: "32px",
+              borderRadius: "0",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               background: "transparent",
               border: "none",
+              outline: "none",
               cursor: "pointer",
               color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               marginLeft: "6px",
@@ -279,18 +280,19 @@ export default function PracticeWorkspace({
               }}
               style={{
                 background: "transparent",
-                border: "1px solid rgba(15, 23, 42, 0.1)",
-                borderRadius: "8px",
-                padding: "6px 12px",
-                fontSize: "14px",
+                border: "none",
+                borderRadius: "0",
+                padding: "0",
+                fontSize: "18px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                justifyContent: "center",
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
+              title="Save bookmark"
             >
-              📑 Save
+              📑
             </button>
             <button
               type="button"
@@ -301,18 +303,19 @@ export default function PracticeWorkspace({
               }}
               style={{
                 background: "transparent",
-                border: "1px solid rgba(15, 23, 42, 0.1)",
-                borderRadius: "8px",
-                padding: "6px 12px",
-                fontSize: "14px",
+                border: "none",
+                borderRadius: "0",
+                padding: "0",
+                fontSize: "18px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                justifyContent: "center",
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
+              title="Bookmark history"
             >
-              📚 History
+              📚
             </button>
             <button
               type="button"
@@ -323,18 +326,19 @@ export default function PracticeWorkspace({
               }}
               style={{
                 background: dictionaryMode ? "rgba(15, 23, 42, 0.08)" : "transparent",
-                border: "1px solid rgba(15, 23, 42, 0.1)",
-                borderRadius: "8px",
-                padding: "6px 12px",
-                fontSize: "14px",
+                border: "none",
+                borderRadius: "0",
+                padding: "0",
+                fontSize: "18px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                justifyContent: "center",
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
+              title="Dictionary"
             >
-              🔍 Dict
+              🔍
             </button>
           </div>
         </div>
