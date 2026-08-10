@@ -146,6 +146,8 @@ Project context:
 - Raw HTML lessons are rendered inside an iframe in the app so embedded scripts can run correctly.
 - This was needed because simple inline injection did not execute lesson JavaScript reliably in the workspace view.
 - When changing a lesson, keep the public version and the book copy aligned so the experience stays consistent.
+- Important: the app expects exact folder names from `contentHtml` iframe paths. If you upload a renamed book folder, create a matching path or redirect stubs so the old iframe path still resolves.
+- Important: do not leave stale `00x-*.html` files behind in a book folder, because duplicate chapter prefixes can break ordering and load behavior.
 
 ## Interactive kids' books (`book_html/`)
 

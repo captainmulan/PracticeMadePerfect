@@ -1,0 +1,201 @@
+/* Duplicate copy without leading underscore for admin uploads */
+/* same content as _speak-theme.css */
+:root{
+  --sky:#E0F2FE;
+  --sky-deep:#38BDF8;
+  --mint:#CCFBF1;
+  --sun:#FBBF24;
+  --sun-light:#FDE68A;
+  --coral:#F472B6;
+  --coral-deep:#DB2777;
+  --purple:#8B5CF6;
+  --purple-deep:#6D28D9;
+  --teal:#14B8A6;
+  --ink:#1E293B;
+  --surface:#FFFFFF;
+  --text-muted:#64748B;
+  --border:rgba(56,189,248,.28);
+  --shadow:0 4px 18px rgba(56,189,248,.18);
+  --radius:16px;
+  --radius-sm:12px;
+  /* legacy aliases used across pages */
+  --palm:var(--sky);
+  --palm-dark:#BAE6FD;
+  --lacquer:var(--coral-deep);
+  --lacquer-deep:var(--purple-deep);
+  --gold:var(--sun);
+  --gold-light:var(--sun-light);
+  --saffron:#F59E0B;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Comic Neue','Comic Sans MS',system-ui,sans-serif;
+  font-size:17px;
+  background:linear-gradient(145deg,#7DD3FC 0%,#A78BFA 50%,#F9A8D4 100%);
+  background-attachment:fixed;
+  color:var(--ink);
+  min-height:100vh;
+  padding:0;
+  line-height:1.65;
+}
+.manuscript-bg{
+  min-height:100dvh;
+  background:transparent;
+  border:none;
+  outline:none;
+  box-shadow:none;
+  position:relative;
+  overflow-x:hidden;
+  border-radius:0;
+}
+.manuscript-bg::before,.manuscript-bg::after{display:none;}
+.scroll-wrap,.container{
+  width:100%;
+  max-width:100%;
+  margin:0;
+  padding:18px clamp(16px,3vw,40px) 32px;
+  position:relative;
+  z-index:1;
+}
+@media(min-width:1200px){
+  .scroll-wrap,.container{max-width:1400px;margin:0 auto;}
+}
+body.intro-page{
+  font-size:18px;
+  line-height:1.7;
+}
+body.intro-page .scroll-wrap{
+  max-width:680px;
+  margin:0 auto;
+  padding:24px 18px 40px;
+}
+body.intro-page .header{
+  margin-bottom:28px;
+  padding-bottom:24px;
+}
+body.intro-page .page-title{
+  font-size:clamp(28px,6vw,36px);
+  margin-bottom:10px;
+}
+body.intro-page .page-subtitle{
+  font-size:clamp(17px,3vw,20px);
+  font-weight:700;
+  font-style:normal;
+  color:var(--purple-deep);
+  line-height:1.5;
+}
+body.intro-page .page-tagline{
+  font-size:clamp(16px,2.8vw,18px);
+  margin-top:12px;
+}
+body.intro-page .section-label span{
+  font-size:14px;
+  letter-spacing:.1em;
+}
+body.intro-page .card h2{
+  font-size:clamp(20px,4vw,24px);
+}
+body.intro-page .card p,
+body.intro-page .card li{
+  font-size:clamp(17px,3vw,19px);
+  line-height:1.75;
+}
+body.intro-page .toc-row{
+  padding:16px 18px;
+  border-radius:18px;
+  margin-bottom:10px;
+  min-height:64px;
+}
+body.intro-page .toc-num{
+  width:48px;
+  height:48px;
+  font-size:20px;
+  border-radius:14px;
+}
+body.intro-page .toc-title{
+  font-size:clamp(17px,3.2vw,20px);
+}
+body.intro-page .toc-mm{
+  font-size:clamp(15px,2.8vw,17px);
+}
+body.intro-page .toc-type{
+  font-size:14px;
+}
+body.intro-page .nav-hint{
+  font-size:clamp(15px,2.8vw,17px);
+  padding:14px;
+  line-height:1.6;
+}
+body.intro-page .character-grid{
+  gap:14px;
+  margin-bottom:18px;
+}
+body.intro-page .character-option{
+  padding:16px 10px;
+  border-radius:18px;
+  min-height:88px;
+}
+body.intro-page .character-option > div:first-child{
+  font-size:clamp(36px,8vw,48px);
+  line-height:1.1;
+}
+body.intro-page .character-name{
+  font-size:15px;
+  font-weight:700;
+  margin-top:8px;
+}
+body.intro-page .preview-character{
+  font-size:clamp(56px,12vw,72px);
+}
+body.intro-page .preview-name{
+  font-size:clamp(20px,4vw,24px);
+}
+body.intro-page input[type="text"]{
+  font-size:18px;
+  padding:16px 18px;
+  border-radius:16px;
+  margin-bottom:16px;
+}
+body.intro-page .btn-primary{
+  font-size:18px;
+  padding:16px 28px;
+  border-radius:16px;
+}
+body.intro-page .pagoda-deco{
+  width:64px;
+  height:72px;
+  margin-bottom:8px;
+}
+.header{
+  text-align:center;
+  padding-bottom:20px;
+  border-bottom:2px solid rgba(56,189,248,.35);
+  margin-bottom:22px;
+}
+.ornament-top{
+  font-size:28px;
+  color:var(--sun);
+  letter-spacing:.35em;
+  margin-bottom:8px;
+  text-shadow:0 2px 8px rgba(251,191,36,.4);
+}
+.page-title{
+  font-size:clamp(22px,5vw,28px);
+  font-weight:700;
+  color:var(--purple-deep);
+  line-height:1.45;
+  margin-bottom:6px;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+}
+.page-subtitle{
+  font-size:17px;
+  font-style:italic;
+  color:#475569;
+  font-weight:600;
+}
+.page-tagline{
+  font-size:15px;
+  color:#92400E;
+  margin-top:10px;
+  font-style:italic;
+  font-weight:600;

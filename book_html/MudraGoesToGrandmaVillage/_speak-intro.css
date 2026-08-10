@@ -1,0 +1,98 @@
+/* Intro pages — same playful gradient as Build Myanmar Village game */
+*{margin:0;padding:0;box-sizing:border-box;}
+body.mm-solar-intro{
+  font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+  background:linear-gradient(145deg,#7DD3FC 0%,#A78BFA 50%,#F9A8D4 100%);
+  color:#1E293B;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.mm-petals{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(4px 4px at 50px 70px,rgba(251,191,36,0.35),transparent),
+    radial-gradient(3px 3px at 120px 40px,rgba(244,114,182,0.25),transparent);
+  background-size:900px 150px;
+  animation:mmDrift 12s ease-in-out infinite;
+}
+@keyframes mmDrift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.mm-container{
+  max-width:640px;margin:0 auto;padding:28px 16px 40px;
+  position:relative;z-index:1;
+}
+.mm-cover{
+  background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(186,230,253,.55));
+  border-radius:28px;padding:36px 24px;text-align:center;color:#1E293B;
+  box-shadow:0 10px 40px rgba(109,40,217,.18);margin-bottom:20px;
+  border:2px solid rgba(56,189,248,.45);position:relative;overflow:hidden;
+}
+.mm-cover .mm-logo{font-size:64px;line-height:1;margin-bottom:10px;}
+.mm-cover h1{font-size:clamp(26px,5vw,34px);margin-bottom:8px;color:#6D28D9;}
+.mm-cover .mm-tagline{font-size:clamp(16px,3vw,18px);color:#475569;margin-bottom:16px;line-height:1.5;font-weight:700;}
+.mm-cover .mm-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+.mm-cover .mm-pill{background:rgba(139,92,246,.15);padding:8px 14px;border-radius:999px;font-size:14px;font-weight:bold;color:#6D28D9;border:1px solid rgba(139,92,246,.25);}
+.mm-card{
+  background:rgba(255,255,255,.78);border-radius:24px;padding:22px;margin-bottom:16px;
+  box-shadow:0 6px 20px rgba(30,41,59,.08);border:2px solid rgba(56,189,248,.35);
+}
+.mm-card h2{color:#6D28D9;margin-bottom:12px;font-size:clamp(20px,4vw,22px);}
+.mm-card p,.mm-card li{font-size:clamp(17px,3vw,18px);line-height:1.75;margin-bottom:10px;color:#334155;}
+.mm-card p:last-child{margin-bottom:0;}
+.mm-meta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;}
+.mm-meta-item{flex:1;min-width:130px;background:rgba(186,230,253,.35);border-radius:16px;padding:14px;text-align:center;border:1px solid rgba(56,189,248,.25);}
+.mm-meta-label{font-size:12px;font-weight:bold;color:#7C3AED;margin-bottom:4px;letter-spacing:.06em;}
+.mm-meta-value{font-size:17px;font-weight:bold;color:#1E293B;}
+.mm-concept-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px;}
+.mm-concept-item{
+  background:rgba(255,255,255,.65);border-radius:14px;padding:12px;
+  display:flex;align-items:center;gap:10px;font-size:15px;font-weight:bold;color:#1E293B;
+  border:1px solid rgba(56,189,248,.2);
+}
+.mm-concept-item .mm-emoji{font-size:24px;flex-shrink:0;}
+.mm-game-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:8px;}
+@media(min-width:520px){.mm-game-grid{grid-template-columns:repeat(3,1fr);}}
+.mm-game-card{background:rgba(255,255,255,.55);border-radius:16px;padding:14px;border:1px solid rgba(56,189,248,.25);}
+.mm-game-card strong{display:block;font-size:16px;color:#6D28D9;margin-bottom:4px;}
+.mm-game-card span{font-size:14px;color:#64748B;line-height:1.45;}
+.mm-game-badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(251,191,36,.35);color:#92400E;margin-bottom:6px;}
+.mm-steps{counter-reset:mmstep;}
+.mm-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.mm-step-num{
+  flex-shrink:0;width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,#DB2777,#8B5CF6);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:15px;
+}
+.mm-step p{margin:0;font-size:17px;line-height:1.65;color:#334155;}
+.mm-tip{
+  background:rgba(251,191,36,.2);border-left:6px solid #f59e0b;
+  padding:14px;border-radius:12px;font-size:17px;line-height:1.65;margin-top:4px;color:#334155;
+}
+.mm-nav-hint{
+  margin-top:18px;text-align:center;font-size:15px;color:#64748B;
+  background:rgba(255,255,255,.65);padding:12px;border-radius:12px;line-height:1.6;
+  border:1px solid rgba(56,189,248,.25);
+}
+.mm-index-header{text-align:center;margin-bottom:24px;}
+.mm-index-header .mm-logo{font-size:56px;margin-bottom:8px;}
+.mm-index-header h1{font-size:clamp(28px,5vw,32px);color:#6D28D9;margin-bottom:6px;}
+.mm-index-header .mm-subtitle{color:#64748B;font-size:18px;font-weight:bold;}
+.mm-chapter-list{display:flex;flex-direction:row;gap:12px;}
+.mm-chapter-card{
+  display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.78);
+  border-radius:20px;padding:14px 16px;border:2px solid rgba(56,189,248,.3);
+  box-shadow:0 4px 16px rgba(30,41,59,.06);
+}
+.mm-num-badge{
+  flex-shrink:0;width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,#DB2777,#8B5CF6);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;
+}
+.mm-chapter-emoji{font-size:32px;flex-shrink:0;width:40px;text-align:center;}
+.mm-chapter-info{flex:1;min-width:0;}
+.mm-chapter-title{font-size:17px;font-weight:bold;color:#1E293B;line-height:1.25;}
+.mm-chapter-concept{font-size:14px;color:#64748B;margin-top:2px;}
+.mm-section-label{
+  font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:#7C3AED;margin:20px 0 10px;padding-left:4px;
+}
+.mm-section-label:first-of-type{margin-top:0;}
