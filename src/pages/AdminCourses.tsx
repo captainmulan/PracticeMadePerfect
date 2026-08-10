@@ -6,6 +6,7 @@ import { MAX_INLINE_HTML_BYTES } from "../utils/bookImport";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import AdminBookUploadPanel from "../components/AdminBookUploadPanel";
 import AdminPdfUploadPanel from "../components/AdminPdfUploadPanel";
+import AdminEpubUploadPanel from "../components/AdminEpubUploadPanel";
 
 function slugify(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -42,7 +43,7 @@ export default function AdminCourses() {
   const [loaded, setLoaded] = useState(false);
   const [bookSection, setBookSection] = useState<"new" | "existing" | "empty">("new");
   const [bookMethod, setBookMethod] = useState<"upload" | "manual">("upload");
-  const [uploadKind, setUploadKind] = useState<"html" | "pdf">("html");
+  const [uploadKind, setUploadKind] = useState<"html" | "pdf" | "epub">("html");
   const [bookSubTab, setBookSubTab] = useState<"general" | "pages" | "title" | "cover" | "logo">("general");
   const [adminData, setAdminData] = useState<any>(null);
   const [isDeletingBook, setIsDeletingBook] = useState(false);
@@ -198,7 +199,7 @@ export default function AdminCourses() {
     }
   }
 
-  function openUpload(kind: "html" | "pdf") {
+  function openUpload(kind: "html" | "pdf" | "epub") {
     setBookMethod("upload");
     setUploadKind(kind);
   }
@@ -711,6 +712,13 @@ export default function AdminCourses() {
                 >
                   PDF upload
                 </button>
+                <button
+                  type="button"
+                  className={`admin-btn admin-btn-book secondary ${uploadKind === "epub" ? "active" : ""}`}
+                  onClick={() => openUpload("epub")}
+                >
+                  EPUB upload
+                </button>
               </div>
               {uploadKind === "html" ? (
                 <AdminBookUploadPanel
@@ -721,8 +729,17 @@ export default function AdminCourses() {
                   onImported={handleImportedBook}
                   onCancel={openManualCreate}
                 />
-              ) : (
+              ) : uploadKind === "pdf" ? (
                 <AdminPdfUploadPanel
+                  books={books}
+                  selectedBookId={selectedBookId}
+                  loadedBook={loadedBook}
+                  forcedMode={bookSection === "new" ? "new" : "existing"}
+                  onImported={handleImportedBook}
+                  onCancel={openManualCreate}
+                />
+              ) : (
+                <AdminEpubUploadPanel
                   books={books}
                   selectedBookId={selectedBookId}
                   loadedBook={loadedBook}
@@ -1234,6 +1251,7 @@ export default function AdminCourses() {
                     >
                       <option value="html">html</option>
                       <option value="pdf">pdf</option>
+                      <option value="epub">epub</option>
                       <option value="code-exam">code-exam</option>
                       <option value="quiz">quiz</option>
                     </select>
@@ -1283,6 +1301,16 @@ export default function AdminCourses() {
                   {selectedStep.stepType === "pdf" ? (
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">PDF iframe source</span>
+                      <input
+                        value={selectedStep.contentHtml ?? ""}
+                        onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                  ) : null}
+                  {selectedStep.stepType === "epub" ? (
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">EPUB iframe source</span>
                       <input
                         value={selectedStep.contentHtml ?? ""}
                         onChange={(e) => updateStep(selectedStep.id, { contentHtml: e.target.value })}

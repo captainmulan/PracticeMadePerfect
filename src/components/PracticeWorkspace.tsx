@@ -42,6 +42,15 @@ interface PracticeWorkspaceProps {
   contentIframeBindKey?: string | number | null;
   /** Navigate to a specific page index (for bookmark navigation) */
   onNavigateToPage?: (pageIndex: number) => void;
+  /** Bookmark-related props */
+  bookId?: string | null;
+  stepIndex?: number;
+  stepTitle?: string;
+  bookmarked?: boolean;
+  bookmarks?: any[];
+  onToggleBookmark?: () => void;
+  onRemoveBookmark?: (bookmarkId: string) => void;
+  onJumpToBookmark?: (stepIndex: number) => void;
 }
 
 export default function PracticeWorkspace({
@@ -77,6 +86,14 @@ export default function PracticeWorkspace({
   contentIframeRef,
   contentIframeBindKey,
   onNavigateToPage,
+  bookId,
+  stepIndex,
+  stepTitle,
+  bookmarked,
+  bookmarks,
+  onToggleBookmark,
+  onRemoveBookmark,
+  onJumpToBookmark,
 }: PracticeWorkspaceProps) {
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;

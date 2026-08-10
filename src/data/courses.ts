@@ -1,6 +1,6 @@
 import { FICTION_BOOK } from "./fictionBook";
 
-export type CourseStepType = "html" | "code-exam" | "quiz" | "pdf";
+export type CourseStepType = "html" | "code-exam" | "quiz" | "pdf" | "epub";
 
 export interface QuizOption {
   id: string;
@@ -115,6 +115,7 @@ export function courseStepLabel(step: CourseStep): string {
   if (step.stepType === "html") return "Lesson";
   if (step.stepType === "code-exam") return "Code exam";
   if (step.stepType === "pdf") return "PDF";
+  if (step.stepType === "epub") return "EPUB";
   return "Quiz";
 }
 

@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import CourseCodeStep from "../components/CourseCodeStep";
 import CourseHtmlStep from "../components/CourseHtmlStep";
 import CoursePdfStep from "../components/CoursePdfStep";
+import CourseEpubStep from "../components/CourseEpubStep";
 import CourseQuizStep from "../components/CourseQuizStep";
 import type { CourseStep } from "../data/courses";
 import { courseStepLabel } from "../data/courses";
@@ -200,6 +201,25 @@ export default function CourseWizard() {
       )}
       {currentStep.stepType === "pdf" && (
         <CoursePdfStep
+          step={currentStep}
+          bookName={bookName}
+          chapterName={chapterName}
+          chapterNumber={chapterNumber}
+          pageType={pageType}
+          pageIndex={pageIndex}
+          totalPages={totalPages}
+          pageBrief={pageBrief}
+          bookHtmlFolder={outline.bookHtmlFolder}
+          courseId={outline.id}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canPrevious={stepIndex > 0}
+          canNext={stepIndex < steps.length - 1}
+          {...bookmarkProps}
+        />
+      )}
+      {currentStep.stepType === "epub" && (
+        <CourseEpubStep
           step={currentStep}
           bookName={bookName}
           chapterName={chapterName}
