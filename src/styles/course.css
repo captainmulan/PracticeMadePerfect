@@ -313,4 +313,117 @@
 
 /* Removed hardcoded practice-workspace styles - admin will define in content HTML */
 
+/* Floating OVERLAID Prev/Next Arrows (on top of content, NO width narrowing!) */
+.workspace-floating-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  width: 48px;
+  height: 72px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(15, 23, 42, 0.18);
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+  opacity: 0.55;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+.workspace-floating-arrow > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  line-height: 1;
+  margin-top: -2px;
+}
+.workspace-floating-arrow-left {
+  left: 8px;
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+  padding-left: 4px;
+}
+.workspace-floating-arrow-right {
+  right: 8px;
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+  padding-right: 4px;
+}
+.workspace-floating-arrow:hover:not(:disabled),
+.workspace-floating-arrow:focus-visible:not(:disabled) {
+  opacity: 1;
+  background: rgba(15, 23, 42, 0.6);
+  transform: translateY(-50%) scale(1.04);
+  outline: none;
+}
+.workspace-floating-arrow:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+  background: rgba(15, 23, 42, 0.75);
+}
+.workspace-floating-arrow:disabled {
+  opacity: 0.15;
+  cursor: not-allowed;
+  background: rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 640px) {
+  .workspace-floating-arrow {
+    width: 36px;
+    height: 60px;
+    font-size: 28px;
+  }
+  .workspace-floating-arrow-left { left: 4px; }
+  .workspace-floating-arrow-right { right: 4px; }
+}
+
+/* Right-side Bookmark Drawer (slide-in OVERLAY, no layout shift!) */
+.workspace-bookmark-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(1px);
+  z-index: 45;
+  animation: fadeIn 0.18s ease-out;
+}
+.workspace-bookmark-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(360px, 90%);
+  max-width: 100%;
+  z-index: 50;
+  padding: 18px 16px;
+  box-shadow: -8px 0 30px rgba(15, 23, 42, 0.18);
+  border-left: 1px solid rgba(15, 23, 42, 0.08);
+  overflow-y: auto;
+  animation: slideInRight 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.workspace-bookmark-drawer > * {
+  animation: fadeInUp 0.24s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 

@@ -133,6 +133,7 @@ export default function PracticeWorkspace({
         ),
         borderColor: style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0",
         touchAction: "pan-y",
+        position: "relative",
       }}
       onPointerDown={swipe.onPointerDown}
       onPointerUp={swipe.onPointerUp}
@@ -147,33 +148,7 @@ export default function PracticeWorkspace({
           borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
         }}
       >
-        <div className="chapter-nav-side chapter-nav-side-left">
-        <button
-          type="button"
-          className="chapter-nav-button"
-          disabled={!canPrevious}
-          onClick={onPrevious}
-          aria-label="Previous chapter"
-          style={{
-            fontSize: "24px",
-            fontWeight: "bold",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0",
-            border: style?.wizardTopInfo?.navButton?.border ?? "none",
-            cursor: canPrevious ? "pointer" : "not-allowed",
-            color: canPrevious ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a") : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
-          }}
-        >
-          ←
-        </button>
-        </div>
-
-        <div className="chapter-nav-center">
+        <div className="chapter-nav-side chapter-nav-side-left" style={{ minWidth: "40px" }}>
           <Link
             to="/"
             className="chapter-nav-home"
@@ -194,6 +169,9 @@ export default function PracticeWorkspace({
           >
             🏠
           </Link>
+        </div>
+
+        <div className="chapter-nav-center" style={{ flex: 1, justifyContent: "center" }}>
           <span
             className="chapter-label"
             style={{
@@ -206,270 +184,87 @@ export default function PracticeWorkspace({
               fontWeight: style?.wizardTopInfo?.chapterLabel?.fontWeight ?? 700,
               opacity: 1,
               textTransform: "none",
+              textAlign: "center",
             }}
           >
             {`Page ${pageIndex ?? ""}/${totalPages ?? ""}`}
           </span>
         </div>
 
-        <div className="chapter-nav-side chapter-nav-side-right" style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+        <div className="chapter-nav-side chapter-nav-side-right" style={{ display: "flex", gap: "6px", alignItems: "center", justifyContent: "flex-end", minWidth: "40px" }}>
           {bookId && typeof stepIndex === "number" && onToggleBookmark ? (
-            <>
-              <button
-                type="button"
-                className="chapter-nav-button"
-                onClick={onToggleBookmark}
-                aria-label={bookmarked ? "Remove bookmark" : "Bookmark this page"}
-                title={bookmarked ? "Remove bookmark" : "Bookmark this page"}
-                style={{
-                  fontSize: bookmarked ? "22px" : "20px",
-                  fontWeight: "bold",
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: bookmarked ? (style?.wizardTopInfo?.navButton?.backgroundColor ?? "#fde68a") : (style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0"),
-                  border: "none",
-                  cursor: "pointer",
-                  color: bookmarked ? "#b45309" : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
-                  filter: bookmarked ? "drop-shadow(0 1px 1px rgba(0,0,0,0.15))" : undefined,
-                }}
-              >
-                {bookmarked ? "🔖" : "📑"}
-              </button>
-              <button
-                type="button"
-                className="chapter-nav-button"
-                onClick={() => setShowBookmarkDrawer((v) => !v)}
-                aria-label={showBookmarkDrawer ? "Close bookmarks" : "Open bookmarks"}
-                title={`Bookmarks (${bookmarkCount})`}
-                style={{
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: showBookmarkDrawer ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a") : (style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0"),
-                  border: "none",
-                  cursor: "pointer",
-                  color: showBookmarkDrawer ? "#ffffff" : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
-                  position: "relative",
-                }}
-              >
-                <span>☰</span>
-                {bookmarkCount > 0 ? (
-                  <span
-                    style={{
-                      position: "absolute",
-                      right: "-2px",
-                      top: "-2px",
-                      background: "#dc2626",
-                      color: "white",
-                      borderRadius: "999px",
-                      minWidth: "16px",
-                      height: "16px",
-                      padding: "0 4px",
-                      fontSize: "10px",
-                      lineHeight: "16px",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {bookmarkCount > 99 ? "99+" : String(bookmarkCount)}
-                  </span>
-                ) : null}
-              </button>
-            </>
+            <button
+              type="button"
+              className="chapter-nav-button"
+              onClick={() => setShowBookmarkDrawer((v) => !v)}
+              aria-label={showBookmarkDrawer ? "Close bookmarks" : "Open bookmarks"}
+              title={bookmarked ? "Bookmarked — tap to open list" : `Bookmarks (${bookmarkCount})`}
+              style={{
+                fontSize: bookmarked ? "22px" : "20px",
+                fontWeight: "bold",
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: bookmarked
+                  ? "rgba(253, 230, 138, 0.35)"
+                  : "transparent",
+                border: bookmarked ? `1px solid ${style?.wizardTopInfo?.navButton?.backgroundColor ?? "#fde68a"}` : "none",
+                cursor: "pointer",
+                color: bookmarked ? "#b45309" : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
+                position: "relative",
+              }}
+            >
+              <span>{bookmarked ? "🔖" : "📑"}</span>
+              {bookmarkCount > 0 ? (
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "-2px",
+                    top: "-2px",
+                    background: "#dc2626",
+                    color: "white",
+                    borderRadius: "999px",
+                    minWidth: "16px",
+                    height: "16px",
+                    padding: "0 4px",
+                    fontSize: "10px",
+                    lineHeight: "16px",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {bookmarkCount > 99 ? "99+" : String(bookmarkCount)}
+                </span>
+              ) : null}
+            </button>
           ) : null}
-        <button
-          type="button"
-          className="chapter-nav-button"
-          disabled={!canNext}
-          onClick={onNext}
-          aria-label="Next chapter"
-          style={{
-            fontSize: "24px",
-            fontWeight: "bold",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0",
-            border: style?.wizardTopInfo?.navButton?.border ?? "none",
-            cursor: canNext ? "pointer" : "not-allowed",
-            color: canNext ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a") : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
-          }}
-        >
-          →
-        </button>
         </div>
       </div>
 
-      {showBookmarkDrawer ? (
-        <div
-          className="practice-workspace-step-header"
-          style={{
-            padding: "10px 12px",
-            background: buildGradient(
-              style?.wizardTopInfo?.descriptionBackgroundColorGradientStart,
-              style?.wizardTopInfo?.descriptionBackgroundColorGradientMiddle,
-              style?.wizardTopInfo?.descriptionBackgroundColorGradientEnd,
-              style?.wizardTopInfo?.descriptionBackgroundColor ?? "#fffbeb",
-            ),
-            borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#fde68a"}`,
-            borderTop: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#fde68a"}`,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "8px",
-            }}
-          >
-            <h4
-              style={{
-                margin: 0,
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                color: style?.wizardTopInfo?.descriptionColor ?? "#78350f",
-              }}
-            >
-              {bookmarkCount > 0 ? `🔖 Bookmarks (${bookmarkCount})` : "🔖 No bookmarks yet"}
-            </h4>
-            <button
-              type="button"
-              onClick={() => setShowBookmarkDrawer(false)}
-              aria-label="Close bookmarks"
-              style={{
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                color: style?.wizardTopInfo?.descriptionColor ?? "#78350f",
-                fontSize: "16px",
-                lineHeight: 1,
-                padding: "2px 6px",
-              }}
-            >
-              ✕
-            </button>
-          </div>
-          {bookmarkCount === 0 ? (
-            <p
-              style={{
-                margin: 0,
-                fontSize: "0.85rem",
-                color: style?.wizardTopInfo?.descriptionColor ?? "#78350f",
-                opacity: 0.75,
-              }}
-            >
-              Tap the 📑 button to save a spot.
-            </p>
-          ) : (
-            <ul
-              style={{
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-                display: "flex",
-                flexDirection: "column",
-                gap: "6px",
-                maxHeight: "min(42vh, 340px)",
-                overflowY: "auto",
-              }}
-            >
-              {bookmarkList.map((b) => {
-                const isCurrent = b.bookId === bookId && b.stepIndex === stepIndex;
-                return (
-                  <li
-                    key={b.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: "8px",
-                      padding: "8px 10px",
-                      background: isCurrent ? "#fef3c7" : "rgba(255,255,255,0.75)",
-                      border: `1px solid ${isCurrent ? "#f59e0b" : "rgba(15,23,42,0.08)"}`,
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => onJumpToBookmark?.(b.stepIndex)}
-                      style={{
-                        flex: 1,
-                        textAlign: "left",
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: 0,
-                        color: style?.wizardTopInfo?.descriptionColor ?? "#0f172a",
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          fontSize: "0.9rem",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {isCurrent ? "• " : ""}
-                        {b.stepTitle?.trim() ? b.stepTitle : `Page ${b.stepIndex + 1}`}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "0.75rem",
-                          opacity: 0.7,
-                          marginTop: "2px",
-                        }}
-                      >
-                        {`Page ${b.stepIndex + 1}${b.createdAt ? ` · ${new Date(b.createdAt).toLocaleDateString()}` : ""}`}
-                      </div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onRemoveBookmark?.(b.id)}
-                      aria-label="Remove bookmark"
-                      title="Remove bookmark"
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        color: "#991b1b",
-                        fontSize: "16px",
-                        lineHeight: 1,
-                        padding: "4px 8px",
-                        borderRadius: "6px",
-                      }}
-                      onMouseOver={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.background = "rgba(153, 27, 27, 0.08)";
-                      }}
-                      onMouseOut={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                      }}
-                    >
-                      🗑
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      ) : null}
+      {/* Floating Overlaid Prev/Next Arrows (on top of content, NO width narrowing) */}
+      <button
+        type="button"
+        className="workspace-floating-arrow workspace-floating-arrow-left"
+        disabled={!canPrevious}
+        onClick={onPrevious}
+        aria-label="Previous page"
+      >
+        <span>‹</span>
+      </button>
+      <button
+        type="button"
+        className="workspace-floating-arrow workspace-floating-arrow-right"
+        disabled={!canNext}
+        onClick={onNext}
+        aria-label="Next page"
+      >
+        <span>›</span>
+      </button>
 
-      {/* Step Brief */}
+      {/* Step Brief (above bookmark drawer so it's visible first) */}
       {pageBrief?.trim() && (
         <div className="practice-workspace-step-header" style={{
           paddingTop: `${(style?.wizardTopInfo?.descriptionPaddingTop ?? 16) / 16}rem`,
@@ -555,6 +350,238 @@ export default function PracticeWorkspace({
             </div>
           </div>
         </div>
+      ) : null}
+
+      {/* Bookmark Drawer: Right-side slide-in OVERLAY (no layout shift!) */}
+      {showBookmarkDrawer ? (
+        <>
+          {/* Backdrop: click to close */}
+          <div
+            className="workspace-bookmark-backdrop"
+            onClick={() => setShowBookmarkDrawer(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="workspace-bookmark-drawer"
+            style={{
+              background: style?.wizardTopInfo?.descriptionBackgroundColor ?? "#ffffff",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "14px",
+              }}
+            >
+              <h4
+                style={{
+                  margin: 0,
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  color: style?.wizardTopInfo?.descriptionColor ?? "#0f172a",
+                }}
+              >
+                {bookmarkCount > 0 ? `🔖 Bookmarks (${bookmarkCount})` : "🔖 Bookmarks"}
+              </h4>
+              <button
+                type="button"
+                onClick={() => setShowBookmarkDrawer(false)}
+                aria-label="Close bookmarks"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  color: style?.wizardTopInfo?.descriptionColor ?? "#0f172a",
+                  fontSize: "18px",
+                  lineHeight: 1,
+                  padding: "4px 8px",
+                  borderRadius: "8px",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Current-page bookmark toggle (quick action) */}
+            {bookId && typeof stepIndex === "number" && onToggleBookmark ? (
+              <div
+                style={{
+                  padding: "10px 12px",
+                  background: bookmarked
+                    ? buildGradient(
+                        style?.wizardTopInfo?.descriptionBackgroundColorGradientStart,
+                        style?.wizardTopInfo?.descriptionBackgroundColorGradientMiddle,
+                        style?.wizardTopInfo?.descriptionBackgroundColorGradientEnd,
+                        style?.wizardTopInfo?.descriptionBackgroundColor ?? "#fffbeb",
+                      )
+                    : "rgba(15,23,42,0.04)",
+                  border: `1px solid ${bookmarked ? "#f59e0b" : "rgba(15,23,42,0.08)"}`,
+                  borderRadius: "12px",
+                  marginBottom: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                }}
+              >
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: "0.85rem",
+                      opacity: 0.7,
+                      marginBottom: "2px",
+                    }}
+                  >
+                    {`Page ${pageIndex ?? ""}${title ? ` · ` : ""}`}
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: "0.92rem",
+                      color: style?.wizardTopInfo?.descriptionColor ?? "#0f172a",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {title?.trim() ? title : stepTitle ?? "Current page"}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={onToggleBookmark}
+                  style={{
+                    background: bookmarked ? "#b45309" : "#0f172a",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "10px",
+                    padding: "8px 12px",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  {bookmarked ? "🔖 Saved" : "📑 Save"}
+                </button>
+              </div>
+            ) : null}
+
+            {bookmarkCount === 0 ? (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.9rem",
+                  color: style?.wizardTopInfo?.descriptionColor ?? "#64748b",
+                  opacity: 0.75,
+                  padding: "10px 4px",
+                }}
+              >
+                No saved bookmarks yet. Tap "Save" above to save your spot.
+              </p>
+            ) : (
+              <ul
+                style={{
+                  listStyle: "none",
+                  margin: 0,
+                  padding: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  marginBottom: "12px",
+                }}
+              >
+                {bookmarkList.map((b) => {
+                  const isCurrent = b.bookId === bookId && b.stepIndex === stepIndex;
+                  return (
+                    <li
+                      key={b.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "8px",
+                        padding: "10px 12px",
+                        background: isCurrent
+                          ? "#fef3c7"
+                          : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
+                        border: `1px solid ${isCurrent ? "#f59e0b" : "rgba(15,23,42,0.08)"}`,
+                        borderRadius: "10px",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => onJumpToBookmark?.(b.stepIndex)}
+                        style={{
+                          flex: 1,
+                          textAlign: "left",
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                          color: style?.wizardTopInfo?.descriptionColor ?? "#0f172a",
+                          minWidth: 0,
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontWeight: 600,
+                            fontSize: "0.9rem",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {isCurrent ? "📍 " : ""}
+                          {b.stepTitle?.trim() ? b.stepTitle : `Page ${b.stepIndex + 1}`}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "0.75rem",
+                            opacity: 0.7,
+                            marginTop: "3px",
+                          }}
+                        >
+                          {`Page ${b.stepIndex + 1}${b.createdAt ? ` · ${new Date(b.createdAt).toLocaleDateString()}` : ""}`}
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onRemoveBookmark?.(b.id)}
+                        aria-label="Remove bookmark"
+                        title="Remove bookmark"
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "#991b1b",
+                          fontSize: "15px",
+                          lineHeight: 1,
+                          padding: "6px 10px",
+                          borderRadius: "8px",
+                          flexShrink: 0,
+                        }}
+                        onMouseOver={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(153, 27, 27, 0.08)";
+                        }}
+                        onMouseOut={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                        }}
+                      >
+                        🗑
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </>
       ) : null}
     </section>
   );
