@@ -134,13 +134,19 @@ export default function PracticeWorkspace({
         borderColor: style?.wizardWorkspace?.panelBorderColor ?? "#e2e8f0",
         touchAction: "pan-y",
         position: "relative",
+        display: "flex",
+        flexDirection: "column",
       }}
       onPointerDown={swipe.onPointerDown}
       onPointerUp={swipe.onPointerUp}
       onPointerCancel={swipe.onPointerCancel}
     >
+      {/* ===========================================================
+           TOP BAR — ONLY page navigation, centered compact group
+           [ ‹ ]   Page 1 / 125   [ › ]
+          =========================================================== */}
       <div
-        className="practice-workspace-top-bar"
+        className="practice-workspace-top-bar practice-workspace-top-nav"
         style={{
           background: style?.wizardTopInfo?.useBackgroundColorGradient
             ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientMiddle ?? style.wizardTopInfo.backgroundColorGradientStart} 50%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)`
@@ -148,34 +154,29 @@ export default function PracticeWorkspace({
           borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
         }}
       >
-        <div className="chapter-nav-side chapter-nav-side-left" style={{ minWidth: "40px" }}>
-          <Link
-            to="/"
-            className="chapter-nav-home"
-            aria-label="Home"
+        <div className="practice-nav-group-centered">
+          <button
+            type="button"
+            className="practice-nav-arrow practice-nav-arrow-prev"
+            disabled={!canPrevious}
+            onClick={onPrevious}
+            aria-label="Previous page"
             style={{
-              textDecoration: "none",
-              width: "32px",
-              height: "32px",
-              borderRadius: "0",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: "44px",
+              height: "44px",
+              color: canPrevious
+                ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a")
+                : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
               background: "transparent",
-              border: "none",
-              color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a",
-              fontSize: "18px",
             }}
           >
-            🏠
-          </Link>
-        </div>
+            ‹
+          </button>
 
-        <div className="chapter-nav-center" style={{ flex: 1, justifyContent: "center" }}>
           <span
-            className="chapter-label"
+            className="chapter-label practice-page-label"
             style={{
-              padding: "0",
+              padding: "0 8px",
               borderRadius: "0",
               background: "transparent",
               border: "none",
@@ -185,86 +186,33 @@ export default function PracticeWorkspace({
               opacity: 1,
               textTransform: "none",
               textAlign: "center",
+              minWidth: "7.5rem",
             }}
           >
             {`Page ${pageIndex ?? ""}/${totalPages ?? ""}`}
           </span>
-        </div>
 
-        <div className="chapter-nav-side chapter-nav-side-right" style={{ display: "flex", gap: "6px", alignItems: "center", justifyContent: "flex-end", minWidth: "40px" }}>
-          {bookId && typeof stepIndex === "number" && onToggleBookmark ? (
-            <button
-              type="button"
-              className="chapter-nav-button"
-              onClick={() => setShowBookmarkDrawer((v) => !v)}
-              aria-label={showBookmarkDrawer ? "Close bookmarks" : "Open bookmarks"}
-              title={bookmarked ? "Bookmarked — tap to open list" : `Bookmarks (${bookmarkCount})`}
-              style={{
-                fontSize: bookmarked ? "22px" : "20px",
-                fontWeight: "bold",
-                width: "36px",
-                height: "36px",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: bookmarked
-                  ? "rgba(253, 230, 138, 0.35)"
-                  : "transparent",
-                border: bookmarked ? `1px solid ${style?.wizardTopInfo?.navButton?.backgroundColor ?? "#fde68a"}` : "none",
-                cursor: "pointer",
-                color: bookmarked ? "#b45309" : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
-                position: "relative",
-              }}
-            >
-              <span>{bookmarked ? "🔖" : "📑"}</span>
-              {bookmarkCount > 0 ? (
-                <span
-                  style={{
-                    position: "absolute",
-                    right: "-2px",
-                    top: "-2px",
-                    background: "#dc2626",
-                    color: "white",
-                    borderRadius: "999px",
-                    minWidth: "16px",
-                    height: "16px",
-                    padding: "0 4px",
-                    fontSize: "10px",
-                    lineHeight: "16px",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {bookmarkCount > 99 ? "99+" : String(bookmarkCount)}
-                </span>
-              ) : null}
-            </button>
-          ) : null}
+          <button
+            type="button"
+            className="practice-nav-arrow practice-nav-arrow-next"
+            disabled={!canNext}
+            onClick={onNext}
+            aria-label="Next page"
+            style={{
+              width: "44px",
+              height: "44px",
+              color: canNext
+                ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a")
+                : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
+              background: "transparent",
+            }}
+          >
+            ›
+          </button>
         </div>
       </div>
 
-      {/* Floating Overlaid Prev/Next Arrows (on top of content, NO width narrowing) */}
-      <button
-        type="button"
-        className="workspace-floating-arrow workspace-floating-arrow-left"
-        disabled={!canPrevious}
-        onClick={onPrevious}
-        aria-label="Previous page"
-      >
-        <span>‹</span>
-      </button>
-      <button
-        type="button"
-        className="workspace-floating-arrow workspace-floating-arrow-right"
-        disabled={!canNext}
-        onClick={onNext}
-        aria-label="Next page"
-      >
-        <span>›</span>
-      </button>
-
-      {/* Step Brief (above bookmark drawer so it's visible first) */}
+      {/* Step Brief (between top nav and content) */}
       {pageBrief?.trim() && (
         <div className="practice-workspace-step-header" style={{
           paddingTop: `${(style?.wizardTopInfo?.descriptionPaddingTop ?? 16) / 16}rem`,
@@ -291,8 +239,8 @@ export default function PracticeWorkspace({
         </div>
       )}
 
-      {/* Workspace Body */}
-      <div className="practice-workspace-body">
+      {/* Workspace Body (content area, flexible fill) */}
+      <div className="practice-workspace-body practice-workspace-content-area">
         <div className="practice-workspace-editor-shell">
           {loadError ? (
             <div className="practice-error-message">
@@ -351,6 +299,83 @@ export default function PracticeWorkspace({
           </div>
         </div>
       ) : null}
+
+      {/* ===========================================================
+           BOTTOM BAR — ONLY global actions, centered compact dock
+                        [ 🏠 ]   32–40px gap   [ 📑 ]
+          =========================================================== */}
+      <div
+        className="practice-workspace-bottom-bar practice-workspace-bottom-dock"
+        style={{
+          background: style?.wizardTopInfo?.useBackgroundColorGradient
+            ? `linear-gradient(0deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientMiddle ?? style.wizardTopInfo.backgroundColorGradientStart} 50%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)`
+            : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
+          borderTop: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
+        }}
+      >
+        <div className="practice-tool-dock-centered">
+          <Link
+            to="/"
+            className="practice-tool-dock-button"
+            aria-label="Home"
+            title="Home"
+            style={{
+              width: "44px",
+              height: "44px",
+              color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a",
+            }}
+          >
+            🏠
+          </Link>
+
+          {bookId && typeof stepIndex === "number" ? (
+            <button
+              type="button"
+              className="practice-tool-dock-button practice-bookmark-button"
+              onClick={() => setShowBookmarkDrawer((v) => !v)}
+              aria-label={showBookmarkDrawer ? "Close bookmarks" : "Open bookmarks"}
+              title={bookmarked ? "Bookmarked" : `Bookmarks (${bookmarkCount})`}
+              style={{
+                width: "44px",
+                height: "44px",
+                color: bookmarked
+                  ? "#b45309"
+                  : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
+                background: bookmarked ? "rgba(253, 230, 138, 0.35)" : "transparent",
+                border: bookmarked
+                  ? `1px solid ${style?.wizardTopInfo?.navButton?.backgroundColor ?? "#fde68a"}`
+                  : "none",
+                position: "relative",
+              }}
+            >
+              <span style={{ fontSize: bookmarked ? "22px" : "20px" }}>
+                {bookmarked ? "🔖" : "📑"}
+              </span>
+              {bookmarkCount > 0 ? (
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "-2px",
+                    top: "-2px",
+                    background: "#dc2626",
+                    color: "white",
+                    borderRadius: "999px",
+                    minWidth: "16px",
+                    height: "16px",
+                    padding: "0 4px",
+                    fontSize: "10px",
+                    lineHeight: "16px",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {bookmarkCount > 99 ? "99+" : String(bookmarkCount)}
+                </span>
+              ) : null}
+            </button>
+          ) : null}
+        </div>
+      </div>
 
       {/* Bookmark Drawer: Right-side slide-in OVERLAY (no layout shift!) */}
       {showBookmarkDrawer ? (
