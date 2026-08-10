@@ -79,13 +79,17 @@
       </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.93/epub.min.js"></script>
+    <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://unpkg.com/epubjs@0.3.93/dist/epub.min.js"></script>
     <script>
       (() => {
+        console.log("[EPUB Viewer] Script loaded, checking ePub availability");
         const params = new URLSearchParams(window.location.search);
         const fileUrl = params.get("file");
         const viewer = document.getElementById("epub-viewer");
         const shell = document.querySelector(".epub-shell");
+
+        console.log("[EPUB Viewer] fileUrl:", fileUrl);
 
         if (!fileUrl) {
           shell.innerHTML = '<div class="epub-error">No EPUB file source was provided.</div>';
@@ -97,11 +101,14 @@
         // Extract location fragment for chapter navigation (e.g., #chapter1.xhtml)
         const locationMatch = resolvedFileUrl.match(/#(.+)$/);
         const initialLocation = locationMatch ? locationMatch[1] : null;
+        console.log("[EPUB Viewer] initialLocation:", initialLocation);
 
         if (!window.ePub || !window.ePub.Book) {
+          console.error("[EPUB Viewer] EPUB.js not available:", window.ePub);
           shell.innerHTML = '<div class="epub-error">EPUB.js failed to load. Please retry.</div>';
           return;
         }
+        console.log("[EPUB Viewer] EPUB.js is available");
 
         let epubBook = null;
         let rendition = null;
@@ -123,7 +130,8 @@
             rendition = epubBook.renderTo("epub-viewer", {
               width: "100%",
               height: "100%",
-              flow: "paginated",
+              flow: "scrolled",
+              spread: "none",
             });
             console.log("[EPUB Viewer] Rendition created");
             
@@ -137,6 +145,13 @@
             }
             
             console.log("[EPUB Viewer] Display successful");
+            
+            // Force a resize to ensure content renders
+            setTimeout(() => {
+              console.log("[EPUB Viewer] Forcing resize");
+              rendition.resize();
+            }, 500);
+            
             try {
               window.parent?.postMessage({ type: "epub-viewer:ready", url: resolvedFileUrl }, "*");
             } catch {}
@@ -150,14 +165,26 @@
         window.addEventListener(
           "message",
           (event) => {
+            console.log("[EPUB Viewer] Received message:", event.data);
             const data = event.data && typeof event.data === "object" ? event.data : null;
-            if (!data || data.target !== "epub-viewer") return;
+            if (!data || data.target !== "epub-viewer") {
+              console.log("[EPUB Viewer] Message ignored - target mismatch or null data");
+              return;
+            }
+            console.log("[EPUB Viewer] Processing message type:", data.type);
             if (data.type === "load-buffer") {
-              if (data.url && data.url !== resolvedFileUrl) return;
+              if (data.url && data.url !== resolvedFileUrl) {
+                console.log("[EPUB Viewer] URL mismatch:", data.url, "vs", resolvedFileUrl);
+                return;
+              }
               if (data.buffer instanceof ArrayBuffer) {
+                console.log("[EPUB Viewer] Loading from ArrayBuffer, size:", data.buffer.byteLength);
                 loadEpubFromSource(data.buffer.slice(0));
               } else if (typeof data.url === "string" && !loaded) {
+                console.log("[EPUB Viewer] Loading from URL:", data.url);
                 loadEpubFromSource(data.url);
+              } else {
+                console.log("[EPUB Viewer] No valid buffer or URL provided");
               }
             }
           },

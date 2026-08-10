@@ -72,7 +72,10 @@ export default function CourseEpubStep({
 
     const sendToIframe = (buffer?: ArrayBuffer) => {
       const frame = iframeRef.current;
-      if (!frame || !frame.contentWindow) return;
+      if (!frame || !frame.contentWindow) {
+        console.error("[CourseEpubStep] No frame or contentWindow");
+        return;
+      }
       try {
         const payload: { target: "epub-viewer"; type: "load-buffer"; url: string; buffer?: ArrayBuffer } = {
           target: "epub-viewer",
@@ -80,8 +83,8 @@ export default function CourseEpubStep({
           url: fileUrl,
         };
         if (buffer) payload.buffer = buffer.slice(0);
-        console.log("[CourseEpubStep] Sending buffer to iframe, size:", buffer?.byteLength);
-        frame.contentWindow.postMessage(payload, window.location.origin);
+        console.log("[CourseEpubStep] Sending buffer to iframe, size:", buffer?.byteLength, "payload:", payload);
+        frame.contentWindow.postMessage(payload, "*");
       } catch (e) {
         console.error("[CourseEpubStep] Failed to send to iframe:", e);
       }
