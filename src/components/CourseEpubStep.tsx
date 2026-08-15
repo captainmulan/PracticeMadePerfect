@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
-import { getEpubBuffer, normalizeEpubFileUrl } from "../utils/epubCache";
+import { extractEpubLocation, getEpubBuffer, normalizeEpubFileUrl } from "../utils/epubCache";
 import "../styles/course.css";
 
 interface CourseEpubStepProps {
@@ -49,12 +49,13 @@ export default function CourseEpubStep({
   onJumpToBookmark,
 }: CourseEpubStepProps) {
   const epubSource = step.contentHtml?.trim() ?? "";
-  const { fileUrl, viewerSrc } = useMemo(() => {
+  const { fileUrl, location, viewerSrc } = useMemo(() => {
     const raw = epubSource;
     const isUrl = raw && (raw.startsWith("/") || /^https?:\/\//i.test(raw));
     const file = normalizeEpubFileUrl(isUrl ? raw : "");
+    const loc = extractEpubLocation(isUrl ? raw : "");
     const src = isUrl ? `/epub-viewer.html?file=${encodeURIComponent(raw)}` : null;
-    return { fileUrl: file, viewerSrc: src };
+    return { fileUrl: file, location: loc, viewerSrc: src };
   }, [epubSource]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -141,6 +142,22 @@ export default function CourseEpubStep({
       iframeRef.current?.removeEventListener("load", onIframeLoad);
     };
   }, [fileUrl, pageIndex]);
+
+  // Navigate the EPUB viewer to the correct chapter when the buffer is ready
+  // and the location changes (e.g. when navigating between chapters).
+  useEffect(() => {
+    if (bufferReady !== "ready") return;
+    const frame = iframeRef.current;
+    if (!frame?.contentWindow) return;
+    try {
+      frame.contentWindow.postMessage(
+        { target: "epub-viewer", type: "goto-location", location },
+        window.location.origin,
+      );
+    } catch {
+      /* ignore */
+    }
+  }, [location, bufferReady]);
 
   return (
     <PracticeWorkspace

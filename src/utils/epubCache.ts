@@ -112,12 +112,23 @@ async function idbPut(url: string, buffer: ArrayBuffer, fetchedAt: number): Prom
 }
 
 /**
- * Normalize an EPUB step source like `/folder/book.epub#chapter1.xhtml` 
+ * Normalize an EPUB step source like `/folder/book.epub#chapter1.xhtml`
  * down to the canonical file URL (stripped of location fragments).
  */
 export function normalizeEpubFileUrl(source: string): string {
   if (!source) return "";
   return source.replace(/#.+$/, "");
+}
+
+/**
+ * Extract the location fragment from an EPUB step source like
+ * `/folder/book.epub#chapter1.xhtml`.
+ * Returns the location string (e.g. "chapter1.xhtml") or null if none.
+ */
+export function extractEpubLocation(source: string): string | null {
+  if (!source) return null;
+  const locationMatch = source.match(/#(.+)$/);
+  return locationMatch ? locationMatch[1] : null;
 }
 
 /**

@@ -97,7 +97,7 @@
         }
 
         const resolvedFileUrl = fileUrl;
-        
+
         // Extract location fragment for chapter navigation (e.g., #chapter1.xhtml)
         const locationMatch = resolvedFileUrl.match(/#(.+)$/);
         const initialLocation = locationMatch ? locationMatch[1] : null;
@@ -134,7 +134,7 @@
               spread: "none",
             });
             console.log("[EPUB Viewer] Rendition created");
-            
+
             // Display initial location if provided, otherwise start from beginning
             if (initialLocation) {
               console.log("[EPUB Viewer] Displaying initial location:", initialLocation);
@@ -143,15 +143,15 @@
               console.log("[EPUB Viewer] Displaying from beginning");
               await rendition.display();
             }
-            
+
             console.log("[EPUB Viewer] Display successful");
-            
+
             // Force a resize to ensure content renders
             setTimeout(() => {
               console.log("[EPUB Viewer] Forcing resize");
               rendition.resize();
             }, 500);
-            
+
             try {
               window.parent?.postMessage({ type: "epub-viewer:ready", url: resolvedFileUrl }, "*");
             } catch {}
@@ -185,6 +185,20 @@
                 loadEpubFromSource(data.url);
               } else {
                 console.log("[EPUB Viewer] No valid buffer or URL provided");
+              }
+            } else if (data.type === "goto-location") {
+              if (!epubBook || !rendition) {
+                console.log("[EPUB Viewer] goto-location: book or rendition not ready");
+                return;
+              }
+              const location = data.location;
+              if (typeof location === "string" && location) {
+                console.log("[EPUB Viewer] Navigating to location:", location);
+                try {
+                  rendition.display(location);
+                } catch (err) {
+                  console.error("[EPUB Viewer] Navigation error:", err);
+                }
               }
             }
           },

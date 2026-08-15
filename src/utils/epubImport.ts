@@ -115,11 +115,18 @@ export async function buildEpubImportPreview(
     if (ePub?.Book) {
       const arrayBuffer = await file.arrayBuffer();
       const book = ePub.Book(arrayBuffer);
-      
+
+      // EPUB.js loads the spine asynchronously. We must wait for the book
+      // to be "ready" before accessing book.spine.items — otherwise the
+      // spine is empty and pageCount falls back to 1.
+      if (typeof book.ready?.then === "function") {
+        await book.ready;
+      }
+
       // Get spine items (chapters/sections)
-      spineItems = book.spine.items;
+      spineItems = book.spine?.items ?? [];
       pageCount = spineItems.length || 1;
-      
+
       // If spine is empty, try to get from navigation
       if (pageCount === 0) {
         const navigation = await book.loaded.navigation;
