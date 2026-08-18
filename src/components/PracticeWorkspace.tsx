@@ -51,6 +51,10 @@ interface PracticeWorkspaceProps {
   onToggleBookmark?: () => void;
   onRemoveBookmark?: (bookmarkId: string) => void;
   onJumpToBookmark?: (stepIndex: number) => void;
+  /** PDF page zoom (percent of viewer width). Only used for PDF steps. */
+  pageZoom?: number;
+  pageZoomLevels?: number[];
+  onPageZoomChange?: (zoom: number) => void;
 }
 
 export default function PracticeWorkspace({
@@ -94,6 +98,9 @@ export default function PracticeWorkspace({
   onToggleBookmark,
   onRemoveBookmark,
   onJumpToBookmark,
+  pageZoom,
+  pageZoomLevels = [90, 100, 125, 150, 175, 200],
+  onPageZoomChange,
 }: PracticeWorkspaceProps) {
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
@@ -357,6 +364,36 @@ export default function PracticeWorkspace({
             >
               🔍
             </button>
+            {typeof pageZoom === "number" && onPageZoomChange ? (
+              <div className="pdf-zoom-control" title="Page zoom">
+                <button
+                  type="button"
+                  className="pdf-zoom-btn"
+                  aria-label="Zoom out"
+                  disabled={pageZoom <= pageZoomLevels[0]}
+                  onClick={() => {
+                    const idx = Math.max(0, pageZoomLevels.indexOf(pageZoom));
+                    onPageZoomChange(pageZoomLevels[Math.max(0, idx - 1)]);
+                  }}
+                >
+                  −
+                </button>
+                <span className="pdf-zoom-value">{pageZoom}%</span>
+                <button
+                  type="button"
+                  className="pdf-zoom-btn"
+                  aria-label="Zoom in"
+                  disabled={pageZoom >= pageZoomLevels[pageZoomLevels.length - 1]}
+                  onClick={() => {
+                    const last = pageZoomLevels.length - 1;
+                    const idx = pageZoomLevels.indexOf(pageZoom);
+                    onPageZoomChange(pageZoomLevels[Math.min(last, (idx < 0 ? 0 : idx) + 1)]);
+                  }}
+                >
+                  +
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

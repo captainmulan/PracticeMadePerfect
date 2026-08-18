@@ -326,6 +326,42 @@
   justify-content: center;
 }
 
+.pdf-zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.pdf-zoom-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pdf-zoom-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pdf-zoom-value {
+  min-width: 3.2em;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: inherit;
+}
+
 .practice-settings-btn {
   transition: transform 0.1s ease;
   -webkit-tap-highlight-color: transparent;

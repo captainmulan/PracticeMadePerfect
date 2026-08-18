@@ -30,21 +30,21 @@
       .pdf-canvas-wrap {
         flex: 1;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
-        overflow: hidden;
-        padding: 4px;
+        overflow: auto;
+        padding: 0;
         box-sizing: border-box;
         width: 100%;
         height: 100%;
         min-height: 0;
+        -webkit-overflow-scrolling: touch;
       }
       canvas {
         display: block;
-        max-width: 100%;
-        max-height: 100%;
+        margin: 0;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+        box-shadow: none;
         image-rendering: auto;
       }
       @media (max-width: 767px) {
@@ -52,7 +52,7 @@
           background: #ffffff;
         }
         .pdf-canvas-wrap {
-          padding: 2px;
+          padding: 0;
         }
       }
       .pdf-error {
@@ -118,10 +118,11 @@
         let loaded = false;
         let lastLayoutKey = "";
         let prefetchTimer = 0;
+        let pageZoom = 100;
         currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
         const layoutKey = () =>
-          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${lowMem ? "l" : "h"}`;
+          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}`;
 
         const pagesInWindow = (center) => {
           if (!pdfDoc) return [];
@@ -152,20 +153,18 @@
 
         const computeLayout = (page, scaleBoost = 1) => {
           const baseViewport = page.getViewport({ scale: 1 });
+          const zoomFactor = Math.max(0.5, Number(pageZoom) / 100);
           const availW = Math.max(80, wrap.clientWidth);
-          const availH = Math.max(80, wrap.clientHeight);
-          const fitScale = Math.min(availW / baseViewport.width, availH / baseViewport.height);
-          const cssScale = Math.max(0.35, fitScale);
-          const viewport = page.getViewport({ scale: cssScale });
+          /* Fill viewer width at 100%. PDF's own page margins stay; viewer adds none. */
+          const cssScale = (availW / baseViewport.width) * zoomFactor;
+          const viewport = page.getViewport({ scale: Math.max(0.35, cssScale) });
           const cssWidth = Math.max(1, Math.floor(viewport.width));
           const cssHeight = Math.max(1, Math.floor(viewport.height));
 
           const dpr = Math.max(1, window.devicePixelRatio || 1);
-          /* Supersample above DPR so downsampling looks sharper than the source bitmap.
-             iPad Mini stays at DPR to avoid Safari canvas OOM. */
           let outputScale = lowMem
             ? Math.min(2, dpr)
-            : Math.min(3, Math.max(dpr * 1.75, 2) * scaleBoost);
+            : Math.min(3, Math.max(dpr * 2, 2.5) * scaleBoost);
 
           const pixels = cssWidth * outputScale * cssHeight * outputScale;
           if (pixels > MAX_CANVAS_PIXELS) {
@@ -349,6 +348,14 @@
             if (!Number.isFinite(n) || !pdfDoc) return;
             currentPage = Math.min(Math.max(1, n), pdfDoc.numPages);
             void renderPage(currentPage);
+          } else if (data.type === "set-zoom") {
+            const next = Math.floor(Number(data.zoom));
+            if (!Number.isFinite(next) || next < 50 || next > 300) return;
+            if (next === pageZoom) return;
+            pageZoom = next;
+            lastLayoutKey = layoutKey();
+            prunePageCache(currentPage);
+            if (pdfDoc) void renderPage(currentPage);
           }
         });
 

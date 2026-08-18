@@ -1,9 +1,23 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
 import { extractPdfPageNumber, getPdfBuffer, normalizePdfFileUrl } from "../utils/pdfCache";
 import "../styles/course.css";
+
+const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom";
+const PDF_ZOOM_LEVELS = [90, 100, 125, 150, 175, 200];
+const DEFAULT_PDF_ZOOM = 100;
+
+function readStoredPdfZoom(): number {
+  try {
+    const raw = Number(localStorage.getItem(PDF_ZOOM_STORAGE_KEY));
+    if (PDF_ZOOM_LEVELS.includes(raw)) return raw;
+  } catch {
+    /* ignore */
+  }
+  return DEFAULT_PDF_ZOOM;
+}
 
 interface CoursePdfStepProps {
   step: CourseStep;
@@ -61,6 +75,7 @@ export default function CoursePdfStep({
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [bufferReady, setBufferReady] = useState<"idle" | "loading" | "ready">("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [pageZoom, setPageZoom] = useState(readStoredPdfZoom);
   const keyRef = useRef(`${fileUrl}::${pageIndex}`);
 
   useEffect(() => {
@@ -148,6 +163,19 @@ export default function CoursePdfStep({
     };
   }, [fileUrl, pageIndex]);
 
+  const sendZoom = useCallback((zoom: number) => {
+    const frame = iframeRef.current;
+    if (!frame?.contentWindow) return;
+    try {
+      frame.contentWindow.postMessage(
+        { target: "pdf-viewer", type: "set-zoom", zoom },
+        window.location.origin,
+      );
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   useEffect(() => {
     if (bufferReady !== "ready") return;
     const frame = iframeRef.current;
@@ -157,10 +185,21 @@ export default function CoursePdfStep({
         { target: "pdf-viewer", type: "goto-page", page: pageNumber },
         window.location.origin,
       );
+      sendZoom(pageZoom);
     } catch {
       /* ignore */
     }
-  }, [pageNumber, bufferReady]);
+  }, [pageNumber, bufferReady, pageZoom, sendZoom]);
+
+  const handlePageZoomChange = (zoom: number) => {
+    setPageZoom(zoom);
+    try {
+      localStorage.setItem(PDF_ZOOM_STORAGE_KEY, String(zoom));
+    } catch {
+      /* ignore */
+    }
+    sendZoom(zoom);
+  };
 
   return (
     <PracticeWorkspace
@@ -187,6 +226,9 @@ export default function CoursePdfStep({
       onToggleBookmark={onToggleBookmark}
       onRemoveBookmark={onRemoveBookmark}
       onJumpToBookmark={onJumpToBookmark}
+      pageZoom={pageZoom}
+      pageZoomLevels={PDF_ZOOM_LEVELS}
+      onPageZoomChange={handlePageZoomChange}
     >
       {viewerSrc ? (
         <iframe
