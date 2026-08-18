@@ -37,8 +37,10 @@
         display: block;
         margin: 0 auto 8px;
         max-width: 100%;
+        height: auto;
         background: white;
         box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+        /* Let the HiDPI bitmap downsample; crisp-edges blurs vector-like PDF text. */
         image-rendering: auto;
       }
 
@@ -109,49 +111,156 @@
         let loaded = false;
         currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
-        const renderPage = async (pageNumber) => {
-          if (!pdfDoc) return;
-          const myToken = ++renderToken;
-          const page = await pdfDoc.getPage(pageNumber);
-          if (myToken !== renderToken) return;
+        /* Keep only current ± 2 rendered bitmaps in memory (5 pages). The full PDF
+           document still lives in pdf.js — we only window the expensive canvases. */
+        const PAGE_WINDOW = 2;
+        const MAX_CANVAS_PIXELS = 16777216;
+        const pageCache = new Map();
+        let lastLayoutKey = "";
+        let prefetchTimer = 0;
+
+        const layoutKey = () =>
+          `${shell.clientWidth}x${window.innerHeight}@${window.devicePixelRatio || 1}`;
+
+        const pagesInWindow = (center) => {
+          if (!pdfDoc) return [];
+          const pages = [];
+          for (let i = center - PAGE_WINDOW; i <= center + PAGE_WINDOW; i += 1) {
+            if (i >= 1 && i <= pdfDoc.numPages) pages.push(i);
+          }
+          return pages;
+        };
+
+        const releaseEntry = (entry) => {
+          if (!entry?.canvas) return;
+          entry.canvas.width = 0;
+          entry.canvas.height = 0;
+        };
+
+        const prunePageCache = (center) => {
+          const keep = new Set(pagesInWindow(center));
+          const key = lastLayoutKey || layoutKey();
+          for (const [pageNum, entry] of pageCache.entries()) {
+            const staleLayout = entry.status === "ready" && entry.key !== key;
+            if (!keep.has(pageNum) || staleLayout) {
+              if (entry.status === "ready") releaseEntry(entry);
+              pageCache.delete(pageNum);
+            }
+          }
+        };
+
+        const computeLayout = (page) => {
           const isMobile = window.matchMedia("(max-width: 767px)").matches;
           const isTablet = window.matchMedia("(min-width: 768px) and (max-width: 1024px)").matches;
           const baseViewport = page.getViewport({ scale: 1 });
+          const padX = isMobile ? 18 : isTablet ? 32 : 36;
+          const padY = isMobile ? 150 : isTablet ? 120 : 115;
+          const maxCssW = isMobile ? 420 : isTablet ? 740 : 840;
+          const maxCssH = isMobile ? 720 : isTablet ? 980 : 1100;
+          const targetWidth = Math.max(120, Math.min(shell.clientWidth - padX, maxCssW));
+          const targetHeight = Math.max(160, Math.min(window.innerHeight - padY, maxCssH));
+          const fitScale = Math.min(targetWidth / baseViewport.width, targetHeight / baseViewport.height);
+          const cssScale = Math.max(0.5, fitScale);
+          const viewport = page.getViewport({ scale: cssScale });
+          const cssWidth = Math.floor(viewport.width);
+          const cssHeight = Math.floor(viewport.height);
 
-          const targetWidth = (() => {
-            if (isMobile) {
-              return Math.min(shell.clientWidth - 18, 420);
-            }
-            if (isTablet) {
-              return Math.min(shell.clientWidth - 32, 740);
-            }
-            return Math.min(shell.clientWidth - 36, 840);
-          })();
+          /* Official pdf.js HiDPI path: physical canvas = CSS size × devicePixelRatio. */
+          let outputScale = Math.max(1, window.devicePixelRatio || 1);
+          const pixels = cssWidth * outputScale * cssHeight * outputScale;
+          if (pixels > MAX_CANVAS_PIXELS) {
+            outputScale *= Math.sqrt(MAX_CANVAS_PIXELS / pixels);
+          }
 
-          const targetHeight = (() => {
-            if (isMobile) {
-              return Math.min(window.innerHeight - 150, 720);
-            }
-            if (isTablet) {
-              return Math.min(window.innerHeight - 120, 980);
-            }
-            return Math.min(window.innerHeight - 115, 1100);
-          })();
+          return { viewport, outputScale, cssWidth, cssHeight, key: layoutKey() };
+        };
 
-          const widthScale = targetWidth / baseViewport.width;
-          const heightScale = targetHeight / baseViewport.height;
-          const fitScale = Math.min(widthScale, heightScale);
-
-          const scaleCaps = isMobile ? 1.16 : isTablet ? 1.28 : 1.38;
-          const renderScale = Math.max(1.0, Math.min(scaleCaps, fitScale));
-          const viewport = page.getViewport({ scale: renderScale });
+        const blitToVisible = (entry) => {
+          canvas.width = entry.canvas.width;
+          canvas.height = entry.canvas.height;
+          canvas.style.width = `${entry.cssWidth}px`;
+          canvas.style.height = `${entry.cssHeight}px`;
           const context = canvas.getContext("2d", { alpha: false, desynchronized: true });
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          canvas.style.width = `${Math.round(viewport.width)}px`;
-          canvas.style.height = `${Math.round(viewport.height)}px`;
-          if (myToken !== renderToken) return;
-          await page.render({ canvasContext: context, viewport }).promise;
+          context.imageSmoothingEnabled = true;
+          context.imageSmoothingQuality = "high";
+          context.drawImage(entry.canvas, 0, 0);
+        };
+
+        const renderPageToEntry = async (pageNumber) => {
+          const page = await pdfDoc.getPage(pageNumber);
+          const { viewport, outputScale, cssWidth, cssHeight, key } = computeLayout(page);
+          const off = document.createElement("canvas");
+          off.width = Math.max(1, Math.floor(viewport.width * outputScale));
+          off.height = Math.max(1, Math.floor(viewport.height * outputScale));
+          const context = off.getContext("2d", { alpha: false });
+          const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+          await page.render({ canvasContext: context, transform, viewport }).promise;
+          return { status: "ready", canvas: off, cssWidth, cssHeight, outputScale, key };
+        };
+
+        const cachePage = async (pageNumber) => {
+          if (!pdfDoc) return null;
+          const existing = pageCache.get(pageNumber);
+          if (existing?.status === "ready" && existing.key === lastLayoutKey) {
+            return existing;
+          }
+          if (existing?.status === "loading") {
+            return existing.promise;
+          }
+          const promise = renderPageToEntry(pageNumber)
+            .then((entry) => {
+              const keep = new Set(pagesInWindow(currentPage));
+              if (!keep.has(pageNumber) || entry.key !== layoutKey()) {
+                releaseEntry(entry);
+                if (pageCache.get(pageNumber)?.promise === promise) {
+                  pageCache.delete(pageNumber);
+                }
+                return null;
+              }
+              pageCache.set(pageNumber, entry);
+              return entry;
+            })
+            .catch((err) => {
+              if (pageCache.get(pageNumber)?.promise === promise) {
+                pageCache.delete(pageNumber);
+              }
+              throw err;
+            });
+          pageCache.set(pageNumber, { status: "loading", promise });
+          return promise;
+        };
+
+        const prefetchNeighbors = (center) => {
+          window.clearTimeout(prefetchTimer);
+          prefetchTimer = window.setTimeout(() => {
+            for (const pageNum of pagesInWindow(center)) {
+              if (pageNum === center) continue;
+              const hit = pageCache.get(pageNum);
+              if (hit?.status === "ready" && hit.key === lastLayoutKey) continue;
+              if (hit?.status === "loading") continue;
+              void cachePage(pageNum);
+            }
+          }, 80);
+        };
+
+        const renderPage = async (pageNumber) => {
+          if (!pdfDoc) return;
+          const myToken = ++renderToken;
+          lastLayoutKey = layoutKey();
+          prunePageCache(pageNumber);
+
+          const cached = pageCache.get(pageNumber);
+          if (cached?.status === "ready" && cached.key === lastLayoutKey) {
+            if (myToken !== renderToken) return;
+            blitToVisible(cached);
+            prefetchNeighbors(pageNumber);
+            return;
+          }
+
+          const entry = await cachePage(pageNumber);
+          if (myToken !== renderToken || !entry) return;
+          blitToVisible(entry);
+          prefetchNeighbors(pageNumber);
         };
 
         const showError = (msg) => {
@@ -194,6 +303,25 @@
             }
           },
         );
+
+        let resizeTimer = 0;
+        const onViewportChange = () => {
+          if (!pdfDoc) return;
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(() => {
+            if (layoutKey() === lastLayoutKey) return;
+            lastLayoutKey = layoutKey();
+            prunePageCache(currentPage);
+            void renderPage(currentPage);
+          }, 120);
+        };
+        window.addEventListener("resize", onViewportChange);
+        window.visualViewport?.addEventListener("resize", onViewportChange);
+        try {
+          matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addEventListener("change", onViewportChange);
+        } catch {
+          /* older browsers */
+        }
 
         // Note: The parent component (CoursePdfStep.tsx) is responsible for fetching
         // and sending the PDF buffer via postMessage. This eliminates double-downloads
