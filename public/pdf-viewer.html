@@ -46,6 +46,8 @@
         background: white;
         box-shadow: none;
         image-rendering: auto;
+        /* Keep CSS size in CSS pixels; backing store is 2×+ for sharp glyphs. */
+        transform: translateZ(0);
       }
       @media (max-width: 767px) {
         .pdf-shell {
@@ -78,7 +80,6 @@
       (() => {
         const params = new URLSearchParams(window.location.search);
         const fileUrl = params.get("file");
-        const canvas = document.getElementById("pdf-canvas");
         const wrap = document.getElementById("pdf-wrap");
         const shell = document.querySelector(".pdf-shell");
 
@@ -135,6 +136,7 @@
 
         const releaseEntry = (entry) => {
           if (!entry?.canvas) return;
+          releaseVisibleIf(entry.canvas);
           entry.canvas.width = 0;
           entry.canvas.height = 0;
         };
@@ -157,66 +159,79 @@
           const availW = Math.max(80, wrap.clientWidth);
           /* Fill viewer width at 100%. PDF's own page margins stay; viewer adds none. */
           const cssScale = (availW / baseViewport.width) * zoomFactor;
-          const viewport = page.getViewport({ scale: Math.max(0.35, cssScale) });
-          const cssWidth = Math.max(1, Math.floor(viewport.width));
-          const cssHeight = Math.max(1, Math.floor(viewport.height));
-
           const dpr = Math.max(1, window.devicePixelRatio || 1);
-          let outputScale = lowMem
-            ? Math.min(2, dpr)
-            : Math.min(3, Math.max(dpr * 2, 2.5) * scaleBoost);
+          /* Chrome tablet emulation often reports DPR=1; still render at 2× so type stays sharp. */
+          let outputScale = (lowMem
+            ? Math.min(2, Math.max(2, dpr))
+            : Math.min(3, Math.max(2, dpr * 1.5))) * scaleBoost;
+          outputScale = Math.max(1, outputScale);
 
-          const pixels = cssWidth * outputScale * cssHeight * outputScale;
+          let pixels =
+            availW * outputScale * (availW * (baseViewport.height / baseViewport.width)) * outputScale;
           if (pixels > MAX_CANVAS_PIXELS) {
             outputScale *= Math.sqrt(MAX_CANVAS_PIXELS / pixels);
+            outputScale = Math.max(1, outputScale);
           }
 
-          return { viewport, outputScale, cssWidth, cssHeight, key: layoutKey() };
+          const viewport = page.getViewport({
+            scale: Math.max(0.35, cssScale * outputScale),
+          });
+          const pixelWidth = Math.max(1, Math.round(viewport.width));
+          const pixelHeight = Math.max(1, Math.round(viewport.height));
+          const cssWidth = pixelWidth / outputScale;
+          const cssHeight = pixelHeight / outputScale;
+
+          return { viewport, outputScale, cssWidth, cssHeight, pixelWidth, pixelHeight, key: layoutKey() };
         };
 
-        const blitToVisible = (entry) => {
-          canvas.width = entry.canvas.width;
-          canvas.height = entry.canvas.height;
-          canvas.style.width = `${entry.cssWidth}px`;
-          canvas.style.height = `${entry.cssHeight}px`;
-          const context = canvas.getContext("2d", { alpha: false, desynchronized: true });
-          context.imageSmoothingEnabled = true;
-          context.imageSmoothingQuality = "high";
-          context.drawImage(entry.canvas, 0, 0);
+        const releaseVisibleIf = (node) => {
+          if (node && node.parentNode === wrap) {
+            wrap.replaceChildren();
+          }
+        };
+
+        const mountEntry = (entry) => {
+          const node = entry.canvas;
+          node.style.width = `${entry.cssWidth}px`;
+          node.style.height = `${entry.cssHeight}px`;
+          if (node.parentNode !== wrap) {
+            wrap.replaceChildren(node);
+          }
         };
 
         const renderPageToEntry = async (pageNumber) => {
           const page = await pdfDoc.getPage(pageNumber);
-          let layout = computeLayout(page);
-          const tryRender = async (viewport, outputScale, cssWidth, cssHeight, key) => {
+          const tryRender = async (layout) => {
             const off = document.createElement("canvas");
-            off.width = Math.max(1, Math.floor(viewport.width * outputScale));
-            off.height = Math.max(1, Math.floor(viewport.height * outputScale));
+            off.width = layout.pixelWidth;
+            off.height = layout.pixelHeight;
             const context = off.getContext("2d", { alpha: false });
             if (!context) throw new Error("2d context unavailable");
-            const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-            await page.render({ canvasContext: context, transform, viewport }).promise;
-            return { status: "ready", canvas: off, cssWidth, cssHeight, outputScale, key };
+            context.imageSmoothingEnabled = true;
+            context.imageSmoothingQuality = "high";
+            await page.render({
+              canvasContext: context,
+              viewport: layout.viewport,
+              intent: "print",
+              background: "#ffffff",
+            }).promise;
+            return {
+              status: "ready",
+              canvas: off,
+              cssWidth: layout.cssWidth,
+              cssHeight: layout.cssHeight,
+              outputScale: layout.outputScale,
+              key: layout.key,
+            };
           };
           try {
-            return await tryRender(
-              layout.viewport,
-              layout.outputScale,
-              layout.cssWidth,
-              layout.cssHeight,
-              layout.key,
-            );
+            return await tryRender(computeLayout(page, 1));
           } catch (err) {
-            /* Safari often fails huge canvases — retry at 1× DPR. */
-            layout = computeLayout(page, 0.5);
-            const fallbackScale = Math.min(layout.outputScale, Math.max(1, window.devicePixelRatio || 1));
-            return tryRender(
-              layout.viewport,
-              fallbackScale,
-              layout.cssWidth,
-              layout.cssHeight,
-              layout.key,
-            );
+            try {
+              return await tryRender(computeLayout(page, 0.75));
+            } catch {
+              return tryRender(computeLayout(page, 0.5));
+            }
           }
         };
 
@@ -274,14 +289,14 @@
           const cached = pageCache.get(pageNumber);
           if (cached?.status === "ready" && cached.key === lastLayoutKey) {
             if (myToken !== renderToken) return;
-            blitToVisible(cached);
+            mountEntry(cached);
             prefetchNeighbors(pageNumber);
             return;
           }
 
           const entry = await cachePage(pageNumber);
           if (myToken !== renderToken || !entry) return;
-          blitToVisible(entry);
+          mountEntry(entry);
           prefetchNeighbors(pageNumber);
         };
 

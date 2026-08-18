@@ -119,7 +119,9 @@ export default function CourseWizard() {
   const handleRemoveBookmark = useCallback(async (bookmarkId: string) => {
     const bookId = outline?.id;
     if (!bookId) return;
-    const list = await removeBookmarkForCurrentUser(bookId, bookmarkId);
+    const list = (await removeBookmarkForCurrentUser(bookId, bookmarkId)).filter(
+      (item) => item.bookId === bookId,
+    );
     setBookmarks(list);
     if (list.findIndex((item) => item.stepIndex === stepIndex) < 0) {
       setBookmarked(false);

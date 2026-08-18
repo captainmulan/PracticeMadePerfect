@@ -286,21 +286,13 @@ export default function PracticeWorkspace({
               type="button"
               className="practice-settings-btn"
               onClick={() => {
-                // Save current page to bookmark history
-                if (typeof pageIndex === "number") {
-                  const bookmark = {
-                    id: Date.now().toString(),
-                    bookId: bookName ?? "",
-                    stepIndex: pageIndex,
-                    stepTitle: title,
-                    createdAt: new Date().toISOString(),
-                  };
-                  const existingBookmarks = JSON.parse(localStorage.getItem("bookmarkHistory") || "[]");
-                  const updatedBookmarks = [bookmark, ...existingBookmarks.filter((b: any) => b.stepIndex !== pageIndex)];
-                  localStorage.setItem("bookmarkHistory", JSON.stringify(updatedBookmarks));
-                  setShowBookmarkHistory(true);
-                }
                 setDictionaryMode(false);
+                const persist = onToggleBookmark
+                  ? bookmarked
+                    ? Promise.resolve()
+                    : Promise.resolve(onToggleBookmark())
+                  : Promise.resolve();
+                void persist.finally(() => setShowBookmarkHistory(true));
               }}
               style={{
                 background: "transparent",
@@ -312,9 +304,12 @@ export default function PracticeWorkspace({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
+                color: bookmarked
+                  ? "#d97706"
+                  : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
               }}
-              title="Save bookmark"
+              title={bookmarked ? "Bookmarks" : "Save bookmark"}
+              aria-label={bookmarked ? "Open bookmarks" : "Save bookmark"}
             >
               📑
             </button>
@@ -550,8 +545,10 @@ export default function PracticeWorkspace({
               </button>
             </div>
             {(() => {
-              const bookmarks = JSON.parse(localStorage.getItem("bookmarkHistory") || "[]");
-              if (bookmarks.length === 0) {
+              const list = (Array.isArray(bookmarks) ? bookmarks : []).filter(
+                (b: { bookId?: string }) => !bookId || !b.bookId || b.bookId === bookId,
+              );
+              if (list.length === 0) {
                 return (
                   <p
                     style={{
@@ -561,7 +558,7 @@ export default function PracticeWorkspace({
                       opacity: 0.75,
                     }}
                   >
-                    No saved bookmarks yet. Tap "Save" to bookmark this page.
+                    No saved bookmarks yet. Tap 📑 to bookmark this page.
                   </p>
                 );
               }
@@ -576,8 +573,8 @@ export default function PracticeWorkspace({
                     gap: "8px",
                   }}
                 >
-                  {bookmarks.map((b: any) => {
-                    const isCurrent = b.stepIndex === pageIndex;
+                  {list.map((b: any) => {
+                    const isCurrent = b.stepIndex === stepIndex;
                     return (
                       <li
                         key={b.id}
@@ -597,9 +594,9 @@ export default function PracticeWorkspace({
                         <button
                           type="button"
                           onClick={() => {
-                            // Navigate to saved page index
-                            if (onNavigateToPage && typeof b.stepIndex === "number") {
-                              onNavigateToPage(b.stepIndex);
+                            if (typeof b.stepIndex === "number") {
+                              onJumpToBookmark?.(b.stepIndex);
+                              onNavigateToPage?.(b.stepIndex);
                               setShowBookmarkHistory(false);
                             }
                           }}
@@ -639,8 +636,7 @@ export default function PracticeWorkspace({
                         <button
                           type="button"
                           onClick={() => {
-                            const updatedBookmarks = bookmarks.filter((item: any) => item.id !== b.id);
-                            localStorage.setItem("bookmarkHistory", JSON.stringify(updatedBookmarks));
+                            void onRemoveBookmark?.(b.id);
                           }}
                           aria-label="Remove bookmark"
                           title="Remove bookmark"
