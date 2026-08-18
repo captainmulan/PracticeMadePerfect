@@ -74,12 +74,18 @@ export default function CoursePdfStep({
       const frame = iframeRef.current;
       if (!frame || !frame.contentWindow) return;
       try {
+        const ua = navigator.userAgent || "";
+        const isIOS =
+          /iPad|iPhone|iPod/.test(ua) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
         const payload: { target: "pdf-viewer"; type: "load-buffer"; url: string; buffer?: ArrayBuffer } = {
           target: "pdf-viewer",
           type: "load-buffer",
           url: fileUrl,
         };
-        if (buffer) payload.buffer = buffer.slice(0);
+        /* Avoid cloning a large ArrayBuffer into the iframe on iOS — Safari OOMs
+           on books like Richest Man in Babylon. The viewer fetches the URL instead. */
+        if (buffer && !isIOS) payload.buffer = buffer.slice(0);
         frame.contentWindow.postMessage(payload, window.location.origin);
       } catch {
         /* ignore cross-origin sandbox errors */
@@ -105,7 +111,7 @@ export default function CoursePdfStep({
           sendToIframe(buffer);
         }
         if (iframeRef.current) {
-          (iframeRef.current as any)._pendingBuffer = buffer.slice(0);
+          (iframeRef.current as any)._pendingBuffer = buffer;
         }
       })
       .catch((err) => {

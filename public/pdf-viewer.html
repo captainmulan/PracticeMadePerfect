@@ -8,7 +8,9 @@
       html,
       body {
         margin: 0;
-        min-height: 100%;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
         background: #f3f6fb;
         font-family: Arial, Helvetica, sans-serif;
       }
@@ -20,48 +22,37 @@
       .pdf-shell {
         flex: 1;
         display: flex;
-        min-height: 100%;
+        width: 100%;
         height: 100%;
+        min-height: 0;
         background: #f7f9fd;
       }
       .pdf-canvas-wrap {
         flex: 1;
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
         overflow: hidden;
-        padding: 12px 12px 16px;
+        padding: 4px;
         box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
       }
       canvas {
         display: block;
-        margin: 0 auto 8px;
         max-width: 100%;
-        height: auto;
+        max-height: 100%;
         background: white;
         box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
-        /* Let the HiDPI bitmap downsample; crisp-edges blurs vector-like PDF text. */
         image-rendering: auto;
       }
-
       @media (max-width: 767px) {
         .pdf-shell {
           background: #ffffff;
         }
         .pdf-canvas-wrap {
-          padding: 8px 8px 12px;
-        }
-      }
-
-      @media (min-width: 768px) and (max-width: 1024px) {
-        .pdf-canvas-wrap {
-          padding: 16px 16px 22px;
-        }
-      }
-
-      @media (min-width: 1025px) {
-        .pdf-canvas-wrap {
-          padding: 18px 18px 24px;
+          padding: 2px;
         }
       }
       .pdf-error {
@@ -77,7 +68,7 @@
   </head>
   <body>
     <div class="pdf-shell">
-      <div class="pdf-canvas-wrap">
+      <div class="pdf-canvas-wrap" id="pdf-wrap">
         <canvas id="pdf-canvas"></canvas>
       </div>
     </div>
@@ -88,6 +79,7 @@
         const params = new URLSearchParams(window.location.search);
         const fileUrl = params.get("file");
         const canvas = document.getElementById("pdf-canvas");
+        const wrap = document.getElementById("pdf-wrap");
         const shell = document.querySelector(".pdf-shell");
 
         if (!fileUrl) {
@@ -104,23 +96,32 @@
           return;
         }
 
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
+        const ua = navigator.userAgent || "";
+        const isIOS =
+          /iPad|iPhone|iPod/.test(ua) ||
+          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        const shortSide = Math.min(window.screen?.width || window.innerWidth, window.screen?.height || window.innerHeight);
+        const isMiniClass = shortSide <= 768;
+        const deviceMem = Number(navigator.deviceMemory) || 0;
+        const lowMem = isIOS || isMiniClass || (deviceMem > 0 && deviceMem <= 4);
+
+        /* Keep rendered bitmaps only around the current page. Low-RAM devices (iPad Mini)
+           keep 3 pages; others keep 5. */
+        const PAGE_WINDOW = lowMem ? 1 : 2;
+        const MAX_CANVAS_PIXELS = lowMem ? 8388608 : 16777216;
+        const pageCache = new Map();
         let pdfDoc = null;
         let renderToken = 0;
         let loaded = false;
-        currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
-
-        /* Keep only current ± 2 rendered bitmaps in memory (5 pages). The full PDF
-           document still lives in pdf.js — we only window the expensive canvases. */
-        const PAGE_WINDOW = 2;
-        const MAX_CANVAS_PIXELS = 16777216;
-        const pageCache = new Map();
         let lastLayoutKey = "";
         let prefetchTimer = 0;
+        currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
         const layoutKey = () =>
-          `${shell.clientWidth}x${window.innerHeight}@${window.devicePixelRatio || 1}`;
+          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${lowMem ? "l" : "h"}`;
 
         const pagesInWindow = (center) => {
           if (!pdfDoc) return [];
@@ -149,24 +150,23 @@
           }
         };
 
-        const computeLayout = (page) => {
-          const isMobile = window.matchMedia("(max-width: 767px)").matches;
-          const isTablet = window.matchMedia("(min-width: 768px) and (max-width: 1024px)").matches;
+        const computeLayout = (page, scaleBoost = 1) => {
           const baseViewport = page.getViewport({ scale: 1 });
-          const padX = isMobile ? 18 : isTablet ? 32 : 36;
-          const padY = isMobile ? 150 : isTablet ? 120 : 115;
-          const maxCssW = isMobile ? 420 : isTablet ? 740 : 840;
-          const maxCssH = isMobile ? 720 : isTablet ? 980 : 1100;
-          const targetWidth = Math.max(120, Math.min(shell.clientWidth - padX, maxCssW));
-          const targetHeight = Math.max(160, Math.min(window.innerHeight - padY, maxCssH));
-          const fitScale = Math.min(targetWidth / baseViewport.width, targetHeight / baseViewport.height);
-          const cssScale = Math.max(0.5, fitScale);
+          const availW = Math.max(80, wrap.clientWidth);
+          const availH = Math.max(80, wrap.clientHeight);
+          const fitScale = Math.min(availW / baseViewport.width, availH / baseViewport.height);
+          const cssScale = Math.max(0.35, fitScale);
           const viewport = page.getViewport({ scale: cssScale });
-          const cssWidth = Math.floor(viewport.width);
-          const cssHeight = Math.floor(viewport.height);
+          const cssWidth = Math.max(1, Math.floor(viewport.width));
+          const cssHeight = Math.max(1, Math.floor(viewport.height));
 
-          /* Official pdf.js HiDPI path: physical canvas = CSS size × devicePixelRatio. */
-          let outputScale = Math.max(1, window.devicePixelRatio || 1);
+          const dpr = Math.max(1, window.devicePixelRatio || 1);
+          /* Supersample above DPR so downsampling looks sharper than the source bitmap.
+             iPad Mini stays at DPR to avoid Safari canvas OOM. */
+          let outputScale = lowMem
+            ? Math.min(2, dpr)
+            : Math.min(3, Math.max(dpr * 1.75, 2) * scaleBoost);
+
           const pixels = cssWidth * outputScale * cssHeight * outputScale;
           if (pixels > MAX_CANVAS_PIXELS) {
             outputScale *= Math.sqrt(MAX_CANVAS_PIXELS / pixels);
@@ -188,14 +188,37 @@
 
         const renderPageToEntry = async (pageNumber) => {
           const page = await pdfDoc.getPage(pageNumber);
-          const { viewport, outputScale, cssWidth, cssHeight, key } = computeLayout(page);
-          const off = document.createElement("canvas");
-          off.width = Math.max(1, Math.floor(viewport.width * outputScale));
-          off.height = Math.max(1, Math.floor(viewport.height * outputScale));
-          const context = off.getContext("2d", { alpha: false });
-          const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-          await page.render({ canvasContext: context, transform, viewport }).promise;
-          return { status: "ready", canvas: off, cssWidth, cssHeight, outputScale, key };
+          let layout = computeLayout(page);
+          const tryRender = async (viewport, outputScale, cssWidth, cssHeight, key) => {
+            const off = document.createElement("canvas");
+            off.width = Math.max(1, Math.floor(viewport.width * outputScale));
+            off.height = Math.max(1, Math.floor(viewport.height * outputScale));
+            const context = off.getContext("2d", { alpha: false });
+            if (!context) throw new Error("2d context unavailable");
+            const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+            await page.render({ canvasContext: context, transform, viewport }).promise;
+            return { status: "ready", canvas: off, cssWidth, cssHeight, outputScale, key };
+          };
+          try {
+            return await tryRender(
+              layout.viewport,
+              layout.outputScale,
+              layout.cssWidth,
+              layout.cssHeight,
+              layout.key,
+            );
+          } catch (err) {
+            /* Safari often fails huge canvases — retry at 1× DPR. */
+            layout = computeLayout(page, 0.5);
+            const fallbackScale = Math.min(layout.outputScale, Math.max(1, window.devicePixelRatio || 1));
+            return tryRender(
+              layout.viewport,
+              fallbackScale,
+              layout.cssWidth,
+              layout.cssHeight,
+              layout.key,
+            );
+          }
         };
 
         const cachePage = async (pageNumber) => {
@@ -240,7 +263,7 @@
               if (hit?.status === "loading") continue;
               void cachePage(pageNum);
             }
-          }, 80);
+          }, lowMem ? 280 : 80);
         };
 
         const renderPage = async (pageNumber) => {
@@ -267,42 +290,72 @@
           shell.innerHTML = `<div class="pdf-error">${msg}</div>`;
         };
 
+        const openDocument = (source) => {
+          const options =
+            source instanceof ArrayBuffer || ArrayBuffer.isView(source)
+              ? {
+                  data: source instanceof Uint8Array ? source : new Uint8Array(source),
+                  disableStream: true,
+                  disableAutoFetch: true,
+                  disableRange: true,
+                  isEvalSupported: false,
+                  maxImageSize: lowMem ? 8_000_000 : 32_000_000,
+                  verbosity: 0,
+                }
+              : {
+                  url: source,
+                  disableAutoFetch: true,
+                  isEvalSupported: false,
+                  maxImageSize: lowMem ? 8_000_000 : 32_000_000,
+                  verbosity: 0,
+                };
+          return window.pdfjsLib.getDocument(options).promise;
+        };
+
         const loadPdfFromSource = async (source) => {
           if (loaded) return;
           loaded = true;
           try {
-            pdfDoc = await window.pdfjsLib.getDocument(source).promise;
+            pdfDoc = await openDocument(source);
             currentPage = Math.min(Math.max(1, currentPage), pdfDoc.numPages);
             await renderPage(currentPage);
             try {
-              window.parent?.postMessage({ type: "pdf-viewer:ready", numPages: pdfDoc.numPages, url: resolvedFileUrl }, "*");
-            } catch {}
+              window.parent?.postMessage(
+                { type: "pdf-viewer:ready", numPages: pdfDoc.numPages, url: resolvedFileUrl },
+                "*",
+              );
+            } catch {
+              /* ignore */
+            }
           } catch (err) {
             loaded = false;
-            showError("Unable to load the PDF in the browser viewer.");
+            const detail = err && err.message ? String(err.message) : "Unknown error";
+            showError(`Unable to load this PDF on this device. ${detail}`);
           }
         };
 
-        window.addEventListener(
-          "message",
-          (event) => {
-            const data = event.data && typeof event.data === "object" ? event.data : null;
-            if (!data || data.target !== "pdf-viewer") return;
-            if (data.type === "load-buffer") {
-              if (data.url && data.url !== resolvedFileUrl) return;
-              if (data.buffer instanceof ArrayBuffer) {
-                loadPdfFromSource({ data: data.buffer.slice(0) });
-              } else if (typeof data.url === "string" && !loaded) {
-                loadPdfFromSource(data.url);
-              }
-            } else if (data.type === "goto-page") {
-              const n = Math.floor(Number(data.page));
-              if (!Number.isFinite(n) || !pdfDoc) return;
-              currentPage = Math.min(Math.max(1, n), pdfDoc.numPages);
-              void renderPage(currentPage);
+        window.addEventListener("message", (event) => {
+          const data = event.data && typeof event.data === "object" ? event.data : null;
+          if (!data || data.target !== "pdf-viewer") return;
+          if (data.type === "load-buffer") {
+            if (data.url && data.url !== resolvedFileUrl) return;
+            if (data.buffer instanceof ArrayBuffer) {
+              loadPdfFromSource(data.buffer);
+            } else if (typeof data.url === "string" && !loaded) {
+              loadPdfFromSource(data.url);
             }
-          },
-        );
+          } else if (data.type === "goto-page") {
+            const n = Math.floor(Number(data.page));
+            if (!Number.isFinite(n) || !pdfDoc) return;
+            currentPage = Math.min(Math.max(1, n), pdfDoc.numPages);
+            void renderPage(currentPage);
+          }
+        });
+
+        /* If the parent never posts a buffer (iOS memory path), load by URL. */
+        window.setTimeout(() => {
+          if (!loaded) loadPdfFromSource(resolvedFileUrl);
+        }, 50);
 
         let resizeTimer = 0;
         const onViewportChange = () => {
@@ -322,10 +375,6 @@
         } catch {
           /* older browsers */
         }
-
-        // Note: The parent component (CoursePdfStep.tsx) is responsible for fetching
-        // and sending the PDF buffer via postMessage. This eliminates double-downloads
-        // and enables client-side caching (memory + IndexedDB).
       })();
     </script>
   </body>
