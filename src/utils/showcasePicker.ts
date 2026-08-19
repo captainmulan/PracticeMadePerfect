@@ -167,7 +167,7 @@ export function getShowcaseCoursePool(courses: Course[]): Course[] {
 
 /** Instant featured frame from summary meta (no HTML fetch). */
 export function buildQuickShowcaseExcerpt(course: Course): ShowcaseExcerpt {
-  const cover = resolveBookCoverUrl(course) ?? null;
+  const cover = resolveBookCoverUrl(course, { variant: "thumb" }) ?? null;
   const blurb =
     (course.description || "").replace(/\s+/g, " ").trim() ||
     "Open this book to explore more pages.";
@@ -305,7 +305,7 @@ export function parseShowcaseExcerptFromHtml(
     chapterTitle: step.chapterTitle || "Chapter",
     pageTitle,
     heroImageUrl,
-    coverImageUrl: resolveBookCoverUrl(course) ?? null,
+    coverImageUrl: resolveBookCoverUrl(course, { variant: "thumb" }) ?? null,
     previewImageUrl: null,
     previewPageTitle: pageTitle,
     pageEmoji,

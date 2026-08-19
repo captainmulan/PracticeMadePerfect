@@ -801,7 +801,7 @@ export default function AdminCourses() {
                         <option value="Language">Language</option>
                         <option value="Kid">Kid</option>
                         <option value="Migration">Migration</option>
-                        <option value="Fiction">Fiction</option>
+                        <option value="PersonalDevelopment">PersonalDevelopment</option>
                       </select>
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">

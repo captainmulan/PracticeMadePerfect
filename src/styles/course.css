@@ -354,12 +354,21 @@
   cursor: not-allowed;
 }
 
-.pdf-zoom-value {
-  min-width: 3.2em;
+.pdf-zoom-value,
+.pdf-zoom-select {
+  min-width: 4.4em;
   text-align: center;
   font-size: 13px;
   font-weight: 700;
   color: inherit;
+}
+
+.pdf-zoom-select {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 2px 4px;
+  cursor: pointer;
 }
 
 .practice-settings-btn {
@@ -487,6 +496,211 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 @keyframes slideInRight {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
+}
+
+.course-wizard-page--about,
+.course-wizard-page--about .practice-workspace,
+.course-wizard-page--about .practice-workspace-body,
+.course-wizard-page--about .practice-workspace-editor-shell {
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+}
+
+.course-wizard-page--about .practice-workspace-body,
+.course-wizard-page--about .practice-workspace-editor-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.book-about {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+  padding: 16px 16px 12px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+
+.book-about .home-space-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.book-about-hero,
+.book-about-blurb,
+.book-about-related {
+  position: relative;
+  z-index: 1;
+}
+
+.book-about-hero {
+  display: grid;
+  grid-template-columns: minmax(110px, 160px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.book-about-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.35);
+  display: block;
+}
+
+.book-about-cover--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+}
+
+.book-about-meta {
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.book-about-meta div {
+  display: grid;
+  gap: 3px;
+}
+
+.book-about-meta dt {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+}
+
+.book-about-meta dd {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.book-about-blurb {
+  margin: 18px 0 0;
+  font-size: 1.15rem;
+  line-height: 1.55;
+  color: #e2e8f0;
+}
+
+.book-about-blurb--empty {
+  color: #94a3b8;
+}
+
+.book-about-related {
+  margin-top: auto;
+  padding-top: 18px;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(15, 12, 41, 0) 0%, #24243e 28%);
+  padding-bottom: 4px;
+}
+
+.book-about-related h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  color: #f8fafc;
+}
+
+.book-about-related-scroller {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 2px 12px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.book-about-related-item {
+  flex: 0 0 140px;
+  width: 140px;
+  scroll-snap-align: start;
+}
+
+.book-about-related-item .book,
+.book-about-related-item .book-cover {
+  width: 140px !important;
+  max-width: 140px;
+}
+
+.book-about-related-item .book-cover {
+  height: 196px !important;
+}
+
+.book-about-related-item .book-cover-image {
+  object-fit: contain !important;
+  object-position: center;
+}
+
+.book-about-related-item .book-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.book-about-related-item .book-caption-author,
+.book-about-related-item .book-caption-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.05rem;
+  color: #e2e8f0;
+}
+
+.book-about-related-item .book-caption-title {
+  font-weight: 800;
+  font-size: 1.18rem;
+  color: #f8fafc;
+}
+
+.course-wizard-page--about .home-space-decor .space-float,
+body[data-bookshelf-theme="space"] .book-about .home-space-decor .space-float {
+  display: block;
+}
+
+.book-about::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+    radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+    radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+    radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+    radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+    radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+    radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+    radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+    radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+    radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+    radial-gradient(2px 2px at 500px 100px,#fff,transparent);
+  background-size: 900px 200px;
+}
+
+body[data-bookshelf-theme="space"] .book-about .home-space-decor .space-float {
+  display: block;
 }
 
 /* Removed hardcoded practice-workspace styles - admin will define in content HTML */

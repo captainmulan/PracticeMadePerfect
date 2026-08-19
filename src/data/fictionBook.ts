@@ -22,7 +22,7 @@ export const FICTION_BOOK: Course = {
   titlePosition: "bottom-center",
   titleTextAlign: "center",
   courseIndex: 1,
-  category: "Fiction",
+  category: "PersonalDevelopment",
   pIndex: 2,
   artifactType: "book",
   coverWidth: 100,

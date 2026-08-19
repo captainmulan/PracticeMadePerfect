@@ -1,9 +1,8 @@
 import type { CourseShelfRow, CourseShelfItem } from "../utils/courseShelf";
 import AuthorShelfCard from "./AuthorShelfCard";
 import CourseBookCard from "./CourseBookCard";
-import CourseMagazineCard from "./CourseMagazineCard";
-import CourseNewspaperCard from "./CourseNewspaperCard";
 import { getHomePageData } from "../utils/contentStore";
+import { useShelfColumns } from "../hooks/useShelfColumns";
 
 interface AuthorShelfRowProps {
   row: CourseShelfRow;
@@ -38,9 +37,9 @@ function createAuthorPlaceholderItem(index: number): CourseShelfItem {
 }
 
 export default function AuthorShelfRow({ row, onItemClick }: AuthorShelfRowProps) {
-  const BOOKS_PER_ROW = 3;
-  const DEFAULT_SHELF_ROWS = 4;
-  const minSlots = DEFAULT_SHELF_ROWS * BOOKS_PER_ROW;
+  const booksPerRow = useShelfColumns();
+  const DEFAULT_SHELF_ROWS = 2;
+  const minSlots = DEFAULT_SHELF_ROWS * booksPerRow;
   const displayItems: CourseShelfItem[] = [...row.items];
 
   while (displayItems.length < minSlots) {
@@ -48,27 +47,21 @@ export default function AuthorShelfRow({ row, onItemClick }: AuthorShelfRowProps
   }
 
   const groups: CourseShelfItem[][] = [];
-  const totalRows = Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / BOOKS_PER_ROW));
+  const totalRows = Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
 
   for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
-    groups.push(displayItems.slice(rowIndex * BOOKS_PER_ROW, rowIndex * BOOKS_PER_ROW + BOOKS_PER_ROW));
+    groups.push(displayItems.slice(rowIndex * booksPerRow, rowIndex * booksPerRow + booksPerRow));
   }
 
   const renderCard = (item: CourseShelfItem) => {
-    if (item.artifactType === "magazine") {
-      return <CourseMagazineCard key={item.id} item={item} />;
-    }
-    if (item.artifactType === "newspaper") {
-      return <CourseNewspaperCard key={item.id} item={item} />;
-    }
     if (item.actionType === "author") {
       return <AuthorShelfCard key={item.id} item={item} onItemClick={onItemClick} />;
     }
-    return <CourseBookCard key={item.id} item={item} onItemClick={onItemClick} />;
+    return <CourseBookCard key={item.id} item={item} useCoverImage onItemClick={onItemClick} />;
   };
 
   return (
-    <div className="bookshelf-container">
+    <div className="bookshelf-container" style={{ ["--shelf-cols" as string]: String(booksPerRow) }}>
       {groups.map((group, rowIndex) => (
         <div key={`author-row-wrap-${rowIndex}`} className="shelf">
           <div className="books author-browse-row" key={`author-row-${rowIndex}`}>

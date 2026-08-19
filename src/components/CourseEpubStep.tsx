@@ -21,6 +21,7 @@ interface CourseEpubStepProps {
   canPrevious?: boolean;
   canNext?: boolean;
   bookId?: string | null;
+  stepIndex?: number;
   bookmarked?: boolean;
   bookmarks?: BookBookmark[];
   onToggleBookmark?: () => void;
@@ -42,6 +43,7 @@ export default function CourseEpubStep({
   canPrevious = false,
   canNext = false,
   bookId,
+  stepIndex,
   bookmarked,
   bookmarks,
   onToggleBookmark,
@@ -177,7 +179,7 @@ export default function CourseEpubStep({
       contentIframeRef={iframeRef}
       contentIframeBindKey={viewerSrc}
       bookId={bookId}
-      stepIndex={pageIndex - 1}
+      stepIndex={typeof stepIndex === "number" ? stepIndex : Math.max(0, pageIndex - 2)}
       stepTitle={step.title}
       bookmarked={bookmarked}
       bookmarks={bookmarks}

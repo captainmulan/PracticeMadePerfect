@@ -2,21 +2,40 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
-import { extractPdfPageNumber, getPdfBuffer, normalizePdfFileUrl } from "../utils/pdfCache";
+import { extractPdfPageNumber, getPdfBuffer, resolvePdfStepFileUrl } from "../utils/pdfCache";
 import "../styles/course.css";
 
 const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom";
-const PDF_ZOOM_LEVELS = [90, 100, 125, 150, 175, 200];
-const DEFAULT_PDF_ZOOM = 100;
+const PDF_ZOOM_LEVELS = [100, 110, 120, 130, 140, 150, 160, 170, 180, 190];
+const DESKTOP_PDF_ZOOM = 100;
+const MOBILE_PDF_ZOOM = 100;
+
+function isMobilePdfViewport(): boolean {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const isIOS =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  return isIOS || window.matchMedia("(max-width: 767px)").matches;
+}
+
+function snapPdfZoom(value: number): number {
+  return PDF_ZOOM_LEVELS.reduce((best, level) =>
+    Math.abs(level - value) < Math.abs(best - value) ? level : best,
+  );
+}
 
 function readStoredPdfZoom(): number {
+  const fallback = isMobilePdfViewport() ? MOBILE_PDF_ZOOM : DESKTOP_PDF_ZOOM;
   try {
     const raw = Number(localStorage.getItem(PDF_ZOOM_STORAGE_KEY));
-    if (PDF_ZOOM_LEVELS.includes(raw)) return raw;
+    if (Number.isFinite(raw) && raw >= 50 && raw <= 300) {
+      return snapPdfZoom(raw);
+    }
   } catch {
     /* ignore */
   }
-  return DEFAULT_PDF_ZOOM;
+  return fallback;
 }
 
 interface CoursePdfStepProps {
@@ -35,6 +54,7 @@ interface CoursePdfStepProps {
   canPrevious?: boolean;
   canNext?: boolean;
   bookId?: string | null;
+  stepIndex?: number;
   bookmarked?: boolean;
   bookmarks?: BookBookmark[];
   onToggleBookmark?: () => void;
@@ -51,11 +71,13 @@ export default function CoursePdfStep({
   pageIndex,
   totalPages,
   pageBrief,
+  bookHtmlFolder,
   onPrevious,
   onNext,
   canPrevious = false,
   canNext = false,
   bookId,
+  stepIndex,
   bookmarked,
   bookmarks,
   onToggleBookmark,
@@ -64,13 +86,14 @@ export default function CoursePdfStep({
 }: CoursePdfStepProps) {
   const pdfSource = step.contentHtml?.trim() ?? "";
   const { fileUrl, pageNumber, viewerSrc } = useMemo(() => {
-    const raw = pdfSource;
-    const isUrl = raw && (raw.startsWith("/") || /^https?:\/\//i.test(raw));
-    const file = normalizePdfFileUrl(isUrl ? raw : "");
-    const page = extractPdfPageNumber(raw);
-    const src = isUrl ? `/pdf-viewer.html?file=${encodeURIComponent(raw)}` : null;
+    const file = resolvePdfStepFileUrl(pdfSource, bookHtmlFolder);
+    const hasPageHint = /(?:#|\?)page=\d+/i.test(pdfSource);
+    const page = hasPageHint
+      ? extractPdfPageNumber(pdfSource)
+      : Math.max(1, (typeof step.stepIndex === "number" ? step.stepIndex : 0) + 1);
+    const src = file ? `/pdf-viewer.html?file=${encodeURIComponent(file)}&page=${page}` : null;
     return { fileUrl: file, pageNumber: page, viewerSrc: src };
-  }, [pdfSource]);
+  }, [bookHtmlFolder, pdfSource, step.stepIndex]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [bufferReady, setBufferReady] = useState<"idle" | "loading" | "ready">("idle");
@@ -219,7 +242,7 @@ export default function CoursePdfStep({
       contentIframeRef={iframeRef}
       contentIframeBindKey={viewerSrc}
       bookId={bookId}
-      stepIndex={pageIndex - 1}
+      stepIndex={typeof stepIndex === "number" ? stepIndex : Math.max(0, pageIndex - 2)}
       stepTitle={step.title}
       bookmarked={bookmarked}
       bookmarks={bookmarks}

@@ -1,5 +1,6 @@
 import type { Course } from "../data/courses";
 import type { ShowcaseExcerpt } from "./showcasePicker";
+import { normalizeBookCategory } from "./bookCategories";
 
 const SHOWCASE_CACHE_KEY = "pmp-showcase-excerpt-v1";
 
@@ -56,6 +57,7 @@ export async function fetchHomeCatalogSummaries(): Promise<Course[] | null> {
     }
     return data.courses.map((course) => ({
       ...course,
+      category: normalizeBookCategory(course.category),
       chapters: [],
       stepCount: course.stepCount ?? 0,
     }));

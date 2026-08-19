@@ -1,5 +1,6 @@
 import type { Course } from "../data/courses";
 import { resolveBookCoverUrl } from "./bookCoverSeeds";
+import { HOME_CATEGORY_PICKER, normalizeBookCategory } from "./bookCategories";
 
 export interface CourseShelfItem {
   id: string;
@@ -28,8 +29,9 @@ export interface CourseShelfItem {
   link?: string;
   placeholder?: boolean;
   category?: string;
-  actionType?: "book" | "author";
+  actionType?: "book" | "author" | "category";
   artifactType?: "book" | "magazine" | "newspaper" | "game";
+  authorName?: string;
 }
 
 export interface CourseShelfRow {
@@ -279,12 +281,12 @@ const placeholderRows: CourseShelfRow[] = [
     ],
   },
   {
-    title: "Fiction",
+    title: "PersonalDevelopment",
     items: [
       {
-        id: "fiction-sample-1",
+        id: "personal-dev-sample-1",
         title: "Coming soon",
-        description: "Fiction category placeholder",
+        description: "PersonalDevelopment category placeholder",
         color: "#ef4444",
         coverColorStart: "#ef4444",
         coverColorMiddle: "#ef4444",
@@ -299,7 +301,7 @@ const placeholderRows: CourseShelfRow[] = [
       {
         id: "fiction-sample-2",
         title: "Coming soon",
-        description: "Fiction category placeholder",
+        description: "PersonalDevelopment category placeholder",
         color: "#f59e0b",
         coverColorStart: "#f59e0b",
         coverColorMiddle: "#f59e0b",
@@ -314,7 +316,7 @@ const placeholderRows: CourseShelfRow[] = [
       {
         id: "fiction-sample-3",
         title: "Coming soon",
-        description: "Fiction category placeholder",
+        description: "PersonalDevelopment category placeholder",
         color: "#10b981",
         coverColorStart: "#10b981",
         coverColorMiddle: "#10b981",
@@ -329,7 +331,7 @@ const placeholderRows: CourseShelfRow[] = [
       {
         id: "fiction-sample-4",
         title: "Coming soon",
-        description: "Fiction category placeholder",
+        description: "PersonalDevelopment category placeholder",
         color: "#8b5cf6",
         coverColorStart: "#8b5cf6",
         coverColorMiddle: "#8b5cf6",
@@ -344,7 +346,7 @@ const placeholderRows: CourseShelfRow[] = [
       {
         id: "fiction-sample-5",
         title: "Coming soon",
-        description: "Fiction category placeholder",
+        description: "PersonalDevelopment category placeholder",
         color: "#06b6d4",
         coverColorStart: "#06b6d4",
         coverColorMiddle: "#06b6d4",
@@ -412,7 +414,8 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
     coverColorEnd: course.coverColorEnd ?? course.color,
     coverWidth: course.coverWidth ?? undefined,
     coverHeight: course.coverHeight ?? undefined,
-    coverImageUrl: resolveBookCoverUrl(course),
+    coverImageUrl: resolveBookCoverUrl(course, { variant: "thumb" }),
+    authorName: course.authorName,
     icon: course.icon,
     iconColorStart: course.iconColorStart ?? "#fff",
     iconColorMiddle: course.iconColorEnd ?? "#fff",
@@ -459,19 +462,45 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     .map((course) => createShelfItemFromCourse(course, "Selection"));
 
   const kidItems = courses
-    .filter((course) => course.category === "Kid")
+    .filter((course) => normalizeBookCategory(course.category) === "Kid")
     .map((course) => createShelfItemFromCourse(course, "Kid"));
 
-  const fictionItems = courses
-    .filter((course) => course.category === "Fiction")
-    .map((course) => createShelfItemFromCourse(course, "Fiction"));
+  const personalDevItems = courses
+    .filter((course) => normalizeBookCategory(course.category) === "PersonalDevelopment")
+    .map((course) => createShelfItemFromCourse(course, "PersonalDevelopment"));
 
   return [
     buildShelfRow("Selection", popularItems),
     buildShelfRow("Kid", kidItems),
-    buildShelfRow("Fiction", fictionItems),
+    buildShelfRow("PersonalDevelopment", personalDevItems),
     { title: "Other", items: [] },
   ];
+}
+
+export function getCategoryPickerRow(): CourseShelfRow {
+  const items = HOME_CATEGORY_PICKER.map((category) => ({
+    id: `category-${category.id}`,
+    title: category.label,
+    description: `Browse ${category.label} books`,
+    color: category.coverColorStart,
+    coverColorStart: category.coverColorStart,
+    coverColorMiddle: category.coverColorMiddle,
+    coverColorEnd: category.coverColorEnd,
+    icon: category.icon,
+    iconColorStart: "#fff",
+    iconColorMiddle: "#fff",
+    iconColorEnd: "#fff",
+    iconSize: 88,
+    iconPosition: "center-center" as const,
+    titlePosition: "top-center" as const,
+    titleColor: "#0f172a",
+    meta: "Category",
+    category: category.id,
+    actionType: "category" as const,
+    artifactType: "book" as const,
+  }));
+
+  return { title: "Category", items };
 }
 
 export function getAuthorShelfRow(authorGroups: Array<{ authorName: string; authorPicture?: string }>): CourseShelfRow {
@@ -508,9 +537,10 @@ export function getCourseShelfRowForAuthor(courses: Course[], authorName: string
 }
 
 export function getCourseShelfRowForCategory(courses: Course[], category: string): CourseShelfRow {
+  const normalized = normalizeBookCategory(category);
   const items = courses
-    .filter((course) => course.category === category)
-    .map((course) => createShelfItemFromCourse(course, category));
+    .filter((course) => normalizeBookCategory(course.category) === normalized)
+    .map((course) => createShelfItemFromCourse(course, normalized));
 
-  return buildShelfRow(category, items);
+  return buildShelfRow(normalized, items);
 }

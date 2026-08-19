@@ -99,7 +99,7 @@ export default function PracticeWorkspace({
   onRemoveBookmark,
   onJumpToBookmark,
   pageZoom,
-  pageZoomLevels = [90, 100, 125, 150, 175, 200],
+  pageZoomLevels = [100, 110, 120, 130, 140, 150, 160, 170, 180, 190],
   onPageZoomChange,
 }: PracticeWorkspaceProps) {
   const homeData = getHomePageData();
@@ -373,7 +373,18 @@ export default function PracticeWorkspace({
                 >
                   −
                 </button>
-                <span className="pdf-zoom-value">{pageZoom}%</span>
+                <select
+                  className="pdf-zoom-select"
+                  aria-label="Page zoom"
+                  value={pageZoom}
+                  onChange={(event) => onPageZoomChange(Number(event.target.value))}
+                >
+                  {pageZoomLevels.map((level) => (
+                    <option key={level} value={level}>
+                      {level}%
+                    </option>
+                  ))}
+                </select>
                 <button
                   type="button"
                   className="pdf-zoom-btn"

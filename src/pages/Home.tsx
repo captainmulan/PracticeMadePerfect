@@ -13,6 +13,7 @@ import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import {
   createShelfItemFromCourse,
   getAuthorShelfRow,
+  getCategoryPickerRow,
   getCourseShelfRowForAuthor,
   getCourseShelfRowForCategory,
   getHomeCourseShelfRows,
@@ -20,6 +21,7 @@ import {
   getUnpublishedBooksRow,
   type CourseShelfRow,
 } from "../utils/courseShelf";
+import type { HomeCategoryPickerId } from "../utils/bookCategories";
 import "../styles/home-test-showcase.css";
 
 const HOME_SHELF_TABS = [
@@ -42,9 +44,9 @@ function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["cour
 
 function preloadPopularCovers(courses: ReturnType<typeof useCourseCatalog>["courses"]) {
   const popular = getPopularCourses(courses);
-  const targets = (popular.length > 0 ? popular : courses).slice(0, 6);
+  const targets = (popular.length > 0 ? popular : courses).slice(0, 4);
   for (const course of targets) {
-    const url = resolveBookCoverUrl(course);
+    const url = resolveBookCoverUrl(course, { variant: "thumb" });
     if (!url) {
       continue;
     }
@@ -62,7 +64,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const navigate = useNavigate();
   const [heroCollapsed, setHeroCollapsed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
-  const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<"Kid" | "IT" | "Fiction" | "Author">("IT");
+  const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<HomeCategoryPickerId | null>(null);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const data = getHomePageData();
@@ -88,7 +90,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     return [...groups.values()].sort((a, b) => a.authorName.localeCompare(b.authorName));
   }, [courses]);
   const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
-  const isAuthorBrowseCategory = selectedTab === "Category" && selectedCategorySubTab === "Author" && !selectedAuthorName;
   const showcaseEnabled = !showUnpublishedOnly && !heroCollapsed && coursesLoaded && courses.length > 0;
   const {
     selection: showcaseSelection,
@@ -121,6 +122,9 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       return rows[0];
     }
     if (selectedTab === "Category") {
+      if (!selectedCategorySubTab) {
+        return getCategoryPickerRow();
+      }
       if (selectedCategorySubTab === "Author") {
         if (selectedAuthorName) {
           return getCourseShelfRowForAuthor(courses, selectedAuthorName);
@@ -217,7 +221,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 key={tab.id}
                 type="button"
                 className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
-                onClick={() => setSelectedTab(tab.id)}
+                onClick={() => {
+                  setSelectedTab(tab.id);
+                  if (tab.id === "Category") {
+                    setSelectedCategorySubTab(null);
+                    setSelectedAuthorName(null);
+                  }
+                }}
               >
                 {tab.label}
               </button>
@@ -241,44 +251,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
               </div>
             </div>
           )}
-
-          {selectedTab === "Category" && (
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
-              {(["Kid", "IT", "Fiction", "Author"] as const).map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  className={`tab ${selectedCategorySubTab === category ? "active" : ""}`}
-                  onClick={() => {
-                    setSelectedCategorySubTab(category);
-                    setSelectedAuthorName(null);
-                  }}
-                  style={{
-                    padding: "6px 10px",
-                    borderRadius: "999px",
-                    background:
-                      selectedCategorySubTab === category
-                        ? (style?.tabs?.activeBackgroundColor ?? "#0f172a")
-                        : (style?.tabs?.backgroundColor ?? "#e2e8f0"),
-                    color:
-                      selectedCategorySubTab === category
-                        ? (style?.tabs?.activeColor ?? "#ffffff")
-                        : (style?.tabs?.color ?? "#334155"),
-                  }}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {selectedTab === "Login" ? (
-            <HomeLoginPanel />
-          ) : selectedTab === "Category" && selectedCategorySubTab === "Author" && selectedAuthorName ? (
-            <div style={{ marginBottom: "12px", color: "#334155", fontWeight: 700 }}>
-              Showing books for {selectedAuthorName}
-            </div>
-          ) : null}
 
           {selectedTab === "Login" ? (
             <HomeLoginPanel />
@@ -307,6 +279,10 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                   onItemClick={(item) => {
                     if (item.actionType === "author") {
                       setSelectedAuthorName(item.title);
+                    }
+                    if (item.actionType === "category" && item.category) {
+                      setSelectedCategorySubTab(item.category as HomeCategoryPickerId);
+                      setSelectedAuthorName(null);
                     }
                   }}
                 />

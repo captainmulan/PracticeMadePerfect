@@ -2,6 +2,7 @@ import type { Course, CourseChapter, CourseStep, CourseStepOutline } from "../da
 import type { PracticeTask } from "../data/tasks";
 import type { Announcement } from "../types/announcement";
 import { BOOK_COVER_SEEDS } from "./bookCoverSeeds";
+import { normalizeBookCategory } from "./bookCategories";
 
 const DB_NAME = "magic-library-db";
 const DB_VERSION = 4;
@@ -246,7 +247,7 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     titleAlignment: raw.titleAlignment,
     iconPosition: raw.iconPosition,
     courseIndex: raw.courseIndex,
-    category: raw.category,
+    category: normalizeBookCategory(raw.category),
     pIndex: raw.pIndex,
     artifactType: raw.artifactType,
     bookHtmlFolder: raw.bookHtmlFolder,
@@ -369,6 +370,7 @@ export async function saveCourse(course: Course): Promise<void> {
     const stepOutline = buildStepOutline(course);
     writeTransaction.objectStore(STORE_COURSES).put({
       ...courseMeta,
+      category: normalizeBookCategory(course.category),
       chapters: [],
       stepOutline,
       stepCount: stepOutline.length,
@@ -593,7 +595,8 @@ async function applyBookCoverSeeds(): Promise<void> {
   const summaries = await getCourseSummaries();
   for (const summary of summaries) {
     const seedUrl = BOOK_COVER_SEEDS[summary.id];
-    if (!seedUrl || summary.coverImageUrl) {
+    const current = summary.coverImageUrl?.trim() ?? "";
+    if (!seedUrl || (current && !current.startsWith("data:") && !current.startsWith("blob:"))) {
       continue;
     }
     const full = await getCourseById(summary.id);
@@ -650,6 +653,18 @@ async function fetchDeployedCatalogVersion(): Promise<CatalogVersion | null> {
   }
 }
 
+async function migrateLegacyBookCategories(): Promise<void> {
+  const db = await openDb();
+  const store = db.transaction(STORE_COURSES, "readwrite").objectStore(STORE_COURSES);
+  const courses = await promisifyRequest(store.getAll()) as CourseRecord[];
+  for (const course of courses) {
+    const next = normalizeBookCategory(course.category);
+    if (next && next !== course.category) {
+      store.put({ ...course, category: next });
+    }
+  }
+}
+
 async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Promise<boolean> {
   const remote = await fetchDeployedCatalogVersion();
   if (!remote) {
@@ -682,6 +697,7 @@ async function runInitialMigration(): Promise<void> {
 
   if (summaries.length > 0 && !refreshFromDeploy) {
     console.log("Courses already exist, skipping initialization");
+    await migrateLegacyBookCategories();
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
     return;

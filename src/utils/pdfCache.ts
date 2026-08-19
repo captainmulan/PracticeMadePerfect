@@ -10,7 +10,11 @@ const IDB_NAME = "magic-library-pdf-cache";
 const IDB_VERSION = 1;
 const IDB_STORE = "pdf-buffers";
 
-function pruneCache() {
+function isPdfBuffer(buffer: ArrayBuffer): boolean {
+  if (buffer.byteLength < 5) return false;
+  const head = new Uint8Array(buffer.slice(0, 5));
+  return String.fromCharCode(head[0], head[1], head[2], head[3], head[4]) === "%PDF-";
+}
   const now = Date.now();
   const entries = Array.from(bufferCache.entries()).filter(
     ([, entry]) => entry.status === "ready",
@@ -122,6 +126,39 @@ export function normalizePdfFileUrl(source: string): string {
   return source.replace(/#page=\d+/i, "").replace(/\?page=\d+/i, "");
 }
 
+function extractPdfUrlFromHtml(source: string): string {
+  const trimmed = source.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/") || /^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return trimmed.match(/src=["']([^"']+)["']/i)?.[1] ?? "";
+}
+
+/** UNICEF imports store the file as `FolderName.pdf/FolderName.pdf.pdf`. */
+export function pdfUrlFromBookFolder(bookHtmlFolder?: string | null): string {
+  const folder = (bookHtmlFolder ?? "").replace(/^\/+|\/+$/g, "");
+  if (!folder) return "";
+  const fileName = /\.pdf$/i.test(folder) ? `${folder}.pdf` : `${folder}.pdf`;
+  return `/book_html/${folder}/${fileName}`;
+}
+
+/** Resolve the file URL for a PDF step, including the imported-folder fallback. */
+export function resolvePdfStepFileUrl(contentHtml: string, bookHtmlFolder?: string | null): string {
+  const fromContent = normalizePdfFileUrl(extractPdfUrlFromHtml(contentHtml));
+  return fromContent || pdfUrlFromBookFolder(bookHtmlFolder);
+}
+
+export function pdfFetchFallbackUrls(url: string): string[] {
+  const key = normalizePdfFileUrl(url);
+  if (!key) return [];
+  const urls = [key];
+  if (/\.pdf$/i.test(key) && !/\.pdf\.pdf$/i.test(key)) {
+    urls.push(`${key}.pdf`);
+  }
+  return urls;
+}
+
 /**
  * Extract the page number from a source URL like `/book.pdf#page=5` or `/book.pdf?page=5`.
  * Returns `1` if no page fragment is found.
@@ -149,7 +186,7 @@ export async function getPdfBuffer(fileUrl: string): Promise<ArrayBuffer> {
   const existing = bufferCache.get(key);
   if (existing) {
     if (existing.status === "ready") {
-      if (Date.now() - existing.fetchedAt > CACHE_TTL_MS) {
+      if (Date.now() - existing.fetchedAt > CACHE_TTL_MS || !isPdfBuffer(existing.buffer)) {
         bufferCache.delete(key);
       } else {
         return existing.buffer.slice(0);
@@ -162,7 +199,7 @@ export async function getPdfBuffer(fileUrl: string): Promise<ArrayBuffer> {
 
   // 2. Check persistent IndexedDB cache (survives page reloads)
   const idbHit = await idbGet(key);
-  if (idbHit) {
+  if (idbHit && isPdfBuffer(idbHit.buffer)) {
     bufferCache.set(key, { status: "ready", buffer: idbHit.buffer.slice(0), fetchedAt: idbHit.fetchedAt });
     pruneCache();
     return idbHit.buffer.slice(0);
@@ -170,18 +207,27 @@ export async function getPdfBuffer(fileUrl: string): Promise<ArrayBuffer> {
 
   // 3. Network fetch
   const promise = (async () => {
-    const response = await fetch(key, { credentials: "same-origin" });
-    if (!response.ok) {
-      bufferCache.delete(key);
-      throw new Error(`PDF fetch failed: ${response.status} ${response.statusText}`);
+    let lastError: Error | null = null;
+    for (const candidate of pdfFetchFallbackUrls(key)) {
+      const response = await fetch(candidate, { credentials: "same-origin" });
+      if (!response.ok) {
+        lastError = new Error(`PDF fetch failed: ${response.status} ${response.statusText}`);
+        continue;
+      }
+      const buffer = await response.arrayBuffer();
+      if (!isPdfBuffer(buffer)) {
+        lastError = new Error("PDF fetch failed: response was not a PDF file.");
+        continue;
+      }
+      const fetchedAt = Date.now();
+      bufferCache.set(key, { status: "ready", buffer: buffer.slice(0), fetchedAt });
+      pruneCache();
+      // Persist to IndexedDB in the background (don't await, so first load is not blocked)
+      void idbPut(key, buffer, fetchedAt);
+      return buffer.slice(0);
     }
-    const buffer = await response.arrayBuffer();
-    const fetchedAt = Date.now();
-    bufferCache.set(key, { status: "ready", buffer: buffer.slice(0), fetchedAt });
-    pruneCache();
-    // Persist to IndexedDB in the background (don't await, so first load is not blocked)
-    void idbPut(key, buffer, fetchedAt);
-    return buffer.slice(0);
+    bufferCache.delete(key);
+    throw lastError ?? new Error("PDF fetch failed.");
   })();
 
   bufferCache.set(key, { status: "loading", promise });

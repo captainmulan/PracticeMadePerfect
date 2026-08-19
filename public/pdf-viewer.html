@@ -32,7 +32,8 @@
         display: flex;
         align-items: flex-start;
         justify-content: center;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
         padding: 0;
         box-sizing: border-box;
         width: 100%;
@@ -88,8 +89,12 @@
           return;
         }
 
+        const pageParam = Number.parseInt(params.get("page") ?? "", 10);
         const pageMatch = fileUrl.match(/#page=(\d+)/i) ?? fileUrl.match(/\?page=(\d+)/i);
         let currentPage = Number.parseInt(pageMatch?.[1] ?? "1", 10);
+        if (Number.isFinite(pageParam) && pageParam >= 1) {
+          currentPage = pageParam;
+        }
         const resolvedFileUrl = fileUrl.replace(/#page=\d+/i, "").replace(/\?page=\d+/i, "");
 
         if (!window.pdfjsLib || !window.pdfjsLib.getDocument) {
@@ -112,7 +117,7 @@
         /* Keep rendered bitmaps only around the current page. Low-RAM devices (iPad Mini)
            keep 3 pages; others keep 5. */
         const PAGE_WINDOW = lowMem ? 1 : 2;
-        const MAX_CANVAS_PIXELS = lowMem ? 8388608 : 16777216;
+          const MAX_CANVAS_PIXELS = lowMem ? 8388608 : 33554432;
         const pageCache = new Map();
         let pdfDoc = null;
         let renderToken = 0;
@@ -120,7 +125,17 @@
         let lastLayoutKey = "";
         let prefetchTimer = 0;
         let pageZoom = 100;
+        const zoomParam = Number(params.get("zoom"));
+        if (Number.isFinite(zoomParam) && zoomParam >= 50 && zoomParam <= 300) {
+          pageZoom = Math.round(zoomParam / 10) * 10;
+        }
         currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
+
+        const syncScrollMode = () => {
+          wrap.style.overflowX = pageZoom > 100 ? "auto" : "hidden";
+          wrap.style.overflowY = "auto";
+        };
+        syncScrollMode();
 
         const layoutKey = () =>
           `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}`;
@@ -160,10 +175,10 @@
           /* Fill viewer width at 100%. PDF's own page margins stay; viewer adds none. */
           const cssScale = (availW / baseViewport.width) * zoomFactor;
           const dpr = Math.max(1, window.devicePixelRatio || 1);
-          /* Chrome tablet emulation often reports DPR=1; still render at 2× so type stays sharp. */
+          /* Always render at least 2×; prefer 3× on desktop so type stays razor-sharp. */
           let outputScale = (lowMem
-            ? Math.min(2, Math.max(2, dpr))
-            : Math.min(3, Math.max(2, dpr * 1.5))) * scaleBoost;
+            ? Math.min(2.25, Math.max(2, dpr))
+            : Math.min(3.5, Math.max(2.5, dpr * 1.75))) * scaleBoost;
           outputScale = Math.max(1, outputScale);
 
           let pixels =
@@ -212,7 +227,7 @@
             await page.render({
               canvasContext: context,
               viewport: layout.viewport,
-              intent: "print",
+              intent: "display",
               background: "#ffffff",
             }).promise;
             return {
@@ -294,7 +309,10 @@
             return;
           }
 
-          const entry = await cachePage(pageNumber);
+          const entry = await cachePage(pageNumber).catch((err) => {
+            showError(`Unable to draw this PDF page. ${err && err.message ? err.message : ""}`);
+            return null;
+          });
           if (myToken !== renderToken || !entry) return;
           mountEntry(entry);
           prefetchNeighbors(pageNumber);
@@ -313,14 +331,16 @@
                   disableAutoFetch: true,
                   disableRange: true,
                   isEvalSupported: false,
-                  maxImageSize: lowMem ? 8_000_000 : 32_000_000,
+                  maxImageSize: -1,
+                  disableFontFace: false,
                   verbosity: 0,
                 }
               : {
                   url: source,
                   disableAutoFetch: true,
                   isEvalSupported: false,
-                  maxImageSize: lowMem ? 8_000_000 : 32_000_000,
+                  maxImageSize: -1,
+                  disableFontFace: false,
                   verbosity: 0,
                 };
           return window.pdfjsLib.getDocument(options).promise;
@@ -368,6 +388,7 @@
             if (!Number.isFinite(next) || next < 50 || next > 300) return;
             if (next === pageZoom) return;
             pageZoom = next;
+            syncScrollMode();
             lastLayoutKey = layoutKey();
             prunePageCache(currentPage);
             if (pdfDoc) void renderPage(currentPage);

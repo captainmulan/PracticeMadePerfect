@@ -351,7 +351,7 @@ export default function AdminEpubUploadPanel({
                 <select value={category} onChange={(e) => setCategory(e.target.value)} className="admin-grid-select">
                   <option value="IT">IT</option>
                   <option value="Kid">Kid</option>
-                  <option value="Fiction">Fiction</option>
+                  <option value="PersonalDevelopment">PersonalDevelopment</option>
                   <option value="Language">Language</option>
                 </select>
               </label>

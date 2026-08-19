@@ -117,6 +117,12 @@ export default function CourseMagazineCard({ item, useCoverImage = false }: Cour
               alt=""
               loading="lazy"
               decoding="async"
+              onError={(event) => {
+                const image = event.currentTarget;
+                if (image.src.includes("/thumbs/")) {
+                  image.src = image.src.replace("/thumbs/", "/");
+                }
+              }}
               style={{
                 position: "absolute",
                 inset: 0,

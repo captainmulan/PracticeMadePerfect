@@ -45,6 +45,12 @@ export default function CourseNewspaperCard({ item, useCoverImage = false }: Cou
         alt=""
         loading="lazy"
         decoding="async"
+        onError={(event) => {
+          const image = event.currentTarget;
+          if (image.src.includes("/thumbs/")) {
+            image.src = image.src.replace("/thumbs/", "/");
+          }
+        }}
         style={{
           width: "100%",
           height: "100%",

@@ -589,6 +589,13 @@ textarea {
   max-height: none !important;
 }
 
+.course-wizard-page.course-wizard-page--about,
+.course-wizard-page.course-wizard-page--about .practice-workspace,
+.course-wizard-page.course-wizard-page--about .practice-workspace-body,
+.course-wizard-page.course-wizard-page--about .practice-workspace-editor-shell {
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+}
+
 .course-wizard-page .practice-workspace-editor-shell {
   flex: 1 1 auto;
   min-height: 0;
@@ -3253,8 +3260,8 @@ textarea {
   }
 
   .author-profile-avatar {
-    width: 112px; /* increased further for clearer faces */
-    height: 112px;
+    width: 210px;
+    height: 210px;
     border-radius: 999px;
     border: 3px solid rgba(255,255,255,0.92);
     background: rgba(255,255,255,0.10);
@@ -3276,7 +3283,7 @@ textarea {
   }
 
   .author-profile-icon {
-    font-size: 34px;
+    font-size: 128px;
     line-height: 1;
   }
 
@@ -3289,7 +3296,7 @@ textarea {
     white-space: normal;
     word-break: break-word;
     text-shadow: 0 1px 2px rgba(0,0,0,0.45);
-    max-width: 100px;
+    max-width: 180px;
   }
 
   /* When displaying the author name over the avatar */
@@ -3312,9 +3319,9 @@ textarea {
   .author-profile-title--above {
     position: absolute;
     left: 50%;
-    top: -36px; /* move well above the circle border (no overlap) */
+    top: -42px; /* move well above the circle border (no overlap) */
     transform: translateX(-50%);
-    font-size: 15px; /* larger name */
+    font-size: 18px; /* larger name */
     padding: 6px 12px;
     background: transparent;
     border-radius: 12px;
@@ -3344,12 +3351,16 @@ textarea {
     }
 
     .author-browse-row .author-profile-content {
-      width: 112px;
+      width: 140px;
     }
 
     .author-profile-avatar {
-      width: 96px;
-      height: 96px;
+      width: 168px;
+      height: 168px;
+    }
+
+    .author-profile-icon {
+      font-size: 108px;
     }
 
     .author-profile-title--above {

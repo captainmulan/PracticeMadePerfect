@@ -21,6 +21,7 @@ interface CourseCodeStepProps {
   canPrevious?: boolean;
   canNext?: boolean;
   bookId?: string | null;
+  stepIndex?: number;
   bookmarked?: boolean;
   bookmarks?: BookBookmark[];
   onToggleBookmark?: () => void;
@@ -43,6 +44,7 @@ export default function CourseCodeStep({
   canPrevious = false,
   canNext = false,
   bookId,
+  stepIndex,
   bookmarked,
   bookmarks,
   onToggleBookmark,
@@ -114,7 +116,7 @@ export default function CourseCodeStep({
         canPrevious={canPrevious}
         canNext={canNext}
         bookId={bookId}
-        stepIndex={pageIndex - 1}
+        stepIndex={typeof stepIndex === "number" ? stepIndex : Math.max(0, pageIndex - 2)}
         stepTitle={step.title}
         bookmarked={bookmarked}
         bookmarks={bookmarks}

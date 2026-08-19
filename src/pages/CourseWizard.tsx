@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import CourseAboutStep from "../components/CourseAboutStep";
 import CourseCodeStep from "../components/CourseCodeStep";
 import CourseHtmlStep from "../components/CourseHtmlStep";
 import CoursePdfStep from "../components/CoursePdfStep";
@@ -20,10 +21,13 @@ import {
 import type { BookBookmark } from "../services/types/account";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
+import { useCourseCatalog } from "../utils/useCourseCatalog";
+import { normalizeBookCategory } from "../utils/bookCategories";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
   const account = useAccountOptional();
+  const { courses } = useCourseCatalog();
   const {
     outline,
     steps,
@@ -33,6 +37,7 @@ export default function CourseWizard() {
     loadStep,
   } = useCourseReader(courseId);
   const [stepIndex, setStepIndex] = useState(0);
+  const [viewingIntro, setViewingIntro] = useState(true);
   const [currentStep, setCurrentStep] = useState<CourseStep | null>(null);
   const placeholder = getPracticePageData().placeholder;
   const [bookmarked, setBookmarked] = useState(false);
@@ -43,7 +48,9 @@ export default function CourseWizard() {
     let active = true;
     loadCourseProgressForUser(courseId, account?.user?.userId).then((saved) => {
       if (!active) return;
-      setStepIndex(Math.min(saved, Math.max(steps.length - 1, 0)));
+      const clamped = Math.min(saved, Math.max(steps.length - 1, 0));
+      setStepIndex(clamped);
+      setViewingIntro(clamped <= 0);
     });
     return () => {
       active = false;
@@ -51,9 +58,9 @@ export default function CourseWizard() {
   }, [account?.user?.userId, courseId, steps.length]);
 
   useEffect(() => {
-    if (!courseId) return;
+    if (!courseId || viewingIntro) return;
     saveCourseProgress(courseId, stepIndex);
-  }, [courseId, stepIndex]);
+  }, [courseId, stepIndex, viewingIntro]);
 
   useEffect(() => {
     const outlineStep = steps[stepIndex];
@@ -76,9 +83,9 @@ export default function CourseWizard() {
 
   useEffect(() => {
     const bookId = outline?.id;
-    if (!bookId || stepIndex < 0) {
+    if (!bookId || stepIndex < 0 || viewingIntro) {
       setBookmarked(false);
-      setBookmarks([]);
+      if (!bookId) setBookmarks([]);
       return;
     }
     let active = true;
@@ -93,19 +100,28 @@ export default function CourseWizard() {
     return () => {
       active = false;
     };
-  }, [outline?.id, stepIndex, account?.user?.userId]);
+  }, [outline?.id, stepIndex, account?.user?.userId, viewingIntro]);
 
   const handlePrevious = useCallback(() => {
+    if (viewingIntro) return;
+    if (stepIndex <= 0) {
+      setViewingIntro(true);
+      return;
+    }
     setStepIndex((value) => Math.max(0, value - 1));
-  }, []);
+  }, [stepIndex, viewingIntro]);
 
   const handleNext = useCallback(() => {
+    if (viewingIntro) {
+      setViewingIntro(false);
+      return;
+    }
     setStepIndex((value) => Math.min(steps.length - 1, value + 1));
-  }, [steps.length]);
+  }, [steps.length, viewingIntro]);
 
   const handleToggleBookmark = useCallback(async () => {
     const bookId = outline?.id;
-    if (!bookId || !currentStep) return;
+    if (!bookId || !currentStep || viewingIntro) return;
     const result = await toggleCurrentBookmark({
       bookId,
       stepIndex,
@@ -114,7 +130,7 @@ export default function CourseWizard() {
     });
     setBookmarks(result.list);
     setBookmarked(Boolean(result.created));
-  }, [outline?.id, currentStep, stepIndex]);
+  }, [outline?.id, currentStep, stepIndex, viewingIntro]);
 
   const handleRemoveBookmark = useCallback(async (bookmarkId: string) => {
     const bookId = outline?.id;
@@ -130,23 +146,37 @@ export default function CourseWizard() {
 
   const handleJumpToBookmark = useCallback((targetStepIndex: number) => {
     const clamped = Math.max(0, Math.min(steps.length - 1, targetStepIndex));
+    setViewingIntro(false);
     setStepIndex(clamped);
   }, [steps.length]);
 
+  const relatedBooks = useMemo(() => {
+    if (!outline) return [];
+    const category = normalizeBookCategory(outline.category);
+    return courses.filter(
+      (course) => course.id !== outline.id && normalizeBookCategory(course.category) === category,
+    );
+  }, [courses, outline]);
+
+  const uiTotalPages = steps.length + 1;
+  const uiPageIndex = viewingIntro ? 1 : stepIndex + 2;
+  const canGoPrevious = !viewingIntro;
+  const canGoNext = viewingIntro || stepIndex < steps.length - 1;
+
   useStageNavRegistration(
-    stepIndex + 1,
-    steps.length,
-    stepIndex > 0,
-    stepIndex < steps.length - 1,
+    uiPageIndex,
+    uiTotalPages,
+    canGoPrevious,
+    canGoNext,
     handlePrevious,
     handleNext,
   );
 
-  if (!outlineLoaded || (stepLoading && !currentStep)) {
+  if (!outlineLoaded || (stepLoading && !currentStep && !viewingIntro)) {
     return <div className="page-content panel"><div className="panel-body">Loading course...</div></div>;
   }
 
-  if (error || !outline || !currentStep || steps.length === 0) {
+  if (error || !outline || steps.length === 0) {
     return (
       <div className="page-content panel">
         <div className="panel-heading">Course not found</div>
@@ -158,12 +188,31 @@ export default function CourseWizard() {
     );
   }
 
+  if (viewingIntro) {
+    return (
+      <div className="page-content course-wizard-page course-wizard-page--about practice-page practice-wizard practice-code-page">
+        <CourseAboutStep
+          course={outline}
+          related={relatedBooks}
+          pageIndex={uiPageIndex}
+          totalPages={uiTotalPages}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canPrevious={canGoPrevious}
+          canNext={canGoNext}
+        />
+      </div>
+    );
+  }
+
+  if (!currentStep) {
+    return <div className="page-content panel"><div className="panel-body">Loading course...</div></div>;
+  }
+
   const bookName = `${outline.icon} ${outline.title}`;
   const chapterName = currentStep.chapterTitle;
   const chapterNumber = currentStep.chapterIndex + 1;
   const pageType = courseStepLabel(currentStep);
-  const pageIndex = stepIndex + 1;
-  const totalPages = steps.length;
   const hasChapterIndex = typeof currentStep.chapterIndex !== undefined
     && currentStep.chapterIndex !== null
     && currentStep.chapterIndex > 0;
@@ -173,6 +222,7 @@ export default function CourseWizard() {
 
   const bookmarkProps = {
     bookId: outline.id,
+    stepIndex,
     bookmarked,
     bookmarks,
     onToggleBookmark: handleToggleBookmark,
@@ -189,15 +239,15 @@ export default function CourseWizard() {
           chapterName={chapterName}
           chapterNumber={chapterNumber}
           pageType={pageType}
-          pageIndex={pageIndex}
-          totalPages={totalPages}
+          pageIndex={uiPageIndex}
+          totalPages={uiTotalPages}
           pageBrief={pageBrief}
           bookHtmlFolder={outline.bookHtmlFolder}
           courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}
-          canPrevious={stepIndex > 0}
-          canNext={stepIndex < steps.length - 1}
+          canPrevious={canGoPrevious}
+          canNext={canGoNext}
           {...bookmarkProps}
         />
       )}
@@ -208,15 +258,15 @@ export default function CourseWizard() {
           chapterName={chapterName}
           chapterNumber={chapterNumber}
           pageType={pageType}
-          pageIndex={pageIndex}
-          totalPages={totalPages}
+          pageIndex={uiPageIndex}
+          totalPages={uiTotalPages}
           pageBrief={pageBrief}
           bookHtmlFolder={outline.bookHtmlFolder}
           courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}
-          canPrevious={stepIndex > 0}
-          canNext={stepIndex < steps.length - 1}
+          canPrevious={canGoPrevious}
+          canNext={canGoNext}
           {...bookmarkProps}
         />
       )}
@@ -227,15 +277,15 @@ export default function CourseWizard() {
           chapterName={chapterName}
           chapterNumber={chapterNumber}
           pageType={pageType}
-          pageIndex={pageIndex}
-          totalPages={totalPages}
+          pageIndex={uiPageIndex}
+          totalPages={uiTotalPages}
           pageBrief={pageBrief}
           bookHtmlFolder={outline.bookHtmlFolder}
           courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}
-          canPrevious={stepIndex > 0}
-          canNext={stepIndex < steps.length - 1}
+          canPrevious={canGoPrevious}
+          canNext={canGoNext}
           {...bookmarkProps}
         />
       )}
@@ -247,13 +297,13 @@ export default function CourseWizard() {
           chapterName={chapterName}
           chapterNumber={chapterNumber}
           pageType={pageType}
-          pageIndex={pageIndex}
-          totalPages={totalPages}
+          pageIndex={uiPageIndex}
+          totalPages={uiTotalPages}
           pageBrief={pageBrief}
           onPrevious={handlePrevious}
           onNext={handleNext}
-          canPrevious={stepIndex > 0}
-          canNext={stepIndex < steps.length - 1}
+          canPrevious={canGoPrevious}
+          canNext={canGoNext}
           {...bookmarkProps}
         />
       )}
@@ -264,13 +314,13 @@ export default function CourseWizard() {
           chapterName={chapterName}
           chapterNumber={chapterNumber}
           pageType={pageType}
-          pageIndex={pageIndex}
-          totalPages={totalPages}
+          pageIndex={uiPageIndex}
+          totalPages={uiTotalPages}
           pageBrief={pageBrief}
           onPrevious={handlePrevious}
           onNext={handleNext}
-          canPrevious={stepIndex > 0}
-          canNext={stepIndex < steps.length - 1}
+          canPrevious={canGoPrevious}
+          canNext={canGoNext}
           {...bookmarkProps}
         />
       )}

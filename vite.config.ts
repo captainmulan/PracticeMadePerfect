@@ -1,8 +1,10 @@
-import { cpSync, existsSync } from "node:fs";
+import { cpSync, existsSync, readdirSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BOOK_HTML_ROOT = path.resolve(__dirname, "book_html");
@@ -23,6 +25,8 @@ const BOOK_HTML_MIME: Record<string, string> = {
   ".woff": "font/woff",
   ".mp3": "audio/mpeg",
   ".wav": "audio/wav",
+  ".pdf": "application/pdf",
+  ".epub": "application/epub+zip",
 };
 
 function safeBookHtmlPath(relativePath: string): string | null {
@@ -34,33 +38,65 @@ function safeBookHtmlPath(relativePath: string): string | null {
   return filePath;
 }
 
+async function resolveBookHtmlFile(filePath: string): Promise<string | null> {
+  if (existsSync(filePath)) {
+    return filePath;
+  }
+  const withPdf = `${filePath}.pdf`;
+  if (existsSync(withPdf)) {
+    return withPdf;
+  }
+  const dir = path.dirname(filePath);
+  if (!existsSync(dir)) {
+    return null;
+  }
+  const pdfs = readdirSync(dir).filter((name) => name.toLowerCase().endsWith(".pdf"));
+  if (pdfs.length === 0) {
+    return null;
+  }
+  return path.resolve(dir, pdfs[0]);
+}
+
+async function serveBookHtml(
+  req: IncomingMessage,
+  res: ServerResponse,
+  next: () => void,
+) {
+  if (!req.url?.startsWith("/book_html/")) {
+    next();
+    return;
+  }
+
+  const requested = safeBookHtmlPath(req.url.slice("/book_html/".length));
+  if (!requested) {
+    res.statusCode = 403;
+    res.end("Forbidden");
+    return;
+  }
+
+  try {
+    const filePath = await resolveBookHtmlFile(requested);
+    if (!filePath) {
+      next();
+      return;
+    }
+    const data = await readFile(filePath);
+    const ext = path.extname(filePath).toLowerCase();
+    res.setHeader("Content-Type", BOOK_HTML_MIME[ext] ?? "application/octet-stream");
+    res.end(data);
+  } catch {
+    next();
+  }
+}
+
 function bookHtmlStaticPlugin(): Plugin {
   return {
     name: "book-html-static",
     configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        if (!req.url?.startsWith("/book_html/")) {
-          next();
-          return;
-        }
-
-        const filePath = safeBookHtmlPath(req.url.slice("/book_html/".length));
-        if (!filePath) {
-          res.statusCode = 403;
-          res.end("Forbidden");
-          return;
-        }
-
-        try {
-          const { readFile } = await import("node:fs/promises");
-          const data = await readFile(filePath);
-          const ext = path.extname(filePath).toLowerCase();
-          res.setHeader("Content-Type", BOOK_HTML_MIME[ext] ?? "application/octet-stream");
-          res.end(data);
-        } catch {
-          next();
-        }
-      });
+      server.middlewares.use(serveBookHtml);
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(serveBookHtml);
     },
     closeBundle() {
       if (!existsSync(BOOK_HTML_ROOT)) {

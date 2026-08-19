@@ -14,9 +14,11 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
   const homePageData = getHomePageData();
   const isEmpty = Boolean(item.placeholder);
   const isAuthor = item.actionType === "author";
+  const isCategory = item.actionType === "category";
   const authorAvatarUrl = isAuthor ? item.coverImageUrl?.trim() : undefined;
   const isImageAvatar = Boolean(authorAvatarUrl && /^https?:\/\//i.test(authorAvatarUrl));
   const showCoverImage = Boolean(useCoverImage && item.coverImageUrl && !isEmpty && !item.actionType);
+  const showCaption = !isEmpty && !isAuthor;
   
   const iconSize = item.iconSize ?? 80; // default admin-configurable
   const iconFont = Math.round(iconSize * 0.9);
@@ -30,12 +32,6 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
   const coverColorStart = isEmpty ? (homePageData.style?.emptyBook?.coverColorStart ?? "#f1f5f9") : item.coverColorStart;
   const coverColorMiddle = isEmpty ? (homePageData.style?.emptyBook?.coverColorMiddle ?? "#f1f5f9") : item.coverColorMiddle;
   const coverColorEnd = isEmpty ? (homePageData.style?.emptyBook?.coverColorEnd ?? "#f1f5f9") : item.coverColorEnd;
-  const coverWidth = isEmpty
-    ? ((homePageData.style?.emptyBook as any)?.coverWidth ?? item.coverWidth)
-    : item.coverWidth;
-  const coverHeight = isEmpty
-    ? ((homePageData.style?.emptyBook as any)?.coverHeight ?? item.coverHeight)
-    : item.coverHeight;
   const displayTitle = isEmpty ? (homePageData.style?.emptyBook?.title ?? "Coming soon") : item.title;
   const iconPosition = item.iconPosition ?? "center-center";
 
@@ -69,7 +65,6 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
     ["--book-color" as any]: coverColorStart,
     ["--book-icon-font" as any]: `${iconFont}px`,
     ["--book-title-font" as any]: `${titleFontSize}px`,
-    width: coverWidth ? `${coverWidth}px` : undefined,
   };
 
   const authorCoverStyles: CSSProperties = isAuthor
@@ -111,20 +106,31 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
 
   const content = (
     <>
-      {!showCoverImage && item.link ? (
+      {showCaption ? (
+        <div className="book-caption">
+          {isCategory ? (
+            <span className="book-caption-title">{displayTitle}</span>
+          ) : (
+            <>
+              <span className="book-caption-author">{item.authorName?.trim() || "Unknown"}</span>
+              <span className="book-caption-title">{displayTitle}</span>
+            </>
+          )}
+        </div>
+      ) : !showCoverImage && item.link ? (
         <span className="book-title" style={bookTitleStyles}>{displayTitle}</span>
       ) : null}
-      <div className="book-cover" style={{ 
+      <div className={`book-cover${isCategory ? " book-cover--emoji" : ""}`} style={{ 
         ...authorCoverStyles,
-        background: showCoverImage
+        background: showCoverImage || isCategory
           ? undefined
           : `linear-gradient(180deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
         position: "relative",
-        width: coverWidth ? `${coverWidth}px` : undefined,
-        height: coverHeight ? `${coverHeight}px` : undefined,
-        overflow: "hidden",
+        overflow: isCategory ? "visible" : "hidden",
       }}>
-        {isAuthor ? (
+        {isCategory ? (
+          <span className="book-category-emoji" aria-hidden="true">{item.icon}</span>
+        ) : isAuthor ? (
           <div
             style={{
               display: "flex",
@@ -184,36 +190,30 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
             </span>
           </div>
         ) : showCoverImage ? (
-          <>
-            <img
-              className="book-cover-image"
-              src={item.coverImageUrl}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-              }}
-            />
-            <span
-              className="book-cover-title book-cover-title--on-image"
-              style={{
-                position: "absolute",
-                zIndex: 3,
-                ...titleContainerStyles,
-                ...coverTitleStyles,
-                color: titleColor ?? "#ffffff",
-                textShadow: "0 1px 3px rgba(0, 0, 0, 0.85), 0 0 8px rgba(0, 0, 0, 0.5)",
-              }}
-            >
-              {displayTitle}
-            </span>
-          </>
+          <img
+            className="book-cover-image"
+            src={(item.coverImageUrl ?? "").replace(/ /g, "%20")}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            sizes="(max-width: 640px) 46vw, (max-width: 980px) 28vw, 18vw"
+            onError={(event) => {
+              const image = event.currentTarget;
+              if (image.src.includes("/thumbs/")) {
+                image.src = image.src.replace("/thumbs/", "/");
+              }
+            }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              objectPosition: "center",
+              background: "#0b1220",
+              display: "block",
+            }}
+          />
         ) : isEmpty ? (
           <span className="book-cover-title" style={{ 
             position: "absolute",
@@ -228,11 +228,13 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
           </span>
         ) : (
           <>
-            <span className="book-cover-title" style={{
-              position: "absolute",
-              ...titleContainerStyles,
-              ...coverTitleStyles
-            }}>{displayTitle}</span>
+            {!showCaption ? (
+              <span className="book-cover-title" style={{
+                position: "absolute",
+                ...titleContainerStyles,
+                ...coverTitleStyles
+              }}>{displayTitle}</span>
+            ) : null}
             <div className="book-icon" style={{ 
               position: "absolute", 
               width: `calc(var(--book-icon-font) * 1)`,
@@ -251,19 +253,19 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
             </div>
           </>
         )}
-        <div className="book-spine" />
+        {!isCategory ? <div className="book-spine" /> : null}
       </div>
     </>
   );
 
-  if (item.actionType === "author") {
+  if (item.actionType === "author" || item.actionType === "category") {
     return (
       <button
         type="button"
-        className={`book${showCoverImage ? " book--cover-image" : ""}`}
+        className={`book${showCoverImage ? " book--cover-image" : ""}${isCategory ? " book--category" : ""}`}
         style={{ ...bookStyles, border: "none", cursor: "pointer", padding: 0 }}
         onClick={() => onItemClick?.(item)}
-        aria-label={`View books by ${item.title}`}
+        aria-label={item.actionType === "category" ? `Open ${item.title}` : `View books by ${item.title}`}
       >
         {content}
       </button>
