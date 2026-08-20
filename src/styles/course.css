@@ -498,20 +498,49 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   to { transform: translateX(0); }
 }
 
-.course-wizard-page--about,
-.course-wizard-page--about .practice-workspace,
-.course-wizard-page--about .practice-workspace-body,
-.course-wizard-page--about .practice-workspace-editor-shell {
+.course-wizard-page--about {
   background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.course-wizard-page--about .practice-workspace-body,
-.course-wizard-page--about .practice-workspace-editor-shell {
+.book-about-page {
   display: flex;
   flex-direction: column;
+  height: 100%;
   min-height: 0;
+}
+
+.book-about-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 12px;
+  padding: 16px 0 8px;
+  flex-shrink: 0;
+}
+
+.book-about-action {
   flex: 1;
-  overflow: hidden;
+  max-width: 220px;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 2px solid rgba(148, 163, 184, 0.45);
+  background: rgba(15, 23, 42, 0.45);
+  color: #f8fafc;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.book-about-action--primary {
+  border-color: rgba(102, 126, 234, 0.75);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .book-about {
@@ -520,11 +549,16 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  height: 100%;
   overflow: auto;
-  padding: 16px 16px 12px;
+  padding: 8px 16px 12px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  background: transparent;
+}
+
+.book-about-inner {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
 }
 
 .book-about .home-space-decor {
@@ -537,6 +571,7 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 
 .book-about-hero,
 .book-about-blurb,
+.book-about-actions,
 .book-about-related {
   position: relative;
   z-index: 1;
@@ -544,19 +579,34 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 
 .book-about-hero {
   display: grid;
-  grid-template-columns: minmax(110px, 160px) minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: minmax(140px, min(46vw, 280px)) minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
+}
+
+.book-about-cover-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.book-about-cover-wrap .book-spine {
+  width: 10px;
+  z-index: 3;
 }
 
 .book-about-cover {
   width: 100%;
   aspect-ratio: 2 / 3;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.35);
   display: block;
+  padding-left: 10px;
+  box-sizing: border-box;
 }
 
 .book-about-cover--fallback {
@@ -564,21 +614,24 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   align-items: center;
   justify-content: center;
   font-size: 2.4rem;
+  background: rgba(15, 23, 42, 0.35);
 }
 
 .book-about-meta {
   margin: 0;
   display: grid;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
 }
 
 .book-about-meta div {
   display: grid;
-  gap: 3px;
+  gap: 2px;
+  min-width: 0;
 }
 
 .book-about-meta dt {
-  font-size: 1rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -587,9 +640,48 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 
 .book-about-meta dd {
   margin: 0;
-  font-size: 1.45rem;
+  font-size: clamp(0.95rem, 3.8vw, 1.35rem);
   font-weight: 800;
   color: #f8fafc;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.25;
+}
+
+@media (min-width: 900px) {
+  .book-about-actions {
+    justify-content: flex-start;
+    padding-top: 20px;
+  }
+
+  .book-about-inner {
+    max-width: 760px;
+    padding-top: 12px;
+  }
+
+  .book-about-hero {
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .book-about-cover-wrap {
+    max-width: 280px;
+  }
+
+  .book-about-meta dt {
+    font-size: 1rem;
+  }
+
+  .book-about-meta dd {
+    font-size: 1.45rem;
+  }
+
+  .book-about-related {
+    max-width: min(1200px, 100%);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
 }
 
 .book-about-blurb {
@@ -644,8 +736,15 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 }
 
 .book-about-related-item .book-cover-image {
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center;
+  left: 10px !important;
+  width: calc(100% - 10px) !important;
+}
+
+.book-about-related-item .book-spine {
+  width: 10px !important;
+  z-index: 3;
 }
 
 .book-about-related-item .book-caption {

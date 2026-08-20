@@ -5,19 +5,10 @@ import PracticeWorkspace from "./PracticeWorkspace";
 import { extractPdfPageNumber, getPdfBuffer, resolvePdfStepFileUrl } from "../utils/pdfCache";
 import "../styles/course.css";
 
-const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom";
-const PDF_ZOOM_LEVELS = [100, 110, 120, 130, 140, 150, 160, 170, 180, 190];
-const DESKTOP_PDF_ZOOM = 100;
-const MOBILE_PDF_ZOOM = 100;
-
-function isMobilePdfViewport(): boolean {
-  if (typeof window === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  const isIOS =
-    /iPad|iPhone|iPod/.test(ua) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  return isIOS || window.matchMedia("(max-width: 767px)").matches;
-}
+const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom-v6";
+const PDF_ZOOM_LEVELS = Array.from({ length: 21 }, (_, i) => 100 + i * 5); // 100..200 step 5
+/** 100% = auto-fit real page content (margins cropped). User zoom multiplies that. */
+const DEFAULT_PDF_ZOOM = 100;
 
 function snapPdfZoom(value: number): number {
   return PDF_ZOOM_LEVELS.reduce((best, level) =>
@@ -26,7 +17,6 @@ function snapPdfZoom(value: number): number {
 }
 
 function readStoredPdfZoom(): number {
-  const fallback = isMobilePdfViewport() ? MOBILE_PDF_ZOOM : DESKTOP_PDF_ZOOM;
   try {
     const raw = Number(localStorage.getItem(PDF_ZOOM_STORAGE_KEY));
     if (Number.isFinite(raw) && raw >= 50 && raw <= 300) {
@@ -35,7 +25,7 @@ function readStoredPdfZoom(): number {
   } catch {
     /* ignore */
   }
-  return fallback;
+  return DEFAULT_PDF_ZOOM;
 }
 
 interface CoursePdfStepProps {
@@ -85,21 +75,35 @@ export default function CoursePdfStep({
   onJumpToBookmark,
 }: CoursePdfStepProps) {
   const pdfSource = step.contentHtml?.trim() ?? "";
-  const { fileUrl, pageNumber, viewerSrc } = useMemo(() => {
+  const { fileUrl, pageNumber, viewerBindKey } = useMemo(() => {
     const file = resolvePdfStepFileUrl(pdfSource, bookHtmlFolder);
     const hasPageHint = /(?:#|\?)page=\d+/i.test(pdfSource);
     const page = hasPageHint
       ? extractPdfPageNumber(pdfSource)
       : Math.max(1, (typeof step.stepIndex === "number" ? step.stepIndex : 0) + 1);
-    const src = file ? `/pdf-viewer.html?file=${encodeURIComponent(file)}&page=${page}` : null;
-    return { fileUrl: file, pageNumber: page, viewerSrc: src };
+    const bindKey = file ? `${file}::${page}` : null;
+    return { fileUrl: file, pageNumber: page, viewerBindKey: bindKey };
   }, [bookHtmlFolder, pdfSource, step.stepIndex]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [bufferReady, setBufferReady] = useState<"idle" | "loading" | "ready">("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pageZoom, setPageZoom] = useState(readStoredPdfZoom);
+  /** Bake current zoom into iframe URL only when the page/file changes so zoom persists across pages. */
+  const [viewerSrc, setViewerSrc] = useState<string | null>(null);
   const keyRef = useRef(`${fileUrl}::${pageIndex}`);
+
+  useEffect(() => {
+    if (!fileUrl) {
+      setViewerSrc(null);
+      return;
+    }
+    setViewerSrc(
+      `/pdf-viewer.html?file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}`,
+    );
+    // pageZoom intentionally omitted: zoom-only changes use postMessage, not remount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fileUrl, pageNumber]);
 
   useEffect(() => {
     keyRef.current = `${fileUrl}::${pageIndex}`;
@@ -240,7 +244,7 @@ export default function CoursePdfStep({
       canNext={canNext}
       loadError={loadError ?? undefined}
       contentIframeRef={iframeRef}
-      contentIframeBindKey={viewerSrc}
+      contentIframeBindKey={viewerBindKey}
       bookId={bookId}
       stepIndex={typeof stepIndex === "number" ? stepIndex : Math.max(0, pageIndex - 2)}
       stepTitle={step.title}

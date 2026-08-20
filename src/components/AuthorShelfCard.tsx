@@ -14,33 +14,33 @@ export default function AuthorShelfCard({ item, onItemClick }: AuthorShelfCardPr
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "flex-start",
-    gap: "10px",
+    justifyContent: "flex-end",
+    gap: "8px",
     padding: item.placeholder ? "4px 0 0" : "0",
     background: "transparent",
     border: "none",
     boxSizing: "border-box",
     cursor: item.placeholder ? "default" : "pointer",
-    width: "auto",
+    width: "100%",
     minHeight: "auto",
   };
 
   const content = (
-    <div className={`author-profile-content${item.placeholder ? " placeholder" : ""}`} style={cardStyles}>
-      <div className="author-profile-avatar">
-        {isImageAvatar ? (
-          <img
-            src={authorAvatarUrl}
-            alt={item.title}
-            loading="lazy"
-            decoding="async"
-          />
-        ) : (
-          <span className="author-profile-icon">{item.icon || "👤"}</span>
-        )}
-        {/* Title above avatar for both real authors and placeholders */}
-        <div className="author-profile-title author-profile-title--above">{item.title}</div>
-      </div>
+    <div className={`author-shelf-item${item.placeholder ? " placeholder" : ""}`} style={cardStyles}>
+      <span className="book-caption-title author-shelf-label">{item.title}</span>
+      {isImageAvatar ? (
+        <img
+          className="author-shelf-photo"
+          src={authorAvatarUrl}
+          alt={item.title}
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <span className="book-category-emoji author-shelf-emoji" aria-hidden="true">
+          {item.icon || "👤"}
+        </span>
+      )}
     </div>
   );
 
@@ -59,14 +59,14 @@ export default function AuthorShelfCard({ item, onItemClick }: AuthorShelfCardPr
   return (
     <button
       type="button"
-      className="author-profile-button"
+      className="author-profile-button author-shelf-button"
       onClick={() => onItemClick?.(item)}
       style={{
         border: "none",
         background: "transparent",
         padding: 0,
         margin: 0,
-        width: "auto",
+        width: "100%",
       }}
       aria-label={`View books by ${item.title}`}
     >

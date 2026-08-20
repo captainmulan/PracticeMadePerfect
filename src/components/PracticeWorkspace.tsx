@@ -99,7 +99,7 @@ export default function PracticeWorkspace({
   onRemoveBookmark,
   onJumpToBookmark,
   pageZoom,
-  pageZoomLevels = [100, 110, 120, 130, 140, 150, 160, 170, 180, 190],
+  pageZoomLevels = Array.from({ length: 21 }, (_, i) => 100 + i * 5),
   onPageZoomChange,
 }: PracticeWorkspaceProps) {
   const homeData = getHomePageData();

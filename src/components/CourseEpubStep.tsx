@@ -56,8 +56,16 @@ export default function CourseEpubStep({
     const isUrl = raw && (raw.startsWith("/") || /^https?:\/\//i.test(raw));
     const file = normalizeEpubFileUrl(isUrl ? raw : "");
     const loc = extractEpubLocation(isUrl ? raw : "");
-    const src = isUrl ? `/epub-viewer.html?file=${encodeURIComponent(raw)}` : null;
-    return { fileUrl: file, location: loc, viewerSrc: src };
+    if (!isUrl || !file) {
+      return { fileUrl: "", location: null as string | null, viewerSrc: null as string | null };
+    }
+    const qs = new URLSearchParams({ file });
+    if (loc) qs.set("location", loc);
+    return {
+      fileUrl: file,
+      location: loc,
+      viewerSrc: `/epub-viewer.html?${qs.toString()}`,
+    };
   }, [epubSource]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -66,11 +74,11 @@ export default function CourseEpubStep({
   const keyRef = useRef(`${fileUrl}::${pageIndex}`);
 
   useEffect(() => {
-    keyRef.current = `${fileUrl}::${pageIndex}`;
+    keyRef.current = fileUrl;
     const myKey = keyRef.current;
     if (!fileUrl) return;
 
-    console.log("[CourseEpubStep] Loading EPUB:", fileUrl, "pageIndex:", pageIndex);
+    console.log("[CourseEpubStep] Loading EPUB:", fileUrl);
     setLoadError(null);
 
     const sendToIframe = (buffer?: ArrayBuffer) => {
@@ -80,13 +88,20 @@ export default function CourseEpubStep({
         return;
       }
       try {
-        const payload: { target: "epub-viewer"; type: "load-buffer"; url: string; buffer?: ArrayBuffer } = {
+        const payload: {
+          target: "epub-viewer";
+          type: "load-buffer";
+          url: string;
+          location?: string | null;
+          buffer?: ArrayBuffer;
+        } = {
           target: "epub-viewer",
           type: "load-buffer",
           url: fileUrl,
+          location,
         };
         if (buffer) payload.buffer = buffer.slice(0);
-        console.log("[CourseEpubStep] Sending buffer to iframe, size:", buffer?.byteLength, "payload:", payload);
+        console.log("[CourseEpubStep] Sending buffer to iframe, size:", buffer?.byteLength);
         frame.contentWindow.postMessage(payload, "*");
       } catch (e) {
         console.error("[CourseEpubStep] Failed to send to iframe:", e);
@@ -143,18 +158,20 @@ export default function CourseEpubStep({
       active = false;
       iframeRef.current?.removeEventListener("load", onIframeLoad);
     };
-  }, [fileUrl, pageIndex]);
+    // Intentionally only reload when the EPUB file changes; chapter jumps use goto-location.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- location handled below
+  }, [fileUrl]);
 
   // Navigate the EPUB viewer to the correct chapter when the buffer is ready
   // and the location changes (e.g. when navigating between chapters).
   useEffect(() => {
     if (bufferReady !== "ready") return;
     const frame = iframeRef.current;
-    if (!frame?.contentWindow) return;
+    if (!frame?.contentWindow || !location) return;
     try {
       frame.contentWindow.postMessage(
         { target: "epub-viewer", type: "goto-location", location },
-        window.location.origin,
+        "*",
       );
     } catch {
       /* ignore */
@@ -177,7 +194,7 @@ export default function CourseEpubStep({
       canNext={canNext}
       loadError={loadError ?? undefined}
       contentIframeRef={iframeRef}
-      contentIframeBindKey={viewerSrc}
+      contentIframeBindKey={fileUrl}
       bookId={bookId}
       stepIndex={typeof stepIndex === "number" ? stepIndex : Math.max(0, pageIndex - 2)}
       stepTitle={step.title}

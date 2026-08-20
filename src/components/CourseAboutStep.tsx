@@ -1,5 +1,5 @@
+import { Link } from "react-router-dom";
 import type { Course } from "../data/courses";
-import PracticeWorkspace from "./PracticeWorkspace";
 import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
 import { normalizeBookCategory } from "../utils/bookCategories";
@@ -10,75 +10,65 @@ import "../styles/course.css";
 interface CourseAboutStepProps {
   course: Course;
   related: Course[];
-  pageIndex: number;
-  totalPages: number;
-  onPrevious?: () => void;
-  onNext?: () => void;
-  canPrevious?: boolean;
-  canNext?: boolean;
+  onRead?: () => void;
 }
 
 export default function CourseAboutStep({
   course,
   related,
-  pageIndex,
-  totalPages,
-  onPrevious,
-  onNext,
-  canPrevious = false,
-  canNext = true,
+  onRead,
 }: CourseAboutStepProps) {
-  const coverUrl = resolveBookCoverUrl(course);
+  const coverUrl = resolveBookCoverUrl(course, { variant: "thumb" }) ?? resolveBookCoverUrl(course);
   const pageCount = course.stepCount ?? course.chapters.reduce((sum, chapter) => sum + chapter.steps.length, 0);
   const relatedItems = related.slice(0, 12).map((item) => createShelfItemFromCourse(item, item.category));
 
   return (
-    <PracticeWorkspace
-      bookName={`${course.icon} ${course.title}`}
-      chapterName="About"
-      chapterNumber={0}
-      pageType="About"
-      pageIndex={pageIndex}
-      totalPages={totalPages}
-      title={course.title}
-      description={course.description}
-      onPrevious={onPrevious}
-      onNext={onNext}
-      canPrevious={canPrevious}
-      canNext={canNext}
-    >
+    <div className="book-about-page">
       <div className="book-about">
         <HomeSpaceDecor />
-        <div className="book-about-hero">
-          {coverUrl ? (
-            <img className="book-about-cover" src={coverUrl} alt="" />
+        <div className="book-about-inner">
+          <div className="book-about-hero">
+            <div className="book-about-cover-wrap">
+              {coverUrl ? (
+                <img className="book-about-cover" src={coverUrl} alt="" />
+              ) : (
+                <div className="book-about-cover book-about-cover--fallback">{course.icon}</div>
+              )}
+              <div className="book-spine" aria-hidden="true" />
+            </div>
+            <dl className="book-about-meta">
+              <div>
+                <dt>Title</dt>
+                <dd>{course.title || "Untitled"}</dd>
+              </div>
+              <div>
+                <dt>Author</dt>
+                <dd>{course.authorName?.trim() || "Unknown"}</dd>
+              </div>
+              <div>
+                <dt>Category</dt>
+                <dd>{normalizeBookCategory(course.category) || "—"}</dd>
+              </div>
+              <div>
+                <dt>Pages</dt>
+                <dd>{pageCount || "—"}</dd>
+              </div>
+            </dl>
+          </div>
+          {course.description?.trim() ? (
+            <p className="book-about-blurb">{course.description}</p>
           ) : (
-            <div className="book-about-cover book-about-cover--fallback">{course.icon}</div>
+            <p className="book-about-blurb book-about-blurb--empty">No description yet.</p>
           )}
-          <dl className="book-about-meta">
-            <div>
-              <dt>Title</dt>
-              <dd>{course.title || "Untitled"}</dd>
-            </div>
-            <div>
-              <dt>Author</dt>
-              <dd>{course.authorName?.trim() || "Unknown"}</dd>
-            </div>
-            <div>
-              <dt>Category</dt>
-              <dd>{normalizeBookCategory(course.category) || "—"}</dd>
-            </div>
-            <div>
-              <dt>Pages</dt>
-              <dd>{pageCount || "—"}</dd>
-            </div>
-          </dl>
+          <div className="book-about-actions">
+            <Link to="/" className="book-about-action">
+              Home
+            </Link>
+            <button type="button" className="book-about-action book-about-action--primary" onClick={onRead}>
+              Read
+            </button>
+          </div>
         </div>
-        {course.description?.trim() ? (
-          <p className="book-about-blurb">{course.description}</p>
-        ) : (
-          <p className="book-about-blurb book-about-blurb--empty">No description yet.</p>
-        )}
         {relatedItems.length > 0 ? (
           <section className="book-about-related">
             <h3>Related books</h3>
@@ -92,6 +82,6 @@ export default function CourseAboutStep({
           </section>
         ) : null}
       </div>
-    </PracticeWorkspace>
+    </div>
   );
 }

@@ -86,6 +86,7 @@
         console.log("[EPUB Viewer] Script loaded, checking ePub availability");
         const params = new URLSearchParams(window.location.search);
         const fileUrl = params.get("file");
+        const locationParam = params.get("location");
         const viewer = document.getElementById("epub-viewer");
         const shell = document.querySelector(".epub-shell");
 
@@ -96,14 +97,15 @@
           return;
         }
 
-        const resolvedFileUrl = fileUrl;
+        const stripHash = (value) => String(value || "").replace(/#.+$/, "");
+        const resolvedFileUrl = stripHash(fileUrl);
+        const locationMatch = String(fileUrl).match(/#(.+)$/);
+        const initialLocation =
+          (typeof locationParam === "string" && locationParam.trim()) ||
+          (locationMatch ? locationMatch[1] : null);
+        console.log("[EPUB Viewer] baseFile:", resolvedFileUrl, "initialLocation:", initialLocation);
 
-        // Extract location fragment for chapter navigation (e.g., #chapter1.xhtml)
-        const locationMatch = resolvedFileUrl.match(/#(.+)$/);
-        const initialLocation = locationMatch ? locationMatch[1] : null;
-        console.log("[EPUB Viewer] initialLocation:", initialLocation);
-
-        if (!window.ePub || !window.ePub.Book) {
+        if (!window.ePub || typeof window.ePub !== "function") {
           console.error("[EPUB Viewer] EPUB.js not available:", window.ePub);
           shell.innerHTML = '<div class="epub-error">EPUB.js failed to load. Please retry.</div>';
           return;
@@ -113,9 +115,113 @@
         let epubBook = null;
         let rendition = null;
         let loaded = false;
+        let pendingLocation = initialLocation;
 
         const showError = (msg) => {
           shell.innerHTML = `<div class="epub-error">${msg}</div>`;
+        };
+
+        const sameEpubUrl = (a, b) => stripHash(a) === stripHash(b);
+
+        const parseLocationParts = (location) => {
+          const raw = String(location || "").trim();
+          if (!raw) return { path: "", fragment: "" };
+          const hash = raw.indexOf("#");
+          if (hash < 0) return { path: raw, fragment: "" };
+          return { path: raw.slice(0, hash), fragment: raw.slice(hash + 1) };
+        };
+
+        const findAnchor = (doc, fragment) => {
+          if (!doc || !fragment) return null;
+          try {
+            const decoded = decodeURIComponent(fragment);
+            return (
+              doc.getElementById(decoded) ||
+              doc.getElementById(fragment) ||
+              doc.querySelector(`[name="${CSS.escape(decoded)}"]`) ||
+              doc.querySelector(`a[id="${CSS.escape(decoded)}"]`)
+            );
+          } catch {
+            return doc.getElementById(fragment) || doc.querySelector(`[name="${fragment}"]`);
+          }
+        };
+
+        const nextSectionAnchor = (doc, startEl) => {
+          if (!doc || !startEl) return null;
+          const anchors = [...doc.querySelectorAll("[id], a[name]")];
+          const startId = startEl.id || startEl.getAttribute("name") || "";
+          let passed = false;
+          for (const el of anchors) {
+            const id = el.id || el.getAttribute("name") || "";
+            if (!id) continue;
+            if (!passed) {
+              if (el === startEl || id === startId) passed = true;
+              continue;
+            }
+            /* Prefer Gutenberg-style / chapter-ish markers; otherwise any later id. */
+            if (/^pgepubid/i.test(id) || /^(chap|chapter|part|sec|section)/i.test(id)) {
+              return el;
+            }
+          }
+          /* Fallback: next id after start in document order. */
+          passed = false;
+          for (const el of anchors) {
+            const id = el.id || el.getAttribute("name") || "";
+            if (!id) continue;
+            if (!passed) {
+              if (el === startEl || id === startId) passed = true;
+              continue;
+            }
+            return el;
+          }
+          return null;
+        };
+
+        /** Keep only one chapter when several share the same XHTML file. */
+        const isolateChapter = (doc, fragment) => {
+          if (!doc?.body || !fragment) return;
+          const start = findAnchor(doc, fragment);
+          if (!start) return;
+          const end = nextSectionAnchor(doc, start);
+          try {
+            const range = doc.createRange();
+            range.setStartBefore(start);
+            if (end) range.setEndBefore(end);
+            else range.setEnd(doc.body, doc.body.childNodes.length);
+            const clone = range.cloneContents();
+            const wrap = doc.createElement("div");
+            wrap.setAttribute("data-pmp-chapter", fragment);
+            wrap.appendChild(clone);
+            doc.body.innerHTML = "";
+            doc.body.appendChild(wrap);
+            doc.documentElement.scrollTop = 0;
+            doc.body.scrollTop = 0;
+          } catch (err) {
+            console.warn("[EPUB Viewer] Chapter isolate failed:", err);
+          }
+        };
+
+        const displayLocation = async (location) => {
+          if (!rendition || !location) return;
+          console.log("[EPUB Viewer] Displaying location:", location);
+          const { fragment } = parseLocationParts(location);
+          await rendition.display(location);
+          try {
+            const contentsList = typeof rendition.getContents === "function" ? rendition.getContents() : [];
+            const list = Array.isArray(contentsList) ? contentsList : contentsList ? [contentsList] : [];
+            for (const contents of list) {
+              if (contents?.document) isolateChapter(contents.document, fragment);
+            }
+          } catch (err) {
+            console.warn("[EPUB Viewer] Post-display isolate error:", err);
+          }
+          setTimeout(() => {
+            try {
+              rendition.resize();
+            } catch {
+              /* ignore */
+            }
+          }, 200);
         };
 
         const loadEpubFromSource = async (source) => {
@@ -130,15 +236,20 @@
             rendition = epubBook.renderTo("epub-viewer", {
               width: "100%",
               height: "100%",
-              flow: "scrolled",
+              flow: "scrolled-doc",
               spread: "none",
             });
             console.log("[EPUB Viewer] Rendition created");
 
-            // Display initial location if provided, otherwise start from beginning
-            if (initialLocation) {
-              console.log("[EPUB Viewer] Displaying initial location:", initialLocation);
-              await rendition.display(initialLocation);
+            rendition.hooks.content.register((contents) => {
+              const { fragment } = parseLocationParts(pendingLocation);
+              if (fragment && contents?.document) {
+                isolateChapter(contents.document, fragment);
+              }
+            });
+
+            if (pendingLocation) {
+              await displayLocation(pendingLocation);
             } else {
               console.log("[EPUB Viewer] Displaying from beginning");
               await rendition.display();
@@ -146,10 +257,13 @@
 
             console.log("[EPUB Viewer] Display successful");
 
-            // Force a resize to ensure content renders
             setTimeout(() => {
               console.log("[EPUB Viewer] Forcing resize");
-              rendition.resize();
+              try {
+                rendition.resize();
+              } catch {
+                /* ignore */
+              }
             }, 500);
 
             try {
@@ -173,32 +287,39 @@
             }
             console.log("[EPUB Viewer] Processing message type:", data.type);
             if (data.type === "load-buffer") {
-              if (data.url && data.url !== resolvedFileUrl) {
+              if (data.url && !sameEpubUrl(data.url, resolvedFileUrl) && !sameEpubUrl(data.url, fileUrl)) {
                 console.log("[EPUB Viewer] URL mismatch:", data.url, "vs", resolvedFileUrl);
+                return;
+              }
+              if (typeof data.location === "string" && data.location) {
+                pendingLocation = data.location;
+              }
+              if (loaded && rendition) {
+                if (pendingLocation) {
+                  void displayLocation(pendingLocation);
+                }
                 return;
               }
               if (data.buffer instanceof ArrayBuffer) {
                 console.log("[EPUB Viewer] Loading from ArrayBuffer, size:", data.buffer.byteLength);
                 loadEpubFromSource(data.buffer.slice(0));
               } else if (typeof data.url === "string" && !loaded) {
-                console.log("[EPUB Viewer] Loading from URL:", data.url);
-                loadEpubFromSource(data.url);
+                console.log("[EPUB Viewer] Loading from URL:", stripHash(data.url));
+                loadEpubFromSource(stripHash(data.url));
               } else {
                 console.log("[EPUB Viewer] No valid buffer or URL provided");
               }
             } else if (data.type === "goto-location") {
+              const location = data.location;
+              if (typeof location === "string" && location) {
+                pendingLocation = location;
+              }
               if (!epubBook || !rendition) {
                 console.log("[EPUB Viewer] goto-location: book or rendition not ready");
                 return;
               }
-              const location = data.location;
               if (typeof location === "string" && location) {
-                console.log("[EPUB Viewer] Navigating to location:", location);
-                try {
-                  rendition.display(location);
-                } catch (err) {
-                  console.error("[EPUB Viewer] Navigation error:", err);
-                }
+                void displayLocation(location);
               }
             }
           },

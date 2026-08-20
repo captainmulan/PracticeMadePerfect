@@ -158,14 +158,14 @@ export default function CourseWizard() {
     );
   }, [courses, outline]);
 
-  const uiTotalPages = steps.length + 1;
-  const uiPageIndex = viewingIntro ? 1 : stepIndex + 2;
+  const uiTotalPages = steps.length;
+  const uiPageIndex = stepIndex + 1;
   const canGoPrevious = !viewingIntro;
   const canGoNext = viewingIntro || stepIndex < steps.length - 1;
 
   useStageNavRegistration(
-    uiPageIndex,
-    uiTotalPages,
+    viewingIntro ? 0 : uiPageIndex,
+    viewingIntro ? 0 : uiTotalPages,
     canGoPrevious,
     canGoNext,
     handlePrevious,
@@ -194,12 +194,7 @@ export default function CourseWizard() {
         <CourseAboutStep
           course={outline}
           related={relatedBooks}
-          pageIndex={uiPageIndex}
-          totalPages={uiTotalPages}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          canPrevious={canGoPrevious}
-          canNext={canGoNext}
+          onRead={handleNext}
         />
       </div>
     );

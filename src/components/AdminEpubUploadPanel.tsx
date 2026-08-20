@@ -240,8 +240,8 @@ export default function AdminEpubUploadPanel({
         trimmedId,
       );
       const summary = saveImmediately
-        ? `Uploaded and saved "${course.title}" with ${preview.pages.length} page(s) from EPUB.`
-        : `Loaded "${course.title}" with ${preview.pages.length} page(s) from EPUB. Review pages, then click Save Book.`;
+        ? `Uploaded and saved "${course.title}" with ${preview.pages.length} chapter page(s) from EPUB.`
+        : `Loaded "${course.title}" with ${preview.pages.length} chapter page(s) from EPUB (table of contents). Review pages, then click Save Book.`;
 
       onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
     } catch (err) {

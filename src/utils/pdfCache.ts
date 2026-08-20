@@ -15,6 +15,8 @@ function isPdfBuffer(buffer: ArrayBuffer): boolean {
   const head = new Uint8Array(buffer.slice(0, 5));
   return String.fromCharCode(head[0], head[1], head[2], head[3], head[4]) === "%PDF-";
 }
+
+function pruneCache() {
   const now = Date.now();
   const entries = Array.from(bufferCache.entries()).filter(
     ([, entry]) => entry.status === "ready",

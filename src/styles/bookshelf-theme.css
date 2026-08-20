@@ -1029,7 +1029,10 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
 
 body[data-bookshelf-theme="space"] .page-home .book--category,
 body[data-bookshelf-theme="space"] .page-home .book--category:hover,
-body[data-bookshelf-theme="space"] .page-home .book--category:active {
+body[data-bookshelf-theme="space"] .page-home .book--category:active,
+body[data-bookshelf-theme="space"] .page-home .author-shelf-button,
+body[data-bookshelf-theme="space"] .page-home .author-shelf-button:hover,
+body[data-bookshelf-theme="space"] .page-home .author-shelf-button:active {
   background: transparent !important;
   color: inherit !important;
   box-shadow: none !important;
@@ -1105,9 +1108,61 @@ body[data-bookshelf-theme="space"] .page-home .book--category:active {
 }
 
 .page-home .book-cover-image {
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center center;
   background: #0b1220;
+  left: 10px !important;
+  width: calc(100% - 10px) !important;
+}
+
+.page-home .book-spine {
+  width: 10px !important;
+  z-index: 3;
+}
+
+.page-home .book--category .book-caption {
+  min-height: 3.8em;
+  overflow: visible;
+}
+
+.page-home .book--category .book-caption-title {
+  white-space: normal;
+  overflow: visible;
+  display: block;
+  -webkit-line-clamp: unset;
+  -webkit-box-orient: unset;
+  word-break: break-word;
+  line-height: 1.2;
+  min-height: 2.4em;
+  padding: 0 2px;
+}
+
+.page-home .author-shelf-item {
+  width: 100%;
+  text-align: center;
+}
+
+.page-home .author-shelf-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #f8fafc;
+  font-size: 1.1rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-home .author-shelf-emoji {
+  font-size: clamp(5rem, 16vw, 8rem);
+}
+
+.page-home .author-shelf-photo {
+  width: min(72%, 160px);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
 }
 
 .page-home .book--category .book-cover,

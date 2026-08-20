@@ -197,21 +197,27 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
             loading="lazy"
             decoding="async"
             sizes="(max-width: 640px) 46vw, (max-width: 980px) 28vw, 18vw"
-            onError={(event) => {
-              const image = event.currentTarget;
-              if (image.src.includes("/thumbs/")) {
-                image.src = image.src.replace("/thumbs/", "/");
-              }
-            }}
             style={{
               position: "absolute",
               inset: 0,
-              width: "100%",
+              left: 10,
+              width: "calc(100% - 10px)",
               height: "100%",
-              objectFit: "contain",
+              objectFit: "cover",
               objectPosition: "center",
               background: "#0b1220",
               display: "block",
+            }}
+            onError={(event) => {
+              const image = event.currentTarget;
+              const current = image.src;
+              if (!current.includes("/thumbs/") && current.includes("/book_covers/")) {
+                image.src = current.replace("/book_covers/", "/book_covers/thumbs/");
+                return;
+              }
+              if (current.includes("/thumbs/")) {
+                /* thumbs are canonical — nothing further to try */
+              }
             }}
           />
         ) : isEmpty ? (

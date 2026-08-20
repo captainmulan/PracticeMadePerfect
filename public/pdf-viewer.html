@@ -31,8 +31,8 @@
         flex: 1;
         display: flex;
         align-items: flex-start;
-        justify-content: center;
-        overflow-x: hidden;
+        justify-content: flex-start;
+        overflow-x: auto;
         overflow-y: auto;
         padding: 0;
         box-sizing: border-box;
@@ -49,6 +49,7 @@
         image-rendering: auto;
         /* Keep CSS size in CSS pixels; backing store is 2×+ for sharp glyphs. */
         transform: translateZ(0);
+        flex: 0 0 auto;
       }
       @media (max-width: 767px) {
         .pdf-shell {
@@ -127,13 +128,15 @@
         let pageZoom = 100;
         const zoomParam = Number(params.get("zoom"));
         if (Number.isFinite(zoomParam) && zoomParam >= 50 && zoomParam <= 300) {
-          pageZoom = Math.round(zoomParam / 10) * 10;
+          pageZoom = Math.round(zoomParam / 5) * 5;
         }
         currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
         const syncScrollMode = () => {
-          wrap.style.overflowX = pageZoom > 100 ? "auto" : "hidden";
+          wrap.style.overflowX = "auto";
           wrap.style.overflowY = "auto";
+          wrap.style.justifyContent = "flex-start";
+          wrap.style.alignItems = "flex-start";
         };
         syncScrollMode();
 
@@ -168,21 +171,258 @@
           }
         };
 
-        const computeLayout = (page, scaleBoost = 1) => {
+        /** Text-layer bounds in viewport/page CSS units (top-left origin). */
+        const getTextContentBox = async (page, pageW, pageH) => {
+          try {
+            const text = await page.getTextContent();
+            const items = text?.items;
+            if (!items || items.length < 3) return null;
+            const viewport = page.getViewport({ scale: 1 });
+            const Util = window.pdfjsLib.Util;
+            const headerCut = pageH * 0.09;
+            const footerCut = pageH * 0.07;
+            let minX = Infinity;
+            let minY = Infinity;
+            let maxX = -Infinity;
+            let maxY = -Infinity;
+            let used = 0;
+            for (const item of items) {
+              if (!item?.transform) continue;
+              const m = Util.transform(viewport.transform, item.transform);
+              const x = m[4];
+              const y = m[5];
+              const w = (typeof item.width === "number" ? item.width : 0) * Math.abs(m[0] || 1);
+              const h =
+                (typeof item.height === "number" ? item.height : 0) * Math.abs(m[3] || 1) ||
+                Math.hypot(m[2], m[3]) ||
+                8;
+              if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+              const top = y - h;
+              /* Skip running headers/footers so they don't force a full-page width. */
+              if (top < headerCut || top > pageH - footerCut) continue;
+              used += 1;
+              minX = Math.min(minX, x);
+              maxX = Math.max(maxX, x + Math.max(w, 0));
+              minY = Math.min(minY, top);
+              maxY = Math.max(maxY, y);
+            }
+            if (used < 2 || !Number.isFinite(minX) || maxX <= minX || maxY <= minY) return null;
+            return {
+              x: Math.max(0, minX),
+              y: Math.max(0, minY),
+              w: Math.min(pageW, maxX) - Math.max(0, minX),
+              h: Math.min(pageH, maxY) - Math.max(0, minY),
+            };
+          } catch {
+            return null;
+          }
+        };
+
+        /**
+         * Find ink bounds from ImageData. Ignores a thin outer frame (page borders)
+         * and trims sparse edge noise via ink-mass percentiles so sparse text pages
+         * don't expand to the full paper size.
+         */
+        const inkBoundsFromImageData = (imageData) => {
+          const { data, width, height } = imageData;
+          if (width < 8 || height < 8) return null;
+
+          const frameX = Math.max(1, Math.floor(width * 0.015));
+          const frameY = Math.max(1, Math.floor(height * 0.015));
+          const x0 = frameX;
+          const x1 = width - 1 - frameX;
+          const y0 = frameY;
+          const y1 = height - 1 - frameY;
+          if (x1 <= x0 || y1 <= y0) return null;
+
+          const colCounts = new Int32Array(width);
+          const rowCounts = new Int32Array(height);
+          let total = 0;
+          const step = width * height > 220000 ? 2 : 1;
+
+          for (let y = y0; y <= y1; y += step) {
+            for (let x = x0; x <= x1; x += step) {
+              const i = (y * width + x) * 4;
+              /* Near-pure paper only — catch light gray glyphs. */
+              if (data[i] + data[i + 1] + data[i + 2] >= 747) continue;
+              colCounts[x] += 1;
+              rowCounts[y] += 1;
+              total += 1;
+            }
+          }
+          if (total < 24) return null;
+
+          const trimMass = (counts, from, to, dropFrac) => {
+            const budget = Math.max(1, Math.floor(total * dropFrac));
+            let lo = from;
+            let hi = to;
+            let acc = 0;
+            while (lo < hi && acc + counts[lo] <= budget) {
+              acc += counts[lo];
+              lo += 1;
+            }
+            acc = 0;
+            while (hi > lo && acc + counts[hi] <= budget) {
+              acc += counts[hi];
+              hi -= 1;
+            }
+            return [lo, hi];
+          };
+
+          /* Drop ~1.2% ink mass each side — kills hairline borders / compression dots. */
+          let [minX, maxX] = trimMass(colCounts, x0, x1, 0.012);
+          let [minY, maxY] = trimMass(rowCounts, y0, y1, 0.012);
+
+          /* Also require a minimum column/row density so one speck doesn't win. */
+          const minCol = Math.max(1, Math.floor(((y1 - y0) / step) * 0.004));
+          const minRow = Math.max(1, Math.floor(((x1 - x0) / step) * 0.004));
+          while (minX < maxX && colCounts[minX] < minCol) minX += 1;
+          while (maxX > minX && colCounts[maxX] < minCol) maxX -= 1;
+          while (minY < maxY && rowCounts[minY] < minRow) minY += 1;
+          while (maxY > minY && rowCounts[maxY] < minRow) maxY -= 1;
+
+          if (maxX <= minX || maxY <= minY) return null;
+
+          const pad = Math.max(1, Math.round(Math.min(width, height) * 0.004));
+          minX = Math.max(0, minX - pad);
+          minY = Math.max(0, minY - pad);
+          maxX = Math.min(width - 1, maxX + pad);
+          maxY = Math.min(height - 1, maxY + pad);
+
+          return {
+            x: minX,
+            y: minY,
+            w: maxX - minX + 1,
+            h: maxY - minY + 1,
+            width,
+            height,
+          };
+        };
+
+        const padContentBox = (box, pageW, pageH) => {
+          const padX = Math.min(Math.max(box.w * 0.04, pageW * 0.01), pageW * 0.045);
+          const padY = Math.min(Math.max(box.h * 0.04, pageH * 0.01), pageH * 0.045);
+          const x = Math.max(0, box.x - padX);
+          const y = Math.max(0, box.y - padY);
+          const r = Math.min(pageW, box.x + box.w + padX);
+          const b = Math.min(pageH, box.y + box.h + padY);
+          return { x, y, w: Math.max(1, r - x), h: Math.max(1, b - y), pageW, pageH };
+        };
+
+        /** Scan a preview render for non-white ink — primary content detector. */
+        const getInkContentBox = async (page, pageW, pageH) => {
+          try {
+            const probeScale = lowMem ? 0.4 : 0.55;
+            const probeVp = page.getViewport({ scale: probeScale });
+            const probe = document.createElement("canvas");
+            probe.width = Math.max(1, Math.floor(probeVp.width));
+            probe.height = Math.max(1, Math.floor(probeVp.height));
+            const ctx = probe.getContext("2d", { alpha: false, willReadFrequently: true });
+            if (!ctx) return null;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, probe.width, probe.height);
+            await page.render({
+              canvasContext: ctx,
+              viewport: probeVp,
+              intent: "display",
+              background: "#ffffff",
+            }).promise;
+            const bounds = inkBoundsFromImageData(
+              ctx.getImageData(0, 0, probe.width, probe.height)
+            );
+            probe.width = 0;
+            probe.height = 0;
+            if (!bounds) return null;
+            return {
+              x: (bounds.x / bounds.width) * pageW,
+              y: (bounds.y / bounds.height) * pageH,
+              w: (bounds.w / bounds.width) * pageW,
+              h: (bounds.h / bounds.height) * pageH,
+            };
+          } catch {
+            return null;
+          }
+        };
+
+        const getContentBox = async (page) => {
+          const base = page.getViewport({ scale: 1 });
+          const pageW = base.width;
+          const pageH = base.height;
+          const full = { x: 0, y: 0, w: pageW, h: pageH };
+
+          const inkBox = await getInkContentBox(page, pageW, pageH);
+          const textBox = await getTextContentBox(page, pageW, pageH);
+          let box = inkBox || textBox || full;
+
+          if (inkBox && textBox) {
+            const top = Math.min(inkBox.y, textBox.y);
+            const bottom = Math.max(inkBox.y + inkBox.h, textBox.y + textBox.h);
+            /* Horizontal fit uses the tighter detector so margins crop consistently. */
+            if (textBox.w <= inkBox.w) {
+              box = { x: textBox.x, y: top, w: textBox.w, h: bottom - top };
+            } else {
+              box = { x: inkBox.x, y: top, w: inkBox.w, h: bottom - top };
+            }
+          } else if (!inkBox || inkBox.w < pageW * 0.06 || inkBox.h < pageH * 0.06) {
+            box = textBox || full;
+          }
+
+          if (box.w > pageW * 0.94 && textBox && textBox.w < pageW * 0.9) {
+            box = textBox;
+          }
+          if (box.w > pageW * 0.97 && box.h > pageH * 0.97) {
+            box = textBox && textBox.w < pageW * 0.95 ? textBox : full;
+          }
+
+          return padContentBox(box, pageW, pageH);
+        };
+
+        const scrollForBox = (box, cssScale, cssWidth, cssHeight) => {
+          const availW = Math.max(80, wrap.clientWidth);
+          const edge = 8;
+          const contentCssW = box.w * cssScale;
+          /* Horizontal center; pin content top to the viewer top (never vertically center). */
+          const idealLeft = box.x * cssScale - (availW - contentCssW) / 2;
+          const idealTop = box.y * cssScale - edge;
+          const maxScrollX = Math.max(0, cssWidth - availW);
+          const maxScrollY = Math.max(0, cssHeight - wrap.clientHeight);
+          const scrollLeft = Math.max(0, Math.min(idealLeft, maxScrollX));
+          const scrollTop = Math.max(0, Math.min(idealTop, maxScrollY));
+          return {
+            scrollLeft,
+            scrollTop,
+            shiftX: scrollLeft - idealLeft,
+            /* Pull content up when top paper margin can't be scrolled away. */
+            shiftY: scrollTop - idealTop,
+          };
+        };
+
+        const computeLayout = (page, contentBox, scaleBoost = 1) => {
           const baseViewport = page.getViewport({ scale: 1 });
           const zoomFactor = Math.max(0.5, Number(pageZoom) / 100);
           const availW = Math.max(80, wrap.clientWidth);
-          /* Fill viewer width at 100%. PDF's own page margins stay; viewer adds none. */
-          const cssScale = (availW / baseViewport.width) * zoomFactor;
+          const edge = 12;
+          const box = contentBox || {
+            x: 0,
+            y: 0,
+            w: baseViewport.width,
+            h: baseViewport.height,
+            pageW: baseViewport.width,
+            pageH: baseViewport.height,
+          };
+
+          /* Fit content width to the screen; zoom % multiplies that auto-fit. */
+          const cssScale = (Math.max(60, availW - edge * 2) / box.w) * zoomFactor;
+
           const dpr = Math.max(1, window.devicePixelRatio || 1);
-          /* Always render at least 2×; prefer 3× on desktop so type stays razor-sharp. */
           let outputScale = (lowMem
             ? Math.min(2.25, Math.max(2, dpr))
             : Math.min(3.5, Math.max(2.5, dpr * 1.75))) * scaleBoost;
           outputScale = Math.max(1, outputScale);
 
-          let pixels =
-            availW * outputScale * (availW * (baseViewport.height / baseViewport.width)) * outputScale;
+          let cssWidth = baseViewport.width * cssScale;
+          let cssHeight = baseViewport.height * cssScale;
+          let pixels = cssWidth * outputScale * cssHeight * outputScale;
           if (pixels > MAX_CANVAS_PIXELS) {
             outputScale *= Math.sqrt(MAX_CANVAS_PIXELS / pixels);
             outputScale = Math.max(1, outputScale);
@@ -193,16 +433,52 @@
           });
           const pixelWidth = Math.max(1, Math.round(viewport.width));
           const pixelHeight = Math.max(1, Math.round(viewport.height));
-          const cssWidth = pixelWidth / outputScale;
-          const cssHeight = pixelHeight / outputScale;
+          cssWidth = pixelWidth / outputScale;
+          cssHeight = pixelHeight / outputScale;
 
-          return { viewport, outputScale, cssWidth, cssHeight, pixelWidth, pixelHeight, key: layoutKey() };
+          const focus = scrollForBox(box, cssScale, cssWidth, cssHeight);
+
+          return {
+            viewport,
+            outputScale,
+            cssWidth,
+            cssHeight,
+            pixelWidth,
+            pixelHeight,
+            cssScale,
+            contentBox: box,
+            scrollLeft: focus.scrollLeft,
+            scrollTop: focus.scrollTop,
+            shiftX: focus.shiftX,
+            shiftY: focus.shiftY,
+            key: layoutKey(),
+          };
         };
 
         const releaseVisibleIf = (node) => {
           if (node && node.parentNode === wrap) {
             wrap.replaceChildren();
           }
+        };
+
+        const focusContent = (entry) => {
+          wrap.style.justifyContent = "flex-start";
+          wrap.style.alignItems = "flex-start";
+          const node = entry.canvas;
+          if (node) {
+            const sx = Math.round(entry.shiftX || 0);
+            const sy = Math.round(entry.shiftY || 0);
+            node.style.transform = sx || sy ? `translate(${sx}px, ${sy}px)` : "translateZ(0)";
+          }
+          const apply = () => {
+            wrap.scrollLeft = Math.round(entry.scrollLeft || 0);
+            wrap.scrollTop = Math.round(entry.scrollTop || 0);
+          };
+          apply();
+          requestAnimationFrame(() => {
+            apply();
+            requestAnimationFrame(apply);
+          });
         };
 
         const mountEntry = (entry) => {
@@ -212,42 +488,142 @@
           if (node.parentNode !== wrap) {
             wrap.replaceChildren(node);
           }
+          focusContent(entry);
+        };
+
+        const entryFromLayout = async (page, layout) => {
+          const off = document.createElement("canvas");
+          off.width = layout.pixelWidth;
+          off.height = layout.pixelHeight;
+          const context = off.getContext("2d", { alpha: false, willReadFrequently: true });
+          if (!context) throw new Error("2d context unavailable");
+          context.imageSmoothingEnabled = true;
+          context.imageSmoothingQuality = "high";
+          await page.render({
+            canvasContext: context,
+            viewport: layout.viewport,
+            intent: "display",
+            background: "#ffffff",
+          }).promise;
+          return {
+            status: "ready",
+            canvas: off,
+            cssWidth: layout.cssWidth,
+            cssHeight: layout.cssHeight,
+            outputScale: layout.outputScale,
+            cssScale: layout.cssScale,
+            contentBox: layout.contentBox,
+            scrollLeft: layout.scrollLeft,
+            scrollTop: layout.scrollTop,
+            shiftX: layout.shiftX || 0,
+            shiftY: layout.shiftY || 0,
+            key: layout.key,
+          };
+        };
+
+        const refineEntryFromCanvas = (entry, pageW, pageH) => {
+          try {
+            const ctx = entry.canvas.getContext("2d", { willReadFrequently: true });
+            if (!ctx) return entry;
+            /* Downsample read for speed on large canvases. */
+            const srcW = entry.canvas.width;
+            const srcH = entry.canvas.height;
+            const maxSide = 720;
+            const scale = Math.min(1, maxSide / Math.max(srcW, srcH));
+            let bounds;
+            if (scale < 1) {
+              const tw = Math.max(1, Math.floor(srcW * scale));
+              const th = Math.max(1, Math.floor(srcH * scale));
+              const tmp = document.createElement("canvas");
+              tmp.width = tw;
+              tmp.height = th;
+              const tctx = tmp.getContext("2d", { willReadFrequently: true });
+              if (!tctx) return entry;
+              tctx.drawImage(entry.canvas, 0, 0, tw, th);
+              bounds = inkBoundsFromImageData(tctx.getImageData(0, 0, tw, th));
+              tmp.width = 0;
+              tmp.height = 0;
+              if (bounds) {
+                bounds = {
+                  x: bounds.x / scale,
+                  y: bounds.y / scale,
+                  w: bounds.w / scale,
+                  h: bounds.h / scale,
+                  width: srcW,
+                  height: srcH,
+                };
+              }
+            } else {
+              bounds = inkBoundsFromImageData(ctx.getImageData(0, 0, srcW, srcH));
+            }
+            if (!bounds) return entry;
+
+            const box = padContentBox(
+              {
+                x: (bounds.x / srcW) * pageW,
+                y: (bounds.y / srcH) * pageH,
+                w: (bounds.w / srcW) * pageW,
+                h: (bounds.h / srcH) * pageH,
+              },
+              pageW,
+              pageH
+            );
+
+            const focus = scrollForBox(box, entry.cssScale, entry.cssWidth, entry.cssHeight);
+            entry.contentBox = box;
+            entry.scrollLeft = focus.scrollLeft;
+            entry.scrollTop = focus.scrollTop;
+            entry.shiftX = focus.shiftX;
+            entry.shiftY = focus.shiftY;
+            entry._refinedBox = box;
+            return entry;
+          } catch {
+            return entry;
+          }
         };
 
         const renderPageToEntry = async (pageNumber) => {
           const page = await pdfDoc.getPage(pageNumber);
-          const tryRender = async (layout) => {
-            const off = document.createElement("canvas");
-            off.width = layout.pixelWidth;
-            off.height = layout.pixelHeight;
-            const context = off.getContext("2d", { alpha: false });
-            if (!context) throw new Error("2d context unavailable");
-            context.imageSmoothingEnabled = true;
-            context.imageSmoothingQuality = "high";
-            await page.render({
-              canvasContext: context,
-              viewport: layout.viewport,
-              intent: "display",
-              background: "#ffffff",
-            }).promise;
-            return {
-              status: "ready",
-              canvas: off,
-              cssWidth: layout.cssWidth,
-              cssHeight: layout.cssHeight,
-              outputScale: layout.outputScale,
-              key: layout.key,
-            };
+          const base = page.getViewport({ scale: 1 });
+          let contentBox = await getContentBox(page);
+
+          const tryRender = async (box, boost) => {
+            const layout = computeLayout(page, box, boost);
+            const entry = await entryFromLayout(page, layout);
+            refineEntryFromCanvas(entry, base.width, base.height);
+            return entry;
           };
+
+          let entry;
           try {
-            return await tryRender(computeLayout(page, 1));
-          } catch (err) {
+            entry = await tryRender(contentBox, 1);
+          } catch {
             try {
-              return await tryRender(computeLayout(page, 0.75));
+              entry = await tryRender(contentBox, 0.75);
             } catch {
-              return tryRender(computeLayout(page, 0.5));
+              entry = await tryRender(contentBox, 0.5);
             }
           }
+
+          /*
+            If the real bitmap's content is much narrower than we assumed, re-render
+            zoomed to that box so every page fills width the same way.
+          */
+          const refined = entry._refinedBox;
+          if (
+            refined &&
+            refined.w > base.width * 0.05 &&
+            refined.w < contentBox.w * 0.9
+          ) {
+            try {
+              const again = await tryRender(refined, 1);
+              releaseEntry({ canvas: entry.canvas });
+              entry = again;
+            } catch {
+              /* keep first render */
+            }
+          }
+          return entry;
         };
 
         const cachePage = async (pageNumber) => {

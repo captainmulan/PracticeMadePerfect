@@ -590,9 +590,7 @@ textarea {
 }
 
 .course-wizard-page.course-wizard-page--about,
-.course-wizard-page.course-wizard-page--about .practice-workspace,
-.course-wizard-page.course-wizard-page--about .practice-workspace-body,
-.course-wizard-page.course-wizard-page--about .practice-workspace-editor-shell {
+.course-wizard-page.course-wizard-page--about .book-about-page {
   background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
 }
 
@@ -3408,10 +3406,12 @@ body[data-bookshelf-theme="space"] .author-profile-content {
   position: absolute;
   left: 0;
   top: 0;
-  width: 4px;
+  width: 10px;
   height: 100%;
-  background: linear-gradient(90deg, #222 0%, #444 100%);
-  border-radius: 2px 0 0 2px;
+  background: linear-gradient(90deg, #1a1a1a 0%, #555 55%, #333 100%);
+  border-radius: 3px 0 0 3px;
+  z-index: 3;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.12);
 }
 
 .book.empty-space {

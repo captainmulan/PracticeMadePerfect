@@ -8,7 +8,7 @@ export const HOME_CATEGORY_PICKER = [
   { id: "IT", label: "IT", icon: "💻", coverColorStart: "#38bdf8", coverColorMiddle: "#0ea5e9", coverColorEnd: "#0369a1" },
   {
     id: "PersonalDevelopment",
-    label: "PersonalDevelopment",
+    label: "Personal Dev",
     icon: "🌱",
     coverColorStart: "#86efac",
     coverColorMiddle: "#22c55e",
