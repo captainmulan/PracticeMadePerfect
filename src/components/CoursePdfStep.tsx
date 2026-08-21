@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
+import { normalizePageViewType, type PageViewType } from "../data/pageViewType";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
 import { extractPdfPageNumber, getPdfBuffer, resolvePdfStepFileUrl } from "../utils/pdfCache";
 import "../styles/course.css";
 
-const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom-v6";
+const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom-v8";
 const PDF_ZOOM_LEVELS = Array.from({ length: 21 }, (_, i) => 100 + i * 5); // 100..200 step 5
-/** 100% = auto-fit real page content (margins cropped). User zoom multiplies that. */
+/** 100% = mode-based auto layout. User zoom multiplies that. */
 const DEFAULT_PDF_ZOOM = 100;
 
 function snapPdfZoom(value: number): number {
@@ -38,6 +39,7 @@ interface CoursePdfStepProps {
   totalPages: number;
   pageBrief: string;
   bookHtmlFolder?: string | null;
+  pageViewType?: PageViewType | null;
   courseId?: string | null;
   onPrevious?: () => void;
   onNext?: () => void;
@@ -62,6 +64,7 @@ export default function CoursePdfStep({
   totalPages,
   pageBrief,
   bookHtmlFolder,
+  pageViewType: pageViewTypeProp,
   onPrevious,
   onNext,
   canPrevious = false,
@@ -74,6 +77,7 @@ export default function CoursePdfStep({
   onRemoveBookmark,
   onJumpToBookmark,
 }: CoursePdfStepProps) {
+  const configuredView = normalizePageViewType(pageViewTypeProp);
   const pdfSource = step.contentHtml?.trim() ?? "";
   const { fileUrl, pageNumber, viewerBindKey } = useMemo(() => {
     const file = resolvePdfStepFileUrl(pdfSource, bookHtmlFolder);
@@ -81,15 +85,14 @@ export default function CoursePdfStep({
     const page = hasPageHint
       ? extractPdfPageNumber(pdfSource)
       : Math.max(1, (typeof step.stepIndex === "number" ? step.stepIndex : 0) + 1);
-    const bindKey = file ? `${file}::${page}` : null;
+    const bindKey = file ? `${file}::${page}::${configuredView}` : null;
     return { fileUrl: file, pageNumber: page, viewerBindKey: bindKey };
-  }, [bookHtmlFolder, pdfSource, step.stepIndex]);
+  }, [bookHtmlFolder, pdfSource, step.stepIndex, configuredView]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [bufferReady, setBufferReady] = useState<"idle" | "loading" | "ready">("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pageZoom, setPageZoom] = useState(readStoredPdfZoom);
-  /** Bake current zoom into iframe URL only when the page/file changes so zoom persists across pages. */
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
   const keyRef = useRef(`${fileUrl}::${pageIndex}`);
 
@@ -99,11 +102,23 @@ export default function CoursePdfStep({
       return;
     }
     setViewerSrc(
-      `/pdf-viewer.html?file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}`,
+      `/pdf-viewer.html?v=tiny1&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
     );
-    // pageZoom intentionally omitted: zoom-only changes use postMessage, not remount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileUrl, pageNumber]);
+  }, [fileUrl, pageNumber, configuredView]);
+
+  const postToViewer = useCallback((payload: Record<string, unknown>) => {
+    const frame = iframeRef.current;
+    if (!frame?.contentWindow) return;
+    try {
+      frame.contentWindow.postMessage(
+        { target: "pdf-viewer", ...payload },
+        window.location.origin,
+      );
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     keyRef.current = `${fileUrl}::${pageIndex}`;
@@ -120,25 +135,27 @@ export default function CoursePdfStep({
         const isIOS =
           /iPad|iPhone|iPod/.test(ua) ||
           (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-        const payload: { target: "pdf-viewer"; type: "load-buffer"; url: string; buffer?: ArrayBuffer } = {
+        const payload: {
+          target: "pdf-viewer";
+          type: "load-buffer";
+          url: string;
+          buffer?: ArrayBuffer;
+          view?: string;
+          panel?: number;
+        } = {
           target: "pdf-viewer",
           type: "load-buffer",
           url: fileUrl,
+          view: configuredView,
+          panel: 0,
         };
-        /* Avoid cloning a large ArrayBuffer into the iframe on iOS — Safari OOMs
-           on books like Richest Man in Babylon. The viewer fetches the URL instead. */
         if (buffer && !isIOS) payload.buffer = buffer.slice(0);
         frame.contentWindow.postMessage(payload, window.location.origin);
       } catch {
-        /* ignore cross-origin sandbox errors */
+        /* ignore */
       }
     };
 
-    // Start loading the buffer immediately.
-    // getPdfBuffer() handles the 3-level cache internally:
-    //   1. In-memory (fastest)
-    //   2. IndexedDB (persists across reloads)
-    //   3. Network (only on miss)
     setBufferReady("loading");
     let active = true;
     const bufferPromise = getPdfBuffer(fileUrl);
@@ -147,7 +164,6 @@ export default function CoursePdfStep({
       .then((buffer) => {
         if (!active || keyRef.current !== myKey) return;
         setBufferReady("ready");
-        // If iframe is already loaded, send now. Otherwise send in the iframe onload handler.
         const frame = iframeRef.current;
         if (frame?.contentWindow && (frame as any)._ready) {
           sendToIframe(buffer);
@@ -167,19 +183,19 @@ export default function CoursePdfStep({
       const frame = iframeRef.current;
       if (!frame) return;
       (frame as any)._ready = true;
-      // Check if buffer is already ready (stored on iframe ref as pending)
       const pending = (frame as any)._pendingBuffer as ArrayBuffer | undefined;
       if (pending) {
         sendToIframe(pending);
         return;
       }
-      // Otherwise wait for bufferPromise to resolve (it'll send via the .then handler above)
-      bufferPromise.then((buffer) => {
-        if (!active || keyRef.current !== myKey) return;
-        if ((frame as any)._ready) sendToIframe(buffer);
-      }).catch(() => {
-        /* already handled above */
-      });
+      bufferPromise
+        .then((buffer) => {
+          if (!active || keyRef.current !== myKey) return;
+          if ((frame as any)._ready) sendToIframe(buffer);
+        })
+        .catch(() => {
+          /* already handled */
+        });
     };
 
     iframeRef.current?.addEventListener("load", onIframeLoad);
@@ -188,35 +204,22 @@ export default function CoursePdfStep({
       active = false;
       iframeRef.current?.removeEventListener("load", onIframeLoad);
     };
-  }, [fileUrl, pageIndex]);
+  }, [fileUrl, pageIndex, configuredView]);
 
-  const sendZoom = useCallback((zoom: number) => {
-    const frame = iframeRef.current;
-    if (!frame?.contentWindow) return;
-    try {
-      frame.contentWindow.postMessage(
-        { target: "pdf-viewer", type: "set-zoom", zoom },
-        window.location.origin,
-      );
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const sendZoom = useCallback(
+    (zoom: number) => {
+      postToViewer({ type: "set-zoom", zoom });
+    },
+    [postToViewer],
+  );
 
   useEffect(() => {
     if (bufferReady !== "ready") return;
-    const frame = iframeRef.current;
-    if (!frame?.contentWindow) return;
-    try {
-      frame.contentWindow.postMessage(
-        { target: "pdf-viewer", type: "goto-page", page: pageNumber },
-        window.location.origin,
-      );
-      sendZoom(pageZoom);
-    } catch {
-      /* ignore */
-    }
-  }, [pageNumber, bufferReady, pageZoom, sendZoom]);
+    postToViewer({ type: "goto-page", page: pageNumber });
+    postToViewer({ type: "set-view", view: configuredView });
+    postToViewer({ type: "set-panel", panel: 0 });
+    sendZoom(pageZoom);
+  }, [pageNumber, bufferReady, pageZoom, configuredView, postToViewer, sendZoom]);
 
   const handlePageZoomChange = (zoom: number) => {
     setPageZoom(zoom);

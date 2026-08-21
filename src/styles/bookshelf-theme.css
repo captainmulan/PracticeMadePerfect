@@ -309,6 +309,16 @@ body[data-bookshelf-theme="space"] .practice-workspace.panel {
   border-radius: 24px;
 }
 
+/* Full-screen reader: keep square edges so top-bar arrows are not clipped by radius. */
+body[data-bookshelf-theme="space"] .course-wizard-page .practice-workspace.panel,
+body[data-bookshelf-theme="space"] .practice-page .practice-workspace.panel {
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  background: transparent !important;
+}
+
 /* 3D Tabs */
 body[data-bookshelf-theme="space"] .tab {
   background: linear-gradient(135deg, rgba(102,126,234,0.3) 0%, rgba(118,75,162,0.3) 100%);
@@ -426,12 +436,13 @@ body[data-bookshelf-theme="space"] .category-card {
     ) !important;
 }
 
-/* 3D Buttons */
-body[data-bookshelf-theme="space"] button,
+/* 3D Buttons — do NOT target bare `button` (breaks reader nav arrows after theme hydrates). */
 body[data-bookshelf-theme="space"] .action-button,
 body[data-bookshelf-theme="space"] .panel-toggle,
 body[data-bookshelf-theme="space"] .practice-code-button,
-body[data-bookshelf-theme="space"] .primary-button {
+body[data-bookshelf-theme="space"] .primary-button,
+body[data-bookshelf-theme="space"] .footer-button,
+body[data-bookshelf-theme="space"] .admin-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: #ffffff !important;
   border: 2px solid rgba(167,139,250,0.5) !important;
@@ -448,11 +459,12 @@ body[data-bookshelf-theme="space"] .primary-button {
   font-size: 0.85rem;
 }
 
-body[data-bookshelf-theme="space"] button:hover,
 body[data-bookshelf-theme="space"] .action-button:hover,
 body[data-bookshelf-theme="space"] .panel-toggle:hover,
 body[data-bookshelf-theme="space"] .practice-code-button:hover,
-body[data-bookshelf-theme="space"] .primary-button:hover {
+body[data-bookshelf-theme="space"] .primary-button:hover,
+body[data-bookshelf-theme="space"] .footer-button:hover,
+body[data-bookshelf-theme="space"] .admin-btn:hover {
   transform: translateY(-2px);
   box-shadow: 
     0 6px 12px rgba(102,126,234,0.5),
@@ -461,11 +473,12 @@ body[data-bookshelf-theme="space"] .primary-button:hover {
   border-color: rgba(167,139,250,0.8);
 }
 
-body[data-bookshelf-theme="space"] button:active,
 body[data-bookshelf-theme="space"] .action-button:active,
 body[data-bookshelf-theme="space"] .panel-toggle:active,
 body[data-bookshelf-theme="space"] .practice-code-button:active,
-body[data-bookshelf-theme="space"] .primary-button:active {
+body[data-bookshelf-theme="space"] .primary-button:active,
+body[data-bookshelf-theme="space"] .footer-button:active,
+body[data-bookshelf-theme="space"] .admin-btn:active {
   transform: translateY(0);
   box-shadow: 
     0 2px 4px rgba(0,0,0,0.3),
@@ -1311,11 +1324,36 @@ body[data-bookshelf-theme="space"] .page-home .home-login-mode-tab.active {
   flex: 1 1 auto;
 }
 
+/* Kill rounded clipping on reader chrome — circles must stay fully visible. */
+.course-wizard-page .practice-workspace.panel,
+.practice-page .practice-workspace.panel,
+.course-wizard-page .practice-workspace,
+.practice-page .practice-workspace {
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+
+.course-wizard-page .practice-workspace-top-bar,
 .practice-page .practice-workspace-top-bar,
-.course-wizard-page .practice-workspace-top-bar {
-  margin: 0;
-  width: 100%;
-  border-radius: 0;
+.practice-workspace--epub .practice-workspace-top-bar,
+.practice-workspace--pdf .practice-workspace-top-bar {
+  border-radius: 0 !important;
+  overflow: visible !important;
+  --pmp-nav-side-pad: 32px;
+  --pmp-nav-btn-size: 24px;
+  padding-left: 32px !important;
+  padding-right: 32px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  box-sizing: border-box !important;
+}
+
+body[data-bookshelf-theme="space"] .course-wizard-page .practice-workspace.panel,
+body[data-bookshelf-theme="space"] .practice-page .practice-workspace.panel,
+body[data-bookshelf-theme="dinosaur"] .course-wizard-page .practice-workspace.panel,
+body[data-bookshelf-theme="ocean"] .course-wizard-page .practice-workspace.panel {
+  border-radius: 0 !important;
+  overflow: hidden !important;
 }
 
 .practice-workspace-top {

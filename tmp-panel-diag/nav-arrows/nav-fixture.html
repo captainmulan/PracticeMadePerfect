@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<style>
+  html, body { margin:0; width:100%; height:100%; background:#cbd5e1; }
+  .phone {
+    width: 414px; height: 896px; margin: 0 auto; background: #e2e8f0;
+    overflow: hidden; border-radius: 40px; position: relative;
+  }
+  .practice-workspace-top-bar {
+    --pmp-nav-btn-bg: rgba(255,255,255,0.14);
+    --pmp-nav-btn-border: 1px solid rgba(255,255,255,0.24);
+    --pmp-nav-btn-color: #ffffff;
+    --pmp-nav-btn-disabled: rgba(255,255,255,0.45);
+    --pmp-nav-btn-size: 24px;
+    --pmp-nav-side-pad: 32px;
+    display: grid;
+    grid-template-columns: var(--pmp-nav-btn-size) minmax(0, 1fr) var(--pmp-nav-btn-size);
+    align-items: center;
+    column-gap: 8px;
+    color: #f8fafc;
+    padding: 12px var(--pmp-nav-side-pad);
+    border-radius: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+    min-height: 52px;
+    background: linear-gradient(180deg, #a78bfa 0%, #6366f1 100%);
+  }
+  .chapter-nav-side { display:flex; align-items:center; justify-content:center; }
+  .chapter-nav-side-left { justify-content:flex-start; }
+  .chapter-nav-side-right { justify-content:flex-end; }
+  .chapter-nav-center { display:inline-flex; align-items:center; gap:4px; justify-self:center; min-width:0; }
+  .chapter-nav-button {
+    width: var(--pmp-nav-btn-size) !important;
+    height: var(--pmp-nav-btn-size) !important;
+    min-width: var(--pmp-nav-btn-size) !important;
+    min-height: var(--pmp-nav-btn-size) !important;
+    padding: 0 !important; margin: 0 !important;
+    border-radius: 999px !important;
+    border: var(--pmp-nav-btn-border) !important;
+    background: var(--pmp-nav-btn-bg) !important;
+    color: var(--pmp-nav-btn-color) !important;
+    font-size: 15px !important; font-weight: 700 !important;
+    display: inline-flex !important; align-items: center !important; justify-content: center !important;
+    box-sizing: border-box !important; flex-shrink: 0 !important;
+  }
+  .chapter-label { font-size: 0.85rem; font-weight: 800; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <div class="phone" id="phone">
+    <div class="practice-workspace-top-bar" id="bar">
+      <div class="chapter-nav-side chapter-nav-side-left">
+        <button class="chapter-nav-button" id="prev" type="button">←</button>
+      </div>
+      <div class="chapter-nav-center">
+        <span>🏠</span>
+        <span class="chapter-label">Page 11/35</span>
+        <span>⚙️</span>
+      </div>
+      <div class="chapter-nav-side chapter-nav-side-right">
+        <button class="chapter-nav-button" id="next" type="button">→</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -160,6 +160,7 @@ export default function AdminCourses() {
       courseIndex: books.length,
       category: "IT",
       artifactType: "book",
+      pageViewType: "Auto",
       chapters: [],
     };
     setDraftBook(book);
@@ -789,6 +790,26 @@ export default function AdminCourses() {
                         <option value="newspaper">Newspaper</option>
                         <option value="game">Game</option>
                       </select>
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Page View Type</span>
+                      <select
+                        value={activeBook.pageViewType ?? "Auto"}
+                        onChange={(e) => {
+                          const pageViewType = e.target.value as Course["pageViewType"];
+                          updateActiveBook((c) => ({ ...c, pageViewType }));
+                        }}
+                        className="admin-grid-select"
+                      >
+                        <option value="Auto">Auto (trim margins, fit width, scroll)</option>
+                        <option value="Normal">Normal (fit page)</option>
+                        <option value="Fit">Fit (full page width)</option>
+                        <option value="SoftFocus">SoftFocus (trim margins, fit width, scroll)</option>
+                        <option value="PanelJump">PanelJump (legacy panel strips)</option>
+                      </select>
+                      <span className="admin-task-editor-hint" style={{ display: "block", marginTop: 6, opacity: 0.75, fontSize: 12 }}>
+                        Click <strong>Save Book</strong> after changing this, then hard-refresh the reader.
+                      </span>
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Category</span>

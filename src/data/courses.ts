@@ -53,6 +53,9 @@ export interface CourseChapter {
 
 export type ArtifactType = "book" | "magazine" | "newspaper" | "game";
 
+export type { PageViewType } from "./pageViewType";
+import type { PageViewType } from "./pageViewType";
+
 export interface Course {
   id: string;
   title: string;
@@ -84,6 +87,11 @@ export interface Course {
   category: string;
   pIndex?: number;
   artifactType: ArtifactType;
+  /**
+   * PDF page display mode. Auto → SoftFocus (trim margins, fit width, vertical scroll).
+   * SoftFocus = contract to ink/text bounds + fit width + center. PanelJump = legacy.
+   */
+  pageViewType?: PageViewType;
   /** Folder name under /book_html used for iframe page links and asset base URLs. */
   bookHtmlFolder?: string;
   /** Page count stored in IndexedDB metadata (available without loading steps). */

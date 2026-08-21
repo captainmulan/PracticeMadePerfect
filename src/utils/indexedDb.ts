@@ -250,6 +250,7 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     category: normalizeBookCategory(raw.category),
     pIndex: raw.pIndex,
     artifactType: raw.artifactType,
+    pageViewType: raw.pageViewType,
     bookHtmlFolder: raw.bookHtmlFolder,
     stepCount: raw.stepCount ?? raw.stepOutline?.length ?? 0,
     chapters: [],

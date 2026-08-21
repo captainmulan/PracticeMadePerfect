@@ -257,6 +257,7 @@ export default function CourseWizard() {
           totalPages={uiTotalPages}
           pageBrief={pageBrief}
           bookHtmlFolder={outline.bookHtmlFolder}
+          pageViewType={outline.pageViewType}
           courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}

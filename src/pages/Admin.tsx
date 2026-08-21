@@ -401,7 +401,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
             border: "none",
             color: "#0f172a",
             disabledColor: "#94a3b8",
-            fontSize: 24,
+            fontSize: 16,
             fontWeight: "bold"
           },
           homeButton: {
@@ -1766,6 +1766,10 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 {wizardTopInfoSubTab === "navButtons" && (
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                   <h4 style={{ marginTop: 0 }}>Navigation Buttons</h4>
+                  <p style={{ marginTop: 0, fontSize: "12px", color: "#64748b" }}>
+                    Colors only — button size is fixed in the reader so arrows stay inside the top bar.
+                    Font size below is kept for reference but does not change the circular button size.
+                  </p>
                   <div className="admin-search-row">
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Background Color</span>
@@ -1807,12 +1811,12 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                       />
                     </label>
                     <label className="admin-task-editor-field">
-                      <span className="admin-task-editor-label">Font Size</span>
+                      <span className="admin-task-editor-label">Font Size (unused for fit)</span>
                       <input
                         type="number"
                         min="8"
-                        max="48"
-                        value={homeData?.style?.wizardTopInfo?.navButton?.fontSize ?? 24}
+                        max="20"
+                        value={homeData?.style?.wizardTopInfo?.navButton?.fontSize ?? 16}
                         onChange={(e) => updateStyleConfig("wizardTopInfo.navButton", "fontSize", Number(e.target.value))}
                         className="admin-grid-input"
                       />

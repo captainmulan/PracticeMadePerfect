@@ -8,9 +8,12 @@
       html,
       body {
         margin: 0;
+        width: 100%;
+        height: 100%;
         min-height: 100%;
-        background: #f3f6fb;
+        background: #ffffff;
         font-family: Arial, Helvetica, sans-serif;
+        overflow: hidden;
       }
       body {
         display: flex;
@@ -20,45 +23,46 @@
       .epub-shell {
         flex: 1;
         display: flex;
+        width: 100%;
         min-height: 100%;
         height: 100%;
-        background: #f7f9fd;
+        background: #ffffff;
       }
       .epub-viewer-wrap {
         flex: 1;
         display: flex;
-        align-items: flex-start;
-        justify-content: center;
+        align-items: stretch;
+        justify-content: stretch;
         overflow: hidden;
-        padding: 12px 12px 16px;
+        width: 100%;
+        max-width: none;
+        /* Tiny equal L/R only */
+        padding: 0 4px;
         box-sizing: border-box;
       }
       #epub-viewer {
         flex: 1;
-        width: 100%;
-        height: 100%;
+        width: 100% !important;
+        max-width: none !important;
+        height: 100% !important;
         background: white;
-        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+        box-shadow: none;
+      }
+      #epub-viewer iframe {
+        width: 100% !important;
+        max-width: none !important;
+        border: 0 !important;
       }
 
       @media (max-width: 767px) {
-        .epub-shell {
-          background: #ffffff;
-        }
         .epub-viewer-wrap {
-          padding: 8px 8px 12px;
+          padding: 0 4px;
         }
       }
 
-      @media (min-width: 768px) and (max-width: 1024px) {
+      @media (min-width: 768px) {
         .epub-viewer-wrap {
-          padding: 16px 16px 22px;
-        }
-      }
-
-      @media (min-width: 1025px) {
-        .epub-viewer-wrap {
-          padding: 18px 18px 24px;
+          padding: 0 6px;
         }
       }
       .epub-error {
@@ -116,6 +120,7 @@
         let rendition = null;
         let loaded = false;
         let pendingLocation = initialLocation;
+        let displaySeq = 0;
 
         const showError = (msg) => {
           shell.innerHTML = `<div class="epub-error">${msg}</div>`;
@@ -146,6 +151,10 @@
           }
         };
 
+        const isChapterMarkerId = (id) =>
+          /^pgepubid/i.test(id) || /^(chap|chapter|part|sec|section)[-_]?\d*/i.test(id);
+
+        /** Next TOC/chapter marker after start — never footnote/random ids. */
         const nextSectionAnchor = (doc, startEl) => {
           if (!doc || !startEl) return null;
           const anchors = [...doc.querySelectorAll("[id], a[name]")];
@@ -158,54 +167,73 @@
               if (el === startEl || id === startId) passed = true;
               continue;
             }
-            /* Prefer Gutenberg-style / chapter-ish markers; otherwise any later id. */
-            if (/^pgepubid/i.test(id) || /^(chap|chapter|part|sec|section)/i.test(id)) {
-              return el;
-            }
-          }
-          /* Fallback: next id after start in document order. */
-          passed = false;
-          for (const el of anchors) {
-            const id = el.id || el.getAttribute("name") || "";
-            if (!id) continue;
-            if (!passed) {
-              if (el === startEl || id === startId) passed = true;
-              continue;
-            }
-            return el;
+            if (isChapterMarkerId(id)) return el;
           }
           return null;
         };
 
-        /** Keep only one chapter when several share the same XHTML file. */
-        const isolateChapter = (doc, fragment) => {
-          if (!doc?.body || !fragment) return;
-          const start = findAnchor(doc, fragment);
-          if (!start) return;
-          const end = nextSectionAnchor(doc, start);
-          try {
-            const range = doc.createRange();
-            range.setStartBefore(start);
-            if (end) range.setEndBefore(end);
-            else range.setEnd(doc.body, doc.body.childNodes.length);
-            const clone = range.cloneContents();
-            const wrap = doc.createElement("div");
-            wrap.setAttribute("data-pmp-chapter", fragment);
-            wrap.appendChild(clone);
-            doc.body.innerHTML = "";
-            doc.body.appendChild(wrap);
-            doc.documentElement.scrollTop = 0;
-            doc.body.scrollTop = 0;
-          } catch (err) {
-            console.warn("[EPUB Viewer] Chapter isolate failed:", err);
-          }
+        const clearChapterIsolation = (doc) => {
+          if (!doc) return;
+          doc.getElementById("pmp-isolate-style")?.remove();
+          doc.querySelectorAll("[data-pmp-hide='1']").forEach((el) => {
+            el.removeAttribute("data-pmp-hide");
+          });
         };
 
-        const displayLocation = async (location) => {
-          if (!rendition || !location) return;
-          console.log("[EPUB Viewer] Displaying location:", location);
-          const { fragment } = parseLocationParts(location);
-          await rendition.display(location);
+        /**
+         * Hide content outside the current chapter WITHOUT destroying the DOM.
+         * (Replacing body.innerHTML broke later pages that share the same XHTML file.)
+         */
+        const isolateChapter = (doc, fragment) => {
+          if (!doc?.body || !fragment) return;
+          clearChapterIsolation(doc);
+          const start = findAnchor(doc, fragment);
+          if (!start) {
+            console.warn("[EPUB Viewer] Chapter anchor not found:", fragment);
+            return;
+          }
+          const end = nextSectionAnchor(doc, start);
+
+          if (!doc.getElementById("pmp-isolate-style")) {
+            const style = doc.createElement("style");
+            style.id = "pmp-isolate-style";
+            style.textContent = "[data-pmp-hide='1']{display:none!important;}";
+            (doc.head || doc.documentElement).appendChild(style);
+          }
+
+          const PRECEDING = Node.DOCUMENT_POSITION_PRECEDING;
+          const FOLLOWING = Node.DOCUMENT_POSITION_FOLLOWING;
+          const elements = doc.body.querySelectorAll("*");
+          for (const el of elements) {
+            /* Keep ancestors of the chapter start so layout/CSS still apply. */
+            if (el.contains(start)) continue;
+            const posFromStart = start.compareDocumentPosition(el);
+            if (posFromStart & PRECEDING) {
+              el.setAttribute("data-pmp-hide", "1");
+              continue;
+            }
+            if (end) {
+              if (el === end || end.contains(el)) {
+                el.setAttribute("data-pmp-hide", "1");
+                continue;
+              }
+              if (end.compareDocumentPosition(el) & FOLLOWING) {
+                el.setAttribute("data-pmp-hide", "1");
+              }
+            }
+          }
+
+          try {
+            start.scrollIntoView({ block: "start" });
+          } catch {
+            /* ignore */
+          }
+          doc.documentElement.scrollTop = 0;
+          doc.body.scrollTop = 0;
+        };
+
+        const applyIsolationToRendition = (fragment) => {
+          if (!rendition || !fragment) return;
           try {
             const contentsList = typeof rendition.getContents === "function" ? rendition.getContents() : [];
             const list = Array.isArray(contentsList) ? contentsList : contentsList ? [contentsList] : [];
@@ -213,9 +241,42 @@
               if (contents?.document) isolateChapter(contents.document, fragment);
             }
           } catch (err) {
-            console.warn("[EPUB Viewer] Post-display isolate error:", err);
+            console.warn("[EPUB Viewer] isolate apply error:", err);
           }
+        };
+
+        const displayLocation = async (location) => {
+          if (!rendition || !location) return;
+          const seq = ++displaySeq;
+          pendingLocation = location;
+          console.log("[EPUB Viewer] Displaying location:", location);
+          const { fragment } = parseLocationParts(location);
+          try {
+            const contentsList = typeof rendition.getContents === "function" ? rendition.getContents() : [];
+            const list = Array.isArray(contentsList) ? contentsList : contentsList ? [contentsList] : [];
+            for (const contents of list) {
+              clearChapterIsolation(contents?.document);
+            }
+          } catch {
+            /* ignore */
+          }
+
+          try {
+            await rendition.display(location);
+          } catch (err) {
+            console.warn("[EPUB Viewer] display failed:", err);
+            return;
+          }
+          if (seq !== displaySeq) return;
+
+          applyIsolationToRendition(fragment);
+          requestAnimationFrame(() => {
+            if (seq !== displaySeq) return;
+            applyIsolationToRendition(fragment);
+          });
           setTimeout(() => {
+            if (seq !== displaySeq) return;
+            applyIsolationToRendition(fragment);
             try {
               rendition.resize();
             } catch {
@@ -241,10 +302,84 @@
             });
             console.log("[EPUB Viewer] Rendition created");
 
+            /* Mobile-first readable type — denser EPUBs stay scrollable, not tiny. */
+            try {
+              const shortSide = Math.min(window.innerWidth || 400, window.innerHeight || 700);
+              const fontPct = shortSide <= 430 ? "122%" : shortSide <= 768 ? "112%" : "100%";
+              if (rendition.themes?.fontSize) {
+                rendition.themes.fontSize(fontPct);
+              }
+              if (rendition.themes?.default) {
+                rendition.themes.default({
+                  html: {
+                    "margin": "0 !important",
+                    "padding": "0 !important",
+                    "width": "100% !important",
+                    "max-width": "none !important",
+                  },
+                  body: {
+                    "line-height": "1.55 !important",
+                    "margin": "0 !important",
+                    "padding": "0.35em 8px 1em !important",
+                    "box-sizing": "border-box !important",
+                    "width": "100% !important",
+                    "max-width": "none !important",
+                  },
+                  img: {
+                    "max-width": "100% !important",
+                    "height": "auto !important",
+                  },
+                });
+              }
+            } catch (err) {
+              console.warn("[EPUB Viewer] theme font adjust failed:", err);
+            }
+
+            const injectEdgePad = (doc) => {
+              if (!doc || doc.getElementById("pmp-epub-pad")) return;
+              const style = doc.createElement("style");
+              style.id = "pmp-epub-pad";
+              /* Beat Gutenberg / publisher margins that leave huge L/R gutters. */
+              style.textContent = `
+                html {
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  width: 100% !important;
+                  max-width: none !important;
+                }
+                body {
+                  margin: 0 !important;
+                  padding: 0.35em 8px 1.25em !important;
+                  box-sizing: border-box !important;
+                  width: 100% !important;
+                  max-width: none !important;
+                }
+                body > *, p, div, section, article, header, footer, main,
+                h1, h2, h3, h4, h5, h6, blockquote, pre, ul, ol, table {
+                  margin-left: 0 !important;
+                  margin-right: 0 !important;
+                  max-width: 100% !important;
+                }
+                img, svg, video, table, .x-ebookmaker {
+                  max-width: 100% !important;
+                  height: auto !important;
+                }
+              `;
+              (doc.head || doc.documentElement).appendChild(style);
+            };
+
             rendition.hooks.content.register((contents) => {
+              try {
+                injectEdgePad(contents?.document);
+              } catch {
+                /* ignore */
+              }
               const { fragment } = parseLocationParts(pendingLocation);
               if (fragment && contents?.document) {
-                isolateChapter(contents.document, fragment);
+                requestAnimationFrame(() => {
+                  injectEdgePad(contents.document);
+                  isolateChapter(contents.document, fragment);
+                });
               }
             });
 
@@ -258,7 +393,6 @@
             console.log("[EPUB Viewer] Display successful");
 
             setTimeout(() => {
-              console.log("[EPUB Viewer] Forcing resize");
               try {
                 rendition.resize();
               } catch {
@@ -279,13 +413,10 @@
         window.addEventListener(
           "message",
           (event) => {
-            console.log("[EPUB Viewer] Received message:", event.data);
             const data = event.data && typeof event.data === "object" ? event.data : null;
             if (!data || data.target !== "epub-viewer") {
-              console.log("[EPUB Viewer] Message ignored - target mismatch or null data");
               return;
             }
-            console.log("[EPUB Viewer] Processing message type:", data.type);
             if (data.type === "load-buffer") {
               if (data.url && !sameEpubUrl(data.url, resolvedFileUrl) && !sameEpubUrl(data.url, fileUrl)) {
                 console.log("[EPUB Viewer] URL mismatch:", data.url, "vs", resolvedFileUrl);
@@ -306,20 +437,14 @@
               } else if (typeof data.url === "string" && !loaded) {
                 console.log("[EPUB Viewer] Loading from URL:", stripHash(data.url));
                 loadEpubFromSource(stripHash(data.url));
-              } else {
-                console.log("[EPUB Viewer] No valid buffer or URL provided");
               }
             } else if (data.type === "goto-location") {
               const location = data.location;
               if (typeof location === "string" && location) {
                 pendingLocation = location;
-              }
-              if (!epubBook || !rendition) {
-                console.log("[EPUB Viewer] goto-location: book or rendition not ready");
-                return;
-              }
-              if (typeof location === "string" && location) {
-                void displayLocation(location);
+                if (epubBook && rendition) {
+                  void displayLocation(location);
+                }
               }
             }
           },

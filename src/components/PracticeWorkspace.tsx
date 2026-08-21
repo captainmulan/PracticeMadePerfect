@@ -128,7 +128,9 @@ export default function PracticeWorkspace({
 
   return (
     <section
-      className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}`}
+      className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}${
+        typeof pageZoom === "number" ? " practice-workspace--pdf" : ""
+      }${pageType?.toLowerCase() === "epub" ? " practice-workspace--epub" : ""}`}
       style={{
         background: buildGradient(
           style?.wizardWorkspace?.panelBackgroundColorGradientStart,
@@ -151,6 +153,23 @@ export default function PracticeWorkspace({
             ? `linear-gradient(180deg, ${style.wizardTopInfo.backgroundColorGradientStart} 0%, ${style.wizardTopInfo.backgroundColorGradientMiddle ?? style.wizardTopInfo.backgroundColorGradientStart} 50%, ${style.wizardTopInfo.backgroundColorGradientEnd} 100%)`
             : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
           borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
+          /* Clear iPhone continuous-corner mask — circles fully inside. */
+          paddingLeft: 32,
+          paddingRight: 32,
+          paddingTop: 12,
+          paddingBottom: 12,
+          boxSizing: "border-box",
+          overflow: "visible",
+          borderRadius: 0,
+          ["--pmp-nav-side-pad" as string]: "32px",
+          ["--pmp-nav-btn-size" as string]: "24px",
+          // Admin themes colors only — size/position stay in CSS so buttons stay inside the bar.
+          ["--pmp-nav-btn-bg" as string]: style?.wizardTopInfo?.navButton?.backgroundColor ?? "rgba(255,255,255,0.14)",
+          ["--pmp-nav-btn-border" as string]: style?.wizardTopInfo?.navButton?.border && style.wizardTopInfo.navButton.border !== "none"
+            ? style.wizardTopInfo.navButton.border
+            : "1px solid rgba(255,255,255,0.24)",
+          ["--pmp-nav-btn-color" as string]: style?.wizardTopInfo?.navButton?.color ?? "#ffffff",
+          ["--pmp-nav-btn-disabled" as string]: style?.wizardTopInfo?.navButton?.disabledColor ?? "rgba(255,255,255,0.45)",
         }}
       >
         <div className="chapter-nav-side chapter-nav-side-left">
@@ -160,20 +179,6 @@ export default function PracticeWorkspace({
           disabled={!canPrevious}
           onClick={onPrevious}
           aria-label="Previous chapter"
-          style={{
-            fontSize: "24px",
-            fontWeight: "bold",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0",
-            border: style?.wizardTopInfo?.navButton?.border ?? "none",
-            cursor: canPrevious ? "pointer" : "not-allowed",
-            color: canPrevious ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a") : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
-          }}
         >
           ←
         </button>
@@ -249,20 +254,6 @@ export default function PracticeWorkspace({
           disabled={!canNext}
           onClick={onNext}
           aria-label="Next chapter"
-          style={{
-            fontSize: "24px",
-            fontWeight: "bold",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: style?.wizardTopInfo?.navButton?.backgroundColor ?? "#e2e8f0",
-            border: style?.wizardTopInfo?.navButton?.border ?? "none",
-            cursor: canNext ? "pointer" : "not-allowed",
-            color: canNext ? (style?.wizardTopInfo?.navButton?.color ?? "#0f172a") : (style?.wizardTopInfo?.navButton?.disabledColor ?? "#94a3b8"),
-          }}
         >
           →
         </button>

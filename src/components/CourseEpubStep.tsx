@@ -53,14 +53,18 @@ export default function CourseEpubStep({
   const epubSource = step.contentHtml?.trim() ?? "";
   const { fileUrl, location, viewerSrc } = useMemo(() => {
     const raw = epubSource;
-    const isUrl = raw && (raw.startsWith("/") || /^https?:\/\//i.test(raw));
+    const isUrl = Boolean(raw && (raw.startsWith("/") || /^https?:\/\//i.test(raw)));
     const file = normalizeEpubFileUrl(isUrl ? raw : "");
     const loc = extractEpubLocation(isUrl ? raw : "");
     if (!isUrl || !file) {
       return { fileUrl: "", location: null as string | null, viewerSrc: null as string | null };
     }
-    const qs = new URLSearchParams({ file });
-    if (loc) qs.set("location", loc);
+    /*
+      Keep iframe src stable (file only). Putting chapter location in the query
+      reloads the viewer on every arrow click and races a stale load-buffer.
+      Chapter changes go through postMessage goto-location instead.
+    */
+    const qs = new URLSearchParams({ file, v: "epad2" });
     return {
       fileUrl: file,
       location: loc,
@@ -69,114 +73,112 @@ export default function CourseEpubStep({
   }, [epubSource]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const locationRef = useRef<string | null>(location);
   const [bufferReady, setBufferReady] = useState<"idle" | "loading" | "ready">("idle");
+  const [viewerReady, setViewerReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const keyRef = useRef(`${fileUrl}::${pageIndex}`);
+  const fileKeyRef = useRef(fileUrl);
 
+  locationRef.current = location;
+
+  const postToViewer = (payload: Record<string, unknown>) => {
+    const frame = iframeRef.current;
+    if (!frame?.contentWindow) return false;
+    try {
+      frame.contentWindow.postMessage({ target: "epub-viewer", ...payload }, "*");
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const gotoCurrentLocation = () => {
+    const loc = locationRef.current;
+    if (!loc) return;
+    postToViewer({ type: "goto-location", location: loc });
+  };
+
+  /* Load EPUB buffer once per file; always send the latest chapter from locationRef. */
   useEffect(() => {
-    keyRef.current = fileUrl;
-    const myKey = keyRef.current;
+    fileKeyRef.current = fileUrl;
+    const myKey = fileUrl;
     if (!fileUrl) return;
 
-    console.log("[CourseEpubStep] Loading EPUB:", fileUrl);
     setLoadError(null);
-
-    const sendToIframe = (buffer?: ArrayBuffer) => {
-      const frame = iframeRef.current;
-      if (!frame || !frame.contentWindow) {
-        console.error("[CourseEpubStep] No frame or contentWindow");
-        return;
-      }
-      try {
-        const payload: {
-          target: "epub-viewer";
-          type: "load-buffer";
-          url: string;
-          location?: string | null;
-          buffer?: ArrayBuffer;
-        } = {
-          target: "epub-viewer",
-          type: "load-buffer",
-          url: fileUrl,
-          location,
-        };
-        if (buffer) payload.buffer = buffer.slice(0);
-        console.log("[CourseEpubStep] Sending buffer to iframe, size:", buffer?.byteLength);
-        frame.contentWindow.postMessage(payload, "*");
-      } catch (e) {
-        console.error("[CourseEpubStep] Failed to send to iframe:", e);
-      }
-    };
-
     setBufferReady("loading");
+    setViewerReady(false);
+
     let active = true;
     const bufferPromise = getEpubBuffer(fileUrl);
 
+    const sendBuffer = (buffer: ArrayBuffer) => {
+      postToViewer({
+        type: "load-buffer",
+        url: fileUrl,
+        location: locationRef.current,
+        buffer: buffer.slice(0),
+      });
+    };
+
     bufferPromise
       .then((buffer) => {
-        if (!active || keyRef.current !== myKey) return;
-        console.log("[CourseEpubStep] Buffer loaded, size:", buffer.byteLength);
+        if (!active || fileKeyRef.current !== myKey) return;
         setBufferReady("ready");
-        const frame = iframeRef.current;
-        if (frame?.contentWindow && (frame as any)._ready) {
-          sendToIframe(buffer);
-        }
-        if (iframeRef.current) {
-          (iframeRef.current as any)._pendingBuffer = buffer.slice(0);
-        }
+        const frame = iframeRef.current as (HTMLIFrameElement & { _ready?: boolean; _pendingBuffer?: ArrayBuffer }) | null;
+        if (frame) frame._pendingBuffer = buffer.slice(0);
+        if (frame?._ready) sendBuffer(buffer);
       })
       .catch((err) => {
-        if (!active || keyRef.current !== myKey) return;
-        console.error("[CourseEpubStep] Buffer load error:", err);
+        if (!active || fileKeyRef.current !== myKey) return;
         setBufferReady("idle");
         setLoadError(err instanceof Error ? err.message : "Failed to fetch EPUB.");
       });
 
     const onIframeLoad = () => {
-      console.log("[CourseEpubStep] Iframe loaded");
-      if (!active || keyRef.current !== myKey) return;
-      const frame = iframeRef.current;
+      if (!active || fileKeyRef.current !== myKey) return;
+      const frame = iframeRef.current as (HTMLIFrameElement & { _ready?: boolean; _pendingBuffer?: ArrayBuffer }) | null;
       if (!frame) return;
-      (frame as any)._ready = true;
-      const pending = (frame as any)._pendingBuffer as ArrayBuffer | undefined;
+      frame._ready = true;
+      setViewerReady(false);
+      const pending = frame._pendingBuffer;
       if (pending) {
-        console.log("[CourseEpubStep] Sending pending buffer");
-        sendToIframe(pending);
+        sendBuffer(pending);
         return;
       }
-      bufferPromise.then((buffer) => {
-        if (!active || keyRef.current !== myKey) return;
-        if ((frame as any)._ready) sendToIframe(buffer);
-      }).catch(() => {
-        /* already handled above */
-      });
+      bufferPromise
+        .then((buffer) => {
+          if (!active || fileKeyRef.current !== myKey) return;
+          if (frame._ready) sendBuffer(buffer);
+        })
+        .catch(() => {
+          /* handled above */
+        });
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      const data = event.data && typeof event.data === "object" ? event.data : null;
+      if (!data || data.type !== "epub-viewer:ready") return;
+      if (typeof data.url === "string" && normalizeEpubFileUrl(data.url) !== fileUrl) return;
+      if (!active || fileKeyRef.current !== myKey) return;
+      setViewerReady(true);
+      gotoCurrentLocation();
     };
 
     iframeRef.current?.addEventListener("load", onIframeLoad);
+    window.addEventListener("message", onMessage);
 
     return () => {
       active = false;
       iframeRef.current?.removeEventListener("load", onIframeLoad);
+      window.removeEventListener("message", onMessage);
     };
-    // Intentionally only reload when the EPUB file changes; chapter jumps use goto-location.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- location handled below
   }, [fileUrl]);
 
-  // Navigate the EPUB viewer to the correct chapter when the buffer is ready
-  // and the location changes (e.g. when navigating between chapters).
+  /* Arrow / page changes: jump chapter without reloading the iframe. */
   useEffect(() => {
-    if (bufferReady !== "ready") return;
-    const frame = iframeRef.current;
-    if (!frame?.contentWindow || !location) return;
-    try {
-      frame.contentWindow.postMessage(
-        { target: "epub-viewer", type: "goto-location", location },
-        "*",
-      );
-    } catch {
-      /* ignore */
-    }
-  }, [location, bufferReady]);
+    if (bufferReady !== "ready" || !viewerReady) return;
+    gotoCurrentLocation();
+  }, [location, bufferReady, viewerReady, pageIndex]);
 
   return (
     <PracticeWorkspace
@@ -210,7 +212,6 @@ export default function CourseEpubStep({
           title={step.title}
           className="practice-html-iframe practice-pdf-iframe"
           src={viewerSrc}
-          loading="lazy"
         />
       ) : (
         <div className="practice-error-message">

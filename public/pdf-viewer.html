@@ -41,6 +41,16 @@
         min-height: 0;
         -webkit-overflow-scrolling: touch;
       }
+      /* SoftFocus: hide scrollbar gutter so L/R margins stay equal. */
+      .pdf-canvas-wrap.is-soft-focus {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .pdf-canvas-wrap.is-soft-focus::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
+      }
       canvas {
         display: block;
         margin: 0;
@@ -57,6 +67,7 @@
         }
         .pdf-canvas-wrap {
           padding: 0;
+          background: #ffffff;
         }
       }
       .pdf-error {
@@ -68,12 +79,111 @@
         border-radius: 12px;
         max-width: 640px;
       }
+      .pdf-shell {
+        position: relative;
+      }
+      .pdf-panel-nav {
+        display: none;
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+      }
+      .pdf-shell.is-panel-jump .pdf-panel-nav {
+        display: block;
+      }
+      .pdf-panel-arrow {
+        pointer-events: auto;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(20, 24, 40, 0.55);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+      }
+      .pdf-panel-arrow svg {
+        width: 22px;
+        height: 22px;
+        display: block;
+      }
+      .pdf-panel-arrow--left {
+        left: 10px;
+        animation: pdf-panel-nudge-left 1.35s ease-in-out infinite;
+      }
+      .pdf-panel-arrow--right {
+        right: 10px;
+        animation: pdf-panel-nudge-right 1.35s ease-in-out infinite;
+      }
+      .pdf-panel-arrow:disabled,
+      .pdf-panel-arrow.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+        animation: none;
+      }
+      .pdf-panel-dots {
+        pointer-events: none;
+        position: absolute;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 7px;
+      }
+      .pdf-panel-dots span {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.45);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+      }
+      .pdf-panel-dots span.is-active {
+        background: #fff;
+        transform: scale(1.15);
+      }
+      @keyframes pdf-panel-nudge-right {
+        0%,
+        100% {
+          transform: translateY(-50%) translateX(0);
+        }
+        50% {
+          transform: translateY(-50%) translateX(6px);
+        }
+      }
+      @keyframes pdf-panel-nudge-left {
+        0%,
+        100% {
+          transform: translateY(-50%) translateX(0);
+        }
+        50% {
+          transform: translateY(-50%) translateX(-6px);
+        }
+      }
     </style>
   </head>
   <body>
     <div class="pdf-shell">
       <div class="pdf-canvas-wrap" id="pdf-wrap">
         <canvas id="pdf-canvas"></canvas>
+      </div>
+      <div class="pdf-panel-nav" id="pdf-panel-nav" aria-hidden="true">
+        <button type="button" class="pdf-panel-arrow pdf-panel-arrow--left is-hidden" id="pdf-panel-prev" aria-label="Previous panel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="pdf-panel-arrow pdf-panel-arrow--right" id="pdf-panel-next" aria-label="Next panel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <div class="pdf-panel-dots" id="pdf-panel-dots" aria-hidden="true">
+          <span class="is-active"></span><span></span>
+        </div>
       </div>
     </div>
 
@@ -84,6 +194,9 @@
         const fileUrl = params.get("file");
         const wrap = document.getElementById("pdf-wrap");
         const shell = document.querySelector(".pdf-shell");
+        const panelPrevBtn = document.getElementById("pdf-panel-prev");
+        const panelNextBtn = document.getElementById("pdf-panel-next");
+        const panelDots = document.getElementById("pdf-panel-dots");
 
         if (!fileUrl) {
           shell.innerHTML = '<div class="pdf-error">No PDF file source was provided.</div>';
@@ -132,16 +245,50 @@
         }
         currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
+        const VIEW_MODES = ["Auto", "Normal", "Fit", "SoftFocus", "PanelJump"];
+        const normalizeView = (value) => {
+          const raw = typeof value === "string" ? value.trim() : "";
+          return VIEW_MODES.includes(raw) ? raw : "Auto";
+        };
+        let configuredView = normalizeView(params.get("view"));
+        let resolvedView = configuredView === "Auto" ? null : configuredView;
+        let panelIndex = Math.max(0, Math.floor(Number(params.get("panel")) || 0));
+        let panelCount = 2;
+        /** @type {Map<number, Array<{x:number,y:number,w:number,h:number,pageW:number,pageH:number}>>} */
+        const panelsByPage = new Map();
+
+        const notifyViewMode = (mode) => {
+          try {
+            window.parent?.postMessage({ type: "pdf-viewer:view-mode", viewMode: mode }, "*");
+          } catch {
+            /* ignore */
+          }
+        };
+
+        const activeView = () => resolvedView || (configuredView === "Auto" ? "SoftFocus" : configuredView);
+
         const syncScrollMode = () => {
-          wrap.style.overflowX = "auto";
-          wrap.style.overflowY = "auto";
+          const mode = activeView();
+          const soft = mode === "SoftFocus";
+          wrap.classList.toggle("is-soft-focus", soft);
+          /*
+            SoftFocus (Auto): trim margins, fit content WIDTH with equal inset,
+            center horizontally (translateX), scroll vertically.
+          */
+          if (soft || mode === "PanelJump") {
+            wrap.style.overflowX = "hidden";
+            wrap.style.overflowY = "auto";
+          } else {
+            wrap.style.overflowX = "auto";
+            wrap.style.overflowY = "auto";
+          }
           wrap.style.justifyContent = "flex-start";
           wrap.style.alignItems = "flex-start";
         };
         syncScrollMode();
 
         const layoutKey = () =>
-          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}`;
+          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}:${activeView()}:p${panelIndex}/${panelCount}:tinyLR1`;
 
         const pagesInWindow = (center) => {
           if (!pdfDoc) return [];
@@ -171,23 +318,24 @@
           }
         };
 
-        /** Text-layer bounds in viewport/page CSS units (top-left origin). */
-        const getTextContentBox = async (page, pageW, pageH) => {
+        /**
+         * Text-layer bounds. Horizontal span prefers BODY glyphs (skips header
+         * title / page number that stretch the box to full page width and leave
+         * a big empty right margin on kids books).
+         */
+        const getTextMetrics = async (page, pageW, pageH) => {
           try {
             const text = await page.getTextContent();
             const items = text?.items;
             if (!items || items.length < 3) return null;
             const viewport = page.getViewport({ scale: 1 });
             const Util = window.pdfjsLib.Util;
-            const headerCut = pageH * 0.09;
-            const footerCut = pageH * 0.07;
-            let minX = Infinity;
-            let minY = Infinity;
-            let maxX = -Infinity;
-            let maxY = -Infinity;
-            let used = 0;
+            const glyphs = [];
+            const heights = [];
             for (const item of items) {
               if (!item?.transform) continue;
+              const str = typeof item.str === "string" ? item.str.trim() : "";
+              if (!str) continue;
               const m = Util.transform(viewport.transform, item.transform);
               const x = m[4];
               const y = m[5];
@@ -196,22 +344,60 @@
                 (typeof item.height === "number" ? item.height : 0) * Math.abs(m[3] || 1) ||
                 Math.hypot(m[2], m[3]) ||
                 8;
-              if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+              if (!Number.isFinite(x) || !Number.isFinite(y) || h < 0.5) continue;
               const top = y - h;
-              /* Skip running headers/footers so they don't force a full-page width. */
-              if (top < headerCut || top > pageH - footerCut) continue;
-              used += 1;
-              minX = Math.min(minX, x);
-              maxX = Math.max(maxX, x + Math.max(w, 0));
-              minY = Math.min(minY, top);
-              maxY = Math.max(maxY, y);
+              glyphs.push({ x, top, right: x + Math.max(w, 0), bottom: y, h });
+              if (h < pageH * 0.08) heights.push(h);
             }
-            if (used < 2 || !Number.isFinite(minX) || maxX <= minX || maxY <= minY) return null;
+            if (glyphs.length < 2) return null;
+
+            let minX = Infinity;
+            let minY = Infinity;
+            let maxX = -Infinity;
+            let maxY = -Infinity;
+            for (const g of glyphs) {
+              minX = Math.min(minX, g.x);
+              maxX = Math.max(maxX, g.right);
+              minY = Math.min(minY, g.top);
+              maxY = Math.max(maxY, g.bottom);
+            }
+
+            /* Body band: ignore top/bottom chrome for horizontal crop. */
+            const bandTop = pageH * 0.1;
+            const bandBot = pageH * 0.9;
+            const body = glyphs.filter((g) => g.top >= bandTop && g.bottom <= bandBot);
+            if (body.length >= 4) {
+              let bx0 = Infinity;
+              let bx1 = -Infinity;
+              for (const g of body) {
+                bx0 = Math.min(bx0, g.x);
+                bx1 = Math.max(bx1, g.right);
+              }
+              if (bx1 > bx0) {
+                minX = bx0;
+                maxX = bx1;
+              }
+            }
+
+            const sorted = heights.slice().sort((a, b) => a - b);
+            const medianTextH = sorted.length
+              ? sorted[Math.floor((sorted.length - 1) * 0.5)]
+              : 0;
+            const hang = Math.max(medianTextH * 0.65, pageW * 0.028);
+            minX = Math.max(0, minX - hang);
+            maxX = Math.min(pageW, maxX + hang);
+            minY = Math.max(0, minY - hang * 0.35);
+            maxY = Math.min(pageH, maxY + hang * 0.35);
+
             return {
-              x: Math.max(0, minX),
-              y: Math.max(0, minY),
-              w: Math.min(pageW, maxX) - Math.max(0, minX),
-              h: Math.min(pageH, maxY) - Math.max(0, minY),
+              box: {
+                x: minX,
+                y: minY,
+                w: Math.max(1, maxX - minX),
+                h: Math.max(1, maxY - minY),
+              },
+              medianTextH,
+              sampleCount: glyphs.length,
             };
           } catch {
             return null;
@@ -219,21 +405,47 @@
         };
 
         /**
-         * Find ink bounds from ImageData. Ignores a thin outer frame (page borders)
-         * and trims sparse edge noise via ink-mass percentiles so sparse text pages
-         * don't expand to the full paper size.
+         * Soft ink bounds — trim paper only.
+         * Uses adaptive paper luminance so gray scanned pages (Babylon etc.)
+         * still contract; ignores outer scan noise / black edge lines.
          */
         const inkBoundsFromImageData = (imageData) => {
           const { data, width, height } = imageData;
           if (width < 8 || height < 8) return null;
 
-          const frameX = Math.max(1, Math.floor(width * 0.015));
-          const frameY = Math.max(1, Math.floor(height * 0.015));
+          /* Skip outer scan frame — black edge lines live here. */
+          const frameX = Math.max(2, Math.floor(width * 0.03));
+          const frameY = Math.max(2, Math.floor(height * 0.025));
           const x0 = frameX;
           const x1 = width - 1 - frameX;
           const y0 = frameY;
           const y1 = height - 1 - frameY;
           if (x1 <= x0 || y1 <= y0) return null;
+
+          /* Estimate paper from border ring samples. */
+          let paperSum = 0;
+          let paperN = 0;
+          const ring = Math.max(2, Math.floor(Math.min(width, height) * 0.04));
+          const samplePaper = (x, y) => {
+            const i = (y * width + x) * 4;
+            paperSum += data[i] + data[i + 1] + data[i + 2];
+            paperN += 1;
+          };
+          for (let x = 0; x < width; x += 3) {
+            for (let t = 0; t < ring; t += 2) {
+              samplePaper(x, t);
+              samplePaper(x, height - 1 - t);
+            }
+          }
+          for (let y = ring; y < height - ring; y += 3) {
+            for (let t = 0; t < ring; t += 2) {
+              samplePaper(t, y);
+              samplePaper(width - 1 - t, y);
+            }
+          }
+          const paper = paperN ? paperSum / paperN : 765;
+          /* Darker than paper by ~12% — gray paper stays "paper", ink is ink. */
+          const inkCutoff = Math.min(755, Math.max(520, paper - Math.max(55, paper * 0.12)));
 
           const colCounts = new Int32Array(width);
           const rowCounts = new Int32Array(height);
@@ -243,8 +455,7 @@
           for (let y = y0; y <= y1; y += step) {
             for (let x = x0; x <= x1; x += step) {
               const i = (y * width + x) * 4;
-              /* Near-pure paper only — catch light gray glyphs. */
-              if (data[i] + data[i + 1] + data[i + 2] >= 747) continue;
+              if (data[i] + data[i + 1] + data[i + 2] >= inkCutoff) continue;
               colCounts[x] += 1;
               rowCounts[y] += 1;
               total += 1;
@@ -269,13 +480,16 @@
             return [lo, hi];
           };
 
-          /* Drop ~1.2% ink mass each side — kills hairline borders / compression dots. */
-          let [minX, maxX] = trimMass(colCounts, x0, x1, 0.012);
-          let [minY, maxY] = trimMass(rowCounts, y0, y1, 0.012);
+          /* Drop sparse edge dust; stronger L/R so comics keep only tiny side paper. */
+          let [minX, maxX] = trimMass(colCounts, x0, x1, 0.022);
+          let [minY, maxY] = trimMass(rowCounts, y0, y1, 0.014);
 
-          /* Also require a minimum column/row density so one speck doesn't win. */
-          const minCol = Math.max(1, Math.floor(((y1 - y0) / step) * 0.004));
-          const minRow = Math.max(1, Math.floor(((x1 - x0) / step) * 0.004));
+          let peakCol = 1;
+          let peakRow = 1;
+          for (let x = minX; x <= maxX; x += 1) peakCol = Math.max(peakCol, colCounts[x]);
+          for (let y = minY; y <= maxY; y += 1) peakRow = Math.max(peakRow, rowCounts[y]);
+          const minCol = Math.max(1, Math.floor(peakCol * 0.07));
+          const minRow = Math.max(1, Math.floor(peakRow * 0.05));
           while (minX < maxX && colCounts[minX] < minCol) minX += 1;
           while (maxX > minX && colCounts[maxX] < minCol) maxX -= 1;
           while (minY < maxY && rowCounts[minY] < minRow) minY += 1;
@@ -283,7 +497,7 @@
 
           if (maxX <= minX || maxY <= minY) return null;
 
-          const pad = Math.max(1, Math.round(Math.min(width, height) * 0.004));
+          const pad = Math.max(2, Math.round(Math.min(width, height) * 0.01));
           minX = Math.max(0, minX - pad);
           minY = Math.max(0, minY - pad);
           maxX = Math.min(width - 1, maxX + pad);
@@ -299,9 +513,12 @@
           };
         };
 
+        /**
+         * SoftFocus pad: tiny EQUAL left/right — only a hair past the ink.
+         */
         const padContentBox = (box, pageW, pageH) => {
-          const padX = Math.min(Math.max(box.w * 0.04, pageW * 0.01), pageW * 0.045);
-          const padY = Math.min(Math.max(box.h * 0.04, pageH * 0.01), pageH * 0.045);
+          const padX = Math.min(Math.max(box.w * 0.012, pageW * 0.008), pageW * 0.02);
+          const padY = Math.min(Math.max(box.h * 0.012, pageH * 0.008), pageH * 0.025);
           const x = Math.max(0, box.x - padX);
           const y = Math.max(0, box.y - padY);
           const r = Math.min(pageW, box.x + box.w + padX);
@@ -309,10 +526,20 @@
           return { x, y, w: Math.max(1, r - x), h: Math.max(1, b - y), pageW, pageH };
         };
 
-        /** Scan a preview render for non-white ink — primary content detector. */
+        const unionBoxes = (a, b) => {
+          if (!a) return b;
+          if (!b) return a;
+          const x = Math.min(a.x, b.x);
+          const y = Math.min(a.y, b.y);
+          const r = Math.max(a.x + a.w, b.x + b.w);
+          const bot = Math.max(a.y + a.h, b.y + b.h);
+          return { x, y, w: r - x, h: bot - y };
+        };
+
+        /** Scan a preview render for non-paper ink — primary content detector. */
         const getInkContentBox = async (page, pageW, pageH) => {
           try {
-            const probeScale = lowMem ? 0.4 : 0.55;
+            const probeScale = lowMem ? 0.45 : 0.65;
             const probeVp = page.getViewport({ scale: probeScale });
             const probe = document.createElement("canvas");
             probe.width = Math.max(1, Math.floor(probeVp.width));
@@ -344,63 +571,467 @@
           }
         };
 
+        /**
+         * Contract the page to real content: strip PDF / scan paper margins.
+         * Horizontal crop prefers the TIGHTER of body-text vs ink (kids books
+         * often have a wide header/page-number span that must not win).
+         */
         const getContentBox = async (page) => {
           const base = page.getViewport({ scale: 1 });
           const pageW = base.width;
           const pageH = base.height;
-          const full = { x: 0, y: 0, w: pageW, h: pageH };
+          const full = { x: 0, y: 0, w: pageW, h: pageH, pageW, pageH };
 
           const inkBox = await getInkContentBox(page, pageW, pageH);
-          const textBox = await getTextContentBox(page, pageW, pageH);
-          let box = inkBox || textBox || full;
+          const textMetrics = await getTextMetrics(page, pageW, pageH);
+          const textBox = textMetrics?.box || null;
+          const samples = textMetrics?.sampleCount || 0;
+          const inkFill = inkBox
+            ? (inkBox.w * inkBox.h) / Math.max(1, pageW * pageH)
+            : 1;
+          const inkLooksFull = inkFill > 0.82;
 
-          if (inkBox && textBox) {
-            const top = Math.min(inkBox.y, textBox.y);
-            const bottom = Math.max(inkBox.y + inkBox.h, textBox.y + textBox.h);
-            /* Horizontal fit uses the tighter detector so margins crop consistently. */
-            if (textBox.w <= inkBox.w) {
-              box = { x: textBox.x, y: top, w: textBox.w, h: bottom - top };
+          let box = null;
+          if (inkBox && !inkLooksFull) {
+            /*
+              Always use ink for L/R (comics + kids books) so side paper stays tiny
+              and equal. Keep text for vertical extent when present.
+            */
+            if (textBox && samples >= 8) {
+              const y = Math.min(inkBox.y, textBox.y);
+              const b = Math.max(inkBox.y + inkBox.h, textBox.y + textBox.h);
+              box = { x: inkBox.x, y, w: inkBox.w, h: Math.max(1, b - y) };
             } else {
-              box = { x: inkBox.x, y: top, w: inkBox.w, h: bottom - top };
+              box = inkBox;
             }
-          } else if (!inkBox || inkBox.w < pageW * 0.06 || inkBox.h < pageH * 0.06) {
-            box = textBox || full;
-          }
-
-          if (box.w > pageW * 0.94 && textBox && textBox.w < pageW * 0.9) {
+          } else if (samples >= 8 && textBox) {
             box = textBox;
-          }
-          if (box.w > pageW * 0.97 && box.h > pageH * 0.97) {
-            box = textBox && textBox.w < pageW * 0.95 ? textBox : full;
+          } else if (inkBox && (inkBox.w < pageW * 0.94 || inkBox.h < pageH * 0.94)) {
+            box = inkBox;
           }
 
-          return padContentBox(box, pageW, pageH);
+          if (!box || box.w < pageW * 0.08 || box.h < pageH * 0.08) {
+            box = full;
+          }
+
+          const padded = padContentBox(box, pageW, pageH);
+          padded.medianTextH = textMetrics?.medianTextH || 0;
+          padded.sampleCount = samples;
+          padded.inkFill = inkFill;
+          return padded;
         };
+
+        /**
+         * Find midpoints of low-ink valleys along a density profile.
+         * Tuned for thin comic gutters (1–few px at probe resolution).
+         */
+        const findGutterSplits = (density, length, minSeg) => {
+          if (length < 8) return [0, length];
+          const smooth = new Float32Array(length);
+          for (let i = 0; i < length; i += 1) {
+            let sum = 0;
+            let n = 0;
+            for (let k = -3; k <= 3; k += 1) {
+              const j = i + k;
+              if (j >= 0 && j < length) {
+                sum += density[j];
+                n += 1;
+              }
+            }
+            smooth[i] = sum / n;
+          }
+          let mean = 0;
+          let minV = Infinity;
+          for (let i = 0; i < length; i += 1) {
+            mean += smooth[i];
+            if (smooth[i] < minV) minV = smooth[i];
+          }
+          mean /= length;
+          /*
+            True panel gutters are nearly empty (~0–0.12 ink).
+            Caption boxes are white with sparse text (~0.3–0.45) — NOT gutters.
+            Old mean*0.55 threshold sliced panels through English captions.
+          */
+          const threshold = Math.max(0.04, Math.min(0.14, mean * 0.22));
+
+          const rawValleys = [];
+          for (let i = 2; i < length - 2; i += 1) {
+            const v = smooth[i];
+            if (v > threshold) continue;
+            if (v <= smooth[i - 1] && v <= smooth[i + 1] && v <= smooth[i - 2] && v <= smooth[i + 2]) {
+              if (!rawValleys.length || i - rawValleys[rawValleys.length - 1] >= Math.max(4, Math.floor(minSeg * 0.35))) {
+                rawValleys.push(i);
+              } else if (v < smooth[rawValleys[rawValleys.length - 1]]) {
+                rawValleys[rawValleys.length - 1] = i;
+              }
+            }
+          }
+
+          const splits = [0];
+          for (const v of rawValleys) {
+            if (v >= minSeg && length - v >= minSeg) splits.push(v);
+          }
+          splits.push(length);
+          return splits;
+        };
+
+        const buildGridPanels = (content, rows, cols) => {
+          const panels = [];
+          const cellW = content.w / cols;
+          const cellH = content.h / rows;
+          /* Slight vertical overlap only — keep captions; do NOT widen cells (causes L/R crop). */
+          const overlapY = cellH * 0.1;
+          for (let r = 0; r < rows; r += 1) {
+            for (let c = 0; c < cols; c += 1) {
+              const x = content.x + c * cellW;
+              const y = Math.max(content.y, content.y + r * cellH - overlapY);
+              const right = content.x + (c + 1) * cellW;
+              const bottom = Math.min(content.y + content.h, content.y + (r + 1) * cellH + overlapY);
+              panels.push({
+                x,
+                y,
+                w: Math.max(1, right - x),
+                h: Math.max(1, bottom - y),
+                pageW: content.pageW,
+                pageH: content.pageH,
+              });
+            }
+          }
+          return panels;
+        };
+
+        const guessComicGrid = (content) => {
+          const aspect = content.w / Math.max(1, content.h);
+          /*
+            Portrait kids comics (Shwe Thway): panels are usually FULL-WIDTH
+            horizontal strips stacked top→bottom — not a 3-column manga grid.
+            Using cols>1 was cropping English/art on L/R of each strip.
+          */
+          if (aspect < 0.95) return { rows: 4, cols: 1 };
+          if (aspect <= 1.25) return { rows: 3, cols: 2 };
+          return { rows: 2, cols: 3 };
+        };
+
+        /**
+         * Detect comic panels from white gutters. Returns boxes in page units,
+         * ordered left→right within each row, then top→bottom (Western reading order).
+         */
+        const detectComicPanelsFromImageData = (imageData, pageW, pageH, contentBox) => {
+          const { data, width, height } = imageData;
+          const x0 = Math.max(0, Math.floor((contentBox.x / pageW) * width));
+          const y0 = Math.max(0, Math.floor((contentBox.y / pageH) * height));
+          const x1 = Math.min(width, Math.ceil(((contentBox.x + contentBox.w) / pageW) * width));
+          const y1 = Math.min(height, Math.ceil(((contentBox.y + contentBox.h) / pageH) * height));
+          const cw = x1 - x0;
+          const ch = y1 - y0;
+          if (cw < 24 || ch < 24) return null;
+
+          const rowInk = new Float32Array(ch);
+          /*
+            Shwe Thway paper/gutters are ~RGB(253,253,253) sum≈759 — NOT pure 255.
+            Old threshold (sum<765) counted gutters as ink → detection collapsed.
+          */
+          const isInkPixel = (r, g, b) => r < 248 || g < 248 || b < 248;
+          const step = cw * ch > 180000 ? 2 : 1;
+          for (let y = y0; y < y1; y += step) {
+            let ink = 0;
+            let samples = 0;
+            for (let x = x0; x < x1; x += step) {
+              const i = (y * width + x) * 4;
+              samples += 1;
+              if (isInkPixel(data[i], data[i + 1], data[i + 2])) ink += 1;
+            }
+            rowInk[y - y0] = samples ? ink / samples : 0;
+            if (step > 1 && y + 1 < y1) rowInk[y - y0 + 1] = rowInk[y - y0];
+          }
+
+          const minRowH = Math.max(8, Math.floor(ch * 0.08));
+          const minColW = Math.max(8, Math.floor(cw * 0.08));
+
+          const ySplits = findGutterSplits(rowInk, ch, minRowH);
+          const bands = [];
+          for (let s = 0; s < ySplits.length - 1; s += 1) {
+            const top = ySplits[s];
+            const bot = ySplits[s + 1];
+            if (bot - top >= minRowH) bands.push([top, bot]);
+          }
+          if (!bands.length) bands.push([0, ch]);
+
+          const panels = [];
+          for (const [top, bot] of bands) {
+            const bandH = Math.max(1, bot - top);
+            const colInk = new Float32Array(cw);
+            /* Use mid-band (art) so caption boxes don't hide vertical gutters. */
+            const yArt0 = y0 + top + Math.floor(bandH * 0.28);
+            const yArt1 = y0 + top + Math.floor(bandH * 0.72);
+            const artH = Math.max(1, yArt1 - yArt0);
+            for (let y = yArt0; y < yArt1; y += step) {
+              for (let x = x0; x < x1; x += step) {
+                const i = (y * width + x) * 4;
+                if (isInkPixel(data[i], data[i + 1], data[i + 2])) {
+                  colInk[x - x0] += 1;
+                }
+              }
+            }
+            const rowSamples = Math.max(1, Math.ceil(artH / step));
+            for (let c = 0; c < cw; c += 1) colInk[c] /= rowSamples;
+
+            const xSplits = findGutterSplits(colInk, cw, minColW);
+            let cells = [];
+            for (let s = 0; s < xSplits.length - 1; s += 1) {
+              const left = xSplits[s];
+              const right = xSplits[s + 1];
+              if (right - left >= minColW * 0.55) cells.push([left, right]);
+            }
+
+            /* Wide rows without clear V-gutters → equal 2/3 cols (L→R). */
+            if (cells.length < 2) {
+              const bandHpage = (bandH / ch) * contentBox.h;
+              const aspect = contentBox.w / Math.max(1, bandHpage);
+              const cols = aspect > 2.0 ? 3 : aspect > 1.25 ? 2 : 1;
+              cells = [];
+              for (let c = 0; c < cols; c += 1) {
+                cells.push([
+                  Math.floor((cw * c) / cols),
+                  Math.floor((cw * (c + 1)) / cols),
+                ]);
+              }
+            }
+
+            for (const [left, right] of cells) {
+              const px = contentBox.x + (left / cw) * contentBox.w;
+              const py = contentBox.y + (top / ch) * contentBox.h;
+              const pw = ((right - left) / cw) * contentBox.w;
+              const ph = ((bot - top) / ch) * contentBox.h;
+              panels.push({
+                x: px,
+                y: py,
+                w: Math.max(1, pw),
+                h: Math.max(1, ph),
+                pageW,
+                pageH,
+              });
+            }
+          }
+
+          const minArea = contentBox.w * contentBox.h * 0.04;
+          const filtered = panels.filter((p) => {
+            if (p.w * p.h < minArea) return false;
+            const aspect = p.w / Math.max(1, p.h);
+            return aspect > 0.35 && aspect < 2.8;
+          });
+          if (filtered.length < 4 || filtered.length > 16) return null;
+
+          return filtered.map((p) => {
+            const padX = Math.min(p.w * 0.02, contentBox.w * 0.008);
+            const padY = Math.min(p.h * 0.02, contentBox.h * 0.008);
+            const x = Math.max(contentBox.x, p.x - padX);
+            const y = Math.max(contentBox.y, p.y - padY);
+            const r = Math.min(contentBox.x + contentBox.w, p.x + p.w + padX);
+            const b = Math.min(contentBox.y + contentBox.h, p.y + p.h + padY);
+            return { x, y, w: r - x, h: b - y, pageW, pageH };
+          });
+        };
+
+        /** Reject bogus sets (e.g. full-page + footer strip). */
+        const isSanePanelSet = (panels, content) => {
+          if (!panels || panels.length < 4) return false;
+          const area = Math.max(1, content.w * content.h);
+          for (const p of panels) {
+            const a = p.w * p.h;
+            if (a > area * 0.5) return false;
+            if (p.h < content.h * 0.07 || p.w < content.w * 0.07) return false;
+          }
+          return true;
+        };
+
+        const ensurePanelsForPage = async (page, pageNumber) => {
+          const cached = panelsByPage.get(pageNumber);
+          if (cached?.length) return cached;
+
+          const base = page.getViewport({ scale: 1 });
+          const pageW = base.width;
+          const pageH = base.height;
+          const content = await getContentBox(page);
+          content.pageW = pageW;
+          content.pageH = pageH;
+
+          /*
+            Reliable reading path for magazine comics (Shwe Thway etc.):
+            overlapping 3×3 (or 3×2) grid in L→R then down order.
+            Gutter auto-detect is too fragile on bilingual caption layouts —
+            overlap keeps full Burmese + art + English in each jump.
+          */
+          const { rows, cols } = guessComicGrid(content);
+          const panels = buildGridPanels(content, rows, cols);
+
+          panelsByPage.set(pageNumber, panels);
+          return panels;
+        };
+
+        /** Focus region for the active view mode. */
+        const getFocusBox = async (page, pageNumber) => {
+          const base = page.getViewport({ scale: 1 });
+          const full = {
+            x: 0,
+            y: 0,
+            w: base.width,
+            h: base.height,
+            pageW: base.width,
+            pageH: base.height,
+          };
+          const mode = activeView();
+
+          if (mode === "Normal" || mode === "Fit") {
+            return full;
+          }
+
+          if (mode === "PanelJump") {
+            /*
+              Real gutter-based panels (uneven sizes OK), reading order:
+              left → right, then next row down. Jump arrows follow that list.
+              Each panel is CONTAINed so text/art is not cropped.
+            */
+            const panels = await ensurePanelsForPage(page, pageNumber);
+            panelCount = Math.max(1, panels.length);
+            if (panelIndex >= panelCount) panelIndex = panelCount - 1;
+            const box = panels[panelIndex] || panels[0] || full;
+            return { ...box, pageW: base.width, pageH: base.height };
+          }
+
+          /* SoftFocus: ink/text bounds only — white PDF padding is discarded. */
+          return getContentBox(page);
+        };
+
+        /** Auto → SoftFocus: trim margins, fit width, vertical scroll. */
+        const autoDetectViewMode = async (_doc) => "SoftFocus";
+
+        const ensureResolvedView = async (doc) => {
+          if (configuredView !== "Auto") {
+            resolvedView = configuredView;
+            notifyViewMode(resolvedView);
+            syncPanelChrome();
+            return;
+          }
+          if (resolvedView) {
+            notifyViewMode(resolvedView);
+            syncPanelChrome();
+            return;
+          }
+          resolvedView = await autoDetectViewMode(doc);
+          notifyViewMode(resolvedView);
+          syncPanelChrome();
+        };
+
+        const syncPanelChrome = () => {
+          const on = activeView() === "PanelJump";
+          shell.classList.toggle("is-panel-jump", on);
+          syncScrollMode();
+          const nav = document.getElementById("pdf-panel-nav");
+          if (nav) nav.setAttribute("aria-hidden", on ? "false" : "true");
+          if (!panelPrevBtn || !panelNextBtn) return;
+          if (!on || panelCount < 2) {
+            panelPrevBtn.classList.add("is-hidden");
+            panelNextBtn.classList.add("is-hidden");
+            if (panelDots) panelDots.innerHTML = "";
+            return;
+          }
+          panelPrevBtn.classList.toggle("is-hidden", panelIndex <= 0);
+          panelNextBtn.classList.toggle("is-hidden", panelIndex >= panelCount - 1);
+          panelPrevBtn.disabled = panelIndex <= 0;
+          panelNextBtn.disabled = panelIndex >= panelCount - 1;
+          if (panelDots) {
+            panelDots.innerHTML = "";
+            for (let i = 0; i < panelCount; i += 1) {
+              const dot = document.createElement("span");
+              if (i === panelIndex) dot.className = "is-active";
+              panelDots.appendChild(dot);
+            }
+          }
+        };
+
+        const goPanel = (next) => {
+          const clamped = Math.max(0, Math.min(panelCount - 1, next));
+          if (clamped === panelIndex) return;
+          panelIndex = clamped;
+          syncPanelChrome();
+          lastLayoutKey = layoutKey();
+          prunePageCache(currentPage);
+          if (pdfDoc) void renderPage(currentPage);
+        };
+
+        if (panelPrevBtn) {
+          panelPrevBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            goPanel(panelIndex - 1);
+          });
+        }
+        if (panelNextBtn) {
+          panelNextBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            goPanel(panelIndex + 1);
+          });
+        }
 
         const scrollForBox = (box, cssScale, cssWidth, cssHeight) => {
           const availW = Math.max(80, wrap.clientWidth);
-          const edge = 8;
+          const availH = Math.max(80, wrap.clientHeight);
+          const edge = 6;
           const contentCssW = box.w * cssScale;
-          /* Horizontal center; pin content top to the viewer top (never vertically center). */
-          const idealLeft = box.x * cssScale - (availW - contentCssW) / 2;
-          const idealTop = box.y * cssScale - edge;
-          const maxScrollX = Math.max(0, cssWidth - availW);
-          const maxScrollY = Math.max(0, cssHeight - wrap.clientHeight);
-          const scrollLeft = Math.max(0, Math.min(idealLeft, maxScrollX));
-          const scrollTop = Math.max(0, Math.min(idealTop, maxScrollY));
-          return {
-            scrollLeft,
-            scrollTop,
-            shiftX: scrollLeft - idealLeft,
-            /* Pull content up when top paper margin can't be scrolled away. */
-            shiftY: scrollTop - idealTop,
-          };
+          const contentCssH = box.h * cssScale;
+          const mode = activeView();
+
+          let scrollLeft = 0;
+          let shiftX = 0;
+          /*
+            SoftFocus: overflow-x:hidden ignores scrollLeft — pan with translateX
+            so L/R stay equal / content is edge-fit.
+          */
+          if (mode === "SoftFocus") {
+            const sideGap = Math.max(0, (availW - contentCssW) / 2);
+            shiftX = sideGap - box.x * cssScale;
+            scrollLeft = 0;
+          } else {
+            const sideGap = (availW - contentCssW) / 2;
+            const contentLeft = box.x * cssScale;
+            scrollLeft = contentLeft - sideGap;
+            const maxScrollX = Math.max(0, cssWidth - availW);
+            if (scrollLeft < 0) {
+              shiftX = -scrollLeft;
+              scrollLeft = 0;
+            } else if (scrollLeft > maxScrollX) {
+              shiftX = maxScrollX - scrollLeft;
+              scrollLeft = maxScrollX;
+            }
+          }
+
+          const idealTop =
+            mode === "SoftFocus"
+              ? box.y * cssScale - edge
+              : mode === "Normal"
+                ? box.y * cssScale - (availH - contentCssH) / 2
+                : box.y * cssScale - edge;
+          const maxScrollY = Math.max(0, cssHeight - availH);
+          let scrollTop = idealTop;
+          let shiftY = 0;
+          if (scrollTop < 0) {
+            shiftY = -scrollTop;
+            scrollTop = 0;
+          } else if (scrollTop > maxScrollY) {
+            shiftY = maxScrollY - scrollTop;
+            scrollTop = maxScrollY;
+          }
+
+          return { scrollLeft, scrollTop, shiftX, shiftY };
         };
 
         const computeLayout = (page, contentBox, scaleBoost = 1) => {
           const baseViewport = page.getViewport({ scale: 1 });
           const zoomFactor = Math.max(0.5, Number(pageZoom) / 100);
           const availW = Math.max(80, wrap.clientWidth);
+          const availH = Math.max(80, wrap.clientHeight);
           const edge = 12;
           const box = contentBox || {
             x: 0,
@@ -410,9 +1041,28 @@
             pageW: baseViewport.width,
             pageH: baseViewport.height,
           };
+          const mode = activeView();
+          const pageW = baseViewport.width;
+          const pageH = baseViewport.height;
 
-          /* Fit content width to the screen; zoom % multiplies that auto-fit. */
-          const cssScale = (Math.max(60, availW - edge * 2) / box.w) * zoomFactor;
+          let cssScale;
+          if (mode === "Normal") {
+            const scaleW = Math.max(60, availW - edge * 2) / pageW;
+            const scaleH = Math.max(60, availH - edge * 2) / pageH;
+            cssScale = Math.min(scaleW, scaleH) * zoomFactor;
+          } else if (mode === "Fit") {
+            cssScale = (Math.max(60, availW - edge * 2) / pageW) * zoomFactor;
+          } else if (mode === "PanelJump") {
+            const viewW = Math.max(60, availW - 16);
+            cssScale = (viewW / Math.max(1, box.w)) * zoomFactor;
+          } else {
+            /*
+              SoftFocus: fill phone width with only a tiny EQUAL L/R inset.
+            */
+            const sideInset = 4;
+            const viewW = Math.max(60, availW - sideInset * 2);
+            cssScale = (viewW / Math.max(1, box.w)) * zoomFactor;
+          }
 
           const dpr = Math.max(1, window.devicePixelRatio || 1);
           let outputScale = (lowMem
@@ -489,6 +1139,7 @@
             wrap.replaceChildren(node);
           }
           focusContent(entry);
+          syncPanelChrome();
         };
 
         const entryFromLayout = async (page, layout) => {
@@ -558,6 +1209,22 @@
             }
             if (!bounds) return entry;
 
+            const prev = entry.contentBox;
+            const samples = Number(prev?.sampleCount) || 0;
+            /*
+              Text-heavy pages: trust the text box + pad. Ink refine often
+              trims one side harder (SS2 right clip) or fails on gray paper (SS1).
+            */
+            if (samples >= 8 && prev) {
+              const focus = scrollForBox(prev, entry.cssScale, entry.cssWidth, entry.cssHeight);
+              entry.scrollLeft = focus.scrollLeft;
+              entry.scrollTop = focus.scrollTop;
+              entry.shiftX = focus.shiftX;
+              entry.shiftY = focus.shiftY;
+              entry._refinedBox = prev;
+              return entry;
+            }
+
             const box = padContentBox(
               {
                 x: (bounds.x / srcW) * pageW,
@@ -568,6 +1235,23 @@
               pageW,
               pageH
             );
+            box.medianTextH = Number(prev?.medianTextH) || 0;
+            box.readabilityBoost = 1;
+
+            if (
+              prev &&
+              (box.w < prev.w * 0.45 ||
+                box.h < prev.h * 0.45 ||
+                box.x > prev.x + prev.w * 0.2 ||
+                box.y > prev.y + prev.h * 0.2)
+            ) {
+              const focus = scrollForBox(prev, entry.cssScale, entry.cssWidth, entry.cssHeight);
+              entry.scrollLeft = focus.scrollLeft;
+              entry.scrollTop = focus.scrollTop;
+              entry.shiftX = focus.shiftX;
+              entry.shiftY = focus.shiftY;
+              return entry;
+            }
 
             const focus = scrollForBox(box, entry.cssScale, entry.cssWidth, entry.cssHeight);
             entry.contentBox = box;
@@ -585,12 +1269,14 @@
         const renderPageToEntry = async (pageNumber) => {
           const page = await pdfDoc.getPage(pageNumber);
           const base = page.getViewport({ scale: 1 });
-          let contentBox = await getContentBox(page);
+          let contentBox = await getFocusBox(page, pageNumber);
 
           const tryRender = async (box, boost) => {
             const layout = computeLayout(page, box, boost);
             const entry = await entryFromLayout(page, layout);
-            refineEntryFromCanvas(entry, base.width, base.height);
+            if (activeView() === "SoftFocus") {
+              refineEntryFromCanvas(entry, base.width, base.height);
+            }
             return entry;
           };
 
@@ -606,15 +1292,19 @@
           }
 
           /*
-            If the real bitmap's content is much narrower than we assumed, re-render
-            zoomed to that box so every page fills width the same way.
+            SoftFocus: if the real bitmap is clearly tighter than the probe box,
+            re-contract and fill the phone again.
           */
           const refined = entry._refinedBox;
-          if (
+          const mode = activeView();
+          const needRefit =
+            mode === "SoftFocus" &&
             refined &&
-            refined.w > base.width * 0.05 &&
-            refined.w < contentBox.w * 0.9
-          ) {
+            refined.w > base.width * 0.08 &&
+            refined.h > base.height * 0.08 &&
+            ((refined.w < contentBox.w * 0.92 && refined.w > contentBox.w * 0.45) ||
+              (refined.h < contentBox.h * 0.92 && refined.h > contentBox.h * 0.45));
+          if (needRefit) {
             try {
               const again = await tryRender(refined, 1);
               releaseEntry({ canvas: entry.canvas });
@@ -727,7 +1417,11 @@
           loaded = true;
           try {
             pdfDoc = await openDocument(source);
+            panelsByPage.clear();
+            panelIndex = 0;
             currentPage = Math.min(Math.max(1, currentPage), pdfDoc.numPages);
+            await ensureResolvedView(pdfDoc);
+            lastLayoutKey = layoutKey();
             await renderPage(currentPage);
             try {
               window.parent?.postMessage(
@@ -749,6 +1443,13 @@
           if (!data || data.target !== "pdf-viewer") return;
           if (data.type === "load-buffer") {
             if (data.url && data.url !== resolvedFileUrl) return;
+            if (typeof data.view === "string") {
+              configuredView = normalizeView(data.view);
+              resolvedView = configuredView === "Auto" ? null : configuredView;
+            }
+            if (Number.isFinite(Number(data.panel))) {
+              panelIndex = Math.max(0, Math.floor(Number(data.panel)));
+            }
             if (data.buffer instanceof ArrayBuffer) {
               loadPdfFromSource(data.buffer);
             } else if (typeof data.url === "string" && !loaded) {
@@ -758,6 +1459,7 @@
             const n = Math.floor(Number(data.page));
             if (!Number.isFinite(n) || !pdfDoc) return;
             currentPage = Math.min(Math.max(1, n), pdfDoc.numPages);
+            panelIndex = 0;
             void renderPage(currentPage);
           } else if (data.type === "set-zoom") {
             const next = Math.floor(Number(data.zoom));
@@ -768,6 +1470,25 @@
             lastLayoutKey = layoutKey();
             prunePageCache(currentPage);
             if (pdfDoc) void renderPage(currentPage);
+          } else if (data.type === "set-view") {
+            const next = normalizeView(data.view);
+            if (next === configuredView && (next !== "Auto" || resolvedView)) return;
+            configuredView = next;
+            resolvedView = next === "Auto" ? null : next;
+            panelsByPage.clear();
+            panelIndex = 0;
+            const apply = async () => {
+              if (!pdfDoc) return;
+              await ensureResolvedView(pdfDoc);
+              lastLayoutKey = layoutKey();
+              prunePageCache(currentPage);
+              await renderPage(currentPage);
+            };
+            void apply();
+          } else if (data.type === "set-panel") {
+            const next = Math.floor(Number(data.panel));
+            if (!Number.isFinite(next)) return;
+            goPanel(next);
           }
         });
 

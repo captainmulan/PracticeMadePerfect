@@ -2,21 +2,36 @@
 
 /* Practice Workspace Top Bar */
 .practice-workspace-top-bar {
+  --pmp-nav-btn-bg: rgba(255, 255, 255, 0.14);
+  --pmp-nav-btn-border: 1px solid rgba(255, 255, 255, 0.24);
+  --pmp-nav-btn-color: #ffffff;
+  --pmp-nav-btn-disabled: rgba(255, 255, 255, 0.45);
+  /* Clear iPhone continuous-corner mask (~40px) with room to spare. */
+  --pmp-nav-btn-size: 24px;
+  --pmp-nav-side-pad: 32px;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: var(--pmp-nav-btn-size) minmax(0, 1fr) var(--pmp-nav-btn-size);
   align-items: center;
-  gap: 8px;
+  column-gap: 8px;
   color: #f8fafc;
-  padding: 8px 16px;
+  padding: 12px var(--pmp-nav-side-pad);
   border-radius: 0;
   width: 100%;
+  max-width: 100%;
   box-shadow: none;
-  min-height: 56px;
+  min-height: 52px;
+  height: auto;
+  max-height: none;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .chapter-nav-side {
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-height: var(--pmp-nav-btn-size);
+  height: auto;
 }
 
 .chapter-nav-side-left {
@@ -33,6 +48,8 @@
   gap: 4px;
   justify-self: center;
   min-width: 0;
+  height: auto;
+  min-height: var(--pmp-nav-btn-size);
 }
 
 .chapter-info {
@@ -117,28 +134,84 @@
 }
 
 .chapter-nav-button {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
-  font-size: 1.1rem;
+  /* Geometry locked here — admin may only theme colors via CSS variables. */
+  width: var(--pmp-nav-btn-size) !important;
+  height: var(--pmp-nav-btn-size) !important;
+  min-width: var(--pmp-nav-btn-size) !important;
+  min-height: var(--pmp-nav-btn-size) !important;
+  max-width: var(--pmp-nav-btn-size) !important;
+  max-height: var(--pmp-nav-btn-size) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  border: var(--pmp-nav-btn-border) !important;
+  background: var(--pmp-nav-btn-bg) !important;
+  color: var(--pmp-nav-btn-color) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  align-self: center !important;
+  overflow: visible !important;
+  transform: none !important;
+  position: static !important;
+  top: auto !important;
+  bottom: auto !important;
+  box-shadow: none !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  text-shadow: none !important;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 
 .chapter-nav-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.22);
-  transform: translateY(-1px);
+  filter: brightness(1.08);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .chapter-nav-button:disabled {
-  opacity: 0.45;
+  color: var(--pmp-nav-btn-disabled) !important;
+  opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* EPUB/PDF reader: keep top bar from being squeezed by tall iframes. */
+.course-wizard-page .practice-workspace-top-bar {
+  flex: 0 0 auto;
+  flex-shrink: 0 !important;
+  --pmp-nav-side-pad: 32px;
+  --pmp-nav-btn-size: 24px;
+  padding-left: var(--pmp-nav-side-pad) !important;
+  padding-right: var(--pmp-nav-side-pad) !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+/* EPUB/PDF: roomier top bar so nav circles never look cropped. */
+.practice-workspace--epub .practice-workspace-top-bar,
+.practice-workspace--pdf .practice-workspace-top-bar {
+  --pmp-nav-btn-size: 24px;
+  --pmp-nav-side-pad: 32px;
+  min-height: 52px;
+}
+
+@media (max-width: 480px) {
+  .practice-workspace-top-bar {
+    --pmp-nav-side-pad: 32px;
+    --pmp-nav-btn-size: 24px;
+    column-gap: 6px;
+  }
+  .chapter-nav-center {
+    gap: 2px;
+  }
 }
 
 .practice-workspace-toolbar {
