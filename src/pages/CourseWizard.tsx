@@ -22,7 +22,7 @@ import type { BookBookmark } from "../services/types/account";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { normalizeBookCategory } from "../utils/bookCategories";
+import { categoriesOverlap } from "../utils/bookCategories";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -152,9 +152,8 @@ export default function CourseWizard() {
 
   const relatedBooks = useMemo(() => {
     if (!outline) return [];
-    const category = normalizeBookCategory(outline.category);
     return courses.filter(
-      (course) => course.id !== outline.id && normalizeBookCategory(course.category) === category,
+      (course) => course.id !== outline.id && categoriesOverlap(course.category, outline.category),
     );
   }, [courses, outline]);
 

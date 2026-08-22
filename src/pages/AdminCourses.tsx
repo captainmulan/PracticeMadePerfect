@@ -160,7 +160,7 @@ export default function AdminCourses() {
       courseIndex: books.length,
       category: "IT",
       artifactType: "book",
-      pageViewType: "Auto",
+      pageViewType: "NormalView",
       chapters: [],
     };
     setDraftBook(book);
@@ -794,7 +794,7 @@ export default function AdminCourses() {
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Page View Type</span>
                       <select
-                        value={activeBook.pageViewType ?? "Auto"}
+                        value={activeBook.pageViewType ?? "NormalView"}
                         onChange={(e) => {
                           const pageViewType = e.target.value as Course["pageViewType"];
                           updateActiveBook((c) => ({ ...c, pageViewType }));
@@ -821,19 +821,53 @@ export default function AdminCourses() {
                       </span>
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">
-                      <span className="admin-task-editor-label">Category</span>
-                      <select
+                      <span className="admin-task-editor-label">Category tags</span>
+                      <input
                         value={activeBook.category}
                         onChange={(e) => updateActiveBook((c) => ({ ...c, category: e.target.value }))}
-                        className="admin-grid-select"
-                      >
-                        <option value="IT">IT</option>
-                        <option value="Language">Language</option>
-                        <option value="Kid">Kid</option>
-                        <option value="Migration">Migration</option>
-                        <option value="PersonalDevelopment">PersonalDevelopment</option>
-                      </select>
+                        className="admin-grid-input"
+                        placeholder="IT, Other, AI"
+                      />
                     </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cat 1</span>
+                      <input
+                        value={activeBook.cat1 ?? ""}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, cat1: e.target.value || undefined }))}
+                        className="admin-grid-input"
+                        placeholder="IT"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cat 2</span>
+                      <input
+                        value={activeBook.cat2 ?? ""}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, cat2: e.target.value || undefined }))}
+                        className="admin-grid-input"
+                        placeholder="Other"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cat 3</span>
+                      <input
+                        value={activeBook.cat3 ?? ""}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, cat3: e.target.value || undefined }))}
+                        className="admin-grid-input"
+                        placeholder="AI"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Cat 4</span>
+                      <input
+                        value={activeBook.cat4 ?? ""}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, cat4: e.target.value || undefined }))}
+                        className="admin-grid-input"
+                        placeholder=""
+                      />
+                    </label>
+                    <span className="admin-task-editor-hint" style={{ display: "block", marginTop: 6, opacity: 0.75, fontSize: 12 }}>
+                      Shelf path is Cat1 &gt; Cat2 &gt; Cat3 &gt; Cat4. Example: IT &gt; Other &gt; AI
+                    </span>
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Author Name</span>
                       <input

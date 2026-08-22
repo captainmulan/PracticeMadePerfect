@@ -42,7 +42,9 @@ export default function HomeCourseShelves({ row, useCoverImages = false, onItemC
   const DEFAULT_SHELF_ROWS = 2;
   const minSlots = DEFAULT_SHELF_ROWS * booksPerRow;
   const displayItems: CourseShelfItem[] = [...row.items];
-  const shouldPadPlaceholders = row.title !== "Author" && row.title !== "Category";
+  const shouldPadPlaceholders = !row.items.some(
+    (item) => item.actionType === "category" || item.actionType === "language-sub" || item.actionType === "author",
+  );
 
   if (shouldPadPlaceholders) {
     while (displayItems.length < minSlots) {

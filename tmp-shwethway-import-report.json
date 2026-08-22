@@ -1,0 +1,59 @@
+{
+  "exportedAt": "2026-08-22T05:24:25.000Z",
+  "results": [
+    {
+      "file": "shwe-thway-journal-vol-56-no-10.pdf",
+      "id": "shwe-thway-journal-vol-56-no-10",
+      "sizeMB": 6.06,
+      "compressed": false,
+      "status": "imported",
+      "reason": "copied 16 pages, cover /book_covers/thumbs/shwe-thway-journal-vol-56-no-10.webp",
+      "pages": 16
+    },
+    {
+      "file": "shwe-thway-journal-vol-56-no-11.pdf",
+      "id": "shwe-thway-journal-vol-56-no-11",
+      "sizeMB": 6.0,
+      "compressed": false,
+      "status": "imported",
+      "reason": "copied 16 pages, cover /book_covers/thumbs/shwe-thway-journal-vol-56-no-11.webp",
+      "pages": 16
+    },
+    {
+      "file": "shwe-thway-journal-vol-56-no-13.pdf",
+      "id": "shwe-thway-journal-vol-56-no-13",
+      "sizeMB": 5.92,
+      "compressed": false,
+      "status": "imported",
+      "reason": "copied 16 pages, cover /book_covers/thumbs/shwe-thway-journal-vol-56-no-13.webp",
+      "pages": 16
+    },
+    {
+      "file": "shwe-thway-journal-vol-56-no-14.pdf",
+      "id": "shwe-thway-journal-vol-56-no-14",
+      "sizeMB": 6.34,
+      "compressed": false,
+      "status": "imported",
+      "reason": "copied 16 pages, cover /book_covers/thumbs/shwe-thway-journal-vol-56-no-14.webp",
+      "pages": 16
+    },
+    {
+      "file": "shwe-thway-journal-vol-56-no-15.pdf",
+      "id": "shwe-thway-journal-vol-56-no-15",
+      "sizeMB": 6.26,
+      "compressed": false,
+      "status": "imported",
+      "reason": "copied 16 pages, cover /book_covers/thumbs/shwe-thway-journal-vol-56-no-15.webp",
+      "pages": 16
+    },
+    {
+      "file": "shwe-thway-journal-vol-56-no-16.pdf",
+      "id": "shwe-thway-journal-vol-56-no-16",
+      "sizeMB": 6.08,
+      "compressed": false,
+      "status": "imported",
+      "reason": "copied 16 pages, cover /book_covers/thumbs/shwe-thway-journal-vol-56-no-16.webp",
+      "pages": 16
+    }
+  ]
+}

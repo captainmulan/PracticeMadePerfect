@@ -84,7 +84,13 @@ export interface Course {
   titleAlignment?: "left" | "center" | "right";
   iconPosition?: "top-left" | "top-center" | "top-right" | "center-left" | "center-center" | "center-right" | "bottom-left" | "bottom-center" | "bottom-right";
   courseIndex: number;
+  /** Legacy comma-separated tags (search + display fallback). */
   category: string;
+  /** Category tree: Comic > Kid > Shwe Thway */
+  cat1?: string;
+  cat2?: string;
+  cat3?: string;
+  cat4?: string;
   pIndex?: number;
   artifactType: ArtifactType;
   /**

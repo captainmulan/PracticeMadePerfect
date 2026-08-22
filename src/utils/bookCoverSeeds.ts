@@ -61,7 +61,7 @@ export function toCoverThumbUrl(url: string): string {
 
 export function resolveBookCoverUrl(
   course: { id: string; coverImageUrl?: string | null },
-  _options?: { variant?: "full" | "thumb" },
+  options?: { variant?: "full" | "thumb" },
 ): string | undefined {
   const seeded = BOOK_COVER_SEEDS[course.id];
   const raw = course.coverImageUrl?.trim() || "";
@@ -69,6 +69,13 @@ export function resolveBookCoverUrl(
   if (!full) {
     return undefined;
   }
-  // Full-size covers were removed; always serve thumbs for shelf + about.
+  const variant = options?.variant ?? "thumb";
+  if (variant === "full") {
+    const withoutQuery = full.split("?")[0];
+    if (withoutQuery.includes("/book_covers/thumbs/")) {
+      return withoutQuery.replace("/book_covers/thumbs/", "/book_covers/");
+    }
+    return withoutQuery;
+  }
   return toCoverThumbUrl(full);
 }

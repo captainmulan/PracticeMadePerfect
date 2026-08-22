@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import type { Course } from "../data/courses";
 import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
-import { normalizeBookCategory } from "../utils/bookCategories";
+import { formatCategoryPath } from "../utils/bookCategories";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import CourseBookCard from "./CourseBookCard";
 import "../styles/course.css";
@@ -18,7 +19,13 @@ export default function CourseAboutStep({
   related,
   onRead,
 }: CourseAboutStepProps) {
-  const coverUrl = resolveBookCoverUrl(course, { variant: "thumb" }) ?? resolveBookCoverUrl(course);
+  const fullCoverUrl = resolveBookCoverUrl(course, { variant: "full" });
+  const thumbCoverUrl = resolveBookCoverUrl(course, { variant: "thumb" });
+  const [coverUrl, setCoverUrl] = useState(fullCoverUrl || thumbCoverUrl);
+
+  useEffect(() => {
+    setCoverUrl(fullCoverUrl || thumbCoverUrl);
+  }, [fullCoverUrl, thumbCoverUrl]);
   const pageCount = course.stepCount ?? course.chapters.reduce((sum, chapter) => sum + chapter.steps.length, 0);
   const relatedItems = related.slice(0, 12).map((item) => createShelfItemFromCourse(item, item.category));
 
@@ -30,7 +37,16 @@ export default function CourseAboutStep({
           <div className="book-about-hero">
             <div className="book-about-cover-wrap">
               {coverUrl ? (
-                <img className="book-about-cover" src={coverUrl} alt="" />
+                <img
+                  className="book-about-cover"
+                  src={coverUrl}
+                  alt=""
+                  onError={() => {
+                    if (thumbCoverUrl && coverUrl !== thumbCoverUrl) {
+                      setCoverUrl(thumbCoverUrl);
+                    }
+                  }}
+                />
               ) : (
                 <div className="book-about-cover book-about-cover--fallback">{course.icon}</div>
               )}
@@ -47,7 +63,7 @@ export default function CourseAboutStep({
               </div>
               <div>
                 <dt>Category</dt>
-                <dd>{normalizeBookCategory(course.category) || "—"}</dd>
+                <dd>{formatCategoryPath(course)}</dd>
               </div>
               <div>
                 <dt>Pages</dt>
@@ -75,7 +91,7 @@ export default function CourseAboutStep({
             <div className="book-about-related-scroller">
               {relatedItems.map((item) => (
                 <div key={item.id} className="book-about-related-item">
-                  <CourseBookCard item={item} useCoverImage />
+                  <CourseBookCard item={item} useCoverImage hideTitleRibbon />
                 </div>
               ))}
             </div>

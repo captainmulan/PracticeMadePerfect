@@ -13,15 +13,15 @@ import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import {
   createShelfItemFromCourse,
   getAuthorShelfRow,
+  getCategoryBrowseRow,
   getCategoryPickerRow,
   getCourseShelfRowForAuthor,
-  getCourseShelfRowForCategory,
   getHomeCourseShelfRows,
   getPopularCourses,
   getUnpublishedBooksRow,
   type CourseShelfRow,
 } from "../utils/courseShelf";
-import type { HomeCategoryPickerId } from "../utils/bookCategories";
+import { AUTHOR_SHELF_ID } from "../utils/bookCategories";
 import "../styles/home-test-showcase.css";
 
 const HOME_SHELF_TABS = [
@@ -64,7 +64,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const navigate = useNavigate();
   const [heroCollapsed, setHeroCollapsed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
-  const [selectedCategorySubTab, setSelectedCategorySubTab] = useState<HomeCategoryPickerId | null>(null);
+  const [categoryPath, setCategoryPath] = useState<string[]>([]);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const data = getHomePageData();
@@ -122,16 +122,16 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       return rows[0];
     }
     if (selectedTab === "Category") {
-      if (!selectedCategorySubTab) {
-        return getCategoryPickerRow();
+      if (categoryPath.length === 0) {
+        return getCategoryPickerRow(courses);
       }
-      if (selectedCategorySubTab === "Author") {
+      if (categoryPath[0] === AUTHOR_SHELF_ID) {
         if (selectedAuthorName) {
           return getCourseShelfRowForAuthor(courses, selectedAuthorName);
         }
         return getAuthorShelfRow(authorGroups);
       }
-      return getCourseShelfRowForCategory(courses, selectedCategorySubTab);
+      return getCategoryBrowseRow(courses, categoryPath);
     }
     if (isSearching) {
       const searchItems = filterCoursesByQuery(courses, searchQuery)
@@ -141,7 +141,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       return { title: "Selection", items: searchItems };
     }
     return rows.find((row) => row.title === "Selection") || rows[0];
-  }, [authorGroups, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedCategorySubTab, selectedTab, showUnpublishedOnly]);
+  }, [authorGroups, categoryPath, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedTab, showUnpublishedOnly]);
 
   const openShowcasedBook = () => {
     if (showcaseSelection?.course.id) {
@@ -224,7 +224,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 onClick={() => {
                   setSelectedTab(tab.id);
                   if (tab.id === "Category") {
-                    setSelectedCategorySubTab(null);
+                    setCategoryPath([]);
                     setSelectedAuthorName(null);
                   }
                 }}
@@ -280,9 +280,9 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                     if (item.actionType === "author") {
                       setSelectedAuthorName(item.title);
                     }
-                    if (item.actionType === "category" && item.category) {
-                      setSelectedCategorySubTab(item.category as HomeCategoryPickerId);
+                    if ((item.actionType === "language-sub" || item.actionType === "category") && item.category) {
                       setSelectedAuthorName(null);
+                      setCategoryPath((current) => [...current, item.category!]);
                     }
                   }}
                 />

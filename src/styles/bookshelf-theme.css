@@ -1152,6 +1152,15 @@ body[data-bookshelf-theme="space"] .page-home .author-shelf-button:active {
   filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
 }
 
+.page-home img.book-category-flag {
+  width: clamp(4.8rem, 22vw, 8.4rem);
+  height: auto;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+  font-size: 0;
+}
+
 .page-home .book-cover,
 .page-home .book .book-cover {
   width: 100% !important;

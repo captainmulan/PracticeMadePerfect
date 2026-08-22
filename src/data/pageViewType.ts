@@ -58,7 +58,7 @@ export const FOCUS_PAGE_VIEW_TYPES: PageViewType[] = [
   "HardFocus",
 ];
 
-export const DEFAULT_PAGE_VIEW_TYPE: PageViewType = "Auto";
+export const DEFAULT_PAGE_VIEW_TYPE: PageViewType = "NormalView";
 
 export function normalizePageViewType(value: unknown): PageViewType {
   const raw = typeof value === "string" ? value.trim() : "";

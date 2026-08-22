@@ -292,7 +292,7 @@ export function createDefaultBookFields(courseIndex: number, title: string, id: 
     courseIndex,
     category,
     artifactType: "book" as const,
-    pageViewType: "Auto" as const,
+    pageViewType: "NormalView" as const,
   };
 }
 

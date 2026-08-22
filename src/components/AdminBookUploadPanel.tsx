@@ -299,12 +299,12 @@ export default function AdminBookUploadPanel({
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Category</span>
-                <select value={category} onChange={(e) => setCategory(e.target.value)} className="admin-grid-select">
-                  <option value="IT">IT</option>
-                  <option value="Kid">Kid</option>
-                  <option value="PersonalDevelopment">PersonalDevelopment</option>
-                  <option value="Language">Language</option>
-                </select>
+                <input
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="admin-grid-input"
+                  placeholder="Myanmar, Kid, Comic"
+                />
               </label>
             </div>
           ) : (

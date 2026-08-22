@@ -1,6 +1,15 @@
 import type { Course } from "../data/courses";
 import { resolveBookCoverUrl } from "./bookCoverSeeds";
-import { HOME_CATEGORY_PICKER, normalizeBookCategory } from "./bookCategories";
+import {
+  AUTHOR_SHELF_ID,
+  CATEGORY_FOLDER_COVERS,
+  LANGUAGE_SUBCATEGORY_FLAGS,
+  collectCategoryChildren,
+  collectTopCategoryNames,
+  courseIsExactCategoryPath,
+  formatCategoryLabel,
+  getCategoryShelfStyle,
+} from "./bookCategories";
 
 export interface CourseShelfItem {
   id: string;
@@ -14,6 +23,7 @@ export interface CourseShelfItem {
   coverHeight?: number;
   coverImageUrl?: string;
   icon: string;
+  iconImageUrl?: string;
   iconColorStart: string;
   iconColorMiddle: string;
   iconColorEnd: string;
@@ -29,7 +39,7 @@ export interface CourseShelfItem {
   link?: string;
   placeholder?: boolean;
   category?: string;
-  actionType?: "book" | "author" | "category";
+  actionType?: "book" | "author" | "category" | "language-sub";
   artifactType?: "book" | "magazine" | "newspaper" | "game";
   authorName?: string;
 }
@@ -461,46 +471,65 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
   const popularItems = getPopularCourses(courses)
     .map((course) => createShelfItemFromCourse(course, "Selection"));
 
-  const kidItems = courses
-    .filter((course) => normalizeBookCategory(course.category) === "Kid")
-    .map((course) => createShelfItemFromCourse(course, "Kid"));
-
-  const personalDevItems = courses
-    .filter((course) => normalizeBookCategory(course.category) === "PersonalDevelopment")
-    .map((course) => createShelfItemFromCourse(course, "PersonalDevelopment"));
-
-  return [
-    buildShelfRow("Selection", popularItems),
-    buildShelfRow("Kid", kidItems),
-    buildShelfRow("PersonalDevelopment", personalDevItems),
-    { title: "Other", items: [] },
-  ];
+  return [buildShelfRow("Selection", popularItems)];
 }
 
-export function getCategoryPickerRow(): CourseShelfRow {
-  const items = HOME_CATEGORY_PICKER.map((category) => ({
-    id: `category-${category.id}`,
-    title: category.label,
-    description: `Browse ${category.label} books`,
-    color: category.coverColorStart,
-    coverColorStart: category.coverColorStart,
-    coverColorMiddle: category.coverColorMiddle,
-    coverColorEnd: category.coverColorEnd,
-    icon: category.icon,
+export function getCategoryPickerRow(courses: Course[]): CourseShelfRow {
+  const authorStyle = getCategoryShelfStyle(AUTHOR_SHELF_ID);
+  const tagItems = collectTopCategoryNames(courses).map((tag) => makeCategoryFolderItem(tag, "category"));
+
+  const authorItem = makeCategoryFolderItem(AUTHOR_SHELF_ID, "category");
+  authorItem.title = "Author";
+  authorItem.description = "Browse books by author";
+  authorItem.icon = authorStyle.icon;
+  authorItem.coverColorStart = authorStyle.coverColorStart;
+  authorItem.coverColorMiddle = authorStyle.coverColorMiddle;
+  authorItem.coverColorEnd = authorStyle.coverColorEnd;
+  authorItem.color = authorStyle.coverColorStart;
+
+  return { title: "Category", items: [...tagItems, authorItem] };
+}
+
+function makeCategoryFolderItem(tag: string, actionType: "category" | "language-sub"): CourseShelfItem {
+  const style = getCategoryShelfStyle(tag);
+  const flag = LANGUAGE_SUBCATEGORY_FLAGS[tag];
+  const folderCover = flag?.flagSrc || CATEGORY_FOLDER_COVERS[tag];
+  const label = formatCategoryLabel(tag);
+  const isCoverTile = Boolean(folderCover);
+  return {
+    id: `category-${tag}`,
+    title: label,
+    description: `Browse ${label} books`,
+    color: style.coverColorStart,
+    coverColorStart: style.coverColorStart,
+    coverColorMiddle: style.coverColorMiddle,
+    coverColorEnd: style.coverColorEnd,
+    coverWidth: isCoverTile ? 100 : undefined,
+    coverHeight: isCoverTile ? 150 : undefined,
+    coverImageUrl: folderCover,
+    icon: flag?.icon ?? style.icon,
+    iconImageUrl: folderCover,
     iconColorStart: "#fff",
     iconColorMiddle: "#fff",
     iconColorEnd: "#fff",
-    iconSize: 88,
-    iconPosition: "center-center" as const,
-    titlePosition: "top-center" as const,
-    titleColor: "#0f172a",
+    iconSize: isCoverTile ? 80 : 88,
+    iconPosition: "center-center",
+    titlePosition: isCoverTile ? "bottom-center" : "top-center",
+    titleColor: isCoverTile ? "#ffffff" : "#0f172a",
     meta: "Category",
-    category: category.id,
-    actionType: "category" as const,
-    artifactType: "book" as const,
-  }));
+    category: tag,
+    actionType: flag?.flagSrc ? "language-sub" : actionType,
+    artifactType: "book",
+  };
+}
 
-  return { title: "Category", items };
+export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseShelfRow {
+  const childItems = collectCategoryChildren(courses, path).map((tag) => makeCategoryFolderItem(tag, "category"));
+  const bookItems = courses
+    .filter((course) => courseIsExactCategoryPath(course, path))
+    .map((course) => createShelfItemFromCourse(course, path[path.length - 1] ?? "Category"));
+  const title = path.map(formatCategoryLabel).join(" > ") || "Category";
+  return { title, items: [...childItems, ...bookItems] };
 }
 
 export function getAuthorShelfRow(authorGroups: Array<{ authorName: string; authorPicture?: string }>): CourseShelfRow {
@@ -536,11 +565,14 @@ export function getCourseShelfRowForAuthor(courses: Course[], authorName: string
   return buildShelfRow("Author", items);
 }
 
-export function getCourseShelfRowForCategory(courses: Course[], category: string): CourseShelfRow {
-  const normalized = normalizeBookCategory(category);
-  const items = courses
-    .filter((course) => normalizeBookCategory(course.category) === normalized)
-    .map((course) => createShelfItemFromCourse(course, normalized));
+export function getLanguageSubcategoryPickerRow(courses: Course[]): CourseShelfRow {
+  return getCategoryBrowseRow(courses, ["Language"]);
+}
 
-  return buildShelfRow(normalized, items);
+export function getCourseShelfRowForLanguageSub(courses: Course[], subTag: string): CourseShelfRow {
+  return getCategoryBrowseRow(courses, ["Language", subTag.trim()]);
+}
+
+export function getCourseShelfRowForCategory(courses: Course[], category: string): CourseShelfRow {
+  return getCategoryBrowseRow(courses, [category.trim()]);
 }

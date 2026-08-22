@@ -775,12 +775,13 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 .book-about-cover {
   width: 100%;
   aspect-ratio: 2 / 3;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   border-radius: 8px;
   display: block;
-  padding-left: 10px;
+  padding-left: 0;
   box-sizing: border-box;
+  background: #0b1220;
 }
 
 .book-about-cover--fallback {

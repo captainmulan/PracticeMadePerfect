@@ -7,19 +7,24 @@ interface CourseBookCardProps {
   item: CourseShelfItem;
   /** When true, prefer admin/seed cover image over gradient+icon. */
   useCoverImage?: boolean;
+  hideTitleRibbon?: boolean;
   onItemClick?: (item: CourseShelfItem) => void;
 }
 
-export default function CourseBookCard({ item, useCoverImage = false, onItemClick }: CourseBookCardProps) {
+export default function CourseBookCard({ item, useCoverImage = false, hideTitleRibbon = false, onItemClick }: CourseBookCardProps) {
   const homePageData = getHomePageData();
   const isEmpty = Boolean(item.placeholder);
   const isAuthor = item.actionType === "author";
+  const isLanguageSub = item.actionType === "language-sub";
   const isCategory = item.actionType === "category";
+  const isEmojiCategory = isCategory && !item.coverImageUrl;
   const authorAvatarUrl = isAuthor ? item.coverImageUrl?.trim() : undefined;
   const isImageAvatar = Boolean(authorAvatarUrl && /^https?:\/\//i.test(authorAvatarUrl));
-  const showCoverImage = Boolean(useCoverImage && item.coverImageUrl && !isEmpty && !item.actionType);
-  const showCaption = !isEmpty && isCategory;
-  const showCoverRibbon = !isEmpty && !isAuthor && !isCategory;
+  const showCoverImage = Boolean(
+    useCoverImage && item.coverImageUrl && !isEmpty && (!item.actionType || isLanguageSub || (isCategory && Boolean(item.coverImageUrl))),
+  );
+  const showCaption = !isEmpty && isEmojiCategory;
+  const showCoverRibbon = !hideTitleRibbon && !isEmpty && !isAuthor && !isCategory && !isLanguageSub;
   
   const iconSize = item.iconSize ?? 80; // default admin-configurable
   const iconFont = Math.round(iconSize * 0.9);
@@ -103,16 +108,25 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
           <span className="book-caption-title">{displayTitle}</span>
         </div>
       ) : null}
-      <div className={`book-cover${isCategory ? " book-cover--emoji" : ""}`} style={{ 
+      <div className={`book-cover${isEmojiCategory ? " book-cover--emoji" : ""}`} style={{ 
         ...authorCoverStyles,
-        background: showCoverImage || isCategory
+        background: showCoverImage || isEmojiCategory
           ? undefined
           : `linear-gradient(180deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
         position: "relative",
-        overflow: isCategory ? "visible" : "hidden",
+        overflow: isEmojiCategory ? "visible" : "hidden",
       }}>
-        {isCategory ? (
-          <span className="book-category-emoji" aria-hidden="true">{item.icon}</span>
+        {isEmojiCategory ? (
+          item.iconImageUrl ? (
+            <img
+              className="book-category-emoji book-category-flag"
+              src={item.iconImageUrl}
+              alt=""
+              draggable={false}
+            />
+          ) : (
+            <span className="book-category-emoji" aria-hidden="true">{item.icon}</span>
+          )
         ) : isAuthor ? (
           <div
             style={{
@@ -230,7 +244,22 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
             zIndex: 5,
             ...iconContainerStyles 
           }}>
-            {item.icon}
+            {item.iconImageUrl ? (
+              <img
+                src={item.iconImageUrl}
+                alt=""
+                draggable={false}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: 6,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
+                }}
+              />
+            ) : (
+              item.icon
+            )}
           </div>
         )}
         {showCoverRibbon ? (
@@ -238,19 +267,25 @@ export default function CourseBookCard({ item, useCoverImage = false, onItemClic
             <span className="book-cover-ribbon-title">{displayTitle}</span>
           </div>
         ) : null}
-        {!isCategory ? <div className="book-spine" /> : null}
+        {!isEmojiCategory ? <div className="book-spine" /> : null}
       </div>
     </>
   );
 
-  if (item.actionType === "author" || item.actionType === "category") {
+  if (item.actionType === "author" || item.actionType === "category" || item.actionType === "language-sub") {
+    const openLabel =
+      item.actionType === "language-sub"
+        ? `Open ${item.description || item.category || "language"} books`
+        : item.actionType === "category"
+          ? `Open ${item.title}`
+          : `View books by ${item.title}`;
     return (
       <button
         type="button"
-        className={`book${showCoverImage ? " book--cover-image" : ""}${isCategory ? " book--category" : ""}`}
+        className={`book${showCoverImage ? " book--cover-image" : ""}${isEmojiCategory ? " book--category" : ""}`}
         style={{ ...bookStyles, border: "none", cursor: "pointer", padding: 0 }}
         onClick={() => onItemClick?.(item)}
-        aria-label={item.actionType === "category" ? `Open ${item.title}` : `View books by ${item.title}`}
+        aria-label={openLabel}
       >
         {content}
       </button>

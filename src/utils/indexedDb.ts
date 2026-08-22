@@ -248,6 +248,10 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     iconPosition: raw.iconPosition,
     courseIndex: raw.courseIndex,
     category: normalizeBookCategory(raw.category),
+    cat1: raw.cat1,
+    cat2: raw.cat2,
+    cat3: raw.cat3,
+    cat4: raw.cat4,
     pIndex: raw.pIndex,
     artifactType: raw.artifactType,
     pageViewType: raw.pageViewType,
@@ -666,21 +670,16 @@ async function migrateLegacyBookCategories(): Promise<void> {
   }
 }
 
-async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Promise<boolean> {
+async function shouldRefreshCatalogFromDeploy(_existingCourseCount: number): Promise<boolean> {
   const remote = await fetchDeployedCatalogVersion();
   if (!remote) {
     // Old deploys without catalog-version.json — keep current IndexedDB.
     return false;
   }
 
-  // Preserve local admin data. Only use the deployed catalog when the local database is still empty.
-  if (existingCourseCount > 0) {
-    return false;
-  }
-
   const localStamp = readLocalCatalogStamp();
   if (!localStamp) {
-    // First load with an empty local database: seed from the deploy catalog.
+    /* Empty DB, or local books never stamped — merge packaged catalog (new ids only). */
     return true;
   }
   if (localStamp !== remote.exportedAt) {
@@ -712,6 +711,10 @@ async function runInitialMigration(): Promise<void> {
   const loadedFromExport = await loadFromIndexedDbExport();
   if (loadedFromExport) {
     console.log("Initialization complete (from indexeddb-export.json)");
+    const remote = await fetchDeployedCatalogVersion();
+    if (remote) {
+      rememberCatalogStamp(remote);
+    }
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
     return;
@@ -797,7 +800,34 @@ export async function importIndexedDb(jsonData: string, merge: boolean = true): 
     // Import courses — only if courseId doesn't already exist locally!
     for (const course of data.courses) {
       if (merge && existingCourseIds.has(course.id)) {
-        continue; // Preserve local admin version
+        const packagedCategory = normalizeBookCategory(course.category);
+        const packagedView = typeof course.pageViewType === "string" ? course.pageViewType : "";
+        if (packagedCategory || packagedView || course.coverImageUrl) {
+          const existing = await getCourseById(course.id);
+          const packagedCover = typeof course.coverImageUrl === "string" ? course.coverImageUrl : "";
+          if (
+            existing &&
+            (
+              (packagedCategory && existing.category !== packagedCategory) ||
+              (packagedView && existing.pageViewType !== packagedView) ||
+              (packagedCover && existing.coverImageUrl !== packagedCover) ||
+              (course.cat1 && existing.cat1 !== course.cat1)
+            )
+          ) {
+            await saveCourse({
+              ...existing,
+              category: packagedCategory || existing.category,
+              pageViewType: packagedView || existing.pageViewType,
+              coverImageUrl: packagedCover || existing.coverImageUrl,
+              title: course.title ?? existing.title,
+              cat1: course.cat1 ?? existing.cat1,
+              cat2: course.cat2 ?? existing.cat2,
+              cat3: course.cat3 ?? existing.cat3,
+              cat4: course.cat4 ?? existing.cat4,
+            });
+          }
+        }
+        continue;
       }
       await saveCourse(course);
       importedCourses += 1;
