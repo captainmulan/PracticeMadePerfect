@@ -302,10 +302,10 @@
             });
             console.log("[EPUB Viewer] Rendition created");
 
-            /* Mobile-first readable type — denser EPUBs stay scrollable, not tiny. */
+            /* Readable type without breaking publisher layout (overlap fix). */
             try {
               const shortSide = Math.min(window.innerWidth || 400, window.innerHeight || 700);
-              const fontPct = shortSide <= 430 ? "122%" : shortSide <= 768 ? "112%" : "100%";
+              const fontPct = shortSide <= 430 ? "118%" : shortSide <= 768 ? "110%" : "100%";
               if (rendition.themes?.fontSize) {
                 rendition.themes.fontSize(fontPct);
               }
@@ -316,14 +316,17 @@
                     "padding": "0 !important",
                     "width": "100% !important",
                     "max-width": "none !important",
+                    "overflow-x": "hidden !important",
                   },
                   body: {
                     "line-height": "1.55 !important",
                     "margin": "0 !important",
-                    "padding": "0.35em 8px 1em !important",
+                    "padding": "0.5em 10px 1.25em !important",
                     "box-sizing": "border-box !important",
                     "width": "100% !important",
                     "max-width": "none !important",
+                    "position": "relative !important",
+                    "overflow-x": "hidden !important",
                   },
                   img: {
                     "max-width": "100% !important",
@@ -339,30 +342,72 @@
               if (!doc || doc.getElementById("pmp-epub-pad")) return;
               const style = doc.createElement("style");
               style.id = "pmp-epub-pad";
-              /* Beat Gutenberg / publisher margins that leave huge L/R gutters. */
+              /* Kill absolute/float stacking that causes text-on-text overlap. */
               style.textContent = `
-                html {
+                html, body {
                   margin: 0 !important;
                   padding: 0 !important;
                   width: 100% !important;
                   max-width: none !important;
+                  overflow-x: hidden !important;
+                  position: relative !important;
                 }
                 body {
-                  margin: 0 !important;
-                  padding: 0.35em 8px 1.25em !important;
+                  padding: 0.5em 12px 1.5em !important;
                   box-sizing: border-box !important;
-                  width: 100% !important;
-                  max-width: none !important;
+                  line-height: 1.55 !important;
                 }
-                body > *, p, div, section, article, header, footer, main,
-                h1, h2, h3, h4, h5, h6, blockquote, pre, ul, ol, table {
+                img, svg, video, canvas, object, embed, table {
+                  box-sizing: border-box !important;
+                  max-width: 100% !important;
+                }
+                h1, h2, h3, h4, h5, h6, p, div, section, article,
+                blockquote, pre {
+                  position: static !important;
+                  float: none !important;
+                  transform: none !important;
+                  column-count: 1 !important;
+                  -webkit-column-count: 1 !important;
+                  text-indent: 0 !important;
+                }
+                ul, ol {
+                  list-style-position: outside !important;
+                  padding-left: 2.6em !important;
+                  margin: 0.4em 0 0.8em 0.35em !important;
+                  max-width: 100% !important;
+                }
+                li {
+                  position: static !important;
+                  float: none !important;
+                  text-indent: 0 !important;
+                  padding-left: 0.35em !important;
                   margin-left: 0 !important;
                   margin-right: 0 !important;
-                  max-width: 100% !important;
+                  list-style-position: outside !important;
                 }
-                img, svg, video, table, .x-ebookmaker {
-                  max-width: 100% !important;
+                img, svg, video, canvas, object, embed {
                   height: auto !important;
+                  position: relative !important;
+                  float: none !important;
+                  display: block !important;
+                  margin: 0.6em auto !important;
+                }
+                table {
+                  width: 100% !important;
+                  table-layout: auto !important;
+                  border-collapse: collapse !important;
+                }
+                td, th {
+                  text-indent: 0 !important;
+                  padding: 0.15em 0.4em !important;
+                  vertical-align: top !important;
+                }
+                .x-ebookmaker, .pg-boilerplate, [class*="dropcap"], [class*="Dropcap"] {
+                  float: none !important;
+                  position: static !important;
+                }
+                .toc, p.toc, div.toc, [class*="toc"] {
+                  text-indent: 0 !important;
                 }
               `;
               (doc.head || doc.documentElement).appendChild(style);

@@ -1,15 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
-import { normalizePageViewType, type PageViewType } from "../data/pageViewType";
+import {
+  defaultZoomForPageViewType,
+  normalizePageViewType,
+  PAGE_VIEW_TYPE_ZOOM,
+  type PageViewType,
+} from "../data/pageViewType";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
 import { extractPdfPageNumber, getPdfBuffer, resolvePdfStepFileUrl } from "../utils/pdfCache";
 import "../styles/course.css";
 
-const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom-v8";
-const PDF_ZOOM_LEVELS = Array.from({ length: 21 }, (_, i) => 100 + i * 5); // 100..200 step 5
-/** 100% = mode-based auto layout. User zoom multiplies that. */
-const DEFAULT_PDF_ZOOM = 100;
+const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom-v11";
+const PDF_ZOOM_LEVELS = Array.from({ length: 31 }, (_, i) => 100 + i * 5); // 100..250
 
 function snapPdfZoom(value: number): number {
   return PDF_ZOOM_LEVELS.reduce((best, level) =>
@@ -17,7 +20,9 @@ function snapPdfZoom(value: number): number {
   );
 }
 
-function readStoredPdfZoom(): number {
+function initialZoomForView(view: PageViewType): number {
+  const preset = PAGE_VIEW_TYPE_ZOOM[view];
+  if (typeof preset === "number") return snapPdfZoom(preset);
   try {
     const raw = Number(localStorage.getItem(PDF_ZOOM_STORAGE_KEY));
     if (Number.isFinite(raw) && raw >= 50 && raw <= 300) {
@@ -26,7 +31,7 @@ function readStoredPdfZoom(): number {
   } catch {
     /* ignore */
   }
-  return DEFAULT_PDF_ZOOM;
+  return defaultZoomForPageViewType(view);
 }
 
 interface CoursePdfStepProps {
@@ -92,9 +97,13 @@ export default function CoursePdfStep({
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [bufferReady, setBufferReady] = useState<"idle" | "loading" | "ready">("idle");
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [pageZoom, setPageZoom] = useState(readStoredPdfZoom);
+  const [pageZoom, setPageZoom] = useState(() => initialZoomForView(configuredView));
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
   const keyRef = useRef(`${fileUrl}::${pageIndex}`);
+
+  useEffect(() => {
+    setPageZoom(initialZoomForView(configuredView));
+  }, [configuredView]);
 
   useEffect(() => {
     if (!fileUrl) {
@@ -102,7 +111,7 @@ export default function CoursePdfStep({
       return;
     }
     setViewerSrc(
-      `/pdf-viewer.html?v=tiny1&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
+      `/pdf-viewer.html?v=viewz3&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUrl, pageNumber, configuredView]);
@@ -223,10 +232,12 @@ export default function CoursePdfStep({
 
   const handlePageZoomChange = (zoom: number) => {
     setPageZoom(zoom);
-    try {
-      localStorage.setItem(PDF_ZOOM_STORAGE_KEY, String(zoom));
-    } catch {
-      /* ignore */
+    if (!PAGE_VIEW_TYPE_ZOOM[configuredView]) {
+      try {
+        localStorage.setItem(PDF_ZOOM_STORAGE_KEY, String(zoom));
+      } catch {
+        /* ignore */
+      }
     }
     sendZoom(zoom);
   };

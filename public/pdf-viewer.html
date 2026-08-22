@@ -41,15 +41,10 @@
         min-height: 0;
         -webkit-overflow-scrolling: touch;
       }
-      /* SoftFocus: hide scrollbar gutter so L/R margins stay equal. */
+      /* Focus: keep native pan/scroll (swipe) — do not lock overflow. */
       .pdf-canvas-wrap.is-soft-focus {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      }
-      .pdf-canvas-wrap.is-soft-focus::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-        display: none;
+        touch-action: pan-x pan-y;
+        overscroll-behavior: contain;
       }
       canvas {
         display: block;
@@ -57,9 +52,9 @@
         background: white;
         box-shadow: none;
         image-rendering: auto;
-        /* Keep CSS size in CSS pixels; backing store is 2×+ for sharp glyphs. */
         transform: translateZ(0);
         flex: 0 0 auto;
+        will-change: transform;
       }
       @media (max-width: 767px) {
         .pdf-shell {
@@ -228,16 +223,18 @@
         const deviceMem = Number(navigator.deviceMemory) || 0;
         const lowMem = isIOS || isMiniClass || (deviceMem > 0 && deviceMem <= 4);
 
-        /* Keep rendered bitmaps only around the current page. Low-RAM devices (iPad Mini)
-           keep 3 pages; others keep 5. */
+        /* Keep rendered bitmaps only around the current page. */
         const PAGE_WINDOW = lowMem ? 1 : 2;
-          const MAX_CANVAS_PIXELS = lowMem ? 8388608 : 33554432;
+        const MAX_CANVAS_PIXELS = lowMem ? 6291456 : 16777216;
         const pageCache = new Map();
+        /** @type {Map<string, object>} */
+        const contentBoxCache = new Map();
         let pdfDoc = null;
         let renderToken = 0;
         let loaded = false;
         let lastLayoutKey = "";
         let prefetchTimer = 0;
+        let visibleCanvas = null;
         let pageZoom = 100;
         const zoomParam = Number(params.get("zoom"));
         if (Number.isFinite(zoomParam) && zoomParam >= 50 && zoomParam <= 300) {
@@ -245,7 +242,41 @@
         }
         currentPage = Math.max(1, Number.isFinite(currentPage) ? currentPage : 1);
 
-        const VIEW_MODES = ["Auto", "Normal", "Fit", "SoftFocus", "PanelJump"];
+        const VIEW_MODES = [
+          "Auto",
+          "ComicView",
+          "NormalView",
+          "MediumView",
+          "LargeView",
+          "ExtraLargeView",
+          "Normal",
+          "Fit",
+          "SoftFocus",
+          "NormalFocus",
+          "BasicFocus",
+          "MediumFocus",
+          "HardFocus",
+          "PanelJump",
+        ];
+        const FOCUS_MODES = new Set([
+          "ComicView",
+          "NormalView",
+          "MediumView",
+          "LargeView",
+          "ExtraLargeView",
+          "SoftFocus",
+          "NormalFocus",
+          "BasicFocus",
+          "MediumFocus",
+          "HardFocus",
+        ]);
+        const PRESET_ZOOM = {
+          ComicView: 140,
+          NormalView: 100,
+          MediumView: 125,
+          LargeView: 150,
+          ExtraLargeView: 175,
+        };
         const normalizeView = (value) => {
           const raw = typeof value === "string" ? value.trim() : "";
           return VIEW_MODES.includes(raw) ? raw : "Auto";
@@ -265,30 +296,128 @@
           }
         };
 
+        /* Auto on narrow stays Auto (SoftFocus layout). Landscape always fit. */
         const activeView = () => resolvedView || (configuredView === "Auto" ? "SoftFocus" : configuredView);
+        const isFocusMode = (mode = activeView()) => FOCUS_MODES.has(mode);
+        const presetZoomPct = () => PRESET_ZOOM[configuredView] || PRESET_ZOOM[activeView()] || 0;
+
+        /**
+         * Focus aggressiveness for eliminating PDF / scan white padding.
+         * NormalFocus < BasicFocus < MediumFocus/SoftFocus < HardFocus.
+         */
+        const focusProfile = () => {
+          const mode = activeView();
+          if (mode === "NormalFocus") {
+            return {
+              id: "normal",
+              padXFrac: 0.045,
+              padYFrac: 0.035,
+              padXPage: 0.028,
+              padYPage: 0.022,
+              padXMax: 0.07,
+              padYMax: 0.055,
+              frameX: 0.012,
+              frameY: 0.01,
+              massX: 0.006,
+              massY: 0.005,
+              peakCol: 0.025,
+              peakRow: 0.025,
+              sideInset: 10,
+              hangMul: 0.75,
+              bodyBand: 0.06,
+            };
+          }
+          if (mode === "BasicFocus") {
+            return {
+              id: "basic",
+              padXFrac: 0.025,
+              padYFrac: 0.02,
+              padXPage: 0.016,
+              padYPage: 0.014,
+              padXMax: 0.04,
+              padYMax: 0.035,
+              frameX: 0.022,
+              frameY: 0.018,
+              massX: 0.012,
+              massY: 0.01,
+              peakCol: 0.045,
+              peakRow: 0.04,
+              sideInset: 6,
+              hangMul: 0.55,
+              bodyBand: 0.08,
+            };
+          }
+          if (mode === "HardFocus" || mode === "ComicView") {
+            return {
+              id: "hard",
+              padXFrac: 0.004,
+              padYFrac: 0.004,
+              padXPage: 0.002,
+              padYPage: 0.002,
+              padXMax: 0.01,
+              padYMax: 0.012,
+              frameX: 0.045,
+              frameY: 0.04,
+              massX: 0.038,
+              massY: 0.03,
+              peakCol: 0.11,
+              peakRow: 0.09,
+              sideInset: 2,
+              hangMul: 0.22,
+              bodyBand: 0.12,
+            };
+          }
+          /* MediumFocus + SoftFocus (legacy) */
+          return {
+            id: "medium",
+            padXFrac: 0.012,
+            padYFrac: 0.012,
+            padXPage: 0.008,
+            padYPage: 0.008,
+            padXMax: 0.02,
+            padYMax: 0.025,
+            frameX: 0.03,
+            frameY: 0.025,
+            massX: 0.022,
+            massY: 0.014,
+            peakCol: 0.07,
+            peakRow: 0.05,
+            sideInset: 4,
+            hangMul: 0.4,
+            bodyBand: 0.1,
+          };
+        };
 
         const syncScrollMode = () => {
           const mode = activeView();
-          const soft = mode === "SoftFocus";
-          wrap.classList.toggle("is-soft-focus", soft);
-          /*
-            SoftFocus (Auto): trim margins, fit content WIDTH with equal inset,
-            center horizontally (translateX), scroll vertically.
-          */
-          if (soft || mode === "PanelJump") {
-            wrap.style.overflowX = "hidden";
-            wrap.style.overflowY = "auto";
+          const focus = isFocusMode(mode);
+          wrap.classList.toggle("is-soft-focus", focus);
+          wrap.style.overflowX = "auto";
+          wrap.style.overflowY = "auto";
+          /* NormalView: pin to top, center horizontally. */
+          if (mode === "NormalView" || mode === "Normal") {
+            wrap.style.justifyContent = "center";
+            wrap.style.alignItems = "flex-start";
           } else {
-            wrap.style.overflowX = "auto";
-            wrap.style.overflowY = "auto";
+            wrap.style.justifyContent = "flex-start";
+            wrap.style.alignItems = "flex-start";
           }
-          wrap.style.justifyContent = "flex-start";
-          wrap.style.alignItems = "flex-start";
+          if (mode === "PanelJump") {
+            wrap.style.overflowX = "hidden";
+          }
         };
         syncScrollMode();
 
+        /* iPad portrait + landscape (and similar tablets) — large reading surface. */
+        const isLargeScreen = () => {
+          const w = Math.max(80, wrap.clientWidth);
+          const h = Math.max(80, wrap.clientHeight);
+          const screenMin = Math.min(window.screen?.width || w, window.screen?.height || h);
+          return screenMin >= 700 || (w >= 700 && h >= 500);
+        };
+
         const layoutKey = () =>
-          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}:${activeView()}:p${panelIndex}/${panelCount}:tinyLR1`;
+          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}:${activeView()}:p${panelIndex}/${panelCount}:f${focusProfile().id}:${isLargeScreen() ? "lg" : "sm"}`;
 
         const pagesInWindow = (center) => {
           if (!pdfDoc) return [];
@@ -301,6 +430,10 @@
 
         const releaseEntry = (entry) => {
           if (!entry?.canvas) return;
+          if (entry.canvas === visibleCanvas) {
+            /* Keep on-screen page until a new mount replaces it (anti-flicker). */
+            return;
+          }
           releaseVisibleIf(entry.canvas);
           entry.canvas.width = 0;
           entry.canvas.height = 0;
@@ -363,8 +496,9 @@
             }
 
             /* Body band: ignore top/bottom chrome for horizontal crop. */
-            const bandTop = pageH * 0.1;
-            const bandBot = pageH * 0.9;
+            const fp = focusProfile();
+            const bandTop = pageH * fp.bodyBand;
+            const bandBot = pageH * (1 - fp.bodyBand);
             const body = glyphs.filter((g) => g.top >= bandTop && g.bottom <= bandBot);
             if (body.length >= 4) {
               let bx0 = Infinity;
@@ -383,7 +517,7 @@
             const medianTextH = sorted.length
               ? sorted[Math.floor((sorted.length - 1) * 0.5)]
               : 0;
-            const hang = Math.max(medianTextH * 0.65, pageW * 0.028);
+            const hang = Math.max(medianTextH * fp.hangMul, pageW * (0.012 + fp.hangMul * 0.02));
             minX = Math.max(0, minX - hang);
             maxX = Math.min(pageW, maxX + hang);
             minY = Math.max(0, minY - hang * 0.35);
@@ -406,16 +540,16 @@
 
         /**
          * Soft ink bounds — trim paper only.
-         * Uses adaptive paper luminance so gray scanned pages (Babylon etc.)
-         * still contract; ignores outer scan noise / black edge lines.
+         * Aggressiveness comes from focusProfile() (Normal…Hard Focus).
          */
         const inkBoundsFromImageData = (imageData) => {
           const { data, width, height } = imageData;
           if (width < 8 || height < 8) return null;
+          const fp = focusProfile();
 
           /* Skip outer scan frame — black edge lines live here. */
-          const frameX = Math.max(2, Math.floor(width * 0.03));
-          const frameY = Math.max(2, Math.floor(height * 0.025));
+          const frameX = Math.max(2, Math.floor(width * fp.frameX));
+          const frameY = Math.max(2, Math.floor(height * fp.frameY));
           const x0 = frameX;
           const x1 = width - 1 - frameX;
           const y0 = frameY;
@@ -480,16 +614,16 @@
             return [lo, hi];
           };
 
-          /* Drop sparse edge dust; stronger L/R so comics keep only tiny side paper. */
-          let [minX, maxX] = trimMass(colCounts, x0, x1, 0.022);
-          let [minY, maxY] = trimMass(rowCounts, y0, y1, 0.014);
+          /* Drop sparse edge dust; Hard Focus drops more mass from L/R. */
+          let [minX, maxX] = trimMass(colCounts, x0, x1, fp.massX);
+          let [minY, maxY] = trimMass(rowCounts, y0, y1, fp.massY);
 
           let peakCol = 1;
           let peakRow = 1;
           for (let x = minX; x <= maxX; x += 1) peakCol = Math.max(peakCol, colCounts[x]);
           for (let y = minY; y <= maxY; y += 1) peakRow = Math.max(peakRow, rowCounts[y]);
-          const minCol = Math.max(1, Math.floor(peakCol * 0.07));
-          const minRow = Math.max(1, Math.floor(peakRow * 0.05));
+          const minCol = Math.max(1, Math.floor(peakCol * fp.peakCol));
+          const minRow = Math.max(1, Math.floor(peakRow * fp.peakRow));
           while (minX < maxX && colCounts[minX] < minCol) minX += 1;
           while (maxX > minX && colCounts[maxX] < minCol) maxX -= 1;
           while (minY < maxY && rowCounts[minY] < minRow) minY += 1;
@@ -497,7 +631,9 @@
 
           if (maxX <= minX || maxY <= minY) return null;
 
-          const pad = Math.max(2, Math.round(Math.min(width, height) * 0.01));
+          /* Harder focus → smaller safety pad around ink. */
+          const padFrac = Math.max(0.002, Math.min(0.014, 0.014 - (fp.massX - 0.006) * 0.2));
+          const pad = Math.max(fp.id === "hard" ? 1 : 2, Math.round(Math.min(width, height) * padFrac));
           minX = Math.max(0, minX - pad);
           minY = Math.max(0, minY - pad);
           maxX = Math.min(width - 1, maxX + pad);
@@ -514,11 +650,12 @@
         };
 
         /**
-         * SoftFocus pad: tiny EQUAL left/right — only a hair past the ink.
+         * Focus pad around content — Hard Focus keeps almost no white border.
          */
         const padContentBox = (box, pageW, pageH) => {
-          const padX = Math.min(Math.max(box.w * 0.012, pageW * 0.008), pageW * 0.02);
-          const padY = Math.min(Math.max(box.h * 0.012, pageH * 0.008), pageH * 0.025);
+          const fp = focusProfile();
+          const padX = Math.min(Math.max(box.w * fp.padXFrac, pageW * fp.padXPage), pageW * fp.padXMax);
+          const padY = Math.min(Math.max(box.h * fp.padYFrac, pageH * fp.padYPage), pageH * fp.padYMax);
           const x = Math.max(0, box.x - padX);
           const y = Math.max(0, box.y - padY);
           const r = Math.min(pageW, box.x + box.w + padX);
@@ -539,7 +676,8 @@
         /** Scan a preview render for non-paper ink — primary content detector. */
         const getInkContentBox = async (page, pageW, pageH) => {
           try {
-            const probeScale = lowMem ? 0.45 : 0.65;
+            /* Small probe = big speed win; Focus only needs approximate margins. */
+            const probeScale = lowMem ? 0.28 : 0.38;
             const probeVp = page.getViewport({ scale: probeScale });
             const probe = document.createElement("canvas");
             probe.width = Math.max(1, Math.floor(probeVp.width));
@@ -573,41 +711,45 @@
 
         /**
          * Contract the page to real content: strip PDF / scan paper margins.
-         * Horizontal crop prefers the TIGHTER of body-text vs ink (kids books
-         * often have a wide header/page-number span that must not win).
+         * Fast path: text-only when enough glyphs (skips expensive ink probe).
          */
-        const getContentBox = async (page) => {
+        const getContentBox = async (page, pageNumber) => {
           const base = page.getViewport({ scale: 1 });
           const pageW = base.width;
           const pageH = base.height;
           const full = { x: 0, y: 0, w: pageW, h: pageH, pageW, pageH };
+          const cacheKey = `${pageNumber || 0}:${focusProfile().id}`;
+          const cached = contentBoxCache.get(cacheKey);
+          if (cached) return cached;
 
-          const inkBox = await getInkContentBox(page, pageW, pageH);
           const textMetrics = await getTextMetrics(page, pageW, pageH);
           const textBox = textMetrics?.box || null;
           const samples = textMetrics?.sampleCount || 0;
-          const inkFill = inkBox
-            ? (inkBox.w * inkBox.h) / Math.max(1, pageW * pageH)
-            : 1;
-          const inkLooksFull = inkFill > 0.82;
 
           let box = null;
-          if (inkBox && !inkLooksFull) {
-            /*
-              Always use ink for L/R (comics + kids books) so side paper stays tiny
-              and equal. Keep text for vertical extent when present.
-            */
-            if (textBox && samples >= 8) {
-              const y = Math.min(inkBox.y, textBox.y);
-              const b = Math.max(inkBox.y + inkBox.h, textBox.y + textBox.h);
-              box = { x: inkBox.x, y, w: inkBox.w, h: Math.max(1, b - y) };
-            } else {
+          /* Prefer text bounds when dense — avoids a second PDF render. */
+          if (samples >= 12 && textBox && textBox.w < pageW * 0.96 && textBox.h < pageH * 0.96) {
+            box = textBox;
+          } else {
+            const inkBox = await getInkContentBox(page, pageW, pageH);
+            const inkFill = inkBox
+              ? (inkBox.w * inkBox.h) / Math.max(1, pageW * pageH)
+              : 1;
+            const inkLooksFull = inkFill > 0.82;
+
+            if (inkBox && !inkLooksFull) {
+              if (textBox && samples >= 8) {
+                const y = Math.min(inkBox.y, textBox.y);
+                const b = Math.max(inkBox.y + inkBox.h, textBox.y + textBox.h);
+                box = { x: inkBox.x, y, w: inkBox.w, h: Math.max(1, b - y) };
+              } else {
+                box = inkBox;
+              }
+            } else if (samples >= 8 && textBox) {
+              box = textBox;
+            } else if (inkBox && (inkBox.w < pageW * 0.94 || inkBox.h < pageH * 0.94)) {
               box = inkBox;
             }
-          } else if (samples >= 8 && textBox) {
-            box = textBox;
-          } else if (inkBox && (inkBox.w < pageW * 0.94 || inkBox.h < pageH * 0.94)) {
-            box = inkBox;
           }
 
           if (!box || box.w < pageW * 0.08 || box.h < pageH * 0.08) {
@@ -617,7 +759,7 @@
           const padded = padContentBox(box, pageW, pageH);
           padded.medianTextH = textMetrics?.medianTextH || 0;
           padded.sampleCount = samples;
-          padded.inkFill = inkFill;
+          contentBoxCache.set(cacheKey, padded);
           return padded;
         };
 
@@ -852,7 +994,7 @@
           const base = page.getViewport({ scale: 1 });
           const pageW = base.width;
           const pageH = base.height;
-          const content = await getContentBox(page);
+          const content = await getContentBox(page, pageNumber);
           content.pageW = pageW;
           content.pageH = pageH;
 
@@ -882,7 +1024,7 @@
           };
           const mode = activeView();
 
-          if (mode === "Normal" || mode === "Fit") {
+          if (mode === "Normal" || mode === "Fit" || mode === "NormalView") {
             return full;
           }
 
@@ -899,11 +1041,15 @@
             return { ...box, pageW: base.width, pageH: base.height };
           }
 
-          /* SoftFocus: ink/text bounds only — white PDF padding is discarded. */
-          return getContentBox(page);
+          /* Focus modes: ink/text bounds only — white PDF padding is discarded. */
+          if (isFocusMode(mode)) {
+            return getContentBox(page, pageNumber);
+          }
+
+          return full;
         };
 
-        /** Auto → SoftFocus: trim margins, fit width, vertical scroll. */
+        /** Auto → SoftFocus: trim margins, fit width, vertical scroll. (unchanged) */
         const autoDetectViewMode = async (_doc) => "SoftFocus";
 
         const ensureResolvedView = async (doc) => {
@@ -982,46 +1128,40 @@
           const contentCssW = box.w * cssScale;
           const contentCssH = box.h * cssScale;
           const mode = activeView();
+          const topCenter = mode === "NormalView" || mode === "Normal";
 
           let scrollLeft = 0;
           let shiftX = 0;
-          /*
-            SoftFocus: overflow-x:hidden ignores scrollLeft — pan with translateX
-            so L/R stay equal / content is edge-fit.
-          */
-          if (mode === "SoftFocus") {
-            const sideGap = Math.max(0, (availW - contentCssW) / 2);
-            shiftX = sideGap - box.x * cssScale;
-            scrollLeft = 0;
+          if (topCenter) {
+            /* Full page, top-center: no pan into a crop box. */
+            const extra = cssWidth - availW;
+            scrollLeft = extra > 0 ? extra / 2 : 0;
+            shiftX = 0;
           } else {
-            const sideGap = (availW - contentCssW) / 2;
+            const sideGap = Math.min(8, Math.max(0, (availW - contentCssW) / 2));
             const contentLeft = box.x * cssScale;
-            scrollLeft = contentLeft - sideGap;
+            scrollLeft = Math.max(0, contentLeft - sideGap);
             const maxScrollX = Math.max(0, cssWidth - availW);
-            if (scrollLeft < 0) {
-              shiftX = -scrollLeft;
-              scrollLeft = 0;
-            } else if (scrollLeft > maxScrollX) {
-              shiftX = maxScrollX - scrollLeft;
-              scrollLeft = maxScrollX;
-            }
+            if (scrollLeft > maxScrollX) scrollLeft = maxScrollX;
+            shiftX = 0;
           }
 
-          const idealTop =
-            mode === "SoftFocus"
-              ? box.y * cssScale - edge
-              : mode === "Normal"
-                ? box.y * cssScale - (availH - contentCssH) / 2
-                : box.y * cssScale - edge;
-          const maxScrollY = Math.max(0, cssHeight - availH);
-          let scrollTop = idealTop;
+          let scrollTop = 0;
           let shiftY = 0;
-          if (scrollTop < 0) {
-            shiftY = -scrollTop;
+          if (topCenter) {
             scrollTop = 0;
-          } else if (scrollTop > maxScrollY) {
-            shiftY = maxScrollY - scrollTop;
-            scrollTop = maxScrollY;
+            shiftY = 0;
+          } else {
+            const idealTop = box.y * cssScale - edge;
+            const maxScrollY = Math.max(0, cssHeight - availH);
+            scrollTop = idealTop;
+            if (scrollTop < 0) {
+              shiftY = -scrollTop;
+              scrollTop = 0;
+            } else if (scrollTop > maxScrollY) {
+              shiftY = maxScrollY - scrollTop;
+              scrollTop = maxScrollY;
+            }
           }
 
           return { scrollLeft, scrollTop, shiftX, shiftY };
@@ -1044,30 +1184,46 @@
           const mode = activeView();
           const pageW = baseViewport.width;
           const pageH = baseViewport.height;
+          const large = isLargeScreen();
+          /* Large screen (iPad portrait + landscape): fit width, no extra zoom. */
+          const appliedZoom = large ? 1 : zoomFactor;
 
           let cssScale;
-          if (mode === "Normal") {
+          if (large && (isFocusMode(mode) || mode === "Normal" || mode === "Fit")) {
+            const sideInset = isFocusMode(mode) ? Math.min(4, focusProfile().sideInset) : 4;
+            const viewW = Math.max(60, availW - sideInset * 2);
+            cssScale = viewW / Math.max(1, box.w);
+          } else if (mode === "Normal") {
             const scaleW = Math.max(60, availW - edge * 2) / pageW;
             const scaleH = Math.max(60, availH - edge * 2) / pageH;
-            cssScale = Math.min(scaleW, scaleH) * zoomFactor;
+            cssScale = Math.min(scaleW, scaleH) * appliedZoom;
           } else if (mode === "Fit") {
-            cssScale = (Math.max(60, availW - edge * 2) / pageW) * zoomFactor;
+            cssScale = (Math.max(60, availW - edge * 2) / pageW) * appliedZoom;
           } else if (mode === "PanelJump") {
             const viewW = Math.max(60, availW - 16);
-            cssScale = (viewW / Math.max(1, box.w)) * zoomFactor;
+            cssScale = (viewW / Math.max(1, box.w)) * appliedZoom;
+          } else if (isFocusMode(mode)) {
+            const sideInset = focusProfile().sideInset;
+            const viewW = Math.max(60, availW - sideInset * 2);
+            if (presetZoomPct()) {
+              cssScale = (viewW / Math.max(1, box.w)) * appliedZoom;
+            } else {
+              /* Auto on phone: keep auto readable scale. */
+              const short = Math.min(availW, availH);
+              const readMul = short <= 430 ? 1.9 : 1.35;
+              cssScale = ((viewW * readMul) / Math.max(1, box.w)) * appliedZoom;
+            }
           } else {
-            /*
-              SoftFocus: fill phone width with only a tiny EQUAL L/R inset.
-            */
             const sideInset = 4;
             const viewW = Math.max(60, availW - sideInset * 2);
-            cssScale = (viewW / Math.max(1, box.w)) * zoomFactor;
+            cssScale = (viewW / Math.max(1, box.w)) * appliedZoom;
           }
 
           const dpr = Math.max(1, window.devicePixelRatio || 1);
+          /* Prefer fast first paint; still sharp enough for reading. */
           let outputScale = (lowMem
-            ? Math.min(2.25, Math.max(2, dpr))
-            : Math.min(3.5, Math.max(2.5, dpr * 1.75))) * scaleBoost;
+            ? Math.min(1.75, Math.max(1.25, dpr))
+            : Math.min(2.25, Math.max(1.5, dpr * 1.15))) * scaleBoost;
           outputScale = Math.max(1, outputScale);
 
           let cssWidth = baseViewport.width * cssScale;
@@ -1112,33 +1268,54 @@
         };
 
         const focusContent = (entry) => {
-          wrap.style.justifyContent = "flex-start";
+          const mode = activeView();
+          const topCenter = mode === "NormalView" || mode === "Normal";
+          wrap.style.justifyContent = topCenter ? "center" : "flex-start";
           wrap.style.alignItems = "flex-start";
           const node = entry.canvas;
           if (node) {
-            const sx = Math.round(entry.shiftX || 0);
-            const sy = Math.round(entry.shiftY || 0);
-            node.style.transform = sx || sy ? `translate(${sx}px, ${sy}px)` : "translateZ(0)";
+            node.style.transform = "translateZ(0)";
           }
-          const apply = () => {
-            wrap.scrollLeft = Math.round(entry.scrollLeft || 0);
-            wrap.scrollTop = Math.round(entry.scrollTop || 0);
-          };
-          apply();
-          requestAnimationFrame(() => {
-            apply();
-            requestAnimationFrame(apply);
-          });
+          wrap.scrollLeft = Math.round(entry.scrollLeft || 0);
+          wrap.scrollTop = Math.round(entry.scrollTop || 0);
         };
 
         const mountEntry = (entry) => {
           const node = entry.canvas;
           node.style.width = `${entry.cssWidth}px`;
           node.style.height = `${entry.cssHeight}px`;
-          if (node.parentNode !== wrap) {
-            wrap.replaceChildren(node);
+          const prev = visibleCanvas;
+          if (prev === node) {
+            focusContent(entry);
+            syncPanelChrome();
+            return;
           }
+          /* Swap without blanking: append new, then drop old. */
+          if (node.parentNode !== wrap) {
+            wrap.appendChild(node);
+          }
+          visibleCanvas = node;
           focusContent(entry);
+          if (prev && prev !== node) {
+            try {
+              prev.remove();
+            } catch {
+              /* ignore */
+            }
+            if (prev.width) {
+              prev.width = 0;
+              prev.height = 0;
+            }
+          }
+          while (wrap.childElementCount > 1) {
+            const extra = [...wrap.children].find((c) => c !== node);
+            if (!extra) break;
+            try {
+              extra.remove();
+            } catch {
+              break;
+            }
+          }
           syncPanelChrome();
         };
 
@@ -1146,10 +1323,10 @@
           const off = document.createElement("canvas");
           off.width = layout.pixelWidth;
           off.height = layout.pixelHeight;
-          const context = off.getContext("2d", { alpha: false, willReadFrequently: true });
+          const context = off.getContext("2d", { alpha: false });
           if (!context) throw new Error("2d context unavailable");
           context.imageSmoothingEnabled = true;
-          context.imageSmoothingQuality = "high";
+          context.imageSmoothingQuality = lowMem ? "medium" : "high";
           await page.render({
             canvasContext: context,
             viewport: layout.viewport,
@@ -1166,154 +1343,30 @@
             contentBox: layout.contentBox,
             scrollLeft: layout.scrollLeft,
             scrollTop: layout.scrollTop,
-            shiftX: layout.shiftX || 0,
+            shiftX: 0,
             shiftY: layout.shiftY || 0,
             key: layout.key,
           };
         };
 
-        const refineEntryFromCanvas = (entry, pageW, pageH) => {
-          try {
-            const ctx = entry.canvas.getContext("2d", { willReadFrequently: true });
-            if (!ctx) return entry;
-            /* Downsample read for speed on large canvases. */
-            const srcW = entry.canvas.width;
-            const srcH = entry.canvas.height;
-            const maxSide = 720;
-            const scale = Math.min(1, maxSide / Math.max(srcW, srcH));
-            let bounds;
-            if (scale < 1) {
-              const tw = Math.max(1, Math.floor(srcW * scale));
-              const th = Math.max(1, Math.floor(srcH * scale));
-              const tmp = document.createElement("canvas");
-              tmp.width = tw;
-              tmp.height = th;
-              const tctx = tmp.getContext("2d", { willReadFrequently: true });
-              if (!tctx) return entry;
-              tctx.drawImage(entry.canvas, 0, 0, tw, th);
-              bounds = inkBoundsFromImageData(tctx.getImageData(0, 0, tw, th));
-              tmp.width = 0;
-              tmp.height = 0;
-              if (bounds) {
-                bounds = {
-                  x: bounds.x / scale,
-                  y: bounds.y / scale,
-                  w: bounds.w / scale,
-                  h: bounds.h / scale,
-                  width: srcW,
-                  height: srcH,
-                };
-              }
-            } else {
-              bounds = inkBoundsFromImageData(ctx.getImageData(0, 0, srcW, srcH));
-            }
-            if (!bounds) return entry;
-
-            const prev = entry.contentBox;
-            const samples = Number(prev?.sampleCount) || 0;
-            /*
-              Text-heavy pages: trust the text box + pad. Ink refine often
-              trims one side harder (SS2 right clip) or fails on gray paper (SS1).
-            */
-            if (samples >= 8 && prev) {
-              const focus = scrollForBox(prev, entry.cssScale, entry.cssWidth, entry.cssHeight);
-              entry.scrollLeft = focus.scrollLeft;
-              entry.scrollTop = focus.scrollTop;
-              entry.shiftX = focus.shiftX;
-              entry.shiftY = focus.shiftY;
-              entry._refinedBox = prev;
-              return entry;
-            }
-
-            const box = padContentBox(
-              {
-                x: (bounds.x / srcW) * pageW,
-                y: (bounds.y / srcH) * pageH,
-                w: (bounds.w / srcW) * pageW,
-                h: (bounds.h / srcH) * pageH,
-              },
-              pageW,
-              pageH
-            );
-            box.medianTextH = Number(prev?.medianTextH) || 0;
-            box.readabilityBoost = 1;
-
-            if (
-              prev &&
-              (box.w < prev.w * 0.45 ||
-                box.h < prev.h * 0.45 ||
-                box.x > prev.x + prev.w * 0.2 ||
-                box.y > prev.y + prev.h * 0.2)
-            ) {
-              const focus = scrollForBox(prev, entry.cssScale, entry.cssWidth, entry.cssHeight);
-              entry.scrollLeft = focus.scrollLeft;
-              entry.scrollTop = focus.scrollTop;
-              entry.shiftX = focus.shiftX;
-              entry.shiftY = focus.shiftY;
-              return entry;
-            }
-
-            const focus = scrollForBox(box, entry.cssScale, entry.cssWidth, entry.cssHeight);
-            entry.contentBox = box;
-            entry.scrollLeft = focus.scrollLeft;
-            entry.scrollTop = focus.scrollTop;
-            entry.shiftX = focus.shiftX;
-            entry.shiftY = focus.shiftY;
-            entry._refinedBox = box;
-            return entry;
-          } catch {
-            return entry;
-          }
-        };
-
         const renderPageToEntry = async (pageNumber) => {
           const page = await pdfDoc.getPage(pageNumber);
-          const base = page.getViewport({ scale: 1 });
-          let contentBox = await getFocusBox(page, pageNumber);
+          const contentBox = await getFocusBox(page, pageNumber);
 
           const tryRender = async (box, boost) => {
             const layout = computeLayout(page, box, boost);
-            const entry = await entryFromLayout(page, layout);
-            if (activeView() === "SoftFocus") {
-              refineEntryFromCanvas(entry, base.width, base.height);
-            }
-            return entry;
+            return entryFromLayout(page, layout);
           };
 
-          let entry;
           try {
-            entry = await tryRender(contentBox, 1);
+            return await tryRender(contentBox, 1);
           } catch {
             try {
-              entry = await tryRender(contentBox, 0.75);
+              return await tryRender(contentBox, 0.75);
             } catch {
-              entry = await tryRender(contentBox, 0.5);
+              return await tryRender(contentBox, 0.5);
             }
           }
-
-          /*
-            SoftFocus: if the real bitmap is clearly tighter than the probe box,
-            re-contract and fill the phone again.
-          */
-          const refined = entry._refinedBox;
-          const mode = activeView();
-          const needRefit =
-            mode === "SoftFocus" &&
-            refined &&
-            refined.w > base.width * 0.08 &&
-            refined.h > base.height * 0.08 &&
-            ((refined.w < contentBox.w * 0.92 && refined.w > contentBox.w * 0.45) ||
-              (refined.h < contentBox.h * 0.92 && refined.h > contentBox.h * 0.45));
-          if (needRefit) {
-            try {
-              const again = await tryRender(refined, 1);
-              releaseEntry({ canvas: entry.canvas });
-              entry = again;
-            } catch {
-              /* keep first render */
-            }
-          }
-          return entry;
         };
 
         const cachePage = async (pageNumber) => {
@@ -1358,7 +1411,7 @@
               if (hit?.status === "loading") continue;
               void cachePage(pageNum);
             }
-          }, lowMem ? 280 : 80);
+          }, lowMem ? 120 : 40);
         };
 
         const renderPage = async (pageNumber) => {
@@ -1476,6 +1529,7 @@
             configuredView = next;
             resolvedView = next === "Auto" ? null : next;
             panelsByPage.clear();
+            contentBoxCache.clear();
             panelIndex = 0;
             const apply = async () => {
               if (!pdfDoc) return;

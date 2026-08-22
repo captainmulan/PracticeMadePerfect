@@ -88,8 +88,9 @@ export interface Course {
   pIndex?: number;
   artifactType: ArtifactType;
   /**
-   * PDF page display mode. Auto → SoftFocus (trim margins, fit width, vertical scroll).
-   * SoftFocus = contract to ink/text bounds + fit width + center. PanelJump = legacy.
+   * PDF page display. Auto = auto on narrow screens; landscape always fit.
+   * ComicView / NormalView / MediumView / LargeView / ExtraLargeView set
+   * default zoom on phones (140 / 100 / 125 / 150 / 175).
    */
   pageViewType?: PageViewType;
   /** Folder name under /book_html used for iframe page links and asset base URLs. */

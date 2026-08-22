@@ -154,14 +154,14 @@ export default function PracticeWorkspace({
             : (style?.wizardTopInfo?.backgroundColor ?? "#ffffff"),
           borderBottom: `1px solid ${style?.wizardTopInfo?.borderBottomColor ?? "#e2e8f0"}`,
           /* Clear iPhone continuous-corner mask — circles fully inside. */
-          paddingLeft: 32,
-          paddingRight: 32,
+          paddingLeft: 16,
+          paddingRight: 16,
           paddingTop: 12,
           paddingBottom: 12,
           boxSizing: "border-box",
           overflow: "visible",
           borderRadius: 0,
-          ["--pmp-nav-side-pad" as string]: "32px",
+          ["--pmp-nav-side-pad" as string]: "16px",
           ["--pmp-nav-btn-size" as string]: "24px",
           // Admin themes colors only — size/position stay in CSS so buttons stay inside the bar.
           ["--pmp-nav-btn-bg" as string]: style?.wizardTopInfo?.navButton?.backgroundColor ?? "rgba(255,255,255,0.14)",
@@ -172,18 +172,6 @@ export default function PracticeWorkspace({
           ["--pmp-nav-btn-disabled" as string]: style?.wizardTopInfo?.navButton?.disabledColor ?? "rgba(255,255,255,0.45)",
         }}
       >
-        <div className="chapter-nav-side chapter-nav-side-left">
-        <button
-          type="button"
-          className="chapter-nav-button"
-          disabled={!canPrevious}
-          onClick={onPrevious}
-          aria-label="Previous chapter"
-        >
-          ←
-        </button>
-        </div>
-
         <div className="chapter-nav-center">
           <Link 
             to="/" 
@@ -245,18 +233,6 @@ export default function PracticeWorkspace({
           >
             ⚙️
           </button>
-        </div>
-
-        <div className="chapter-nav-side chapter-nav-side-right">
-        <button
-          type="button"
-          className="chapter-nav-button"
-          disabled={!canNext}
-          onClick={onNext}
-          aria-label="Next chapter"
-        >
-          →
-        </button>
         </div>
       </div>
 
@@ -465,6 +441,39 @@ export default function PracticeWorkspace({
             <pre>{peekCode}</pre>
           </section>
         ) : null}
+
+        <div className="practice-page-nav" aria-hidden={false}>
+          <button
+            type="button"
+            className={`practice-page-nav-arrow practice-page-nav-arrow--left${canPrevious ? "" : " is-hidden"}`}
+            disabled={!canPrevious}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onPrevious?.();
+            }}
+            aria-label="Previous page"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className={`practice-page-nav-arrow practice-page-nav-arrow--right${canNext ? "" : " is-hidden"}`}
+            disabled={!canNext}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onNext?.();
+            }}
+            aria-label="Next page"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {showPeek && onTogglePeek && isMobileView ? (

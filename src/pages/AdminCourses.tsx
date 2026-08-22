@@ -801,10 +801,19 @@ export default function AdminCourses() {
                         }}
                         className="admin-grid-select"
                       >
-                        <option value="Auto">Auto (trim margins, fit width, scroll)</option>
-                        <option value="Normal">Normal (fit page)</option>
-                        <option value="Fit">Fit (full page width)</option>
-                        <option value="SoftFocus">SoftFocus (trim margins, fit width, scroll)</option>
+                        <option value="Auto">Auto (phone: auto · iPad/large: fit width)</option>
+                        <option value="ComicView">ComicView (narrow zoom 140%)</option>
+                        <option value="NormalView">NormalView (narrow zoom 100%, top-center)</option>
+                        <option value="MediumView">MediumView (narrow zoom 125%)</option>
+                        <option value="LargeView">LargeView (narrow zoom 150%)</option>
+                        <option value="ExtraLargeView">ExtraLargeView (narrow zoom 175%)</option>
+                        <option value="Normal">Normal (legacy fit page)</option>
+                        <option value="Fit">Fit (legacy full page width)</option>
+                        <option value="NormalFocus">Normal Focus (legacy light trim)</option>
+                        <option value="BasicFocus">Basic Focus (legacy moderate trim)</option>
+                        <option value="MediumFocus">Medium Focus (legacy strong trim)</option>
+                        <option value="HardFocus">Hard Focus (legacy aggressive trim)</option>
+                        <option value="SoftFocus">SoftFocus (legacy)</option>
                         <option value="PanelJump">PanelJump (legacy panel strips)</option>
                       </select>
                       <span className="admin-task-editor-hint" style={{ display: "block", marginTop: 6, opacity: 0.75, fontSize: 12 }}>

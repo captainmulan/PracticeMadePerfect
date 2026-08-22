@@ -64,7 +64,7 @@ export default function CourseEpubStep({
       reloads the viewer on every arrow click and races a stale load-buffer.
       Chapter changes go through postMessage goto-location instead.
     */
-    const qs = new URLSearchParams({ file, v: "epad2" });
+    const qs = new URLSearchParams({ file, v: "epad4" });
     return {
       fileUrl: file,
       location: loc,
