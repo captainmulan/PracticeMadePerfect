@@ -5,6 +5,7 @@ import PracticeCodeEditor from "./PracticeCodeEditor";
 import DictionaryPanel from "./DictionaryPanel";
 import { usePageSwipeNavigation } from "../hooks/usePageSwipeNavigation";
 import { getHomePageData } from "../utils/contentStore";
+import { SHELF_RETURN_HREF } from "../utils/shelfReturn";
 import "../styles/course.css";
 
 interface PracticeWorkspaceProps {
@@ -162,7 +163,7 @@ export default function PracticeWorkspace({
           overflow: "visible",
           borderRadius: 0,
           ["--pmp-nav-side-pad" as string]: "16px",
-          ["--pmp-nav-btn-size" as string]: "24px",
+          ["--pmp-nav-btn-size" as string]: "44px",
           // Admin themes colors only — size/position stay in CSS so buttons stay inside the bar.
           ["--pmp-nav-btn-bg" as string]: style?.wizardTopInfo?.navButton?.backgroundColor ?? "rgba(255,255,255,0.14)",
           ["--pmp-nav-btn-border" as string]: style?.wizardTopInfo?.navButton?.border && style.wizardTopInfo.navButton.border !== "none"
@@ -172,28 +173,26 @@ export default function PracticeWorkspace({
           ["--pmp-nav-btn-disabled" as string]: style?.wizardTopInfo?.navButton?.disabledColor ?? "rgba(255,255,255,0.45)",
         }}
       >
+        <div className="chapter-nav-side chapter-nav-side-left">
+          <Link
+            to={SHELF_RETURN_HREF}
+            className="chapter-nav-icon-btn"
+            aria-label="Previous category"
+            title="Previous category"
+          >
+            📚
+          </Link>
+        </div>
         <div className="chapter-nav-center">
-          <Link 
-            to="/" 
-            className="chapter-nav-home" 
-            aria-label="Home" 
-            style={{ 
-              textDecoration: "none", 
-              width: "32px",
-              height: "32px",
-              borderRadius: "0",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "transparent",
-              border: "none",
-              color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a",
-              fontSize: "18px",
-            }}
+          <Link
+            to="/"
+            className="chapter-nav-icon-btn"
+            aria-label="Home"
+            style={{ color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a" }}
           >
             🏠
           </Link>
-          <span 
+          <span
             className="chapter-label"
             style={{
               padding: "0",
@@ -201,7 +200,7 @@ export default function PracticeWorkspace({
               background: "transparent",
               border: "none",
               color: style?.wizardTopInfo?.chapterLabel?.color ?? "#0f172a",
-              fontSize: `${(style?.wizardTopInfo?.chapterLabel?.fontSize ?? 14) / 16}rem`,
+              fontSize: `${(style?.wizardTopInfo?.chapterLabel?.fontSize ?? 15) / 16}rem`,
               fontWeight: style?.wizardTopInfo?.chapterLabel?.fontWeight ?? 700,
               opacity: 1,
               textTransform: "none",
@@ -211,27 +210,36 @@ export default function PracticeWorkspace({
           </span>
           <button
             type="button"
-            className="chapter-settings-gear"
+            className="chapter-nav-icon-btn chapter-settings-gear"
             onClick={() => setShowSettingsBar(!showSettingsBar)}
             aria-label="Settings"
-            style={{
-              fontSize: "16px",
-              fontWeight: "normal",
-              width: "32px",
-              height: "32px",
-              borderRadius: "0",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              cursor: "pointer",
-              color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
-              marginLeft: "6px",
-            }}
+            style={{ color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a" }}
           >
             ⚙️
+          </button>
+        </div>
+        <div className="chapter-nav-side chapter-nav-side-right">
+          <button
+            type="button"
+            className="chapter-nav-icon-btn"
+            onClick={() => {
+              setDictionaryMode(false);
+              const persist = onToggleBookmark
+                ? bookmarked
+                  ? Promise.resolve()
+                  : Promise.resolve(onToggleBookmark())
+                : Promise.resolve();
+              void persist.finally(() => setShowBookmarkHistory(true));
+            }}
+            aria-label={bookmarked ? "Open bookmarks" : "Save bookmark"}
+            title={bookmarked ? "Bookmarks" : "Save bookmark"}
+            style={{
+              color: bookmarked
+                ? "#d97706"
+                : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
+            }}
+          >
+            🔖
           </button>
         </div>
       </div>
@@ -253,37 +261,6 @@ export default function PracticeWorkspace({
               type="button"
               className="practice-settings-btn"
               onClick={() => {
-                setDictionaryMode(false);
-                const persist = onToggleBookmark
-                  ? bookmarked
-                    ? Promise.resolve()
-                    : Promise.resolve(onToggleBookmark())
-                  : Promise.resolve();
-                void persist.finally(() => setShowBookmarkHistory(true));
-              }}
-              style={{
-                background: "transparent",
-                border: "none",
-                borderRadius: "0",
-                padding: "0",
-                fontSize: "18px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: bookmarked
-                  ? "#d97706"
-                  : (style?.wizardTopInfo?.navButton?.color ?? "#0f172a"),
-              }}
-              title={bookmarked ? "Bookmarks" : "Save bookmark"}
-              aria-label={bookmarked ? "Open bookmarks" : "Save bookmark"}
-            >
-              📑
-            </button>
-            <button
-              type="button"
-              className="practice-settings-btn"
-              onClick={() => {
                 setShowBookmarkHistory(!showBookmarkHistory);
                 setDictionaryMode(false);
               }}
@@ -292,16 +269,16 @@ export default function PracticeWorkspace({
                 border: "none",
                 borderRadius: "0",
                 padding: "0",
-                fontSize: "18px",
+                fontSize: "22px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
-              title="Bookmark history"
+              title="Bookmark list"
             >
-              📚
+              📜
             </button>
             <button
               type="button"
@@ -315,7 +292,7 @@ export default function PracticeWorkspace({
                 border: "none",
                 borderRadius: "0",
                 padding: "0",
-                fontSize: "18px",
+                fontSize: "22px",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",

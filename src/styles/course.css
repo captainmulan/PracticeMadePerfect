@@ -6,23 +6,41 @@
   --pmp-nav-btn-border: 1px solid rgba(255, 255, 255, 0.24);
   --pmp-nav-btn-color: #ffffff;
   --pmp-nav-btn-disabled: rgba(255, 255, 255, 0.45);
-  --pmp-nav-btn-size: 24px;
-  --pmp-nav-side-pad: 16px;
+  --pmp-nav-btn-size: 44px;
+  --pmp-nav-side-pad: 12px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(44px, 1fr) auto minmax(44px, 1fr);
   align-items: center;
   column-gap: 8px;
   color: #f8fafc;
-  padding: 12px var(--pmp-nav-side-pad);
+  padding: 10px var(--pmp-nav-side-pad);
   border-radius: 0;
   width: 100%;
   max-width: 100%;
   box-shadow: none;
-  min-height: 52px;
+  min-height: 56px;
   height: auto;
   max-height: none;
   box-sizing: border-box;
   overflow: visible;
+}
+
+.chapter-nav-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pmp-nav-btn-size);
+  height: var(--pmp-nav-btn-size);
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.55rem;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: 0;
 }
 
 .chapter-nav-side {
@@ -68,12 +86,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: var(--pmp-nav-btn-size);
+  height: var(--pmp-nav-btn-size);
   border-radius: 0 !important;
   background: transparent !important;
   color: inherit;
-  font-size: 1.1rem;
+  font-size: 1.55rem;
   text-decoration: none;
   flex-shrink: 0;
 }
@@ -90,7 +108,7 @@
   border-radius: 0 !important;
   background: transparent !important;
   color: inherit !important;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: none !important;
@@ -184,19 +202,20 @@
 .course-wizard-page .practice-workspace-top-bar {
   flex: 0 0 auto;
   flex-shrink: 0 !important;
-  --pmp-nav-side-pad: 16px;
+  --pmp-nav-side-pad: 12px;
+  --pmp-nav-btn-size: 44px;
   padding-left: var(--pmp-nav-side-pad) !important;
   padding-right: var(--pmp-nav-side-pad) !important;
-  padding-top: 12px !important;
-  padding-bottom: 12px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
   border-radius: 0 !important;
   overflow: visible !important;
 }
 
 .practice-workspace--epub .practice-workspace-top-bar,
 .practice-workspace--pdf .practice-workspace-top-bar {
-  --pmp-nav-side-pad: 16px;
-  min-height: 52px;
+  --pmp-nav-side-pad: 12px;
+  min-height: 56px;
 }
 
 .practice-page-nav {
@@ -587,6 +606,14 @@
   background: transparent !important;
   padding: 0 !important;
   margin: 0 !important;
+  width: var(--pmp-nav-btn-size);
+  height: var(--pmp-nav-btn-size);
+  font-size: 1.55rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 }
 
 .chapter-settings-gear:hover {
@@ -690,14 +717,16 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   position: relative;
   z-index: 2;
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   padding: 16px 0 8px;
   flex-shrink: 0;
 }
 
 .book-about-action {
-  flex: 1;
-  max-width: 220px;
+  flex: 1 1 30%;
+  min-width: 96px;
+  max-width: none;
   min-height: 48px;
   border-radius: 12px;
   border: 2px solid rgba(148, 163, 184, 0.45);

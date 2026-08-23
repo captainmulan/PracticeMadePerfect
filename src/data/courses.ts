@@ -96,7 +96,7 @@ export interface Course {
   /**
    * PDF page display. Auto = auto on narrow screens; landscape always fit.
    * ComicView / NormalView / MediumView / LargeView / ExtraLargeView set
-   * default zoom on phones (140 / 100 / 125 / 150 / 175).
+   * default zoom on phones (140 / 135 / 155 / 175 / 195), top-center.
    */
   pageViewType?: PageViewType;
   /** Folder name under /book_html used for iframe page links and asset base URLs. */

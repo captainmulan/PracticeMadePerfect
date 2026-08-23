@@ -272,10 +272,10 @@
         ]);
         const PRESET_ZOOM = {
           ComicView: 140,
-          NormalView: 100,
-          MediumView: 125,
-          LargeView: 150,
-          ExtraLargeView: 175,
+          NormalView: 135,
+          MediumView: 155,
+          LargeView: 175,
+          ExtraLargeView: 195,
         };
         const normalizeView = (value) => {
           const raw = typeof value === "string" ? value.trim() : "";
@@ -298,6 +298,12 @@
 
         /* Auto on narrow stays Auto (SoftFocus layout). Landscape always fit. */
         const activeView = () => resolvedView || (configuredView === "Auto" ? "SoftFocus" : configuredView);
+        const isTopCenterMode = (mode = activeView()) =>
+          mode === "NormalView" ||
+          mode === "MediumView" ||
+          mode === "LargeView" ||
+          mode === "ExtraLargeView" ||
+          mode === "Normal";
         const isFocusMode = (mode = activeView()) => FOCUS_MODES.has(mode);
         const presetZoomPct = () => PRESET_ZOOM[configuredView] || PRESET_ZOOM[activeView()] || 0;
 
@@ -394,14 +400,8 @@
           wrap.classList.toggle("is-soft-focus", focus);
           wrap.style.overflowX = "auto";
           wrap.style.overflowY = "auto";
-          /* NormalView: pin to top, center horizontally. */
-          if (mode === "NormalView" || mode === "Normal") {
-            wrap.style.justifyContent = "center";
-            wrap.style.alignItems = "flex-start";
-          } else {
-            wrap.style.justifyContent = "flex-start";
-            wrap.style.alignItems = "flex-start";
-          }
+          wrap.style.alignItems = "flex-start";
+          wrap.style.justifyContent = "flex-start";
           if (mode === "PanelJump") {
             wrap.style.overflowX = "hidden";
           }
@@ -1024,7 +1024,7 @@
           };
           const mode = activeView();
 
-          if (mode === "Normal" || mode === "Fit" || mode === "NormalView") {
+          if (mode === "Normal" || mode === "Fit" || isTopCenterMode(mode)) {
             return full;
           }
 
@@ -1128,7 +1128,7 @@
           const contentCssW = box.w * cssScale;
           const contentCssH = box.h * cssScale;
           const mode = activeView();
-          const topCenter = mode === "NormalView" || mode === "Normal";
+          const topCenter = isTopCenterMode(mode);
 
           let scrollLeft = 0;
           let shiftX = 0;
@@ -1269,15 +1269,30 @@
 
         const focusContent = (entry) => {
           const mode = activeView();
-          const topCenter = mode === "NormalView" || mode === "Normal";
-          wrap.style.justifyContent = topCenter ? "center" : "flex-start";
+          const topCenter = isTopCenterMode(mode);
           wrap.style.alignItems = "flex-start";
           const node = entry.canvas;
           if (node) {
             node.style.transform = "translateZ(0)";
           }
-          wrap.scrollLeft = Math.round(entry.scrollLeft || 0);
-          wrap.scrollTop = Math.round(entry.scrollTop || 0);
+          const applyScroll = () => {
+            const availW = Math.max(80, wrap.clientWidth);
+            const extra = (entry.cssWidth || 0) - availW;
+            if (topCenter) {
+              wrap.style.justifyContent = extra > 0 ? "flex-start" : "center";
+              wrap.scrollLeft = extra > 0 ? Math.round(extra / 2) : 0;
+              wrap.scrollTop = 0;
+              return;
+            }
+            wrap.style.justifyContent = "flex-start";
+            wrap.scrollLeft = Math.round(entry.scrollLeft || 0);
+            wrap.scrollTop = Math.round(entry.scrollTop || 0);
+          };
+          applyScroll();
+          requestAnimationFrame(() => {
+            applyScroll();
+            requestAnimationFrame(applyScroll);
+          });
         };
 
         const mountEntry = (entry) => {

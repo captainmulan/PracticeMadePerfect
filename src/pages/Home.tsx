@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { readShelfReturn, saveShelfReturn } from "../utils/shelfReturn";
 import BookShowcase from "../components/showcase/BookShowcase";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import AuthorShelfRow from "../components/AuthorShelfRow";
@@ -62,6 +63,7 @@ type HomeProps = {
 
 export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [heroCollapsed, setHeroCollapsed] = useState(false);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
   const [categoryPath, setCategoryPath] = useState<string[]>([]);
@@ -106,6 +108,31 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     }
     preloadPopularCovers(courses);
   }, [courses, coursesLoaded]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("restoreShelf") !== "1") return;
+    const saved = readShelfReturn();
+    if (saved) {
+      setSelectedTab((saved.tab as HomeShelfTab) || "Category");
+      setCategoryPath(saved.categoryPath);
+      setSelectedAuthorName(saved.selectedAuthorName);
+    } else {
+      setSelectedTab("Category");
+    }
+    navigate(location.pathname, { replace: true });
+  }, [location.pathname, location.search, navigate]);
+
+  useEffect(() => {
+    if (showUnpublishedOnly) return;
+    if (selectedTab !== "Category") return;
+    if (categoryPath.length === 0 && !selectedAuthorName) return;
+    saveShelfReturn({
+      tab: "Category",
+      categoryPath,
+      selectedAuthorName,
+    });
+  }, [categoryPath, selectedAuthorName, selectedTab, showUnpublishedOnly]);
 
   const selectedRow: CourseShelfRow | undefined = useMemo(() => {
     if (selectedTab === "Login") {

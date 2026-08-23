@@ -38,10 +38,10 @@ export const PAGE_VIEW_TYPES: PageViewType[] = [
 /** Named reading sizes — default zoom on narrow screens only. */
 export const PAGE_VIEW_TYPE_ZOOM: Partial<Record<PageViewType, number>> = {
   ComicView: 140,
-  NormalView: 100,
-  MediumView: 125,
-  LargeView: 150,
-  ExtraLargeView: 175,
+  NormalView: 135,
+  MediumView: 155,
+  LargeView: 175,
+  ExtraLargeView: 195,
 };
 
 /** Focus modes that trim PDF white padding (includes zoom presets). */

@@ -4,6 +4,7 @@ import type { Course } from "../data/courses";
 import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
 import { formatCategoryPath } from "../utils/bookCategories";
+import { SHELF_RETURN_HREF } from "../utils/shelfReturn";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import CourseBookCard from "./CourseBookCard";
 import "../styles/course.css";
@@ -77,6 +78,9 @@ export default function CourseAboutStep({
             <p className="book-about-blurb book-about-blurb--empty">No description yet.</p>
           )}
           <div className="book-about-actions">
+            <Link to={SHELF_RETURN_HREF} className="book-about-action">
+              Category
+            </Link>
             <Link to="/" className="book-about-action">
               Home
             </Link>

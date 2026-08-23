@@ -803,10 +803,10 @@ export default function AdminCourses() {
                       >
                         <option value="Auto">Auto (phone: auto · iPad/large: fit width)</option>
                         <option value="ComicView">ComicView (narrow zoom 140%)</option>
-                        <option value="NormalView">NormalView (narrow zoom 100%, top-center)</option>
-                        <option value="MediumView">MediumView (narrow zoom 125%)</option>
-                        <option value="LargeView">LargeView (narrow zoom 150%)</option>
-                        <option value="ExtraLargeView">ExtraLargeView (narrow zoom 175%)</option>
+                        <option value="NormalView">NormalView (narrow zoom 135%, top-center)</option>
+                        <option value="MediumView">MediumView (narrow zoom 155%, top-center)</option>
+                        <option value="LargeView">LargeView (narrow zoom 175%, top-center)</option>
+                        <option value="ExtraLargeView">ExtraLargeView (narrow zoom 195%, top-center)</option>
                         <option value="Normal">Normal (legacy fit page)</option>
                         <option value="Fit">Fit (legacy full page width)</option>
                         <option value="NormalFocus">Normal Focus (legacy light trim)</option>

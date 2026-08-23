@@ -111,7 +111,7 @@ export default function CoursePdfStep({
       return;
     }
     setViewerSrc(
-      `/pdf-viewer.html?v=viewz3&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
+      `/pdf-viewer.html?v=viewz4&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileUrl, pageNumber, configuredView]);

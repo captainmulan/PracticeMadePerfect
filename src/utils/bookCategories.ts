@@ -35,6 +35,7 @@ export const LANGUAGE_SUBCATEGORY_FLAGS: Record<string, { label: string; icon: s
 
 export const CATEGORY_FOLDER_COVERS: Record<string, string> = {
   "Shwe Thway": "/flags/shwe-thway.webp",
+  Tootpee: "/flags/tootpee.webp",
 };
 
 const LANGUAGE_SUB_ORDER = ["Eng", "Jap", "Thai", "Chi", "Cn", "Kor", "Ko", "Fr", "De", "Es", "Hi", "Ru", "Vie", "Id"];
@@ -85,6 +86,7 @@ const CATEGORY_STYLES: Record<
   Other: { icon: "📦", coverColorStart: "#cbd5e1", coverColorMiddle: "#94a3b8", coverColorEnd: "#64748b" },
   AI: { icon: "🤖", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   "Shwe Thway": { icon: "📒", coverColorStart: "#fde047", coverColorMiddle: "#facc15", coverColorEnd: "#ca8a04" },
+  Tootpee: { icon: "📚", coverColorStart: "#f97316", coverColorMiddle: "#ea580c", coverColorEnd: "#c2410c" },
   Author: { icon: "👤", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   Fiction: { icon: "📖", coverColorStart: "#fda4af", coverColorMiddle: "#fb7185", coverColorEnd: "#e11d48" },
 };
