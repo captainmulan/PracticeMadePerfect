@@ -4,21 +4,24 @@ import type { Course } from "../data/courses";
 import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
 import { formatCategoryPath } from "../utils/bookCategories";
-import { SHELF_RETURN_HREF } from "../utils/shelfReturn";
+import { getShelfReturnLabel, SHELF_RETURN_HREF } from "../utils/shelfReturn";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import CourseBookCard from "./CourseBookCard";
+import PdfFunLoader from "./PdfFunLoader";
 import "../styles/course.css";
 
 interface CourseAboutStepProps {
   course: Course;
   related: Course[];
   onRead?: () => void;
+  pdfLoading?: boolean;
 }
 
 export default function CourseAboutStep({
   course,
   related,
   onRead,
+  pdfLoading = false,
 }: CourseAboutStepProps) {
   const fullCoverUrl = resolveBookCoverUrl(course, { variant: "full" });
   const thumbCoverUrl = resolveBookCoverUrl(course, { variant: "thumb" });
@@ -29,6 +32,7 @@ export default function CourseAboutStep({
   }, [fullCoverUrl, thumbCoverUrl]);
   const pageCount = course.stepCount ?? course.chapters.reduce((sum, chapter) => sum + chapter.steps.length, 0);
   const relatedItems = related.slice(0, 12).map((item) => createShelfItemFromCourse(item, item.category));
+  const shelfReturnLabel = getShelfReturnLabel();
 
   return (
     <div className="book-about-page">
@@ -77,9 +81,12 @@ export default function CourseAboutStep({
           ) : (
             <p className="book-about-blurb book-about-blurb--empty">No description yet.</p>
           )}
+          {pdfLoading ? (
+            <PdfFunLoader compact label="Getting your book ready…" />
+          ) : null}
           <div className="book-about-actions">
             <Link to={SHELF_RETURN_HREF} className="book-about-action">
-              Category
+              {shelfReturnLabel.about}
             </Link>
             <Link to="/" className="book-about-action">
               Home

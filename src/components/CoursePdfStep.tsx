@@ -8,7 +8,12 @@ import {
 } from "../data/pageViewType";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
-import { extractPdfPageNumber, getPdfBuffer, resolvePdfStepFileUrl } from "../utils/pdfCache";
+import PdfFunLoader from "./PdfFunLoader";
+import {
+  extractPdfPageNumber,
+  PDF_VIEWER_CACHE_BUST,
+  resolvePdfStepFileUrl,
+} from "../utils/pdfCache";
 import "../styles/course.css";
 
 const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom-v11";
@@ -57,6 +62,8 @@ interface CoursePdfStepProps {
   onToggleBookmark?: () => void;
   onRemoveBookmark?: (bookmarkId: string) => void;
   onJumpToBookmark?: (stepIndex: number) => void;
+  isWarming?: boolean;
+  onViewerReady?: () => void;
 }
 
 export default function CoursePdfStep({
@@ -81,6 +88,8 @@ export default function CoursePdfStep({
   onToggleBookmark,
   onRemoveBookmark,
   onJumpToBookmark,
+  isWarming = false,
+  onViewerReady,
 }: CoursePdfStepProps) {
   const configuredView = normalizePageViewType(pageViewTypeProp);
   const pdfSource = step.contentHtml?.trim() ?? "";
@@ -90,16 +99,16 @@ export default function CoursePdfStep({
     const page = hasPageHint
       ? extractPdfPageNumber(pdfSource)
       : Math.max(1, (typeof step.stepIndex === "number" ? step.stepIndex : 0) + 1);
-    const bindKey = file ? `${file}::${page}::${configuredView}` : null;
+    const bindKey = file ? `${file}::${configuredView}` : null;
     return { fileUrl: file, pageNumber: page, viewerBindKey: bindKey };
   }, [bookHtmlFolder, pdfSource, step.stepIndex, configuredView]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const [bufferReady, setBufferReady] = useState<"idle" | "loading" | "ready">("idle");
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [viewerReady, setViewerReady] = useState(false);
+  const [drawnPage, setDrawnPage] = useState<number | null>(null);
+  const [loadError] = useState<string | null>(null);
   const [pageZoom, setPageZoom] = useState(() => initialZoomForView(configuredView));
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
-  const keyRef = useRef(`${fileUrl}::${pageIndex}`);
 
   useEffect(() => {
     setPageZoom(initialZoomForView(configuredView));
@@ -110,11 +119,14 @@ export default function CoursePdfStep({
       setViewerSrc(null);
       return;
     }
+    setViewerReady(false);
+    setDrawnPage(null);
     setViewerSrc(
-      `/pdf-viewer.html?v=viewz4&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
+      `/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
     );
+    // Keep one iframe per book; page turns use postMessage goto-page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileUrl, pageNumber, configuredView]);
+  }, [fileUrl, configuredView]);
 
   const postToViewer = useCallback((payload: Record<string, unknown>) => {
     const frame = iframeRef.current;
@@ -130,90 +142,21 @@ export default function CoursePdfStep({
   }, []);
 
   useEffect(() => {
-    keyRef.current = `${fileUrl}::${pageIndex}`;
-    const myKey = keyRef.current;
-    if (!fileUrl) return;
-
-    setLoadError(null);
-
-    const sendToIframe = (buffer?: ArrayBuffer) => {
-      const frame = iframeRef.current;
-      if (!frame || !frame.contentWindow) return;
-      try {
-        const ua = navigator.userAgent || "";
-        const isIOS =
-          /iPad|iPhone|iPod/.test(ua) ||
-          (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-        const payload: {
-          target: "pdf-viewer";
-          type: "load-buffer";
-          url: string;
-          buffer?: ArrayBuffer;
-          view?: string;
-          panel?: number;
-        } = {
-          target: "pdf-viewer",
-          type: "load-buffer",
-          url: fileUrl,
-          view: configuredView,
-          panel: 0,
-        };
-        if (buffer && !isIOS) payload.buffer = buffer.slice(0);
-        frame.contentWindow.postMessage(payload, window.location.origin);
-      } catch {
-        /* ignore */
-      }
-    };
-
-    setBufferReady("loading");
-    let active = true;
-    const bufferPromise = getPdfBuffer(fileUrl);
-
-    bufferPromise
-      .then((buffer) => {
-        if (!active || keyRef.current !== myKey) return;
-        setBufferReady("ready");
-        const frame = iframeRef.current;
-        if (frame?.contentWindow && (frame as any)._ready) {
-          sendToIframe(buffer);
-        }
-        if (iframeRef.current) {
-          (iframeRef.current as any)._pendingBuffer = buffer;
-        }
-      })
-      .catch((err) => {
-        if (!active || keyRef.current !== myKey) return;
-        setBufferReady("idle");
-        setLoadError(err instanceof Error ? err.message : "Failed to fetch PDF.");
-      });
-
-    const onIframeLoad = () => {
-      if (!active || keyRef.current !== myKey) return;
-      const frame = iframeRef.current;
-      if (!frame) return;
-      (frame as any)._ready = true;
-      const pending = (frame as any)._pendingBuffer as ArrayBuffer | undefined;
-      if (pending) {
-        sendToIframe(pending);
+    const onMessage = (event: MessageEvent) => {
+      const data = event.data;
+      if (!data) return;
+      if (data.type === "pdf-viewer:ready") {
+        setViewerReady(true);
+        onViewerReady?.();
         return;
       }
-      bufferPromise
-        .then((buffer) => {
-          if (!active || keyRef.current !== myKey) return;
-          if ((frame as any)._ready) sendToIframe(buffer);
-        })
-        .catch(() => {
-          /* already handled */
-        });
+      if (data.type === "pdf-viewer:page-ready" && typeof data.page === "number") {
+        setDrawnPage(data.page);
+      }
     };
-
-    iframeRef.current?.addEventListener("load", onIframeLoad);
-
-    return () => {
-      active = false;
-      iframeRef.current?.removeEventListener("load", onIframeLoad);
-    };
-  }, [fileUrl, pageIndex, configuredView]);
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [fileUrl, onViewerReady]);
 
   const sendZoom = useCallback(
     (zoom: number) => {
@@ -223,12 +166,24 @@ export default function CoursePdfStep({
   );
 
   useEffect(() => {
-    if (bufferReady !== "ready") return;
+    if (!viewerReady) return;
     postToViewer({ type: "goto-page", page: pageNumber });
+  }, [pageNumber, viewerReady, postToViewer]);
+
+  useEffect(() => {
+    if (!viewerReady) return;
     postToViewer({ type: "set-view", view: configuredView });
-    postToViewer({ type: "set-panel", panel: 0 });
+  }, [configuredView, viewerReady, postToViewer]);
+
+  useEffect(() => {
+    if (!viewerReady) return;
     sendZoom(pageZoom);
-  }, [pageNumber, bufferReady, pageZoom, configuredView, postToViewer, sendZoom]);
+  }, [pageZoom, viewerReady, sendZoom]);
+
+  useEffect(() => {
+    if (!viewerReady || isWarming) return;
+    postToViewer({ type: "reflow" });
+  }, [isWarming, viewerReady, postToViewer]);
 
   const handlePageZoomChange = (zoom: number) => {
     setPageZoom(zoom);
@@ -272,13 +227,20 @@ export default function CoursePdfStep({
       onPageZoomChange={handlePageZoomChange}
     >
       {viewerSrc ? (
-        <iframe
-          ref={iframeRef}
-          title={step.title}
-          className="practice-html-iframe practice-pdf-iframe"
-          src={viewerSrc}
-          loading="lazy"
-        />
+        <div className="practice-pdf-frame-wrap">
+          <iframe
+            ref={iframeRef}
+            title={step.title}
+            className="practice-html-iframe practice-pdf-iframe"
+            src={viewerSrc}
+            loading="eager"
+          />
+          {!isWarming && (!viewerReady || drawnPage !== pageNumber) ? (
+            <div className="pdf-fun-loader-overlay">
+              <PdfFunLoader label={viewerReady ? "Turning the page…" : "Opening your book…"} />
+            </div>
+          ) : null}
+        </div>
       ) : (
         <div className="practice-error-message">
           <pre>No PDF source is available for this page.</pre>

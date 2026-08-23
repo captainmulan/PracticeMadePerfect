@@ -69,6 +69,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const [categoryPath, setCategoryPath] = useState<string[]>([]);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [shelfReady, setShelfReady] = useState(false);
   const data = getHomePageData();
   const style = data.style;
   const { courses, loaded: coursesLoaded } = useCourseCatalog({
@@ -111,28 +112,49 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get("restoreShelf") !== "1") return;
-    const saved = readShelfReturn();
-    if (saved) {
-      setSelectedTab((saved.tab as HomeShelfTab) || "Category");
-      setCategoryPath(saved.categoryPath);
-      setSelectedAuthorName(saved.selectedAuthorName);
-    } else {
-      setSelectedTab("Category");
+    const restore = params.get("restoreShelf") === "1";
+    if (restore && !coursesLoaded) return;
+
+    if (restore) {
+      const saved = readShelfReturn();
+      if (saved?.tab === "Search") {
+        setSelectedTab("Search");
+        setCategoryPath([]);
+        setSelectedAuthorName(null);
+        setSearchQuery(saved.searchQuery);
+      } else if (saved) {
+        setSelectedTab((saved.tab as HomeShelfTab) || "Category");
+        setCategoryPath(saved.categoryPath);
+        setSelectedAuthorName(saved.selectedAuthorName);
+        setSearchQuery("");
+      } else {
+        setSelectedTab("Category");
+      }
+      navigate(location.pathname, { replace: true });
     }
-    navigate(location.pathname, { replace: true });
-  }, [location.pathname, location.search, navigate]);
+    setShelfReady(true);
+  }, [coursesLoaded, location.pathname, location.search, navigate]);
 
   useEffect(() => {
+    if (!coursesLoaded || selectedTab !== "Category") return;
+    if (categoryPath.length === 0) return;
+    const row = getCategoryBrowseRow(courses, categoryPath);
+    if (row.items.length > 0) return;
+    setCategoryPath((path) => path.slice(0, -1));
+  }, [categoryPath, courses, coursesLoaded, selectedTab]);
+
+  useEffect(() => {
+    if (!shelfReady) return;
+    if (new URLSearchParams(location.search).get("restoreShelf") === "1") return;
     if (showUnpublishedOnly) return;
-    if (selectedTab !== "Category") return;
-    if (categoryPath.length === 0 && !selectedAuthorName) return;
+    if (selectedTab === "Login") return;
     saveShelfReturn({
-      tab: "Category",
+      tab: selectedTab,
       categoryPath,
       selectedAuthorName,
+      searchQuery,
     });
-  }, [categoryPath, selectedAuthorName, selectedTab, showUnpublishedOnly]);
+  }, [categoryPath, location.search, searchQuery, selectedAuthorName, selectedTab, shelfReady, showUnpublishedOnly]);
 
   const selectedRow: CourseShelfRow | undefined = useMemo(() => {
     if (selectedTab === "Login") {
@@ -249,8 +271,9 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 type="button"
                 className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
                 onClick={() => {
+                  const switchingToCategory = tab.id === "Category" && selectedTab !== "Category";
                   setSelectedTab(tab.id);
-                  if (tab.id === "Category") {
+                  if (switchingToCategory) {
                     setCategoryPath([]);
                     setSelectedAuthorName(null);
                   }

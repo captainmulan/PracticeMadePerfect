@@ -3,27 +3,32 @@ import type { Course } from "../data/courses";
 import { fetchHomeCatalogSummaries } from "./homeCatalog";
 import { loadCourseSummariesFromBrowserDb } from "./sqliteBrowserCourses";
 
+/** Survives Home unmount so Category back does not flash empty placeholder books. */
+let catalogCache: Course[] | null = null;
+
+function applyPublishedFilter(items: Course[], publishedMode: "published" | "unpublished" | "all") {
+  switch (publishedMode) {
+    case "unpublished":
+      return items.filter((course) => course.isPublished === false);
+    case "all":
+      return items;
+    case "published":
+    default:
+      return items.filter((course) => course.isPublished !== false);
+  }
+}
+
 /**
  * Home catalog: paint ASAP from tiny home-catalog.json when present,
  * then replace with authoritative IndexedDB summaries (full migrate/sync).
  */
 export function useCourseCatalog(options: { publishedMode?: "published" | "unpublished" | "all" } = {}) {
   const { publishedMode = "published" } = options;
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [courses, setCourses] = useState<Course[]>(() =>
+    catalogCache ? applyPublishedFilter(catalogCache, publishedMode) : [],
+  );
+  const [loaded, setLoaded] = useState(() => Boolean(catalogCache && catalogCache.length > 0));
   const [error, setError] = useState<string | null>(null);
-
-  const filterCourses = (items: Course[]) => {
-    switch (publishedMode) {
-      case "unpublished":
-        return items.filter((course) => course.isPublished === false);
-      case "all":
-        return items;
-      case "published":
-      default:
-        return items.filter((course) => course.isPublished !== false);
-    }
-  };
 
   useEffect(() => {
     let active = true;
@@ -31,10 +36,12 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
     void (async () => {
       try {
         const early = await fetchHomeCatalogSummaries();
-        if (active && early && early.length > 0) {
-          setCourses(filterCourses(early));
-          setLoaded(true);
+        if (!active || !early || early.length === 0) return;
+        if (!catalogCache || catalogCache.length < early.length) {
+          catalogCache = early;
         }
+        setCourses(applyPublishedFilter(catalogCache, publishedMode));
+        setLoaded(true);
       } catch {
         /* optional artifact */
       }
@@ -43,28 +50,26 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
     void (async () => {
       try {
         const data = await loadCourseSummariesFromBrowserDb();
-        const filteredData = filterCourses(data);
-        if (!active) {
-          return;
+        if (!active) return;
+        if (data.length > 0) {
+          catalogCache = data;
         }
-        /* Don't wipe an early home-catalog paint if IDB is still empty after a failed sync. */
+        const filteredData = applyPublishedFilter(catalogCache ?? data, publishedMode);
         setCourses((prev) => (filteredData.length > 0 ? filteredData : prev.length > 0 ? prev : filteredData));
         setLoaded(true);
         setError(null);
       } catch (err) {
         console.error("Error loading books:", err);
-        if (!active) {
-          return;
-        }
+        if (!active) return;
         setError(String(err));
-        setLoaded(true);
+        setLoaded(Boolean(catalogCache && catalogCache.length > 0));
       }
     })();
 
     return () => {
       active = false;
     };
-  }, []);
+  }, [publishedMode]);
 
   return { courses, loaded, error, setCourses };
 }

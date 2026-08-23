@@ -23,6 +23,7 @@ import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
 import { categoriesOverlap } from "../utils/bookCategories";
+import { warmupPdfReaderAssets } from "../utils/pdfCache";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -42,6 +43,15 @@ export default function CourseWizard() {
   const placeholder = getPracticePageData().placeholder;
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarks, setBookmarks] = useState<BookBookmark[]>([]);
+  const [pdfReady, setPdfReady] = useState(false);
+
+  useEffect(() => {
+    setPdfReady(false);
+  }, [courseId]);
+
+  useEffect(() => {
+    if (viewingIntro) warmupPdfReaderAssets();
+  }, [viewingIntro, courseId]);
 
   useEffect(() => {
     if (!courseId) return;
@@ -144,6 +154,10 @@ export default function CourseWizard() {
     }
   }, [outline?.id, stepIndex]);
 
+  const handlePdfViewerReady = useCallback(() => {
+    setPdfReady(true);
+  }, []);
+
   const handleJumpToBookmark = useCallback((targetStepIndex: number) => {
     const clamped = Math.max(0, Math.min(steps.length - 1, targetStepIndex));
     setViewingIntro(false);
@@ -187,32 +201,21 @@ export default function CourseWizard() {
     );
   }
 
-  if (viewingIntro) {
-    return (
-      <div className="page-content course-wizard-page course-wizard-page--about practice-page practice-wizard practice-code-page">
-        <CourseAboutStep
-          course={outline}
-          related={relatedBooks}
-          onRead={handleNext}
-        />
-      </div>
-    );
-  }
-
-  if (!currentStep) {
+  if (!viewingIntro && !currentStep) {
     return <div className="page-content panel"><div className="panel-body">Loading course...</div></div>;
   }
 
+  const isPdfBook = (currentStep ?? steps[stepIndex] ?? steps[0])?.stepType === "pdf";
+  const pdfStep = currentStep?.stepType === "pdf" ? currentStep : null;
   const bookName = `${outline.icon} ${outline.title}`;
-  const chapterName = currentStep.chapterTitle;
-  const chapterNumber = currentStep.chapterIndex + 1;
-  const pageType = courseStepLabel(currentStep);
-  const hasChapterIndex = typeof currentStep.chapterIndex !== undefined
-    && currentStep.chapterIndex !== null
-    && currentStep.chapterIndex > 0;
-  const pageBrief = hasChapterIndex
+  const chapterName = currentStep?.chapterTitle ?? "";
+  const chapterNumber = (currentStep?.chapterIndex ?? 0) + 1;
+  const pageType = currentStep ? courseStepLabel(currentStep) : "PDF";
+  const chapterIndex = currentStep?.chapterIndex;
+  const hasChapterIndex = typeof chapterIndex === "number" && chapterIndex > 0;
+  const pageBrief = currentStep && hasChapterIndex
     ? `<div><strong>Chapter ${currentStep.chapterIndex + 1}</strong></div>${currentStep.description ?? ""}`
-    : (currentStep.description ?? "");
+    : (currentStep?.description ?? "");
 
   const bookmarkProps = {
     bookId: outline.id,
@@ -224,9 +227,51 @@ export default function CourseWizard() {
     onJumpToBookmark: handleJumpToBookmark,
   };
 
+  const pdfProps = pdfStep
+    ? {
+        step: pdfStep,
+        bookName,
+        chapterName,
+        chapterNumber,
+        pageType,
+        pageIndex: uiPageIndex,
+        totalPages: uiTotalPages,
+        pageBrief,
+        bookHtmlFolder: outline.bookHtmlFolder,
+        pageViewType: outline.pageViewType,
+        courseId: outline.id,
+        onPrevious: handlePrevious,
+        onNext: handleNext,
+        canPrevious: canGoPrevious,
+        canNext: canGoNext,
+        isWarming: viewingIntro,
+        onViewerReady: handlePdfViewerReady,
+        ...bookmarkProps,
+      }
+    : null;
+
   return (
-    <div className="page-content course-wizard-page practice-page practice-wizard practice-code-page">
-      {currentStep.stepType === "html" && (
+    <div
+      className={`page-content course-wizard-page practice-page practice-wizard practice-code-page${
+        viewingIntro ? " course-wizard-page--about" : ""
+      }${viewingIntro && isPdfBook ? " course-wizard-page--pdf-warm" : ""}`}
+    >
+      {pdfProps ? (
+        <div className="pdf-reader-layer" aria-hidden={viewingIntro}>
+          <CoursePdfStep {...pdfProps} />
+        </div>
+      ) : null}
+      {viewingIntro ? (
+        <div className="pdf-about-layer">
+          <CourseAboutStep
+            course={outline}
+            related={relatedBooks}
+            onRead={handleNext}
+            pdfLoading={isPdfBook && !pdfReady}
+          />
+        </div>
+      ) : null}
+      {!viewingIntro && currentStep?.stepType === "html" && (
         <CourseHtmlStep
           step={currentStep}
           bookName={bookName}
@@ -245,27 +290,7 @@ export default function CourseWizard() {
           {...bookmarkProps}
         />
       )}
-      {currentStep.stepType === "pdf" && (
-        <CoursePdfStep
-          step={currentStep}
-          bookName={bookName}
-          chapterName={chapterName}
-          chapterNumber={chapterNumber}
-          pageType={pageType}
-          pageIndex={uiPageIndex}
-          totalPages={uiTotalPages}
-          pageBrief={pageBrief}
-          bookHtmlFolder={outline.bookHtmlFolder}
-          pageViewType={outline.pageViewType}
-          courseId={outline.id}
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          canPrevious={canGoPrevious}
-          canNext={canGoNext}
-          {...bookmarkProps}
-        />
-      )}
-      {currentStep.stepType === "epub" && (
+      {!viewingIntro && currentStep?.stepType === "epub" && (
         <CourseEpubStep
           step={currentStep}
           bookName={bookName}
@@ -284,7 +309,7 @@ export default function CourseWizard() {
           {...bookmarkProps}
         />
       )}
-      {currentStep.stepType === "code-exam" && (
+      {!viewingIntro && currentStep?.stepType === "code-exam" && (
         <CourseCodeStep
           step={currentStep}
           placeholder={placeholder}
@@ -302,7 +327,7 @@ export default function CourseWizard() {
           {...bookmarkProps}
         />
       )}
-      {currentStep.stepType === "quiz" && (
+      {!viewingIntro && currentStep?.stepType === "quiz" && (
         <CourseQuizStep
           step={currentStep}
           bookName={bookName}

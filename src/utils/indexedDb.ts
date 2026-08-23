@@ -22,82 +22,80 @@ function promisifyRequest<T>(request: IDBRequest<T>): Promise<T> {
   });
 }
 
+let dbHandle: IDBDatabase | null = null;
+let dbOpening: Promise<IDBDatabase> | null = null;
+
 async function openDb(): Promise<IDBDatabase> {
-  console.log("openDb called with version", DB_VERSION);
-  const request = indexedDB.open(DB_NAME, DB_VERSION);
+  if (dbHandle) return dbHandle;
+  if (dbOpening) return dbOpening;
 
-  request.onupgradeneeded = (event) => {
-    console.log("onupgradeneeded called");
-    const db = (event.target as IDBOpenDBRequest).result;
-    console.log("db version after upgrade:", db.version);
+  dbOpening = new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result;
 
-    // Create tasks store
-    if (!db.objectStoreNames.contains(STORE_TASKS)) {
-      console.log("creating tasks store");
-      const taskStore = db.createObjectStore(STORE_TASKS, { keyPath: "id" });
-      taskStore.createIndex("category", "category", { unique: false });
-      taskStore.createIndex("categoryIndex", "categoryIndex", { unique: false });
-      taskStore.createIndex("taskIndex", "taskIndex", { unique: false });
-    } else {
-      console.log("tasks store already exists");
-    }
-
-    // Create courses store
-    if (!db.objectStoreNames.contains(STORE_COURSES)) {
-      console.log("creating courses store");
-      const courseStore = db.createObjectStore(STORE_COURSES, { keyPath: "id" });
-      courseStore.createIndex("courseIndex", "courseIndex", { unique: false });
-      courseStore.createIndex("isPublished", "isPublished", { unique: false });
-      courseStore.createIndex("authorName", "authorName", { unique: false });
-      courseStore.createIndex("authorPicture", "authorPicture", { unique: false });
-    } else {
-      console.log("courses store already exists");
-      const existingStore = request.transaction?.objectStore(STORE_COURSES);
-      if (existingStore && !existingStore.indexNames.contains("isPublished")) {
-        existingStore.createIndex("isPublished", "isPublished", { unique: false });
+      if (!db.objectStoreNames.contains(STORE_TASKS)) {
+        const taskStore = db.createObjectStore(STORE_TASKS, { keyPath: "id" });
+        taskStore.createIndex("category", "category", { unique: false });
+        taskStore.createIndex("categoryIndex", "categoryIndex", { unique: false });
+        taskStore.createIndex("taskIndex", "taskIndex", { unique: false });
       }
-      if (existingStore && !existingStore.indexNames.contains("authorName")) {
-        existingStore.createIndex("authorName", "authorName", { unique: false });
+
+      if (!db.objectStoreNames.contains(STORE_COURSES)) {
+        const courseStore = db.createObjectStore(STORE_COURSES, { keyPath: "id" });
+        courseStore.createIndex("courseIndex", "courseIndex", { unique: false });
+        courseStore.createIndex("isPublished", "isPublished", { unique: false });
+        courseStore.createIndex("authorName", "authorName", { unique: false });
+        courseStore.createIndex("authorPicture", "authorPicture", { unique: false });
+      } else {
+        const existingStore = request.transaction?.objectStore(STORE_COURSES);
+        if (existingStore && !existingStore.indexNames.contains("isPublished")) {
+          existingStore.createIndex("isPublished", "isPublished", { unique: false });
+        }
+        if (existingStore && !existingStore.indexNames.contains("authorName")) {
+          existingStore.createIndex("authorName", "authorName", { unique: false });
+        }
+        if (existingStore && !existingStore.indexNames.contains("authorPicture")) {
+          existingStore.createIndex("authorPicture", "authorPicture", { unique: false });
+        }
       }
-      if (existingStore && !existingStore.indexNames.contains("authorPicture")) {
-        existingStore.createIndex("authorPicture", "authorPicture", { unique: false });
+
+      if (!db.objectStoreNames.contains(STORE_CHAPTERS)) {
+        const chapterStore = db.createObjectStore(STORE_CHAPTERS, { keyPath: "id" });
+        chapterStore.createIndex("courseId", "courseId", { unique: false });
+        chapterStore.createIndex("chapterIndex", "chapterIndex", { unique: false });
       }
-      console.log("courses store already exists");
-    }
 
-    // Create chapters store
-    if (!db.objectStoreNames.contains(STORE_CHAPTERS)) {
-      console.log("creating chapters store");
-      const chapterStore = db.createObjectStore(STORE_CHAPTERS, { keyPath: "id" });
-      chapterStore.createIndex("courseId", "courseId", { unique: false });
-      chapterStore.createIndex("chapterIndex", "chapterIndex", { unique: false });
-    } else {
-      console.log("chapters store already exists");
-    }
+      if (!db.objectStoreNames.contains(STORE_STEPS)) {
+        const stepStore = db.createObjectStore(STORE_STEPS, { keyPath: "id" });
+        stepStore.createIndex("courseId", "courseId", { unique: false });
+        stepStore.createIndex("chapterId", "chapterId", { unique: false });
+        stepStore.createIndex("stepIndex", "stepIndex", { unique: false });
+      }
 
-    // Create steps store
-    if (!db.objectStoreNames.contains(STORE_STEPS)) {
-      console.log("creating steps store");
-      const stepStore = db.createObjectStore(STORE_STEPS, { keyPath: "id" });
-      stepStore.createIndex("courseId", "courseId", { unique: false });
-      stepStore.createIndex("chapterId", "chapterId", { unique: false });
-      stepStore.createIndex("stepIndex", "stepIndex", { unique: false });
-    } else {
-      console.log("steps store already exists");
-    }
+      if (!db.objectStoreNames.contains(STORE_ANNOUNCEMENTS)) {
+        const announcementStore = db.createObjectStore(STORE_ANNOUNCEMENTS, { keyPath: "id" });
+        announcementStore.createIndex("publishedAt", "publishedAt", { unique: false });
+        announcementStore.createIndex("isActive", "isActive", { unique: false });
+        announcementStore.createIndex("sortOrder", "sortOrder", { unique: false });
+      }
+    };
 
-    if (!db.objectStoreNames.contains(STORE_ANNOUNCEMENTS)) {
-      console.log("creating announcements store");
-      const announcementStore = db.createObjectStore(STORE_ANNOUNCEMENTS, { keyPath: "id" });
-      announcementStore.createIndex("publishedAt", "publishedAt", { unique: false });
-      announcementStore.createIndex("isActive", "isActive", { unique: false });
-      announcementStore.createIndex("sortOrder", "sortOrder", { unique: false });
-    } else {
-      console.log("announcements store already exists");
-    }
-  };
+    request.onsuccess = () => {
+      dbHandle = request.result;
+      dbHandle.onclose = () => {
+        dbHandle = null;
+      };
+      dbOpening = null;
+      resolve(dbHandle);
+    };
+    request.onerror = () => {
+      dbOpening = null;
+      reject(request.error);
+    };
+  });
 
-  return promisifyRequest(request);
+  return dbOpening;
 }
 
 // --- Tasks operations ---

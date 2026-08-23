@@ -172,6 +172,32 @@ export function extractPdfPageNumber(source: string): number {
   return Number.isFinite(parsed) && parsed >= 1 ? parsed : 1;
 }
 
+const PDFJS_SCRIPT = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+export const PDF_VIEWER_CACHE_BUST = "viewz17";
+
+function addWarmLink(href: string, rel: string, asValue?: string) {
+  if (!href || typeof document === "undefined") return;
+  if (document.querySelector(`link[data-pmp-pdf-warm="${href}"]`)) return;
+  const link = document.createElement("link");
+  link.rel = rel;
+  link.href = href;
+  if (asValue) link.as = asValue as HTMLLinkElement["as"];
+  link.setAttribute("data-pmp-pdf-warm", href);
+  document.head.appendChild(link);
+}
+
+/** Prefetch viewer + pdf.js on the about page. Do not download the whole PDF here. */
+export function warmupPdfReaderAssets() {
+  try {
+    addWarmLink(PDFJS_SCRIPT, "prefetch");
+    addWarmLink(PDFJS_WORKER, "prefetch");
+    addWarmLink(`/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}`, "prefetch");
+  } catch {
+    /* never crash About */
+  }
+}
+
 /**
  * Fetch a PDF file once per URL.
  * 1. Try in-memory cache first (instant).

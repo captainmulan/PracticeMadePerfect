@@ -42,9 +42,11 @@ export default function HomeCourseShelves({ row, useCoverImages = false, onItemC
   const DEFAULT_SHELF_ROWS = 2;
   const minSlots = DEFAULT_SHELF_ROWS * booksPerRow;
   const displayItems: CourseShelfItem[] = [...row.items];
-  const shouldPadPlaceholders = !row.items.some(
-    (item) => item.actionType === "category" || item.actionType === "language-sub" || item.actionType === "author",
-  );
+  const shouldPadPlaceholders =
+    row.items.length > 0 &&
+    !row.items.some(
+      (item) => item.actionType === "category" || item.actionType === "language-sub" || item.actionType === "author",
+    );
 
   if (shouldPadPlaceholders) {
     while (displayItems.length < minSlots) {
@@ -53,7 +55,8 @@ export default function HomeCourseShelves({ row, useCoverImages = false, onItemC
   }
 
   const groups: CourseShelfItem[][] = [];
-  const totalRows = Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
+  const totalRows =
+    displayItems.length === 0 ? 0 : Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
 
   for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
     groups.push(displayItems.slice(rowIndex * booksPerRow, rowIndex * booksPerRow + booksPerRow));

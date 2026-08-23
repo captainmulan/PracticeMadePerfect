@@ -5,7 +5,7 @@ import PracticeCodeEditor from "./PracticeCodeEditor";
 import DictionaryPanel from "./DictionaryPanel";
 import { usePageSwipeNavigation } from "../hooks/usePageSwipeNavigation";
 import { getHomePageData } from "../utils/contentStore";
-import { SHELF_RETURN_HREF } from "../utils/shelfReturn";
+import { getShelfReturnLabel, SHELF_RETURN_HREF } from "../utils/shelfReturn";
 import "../styles/course.css";
 
 interface PracticeWorkspaceProps {
@@ -106,6 +106,7 @@ export default function PracticeWorkspace({
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
   const style = homeData.style;
+  const shelfReturnLabel = getShelfReturnLabel();
   const swipe = usePageSwipeNavigation({
     canPrevious,
     canNext,
@@ -177,8 +178,8 @@ export default function PracticeWorkspace({
           <Link
             to={SHELF_RETURN_HREF}
             className="chapter-nav-icon-btn"
-            aria-label="Previous category"
-            title="Previous category"
+            aria-label={shelfReturnLabel.nav}
+            title={shelfReturnLabel.nav}
           >
             📚
           </Link>

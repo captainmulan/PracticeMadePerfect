@@ -46,11 +46,6 @@ export const PAGE_VIEW_TYPE_ZOOM: Partial<Record<PageViewType, number>> = {
 
 /** Focus modes that trim PDF white padding (includes zoom presets). */
 export const FOCUS_PAGE_VIEW_TYPES: PageViewType[] = [
-  "ComicView",
-  "NormalView",
-  "MediumView",
-  "LargeView",
-  "ExtraLargeView",
   "SoftFocus",
   "NormalFocus",
   "BasicFocus",
