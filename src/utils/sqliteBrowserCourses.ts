@@ -90,6 +90,11 @@ export function toCourseSummary(course: Course): Course {
 
 // Now our main functions, using IndexedDB
 export async function loadCourseSummariesFromBrowserDb(): Promise<Course[]> {
+  const existing = await getCourseSummariesFromIndexedDb();
+  if (existing.length > 0) {
+    void migrateFromSqlJs();
+    return existing;
+  }
   await migrateFromSqlJs();
   return getCourseSummariesFromIndexedDb();
 }

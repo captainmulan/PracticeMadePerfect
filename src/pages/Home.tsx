@@ -273,9 +273,8 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 type="button"
                 className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
                 onClick={() => {
-                  const switchingToCategory = tab.id === "Category" && selectedTab !== "Category";
                   setSelectedTab(tab.id);
-                  if (switchingToCategory) {
+                  if (tab.id === "Category") {
                     setCategoryPath([]);
                     setSelectedAuthorName(null);
                   }

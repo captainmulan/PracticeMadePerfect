@@ -7,6 +7,7 @@ import {
   collectCategoryChildren,
   collectTopCategoryNames,
   courseIsExactCategoryPath,
+  courseMatchesCategoryPath,
   formatCategoryLabel,
   getCategoryShelfStyle,
 } from "./bookCategories";
@@ -490,10 +491,29 @@ export function getCategoryPickerRow(courses: Course[]): CourseShelfRow {
   return { title: "Category", items: [...tagItems, authorItem] };
 }
 
-function makeCategoryFolderItem(tag: string, actionType: "category" | "language-sub"): CourseShelfItem {
+const EMOJI_ONLY_FOLDERS = new Set(["Kid", "Other"]);
+
+function pickSeriesFolderCover(courses: Course[], path: string[], tag: string): string | undefined {
+  if (EMOJI_ONLY_FOLDERS.has(tag) || LANGUAGE_SUBCATEGORY_FLAGS[tag] || CATEGORY_FOLDER_COVERS[tag]) {
+    return undefined;
+  }
+  const nested = [...path, tag];
+  for (const course of courses) {
+    if (!courseMatchesCategoryPath(course, nested)) continue;
+    const url = resolveBookCoverUrl(course, { variant: "thumb" });
+    if (url) return url;
+  }
+  return undefined;
+}
+
+function makeCategoryFolderItem(
+  tag: string,
+  actionType: "category" | "language-sub",
+  bookCover?: string,
+): CourseShelfItem {
   const style = getCategoryShelfStyle(tag);
   const flag = LANGUAGE_SUBCATEGORY_FLAGS[tag];
-  const folderCover = flag?.flagSrc || CATEGORY_FOLDER_COVERS[tag];
+  const folderCover = flag?.flagSrc || CATEGORY_FOLDER_COVERS[tag] || bookCover;
   const label = formatCategoryLabel(tag);
   const isCoverTile = Boolean(folderCover);
   return {
@@ -524,7 +544,9 @@ function makeCategoryFolderItem(tag: string, actionType: "category" | "language-
 }
 
 export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseShelfRow {
-  const childItems = collectCategoryChildren(courses, path).map((tag) => makeCategoryFolderItem(tag, "category"));
+  const childItems = collectCategoryChildren(courses, path).map((tag) =>
+    makeCategoryFolderItem(tag, "category", pickSeriesFolderCover(courses, path, tag)),
+  );
   const bookItems = courses
     .filter((course) => courseIsExactCategoryPath(course, path))
     .map((course) => createShelfItemFromCourse(course, path[path.length - 1] ?? "Category"));

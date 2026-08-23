@@ -25,6 +25,9 @@ const BOOK_ORDER = [
   "Countries",
   "Dinosaur Discovery",
   "explore my body",
+  "MudraGoesToGrandmaVillage",
+  "Mudra goes to Bagan",
+  "သံပါးစပ်",
 ];
 
 const args = process.argv.slice(2);

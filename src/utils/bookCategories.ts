@@ -87,6 +87,8 @@ const CATEGORY_STYLES: Record<
   AI: { icon: "🤖", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   "Shwe Thway": { icon: "📒", coverColorStart: "#fde047", coverColorMiddle: "#facc15", coverColorEnd: "#ca8a04" },
   Tootpee: { icon: "📚", coverColorStart: "#f97316", coverColorMiddle: "#ea580c", coverColorEnd: "#c2410c" },
+  "Short Stories": { icon: "📖", coverColorStart: "#fcd34d", coverColorMiddle: "#f59e0b", coverColorEnd: "#b45309" },
+  HarryPotter: { icon: "⚡", coverColorStart: "#7c3aed", coverColorMiddle: "#5b21b6", coverColorEnd: "#1e1b4b" },
   Biography: { icon: "🪪", coverColorStart: "#fcd34d", coverColorMiddle: "#f59e0b", coverColorEnd: "#b45309" },
   Author: { icon: "👤", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   Fiction: { icon: "📖", coverColorStart: "#fda4af", coverColorMiddle: "#fb7185", coverColorEnd: "#e11d48" },
@@ -166,6 +168,11 @@ export function collectCategoryTagsFromCourses(courses: Array<{ category?: strin
 export function formatCategoryLabel(tag: string): string {
   if (tag === "PersonalDevelopment") return "Personal Dev";
   if (tag === "Shwe Thway") return "Shwe Thway";
+  if (tag === "Short Stories") return "Short Stories";
+  if (tag === "HarryPotter") return "Harry Potter";
+  if (tag === "ReadAtHome") return "Read at Home";
+  if (tag === "ScoobyDoo") return "Scooby-Doo";
+  if (tag === "TinTin") return "Tintin";
   return LANGUAGE_SUBCATEGORY_FLAGS[tag]?.label ?? tag;
 }
 
@@ -179,14 +186,25 @@ export type CategoryCourse = {
   cat4?: string | null;
 };
 
+function coerceKidOtherLevels(levels: [string, string, string, string]): [string, string, string, string] {
+  const [cat1, cat2, cat3, cat4] = levels;
+  if (cat1.toLowerCase() === LANGUAGE_PARENT_ID.toLowerCase()) {
+    return levels;
+  }
+  if (cat2 && isLanguageSubcategoryTag(cat2)) {
+    return [cat1, "Other", cat3, cat4];
+  }
+  return levels;
+}
+
 export function inferCategoryLevels(course: CategoryCourse): [string, string, string, string] {
   if (course.cat1?.trim()) {
-    return [
+    return coerceKidOtherLevels([
       course.cat1.trim(),
       (course.cat2 ?? "").trim(),
       (course.cat3 ?? "").trim(),
       (course.cat4 ?? "").trim(),
-    ];
+    ]);
   }
   const tags = parseCategoryTags(course.category);
   const id = String(course.id ?? "").toLowerCase();
@@ -214,16 +232,21 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
   if (has("PersonalDevelopment")) {
     return ["PersonalDevelopment", "", "", ""];
   }
+  if (id.includes("tootpee") || has("Tootpee")) {
+    return ["Comic", "Other", "Tootpee", ""];
+  }
   if (has("Comic") && has("Kid")) {
     return ["Comic", "Kid", "", ""];
   }
   if (has("Comic")) {
-    return ["Comic", "Other", "", ""];
+    const reserved = new Set(["comic", "eng", "other", "kid"]);
+    const series = tags.find((tag) => !reserved.has(tag.toLowerCase())) ?? "";
+    return ["Comic", "Other", series, ""];
   }
   if (has("Kid")) {
     return ["Comic", "Kid", "", ""];
   }
-  return [tags[0] ?? "", tags[1] ?? "", tags[2] ?? "", tags[3] ?? ""];
+  return coerceKidOtherLevels([tags[0] ?? "", tags[1] ?? "", tags[2] ?? "", tags[3] ?? ""]);
 }
 
 export function getCategoryLevels(course: CategoryCourse): string[] {

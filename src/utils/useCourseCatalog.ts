@@ -51,7 +51,7 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
       try {
         const data = await loadCourseSummariesFromBrowserDb();
         if (!active) return;
-        if (data.length > 0) {
+        if (data.length > 0 && (!catalogCache || data.length >= catalogCache.length)) {
           catalogCache = data;
         }
         const filteredData = applyPublishedFilter(catalogCache ?? data, publishedMode);
