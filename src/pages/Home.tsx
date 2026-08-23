@@ -82,15 +82,16 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const authorGroups = useMemo(() => {
     const groups = new Map<string, { authorName: string; authorPicture?: string }>();
     for (const course of courses) {
-      const authorName = (course.authorName ?? "Unknown").trim();
-      if (!authorName) {
-        continue;
-      }
+      const authorName = (course.authorName ?? "Unknown").trim() || "Unknown";
       if (!groups.has(authorName)) {
         groups.set(authorName, { authorName, authorPicture: course.authorPicture });
       }
     }
-    return [...groups.values()].sort((a, b) => a.authorName.localeCompare(b.authorName));
+    return [...groups.values()].sort((a, b) => {
+      if (a.authorName === "Unknown" && b.authorName !== "Unknown") return 1;
+      if (b.authorName === "Unknown" && a.authorName !== "Unknown") return -1;
+      return a.authorName.localeCompare(b.authorName, undefined, { sensitivity: "base" });
+    });
   }, [courses]);
   const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
   const showcaseEnabled = !showUnpublishedOnly && !heroCollapsed && coursesLoaded && courses.length > 0;
@@ -138,6 +139,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   useEffect(() => {
     if (!coursesLoaded || selectedTab !== "Category") return;
     if (categoryPath.length === 0) return;
+    if (categoryPath[0] === AUTHOR_SHELF_ID) return;
     const row = getCategoryBrowseRow(courses, categoryPath);
     if (row.items.length > 0) return;
     setCategoryPath((path) => path.slice(0, -1));
@@ -320,15 +322,28 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
             )
           ) : (
             selectedRow && (
-              selectedRow.title === "Author" ? (
-                <AuthorShelfRow row={selectedRow} onItemClick={(item) => setSelectedAuthorName(item.title)} />
+              selectedTab === "Category" && categoryPath[0] === AUTHOR_SHELF_ID && !selectedAuthorName ? (
+                <AuthorShelfRow
+                  row={selectedRow}
+                  onItemClick={(item) => {
+                    if (item.placeholder) return;
+                    setSelectedAuthorName(item.title);
+                  }}
+                />
               ) : (
                 <HomeCourseShelves
                   row={selectedRow}
                   useCoverImages
                   onItemClick={(item) => {
+                    if (item.placeholder) return;
+                    if (item.category === AUTHOR_SHELF_ID && item.actionType === "category") {
+                      setSelectedAuthorName(null);
+                      setCategoryPath([AUTHOR_SHELF_ID]);
+                      return;
+                    }
                     if (item.actionType === "author") {
                       setSelectedAuthorName(item.title);
+                      return;
                     }
                     if ((item.actionType === "language-sub" || item.actionType === "category") && item.category) {
                       setSelectedAuthorName(null);

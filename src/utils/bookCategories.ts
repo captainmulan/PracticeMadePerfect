@@ -87,6 +87,7 @@ const CATEGORY_STYLES: Record<
   AI: { icon: "🤖", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   "Shwe Thway": { icon: "📒", coverColorStart: "#fde047", coverColorMiddle: "#facc15", coverColorEnd: "#ca8a04" },
   Tootpee: { icon: "📚", coverColorStart: "#f97316", coverColorMiddle: "#ea580c", coverColorEnd: "#c2410c" },
+  Biography: { icon: "🪪", coverColorStart: "#fcd34d", coverColorMiddle: "#f59e0b", coverColorEnd: "#b45309" },
   Author: { icon: "👤", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   Fiction: { icon: "📖", coverColorStart: "#fda4af", coverColorMiddle: "#fb7185", coverColorEnd: "#e11d48" },
 };

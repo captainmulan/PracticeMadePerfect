@@ -532,11 +532,13 @@ export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseS
   return { title, items: [...childItems, ...bookItems] };
 }
 
-export function getAuthorShelfRow(authorGroups: Array<{ authorName: string; authorPicture?: string }>): CourseShelfRow {
-  const items = authorGroups.map((author, index) => ({
-    id: `author-${index}-${author.authorName}`,
-    title: author.authorName,
-    description: `Browse ${author.authorName}'s books`,
+export function getAuthorShelfRow(authorGroups: Array<{ authorName?: string; authorPicture?: string }>): CourseShelfRow {
+  const items = authorGroups.map((author, index) => {
+    const authorName = (author.authorName ?? "Unknown").trim() || "Unknown";
+    return {
+    id: `author-${index}-${authorName}`,
+    title: authorName,
+    description: `Browse ${authorName}'s books`,
     color: "#e0e7ff",
     coverColorStart: "#e0e7ff",
     coverColorMiddle: "#c7d2fe",
@@ -552,7 +554,8 @@ export function getAuthorShelfRow(authorGroups: Array<{ authorName: string; auth
     category: "Author",
     actionType: "author" as const,
     artifactType: "book" as const,
-  }));
+    };
+  });
 
   return buildShelfRow("Author", items);
 }
@@ -562,7 +565,7 @@ export function getCourseShelfRowForAuthor(courses: Course[], authorName: string
     .filter((course) => (course.authorName ?? "Unknown").trim() === authorName)
     .map((course) => createShelfItemFromCourse(course, "Author"));
 
-  return buildShelfRow("Author", items);
+  return buildShelfRow(authorName, items);
 }
 
 export function getLanguageSubcategoryPickerRow(courses: Course[]): CourseShelfRow {
