@@ -1127,8 +1127,96 @@ body[data-bookshelf-theme="space"] .page-home .author-shelf-button:active {
   overflow: hidden;
 }
 
-.page-home .book--category {
-  max-width: 220px !important;
+.page-home .book--folder-3d {
+  max-width: 168px !important;
+  overflow: visible !important;
+  align-self: end;
+  margin-bottom: 0 !important;
+}
+
+.page-home .book.book--folder-3d .book-cover,
+.page-home .book--folder-3d .book-cover,
+.page-home .book-cover--folder-3d {
+  position: relative !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: visible !important;
+  aspect-ratio: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  margin-bottom: 0 !important;
+  display: flex !important;
+  align-items: flex-end !important;
+}
+
+.book-folder-3d {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  display: block;
+  margin-bottom: -12px;
+}
+
+.book-folder-3d-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  filter: none;
+  object-fit: contain;
+  object-position: bottom center;
+  vertical-align: bottom;
+}
+
+.book-folder-3d-ribbon {
+  position: absolute;
+  top: 7%;
+  left: 5%;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2em 0.26em 0.24em;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #ffe38a 0%, #f5b942 52%, #d97706 100%);
+  border: 1px solid #fff3c4;
+  border-radius: 4px;
+  box-shadow:
+    0 1px 0 #fff6d5,
+    0 3px 0 #92400e,
+    0 6px 10px rgba(0, 0, 0, 0.35);
+  transform: perspective(240px) rotateX(18deg);
+  pointer-events: none;
+}
+
+.book-folder-3d-ribbon-line {
+  display: block;
+  color: #fff8dc;
+  font-weight: 800;
+  font-size: clamp(1.2rem, 4.4vw, 1.55rem);
+  line-height: 1.12;
+  text-align: center;
+  letter-spacing: 0.01em;
+  text-shadow:
+    0 1px 0 #b45309,
+    0 2px 0 #78350f,
+    0 3px 4px rgba(0, 0, 0, 0.4);
+  word-break: break-word;
+}
+
+.book-folder-3d-ribbon--two .book-folder-3d-ribbon-line {
+  font-size: clamp(0.88rem, 3.1vw, 1.12rem);
+}
+
+.book-folder-3d-ribbon--mm .book-folder-3d-ribbon-line {
+  font-family: "Noto Sans Myanmar", "Myanmar Text", Padauk, sans-serif;
+  font-size: clamp(1.32rem, 4.8vw, 1.7rem);
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: 0;
 }
 
 .page-home .book--category .book-cover,

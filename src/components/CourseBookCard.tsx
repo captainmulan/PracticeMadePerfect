@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import type { CourseShelfItem } from "../utils/courseShelf";
 import type { CSSProperties } from "react";
 import { getHomePageData } from "../utils/contentStore";
+import CategoryBooksFolderCover from "./CategoryBooksFolderCover";
 
 interface CourseBookCardProps {
   item: CourseShelfItem;
@@ -17,13 +18,14 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
   const isAuthor = item.actionType === "author";
   const isLanguageSub = item.actionType === "language-sub";
   const isCategory = item.actionType === "category";
-  const isEmojiCategory = isCategory && !item.coverImageUrl;
+  const isBooks3dFolder = (isCategory || isLanguageSub) && item.folderKind === "books-3d";
+  const isEmojiCategory = (isCategory || isLanguageSub) && !isBooks3dFolder && !item.coverImageUrl;
   const authorAvatarUrl = isAuthor ? item.coverImageUrl?.trim() : undefined;
   const isImageAvatar = Boolean(authorAvatarUrl && /^https?:\/\//i.test(authorAvatarUrl));
   const showCoverImage = Boolean(
-    useCoverImage && item.coverImageUrl && !isEmpty && (!item.actionType || isLanguageSub || (isCategory && Boolean(item.coverImageUrl))),
+    useCoverImage && item.coverImageUrl && !isEmpty && !isBooks3dFolder && (!item.actionType || isLanguageSub || (isCategory && Boolean(item.coverImageUrl))),
   );
-  const showCaption = !isEmpty && isEmojiCategory;
+  const showCaption = !isEmpty && isEmojiCategory && !isBooks3dFolder;
   const showCoverRibbon = !hideTitleRibbon && !isEmpty && !isAuthor && !isCategory && !isLanguageSub;
   
   const iconSize = item.iconSize ?? 80; // default admin-configurable
@@ -108,15 +110,17 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
           <span className="book-caption-title">{displayTitle}</span>
         </div>
       ) : null}
-      <div className={`book-cover${isEmojiCategory ? " book-cover--emoji" : ""}`} style={{ 
+      <div className={`book-cover${isEmojiCategory ? " book-cover--emoji" : ""}${isBooks3dFolder ? " book-cover--folder-3d" : ""}`} style={{ 
         ...authorCoverStyles,
-        background: showCoverImage || isEmojiCategory
+        background: showCoverImage || isEmojiCategory || isBooks3dFolder
           ? undefined
           : `linear-gradient(180deg, ${coverColorStart} 0%, ${coverColorMiddle} 50%, ${coverColorEnd} 100%)`, 
         position: "relative",
-        overflow: isEmojiCategory ? "visible" : "hidden",
+        overflow: isEmojiCategory || isBooks3dFolder ? "visible" : "hidden",
       }}>
-        {isEmojiCategory ? (
+        {isBooks3dFolder ? (
+          <CategoryBooksFolderCover label={item.title} />
+        ) : isEmojiCategory ? (
           item.iconImageUrl ? (
             <img
               className="book-category-emoji book-category-flag"
@@ -268,7 +272,7 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
             <span className="book-cover-ribbon-title">{displayTitle}</span>
           </div>
         ) : null}
-        {!isEmojiCategory ? <div className="book-spine" /> : null}
+        {!isEmojiCategory && !isBooks3dFolder ? <div className="book-spine" /> : null}
       </div>
     </>
   );
@@ -283,7 +287,7 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
     return (
       <button
         type="button"
-        className={`book${showCoverImage ? " book--cover-image" : ""}${isEmojiCategory ? " book--category" : ""}`}
+        className={`book${showCoverImage ? " book--cover-image" : ""}${isEmojiCategory ? " book--category" : ""}${isBooks3dFolder ? " book--folder-3d" : ""}`}
         style={{ ...bookStyles, border: "none", cursor: "pointer", padding: 0 }}
         onClick={() => onItemClick?.(item)}
         aria-label={openLabel}

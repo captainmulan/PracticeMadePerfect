@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-08-23T15:12:14.000Z",
+  "exportedAt": "2026-08-24T02:22:10.000Z",
   "courses": [
     {
       "id": "solarsystem",
@@ -19,10 +19,14 @@
       "iconSize": 100,
       "iconPosition": "top-center",
       "courseIndex": 10,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 1,
       "artifactType": "book",
-      "stepCount": 43
+      "stepCount": 43,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "myfirst100mmwords",
@@ -42,11 +46,15 @@
       "iconSize": 80,
       "iconPosition": "top-center",
       "courseIndex": 11,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 1,
       "artifactType": "book",
       "bookHtmlFolder": "MyFirst100MMWords",
-      "stepCount": 38
+      "stepCount": 38,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "little-programmer",
@@ -66,10 +74,14 @@
       "iconSize": 80,
       "iconPosition": "top-center",
       "courseIndex": 5,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 2,
       "artifactType": "book",
-      "stepCount": 29
+      "stepCount": 29,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "programming-for-kids",
@@ -89,11 +101,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 12,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 5,
       "artifactType": "book",
       "bookHtmlFolder": "Programming-for-Kids",
-      "stepCount": 125
+      "stepCount": 125,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "oceanadventure",
@@ -113,11 +129,15 @@
       "iconSize": 100,
       "iconPosition": "center-center",
       "courseIndex": 12,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "OceanAdventure",
-      "stepCount": 35
+      "stepCount": 35,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-8",
@@ -137,11 +157,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 15,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-8-1711504983477",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "kuku-the-bird-english-pdf",
@@ -161,11 +185,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 16,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "Kuku-the-bird-_-English.pdf",
-      "stepCount": 17
+      "stepCount": 17,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "my-hero-is-you-too-eng-pdf",
@@ -185,11 +213,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 17,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "My-Hero-is-You-Too-_-Eng.pdf",
-      "stepCount": 41
+      "stepCount": 41,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "tone-tone-eng-pdf",
@@ -209,11 +241,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 18,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "Tone-Tone-_-Eng.pdf",
-      "stepCount": 23
+      "stepCount": 23,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-9-1711591356943",
@@ -233,11 +269,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 20,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-9-1711591356943",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-10",
@@ -257,11 +297,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 22,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-10",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-11",
@@ -281,11 +325,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 23,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-11",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-13",
@@ -305,11 +353,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 24,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-13",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-14",
@@ -329,11 +381,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 25,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-14",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-15",
@@ -353,11 +409,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 26,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-15",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "shwe-thway-journal-vol-56-no-16",
@@ -377,11 +437,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 27,
-      "category": "Comic, Kid, Shwe Thway",
+      "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "shwe-thway-journal-vol-56-no-16",
-      "stepCount": 16
+      "stepCount": 16,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "Shwe Thway",
+      "cat4": ""
     },
     {
       "id": "new-book",
@@ -401,10 +465,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 10,
-      "category": "IT, Other",
+      "category": "Other, IT",
       "pIndex": 7,
       "artifactType": "newspaper",
-      "stepCount": 1
+      "stepCount": 1,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "tharapasa-nidana",
@@ -424,9 +492,13 @@
       "iconSize": 90,
       "iconPosition": "center-center",
       "courseIndex": 1,
-      "category": "PersonalDevelopment",
+      "category": "Other, PersonalDevelopment",
       "pIndex": 8,
-      "stepCount": 27
+      "stepCount": 27,
+      "cat1": "Other",
+      "cat2": "PersonalDevelopment",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "wine-wine-eng-pdf",
@@ -446,11 +518,15 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 19,
-      "category": "Comic, Kid",
+      "category": "Kid, Comic",
       "pIndex": 8,
       "artifactType": "book",
       "bookHtmlFolder": "Wine-Wine-_-Eng.pdf",
-      "stepCount": 18
+      "stepCount": 18,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "solid-interview-practice",
@@ -470,9 +546,13 @@
       "iconSize": 40,
       "iconPosition": "top-center",
       "courseIndex": 2,
-      "category": "IT, Other",
+      "category": "Other, IT",
       "pIndex": 9,
-      "stepCount": 4
+      "stepCount": 4,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "angular-interview-practice",
@@ -492,9 +572,13 @@
       "iconSize": 35,
       "iconPosition": "top-center",
       "courseIndex": 3,
-      "category": "IT, Other",
+      "category": "Other, IT",
       "pIndex": 10,
-      "stepCount": 15
+      "stepCount": 15,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "csharp-interview-practice",
@@ -514,8 +598,12 @@
       "iconSize": 70,
       "iconPosition": "top-center",
       "courseIndex": 4,
-      "category": "IT, Other",
-      "stepCount": 12
+      "category": "Other, IT",
+      "stepCount": 12,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "sql-interview-practice",
@@ -535,8 +623,12 @@
       "iconSize": 55,
       "iconPosition": "top-center",
       "courseIndex": 5,
-      "category": "IT, Other",
-      "stepCount": 12
+      "category": "Other, IT",
+      "stepCount": 12,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "myanmar-letters",
@@ -556,8 +648,12 @@
       "iconSize": 45,
       "iconPosition": "top-center",
       "courseIndex": 7,
-      "category": "Comic, Kid",
-      "stepCount": 1
+      "category": "Kid, Comic",
+      "stepCount": 1,
+      "cat1": "Kid",
+      "cat2": "Comic",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "mudragoestograndmavillage",
@@ -576,10 +672,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 13,
-      "category": "IT, Other",
+      "category": "Other, IT",
       "artifactType": "book",
       "bookHtmlFolder": "MudraGoesToGrandmaVillage",
-      "stepCount": 37
+      "stepCount": 37,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "mudra-goes-to-bagan",
@@ -598,10 +698,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 14,
-      "category": "IT, Other",
+      "category": "Other, IT",
       "artifactType": "book",
       "bookHtmlFolder": "Mudra goes to Bagan",
-      "stepCount": 31
+      "stepCount": 31,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "autobiographyofbenjaminfranklin",
@@ -621,10 +725,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 21,
-      "category": "PersonalDevelopment",
+      "category": "Other, PersonalDevelopment",
       "artifactType": "book",
       "bookHtmlFolder": "AutobiographyOfBenjaminFranklin",
-      "stepCount": 35
+      "stepCount": 35,
+      "cat1": "Other",
+      "cat2": "PersonalDevelopment",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "the-richest-man-in-babylon",
@@ -644,10 +752,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 21,
-      "category": "PersonalDevelopment",
+      "category": "Other, PersonalDevelopment",
       "artifactType": "book",
       "bookHtmlFolder": "The_Richest_Man_In_Babylon",
-      "stepCount": 90
+      "stepCount": 90,
+      "cat1": "Other",
+      "cat2": "PersonalDevelopment",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "lyra-and-silent-frequency",
@@ -667,10 +779,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 28,
-      "category": "Fiction",
+      "category": "Other, Fiction",
       "artifactType": "book",
       "bookHtmlFolder": "lyra-and-silent-frequency",
-      "stepCount": 306
+      "stepCount": 306,
+      "cat1": "Other",
+      "cat2": "Fiction",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "rockstar-developer-2025",
@@ -690,10 +806,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 29,
-      "category": "IT, Other",
+      "category": "Other, IT",
       "artifactType": "book",
       "bookHtmlFolder": "rockstar-developer-2025",
-      "stepCount": 435
+      "stepCount": 435,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "n8n-book",
@@ -713,10 +833,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 30,
-      "category": "IT, Other, AI",
+      "category": "Other, IT, AI",
       "artifactType": "book",
       "bookHtmlFolder": "n8n-book",
-      "stepCount": 177
+      "stepCount": 177,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "AI",
+      "cat4": ""
     },
     {
       "id": "openclaw-book",
@@ -736,10 +860,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 31,
-      "category": "IT, Other, AI",
+      "category": "Other, IT, AI",
       "artifactType": "book",
       "bookHtmlFolder": "openclaw-book",
-      "stepCount": 129
+      "stepCount": 129,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "AI",
+      "cat4": ""
     },
     {
       "id": "vibe-book-final",
@@ -759,10 +887,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 32,
-      "category": "IT, Other, AI",
+      "category": "Other, IT, AI",
       "artifactType": "book",
       "bookHtmlFolder": "vibe-book-final",
-      "stepCount": 209
+      "stepCount": 209,
+      "cat1": "Other",
+      "cat2": "IT",
+      "cat3": "AI",
+      "cat4": ""
     },
     {
       "id": "koeimaung-programming-for-kids",
@@ -774,7 +906,7 @@
       "coverColorEnd": "#2563eb",
       "coverWidth": 100,
       "coverHeight": 150,
-      "coverImageUrl": "/book_covers/thumbs/koeimaung-programming-for-kids.webp",
+      "coverImageUrl": "/book_covers/thumbs/Programming-for-Kids.webp",
       "icon": "🧸",
       "iconColorStart": "#fff",
       "iconColorMiddle": "#fff",
@@ -782,10 +914,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 33,
-      "category": "IT, Kid",
+      "category": "Kid, IT",
       "artifactType": "book",
       "bookHtmlFolder": "koeimaung-programming-for-kids",
-      "stepCount": 125
+      "stepCount": 125,
+      "cat1": "Kid",
+      "cat2": "IT",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "english-american-idioms-meaning-way-of-uses",
@@ -805,10 +941,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 34,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "english-american-idioms-meaning-way-of-uses",
-      "stepCount": 117
+      "stepCount": 117,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "english-writing-upper-intermediate-part-3",
@@ -828,10 +968,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 35,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "english-writing-upper-intermediate-part-3",
-      "stepCount": 216
+      "stepCount": 216,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "high-school-english-grammar-and-composation",
@@ -851,10 +995,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 36,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "high-school-english-grammar-and-composation",
-      "stepCount": 275
+      "stepCount": 275,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "how-to-write-in-english",
@@ -874,10 +1022,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 37,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "how-to-write-in-english",
-      "stepCount": 235
+      "stepCount": 235,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "modern-american-english-speaking-and-grammar",
@@ -897,10 +1049,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 38,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "modern-american-english-speaking-and-grammar",
-      "stepCount": 200
+      "stepCount": 200,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "practice-with-exercises",
@@ -920,10 +1076,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 39,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "practice-with-exercises",
-      "stepCount": 199
+      "stepCount": 199,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "speak-english-for-nurses",
@@ -943,10 +1103,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 40,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "speak-english-for-nurses",
-      "stepCount": 123
+      "stepCount": 123,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "the-easiest-idioms",
@@ -966,10 +1130,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 41,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "the-easiest-idioms",
-      "stepCount": 133
+      "stepCount": 133,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "the-good-grammar-book-with-answers",
@@ -989,10 +1157,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 42,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "the-good-grammar-book-with-answers",
-      "stepCount": 318
+      "stepCount": 318,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "the-most-beautiful-idiom",
@@ -1012,10 +1184,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 43,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "the-most-beautiful-idiom",
-      "stepCount": 167
+      "stepCount": 167,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "writing-method-essay-and-letter",
@@ -1035,10 +1211,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 44,
-      "category": "Language, Eng, MM",
+      "category": "Other, Language, Eng",
       "artifactType": "book",
       "bookHtmlFolder": "writing-method-essay-and-letter",
-      "stepCount": 185
+      "stepCount": 185,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Eng",
+      "cat4": ""
     },
     {
       "id": "modern-japanese-language-conversation",
@@ -1058,10 +1238,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 45,
-      "category": "Language, Jap, MM",
+      "category": "Other, Language, Jap",
       "artifactType": "book",
       "bookHtmlFolder": "modern-japanese-language-conversation",
-      "stepCount": 211
+      "stepCount": 211,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Jap",
+      "cat4": ""
     },
     {
       "id": "the-easiest-way-to-speak-japanese",
@@ -1081,10 +1265,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 46,
-      "category": "Language, Jap, MM",
+      "category": "Other, Language, Jap",
       "artifactType": "book",
       "bookHtmlFolder": "the-easiest-way-to-speak-japanese",
-      "stepCount": 118
+      "stepCount": 118,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Jap",
+      "cat4": ""
     },
     {
       "id": "speak-thai-burmese-and-english-daily",
@@ -1104,10 +1292,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 47,
-      "category": "Language, Thai, MM",
+      "category": "Other, Language, Thai",
       "artifactType": "book",
       "bookHtmlFolder": "speak-thai-burmese-and-english-daily",
-      "stepCount": 225
+      "stepCount": 225,
+      "cat1": "Other",
+      "cat2": "Language",
+      "cat3": "Thai",
+      "cat4": ""
     },
     {
       "id": "che-guevara",
@@ -1127,10 +1319,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 48,
-      "category": "Biography, MM",
+      "category": "Other, Biography",
       "artifactType": "book",
       "bookHtmlFolder": "che-guevara",
-      "stepCount": 208
+      "stepCount": 208,
+      "cat1": "Other",
+      "cat2": "Biography",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "elon-musk",
@@ -1150,10 +1346,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 49,
-      "category": "Biography, MM",
+      "category": "Other, Biography",
       "artifactType": "book",
       "bookHtmlFolder": "elon-musk",
-      "stepCount": 391
+      "stepCount": 391,
+      "cat1": "Other",
+      "cat2": "Biography",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "florence-nightingale",
@@ -1173,10 +1373,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 50,
-      "category": "Biography, MM",
+      "category": "Other, Biography",
       "artifactType": "book",
       "bookHtmlFolder": "florence-nightingale",
-      "stepCount": 190
+      "stepCount": 190,
+      "cat1": "Other",
+      "cat2": "Biography",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "georg-washington",
@@ -1196,10 +1400,14 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 51,
-      "category": "Biography, MM",
+      "category": "Other, Biography",
       "artifactType": "book",
       "bookHtmlFolder": "georg-washington",
-      "stepCount": 109
+      "stepCount": 109,
+      "cat1": "Other",
+      "cat2": "Biography",
+      "cat3": "",
+      "cat4": ""
     },
     {
       "id": "asterix-and-the-great-divide",
@@ -1219,16 +1427,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 52,
-      "category": "Comic, Eng, Asterix",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, Asterix",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "Asterix",
       "artifactType": "book",
       "bookHtmlFolder": "asterix-and-the-great-divide",
       "stepCount": 45,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "asterix-in-corsica",
@@ -1248,16 +1457,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 53,
-      "category": "Comic, Eng, Asterix",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, Asterix",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "Asterix",
       "artifactType": "book",
       "bookHtmlFolder": "asterix-in-corsica",
       "stepCount": 45,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "donald-duck-and-friends-361-dec-2010",
@@ -1277,16 +1487,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 54,
-      "category": "Comic, Eng",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "donald-duck-and-friends-361-dec-2010",
       "stepCount": 28,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "read-at-home-floppy-and-the-bone",
@@ -1306,16 +1517,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 55,
-      "category": "Comic, Eng, ReadAtHome",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ReadAtHome",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "read-at-home-floppy-and-the-bone",
       "stepCount": 13,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "read-at-home-floppy-s-phonics-seasick",
@@ -1335,16 +1547,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 56,
-      "category": "Comic, Eng, ReadAtHome",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ReadAtHome",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "read-at-home-floppy-s-phonics-seasick",
       "stepCount": 25,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "read-at-home-hungry-floppy",
@@ -1364,16 +1577,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 57,
-      "category": "Comic, Eng, ReadAtHome",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ReadAtHome",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "read-at-home-hungry-floppy",
       "stepCount": 17,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "read-at-home-looking-after-gran",
@@ -1393,16 +1607,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 58,
-      "category": "Comic, Eng, ReadAtHome",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ReadAtHome",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "read-at-home-looking-after-gran",
       "stepCount": 17,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "read-at-home-the-hairy-scary-monster",
@@ -1422,16 +1637,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 59,
-      "category": "Comic, Eng, ReadAtHome",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ReadAtHome",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "read-at-home-the-hairy-scary-monster",
       "stepCount": 17,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "read-at-home-the-monster-hunt",
@@ -1451,16 +1667,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 60,
-      "category": "Comic, Eng, ReadAtHome",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ReadAtHome",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "read-at-home-the-monster-hunt",
       "stepCount": 13,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "read-at-home-the-secret-of-the-sands",
@@ -1480,16 +1697,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 61,
-      "category": "Comic, Eng, ReadAtHome",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ReadAtHome",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "read-at-home-the-secret-of-the-sands",
       "stepCount": 17,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "scooby-doo-and-the-scary-snowman",
@@ -1509,16 +1727,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 62,
-      "category": "Comic, Eng, ScoobyDoo",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ScoobyDoo",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ScoobyDoo",
       "artifactType": "book",
       "bookHtmlFolder": "scooby-doo-and-the-scary-snowman",
       "stepCount": 27,
       "pageViewType": "ComicView",
       "authorName": "Mariah Balaban",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "scooby-doo-the-camping-caper",
@@ -1538,16 +1757,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 63,
-      "category": "Comic, Eng, ScoobyDoo",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, ScoobyDoo",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "ScoobyDoo",
       "artifactType": "book",
       "bookHtmlFolder": "scooby-doo-the-camping-caper",
       "stepCount": 36,
       "pageViewType": "ComicView",
       "authorName": "Gail Herman",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "tintin-and-destination-moon",
@@ -1567,16 +1787,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 64,
-      "category": "Comic, Eng, TinTin",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, TinTin",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "TinTin",
       "artifactType": "book",
       "bookHtmlFolder": "tintin-and-destination-moon",
       "stepCount": 63,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "tintin-and-explorers-on-the-moon",
@@ -1596,16 +1817,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 65,
-      "category": "Comic, Eng, TinTin",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, TinTin",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "TinTin",
       "artifactType": "book",
       "bookHtmlFolder": "tintin-and-explorers-on-the-moon",
       "stepCount": 63,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "tintin-and-king-ottokar-s-sceptre",
@@ -1625,16 +1847,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 66,
-      "category": "Comic, Eng, TinTin",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, TinTin",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "TinTin",
       "artifactType": "book",
       "bookHtmlFolder": "tintin-and-king-ottokar-s-sceptre",
       "stepCount": 64,
       "pageViewType": "ComicView",
       "authorName": "svivek",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "tintin-and-red-rackham-s-treasure",
@@ -1654,16 +1877,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 67,
-      "category": "Comic, Eng, TinTin",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, TinTin",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "TinTin",
       "artifactType": "book",
       "bookHtmlFolder": "tintin-and-red-rackham-s-treasure",
       "stepCount": 63,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "tintin-and-the-castafiore-emerald",
@@ -1683,16 +1907,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 68,
-      "category": "Comic, Eng, TinTin",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, TinTin",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "TinTin",
       "artifactType": "book",
       "bookHtmlFolder": "tintin-and-the-castafiore-emerald",
       "stepCount": 64,
       "pageViewType": "ComicView",
       "authorName": "svivek",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "tintin-and-the-crab-with-the-golden-claws",
@@ -1712,16 +1937,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 69,
-      "category": "Comic, Eng, TinTin",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic, TinTin",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "TinTin",
       "artifactType": "book",
       "bookHtmlFolder": "tintin-and-the-crab-with-the-golden-claws",
       "stepCount": 64,
       "pageViewType": "ComicView",
       "authorName": "svivek",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "town-mouse-and-country-mouse",
@@ -1741,16 +1967,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 70,
-      "category": "Comic, Eng",
-      "cat1": "Comic",
-      "cat2": "Eng",
+      "category": "Kid, Comic",
+      "cat1": "Kid",
+      "cat2": "Comic",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "town-mouse-and-country-mouse",
       "stepCount": 17,
       "pageViewType": "ComicView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "alexander-the-great-the-greatest-ruler-of-the-ancient-world",
@@ -1770,16 +1997,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 71,
-      "category": "Short Stories, Eng",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "alexander-the-great-the-greatest-ruler-of-the-ancient-world",
       "stepCount": 33,
       "pageViewType": "NormalView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "alice-in-wonderland",
@@ -1799,16 +2027,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 72,
-      "category": "Short Stories, Eng",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "alice-in-wonderland",
       "stepCount": 52,
       "pageViewType": "NormalView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "all-about-korea-stories",
@@ -1828,16 +2057,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 73,
-      "category": "Short Stories, Eng",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "all-about-korea-stories",
       "stepCount": 66,
       "pageViewType": "NormalView",
       "authorName": "Ann Martin Bowler",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "all-about-thailand-stories",
@@ -1857,16 +2087,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 74,
-      "category": "Short Stories, Eng",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "all-about-thailand-stories",
       "stepCount": 67,
       "pageViewType": "NormalView",
       "authorName": "Elaine Russell",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "cassandra-the-lucky",
@@ -1886,16 +2117,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 75,
-      "category": "Short Stories, Eng",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "cassandra-the-lucky",
       "stepCount": 104,
       "pageViewType": "NormalView",
       "authorName": "Joan Holub",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "harrypotter-deadlyhollow-part2",
@@ -1915,16 +2147,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 76,
-      "category": "Short Stories, Eng, HarryPotter",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories, HarryPotter",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "harrypotter-deadlyhollow-part2",
       "stepCount": 405,
       "pageViewType": "NormalView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "harrypotter-philosopherstone",
@@ -1944,16 +2177,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 77,
-      "category": "Short Stories, Eng, HarryPotter",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories, HarryPotter",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "harrypotter-philosopherstone",
       "stepCount": 183,
       "pageViewType": "NormalView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "harrypotter-prionsnerofaskaban",
@@ -1973,16 +2207,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 78,
-      "category": "Short Stories, Eng, HarryPotter",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories, HarryPotter",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "harrypotter-prionsnerofaskaban",
       "stepCount": 329,
       "pageViewType": "NormalView",
       "authorName": "Acer",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "jungle-book",
@@ -2002,16 +2237,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 79,
-      "category": "Short Stories, Eng",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "jungle-book",
       "stepCount": 79,
       "pageViewType": "NormalView",
       "authorName": "Unknown",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     },
     {
       "id": "squirrel-s-world",
@@ -2031,16 +2267,17 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 80,
-      "category": "Short Stories, Eng",
-      "cat1": "Short Stories",
-      "cat2": "Eng",
+      "category": "Kid, Short Stories",
+      "cat1": "Kid",
+      "cat2": "Short Stories",
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "squirrel-s-world",
       "stepCount": 50,
       "pageViewType": "NormalView",
       "authorName": "Moser, Lisa",
-      "isPublished": true
+      "isPublished": true,
+      "cat4": ""
     }
   ]
 }

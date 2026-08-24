@@ -2,12 +2,11 @@ import type { Course } from "../data/courses";
 import { resolveBookCoverUrl } from "./bookCoverSeeds";
 import {
   AUTHOR_SHELF_ID,
-  CATEGORY_FOLDER_COVERS,
   LANGUAGE_SUBCATEGORY_FLAGS,
+  isSeriesFolderTag,
   collectCategoryChildren,
   collectTopCategoryNames,
   courseIsExactCategoryPath,
-  courseMatchesCategoryPath,
   formatCategoryLabel,
   getCategoryShelfStyle,
 } from "./bookCategories";
@@ -41,6 +40,7 @@ export interface CourseShelfItem {
   placeholder?: boolean;
   category?: string;
   actionType?: "book" | "author" | "category" | "language-sub";
+  folderKind?: "emoji" | "books-3d";
   artifactType?: "book" | "magazine" | "newspaper" | "game";
   authorName?: string;
 }
@@ -491,31 +491,17 @@ export function getCategoryPickerRow(courses: Course[]): CourseShelfRow {
   return { title: "Category", items: [...tagItems, authorItem] };
 }
 
-const EMOJI_ONLY_FOLDERS = new Set(["Kid", "Other"]);
-
-function pickSeriesFolderCover(courses: Course[], path: string[], tag: string): string | undefined {
-  if (EMOJI_ONLY_FOLDERS.has(tag) || LANGUAGE_SUBCATEGORY_FLAGS[tag] || CATEGORY_FOLDER_COVERS[tag]) {
-    return undefined;
-  }
-  const nested = [...path, tag];
-  for (const course of courses) {
-    if (!courseMatchesCategoryPath(course, nested)) continue;
-    const url = resolveBookCoverUrl(course, { variant: "thumb" });
-    if (url) return url;
-  }
-  return undefined;
-}
+const EMOJI_ROOT_FOLDERS = new Set(["Kid", "Other", AUTHOR_SHELF_ID]);
 
 function makeCategoryFolderItem(
   tag: string,
   actionType: "category" | "language-sub",
-  bookCover?: string,
+  books3d = false,
 ): CourseShelfItem {
   const style = getCategoryShelfStyle(tag);
   const flag = LANGUAGE_SUBCATEGORY_FLAGS[tag];
-  const folderCover = flag?.flagSrc || CATEGORY_FOLDER_COVERS[tag] || bookCover;
   const label = formatCategoryLabel(tag);
-  const isCoverTile = Boolean(folderCover);
+  const useBooks3d = books3d && !EMOJI_ROOT_FOLDERS.has(tag);
   return {
     id: `category-${tag}`,
     title: label,
@@ -524,28 +510,26 @@ function makeCategoryFolderItem(
     coverColorStart: style.coverColorStart,
     coverColorMiddle: style.coverColorMiddle,
     coverColorEnd: style.coverColorEnd,
-    coverWidth: isCoverTile ? 100 : undefined,
-    coverHeight: isCoverTile ? 150 : undefined,
-    coverImageUrl: folderCover,
     icon: flag?.icon ?? style.icon,
-    iconImageUrl: folderCover,
+    iconImageUrl: flag?.flagSrc,
     iconColorStart: "#fff",
     iconColorMiddle: "#fff",
     iconColorEnd: "#fff",
-    iconSize: isCoverTile ? 80 : 88,
+    iconSize: 88,
     iconPosition: "center-center",
-    titlePosition: isCoverTile ? "bottom-center" : "top-center",
-    titleColor: isCoverTile ? "#ffffff" : "#0f172a",
+    titlePosition: "top-center",
+    titleColor: "#0f172a",
     meta: "Category",
     category: tag,
     actionType: flag?.flagSrc ? "language-sub" : actionType,
+    folderKind: useBooks3d ? "books-3d" : "emoji",
     artifactType: "book",
   };
 }
 
 export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseShelfRow {
   const childItems = collectCategoryChildren(courses, path).map((tag) =>
-    makeCategoryFolderItem(tag, "category", pickSeriesFolderCover(courses, path, tag)),
+    makeCategoryFolderItem(tag, "category", isSeriesFolderTag(tag)),
   );
   const bookItems = courses
     .filter((course) => courseIsExactCategoryPath(course, path))

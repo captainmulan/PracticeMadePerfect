@@ -36,7 +36,26 @@ export const LANGUAGE_SUBCATEGORY_FLAGS: Record<string, { label: string; icon: s
 export const CATEGORY_FOLDER_COVERS: Record<string, string> = {
   "Shwe Thway": "/flags/shwe-thway.webp",
   Tootpee: "/flags/tootpee.webp",
+  HarryPotter: "/flags/harry-potter.webp",
+  Asterix: "/flags/asterix.webp",
+  TinTin: "/flags/tintin.webp",
+  ScoobyDoo: "/flags/scooby-doo.webp",
+  ReadAtHome: "/flags/read-at-home.webp",
 };
+
+export const SERIES_FOLDER_TAGS = new Set([
+  "Shwe Thway",
+  "Tootpee",
+  "HarryPotter",
+  "Asterix",
+  "TinTin",
+  "ScoobyDoo",
+  "ReadAtHome",
+]);
+
+export function isSeriesFolderTag(tag: string): boolean {
+  return SERIES_FOLDER_TAGS.has(tag);
+}
 
 const LANGUAGE_SUB_ORDER = ["Eng", "Jap", "Thai", "Chi", "Cn", "Kor", "Ko", "Fr", "De", "Es", "Hi", "Ru", "Vie", "Id"];
 
@@ -167,7 +186,8 @@ export function collectCategoryTagsFromCourses(courses: Array<{ category?: strin
 
 export function formatCategoryLabel(tag: string): string {
   if (tag === "PersonalDevelopment") return "Personal Dev";
-  if (tag === "Shwe Thway") return "Shwe Thway";
+  if (tag === "Shwe Thway") return "ရွှေသွေး";
+  if (tag === "Tootpee") return "တွတ်ပီ";
   if (tag === "Short Stories") return "Short Stories";
   if (tag === "HarryPotter") return "Harry Potter";
   if (tag === "ReadAtHome") return "Read at Home";
@@ -186,67 +206,95 @@ export type CategoryCourse = {
   cat4?: string | null;
 };
 
-function coerceKidOtherLevels(levels: [string, string, string, string]): [string, string, string, string] {
-  const [cat1, cat2, cat3, cat4] = levels;
-  if (cat1.toLowerCase() === LANGUAGE_PARENT_ID.toLowerCase()) {
-    return levels;
+function pickSeriesTag(tags: string[], stored?: string | null): string {
+  const extra = (stored ?? "").trim();
+  if (extra && SERIES_FOLDER_TAGS.has(extra)) return extra;
+  const fromTags = tags.find((tag) => SERIES_FOLDER_TAGS.has(tag));
+  if (fromTags) return fromTags;
+  if (extra && !["Kid", "Other", "Eng", "Comic", "Biography", "Language", "IT"].includes(extra)) {
+    return extra;
   }
-  if (cat2 && isLanguageSubcategoryTag(cat2)) {
-    return [cat1, "Other", cat3, cat4];
-  }
-  return levels;
+  return "";
 }
 
+function audienceTag(has: (name: string) => boolean, storedCat1?: string | null, storedCat2?: string | null): "Kid" | "Other" {
+  if (has("Kid") || storedCat1 === "Kid" || storedCat2 === "Kid") return "Kid";
+  return "Other";
+}
+
+/** Kid | Other at the top, then type (Biography, Comic, …), then optional series. */
 export function inferCategoryLevels(course: CategoryCourse): [string, string, string, string] {
-  if (course.cat1?.trim()) {
-    return coerceKidOtherLevels([
-      course.cat1.trim(),
-      (course.cat2 ?? "").trim(),
-      (course.cat3 ?? "").trim(),
-      (course.cat4 ?? "").trim(),
-    ]);
-  }
   const tags = parseCategoryTags(course.category);
   const id = String(course.id ?? "").toLowerCase();
   const has = (name: string) => tags.some((tag) => tag.toLowerCase() === name.toLowerCase());
+  const cat1 = course.cat1?.trim() ?? "";
+  const cat2 = course.cat2?.trim() ?? "";
+  const cat3 = course.cat3?.trim() ?? "";
 
-  if (id.includes("shwe-thway") || has("Comic") && has("Kid") && id.includes("shwe")) {
-    return ["Comic", "Kid", "Shwe Thway", ""];
+  const isComic =
+    has("Comic") ||
+    cat1 === "Comic" ||
+    cat2 === "Comic" ||
+    id.includes("tootpee") ||
+    id.includes("shwe-thway") ||
+    id.includes("shwe-thway");
+
+  if (isComic) {
+    let series = pickSeriesTag(tags, cat3 || (SERIES_FOLDER_TAGS.has(cat2) ? cat2 : ""));
+    if (id.includes("tootpee") || has("Tootpee")) series = "Tootpee";
+    if (id.includes("shwe-thway") || id.includes("shwe-thway") || has("Shwe Thway")) series = "Shwe Thway";
+    return ["Kid", "Comic", series, ""];
   }
-  if (has("Language")) {
-    const lang = tags.find((tag) => isLanguageSubcategoryTag(tag)) ?? "";
-    return ["Language", lang, "", ""];
+
+  if (has("Biography") || cat1 === "Biography" || cat2 === "Biography") {
+    return [audienceTag(has, cat1, cat2), "Biography", "", ""];
   }
+
+  if (has("Short Stories") || cat1 === "Short Stories" || cat2 === "Short Stories") {
+    return ["Kid", "Short Stories", pickSeriesTag(tags, cat3), ""];
+  }
+
+  if (has("Language") || cat1 === "Language" || cat2 === "Language") {
+    const lang =
+      tags.find((tag) => isLanguageSubcategoryTag(tag)) ||
+      (isLanguageSubcategoryTag(cat3) ? cat3 : isLanguageSubcategoryTag(cat2) ? cat2 : "");
+    return [audienceTag(has, cat1, cat2), "Language", lang, ""];
+  }
+
   if (has("AI")) {
-    return ["IT", has("Kid") ? "Kid" : "Other", "AI", ""];
+    return [audienceTag(has, cat1, cat2), "IT", "AI", ""];
   }
-  if (has("IT") && has("Kid")) {
-    return ["IT", "Kid", "", ""];
+
+  if (has("IT") || cat1 === "IT" || cat2 === "IT") {
+    const extra = cat3 === "AI" || has("AI") ? "AI" : "";
+    return [audienceTag(has, cat1, cat2), "IT", extra, ""];
   }
-  if (has("IT")) {
-    return ["IT", "Other", "", ""];
+
+  if (has("Fiction") || cat1 === "Fiction" || cat2 === "Fiction") {
+    return [audienceTag(has, cat1, cat2), "Fiction", "", ""];
   }
-  if (has("Fiction")) {
-    return ["Fiction", "", "", ""];
+
+  if (has("PersonalDevelopment") || cat1 === "PersonalDevelopment" || cat2 === "PersonalDevelopment") {
+    return ["Other", "PersonalDevelopment", "", ""];
   }
-  if (has("PersonalDevelopment")) {
-    return ["PersonalDevelopment", "", "", ""];
+
+  if (cat1 === "Kid" || cat1 === "Other") {
+    return [cat1, cat2, cat3, (course.cat4 ?? "").trim()];
   }
-  if (id.includes("tootpee") || has("Tootpee")) {
-    return ["Comic", "Other", "Tootpee", ""];
+
+  return [audienceTag(has, cat1, cat2), tags[0] ?? cat1, tags[1] ?? cat2, ""];
+}
+
+export function coursesShareShelf(a: CategoryCourse, b: CategoryCourse): boolean {
+  const left = getCategoryLevels(a);
+  const right = getCategoryLevels(b);
+  if (left.length < 2 || right.length < 2) return false;
+  if (left[0].toLowerCase() !== right[0].toLowerCase()) return false;
+  if (left[1].toLowerCase() !== right[1].toLowerCase()) return false;
+  if (left[2] && right[2]) {
+    return left[2].toLowerCase() === right[2].toLowerCase();
   }
-  if (has("Comic") && has("Kid")) {
-    return ["Comic", "Kid", "", ""];
-  }
-  if (has("Comic")) {
-    const reserved = new Set(["comic", "eng", "other", "kid"]);
-    const series = tags.find((tag) => !reserved.has(tag.toLowerCase())) ?? "";
-    return ["Comic", "Other", series, ""];
-  }
-  if (has("Kid")) {
-    return ["Comic", "Kid", "", ""];
-  }
-  return coerceKidOtherLevels([tags[0] ?? "", tags[1] ?? "", tags[2] ?? "", tags[3] ?? ""]);
+  return true;
 }
 
 export function getCategoryLevels(course: CategoryCourse): string[] {
@@ -282,7 +330,7 @@ export function collectCategoryChildren(courses: CategoryCourse[], path: string[
     seen.add(key);
     children.push(next);
   }
-  const rank = ["Kid", "Other", "Eng", "Jap", "Thai", "AI", "Shwe Thway"];
+  const rank = ["Kid", "Other", "Biography", "Comic", "Fiction", "IT", "Language", "Short Stories", "PersonalDevelopment", "AI", "Shwe Thway", "Tootpee"];
   return children.sort((a, b) => {
     const ia = rank.indexOf(a);
     const ib = rank.indexOf(b);

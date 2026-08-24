@@ -55,8 +55,15 @@ export default function HomeCourseShelves({ row, useCoverImages = false, onItemC
   }
 
   const groups: CourseShelfItem[][] = [];
+  const isFolderRow = row.items.some(
+    (item) => item.actionType === "category" || item.actionType === "language-sub" || item.actionType === "author",
+  );
   const totalRows =
-    displayItems.length === 0 ? 0 : Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
+    displayItems.length === 0
+      ? 0
+      : isFolderRow
+        ? Math.max(1, Math.ceil(displayItems.length / booksPerRow))
+        : Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
 
   for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
     groups.push(displayItems.slice(rowIndex * booksPerRow, rowIndex * booksPerRow + booksPerRow));

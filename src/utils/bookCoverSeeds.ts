@@ -21,6 +21,7 @@ export const BOOK_COVER_SEEDS: Record<string, string> = {
   "tone-tone-eng-pdf": "/book_covers/thumbs/Tone Tone.webp",
   "wine-wine-eng-pdf": "/book_covers/thumbs/Wine Wine.webp",
   "programming-for-kids": "/book_covers/thumbs/Programming-for-Kids.webp",
+  "koeimaung-programming-for-kids": "/book_covers/thumbs/Programming-for-Kids.webp",
 };
 
 function isInlineCoverData(url: string): boolean {

@@ -22,7 +22,7 @@ import type { BookBookmark } from "../services/types/account";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { categoriesOverlap } from "../utils/bookCategories";
+import { coursesShareShelf } from "../utils/bookCategories";
 import { warmupPdfReaderAssets } from "../utils/pdfCache";
 
 export default function CourseWizard() {
@@ -166,9 +166,7 @@ export default function CourseWizard() {
 
   const relatedBooks = useMemo(() => {
     if (!outline) return [];
-    return courses.filter(
-      (course) => course.id !== outline.id && categoriesOverlap(course.category, outline.category),
-    );
+    return courses.filter((course) => course.id !== outline.id && coursesShareShelf(course, outline));
   }, [courses, outline]);
 
   const uiTotalPages = steps.length;
