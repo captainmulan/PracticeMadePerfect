@@ -912,6 +912,38 @@ export default function AdminCourses() {
                       />
                     </label>
                     <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Category Index</span>
+                      <input
+                        type="number"
+                        value={activeBook.scIndex ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          updateActiveBook((c) => ({
+                            ...c,
+                            scIndex: value !== "" ? Number(value) : undefined,
+                          }));
+                        }}
+                        className="admin-grid-input"
+                        placeholder="Order inside the category shelf"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Series Index</span>
+                      <input
+                        type="number"
+                        value={activeBook.sIndex ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          updateActiveBook((c) => ({
+                            ...c,
+                            sIndex: value !== "" ? Number(value) : undefined,
+                          }));
+                        }}
+                        className="admin-grid-input"
+                        placeholder="Order inside the series folder"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">Visible on Home</span>
                       <select
                         value={activeBook.isPublished === false ? "false" : "true"}

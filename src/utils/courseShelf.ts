@@ -1,4 +1,9 @@
 import type { Course } from "../data/courses";
+import {
+  indexesForAuthor,
+  indexesForFolder,
+  sortByShelfIndex,
+} from "./shelfItemIndexes";
 import { resolveBookCoverUrl } from "./bookCoverSeeds";
 import {
   AUTHOR_SHELF_ID,
@@ -10,6 +15,7 @@ import {
   formatCategoryLabel,
   getCategoryShelfStyle,
 } from "./bookCategories";
+import { canonicalAuthorName } from "./authorName";
 
 export interface CourseShelfItem {
   id: string;
@@ -43,6 +49,8 @@ export interface CourseShelfItem {
   folderKind?: "emoji" | "books-3d";
   artifactType?: "book" | "magazine" | "newspaper" | "game";
   authorName?: string;
+  browsePath?: string[];
+  itemKind?: "book" | "subcategory" | "series" | "author";
 }
 
 export interface CourseShelfRow {
@@ -443,6 +451,7 @@ export function createShelfItemFromCourse(course: Course, category: string): Cou
     link: `/courses/${course.id}`,
     category,
     artifactType: course.artifactType,
+    itemKind: "book",
   };
 }
 
@@ -469,17 +478,60 @@ export function getUnpublishedBooksRow(courses: Course[]): CourseShelfRow {
 }
 
 export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
-  const popularItems = getPopularCourses(courses)
-    .map((course) => createShelfItemFromCourse(course, "Selection"));
+  const popularBooks = getPopularCourses(courses).map((course) => ({
+    item: createShelfItemFromCourse(course, "Selection"),
+    pIndex: course.pIndex,
+  }));
+  const folderNodes: Array<{ item: CourseShelfItem; pIndex?: number }> = [];
+  const walk = (path: string[]) => {
+    for (const tag of collectCategoryChildren(courses, path)) {
+      const next = [...path, tag];
+      const pIndex = indexesForFolder(next).pIndex;
+      if (typeof pIndex === "number" && pIndex > 0) {
+        folderNodes.push({
+          item: makeCategoryFolderItem(tag, "category", isSeriesFolderTag(tag), next),
+          pIndex,
+        });
+      }
+      walk(next);
+    }
+  };
+  walk([]);
+  const authorPIndex = indexesForFolder([AUTHOR_SHELF_ID]).pIndex;
+  if (typeof authorPIndex === "number" && authorPIndex > 0) {
+    folderNodes.push({
+      item: makeCategoryFolderItem(AUTHOR_SHELF_ID, "category", false, [AUTHOR_SHELF_ID]),
+      pIndex: authorPIndex,
+    });
+  }
+  const authors = new Map<string, { authorName: string; authorPicture?: string }>();
+  for (const course of courses) {
+    const authorName = canonicalAuthorName(course.authorName);
+    const key = authorName.toLowerCase();
+    if (!authors.has(key)) {
+      authors.set(key, { authorName, authorPicture: course.authorPicture });
+    }
+  }
+  const authorTiles = [...authors.values()]
+    .map((author) => ({ author, pIndex: indexesForAuthor(author.authorName).pIndex }))
+    .filter((entry) => typeof entry.pIndex === "number" && (entry.pIndex ?? 0) > 0)
+    .map((entry) => ({
+      item: createAuthorShelfItem(entry.author.authorName, entry.author.authorPicture),
+      pIndex: entry.pIndex,
+    }));
 
-  return [buildShelfRow("Selection", popularItems)];
+  const mixed = sortByShelfIndex(
+    [...popularBooks, ...folderNodes, ...authorTiles],
+    (entry) => entry.pIndex,
+    (entry) => entry.item.title,
+  ).map((entry) => entry.item);
+
+  return [buildShelfRow("Selection", mixed)];
 }
 
 export function getCategoryPickerRow(courses: Course[]): CourseShelfRow {
   const authorStyle = getCategoryShelfStyle(AUTHOR_SHELF_ID);
-  const tagItems = collectTopCategoryNames(courses).map((tag) => makeCategoryFolderItem(tag, "category"));
-
-  const authorItem = makeCategoryFolderItem(AUTHOR_SHELF_ID, "category");
+  const authorItem = makeCategoryFolderItem(AUTHOR_SHELF_ID, "category", false, [AUTHOR_SHELF_ID]);
   authorItem.title = "Author";
   authorItem.description = "Browse books by author";
   authorItem.icon = authorStyle.icon;
@@ -488,7 +540,26 @@ export function getCategoryPickerRow(courses: Course[]): CourseShelfRow {
   authorItem.coverColorEnd = authorStyle.coverColorEnd;
   authorItem.color = authorStyle.coverColorStart;
 
-  return { title: "Category", items: [...tagItems, authorItem] };
+  const rootOrder: Record<string, number> = { Kid: 1, Other: 2, Author: 3 };
+  const folderItems = [
+    ...collectTopCategoryNames(courses).map((tag) =>
+      makeCategoryFolderItem(tag, "category", false, [tag]),
+    ),
+    authorItem,
+  ];
+  const items = sortByShelfIndex(
+    folderItems.map((item) => {
+      const tag = item.browsePath?.[0] ?? item.category ?? "";
+      return {
+        item,
+        scIndex: indexesForFolder([tag]).scIndex ?? rootOrder[tag],
+      };
+    }),
+    (entry) => entry.scIndex,
+    (entry) => entry.item.title,
+  ).map((entry) => entry.item);
+
+  return { title: "Category", items };
 }
 
 const EMOJI_ROOT_FOLDERS = new Set(["Kid", "Other", AUTHOR_SHELF_ID]);
@@ -497,13 +568,16 @@ function makeCategoryFolderItem(
   tag: string,
   actionType: "category" | "language-sub",
   books3d = false,
+  browsePath?: string[],
 ): CourseShelfItem {
+  const path = browsePath ?? [tag];
   const style = getCategoryShelfStyle(tag);
   const flag = LANGUAGE_SUBCATEGORY_FLAGS[tag];
   const label = formatCategoryLabel(tag);
   const useBooks3d = books3d && !EMOJI_ROOT_FOLDERS.has(tag);
+  const series = isSeriesFolderTag(tag);
   return {
-    id: `category-${tag}`,
+    id: `category-${path.join("/")}`,
     title: label,
     description: `Browse ${label} books`,
     color: style.coverColorStart,
@@ -519,30 +593,19 @@ function makeCategoryFolderItem(
     iconPosition: "center-center",
     titlePosition: "top-center",
     titleColor: "#0f172a",
-    meta: "Category",
+    meta: series ? "Series" : "Category",
     category: tag,
     actionType: flag?.flagSrc ? "language-sub" : actionType,
-    folderKind: useBooks3d ? "books-3d" : "emoji",
+    folderKind: useBooks3d || series ? "books-3d" : "emoji",
     artifactType: "book",
+    browsePath: path,
+    itemKind: series ? "series" : "subcategory",
   };
 }
 
-export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseShelfRow {
-  const childItems = collectCategoryChildren(courses, path).map((tag) =>
-    makeCategoryFolderItem(tag, "category", isSeriesFolderTag(tag)),
-  );
-  const bookItems = courses
-    .filter((course) => courseIsExactCategoryPath(course, path))
-    .map((course) => createShelfItemFromCourse(course, path[path.length - 1] ?? "Category"));
-  const title = path.map(formatCategoryLabel).join(" > ") || "Category";
-  return { title, items: [...childItems, ...bookItems] };
-}
-
-export function getAuthorShelfRow(authorGroups: Array<{ authorName?: string; authorPicture?: string }>): CourseShelfRow {
-  const items = authorGroups.map((author, index) => {
-    const authorName = (author.authorName ?? "Unknown").trim() || "Unknown";
-    return {
-    id: `author-${index}-${authorName}`,
+function createAuthorShelfItem(authorName: string, authorPicture?: string): CourseShelfItem {
+  return {
+    id: `author-${authorName}`,
     title: authorName,
     description: `Browse ${authorName}'s books`,
     color: "#e0e7ff",
@@ -551,27 +614,76 @@ export function getAuthorShelfRow(authorGroups: Array<{ authorName?: string; aut
     coverColorEnd: "#a5b4fc",
     coverWidth: 100,
     coverHeight: 150,
-    coverImageUrl: author.authorPicture?.trim(),
-    icon: author.authorPicture?.trim() || "👤",
+    coverImageUrl: authorPicture?.trim(),
+    icon: authorPicture?.trim() || "👤",
     iconColorStart: "#fff",
     iconColorMiddle: "#fff",
     iconColorEnd: "#fff",
     meta: "Author",
     category: "Author",
-    actionType: "author" as const,
-    artifactType: "book" as const,
+    actionType: "author",
+    artifactType: "book",
+    browsePath: [AUTHOR_SHELF_ID],
+    itemKind: "author",
+  };
+}
+
+export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseShelfRow {
+  const inSeries = isSeriesFolderTag(path[path.length - 1] ?? "");
+  const childItems = collectCategoryChildren(courses, path).map((tag) => {
+    const next = [...path, tag];
+    const indexes = indexesForFolder(next);
+    return {
+      item: makeCategoryFolderItem(tag, "category", isSeriesFolderTag(tag), next),
+      scIndex: indexes.scIndex,
+      sIndex: indexes.sIndex,
     };
   });
+  const bookItems = courses
+    .filter((course) => courseIsExactCategoryPath(course, path))
+    .map((course) => ({
+      item: createShelfItemFromCourse(course, path[path.length - 1] ?? "Category"),
+      scIndex: course.scIndex,
+      sIndex: course.sIndex,
+    }));
+  const mixed = sortByShelfIndex(
+    [...childItems, ...bookItems],
+    (entry) => (inSeries ? entry.sIndex : entry.scIndex) ?? entry.sIndex,
+    (entry) => entry.item.title,
+  ).map((entry) => entry.item);
+  const title = path.map(formatCategoryLabel).join(" > ") || "Category";
+  return { title, items: mixed };
+}
 
-  return buildShelfRow("Author", items);
+export function getAuthorShelfRow(authorGroups: Array<{ authorName?: string; authorPicture?: string }>): CourseShelfRow {
+  const items = sortByShelfIndex(
+    authorGroups.map((author) => {
+      const authorName = canonicalAuthorName(author.authorName);
+      return {
+        item: createAuthorShelfItem(authorName, author.authorPicture),
+        scIndex: indexesForAuthor(authorName).scIndex,
+      };
+    }),
+    (entry) => entry.scIndex,
+    (entry) => entry.item.title,
+  ).map((entry) => entry.item);
+
+  return { title: "Author", items };
 }
 
 export function getCourseShelfRowForAuthor(courses: Course[], authorName: string): CourseShelfRow {
-  const items = courses
-    .filter((course) => (course.authorName ?? "Unknown").trim() === authorName)
-    .map((course) => createShelfItemFromCourse(course, "Author"));
+  const items = sortByShelfIndex(
+    courses
+      .filter((course) => canonicalAuthorName(course.authorName) === canonicalAuthorName(authorName))
+      .map((course) => ({
+        item: createShelfItemFromCourse(course, "Author"),
+        scIndex: course.scIndex,
+      })),
+    (entry) => entry.scIndex,
+    (entry) => entry.item.title,
+  ).map((entry) => entry.item);
 
-  return buildShelfRow(authorName, items);
+  return { title: authorName, items };
 }
 
 export function getLanguageSubcategoryPickerRow(courses: Course[]): CourseShelfRow {

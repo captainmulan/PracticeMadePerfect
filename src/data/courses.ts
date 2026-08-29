@@ -92,6 +92,10 @@ export interface Course {
   cat3?: string;
   cat4?: string;
   pIndex?: number;
+  /** Order on a specific category shelf. Lower first. Empty = natural order, not pinned. */
+  scIndex?: number;
+  /** Order inside a series folder. Lower first. Empty = natural order. */
+  sIndex?: number;
   artifactType: ArtifactType;
   /**
    * PDF page display. Auto = auto on narrow screens; landscape always fit.

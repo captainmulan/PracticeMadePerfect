@@ -29,6 +29,7 @@ import {
 } from "../utils/sqliteBrowserDb";
 import "./Admin.css";
 import AdminCourses from "./AdminCourses";
+import AdminShelfItems from "./AdminShelfItems";
 import AdminDataSync from "./AdminDataSync";
 import AdminAnnouncements from "../components/AdminAnnouncements";
 
@@ -229,7 +230,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
   const [dbError, setDbError] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
-  const [adminTab, setAdminTab] = useState<"home" | "books" | "system">("home");
+  const [adminTab, setAdminTab] = useState<"home" | "books" | "shelf" | "system">("home");
   const [systemSubTab, setSystemSubTab] = useState<"database" | "data-sync" | "reading-style">("database");
   const [homeSection, setHomeSection] = useState<"style" | "json" | "announcements">("announcements");
   const [homeStyleTab, setHomeStyleTab] = useState<"main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
@@ -805,6 +806,14 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
         >
           <span className="admin-primary-tab-title">Books</span>
           <span className="admin-primary-tab-desc">Build and edit book courses</span>
+        </button>
+        <button
+          type="button"
+          className={`admin-primary-tab ${adminTab === "shelf" ? "active" : ""}`}
+          onClick={() => setAdminTab("shelf")}
+        >
+          <span className="admin-primary-tab-title">Shelf Items</span>
+          <span className="admin-primary-tab-desc">Popular, category, and series order</span>
         </button>
         <button
           type="button"
@@ -2354,6 +2363,16 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
                 </button>
               </div>
             </div>
+          </div>
+        </section>
+      ) : adminTab === "shelf" ? (
+        <section className="panel admin-editor admin-section">
+          <div className="admin-section-heading">
+            <h2>Shelf Items</h2>
+            <p>Set Popular, Category, and Series indexes for books, folders, series, and authors in one table.</p>
+          </div>
+          <div className="admin-section-body">
+            <AdminShelfItems />
           </div>
         </section>
       ) : (

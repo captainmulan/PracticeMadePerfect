@@ -5,6 +5,17 @@
     "summary": "Explore interactive e-books with hands-on activities. Every chapter is a magical journey of learning.",
     "featureHtml": "<p><strong>Read Like a Book:</strong> Each chapter feels like flipping through pages in a magical book.</p><p><strong>Interactive Activities:</strong> Quizzes, code exams, and engaging lessons keep you immersed.</p><p><strong>Flexible Content:</strong> Easily update and manage content with built-in CMS features</p>",
     "callToAction": "Start exploring your first magical book",
+    "shelfFolderIndexes": {
+      "Kid": {
+        "scIndex": 1
+      },
+      "Other": {
+        "scIndex": 2
+      },
+      "Author": {
+        "scIndex": 3
+      }
+    },
     "style": {
       "main": {
         "backgroundColor": "#f8fafc",
@@ -114,9 +125,9 @@
         "bookNameFontWeight": "700",
         "bookNameColor": "#0f172a",
         "descriptionBackgroundColor": "#165ce9",
-        "descriptionBackgroundColorGradientStart": "#ffffff",
-        "descriptionBackgroundColorGradientMiddle": "#ffffff",
-        "descriptionBackgroundColorGradientEnd": "#f8fafc",
+        "descriptionBackgroundColorGradientStart": "#6aa9c8",
+        "descriptionBackgroundColorGradientMiddle": "#6097d2",
+        "descriptionBackgroundColorGradientEnd": "#30aadf",
         "descriptionColor": "#19191a",
         "descriptionFontSize": 16,
         "descriptionFontWeight": "normal",

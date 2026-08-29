@@ -427,28 +427,6 @@
   }
 }
 
-/* iPad portrait / stand: left cover must fit fully inside the page plate */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-  .book3d-page--left .book3d-sheet {
-    inset: 5% 6% 6%;
-  }
-
-  .book3d-page--left .book3d-plate--cover {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .book3d-page--left .book3d-cover-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center center;
-  }
-}
-
 @media (max-width: 899px) {
   .page-home-showcase .home-hero:not(.collapsed),
   .page-home-test .home-hero:not(.collapsed) {
@@ -520,6 +498,51 @@
   .book3d-plate--preview.is-text-only .book3d-excerpt {
     font-size: 0.66rem;
     line-height: 1.35;
+  }
+}
+
+/* iPad stand (portrait): same side-by-side Welcome + featured book as landscape */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .page-home-showcase .home-hero:not(.collapsed) .home-hero-expanded-layout,
+  .page-home-test .home-hero:not(.collapsed) .home-hero-expanded-layout {
+    grid-template-columns: minmax(150px, 0.72fr) minmax(0, 1.4fr);
+    gap: 10px;
+    align-items: center;
+  }
+
+  .page-home-showcase .book-showcase,
+  .page-home-test .book-showcase {
+    max-width: none;
+  }
+
+  .page-home-showcase .home-hero:not(.collapsed) .home-hero-title,
+  .page-home-test .home-hero:not(.collapsed) .home-hero-title {
+    font-size: 1.15rem;
+    line-height: 1.25;
+  }
+
+  .book3d-scene {
+    max-height: 220px;
+    min-height: 168px;
+  }
+
+  .book3d-page--left .book3d-sheet {
+    inset: 5% 6% 6%;
+  }
+
+  .book3d-page--left .book3d-plate--cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .book3d-page--left .book3d-cover-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
   }
 }
 

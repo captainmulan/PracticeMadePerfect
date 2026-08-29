@@ -2,17 +2,17 @@
 
 /* Practice Workspace Top Bar */
 .practice-workspace-top-bar {
-  --pmp-nav-btn-bg: rgba(255, 255, 255, 0.14);
-  --pmp-nav-btn-border: 1px solid rgba(255, 255, 255, 0.24);
+  --pmp-nav-btn-bg: rgba(255, 255, 255, 0.2);
+  --pmp-nav-btn-border: 1px solid rgba(255, 255, 255, 0.3);
   --pmp-nav-btn-color: #ffffff;
-  --pmp-nav-btn-disabled: rgba(255, 255, 255, 0.45);
+  --pmp-nav-btn-disabled: rgba(255, 255, 255, 0.5);
   --pmp-nav-btn-size: 44px;
   --pmp-nav-side-pad: 12px;
   display: grid;
   grid-template-columns: minmax(44px, 1fr) auto minmax(44px, 1fr);
   align-items: center;
   column-gap: 8px;
-  color: #f8fafc;
+  color: #ffffff;
   padding: 10px var(--pmp-nav-side-pad);
   border-radius: 0;
   width: 100%;

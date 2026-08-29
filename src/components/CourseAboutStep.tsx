@@ -4,6 +4,7 @@ import type { Course } from "../data/courses";
 import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
 import { formatCategoryPath } from "../utils/bookCategories";
+import { canonicalAuthorName } from "../utils/authorName";
 import { getShelfReturnLabel, SHELF_RETURN_HREF } from "../utils/shelfReturn";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import CourseBookCard from "./CourseBookCard";
@@ -64,7 +65,7 @@ export default function CourseAboutStep({
               </div>
               <div>
                 <dt>Author</dt>
-                <dd>{course.authorName?.trim() || "Unknown"}</dd>
+                <dd>{canonicalAuthorName(course.authorName)}</dd>
               </div>
               <div>
                 <dt>Category</dt>

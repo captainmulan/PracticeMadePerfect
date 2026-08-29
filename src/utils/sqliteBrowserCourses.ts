@@ -9,6 +9,7 @@ import {
   saveCourse as saveCourseToIndexedDb,
   deleteCourse as deleteCourseFromIndexedDb,
   migrateFromSqlJs,
+  patchCourseIndexes,
 } from "./indexedDb";
 
 // Keep these interfaces for compatibility, though we might not use them anymore
@@ -21,6 +22,8 @@ export interface CourseRow {
   courseIndex: number;
   category: string;
   pIndex?: number | null;
+  scIndex?: number | null;
+  sIndex?: number | null;
   coverWidth?: number | null;
   coverHeight?: number | null;
   artifactType?: string | null;
@@ -133,6 +136,13 @@ export async function persistCourses(courses: Course[]): Promise<void> {
 
 export async function persistCourse(course: Course): Promise<void> {
   await saveCourseToIndexedDb(course);
+}
+
+export async function persistCourseIndexes(
+  courseId: string,
+  indexes: { pIndex?: number; scIndex?: number; sIndex?: number },
+): Promise<void> {
+  await patchCourseIndexes(courseId, indexes);
 }
 
 export async function reloadCourses(): Promise<Course[]> {

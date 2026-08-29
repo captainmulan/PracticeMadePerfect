@@ -22,8 +22,8 @@ export interface BookShowcaseState {
   error: string | null;
 }
 
-/** Two popular books: show first ASAP, enrich / fall back lazily. */
-const MAX_BOOKS_TO_TRY = 2;
+/** If a popular book has no showcase pages, try the next shuffled titles. */
+const MAX_BOOKS_TO_TRY = 12;
 
 function initialFromCache(): BookShowcaseState {
   const cached = readShowcaseCache();
@@ -65,6 +65,7 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
   const [state, setState] = useState<BookShowcaseState>(initialFromCache);
   const [paused, setPaused] = useState(false);
   const requestIdRef = useRef(0);
+  const lastCourseIdRef = useRef<string | null>(null);
 
   const loadShowcase = useCallback(async () => {
     if (!enabled || courses.length === 0) {
@@ -79,7 +80,13 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
     }));
 
     try {
-      const pool = shuffleCourses(getShowcaseCoursePool(courses)).slice(0, MAX_BOOKS_TO_TRY);
+      const allPopular = shuffleCourses(getShowcaseCoursePool(courses));
+      const lastId = lastCourseIdRef.current;
+      const rotated =
+        allPopular.length > 1 && lastId
+          ? [...allPopular.filter((course) => course.id !== lastId), ...allPopular.filter((course) => course.id === lastId)]
+          : allPopular;
+      const pool = rotated.slice(0, Math.max(MAX_BOOKS_TO_TRY, 1));
       if (pool.length === 0) {
         setState((prev) => ({
           ...prev,
@@ -106,6 +113,7 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
         },
       };
       publish(requestId, requestIdRef, setState, quickSelection, buildQuickShowcaseExcerpt(lead), true);
+      lastCourseIdRef.current = lead.id;
 
       let shownRich = false;
 
@@ -173,14 +181,13 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
             );
           }
 
+          lastCourseIdRef.current = outline.id;
           /* First successful book is enough — rest stay for rotate later. */
           break;
         }
 
-        /* First book weak — try second popular book. */
-        if (bookIndex === 0 && pool.length > 1) {
-          continue;
-        }
+        /* This book had a weak excerpt — try the next popular book. */
+        continue;
       }
 
       if (!shownRich && requestId === requestIdRef.current) {

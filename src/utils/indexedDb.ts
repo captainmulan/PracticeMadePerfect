@@ -3,6 +3,7 @@ import type { PracticeTask } from "../data/tasks";
 import type { Announcement } from "../types/announcement";
 import { BOOK_COVER_SEEDS } from "./bookCoverSeeds";
 import { normalizeBookCategory } from "./bookCategories";
+import { canonicalAuthorName } from "./authorName";
 
 const DB_NAME = "magic-library-db";
 const DB_VERSION = 4;
@@ -223,7 +224,7 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     title: raw.title,
     description: raw.description,
     isPublished: raw.isPublished ?? true,
-    authorName: raw.authorName,
+    authorName: canonicalAuthorName(raw.authorName),
     authorPicture: raw.authorPicture,
     color: raw.color,
     coverColorStart: raw.coverColorStart,
@@ -251,6 +252,8 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     cat3: raw.cat3,
     cat4: raw.cat4,
     pIndex: raw.pIndex,
+    scIndex: raw.scIndex,
+    sIndex: raw.sIndex,
     artifactType: raw.artifactType,
     pageViewType: raw.pageViewType,
     bookHtmlFolder: raw.bookHtmlFolder,
@@ -339,6 +342,36 @@ export async function getCourses(): Promise<Course[]> {
     if (course) courses.push(course);
   }
   return courses;
+}
+
+export async function patchCourseIndexes(
+  courseId: string,
+  indexes: { pIndex?: number; scIndex?: number; sIndex?: number },
+): Promise<void> {
+  const db = await openDb();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(STORE_COURSES, "readwrite");
+    const store = tx.objectStore(STORE_COURSES);
+    const req = store.get(courseId);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const record = req.result as CourseRecord | undefined;
+      if (!record) {
+        reject(new Error(`Book not found: ${courseId}`));
+        return;
+      }
+      const next: CourseRecord = { ...record };
+      if (typeof indexes.pIndex === "number" && indexes.pIndex > 0) next.pIndex = indexes.pIndex;
+      else delete next.pIndex;
+      if (typeof indexes.scIndex === "number" && indexes.scIndex > 0) next.scIndex = indexes.scIndex;
+      else delete next.scIndex;
+      if (typeof indexes.sIndex === "number" && indexes.sIndex > 0) next.sIndex = indexes.sIndex;
+      else delete next.sIndex;
+      store.put(next);
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
 }
 
 export async function saveCourse(course: Course): Promise<void> {
@@ -569,7 +602,9 @@ async function loadFromIndexedDbExport(): Promise<boolean> {
       return false;
     }
     const jsonData = await response.text();
-    await importIndexedDb(jsonData);
+    // Production must drop books removed from the packaged catalog. Merge-only
+    // left old IndexedDB titles (Kuku, Tone Tone, …) after a refresh.
+    await importIndexedDb(jsonData, true, import.meta.env.PROD);
     console.log("Successfully loaded from indexeddb-export.json");
     return true;
   } catch (e) {
@@ -668,7 +703,7 @@ async function migrateLegacyBookCategories(): Promise<void> {
   }
 }
 
-async function shouldRefreshCatalogFromDeploy(_existingCourseCount: number): Promise<boolean> {
+async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Promise<boolean> {
   const remote = await fetchDeployedCatalogVersion();
   if (!remote) {
     // Old deploys without catalog-version.json — keep current IndexedDB.
@@ -682,6 +717,19 @@ async function shouldRefreshCatalogFromDeploy(_existingCourseCount: number): Pro
   }
   if (localStamp !== remote.exportedAt) {
     console.log("Catalog export changed:", localStamp, "->", remote.exportedAt);
+    return true;
+  }
+  if (
+    import.meta.env.PROD &&
+    remote.courseCount > 0 &&
+    existingCourseCount !== remote.courseCount
+  ) {
+    console.log(
+      "IndexedDB course count differs from deployed catalog:",
+      existingCourseCount,
+      "!=",
+      remote.courseCount,
+    );
     return true;
   }
   return false;
@@ -766,7 +814,11 @@ export async function exportIndexedDb(): Promise<Blob> {
   return blob;
 }
 
-export async function importIndexedDb(jsonData: string, merge: boolean = true): Promise<void> {
+export async function importIndexedDb(
+  jsonData: string,
+  merge: boolean = true,
+  pruneMissingCourses: boolean = false,
+): Promise<void> {
   try {
     const data = JSON.parse(jsonData);
     
@@ -800,7 +852,8 @@ export async function importIndexedDb(jsonData: string, merge: boolean = true): 
       if (merge && existingCourseIds.has(course.id)) {
         const packagedCategory = normalizeBookCategory(course.category);
         const packagedView = typeof course.pageViewType === "string" ? course.pageViewType : "";
-        if (packagedCategory || packagedView || course.coverImageUrl) {
+        const packagedAuthor = canonicalAuthorName(course.authorName);
+        if (packagedCategory || packagedView || course.coverImageUrl || packagedAuthor !== "Unknown") {
           const existing = await getCourseById(course.id);
           const packagedCover = typeof course.coverImageUrl === "string" ? course.coverImageUrl : "";
           if (
@@ -809,7 +862,8 @@ export async function importIndexedDb(jsonData: string, merge: boolean = true): 
               (packagedCategory && existing.category !== packagedCategory) ||
               (packagedView && existing.pageViewType !== packagedView) ||
               (packagedCover && existing.coverImageUrl !== packagedCover) ||
-              (course.cat1 && existing.cat1 !== course.cat1)
+              (course.cat1 && existing.cat1 !== course.cat1) ||
+              (packagedAuthor !== "Unknown" && (existing.authorName ?? "") !== packagedAuthor)
             )
           ) {
             await saveCourse({
@@ -818,6 +872,7 @@ export async function importIndexedDb(jsonData: string, merge: boolean = true): 
               pageViewType: packagedView || existing.pageViewType,
               coverImageUrl: packagedCover || existing.coverImageUrl,
               title: course.title ?? existing.title,
+              authorName: packagedAuthor !== "Unknown" ? packagedAuthor : (existing.authorName ?? packagedAuthor),
               cat1: course.cat1 ?? existing.cat1,
               cat2: course.cat2 ?? existing.cat2,
               cat3: course.cat3 ?? existing.cat3,
@@ -827,8 +882,23 @@ export async function importIndexedDb(jsonData: string, merge: boolean = true): 
         }
         continue;
       }
-      await saveCourse(course);
+      await saveCourse({
+        ...course,
+        authorName: canonicalAuthorName(course.authorName),
+      });
       importedCourses += 1;
+    }
+
+    if (pruneMissingCourses) {
+      const packagedIds = new Set(
+        (data.courses as { id?: string }[]).map((course) => course.id).filter(Boolean) as string[],
+      );
+      const afterImport = await getCourseSummaries();
+      for (const summary of afterImport) {
+        if (!packagedIds.has(summary.id)) {
+          await deleteCourse(summary.id);
+        }
+      }
     }
     
     // Import tasks — only if taskId doesn't already exist locally!
@@ -856,9 +926,12 @@ export async function importIndexedDb(jsonData: string, merge: boolean = true): 
     }
 
     if (typeof data.exportedAt === "string" && data.exportedAt) {
+      const stampedCount = pruneMissingCourses
+        ? data.courses.length
+        : (existingCourseIds.size ?? 0) + importedCourses;
       rememberCatalogStamp({
         exportedAt: data.exportedAt,
-        courseCount: (existingCourseIds.size ?? 0) + importedCourses,
+        courseCount: stampedCount,
       });
     }
     

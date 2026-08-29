@@ -23,6 +23,7 @@ import {
   type CourseShelfRow,
 } from "../utils/courseShelf";
 import { AUTHOR_SHELF_ID } from "../utils/bookCategories";
+import { canonicalAuthorName } from "../utils/authorName";
 import "../styles/home-test-showcase.css";
 
 const HOME_SHELF_TABS = [
@@ -45,7 +46,7 @@ function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["cour
 
 function preloadPopularCovers(courses: ReturnType<typeof useCourseCatalog>["courses"]) {
   const popular = getPopularCourses(courses);
-  const targets = (popular.length > 0 ? popular : courses).slice(0, 4);
+  const targets = popular.length > 0 ? popular : courses.slice(0, 8);
   for (const course of targets) {
     const url = resolveBookCoverUrl(course, { variant: "thumb" });
     if (!url) {
@@ -82,7 +83,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const authorGroups = useMemo(() => {
     const groups = new Map<string, { authorName: string; authorPicture?: string }>();
     for (const course of courses) {
-      const authorName = (course.authorName ?? "Unknown").trim() || "Unknown";
+      const authorName = canonicalAuthorName(course.authorName);
       if (!groups.has(authorName)) {
         groups.set(authorName, { authorName, authorPicture: course.authorPicture });
       }
@@ -335,18 +336,26 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                   useCoverImages
                   onItemClick={(item) => {
                     if (item.placeholder) return;
+                    if (item.actionType === "author") {
+                      setSelectedTab("Category");
+                      setSelectedAuthorName(item.title);
+                      setCategoryPath([AUTHOR_SHELF_ID]);
+                      return;
+                    }
                     if (item.category === AUTHOR_SHELF_ID && item.actionType === "category") {
+                      setSelectedTab("Category");
                       setSelectedAuthorName(null);
                       setCategoryPath([AUTHOR_SHELF_ID]);
                       return;
                     }
-                    if (item.actionType === "author") {
-                      setSelectedAuthorName(item.title);
-                      return;
-                    }
                     if ((item.actionType === "language-sub" || item.actionType === "category") && item.category) {
+                      setSelectedTab("Category");
                       setSelectedAuthorName(null);
-                      setCategoryPath((current) => [...current, item.category!]);
+                      if (item.browsePath && item.browsePath.length > 0) {
+                        setCategoryPath(item.browsePath);
+                      } else {
+                        setCategoryPath((current) => [...current, item.category!]);
+                      }
                     }
                   }}
                 />

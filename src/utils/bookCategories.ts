@@ -8,6 +8,7 @@ export const BOOK_CATEGORIES = [
   "Myanmar",
   "Comic",
   "Fiction",
+  "Interactive",
 ] as const;
 
 export type BookCategory = (typeof BOOK_CATEGORIES)[number];
@@ -51,6 +52,7 @@ export const SERIES_FOLDER_TAGS = new Set([
   "TinTin",
   "ScoobyDoo",
   "ReadAtHome",
+  "BoBo",
 ]);
 
 export function isSeriesFolderTag(tag: string): boolean {
@@ -111,6 +113,12 @@ const CATEGORY_STYLES: Record<
   Biography: { icon: "🪪", coverColorStart: "#fcd34d", coverColorMiddle: "#f59e0b", coverColorEnd: "#b45309" },
   Author: { icon: "👤", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   Fiction: { icon: "📖", coverColorStart: "#fda4af", coverColorMiddle: "#fb7185", coverColorEnd: "#e11d48" },
+  Finance: { icon: "💰", coverColorStart: "#86efac", coverColorMiddle: "#22c55e", coverColorEnd: "#15803d" },
+  Novel: { icon: "🪶", coverColorStart: "#fda4af", coverColorMiddle: "#e879f9", coverColorEnd: "#a21caf" },
+  Asterix: { icon: "🛡️", coverColorStart: "#fde047", coverColorMiddle: "#facc15", coverColorEnd: "#ca8a04" },
+  BoBo: { icon: "🐰", coverColorStart: "#fdba74", coverColorMiddle: "#fb923c", coverColorEnd: "#c2410c" },
+  Translation: { icon: "🗣️", coverColorStart: "#7dd3fc", coverColorMiddle: "#38bdf8", coverColorEnd: "#0369a1" },
+  Interactive: { icon: "🎮", coverColorStart: "#67e8f9", coverColorMiddle: "#22d3ee", coverColorEnd: "#0e7490" },
 };
 
 const STYLE_PALETTE = [
@@ -231,6 +239,10 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
   const cat2 = course.cat2?.trim() ?? "";
   const cat3 = course.cat3?.trim() ?? "";
 
+  if (has("Interactive") || cat1 === "Interactive" || cat2 === "Interactive") {
+    return ["Kid", "Interactive", "", ""];
+  }
+
   const isComic =
     has("Comic") ||
     cat1 === "Comic" ||
@@ -242,7 +254,9 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
   if (isComic) {
     let series = pickSeriesTag(tags, cat3 || (SERIES_FOLDER_TAGS.has(cat2) ? cat2 : ""));
     if (id.includes("tootpee") || has("Tootpee")) series = "Tootpee";
-    if (id.includes("shwe-thway") || id.includes("shwe-thway") || has("Shwe Thway")) series = "Shwe Thway";
+    if (id.includes("shwe-thway") || has("Shwe Thway")) series = "Shwe Thway";
+    if (id.includes("asterix") || has("Asterix")) series = "Asterix";
+    if (id.startsWith("bobo-") || id.startsWith("bo-bo-") || has("BoBo") || has("Bobo")) series = "BoBo";
     return ["Kid", "Comic", series, ""];
   }
 
@@ -251,7 +265,7 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
   }
 
   if (has("Short Stories") || cat1 === "Short Stories" || cat2 === "Short Stories") {
-    return ["Kid", "Short Stories", pickSeriesTag(tags, cat3), ""];
+    return [audienceTag(has, cat1, cat2), "Short Stories", pickSeriesTag(tags, cat3), ""];
   }
 
   if (has("Language") || cat1 === "Language" || cat2 === "Language") {
@@ -330,7 +344,7 @@ export function collectCategoryChildren(courses: CategoryCourse[], path: string[
     seen.add(key);
     children.push(next);
   }
-  const rank = ["Kid", "Other", "Biography", "Comic", "Fiction", "IT", "Language", "Short Stories", "PersonalDevelopment", "AI", "Shwe Thway", "Tootpee"];
+  const rank = ["Kid", "Other", "Interactive", "Biography", "Comic", "Fiction", "Finance", "IT", "Language", "Novel", "Short Stories", "PersonalDevelopment", "Translation", "AI", "Asterix", "BoBo", "Shwe Thway", "Tootpee"];
   return children.sort((a, b) => {
     const ia = rank.indexOf(a);
     const ib = rank.indexOf(b);

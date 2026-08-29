@@ -21,6 +21,10 @@ export function loadAdminData(): ContentStoreData {
         const mergedHomePageData = {
           ...homePageData,
           ...parsed.homePageData,
+          shelfFolderIndexes: {
+            ...homePageData.shelfFolderIndexes,
+            ...parsed.homePageData?.shelfFolderIndexes,
+          },
           style: {
             ...homePageData.style,
             ...parsed.homePageData?.style,
@@ -108,6 +112,10 @@ export function loadAdminData(): ContentStoreData {
     const mergedHomePageData = {
       ...homePageData,
       ...parsed.homePageData,
+      shelfFolderIndexes: {
+        ...homePageData.shelfFolderIndexes,
+        ...parsed.homePageData?.shelfFolderIndexes,
+      },
       style: {
         ...homePageData.style,
         ...parsed.homePageData?.style,

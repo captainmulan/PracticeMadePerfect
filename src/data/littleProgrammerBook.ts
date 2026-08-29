@@ -16,7 +16,9 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
   iconColorEnd: "#ffffff",
   iconSize: 80,
   courseIndex: 4,
-  category: "IT",
+  category: "Kid, IT",
+  cat1: "Kid",
+  cat2: "IT",
   pIndex: 5,
   artifactType: "book",
   chapters: [

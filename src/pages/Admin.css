@@ -1093,6 +1093,60 @@
   color: #64748b;
 }
 
+.admin-shelf-items-help,
+.admin-shelf-items-meta {
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.admin-shelf-items-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0 16px;
+  align-items: center;
+}
+
+.admin-shelf-items-toolbar .admin-grid-input,
+.admin-shelf-items-toolbar .admin-grid-select {
+  min-width: 180px;
+  flex: 1;
+}
+
+.admin-shelf-items-table-wrap {
+  overflow: auto;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.admin-shelf-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.admin-shelf-items-table th,
+.admin-shelf-items-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e8eef5;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-shelf-items-table th {
+  background: #f8fafc;
+  font-weight: 700;
+  color: #334155;
+  position: sticky;
+  top: 0;
+}
+
+.admin-shelf-items-table input[type="number"] {
+  width: 88px;
+}
+
 @media (max-width: 900px) {
   .admin-announcements-layout {
     grid-template-columns: 1fr;

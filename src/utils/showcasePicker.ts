@@ -157,12 +157,10 @@ export function pickRelatedPreviewStep(
   return pickWeightedStep(sameChapter.length > 0 ? sameChapter : eligible);
 }
 
-/** Catalog summaries — prefer popular (pIndex) for featured / cold start. */
+/** Catalog summaries — all books with a popular index (pIndex > 0). */
 export function getShowcaseCoursePool(courses: Course[]): Course[] {
   const popular = getPopularCourses(courses);
-  const pool = popular.length > 0 ? popular : courses;
-  /* Featured only needs a couple of popular books. */
-  return pool.slice(0, 2);
+  return popular.length > 0 ? popular : courses;
 }
 
 /** Instant featured frame from summary meta (no HTML fetch). */
