@@ -237,6 +237,7 @@
         let prefetchTimer = 0;
         let visibleCanvas = null;
         let pageZoom = 100;
+        let lastRenderedPage = null; // Track the last successfully rendered page
         const zoomParam = Number(params.get("zoom"));
         if (Number.isFinite(zoomParam) && zoomParam >= 50 && zoomParam <= 300) {
           pageZoom = Math.round(zoomParam / 5) * 5;
@@ -1332,6 +1333,17 @@
 
         const mountEntry = (entry) => {
           const node = entry.canvas;
+          // Validate canvas has content before mounting
+          if (!node) {
+            console.warn("Null canvas entry - skipping mount");
+            return;
+          }
+          // Check if canvas has actual content (not just white background)
+          const hasContent = node.width > 0 && node.height > 0;
+          if (!hasContent) {
+            console.warn("Canvas has no dimensions - skipping mount");
+            return;
+          }
           node.style.width = `${entry.cssWidth}px`;
           node.style.height = `${entry.cssHeight}px`;
           const prev = visibleCanvas;
@@ -1381,12 +1393,19 @@
           context.fillRect(0, 0, off.width, off.height);
           context.imageSmoothingEnabled = true;
           context.imageSmoothingQuality = lowMem ? "medium" : "high";
-          await page.render({
-            canvasContext: context,
-            viewport: layout.viewport,
-            intent: "display",
-            background: "#ffffff",
-          }).promise;
+          try {
+            await page.render({
+              canvasContext: context,
+              viewport: layout.viewport,
+              intent: "display",
+              background: "#ffffff",
+            }).promise;
+          } catch (renderError) {
+            console.error("PDF render failed:", renderError);
+            // Ensure canvas still has white background even if render fails
+            context.fillStyle = "#ffffff";
+            context.fillRect(0, 0, off.width, off.height);
+          }
           return {
             status: "ready",
             canvas: off,
@@ -1405,7 +1424,21 @@
 
         const renderPageToEntry = async (pageNumber) => {
           const page = await pdfDoc.getPage(pageNumber);
-          const contentBox = await getFocusBox(page, pageNumber);
+          let contentBox;
+          try {
+            contentBox = await getFocusBox(page, pageNumber);
+          } catch (boxError) {
+            console.warn("Content box detection failed, using full page:", boxError);
+            const base = page.getViewport({ scale: 1 });
+            contentBox = {
+              x: 0,
+              y: 0,
+              w: base.width,
+              h: base.height,
+              pageW: base.width,
+              pageH: base.height,
+            };
+          }
           const base = page.getViewport({ scale: 1 });
           const fullBox = {
             x: 0,
@@ -1426,14 +1459,22 @@
 
           try {
             return await tryRender(contentBox, 1);
-          } catch {
+          } catch (firstError) {
+            console.warn("First render attempt failed:", firstError);
             try {
               return await tryRender(contentBox, 0.75);
-            } catch {
+            } catch (secondError) {
+              console.warn("Second render attempt failed:", secondError);
               try {
                 return await tryRender(fullBox, 0.5);
-              } catch {
-                return await tryRender(fullBox, 0.35);
+              } catch (thirdError) {
+                console.warn("Third render attempt failed:", thirdError);
+                try {
+                  return await tryRender(fullBox, 0.35);
+                } catch (finalError) {
+                  console.error("All render attempts failed:", finalError);
+                  throw finalError;
+                }
               }
             }
           }
@@ -1520,12 +1561,16 @@
           if (!pdfDoc) return;
           await waitForWrapSize();
           const myToken = ++renderToken;
+          const targetPage = pageNumber; // Capture the intended page
           lastLayoutKey = layoutKey();
 
           const cached = pageCache.get(pageNumber);
           if (cached?.status === "ready" && cached.key === lastLayoutKey) {
             if (myToken !== renderToken) return;
+            // Only mount if this is still the current intended page
+            if (targetPage !== currentPage) return;
             mountEntry(cached);
+            lastRenderedPage = targetPage; // Update last successfully rendered page
             prunePageCache(pageNumber);
             prefetchNeighbors(pageNumber);
             notifyPageReady(pageNumber);
@@ -1533,12 +1578,24 @@
           }
 
           const entry = await cachePage(pageNumber).catch((err) => {
-            showError(`Unable to draw this PDF page. ${err && err.message ? err.message : ""}`);
+            console.error("Failed to cache page:", err);
+            // Don't show error for every navigation failure, just log it
             return null;
           });
           if (myToken !== renderToken) return;
-          if (!entry) return;
+          if (!entry) {
+            // If render failed, try to keep the last rendered page visible
+            if (lastRenderedPage && lastRenderedPage !== currentPage) {
+              console.warn("Render failed, keeping last rendered page:", lastRenderedPage);
+              // Don't update the displayed content, just notify page ready
+              notifyPageReady(currentPage);
+            }
+            return;
+          }
+          // Only mount if this is still the current intended page
+          if (targetPage !== currentPage) return;
           mountEntry(entry);
+          lastRenderedPage = targetPage; // Update last successfully rendered page
           prunePageCache(pageNumber);
           prefetchNeighbors(pageNumber);
           notifyPageReady(pageNumber);
@@ -1618,9 +1675,17 @@
           } else if (data.type === "goto-page" || data.type === "go-to-page") {
             const n = Math.floor(Number(data.page));
             if (!Number.isFinite(n) || !pdfDoc) return;
-            currentPage = Math.min(Math.max(1, n), pdfDoc.numPages);
-            panelIndex = 0;
-            void renderPage(currentPage);
+            const targetPage = Math.min(Math.max(1, n), pdfDoc.numPages);
+            // Only update and render if the target page is different from current
+            if (targetPage !== currentPage) {
+              currentPage = targetPage;
+              panelIndex = 0;
+              // Clear any stale rendered page reference
+              lastRenderedPage = null;
+              // Cancel any pending renders by incrementing token
+              renderToken++;
+              void renderPage(currentPage);
+            }
           } else if (data.type === "set-zoom") {
             const next = Math.floor(Number(data.zoom));
             if (!Number.isFinite(next) || next < 50 || next > 300) return;
