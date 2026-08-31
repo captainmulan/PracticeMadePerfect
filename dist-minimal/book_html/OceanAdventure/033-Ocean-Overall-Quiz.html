@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ocean Adventure - Overall Quiz</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{min-height:100%;}
+body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#0a1628 0%,#1a365d 50%,#0f4c75 100%);background-attachment:fixed;color:#e0f4ff;min-height:100vh;position:relative;overflow-x:hidden;}
+.bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(3px 3px at 30px 50px,rgba(255,255,255,0.28),transparent),radial-gradient(4px 4px at 70px 90px,rgba(255,255,255,0.18),transparent),radial-gradient(2px 2px at 120px 40px,rgba(255,255,255,0.25),transparent);background-size:900px 150px;animation:rise 8s ease-in-out infinite;}
+@keyframes rise{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+.container{max-width:680px;margin:0 auto;padding:16px 14px 32px;position:relative;z-index:1;}
+.header{text-align:center;margin-bottom:16px;}
+h1{font-size:clamp(22px,5vw,30px);color:#64ffda;margin-bottom:6px;}
+.subtitle{color:#80deea;font-size:15px;line-height:1.45;}
+.nav-hint{margin-top:16px;text-align:center;font-size:12px;color:#80deea;background:rgba(128,222,234,0.1);padding:12px;border-radius:10px;line-height:1.5;}
+.competition-bar{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.1);border-radius:14px;padding:12px;margin-bottom:14px;border:1px solid rgba(100,255,218,0.25);}
+.competitor{text-align:center;flex:1;}
+.competitor-icon{font-size:36px;}
+.competitor-name{font-size:12px;color:#80deea;margin-top:4px;}
+.competitor-score{font-size:22px;font-weight:bold;color:#64ffda;}
+.vs-divider{font-size:20px;font-weight:bold;color:#ffeb3b;margin:0 8px;}
+.quiz-card{background:rgba(255,255,255,0.08);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.1);display:none;}
+.quiz-card.active{display:block;}
+.question{font-size:17px;font-weight:bold;margin-bottom:14px;color:#fff;}
+.options{display:flex;flex-direction:column;gap:10px;}
+.option{padding:12px 16px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.2);border-radius:12px;cursor:pointer;font-size:15px;transition:.15s;}
+.option:hover{background:rgba(255,255,255,0.1);border-color:#64ffda;}
+.option.correct{background:rgba(76,175,80,0.3);border-color:#4caf50;}
+.option.wrong{background:rgba(244,67,54,0.3);border-color:#f44336;}
+.feedback{margin-top:12px;padding:10px;border-radius:10px;font-size:14px;display:none;}
+.feedback.show{display:block;}
+.feedback.correct{background:rgba(76,175,80,0.2);color:#81c784;}
+.feedback.wrong{background:rgba(244,67,54,0.2);color:#e57373;}
+.score-card{display:none;background:linear-gradient(135deg,rgba(100,255,218,0.95),rgba(0,188,212,0.95));border-radius:24px;padding:20px;text-align:center;margin-top:16px;border:4px solid #80deea;}
+.score-card.show{display:block;}
+.score-card h2{color:#0a1628;font-size:22px;margin-bottom:12px;}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin:16px 0;}
+.podium-place{text-align:center;flex:1;max-width:110px;}
+.podium-character{font-size:32px;margin-bottom:6px;}
+.podium-bar{height:60px;border-radius:8px 8px 0 0;width:72px;margin:0 auto;background:rgba(10,22,40,0.35);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-size:13px;font-weight:bold;color:#0a1628;}
+.podium-bar.first{height:90px;background:linear-gradient(180deg,#ffd700,#daa520);}
+.podium-bar.second{height:70px;background:linear-gradient(180deg,#c0c0c0,#a0a0a0);}
+.podium-name{font-size:11px;color:#0a1628;}
+.message{margin:10px 0;font-size:15px;color:#0a1628;font-weight:bold;}
+.retry-btn{padding:12px 22px;border:none;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;margin:4px;background:#0a1628;color:#64ffda;}
+body.reading-page .container{height:auto!important;max-height:none!important;}
+</style>
+<script src="_ocean-player.js"></script>
+</head>
+<body class="reading-page">
+<div class="bubbles"></div>
+<div class="container">
+  <div class="header">
+    <h1>🏆 Ocean Master Quiz</h1>
+    <div class="subtitle">Final quiz — everything you learned in this book!</div>
+  </div>
+  <div class="competition-bar" id="liveScoreBar">
+    <div class="competitor">
+      <div class="competitor-icon" id="playerIcon">🤿</div>
+      <div class="competitor-name" id="playerName">Explorer</div>
+      <div class="competitor-score" id="playerScore">0</div>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="competitor">
+      <div class="competitor-icon">🐚</div>
+      <div class="competitor-name">Professor Pearl</div>
+      <div class="competitor-score" id="opponentScore">0</div>
+    </div>
+  </div>
+  <div id="quizArea">
+  <div class="quiz-card active" id="quizCard-1">
+    <div class="question">1. Which zone gets the most sunlight?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 1, true)">Sunlight Zone</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">Midnight Zone</div>
+      <div class="option" onclick="checkAnswer(this, 1, false)">Abyss Zone</div>
+    </div>
+    <div class="feedback" id="feedback-1"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-2">
+    <div class="question">2. Coral reefs are often called ocean ___.</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 2, false)">Deserts</div>
+      <div class="option" onclick="checkAnswer(this, 2, true)">Cities</div>
+      <div class="option" onclick="checkAnswer(this, 2, false)">Mountains</div>
+    </div>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-3">
+    <div class="question">3. Which animals are marine mammals?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 3, false)">Sharks</div>
+      <div class="option" onclick="checkAnswer(this, 3, true)">Dolphins and whales</div>
+      <div class="option" onclick="checkAnswer(this, 3, false)">Jellyfish</div>
+    </div>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-4">
+    <div class="question">4. Fish breathe using ___.</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 4, true)">Gills</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Lungs like humans</div>
+      <div class="option" onclick="checkAnswer(this, 4, false)">Their fins</div>
+    </div>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-5">
+    <div class="question">5. The twilight zone is also called the ___ zone.</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 5, true)">Mesopelagic</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Epipelagic</div>
+      <div class="option" onclick="checkAnswer(this, 5, false)">Hadal</div>
+    </div>
+    <div class="feedback" id="feedback-5"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-6">
+    <div class="question">6. The Hadal Zone includes trenches deeper than about…</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 6, false)">60 meters</div>
+      <div class="option" onclick="checkAnswer(this, 6, true)">6,000 meters</div>
+      <div class="option" onclick="checkAnswer(this, 6, false)">600,000 meters</div>
+    </div>
+    <div class="feedback" id="feedback-6"></div>
+  </div>
+
+  <div class="quiz-card" id="quizCard-7">
+    <div class="question">7. Why should we protect the ocean?</div>
+    <div class="options">
+      <div class="option" onclick="checkAnswer(this, 7, false)">It has no effect on land</div>
+      <div class="option" onclick="checkAnswer(this, 7, true)">It gives oxygen, food, and a healthy planet</div>
+      <div class="option" onclick="checkAnswer(this, 7, false)">Only for fishing</div>
+    </div>
+    <div class="feedback" id="feedback-7"></div>
+  </div></div>
+  <div class="score-card" id="scoreCard">
+    <h2>🎉 Final Quiz Complete!</h2>
+    <div class="podium" id="podium"></div>
+    <p class="message" id="scoreMessage"></p>
+    <button class="retry-btn" type="button" onclick="location.reload()">🔄 Try Again</button>
+  </div>
+  <div class="nav-hint"><div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div><div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div></div>
+</div>
+<script>
+var playerScore = 0, opponentScore = 0, currentQ = 1, totalQ = 7, answered = false;
+var playerName = "Explorer", playerIcon = "🤿", opponentName = "Professor Pearl", opponentIcon = "🐚";
+
+function loadPlayerInfo() {
+  if (window.OceanPlayer) {
+    playerName = OceanPlayer.getUserName();
+    playerIcon = OceanPlayer.getCharacter();
+  }
+  document.getElementById("playerName").textContent = playerName;
+  document.getElementById("playerIcon").textContent = playerIcon;
+}
+
+function checkAnswer(el, qNum, correct) {
+  if (answered) return;
+  answered = true;
+  var fb = document.getElementById("feedback-" + qNum);
+  var opts = el.parentElement.querySelectorAll(".option");
+  opts.forEach(function(o) { o.style.pointerEvents = "none"; });
+  if (correct) {
+    el.classList.add("correct");
+    playerScore++;
+    fb.textContent = "✅ Correct!";
+    fb.className = "feedback show correct";
+  } else {
+    el.classList.add("wrong");
+    if (Math.random() < 0.65) opponentScore++;
+    fb.textContent = "❌ " + opponentName + " gets a point!";
+    fb.className = "feedback show wrong";
+  }
+  document.getElementById("playerScore").textContent = playerScore;
+  document.getElementById("opponentScore").textContent = opponentScore;
+  setTimeout(function() {
+    answered = false;
+    if (qNum >= totalQ) showResults();
+    else {
+      document.getElementById("quizCard-" + qNum).classList.remove("active");
+      currentQ = qNum + 1;
+      document.getElementById("quizCard-" + currentQ).classList.add("active");
+    }
+  }, 1400);
+}
+
+function showResults() {
+  document.getElementById("quizArea").style.display = "none";
+  document.getElementById("liveScoreBar").style.display = "none";
+  var competitors = [
+    { name: playerName, icon: playerIcon, score: playerScore },
+    { name: opponentName, icon: opponentIcon, score: opponentScore }
+  ].sort(function(a, b) { return b.score - a.score; });
+  var podium = document.getElementById("podium");
+  podium.innerHTML = "";
+  var order = competitors.length > 1 ? [1, 0] : [0];
+  order.forEach(function(idx, pi) {
+    var c = competitors[idx];
+    var place = document.createElement("div");
+    place.className = "podium-place " + (pi === 1 ? "first" : "second");
+    place.innerHTML = '<div class="podium-character">' + c.icon + '</div><div class="podium-bar ' + (pi === 1 ? "first" : "second") + '">' + c.score + '</div><div class="podium-name">' + c.name + '</div>';
+    podium.appendChild(place);
+  });
+  document.getElementById("scoreMessage").textContent = playerScore >= opponentScore
+    ? "🎉 " + playerName + " is an Ocean Master!"
+    : "Professor Pearl wins — try again!";
+  document.getElementById("scoreCard").classList.add("show");
+}
+
+loadPlayerInfo();
+</script>
+</body></html>

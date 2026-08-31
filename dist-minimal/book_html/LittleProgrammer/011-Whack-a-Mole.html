@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whack-a-Mole - JS Programmer</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#e0f2fe 0%,#dcfce7 100%);
+      color:#1f2937;
+      min-height:100vh;
+    }
+    .container{
+      max-width:620px;
+      margin:auto;
+      padding:12px 12px 20px;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:8px;
+    }
+    .logo{
+      font-size:54px;
+      margin-bottom:10px;
+    }
+    h1{
+      font-size:30px;
+      color:#2563eb;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#64748b;
+      font-size:18px;
+    }
+    .card{
+      background:#fff;
+      border-radius:24px;
+      padding:14px;
+      margin-bottom:12px;
+      box-shadow:0 6px 20px rgba(0,0,0,.08);
+    }
+    .card h2{
+      color:#2563eb;
+      margin-bottom:8px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.6;
+      margin-bottom:8px;
+    }
+    .code-box{
+      margin:12px 0;
+      background:#111827;
+      color:#22c55e;
+      border-radius:14px;
+      padding:14px;
+      font-family:Consolas,monospace;
+      font-size:14px;
+      line-height:1.5;
+      overflow:auto;
+      white-space:pre;
+    }
+    .stats{
+      display:flex;
+      justify-content:space-around;
+      margin-bottom:8px;
+    }
+    .stat{
+      text-align:center;
+    }
+    .stat-label{
+      font-size:12px;
+      color:#64748b;
+      font-weight:bold;
+    }
+    .stat-value{
+      font-size:28px;
+      font-weight:bold;
+      color:#2563eb;
+    }
+    .board{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      max-width:280px;
+      margin:0 auto;
+    }
+    .hole{
+      aspect-ratio:1/1;
+      background:#78350f;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:32px;
+      cursor:pointer;
+      box-shadow:inset 0 4px 8px rgba(0,0,0,.4);
+      user-select:none;
+      overflow:hidden;
+    }
+    .hole.up{
+      background:#92400e;
+    }
+    .hole span{
+      transform:translateY(60px);
+      transition:transform .1s;
+    }
+    .hole.up span{
+      transform:translateY(0);
+    }
+    .hole.whacked span{
+      transform:translateY(0) scale(1.2);
+    }
+    .playguide{
+      margin-top:8px;
+      background:#ecfeff;
+      border:3px dashed #06b6d4;
+      border-radius:14px;
+      padding:10px;
+      text-align:center;
+    }
+    .playguide-title{
+      color:#0f766e;
+      font-weight:bold;
+      margin-bottom:6px;
+      font-size:14px;
+    }
+    .playguide-desc{
+      font-size:12px;
+      color:#64748b;
+      margin-bottom:4px;
+    }
+    #msg{
+      font-size:14px;
+      font-weight:bold;
+      color:#16a34a;
+      min-height:20px;
+    }
+    button{
+      width:100%;
+      margin-top:10px;
+      padding:12px;
+      border:none;
+      border-radius:14px;
+      background:linear-gradient(135deg,#3b82f6,#06b6d4);
+      color:white;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:.2s;
+    }
+    button:active{
+      transform:scale(.98);
+    }
+    .tip{
+      margin-top:10px;
+      background:#fef9c3;
+      border-left:5px solid #eab308;
+      padding:12px;
+      border-radius:10px;
+      font-size:15px;
+      line-height:1.5;
+    }
+.chapter-title{
+  font-size:clamp(16px,4vw,22px);
+  font-weight:bold;
+  color:#2563eb;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:center;
+  margin-bottom:8px;
+}
+ .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#64748b;
+      background:#f1f5f9;
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h3>Chapter 05 - 🔨🐹Whack-a-Mole</h3>
+    <div class="chapter-title">Events (Click)</div>
+  </div>
+  
+  <div class="card">
+    <div class="playguide">
+      <div class="playguide-title">Play Guide</div>
+      <div class="playguide-desc">Press start game & hit the moles before they hide!</div>
+      <div id="msg"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">SCORE</div>
+        <div class="stat-value" id="score">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">TIME</div>
+        <div class="stat-value" id="time">20</div>
+      </div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <button id="startBtn" onclick="startGame()">▶ Start Game</button>
+  </div>
+
+<div class="card">
+    <h2>📖 What is an Event?</h2>
+    <p>
+      An <strong>event</strong> is something that happens - like a
+      <strong>click</strong>!
+    </p>
+    <p>
+      The computer waits quietly until you click, then it runs your code.
+      That's called "listening" for an event.
+    </p>
+  </div>
+
+    <h2>💻 JavaScript Code</h2>
+    <div class="code-box">hole.addEventListener("click", () => {
+  if (hole.classList.contains("up")) {
+    score++;
+  }
+});</div>
+
+  <div class="tip">
+    🌟 <strong>Did you know?</strong><br><br>
+    Every time you click a button, tap a screen, or press a key, you are
+    triggering an <strong>event</strong>. Programmers write code that says
+    "when this event happens, do this!"
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+
+<script>
+const board = document.getElementById("board");
+const scoreEl = document.getElementById("score");
+const timeEl = document.getElementById("time");
+const msg = document.getElementById("msg");
+const startBtn = document.getElementById("startBtn");
+
+const HOLE_COUNT = 9;
+let score = 0;
+let timeLeft = 20;
+let gameTimer = null;
+let moleTimer = null;
+let activeHole = null;
+let playing = false;
+
+const holes = [];
+for (let i = 0; i < HOLE_COUNT; i++){
+  const hole = document.createElement("div");
+  hole.className = "hole";
+  hole.innerHTML = "<span>🐹</span>";
+  hole.addEventListener("click", () => whack(hole));
+  board.appendChild(hole);
+  holes.push(hole);
+}
+
+function whack(hole){
+  if (!playing) return;
+  if (hole.classList.contains("up")){
+    score++;
+    scoreEl.textContent = score;
+    hole.classList.remove("up");
+    hole.classList.add("whacked");
+    setTimeout(() => hole.classList.remove("whacked"), 150);
+  }
+}
+
+function popMole(){
+  holes.forEach(h => h.classList.remove("up"));
+  const hole = holes[Math.floor(Math.random() * holes.length)];
+  hole.classList.add("up");
+  activeHole = hole;
+  const speed = 500 + Math.random() * 500;
+  moleTimer = setTimeout(popMole, speed);
+}
+
+function startGame(){
+  score = 0;
+  timeLeft = 20;
+  scoreEl.textContent = score;
+  timeEl.textContent = timeLeft;
+  msg.textContent = "🐹 Whack the moles!";
+  playing = true;
+  startBtn.disabled = true;
+
+  popMole();
+
+  gameTimer = setInterval(() => {
+    timeLeft--;
+    timeEl.textContent = timeLeft;
+    if (timeLeft <= 0){
+      endGame();
+    }
+  }, 1000);
+}
+
+function endGame(){
+  playing = false;
+  clearInterval(gameTimer);
+  clearTimeout(moleTimer);
+  holes.forEach(h => h.classList.remove("up"));
+  msg.textContent = "🎉 Game Over! Score: " + score;
+  startBtn.disabled = false;
+}
+</script>
+</body>
+</html>

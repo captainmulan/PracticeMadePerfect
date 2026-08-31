@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinosaur Discovery - Congratulations!</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:linear-gradient(180deg,#2d1b0e 0%,#4a2c2a 50%,#5c3d3a 100%);
+      color:#f5e6d3;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .confetti{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(8px 8px at 20px 30px,rgba(255,215,0,0.4),transparent),
+        radial-gradient(6px 6px at 60px 70px,rgba(255,105,180,0.4),transparent),
+        radial-gradient(7px 7px at 100px 40px,rgba(0,255,127,0.4),transparent),
+        radial-gradient(5px 5px at 140px 80px,rgba(255,165,0,0.4),transparent),
+        radial-gradient(8px 8px at 180px 50px,rgba(138,43,226,0.4),transparent),
+        radial-gradient(6px 6px at 220px 90px,rgba(255,215,0,0.4),transparent),
+        radial-gradient(7px 7px at 260px 30px,rgba(255,105,180,0.4),transparent),
+        radial-gradient(5px 5px at 300px 70px,rgba(0,255,127,0.4),transparent),
+        radial-gradient(8px 8px at 340px 40px,rgba(255,165,0,0.4),transparent),
+        radial-gradient(6px 6px at 380px 80px,rgba(138,43,226,0.4),transparent),
+        radial-gradient(7px 7px at 420px 50px,rgba(255,215,0,0.4),transparent),
+        radial-gradient(5px 5px at 460px 90px,rgba(255,105,180,0.4),transparent),
+        radial-gradient(8px 8px at 500px 30px,rgba(0,255,127,0.4),transparent),
+        radial-gradient(6px 6px at 540px 70px,rgba(255,165,0,0.4),transparent),
+        radial-gradient(7px 7px at 580px 40px,rgba(138,43,226,0.4),transparent);
+      background-size:600px 120px;
+      animation:confettiFall 3s linear infinite;
+      z-index:0;
+    }
+    @keyframes confettiFall{
+      0%{transform:translateY(-100%);}
+      100%{transform:translateY(100%);}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:32px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:30px;
+    }
+    h1{
+      font-size:36px;
+      color:#ffd700;
+      margin-bottom:8px;
+      animation:glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow{
+      from{text-shadow:0 0 10px #ffd700,0 0 20px #ffd700;}
+      to{text-shadow:0 0 20px #ffd700,0 0 30px #ffd700,0 0 40px #ffd700;}
+    }
+    .subtitle{
+      color:#a5d6a7;
+      font-size:18px;
+    }
+    .card{
+      background:rgba(255,255,255,0.1);
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      border:2px solid rgba(255,215,0,0.4);
+    }
+    .card h2{
+      color:#ffd700;
+      margin-bottom:12px;
+      font-size:24px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .trophy-section{
+      text-align:center;
+      margin:30px 0;
+    }
+    .trophy{
+      font-size:120px;
+      animation:trophyBounce 1s ease infinite alternate;
+    }
+    @keyframes trophyBounce{
+      from{transform:translateY(0);}
+      to{transform:translateY(-10px);}
+    }
+    .achievement-box{
+      background:rgba(76,175,80,0.2);
+      border-left:6px solid #4caf50;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .achievement-box h3{
+      color:#4caf50;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .achievement-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .home-btn{
+      width:100%;
+      padding:16px;
+      background:linear-gradient(135deg,#ffd700,#ff9800);
+      border:none;
+      border-radius:12px;
+      color:#2d1b0e;
+      font-size:18px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:transform 0.2s;
+      margin-top:16px;
+    }
+    .home-btn:hover{
+      transform:scale(1.02);
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a5d6a7;
+      background:rgba(165,214,167,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  </style>
+</head>
+<body>
+<div class="confetti"></div>
+<div class="container">
+  <div class="header">
+    <h1>🎉 Congratulations!</h1>
+    <div class="subtitle">You completed the Dinosaur Discovery ebook!</div>
+  </div>
+
+  <div class="trophy-section">
+    <div class="trophy">🏆</div>
+  </div>
+
+  <div class="card">
+    <h2>🌟 Amazing Job!</h2>
+    <p>
+      Congratulations on completing your journey through the age of dinosaurs! You've learned so much about these amazing creatures that lived millions of years ago.
+    </p>
+    <div class="achievement-box">
+      <h3>🏅 Your Achievement</h3>
+      <p>You've completed all chapters and quizzes in the Dinosaur Discovery ebook! You're now a dinosaur expert!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📚 What You Learned</h2>
+    <p>
+      Throughout this ebook, you discovered:
+    </p>
+    <ul>
+      <li>The three dinosaur time periods</li>
+      <li>How fossils form and are studied</li>
+      <li>About dinosaur eggs and babies</li>
+      <li>Plant-eating and meat-eating dinosaurs</li>
+      <li>The extinction event</li>
+      <li>Famous dinosaurs like T-Rex</li>
+      <li>The prehistoric world</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🚀 Keep Exploring!</h2>
+    <p>
+      The world of dinosaurs is always changing as scientists make new discoveries. Keep learning and exploring!
+    </p>
+    <p>
+      Maybe one day, you could become a paleontologist and discover your own dinosaur!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>👤 Author</h2>
+    <p>
+      This ebook was written by Jimmy Cooper.
+    </p>
+    <p>
+      Thank you for reading Dinosaur Discovery!
+    </p>
+    <button class="home-btn" onclick="goHome()">🏠 Return to Home</button>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Click the button to return to the Home page and explore again!</div>
+</div>
+
+</div>
+
+<script>
+function goHome() {
+  window.location.href = '002-Index.html';
+}
+</script>
+</body>
+</html>

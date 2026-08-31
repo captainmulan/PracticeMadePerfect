@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Newspaper — မာတိကာ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Myanmar Text", "Pyidaungsu", "Padauk", sans-serif;
+      background: #f4f1ea;
+      color: #1a1a1a;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+    .masthead {
+      background: #0f172a;
+      color: #f8fafc;
+      text-align: center;
+      padding: 28px 16px 20px;
+      border-bottom: 4px double #c9a227;
+    }
+    .masthead .tagline {
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .masthead h1 {
+      font-size: clamp(28px, 6vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .masthead .edition {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+    .intro {
+      background: #fff;
+      border: 1px solid #ddd6c8;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+    .intro p { color: #444; }
+    h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #0f172a;
+      color: #0f172a;
+    }
+    .issue-list { list-style: none; }
+    .issue-item {
+      background: #fff;
+      border: 1px solid #ddd6c8;
+      margin-bottom: 14px;
+      transition: box-shadow .2s;
+    }
+    .issue-item:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+    .issue-item a {
+      display: block;
+      padding: 18px 20px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .issue-badge {
+      display: inline-block;
+      background: #0f172a;
+      color: #fbbf24;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      margin-bottom: 8px;
+    }
+    .issue-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 6px;
+    }
+    .issue-desc {
+      font-size: 14px;
+      color: #555;
+    }
+    .issue-meta {
+      font-size: 12px;
+      color: #888;
+      margin-top: 10px;
+    }
+    .coming {
+      opacity: .65;
+      pointer-events: none;
+    }
+    .coming .issue-badge { background: #94a3b8; color: #fff; }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="tagline">Tech · AI · Automation · Myanmar</div>
+  <h1>📰 IT Newspaper</h1>
+  <div class="edition">အပတ်စဉ် IT သတင်းစာ · ၂၀၂၆</div>
+</header>
+
+<div class="container">
+  <div class="intro">
+    <p>
+      IT Newspaper မှာ corporate tech၊ AI automation နဲ့ လက်တွေ့ project တွေကို
+      <strong>မြန်မာဘာသာ</strong>နဲ့ ရိုးရှင်းအောင် ရေးပါမယ်။
+      အပတ်တိုင်း (သို့) ပြကာသိန်တိုင်း article အသစ် ထပ်တိုးမယ်။
+    </p>
+  </div>
+
+  <h2>📚 Issue များ</h2>
+  <ul class="issue-list">
+    <li class="issue-item">
+      <a href="002-AI-Dynamic-Dashboard.html">
+        <span class="issue-badge">ISSUE #01 · AI</span>
+        <div class="issue-title">Corporate AI Automation & Dynamic Dashboard</div>
+        <div class="issue-desc">
+          ကုမ္ပဏီများက AI ကို automation အတွက် ဘယ်လို သုံးလဲ —
+          Local Llama, Hugging Face, MCP, SQL pipeline နဲ့ chart ထုတ်တဲ့ Dynamic Dashboard project။
+        </div>
+        <div class="issue-meta">📅 July 2026 · ⏱ ~15 min read</div>
+      </a>
+    </li>
+    <li class="issue-item coming">
+      <span class="issue-badge">ISSUE #02 · Coming soon</span>
+      <div class="issue-title" style="padding:18px 20px 0;">Agent & Workflow Automation</div>
+      <div class="issue-desc" style="padding:0 20px 18px;">Multi-agent, n8n, CI/CD — နောက်အပတ်</div>
+    </li>
+  </ul>
+
+  <footer>
+    Practice Made Perfect · IT Newspaper Series
+  </footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Continents Adventure - Choose Your Explorer</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a237e 0%,#33691e 45%,#5d4037 100%);color:#fff8e1;min-height:100vh;overflow-x:hidden;overflow-y:auto;}
+    .clouds{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(40px 18px at 60px 40px,rgba(255,255,255,0.22),transparent),radial-gradient(50px 20px at 200px 80px,rgba(255,255,255,0.18),transparent),radial-gradient(35px 16px at 380px 50px,rgba(255,255,255,0.2),transparent);background-size:600px 120px;animation:drift 12s ease-in-out infinite;}
+    @keyframes drift{0%,100%{transform:translateX(0);}50%{transform:translateX(24px);}}
+    .container{max-width:640px;margin:auto;padding:16px 14px 20px;position:relative;z-index:1;}
+    .header{text-align:center;margin-bottom:14px;}
+    h1{font-size:28px;color:#aed581;margin-bottom:8px;}
+    .subtitle{color:#ffe082;font-size:16px;}
+    input[type="text"]{width:100%;padding:10px 12px;border:2px solid rgba(174,213,129,0.45);border-radius:16px;background:rgba(255,255,255,0.08);color:#fff8e1;font-size:16px;font-family:inherit;margin-bottom:14px;outline:none;}
+    input[type="text"]:focus{border-color:#aed581;}
+    .character-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+    .character-option{background:rgba(255,255,255,0.08);border:3px solid transparent;border-radius:18px;padding:10px 4px;cursor:pointer;text-align:center;font-size:34px;transition:.2s;}
+    .character-option.selected{border-color:#ffe082;background:rgba(255,224,130,0.15);box-shadow:0 0 24px rgba(255,224,130,0.35);}
+    .character-name{font-size:12px;margin-top:6px;color:#ffe082;}
+    .preview-section{background:rgba(255,255,255,0.08);border-radius:20px;padding:14px;text-align:center;margin-bottom:12px;border:1px solid rgba(174,213,129,0.25);}
+    .preview-character{font-size:56px;margin-bottom:8px;}
+    .preview-name{font-size:18px;color:#ffe082;font-weight:bold;}
+    .nav-hint{margin-top:16px;text-align:center;font-size:13px;color:#ffe082;background:rgba(255,224,130,0.1);padding:10px;border-radius:10px;line-height:1.5;}
+    @media (max-width:480px){h1{font-size:22px;}.character-option{font-size:28px;padding:8px 2px;}}
+    body.reading-page{overflow-x:hidden;overflow-y:auto!important;height:auto!important;min-height:100%;}
+    body.reading-page .container{height:auto!important;max-height:none!important;overflow:visible!important;display:block;}
+  </style>
+<script src="_continents-player.js"></script>
+</head>
+<body class="reading-page character-select-page">
+<div class="clouds"></div>
+<div class="container">
+  <div class="header">
+    <h1>🧭 Choose Your Explorer!</h1>
+    <div class="subtitle">Pick a character and name for your continents adventure!</div>
+  </div>
+  <div class="preview-section">
+    <div class="preview-character" id="previewCharacter">🧭</div>
+    <div class="preview-name" id="previewName">Explorer</div>
+  </div>
+  <input type="text" id="userName" placeholder="Enter your name..." value="Explorer" oninput="updatePreview()">
+  <div class="character-grid">
+    <div class="character-option selected" onclick="selectCharacter(this, '🧭', 'Explorer')">🧭<div class="character-name">Explorer</div></div>
+    <div class="character-option" onclick="selectCharacter(this, '🗺️', 'Mapper')">🗺️<div class="character-name">Mapper</div></div>
+    <div class="character-option" onclick="selectCharacter(this, '🎒', 'Traveler')">🎒<div class="character-name">Traveler</div></div>
+    <div class="character-option" onclick="selectCharacter(this, '🦁', 'Safari')">🦁<div class="character-name">Safari</div></div>
+    <div class="character-option" onclick="selectCharacter(this, '🐼', 'Panda Friend')">🐼<div class="character-name">Panda Friend</div></div>
+    <div class="character-option" onclick="selectCharacter(this, '🦅', 'Eagle Eye')">🦅<div class="character-name">Eagle Eye</div></div>
+  </div>
+  <div class="nav-hint">
+    <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+    <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+  </div>
+</div>
+<script>
+let selectedCharacter = '🧭';
+let selectedCharacterName = 'Explorer';
+function persistPlayer() {
+  const userName = document.getElementById('userName').value.trim() || 'Explorer';
+  ContinentPlayer.save(userName, selectedCharacter, selectedCharacterName);
+}
+function selectCharacter(element, character, name) {
+  document.querySelectorAll('.character-option').forEach(opt => opt.classList.remove('selected'));
+  element.classList.add('selected');
+  selectedCharacter = character;
+  selectedCharacterName = name;
+  updatePreview();
+}
+function updatePreview() {
+  persistPlayer();
+  document.getElementById('previewCharacter').textContent = selectedCharacter;
+  document.getElementById('previewName').textContent = document.getElementById('userName').value.trim() || 'Explorer';
+}
+updatePreview();
+</script>
+</body>
+</html>
