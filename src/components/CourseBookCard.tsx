@@ -280,10 +280,10 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
   if (item.actionType === "author" || item.actionType === "category" || item.actionType === "language-sub") {
     const openLabel =
       item.actionType === "language-sub"
-        ? `Open ${item.description || item.category || "language"} books`
-        : item.actionType === "category"
-          ? `Open ${item.title}`
-          : `View books by ${item.title}`;
+          ? `Open ${item.description || item.category || "language"} books`
+          : item.actionType === "category"
+            ? `Open ${item.title}`
+            : `View books by ${item.title}`;
     return (
       <button
         type="button"

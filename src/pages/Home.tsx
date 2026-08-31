@@ -274,8 +274,19 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 type="button"
                 className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
                 onClick={() => {
-                  setSelectedTab(tab.id);
                   if (tab.id === "Category") {
+                    if (selectedTab === "Category" && categoryPath.length > 0) {
+                      // Already on Category tab, go back one level
+                      setCategoryPath((path) => path.slice(0, -1));
+                    } else {
+                      // Switching to Category tab from another tab or at main level
+                      setSelectedTab("Category");
+                      setCategoryPath([]);
+                      setSelectedAuthorName(null);
+                    }
+                  } else {
+                    // Switching to non-Category tab, reset category state
+                    setSelectedTab(tab.id);
                     setCategoryPath([]);
                     setSelectedAuthorName(null);
                   }

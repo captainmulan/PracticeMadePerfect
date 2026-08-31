@@ -37,11 +37,16 @@ function createPlaceholderItem(category: string, index: number): CourseShelfItem
   } as CourseShelfItem;
 }
 
-export default function HomeCourseShelves({ row, useCoverImages = false, onItemClick }: HomeCourseShelvesProps) {
+export default function HomeCourseShelves({ 
+  row, 
+  useCoverImages = false, 
+  onItemClick 
+}: HomeCourseShelvesProps) {
   const booksPerRow = useShelfColumns();
   const DEFAULT_SHELF_ROWS = 2;
   const minSlots = DEFAULT_SHELF_ROWS * booksPerRow;
   const displayItems: CourseShelfItem[] = [...row.items];
+  
   const shouldPadPlaceholders =
     row.items.length > 0 &&
     !row.items.some(
