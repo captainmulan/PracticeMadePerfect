@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continents Adventure - Globe Rush</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(180deg,#1a237e,#33691e,#5d4037);color:#fff8e1;}
+  .clouds{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(40px 18px at 60px 40px,rgba(255,255,255,0.22),transparent),radial-gradient(50px 20px at 200px 80px,rgba(255,255,255,0.18),transparent),radial-gradient(35px 16px at 380px 50px,rgba(255,255,255,0.2),transparent);background-size:600px 120px;animation:drift 12s ease-in-out infinite;}
+  @keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(24px)}}
+  .page-head{text-align:center;padding:8px 12px 4px;position:relative;z-index:1;}
+  .page-head h1{font-size:26px;color:#ffe082;margin-bottom:4px;}
+  .page-head .lead{color:#aed581;font-size:15px;line-height:1.45;}
+  .nav-hint{margin:8px 10px 10px;text-align:center;font-size:13px;color:#ffe082;background:rgba(255,224,130,.1);padding:10px;border-radius:10px;flex-shrink:0;}
+</style>
+<script src="_continents-player.js"></script>
+<script src="_continents-action-games.js"></script>
+</head>
+<body class="continent-book-game big-game-page">
+<div class="clouds"></div>
+<div class="game-shell">
+  <header class="page-head">
+    <h1>🌐 Globe Rush — final mission</h1>
+    <p class="lead">Final continents mission — race the globe lanes, grab maps &amp; compasses, dodge volcanoes and deserts!</p>
+  </header>
+  <p class="game-meta" id="action-score">⭐ 0 / 150  ⏱ 75s  ❤️❤️❤️</p>
+  <div class="stage-wrap">
+    <div class="action-stage">
+      <canvas id="action-canvas"></canvas>
+      <div class="action-overlay" id="action-start-overlay">
+        <h3>🌍 Final Globe Mission!</h3>
+        <p>Move ⬅️➡️ and switch lanes ⬆️⬇️. Collect 🌍🗺️ treasures. Avoid 🌋🏜️! Reach 150 points to win.</p>
+        <button type="button" class="game-start-btn" id="action-start-btn">▶ Start Mission</button>
+      </div>
+    </div>
+  </div>
+  <div class="action-controls" id="action-controls"></div>
+  <div class="badge-box">Earn badge: <strong>Globe Master</strong></div>
+  <div class="nav-hint">Use ← → in the top bar to finish the book. 🏠 for home.</div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  ContinentActionGame.boot({
+    canvasId: "action-canvas",
+    scoreId: "action-score",
+    controlsId: "action-controls",
+    startOverlayId: "action-start-overlay",
+    startBtnId: "action-start-btn",
+    gameType: "globe-rush",
+    badge: "Globe Master",
+    target: 150
+  });
+});
+</script>
+</body>
+</html>

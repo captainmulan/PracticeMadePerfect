@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Defender</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Comic Sans MS', 'Comic Neue', system-ui, sans-serif;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 50%, #0a0a2a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            margin: 0;
+        }
+        .game-shell {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 8px 10px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            box-sizing: border-box;
+        }
+        .stage-wrap {
+            flex: 1 1 auto;
+            min-height: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-stage {
+            position: relative;
+            width: min(100%, 700px, calc((100vh - 150px) * 7 / 6));
+            aspect-ratio: 7 / 6;
+            height: auto;
+            max-height: calc(100vh - 150px);
+            margin: 0 auto;
+            overflow: hidden;
+            border: 2px solid rgba(255, 200, 0, 0.5);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(255, 200, 0, 0.2);
+            box-sizing: border-box;
+        }
+        #gameCanvas {
+            position: absolute;
+            display: block;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            image-rendering: auto;
+            touch-action: none;
+            cursor: crosshair;
+        }
+        .ui-container {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .ui-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .ui-label {
+            color: #aaa;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        .ui-value {
+            color: #ffd700;
+        }
+        .start-screen, .game-over-screen {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 10px;
+            bottom: 10px;
+            width: auto;
+            height: auto;
+            max-width: none;
+            max-height: none;
+            margin: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.88);
+            padding: 10px 8px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(255, 200, 0, 0.6);
+            z-index: 100;
+            box-sizing: border-box;
+        }
+        .game-complete-screen {
+            border-color: rgba(74, 222, 128, 0.75);
+            background: rgba(0, 20, 10, 0.92);
+        }
+        .game-complete-screen h1 {
+            color: #4ade80;
+        }
+        .level-clear-toast {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.92);
+            z-index: 90;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.28s ease, transform 0.28s ease, visibility 0.28s;
+            min-width: min(88%, 320px);
+            max-width: calc(100% - 24px);
+            padding: 16px 18px;
+            border-radius: 14px;
+            text-align: center;
+            background: rgba(8, 12, 32, 0.92);
+            border: 2px solid rgba(255, 215, 0, 0.75);
+            box-shadow: 0 0 28px rgba(255, 200, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-sizing: border-box;
+        }
+        .level-clear-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .level-clear-toast .toast-title {
+            color: #ffd700;
+            font-size: clamp(18px, 4.5vw, 26px);
+            font-weight: bold;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+        .level-clear-toast .toast-sub {
+            color: #c4b5fd;
+            font-size: clamp(12px, 3vw, 15px);
+            line-height: 1.35;
+        }
+        /* game-stage-overlay-v2 */
+        .start-screen h1, .game-over-screen h1 {
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-size: clamp(16px, 4.5vw, 32px);
+            line-height: 1.15;
+            max-width: 100%;
+        }
+        .start-screen p, .game-over-screen p {
+            color: #ccc;
+            margin-bottom: 12px;
+            font-size: clamp(11px, 3.2vw, 16px);
+            line-height: 1.4;
+            max-width: 100%;
+            word-break: break-word;
+        }
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ff6b6b, #ff9500);
+            color: white;
+            font-size: clamp(14px, 3.8vw, 20px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            max-width: 100%;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .touch-controls {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+            flex-shrink: 0;
+        }
+        .touch-hint {
+            font-size: 12px;
+            color: #c4b5fd;
+            opacity: 0.9;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .touch-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 200, 0, 0.7);
+            background: rgba(255, 200, 0, 0.2);
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .touch-btn:active {
+            background: rgba(255, 200, 0, 0.5);
+        }
+        @media (max-width: 600px) {
+            .game-shell { padding: 6px 8px 12px; }
+            .title { font-size: 15px !important; margin-bottom: 6px !important; line-height: 1.35; }
+            .ui-container { margin-bottom: 6px; gap: 4px; }
+            .ui-item { font-size: 12px; padding: 5px 8px; }
+            .start-screen, .game-over-screen {
+                left: 8px;
+                right: 8px;
+                top: 8px;
+                bottom: 8px;
+                padding: 8px 6px;
+            }
+            .start-screen h1, .game-over-screen h1 { margin-bottom: 6px; }
+            .start-screen p, .game-over-screen p { margin-bottom: 10px; }
+            .btn { padding: 8px 14px; }
+            .touch-controls { gap: 12px; margin-top: 6px; }
+            .touch-btn { width: 56px; height: 56px; font-size: 22px; }
+            .game-stage { width: min(100%, calc((100vh - 130px) * 7 / 6)); max-height: calc(100vh - 130px); }
+        }
+    /* solar-desktop-fit */
+html {
+  min-height: 100%;
+}
+body:has(.character-grid),
+body:has(.game-shell),
+body:has(#solarSvg),
+body:has(.fire-btn),
+body:has(.planet-game) {
+  overflow: hidden !important;
+  height: 100%;
+  min-height: 0 !important;
+}
+body:not(:has(.character-grid)):not(:has(.game-shell)):not(:has(#solarSvg)):not(:has(.fire-btn)):not(:has(.planet-game)) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100%;
+  height: auto;
+}
+.game-shell {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.character-grid) .container,
+body:has(.game-shell) .container,
+body:has(#solarSvg) .container,
+body:has(.fire-btn) .container,
+body:has(.planet-game) .container {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.game-shell) .game-shell {
+  padding: 4px 8px 6px;
+  max-width: 100%;
+  width: 100%;
+  align-items: stretch;
+}
+body:has(.game-shell) .game-shell .title {
+  display: block;
+  flex-shrink: 0;
+  text-align: center;
+  margin: 0 0 6px;
+  padding: 0 8px;
+  font-size: clamp(13px, 3.5vw, 18px);
+  line-height: 1.35;
+  color: #ffd700;
+  font-weight: bold;
+}
+body:has(.game-shell) .ui-container {
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+body:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body:has(.game-shell) .game-stage {
+  flex: 0 0 auto;
+  width: min(100%, 700px, calc((100vh - 140px) * 7 / 6));
+  height: auto;
+  max-height: calc(100vh - 140px);
+  aspect-ratio: 7 / 6;
+  margin: 0 auto;
+}
+body:has(.game-shell) .touch-controls {
+  flex-shrink: 0;
+  margin-top: 4px;
+  max-width: 100%;
+}
+body:has(#solarSvg) .container {
+  padding: 8px 12px 10px;
+}
+body:has(#solarSvg) .solar-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+  padding: 8px;
+}
+body:has(#solarSvg) .svg-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: unset;
+  height: auto;
+}
+body:has(#solarSvg) #solarSvg {
+  min-height: 0;
+  height: 100%;
+}
+body:has(#solarSvg) .minigame-panel {
+  flex-shrink: 0;
+  max-height: 34%;
+  overflow-y: auto;
+}
+body:has(.fire-btn) .container {
+  padding: 4px 12px 6px;
+}
+body:has(.fire-btn) .game-wrap {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+}
+body:has(.fire-btn) .fire-btn {
+  flex-shrink: 0;
+}
+body:has(.character-grid) .container {
+  padding: 8px 12px 10px;
+  justify-content: center;
+}
+body:has(.character-grid) .header {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .preview-section {
+  padding: 8px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .preview-character {
+  font-size: 36px;
+  margin-bottom: 4px;
+}
+body:has(.character-grid) input[type="text"] {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .character-grid {
+  gap: 6px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .character-option {
+  padding: 6px 2px;
+  font-size: 26px;
+  border-width: 2px;
+  border-radius: 12px;
+}
+body:has(.character-grid) .character-name {
+  font-size: 10px;
+  margin-top: 2px;
+}
+@media (min-width: 640px), (min-width: 768px) and (max-width: 1024px) {
+  body:has(.character-grid) .container {
+    padding: 6px 12px 8px;
+    justify-content: center;
+  }
+  body:has(.character-grid) h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  body:has(.character-grid) .header {
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .subtitle {
+    font-size: 13px;
+  }
+  body:has(.character-grid) .preview-section {
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .preview-character {
+    font-size: 32px;
+    margin-bottom: 2px;
+  }
+  body:has(.character-grid) .preview-name {
+    font-size: 15px;
+  }
+  body:has(.character-grid) input[type="text"] {
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .character-grid {
+    gap: 6px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .character-option {
+    padding: 4px 2px;
+    font-size: 24px;
+    border-width: 2px;
+    border-radius: 10px;
+  }
+  body:has(.character-grid) .character-name {
+    font-size: 9px;
+    margin-top: 1px;
+  }
+  body:has(.game-shell) .ui-item {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+  body:has(.game-shell) .touch-controls {
+    gap: 10px;
+  }
+  body:has(.game-shell) .game-stage {
+    width: min(100%, 700px, calc((100vh - 130px) * 7 / 6));
+    max-height: calc(100vh - 130px);
+  }
+  body:has(.game-shell) .touch-btn {
+    width: 72px;
+    height: 72px;
+    font-size: 28px;
+  }
+  body:has(#solarSvg) .header {
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(#solarSvg) h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  body:has(#solarSvg) .subtitle {
+    font-size: 13px;
+  }
+  body:has(#solarSvg) .info-panel,
+  body:has(#solarSvg) .nav-hint {
+    display: none;
+  }
+  body:has(.fire-btn) .header {
+    margin-bottom: 4px;
+    flex-shrink: 0;
+  }
+  body:has(.fire-btn) .header h1 {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+  body:has(.fire-btn) .header .subtitle {
+    display: none;
+  }
+  body:has(.fire-btn) .hud {
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  body:has(.fire-btn) .game-wrap {
+    margin-bottom: 4px;
+  }
+  body:has(.fire-btn) .fire-btn {
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  body:has(.fire-btn) .instructions,
+  body:has(.fire-btn) .nav-hint {
+    display: none;
+  }
+  .planet-svg-panel .svg-viewport,
+  .svg-viewport {
+    max-height: 220px !important;
+    min-height: 0 !important;
+  }
+  .planet-game .game-canvas,
+  .game-canvas-wrap {
+    height: 220px !important;
+    min-height: 180px !important;
+    max-height: 220px !important;
+  }
+  .planet-game {
+    padding: 10px;
+    margin-top: 10px;
+    flex-shrink: 0;
+  }
+  .planet-game h2 {
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+  .planet-game p {
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .touch-controls {
+    margin-top: 6px;
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(3, 48px);
+    gap: 6px;
+  }
+  .touch-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+}
+@media (max-height: 760px) {
+  body:has(.character-grid) .preview-character {
+    font-size: 28px;
+  }
+  body:has(.character-grid) .character-option {
+    font-size: 22px;
+    padding: 3px 2px;
+  }
+  body:has(.game-shell) .touch-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+  body:has(.fire-btn) .header h1 {
+    font-size: 18px;
+  }
+}
+/* big-game-first-view — intro defender fills mobile screen */
+body.big-game-page {
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+}
+body.big-game-page .game-shell {
+  min-height: 100%;
+  height: 100%;
+  max-height: none;
+  padding: 4px 6px 6px;
+}
+body.big-game-page .game-shell .title {
+  display: block;
+  flex-shrink: 0;
+  text-align: center;
+  margin: 0 0 4px;
+  padding: 0 6px;
+  font-size: clamp(12px, 3.2vw, 17px);
+  line-height: 1.35;
+  color: #ffd700;
+  font-weight: bold;
+}
+body.big-game-page .ui-container {
+  margin-bottom: 4px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+}
+body.big-game-page .ui-item {
+  font-size: 13px;
+  padding: 5px 8px;
+}
+body.big-game-page .stage-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body.big-game-page .game-stage {
+  flex: 1 1 auto;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0;
+}
+body.big-game-page .touch-controls {
+  flex-shrink: 0;
+  margin-top: 4px;
+  gap: 14px;
+}
+body.big-game-page .touch-btn {
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
+}
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+}
+@media (min-width: 768px) {
+  body.big-game-page .game-stage {
+    flex: 0 0 auto;
+    width: min(100%, 700px, calc((100vh - 120px) * 7 / 6)) !important;
+    height: auto !important;
+    max-height: calc(100vh - 120px) !important;
+    aspect-ratio: 7 / 6 !important;
+    margin: 0 auto;
+  }
+  body.big-game-page .stage-wrap {
+    align-items: center;
+    justify-content: center;
+  }
+}
+  
+body.reading-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+
+/* solar-ui-audit-overrides */
+body.reading-page,
+body.reading-page:has(.container),
+body.reading-page:has(.quiz-card),
+body.reading-page:has(.character-grid) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.reading-page:has(.character-grid) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+@media (max-width: 639px) {
+  body.big-planet-page .planet-svg-panel {
+    padding: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .svg-viewport,
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(78vw, calc(100svh - 220px)) !important;
+    min-height: 0 !important;
+    aspect-ratio: 1 !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .container {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+  body.big-planet-page .sun-game .game-canvas-wrap,
+  body.big-planet-page .planet-game .game-canvas,
+  body.big-planet-page .planet-game .game-canvas-wrap {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+}
+@media (min-width: 640px) {
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport,
+  body.big-planet-page .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+    min-height: min(56vw, calc(100svh - 200px)) !important;
+  }
+}
+body.big-planet-page .sun-game .game-canvas-wrap,
+body.big-planet-page .planet-game .game-canvas,
+body.big-planet-page .planet-game .game-canvas-wrap {
+  width: 100% !important;
+  height: min(50vh, 440px) !important;
+  min-height: min(42vh, 300px) !important;
+  max-height: min(56vh, 480px) !important;
+}
+body.big-planet-page .sun-game,
+body.big-planet-page .planet-game {
+  margin-bottom: 8px !important;
+}
+body.big-planet-page .nav-hint {
+  margin-top: 8px !important;
+  padding-bottom: 8px !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+body.all-planets-page:has(#solarSvg) .svg-wrap {
+  max-height: min(96vw, calc(100svh - 162px)) !important;
+  min-height: min(43svh, calc(100svh - 168px), 96vw) !important;
+}
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+}
+html:has(body.big-game-page) {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+body.big-game-page:has(.game-shell) .game-shell {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.big-game-page:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+@media (min-width: 768px) {
+  body.big-game-page:has(.game-shell) .stage-wrap {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  body.big-game-page:has(.game-shell) .game-stage {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: unset !important;
+    margin: 0 !important;
+  }
+}
+body.big-game-page:has(.fire-btn) .game-wrap {
+  min-height: min(calc(100svh - 178px), 78vh) !important;
+  height: min(calc(100svh - 178px), 78vh) !important;
+  max-height: none !important;
+}
+@media (min-width: 640px) {
+  body:has(.planet-svg-panel) .svg-viewport,
+  body:has(.planet-game) .game-canvas,
+  body:has(.sun-game) .game-canvas-wrap {
+    max-height: none !important;
+  }
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+  }
+}
+  </style>
+<script>
+(function (w) {
+  var BOOK = "solarsystem";
+  function key(name) {
+    return "book:" + BOOK + ":" + name;
+  }
+  w.SolarPlayer = {
+    getUserName: function () {
+      return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer";
+    },
+    getCharacter: function () {
+      return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "👨‍🚀";
+    },
+    getCharacterName: function () {
+      return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Astronaut";
+    },
+    save: function (name, character, characterName) {
+      localStorage.setItem(key("userName"), name);
+      localStorage.setItem(key("userCharacter"), character);
+      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userCharacter", character);
+      if (characterName != null) localStorage.setItem("characterName", characterName);
+    },
+  };
+})(window);
+</script>
+</head>
+<body class="big-game-page">
+<div class="game-shell">
+    <div class="title">Before we dive in into chapters, lets play game first</div>
+    <div class="ui-container">
+        <div class="ui-item">
+            <span class="ui-label">⭐ Score:</span>
+            <span class="ui-value" id="scoreDisplay">0</span>
+        </div>
+        <div class="ui-item">
+            <span class="ui-label">🏆 Level:</span>
+            <span class="ui-value" id="levelDisplay">1</span>
+        </div>
+        <div class="ui-item">
+            <span class="ui-label">❤️ Lives:</span>
+            <span class="ui-value" id="livesDisplay">5</span>
+        </div>
+    </div>
+
+    <div class="stage-wrap">
+    <div class="game-stage">
+    <canvas id="gameCanvas" width="700" height="600"></canvas>
+
+    <div class="level-clear-toast" id="levelClearToast" aria-live="polite">
+        <div class="toast-title" id="levelClearTitle">Level 1 Cleared!</div>
+        <div class="toast-sub" id="levelClearSub">Great job defending the Sun!</div>
+    </div>
+
+    <div class="start-screen" id="startScreen">
+        <h1>🌞 Solar System Defender</h1>
+        <p>Protect the Sun! Drag on the game to aim the cannon.<br>Auto-fire every 250ms! Destroy asteroids before they hit!<br><strong>Clear 5 levels to win!</strong></p>
+        <button class="btn" onclick="startGame()">▶️ Start Game</button>
+    </div>
+
+    <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+        <h1>💥 Game Over</h1>
+        <p id="finalStats">Final Score: 0 | Level: 1</p>
+        <button class="btn" onclick="restartGame()">🔄 Restart</button>
+    </div>
+
+    <div class="game-over-screen game-complete-screen" id="gameCompleteScreen" style="display: none;">
+        <h1>🎉 Game Completed!</h1>
+        <p>You defended the Sun through all 5 levels!</p>
+        <p id="completeStats">Final Score: 0</p>
+        <button class="btn" onclick="restartGame()">🔄 Play Again</button>
+    </div>
+    </div>
+    </div>
+</div>
+
+    <script>
+        // Game setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const GAME_SCALE = 1;
+        const sunRadius = 50 * GAME_SCALE;
+        const MAX_LEVEL = 5;
+        const SCORE_PER_LEVEL = 200;
+
+        // Game state
+        let gameRunning = false;
+        let score = 0;
+        let lives = 5;
+        let level = 1;
+        let levelClearTimeout = null;
+        let completeGameTimeout = null;
+        let gameFinished = false;
+        let cannonAngle = -Math.PI / 2; // Start pointing up
+        let lastFireTime = 0;
+        const fireInterval = 250; // ms
+
+        // Game objects
+        let bullets = [];
+        let asteroids = [];
+        let particles = [];
+        let stars = [];
+
+        // Input state
+        let isAiming = false;
+        let keys = {};
+
+        // Initialize stars for background
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < 100; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 2 + 0.5,
+                    alpha: Math.random() * 0.7 + 0.3
+                });
+            }
+        }
+
+        // Draw stars
+        function drawStars() {
+            ctx.fillStyle = '#0a0a1a';
+            ctx.fillRect(0, 0, width, height);
+            
+            stars.forEach(star => {
+                ctx.globalAlpha = star.alpha;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        // Draw sun
+        function drawSun() {
+            const glowOuter = sunRadius + 80 * GAME_SCALE;
+            const glowMid = sunRadius + 40 * GAME_SCALE;
+            // Big glow
+            const glow1 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowOuter);
+            glow1.addColorStop(0, 'rgba(255, 100, 0, 0.3)');
+            glow1.addColorStop(0.5, 'rgba(255, 150, 0, 0.1)');
+            glow1.addColorStop(1, 'rgba(255, 200, 0, 0)');
+            ctx.fillStyle = glow1;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, glowOuter, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Smaller glow
+            const glow2 = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, glowMid);
+            glow2.addColorStop(0, 'rgba(255, 200, 0, 0.4)');
+            glow2.addColorStop(1, 'rgba(255, 200, 0, 0)');
+            ctx.fillStyle = glow2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, glowMid, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sun body
+            const sunGrad = ctx.createRadialGradient(centerX - 10 * GAME_SCALE, centerY - 10 * GAME_SCALE, 10 * GAME_SCALE, centerX, centerY, sunRadius);
+            sunGrad.addColorStop(0, '#fffacd'); // Light yellow
+            sunGrad.addColorStop(0.3, '#ffd700'); // Gold
+            sunGrad.addColorStop(0.7, '#ffa500'); // Orange
+            sunGrad.addColorStop(1, '#ff8c00'); // Dark orange
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, sunRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sunspots
+            ctx.fillStyle = 'rgba(139, 69, 19, 0.4)';
+            ctx.beginPath();
+            ctx.arc(centerX - 20 * GAME_SCALE, centerY - 10 * GAME_SCALE, 8 * GAME_SCALE, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX + 15 * GAME_SCALE, centerY + 15 * GAME_SCALE, 6 * GAME_SCALE, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(centerX + 5 * GAME_SCALE, centerY - 20 * GAME_SCALE, 5 * GAME_SCALE, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Draw cannon
+        function drawCannon() {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(cannonAngle + Math.PI / 2);
+            
+            const barrelW = 20 * GAME_SCALE;
+            const barrelH = 70 * GAME_SCALE;
+            const tipW = 24 * GAME_SCALE;
+            const tipH = 12 * GAME_SCALE;
+            const baseR = 25 * GAME_SCALE;
+            
+            // Cannon barrel
+            ctx.fillStyle = '#8b4513'; // Brown
+            ctx.fillRect(-barrelW / 2, -90 * GAME_SCALE, barrelW, barrelH);
+            
+            // Cannon tip
+            ctx.fillStyle = '#654321'; // Darker brown
+            ctx.fillRect(-tipW / 2, -95 * GAME_SCALE, tipW, tipH);
+            
+            // Cannon base
+            ctx.fillStyle = '#555';
+            ctx.beginPath();
+            ctx.arc(0, 0, baseR, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        // Spawn asteroid
+        function spawnAsteroid() {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.max(width, height) / 2 + 50;
+            const size = (20 + Math.random() * 30) * GAME_SCALE;
+            const speed = (1 + Math.random() * 1.5) + (Math.min(level, MAX_LEVEL) - 1) * 0.3;
+            
+            asteroids.push({
+                x: centerX + Math.cos(angle) * distance,
+                y: centerY + Math.sin(angle) * distance,
+                radius: size,
+                speed: speed,
+                angle: angle + Math.PI // Move towards center
+            });
+        }
+
+        // Fire bullet
+        function fireBullet() {
+            const now = Date.now();
+            if (now - lastFireTime < fireInterval) return;
+            lastFireTime = now;
+            
+            bullets.push({
+                x: centerX + Math.cos(cannonAngle) * 100 * GAME_SCALE,
+                y: centerY + Math.sin(cannonAngle) * 100 * GAME_SCALE,
+                vx: Math.cos(cannonAngle) * 12,
+                vy: Math.sin(cannonAngle) * 12,
+                radius: 8 * GAME_SCALE
+            });
+        }
+
+        // Create explosion
+        function createExplosion(x, y, color, count = 15) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 2;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 4 + 2,
+                    color: color,
+                    life: 1
+                });
+            }
+        }
+
+        function clearPendingTimers() {
+            if (levelClearTimeout) {
+                clearTimeout(levelClearTimeout);
+                levelClearTimeout = null;
+            }
+            if (completeGameTimeout) {
+                clearTimeout(completeGameTimeout);
+                completeGameTimeout = null;
+            }
+        }
+
+        function hideLevelClearToast() {
+            const toast = document.getElementById('levelClearToast');
+            if (!toast) return;
+            toast.classList.remove('show');
+        }
+
+        function showLevelClearToast(clearedLevel) {
+            const toast = document.getElementById('levelClearToast');
+            const title = document.getElementById('levelClearTitle');
+            const sub = document.getElementById('levelClearSub');
+            if (!toast || !title || !sub) return;
+
+            clearPendingTimers();
+            hideLevelClearToast();
+
+            title.textContent = `Level ${clearedLevel} Cleared!`;
+            if (clearedLevel >= MAX_LEVEL) {
+                sub.textContent = 'All levels complete — amazing work!';
+            } else {
+                sub.textContent = `Level ${clearedLevel + 1} incoming — keep defending the Sun!`;
+            }
+
+            requestAnimationFrame(() => toast.classList.add('show'));
+
+            levelClearTimeout = setTimeout(() => {
+                hideLevelClearToast();
+                levelClearTimeout = null;
+            }, 1600);
+        }
+
+        function scoreNeededForLevel(lvl) {
+            return lvl * SCORE_PER_LEVEL;
+        }
+
+        function checkLevelProgress() {
+            if (gameFinished || level > MAX_LEVEL) return;
+
+            const threshold = scoreNeededForLevel(level);
+            if (score < threshold) return;
+
+            const clearedLevel = level;
+            showLevelClearToast(clearedLevel);
+
+            if (clearedLevel >= MAX_LEVEL) {
+                gameRunning = false;
+                completeGameTimeout = setTimeout(() => {
+                    completeGame();
+                    completeGameTimeout = null;
+                }, 1700);
+                return;
+            }
+
+            level = Math.min(clearedLevel + 1, MAX_LEVEL);
+            document.getElementById('levelDisplay').textContent = level;
+        }
+
+        // Check collisions
+        function checkCollisions() {
+            // Bullet vs Asteroid
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const b = bullets[i];
+                for (let j = asteroids.length - 1; j >= 0; j--) {
+                    const a = asteroids[j];
+                    const dx = b.x - a.x;
+                    const dy = b.y - a.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < b.radius + a.radius) {
+                        createExplosion(a.x, a.y, a.radius > 30 * GAME_SCALE ? '#ff6600' : '#ffaa00');
+                        score += Math.floor(a.radius);
+                        bullets.splice(i, 1);
+                        asteroids.splice(j, 1);
+                        
+                        document.getElementById('scoreDisplay').textContent = score;
+                        checkLevelProgress();
+                        break;
+                    }
+                }
+            }
+            
+            // Asteroid vs Sun
+            for (let i = asteroids.length - 1; i >= 0; i--) {
+                const a = asteroids[i];
+                const dx = a.x - centerX;
+                const dy = a.y - centerY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist < a.radius + sunRadius) {
+                    createExplosion(a.x, a.y, '#ff4444', 25);
+                    asteroids.splice(i, 1);
+                    lives--;
+                    document.getElementById('livesDisplay').textContent = lives;
+                    
+                    if (lives <= 0) {
+                        endGame();
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Update game objects
+        function update() {
+            if (gameFinished) return;
+
+            if (keys['ArrowLeft'] || keys['a']) cannonAngle -= 0.08;
+            if (keys['ArrowRight'] || keys['d']) cannonAngle += 0.08;
+            
+            // Auto fire
+            fireBullet();
+            
+            // Update bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const b = bullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+                
+                // Remove off-screen
+                if (b.x < -50 || b.x > width + 50 || b.y < -50 || b.y > height + 50) {
+                    bullets.splice(i, 1);
+                }
+            }
+            
+            // Update asteroids
+            for (let i = asteroids.length - 1; i >= 0; i--) {
+                const a = asteroids[i];
+                const dx = centerX - a.x;
+                const dy = centerY - a.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                a.x += (dx / dist) * a.speed;
+                a.y += (dy / dist) * a.speed;
+            }
+            
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.03;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+            
+            checkCollisions();
+        }
+
+        // Draw everything
+        function draw() {
+            drawStars();
+            drawSun();
+            
+            // Draw asteroids
+            asteroids.forEach(a => {
+                ctx.fillStyle = `hsl(${30 + Math.random() * 20}, 60%, 40%)`;
+                ctx.beginPath();
+                ctx.arc(a.x, a.y, a.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Craters
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.arc(a.x + a.radius * 0.3, a.y - a.radius * 0.2, a.radius * 0.25, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Draw bullets
+            ctx.fillStyle = '#ff0000';
+            ctx.shadowColor = '#ffff00';
+            ctx.shadowBlur = 20;
+            bullets.forEach(b => {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.shadowBlur = 0;
+            
+            drawCannon();
+            
+            // Draw particles
+            particles.forEach(p => {
+                ctx.globalAlpha = p.life;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        // Game loop
+        let lastSpawn = 0;
+        function gameLoop(timestamp) {
+            if (!gameRunning) return;
+            
+            // Spawn asteroids
+            const spawnInterval = Math.max(1400 - Math.min(level, MAX_LEVEL) * 100, 500);
+            if (timestamp - lastSpawn > spawnInterval) {
+                spawnAsteroid();
+                lastSpawn = timestamp;
+            }
+            
+            update();
+            draw();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        function startGame() {
+            clearPendingTimers();
+            hideLevelClearToast();
+            gameFinished = false;
+            score = 0;
+            lives = 5;
+            level = 1;
+            cannonAngle = -Math.PI / 2;
+            bullets = [];
+            asteroids = [];
+            particles = [];
+            lastSpawn = 0;
+            
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('livesDisplay').textContent = lives;
+            document.getElementById('levelDisplay').textContent = level;
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('gameCompleteScreen').style.display = 'none';
+            
+            gameRunning = true;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // End game (lives lost)
+        function endGame() {
+            clearPendingTimers();
+            hideLevelClearToast();
+            gameFinished = true;
+            gameRunning = false;
+            document.getElementById('finalStats').textContent = `Final Score: ${score} | Level: ${level}`;
+            document.getElementById('gameOverScreen').style.display = 'block';
+        }
+
+        function completeGame() {
+            clearPendingTimers();
+            hideLevelClearToast();
+            gameFinished = true;
+            gameRunning = false;
+            document.getElementById('completeStats').textContent = `Final Score: ${score} | All ${MAX_LEVEL} levels cleared!`;
+            document.getElementById('gameCompleteScreen').style.display = 'block';
+        }
+
+        // Restart game
+        function restartGame() {
+            startGame();
+        }
+
+        // Input handling
+        document.addEventListener('keydown', e => {
+            keys[e.key] = true;
+        });
+        document.addEventListener('keyup', e => {
+            keys[e.key] = false;
+        });
+        
+        function aimFromPointer(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            if (!rect.width || !rect.height) return;
+            const x = (clientX - rect.left) * (BASE_W / rect.width);
+            const y = (clientY - rect.top) * (BASE_H / rect.height);
+            cannonAngle = Math.atan2(y - centerY, x - centerX);
+        }
+
+        canvas.addEventListener('touchstart', e => {
+            if (!gameRunning) return;
+            e.preventDefault();
+            isAiming = true;
+            aimFromPointer(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', e => {
+            if (!gameRunning || !isAiming) return;
+            e.preventDefault();
+            aimFromPointer(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', () => { isAiming = false; });
+        canvas.addEventListener('touchcancel', () => { isAiming = false; });
+
+        canvas.addEventListener('mousedown', e => {
+            if (!gameRunning) return;
+            isAiming = true;
+            aimFromPointer(e.clientX, e.clientY);
+        });
+        window.addEventListener('mousemove', e => {
+            if (!gameRunning || !isAiming) return;
+            aimFromPointer(e.clientX, e.clientY);
+        });
+        window.addEventListener('mouseup', () => { isAiming = false; });
+
+        // Fixed 700x600 game coordinates; letterbox uniformly into the stage (no stretch).
+        const BASE_W = 700;
+        const BASE_H = 600;
+
+        function resizeCanvas() {
+            const stage = document.querySelector('.game-stage');
+            if (!stage) return;
+            const displayW = stage.clientWidth;
+            const displayH = stage.clientHeight;
+            if (!displayW || !displayH) return;
+
+            const fitScale = Math.min(displayW / BASE_W, displayH / BASE_H);
+            const cssW = Math.max(1, Math.floor(BASE_W * fitScale));
+            const cssH = Math.max(1, Math.floor(BASE_H * fitScale));
+
+            canvas.style.width = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            canvas.style.left = Math.floor((displayW - cssW) / 2) + 'px';
+            canvas.style.top = Math.floor((displayH - cssH) / 2) + 'px';
+
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.round(BASE_W * dpr);
+            canvas.height = Math.round(BASE_H * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            if (!gameRunning) {
+                drawStars();
+                drawSun();
+                drawCannon();
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        const stageEl = document.querySelector('.game-stage');
+        if (stageEl && typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(resizeCanvas).observe(stageEl);
+        }
+
+        // Initialize
+        initStars();
+        resizeCanvas();
+    </script>
+<script>
+/* solar-ui-fit-frame */
+(function () {
+  function fitGameFrame() {
+    if (!document.body.classList.contains("big-game-page")) return;
+    const h = window.innerHeight + "px";
+    document.documentElement.style.height = h;
+    document.documentElement.style.minHeight = h;
+    document.body.style.height = h;
+    document.body.style.minHeight = h;
+    const shell = document.querySelector(".game-shell");
+    if (shell) {
+      shell.style.height = h;
+      shell.style.minHeight = h;
+    }
+  }
+  fitGameFrame();
+  window.addEventListener("resize", fitGameFrame);
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(fitGameFrame).observe(document.documentElement);
+  }
+})();
+</script>
+</body>
+</html>

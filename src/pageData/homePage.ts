@@ -1,6 +1,6 @@
 export const homePageData = {
   title: "",
-  headline: "📚 Welcome to the Magic Library (မှော်ဝင် စာကြည့်တိုက်)",
+  headline: "Welcome to the Magic Library",
   summary: "Explore interactive e-books with hands-on activities. Every page is a magical journey of learning.",
   featureHtml:
     "<p><strong>Read Like a Book:</strong> Each page feels like flipping through pages in a magical book.</p>" +

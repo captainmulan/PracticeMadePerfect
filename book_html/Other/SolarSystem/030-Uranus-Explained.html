@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System Adventure - Uranus Explained</title>
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+    body{
+      font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;
+      background:#0f0c29;
+      color:#e0e7ff;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px,#fff,transparent),
+        radial-gradient(2px 2px at 40px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 90px 40px,#fff,transparent),
+        radial-gradient(2px 2px at 130px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 160px 120px,#fff,transparent),
+        radial-gradient(2px 2px at 200px 50px,#fff,transparent),
+        radial-gradient(1px 1px at 250px 160px,#fff,transparent),
+        radial-gradient(2px 2px at 300px 90px,#fff,transparent),
+        radial-gradient(1px 1px at 350px 130px,#fff,transparent),
+        radial-gradient(2px 2px at 400px 60px,#fff,transparent),
+        radial-gradient(1px 1px at 450px 180px,#fff,transparent),
+        radial-gradient(2px 2px at 500px 100px,#fff,transparent),
+        radial-gradient(1px 1px at 550px 140px,#fff,transparent),
+        radial-gradient(2px 2px at 600px 70px,#fff,transparent),
+        radial-gradient(1px 1px at 650px 190px,#fff,transparent),
+        radial-gradient(2px 2px at 700px 110px,#fff,transparent),
+        radial-gradient(1px 1px at 750px 150px,#fff,transparent),
+        radial-gradient(2px 2px at 800px 80px,#fff,transparent),
+        radial-gradient(1px 1px at 850px 170px,#fff,transparent);
+      background-size:900px 200px;
+      animation:twinkle 4s ease-in-out infinite;
+      z-index:0;
+    }
+    @keyframes twinkle{
+      0%,100%{opacity:0.3;}
+      50%{opacity:0.8;}
+    }
+    .container{
+      max-width:640px;
+      margin:auto;
+      padding:24px 16px 40px;
+      position:relative;
+      z-index:1;
+    }
+    .header{
+      text-align:center;
+      margin-bottom:20px;
+    }
+    h1{
+      font-size:28px;
+      color:#7de3f4;
+      margin-bottom:8px;
+    }
+    .subtitle{
+      color:#c4b5fd;
+      font-size:16px;
+    }
+    .card{
+      background:#1a1735;
+      backdrop-filter:blur(10px);
+      border-radius:20px;
+      padding:20px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.1);
+    }
+    .card h2{
+      color:#7de3f4;
+      margin-bottom:12px;
+      font-size:20px;
+    }
+    .card p{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:10px;
+    }
+    .card ul{
+      margin-left:20px;
+      margin-bottom:10px;
+    }
+    .card li{
+      font-size:16px;
+      line-height:1.7;
+      margin-bottom:8px;
+    }
+    .fact-box{
+      background:rgba(251,191,36,0.2);
+      border-left:6px solid #fbbf24;
+      padding:16px;
+      border-radius:12px;
+      margin-top:12px;
+    }
+    .fact-box h3{
+      color:#fbbf24;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .fact-box p{
+      font-size:15px;
+      line-height:1.6;
+      margin:0;
+    }
+    .nav-hint{
+      margin-top:20px;
+      text-align:center;
+      font-size:13px;
+      color:#a78bfa;
+      background:rgba(167,139,250,0.1);
+      padding:10px;
+      border-radius:10px;
+    }
+  /* solar-desktop-fit */
+html {
+  min-height: 100%;
+}
+body:has(.character-grid),
+body:has(.game-shell),
+body:has(#solarSvg),
+body:has(.fire-btn),
+body:has(.planet-game) {
+  overflow: hidden !important;
+  height: 100%;
+  min-height: 0 !important;
+}
+body:not(:has(.character-grid)):not(:has(.game-shell)):not(:has(#solarSvg)):not(:has(.fire-btn)):not(:has(.planet-game)) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100%;
+  height: auto;
+}
+.game-shell {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.character-grid) .container,
+body:has(.game-shell) .container,
+body:has(#solarSvg) .container,
+body:has(.fire-btn) .container,
+body:has(.planet-game) .container {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+body:has(.game-shell) .game-shell {
+  padding: 4px 8px 6px;
+}
+body:has(.game-shell) .game-shell .title {
+  display: none;
+}
+body:has(.game-shell) .ui-container {
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+body:has(.game-shell) .game-stage {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100%;
+  aspect-ratio: 7 / 6;
+}
+body:has(.game-shell) .touch-controls {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+body:has(#solarSvg) .container {
+  padding: 8px 12px 10px;
+}
+body:has(#solarSvg) .solar-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+  padding: 8px;
+}
+body:has(#solarSvg) .svg-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: unset;
+  height: auto;
+}
+body:has(#solarSvg) #solarSvg {
+  min-height: 0;
+  height: 100%;
+}
+body:has(#solarSvg) .minigame-panel {
+  flex-shrink: 0;
+  max-height: 34%;
+  overflow-y: auto;
+}
+body:has(.fire-btn) .container {
+  padding: 4px 12px 6px;
+}
+body:has(.fire-btn) .game-wrap {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+}
+body:has(.fire-btn) .fire-btn {
+  flex-shrink: 0;
+}
+body:has(.character-grid) .container {
+  padding: 8px 12px 10px;
+  justify-content: center;
+}
+body:has(.character-grid) .header {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .preview-section {
+  padding: 8px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .preview-character {
+  font-size: 36px;
+  margin-bottom: 4px;
+}
+body:has(.character-grid) input[type="text"] {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .character-grid {
+  gap: 6px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+body:has(.character-grid) .character-option {
+  padding: 6px 2px;
+  font-size: 26px;
+  border-width: 2px;
+  border-radius: 12px;
+}
+body:has(.character-grid) .character-name {
+  font-size: 10px;
+  margin-top: 2px;
+}
+@media (min-width: 640px), (min-width: 768px) and (max-width: 1024px) {
+  body:has(.character-grid) .container {
+    padding: 6px 12px 8px;
+    justify-content: center;
+  }
+  body:has(.character-grid) h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  body:has(.character-grid) .header {
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .subtitle {
+    font-size: 13px;
+  }
+  body:has(.character-grid) .preview-section {
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .preview-character {
+    font-size: 32px;
+    margin-bottom: 2px;
+  }
+  body:has(.character-grid) .preview-name {
+    font-size: 15px;
+  }
+  body:has(.character-grid) input[type="text"] {
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .character-grid {
+    gap: 6px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  body:has(.character-grid) .character-option {
+    padding: 4px 2px;
+    font-size: 24px;
+    border-width: 2px;
+    border-radius: 10px;
+  }
+  body:has(.character-grid) .character-name {
+    font-size: 9px;
+    margin-top: 1px;
+  }
+  body:has(.game-shell) .ui-item {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+  body:has(.game-shell) .touch-controls {
+    gap: 10px;
+  }
+  body:has(#solarSvg) .header {
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+  body:has(#solarSvg) h1 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  body:has(#solarSvg) .subtitle {
+    font-size: 13px;
+  }
+  body:has(#solarSvg) .info-panel,
+  body:has(#solarSvg) .nav-hint {
+    display: none;
+  }
+  body:has(.fire-btn) .header {
+    margin-bottom: 4px;
+    flex-shrink: 0;
+  }
+  body:has(.fire-btn) .header h1 {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+  body:has(.fire-btn) .header .subtitle {
+    display: none;
+  }
+  body:has(.fire-btn) .hud {
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  body:has(.fire-btn) .game-wrap {
+    margin-bottom: 4px;
+  }
+  body:has(.fire-btn) .fire-btn {
+    padding: 10px;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  body:has(.fire-btn) .instructions,
+  body:has(.fire-btn) .nav-hint {
+    display: none;
+  }
+  .planet-svg-panel .svg-viewport,
+  .svg-viewport {
+    max-height: 220px !important;
+    min-height: 0 !important;
+  }
+  .planet-game .game-canvas,
+  .game-canvas-wrap {
+    height: 220px !important;
+    min-height: 180px !important;
+    max-height: 220px !important;
+  }
+  .planet-game {
+    padding: 10px;
+    margin-top: 10px;
+    flex-shrink: 0;
+  }
+  .planet-game h2 {
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+  .planet-game p {
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .touch-controls {
+    margin-top: 6px;
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(3, 48px);
+    gap: 6px;
+  }
+  .touch-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+}
+@media (max-height: 760px) {
+  body:has(.character-grid) .preview-character {
+    font-size: 28px;
+  }
+  body:has(.character-grid) .character-option {
+    font-size: 22px;
+    padding: 3px 2px;
+  }
+  body:has(.game-shell) .touch-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+  body:has(.fire-btn) .header h1 {
+    font-size: 18px;
+  }
+}
+  
+body.reading-page {
+  overflow-x: hidden;
+  overflow-y: auto !important;
+  height: auto !important;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+
+/* solar-ui-audit-overrides */
+body.reading-page,
+body.reading-page:has(.container),
+body.reading-page:has(.quiz-card),
+body.reading-page:has(.character-grid) {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+body.reading-page .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block;
+}
+body.reading-page:has(.character-grid) .container {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  justify-content: flex-start;
+}
+@media (max-width: 639px) {
+  body.big-planet-page .planet-svg-panel {
+    padding: 8px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .svg-viewport,
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: min(78vw, calc(100svh - 220px)) !important;
+    min-height: 0 !important;
+    aspect-ratio: 1 !important;
+    box-sizing: border-box !important;
+  }
+  body.big-planet-page .container {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+  }
+  body.big-planet-page .sun-game .game-canvas-wrap,
+  body.big-planet-page .planet-game .game-canvas,
+  body.big-planet-page .planet-game .game-canvas-wrap {
+    height: min(48vh, 400px) !important;
+    min-height: min(40vh, 280px) !important;
+    max-height: min(52vh, 420px) !important;
+  }
+}
+@media (min-width: 640px) {
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport,
+  body.big-planet-page .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+    min-height: min(56vw, calc(100svh - 200px)) !important;
+  }
+}
+body.big-planet-page .sun-game .game-canvas-wrap,
+body.big-planet-page .planet-game .game-canvas,
+body.big-planet-page .planet-game .game-canvas-wrap {
+  width: 100% !important;
+  height: min(50vh, 440px) !important;
+  min-height: min(42vh, 300px) !important;
+  max-height: min(56vh, 480px) !important;
+}
+body.big-planet-page .sun-game,
+body.big-planet-page .planet-game {
+  margin-bottom: 8px !important;
+}
+body.big-planet-page .nav-hint {
+  margin-top: 8px !important;
+  padding-bottom: 8px !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+body.all-planets-page:has(#solarSvg) .svg-wrap {
+  max-height: min(96vw, calc(100svh - 162px)) !important;
+  min-height: min(43svh, calc(100svh - 168px), 96vw) !important;
+}
+body.big-game-page:has(.game-shell) {
+  overflow: hidden !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+}
+html:has(body.big-game-page) {
+  height: 100% !important;
+  min-height: 100% !important;
+  overflow: hidden !important;
+}
+body.big-game-page:has(.game-shell) .game-shell {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.big-game-page:has(.game-shell) .stage-wrap {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+body.big-game-page:has(.game-shell) .game-stage {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  margin: 0 !important;
+}
+@media (min-width: 768px) {
+  body.big-game-page:has(.game-shell) .stage-wrap {
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  body.big-game-page:has(.game-shell) .game-stage {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: unset !important;
+    margin: 0 !important;
+  }
+}
+body.big-game-page:has(.fire-btn) .game-wrap {
+  min-height: min(calc(100svh - 178px), 78vh) !important;
+  height: min(calc(100svh - 178px), 78vh) !important;
+  max-height: none !important;
+}
+@media (min-width: 640px) {
+  body:has(.planet-svg-panel) .svg-viewport,
+  body:has(.planet-game) .game-canvas,
+  body:has(.sun-game) .game-canvas-wrap {
+    max-height: none !important;
+  }
+  body.big-planet-page:has(.planet-svg-panel) .svg-viewport {
+    max-height: min(92vw, calc(100svh - 156px)) !important;
+  }
+}
+  </style>
+<script>
+(function (w) {
+  var BOOK = "solarsystem";
+  function key(name) {
+    return "book:" + BOOK + ":" + name;
+  }
+  w.SolarPlayer = {
+    getUserName: function () {
+      return localStorage.getItem(key("userName")) || localStorage.getItem("userName") || "Explorer";
+    },
+    getCharacter: function () {
+      return localStorage.getItem(key("userCharacter")) || localStorage.getItem("userCharacter") || "👨‍🚀";
+    },
+    getCharacterName: function () {
+      return localStorage.getItem(key("characterName")) || localStorage.getItem("characterName") || "Astronaut";
+    },
+    save: function (name, character, characterName) {
+      localStorage.setItem(key("userName"), name);
+      localStorage.setItem(key("userCharacter"), character);
+      if (characterName != null) localStorage.setItem(key("characterName"), characterName);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userCharacter", character);
+      if (characterName != null) localStorage.setItem("characterName", characterName);
+    },
+  };
+})(window);
+</script>
+</head>
+<body class="reading-page">
+<div class="stars"></div>
+<div class="container">
+  <div class="header">
+    <h1>📚 Uranus Explained</h1>
+    <div class="subtitle">Learn more about the ice giant!</div>
+  </div>
+
+  <div class="card">
+    <h2>❄️ What is an Ice Giant?</h2>
+    <p>
+      Uranus is called an "ice giant" because it's made mostly of water, ammonia, and methane ices. This is different from gas giants like Jupiter and Saturn, which are made mostly of hydrogen and helium.
+    </p>
+    <p>
+      Underneath the icy layer, Uranus probably has a rocky core about the size of Earth!
+    </p>
+    <div class="fact-box">
+      <h3>💡 Fun Fact</h3>
+      <p>Uranus is the coldest planet in the solar system, even colder than Neptune!</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔄 The Extreme Tilt</h2>
+    <p>
+      Uranus has the most extreme tilt of any planet - it rotates at about 98 degrees! This means it essentially rolls on its side as it orbits the Sun.
+    </p>
+    <p>
+      Because of this tilt, Uranus has very strange seasons. Each pole gets 42 years of continuous sunlight followed by 42 years of darkness!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🎨 The Blue Color</h2>
+    <p>
+      Uranus's beautiful blue-green color comes from methane in its atmosphere. Methane absorbs red light from the Sun and reflects blue light, making the planet appear blue.
+    </p>
+    <p>
+      The upper atmosphere of Uranus is the coldest place in the solar system, at about -224°C (-371°F)!
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Shakespearean Moons</h2>
+    <p>
+      Uranus's 27 moons are named after characters from plays by William Shakespeare and poems by Alexander Pope. This is different from other planets, whose moons are usually named after gods and goddesses.
+    </p>
+    <p>
+      The five largest moons are:
+    </p>
+    <ul>
+      <li><strong>Miranda</strong> - Has strange terrain with huge canyons</li>
+      <li><strong>Ariel</strong> - The brightest of Uranus's moons</li>
+      <li><strong>Umbriel</strong> - The darkest of Uranus's moons</li>
+      <li><strong>Titania</strong> - The largest moon</li>
+      <li><strong>Oberon</strong> - The outermost large moon</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🔭 Discovery of Uranus</h2>
+    <p>
+      Uranus was the first planet discovered with a telescope! It was found by William Herschel in 1781. Before that, people thought it was just a star!
+    </p>
+    <p>
+      Herschel originally wanted to name it "Georgium Sidus" (George's Star) after King George III of England, but other astronomers preferred the name Uranus, after the Greek god of the sky.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>💍 Dark Rings</h2>
+    <p>
+      Uranus has 13 rings that were discovered in 1977. Unlike Saturn's bright, icy rings, Uranus's rings are dark and made of dust and small rocks.
+    </p>
+    <p>
+      The rings are very thin - only about 10 meters to 100 meters thick. They're also very young, probably formed from broken-up moons or comets.
+    </p>
+  </div>
+
+<div class="nav-hint">
+  <div>💡 Use the ← → arrows in the top navigation bar to go to the next chapter.</div>
+  <div>💡 Use the 🏠 button in the top navigation bar to go back to the Home page.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My First 100 Myanmar Words - Build Myanmar Village</title>
+  <style>
+    .petals{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(4px 4px at 50px 70px,rgba(251,191,36,0.35),transparent),radial-gradient(3px 3px at 120px 40px,rgba(244,114,182,0.25),transparent);background-size:900px 150px;animation:drift 12s ease-in-out infinite;}
+    @keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Comic Sans MS','Comic Neue',system-ui,sans-serif;background:linear-gradient(145deg,#7DD3FC 0%,#A78BFA 50%,#F9A8D4 100%);color:#1E293B;margin:0;overflow:hidden;}
+    body.big-game-page{height:100dvh;max-height:100dvh;overflow:hidden;}
+    html:has(body.big-game-page){height:100%;overflow:hidden;}
+    .game-shell{width:100%;max-width:100%;margin:0;padding:8px clamp(12px,3vw,32px) 8px;position:relative;z-index:1;display:flex;flex-direction:column;height:100dvh;max-height:100dvh;overflow:hidden;box-sizing:border-box;}
+    .pick-controls{flex-shrink:0;padding:0 0 6px;}
+    .stage-wrap{flex:1 1 auto;min-height:0;width:100%;display:flex;align-items:stretch;}
+    .game-stage{position:relative;flex:1 1 auto;min-height:0;border:2px solid #38BDF8;border-radius:16px;overflow:hidden;background:#7CB342;touch-action:none;cursor:crosshair;}
+    .action-row{display:flex;gap:6px;justify-content:center;flex-shrink:0;margin-top:8px;flex-wrap:nowrap;align-items:stretch;}
+    @media(min-width:768px){
+      .game-shell{max-width:min(1400px,100%);margin:0 auto;padding:8px clamp(16px,3vw,40px) 8px;}
+      .stamp-row{margin-bottom:0;padding:8px 10px;}
+      .action-row{margin-top:8px;}
+      .nav-hint{margin-top:8px;padding:10px;font-size:15px;}
+    }
+    @media(max-width:520px){
+      .stamp-btn{width:30px;height:30px;font-size:15px;border-radius:8px;}
+      .stamp-row{gap:3px;padding:4px 5px;max-height:calc(2 * 30px + 3px + 8px);}
+      .action-row{gap:4px;padding:0 2px;}
+      .tool-btn{padding:8px 8px;font-size:13px;flex:1 1 0;min-width:0;}
+      .nav-hint{font-size:14px;padding:8px;}
+    }
+    .stamp-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px 10px;background:rgba(255,255,255,.55);border-radius:14px;border:2px solid rgba(56,189,248,.35);max-height:calc(2 * 42px + 6px + 16px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+    .stamp-btn{width:42px;height:42px;border:2px solid rgba(56,189,248,.4);border-radius:11px;background:rgba(255,255,255,.9);font-size:22px;cursor:pointer;touch-action:manipulation;transition:.15s;flex-shrink:0;}
+    .stamp-btn.selected{border-color:#DB2777;background:rgba(244,114,182,.15);box-shadow:0 0 16px rgba(251,191,36,.45);transform:scale(1.06);}
+    .stamp-btn:active{transform:scale(.96);}
+    .tool-btn{padding:10px 14px;border:none;border-radius:10px;background:rgba(255,255,255,.7);color:#1E293B;font-size:15px;font-weight:bold;cursor:pointer;border:1px solid rgba(56,189,248,.35);white-space:nowrap;}
+    .tool-btn:active{transform:scale(.97);}
+    .tool-btn.active{border-color:#8B5CF6;background:rgba(167,139,250,.2);box-shadow:0 0 10px rgba(139,92,246,.25);}
+    .game-stage.eraser-mode{cursor:cell;}
+    canvas{display:block;width:100%;height:100%;}
+    .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,41,59,0.75);text-align:center;padding:18px;z-index:5;}
+    .overlay h3{color:#FDE68A;font-size:clamp(20px,4.5vw,26px);margin-bottom:10px;}
+    .overlay .overlay-lead{color:#FDE68A;font-size:clamp(16px,3.5vw,18px);font-weight:700;margin-bottom:6px;line-height:1.4;}
+    .overlay .overlay-sub{color:#F0F9FF;font-size:clamp(14px,3vw,16px);line-height:1.5;margin-bottom:12px;max-width:420px;}
+    .btn{padding:10px 22px;border:none;border-radius:12px;background:linear-gradient(135deg,#DB2777,#8B5CF6);color:#fff;font-size:16px;font-weight:bold;cursor:pointer;}
+    .nav-hint{flex-shrink:0;margin-top:8px;text-align:center;font-size:15px;color:#64748B;background:rgba(255,255,255,.65);padding:8px 10px;border-radius:10px;line-height:1.45;}
+  </style>
+  <script src="_mmwords-audio-map.js"></script>
+<script src="_mmwords-en-audio-map.js"></script>
+<script src="_mmwords-player.js"></script>
+</head>
+<body class="big-game-page">
+<div class="petals"></div>
+<div class="game-shell">
+  <div class="pick-controls">
+  <div class="stamp-row" id="stampRow">
+    <button type="button" class="stamp-btn selected" data-emoji="🏠" title="House">🏠</button>
+    <button type="button" class="stamp-btn" data-emoji="🛖" title="Hut">🛖</button>
+    <button type="button" class="stamp-btn" data-emoji="🛕" title="Pagoda">🛕</button>
+    <button type="button" class="stamp-btn" data-emoji="🌳" title="Tree">🌳</button>
+    <button type="button" class="stamp-btn" data-emoji="🌴" title="Palm tree">🌴</button>
+    <button type="button" class="stamp-btn" data-emoji="🌲" title="Evergreen">🌲</button>
+    <button type="button" class="stamp-btn" data-emoji="🎋" title="Bamboo">🎋</button>
+    <button type="button" class="stamp-btn" data-emoji="🪴" title="Plant">🪴</button>
+    <button type="button" class="stamp-btn" data-emoji="🌾" title="Paddy">🌾</button>
+    <button type="button" class="stamp-btn" data-emoji="🪵" title="Fence">🪵</button>
+    <button type="button" class="stamp-btn" data-emoji="🕊️" title="Flying bird">🕊️</button>
+    <button type="button" class="stamp-btn" data-emoji="🐘" title="Elephant">🐘</button>
+    <button type="button" class="stamp-btn" data-emoji="🐃" title="Buffalo">🐃</button>
+    <button type="button" class="stamp-btn" data-emoji="🐄" title="Cow">🐄</button>
+    <button type="button" class="stamp-btn" data-emoji="🐕" title="Dog">🐕</button>
+    <button type="button" class="stamp-btn" data-emoji="🐈" title="Cat">🐈</button>
+    <button type="button" class="stamp-btn" data-emoji="🐦" title="Bird">🐦</button>
+    <button type="button" class="stamp-btn" data-emoji="🐓" title="Rooster">🐓</button>
+    <button type="button" class="stamp-btn" data-emoji="🦆" title="Duck">🦆</button>
+    <button type="button" class="stamp-btn" data-emoji="🧍" title="Person">🧍</button>
+    <button type="button" class="stamp-btn" data-emoji="🧍‍♀️" title="Woman">🧍‍♀️</button>
+  </div>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="game-stage" id="stage">
+      <canvas id="gameCanvas"></canvas>
+      <div class="overlay" id="startScreen">
+        <h3>🏘️ Build Myanmar Village</h3>
+        <p class="overlay-lead">Let&apos;s play first!</p>
+        <p class="overlay-sub">Pick a stamp above. Tap anywhere to build your village.</p>
+        <button class="btn" type="button" id="btnStart">▶️ Start Building</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button type="button" class="tool-btn" id="btnUndo">↩️ Undo</button>
+    <button type="button" class="tool-btn" id="btnEraser">🧽 Eraser</button>
+    <button type="button" class="tool-btn" id="btnClear">🧹 clear</button>
+  </div>
+
+  <div class="nav-hint">Press top nav: ← → next chapter. 🏠 Home page.</div>
+</div>
+<script>
+const STORAGE_KEY = 'book:myfirst100mmwords:intro-village';
+const FONT = '"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+const GROUND_PAD = 48;
+const WALKERS = new Set(['🐘', '🐃', '🐄', '🐕', '🐈', '🐦', '🐓', '🦆']);
+const FLYERS = new Set(['🕊']);
+const PLAY_REF = 480;
+const BUILDING = /🏠|🛖|🛕/;
+const TREES = /🌳|🌴|🌲|🎋/;
+const PLANT_POT = /🪴/;
+const PEOPLE = /🧍|🧍‍♀️/;
+const SMALL = /🪵/;
+const STATIC = /🏠|🛖|🛕|🌳|🪵|🌾|🪴|🧍|🧍‍♀️|🎋|🌴|🌲/;
+let canvas, ctx, running = false, animId, lastFrame = 0;
+let bgCanvas, bgW = 0, bgH = 0, bgDpr = 0, stageW = 0, stageH = 0, stageDpr = 0;
+let staticCanvas, staticW = 0, staticH = 0, staticDpr = 0, staticDirty = true;
+let movers = [];
+let canvasDpr = 1;
+const fontCache = {};
+let selectedEmoji = '🏠';
+let toolMode = 'stamp';
+let decorations = [];
+let savedCanvasW = null;
+let savedCanvasH = null;
+let needsMigrate = false;
+
+function loadVillage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (Array.isArray(data)) {
+      decorations = data;
+      needsMigrate = true;
+      return;
+    }
+    decorations = data.items || [];
+    savedCanvasW = data.cw || null;
+    savedCanvasH = data.ch || null;
+    if (decorations.some(d => d.x != null && d.xr == null)) needsMigrate = true;
+  } catch (e) {
+    decorations = [];
+  }
+}
+
+function refreshItemsLayout() {
+  const w = canvas ? canvas.clientWidth : canvasSize().w;
+  const h = canvas ? canvas.clientHeight : canvasSize().h;
+  decorations.forEach(d => normalizeItem(d, w, h));
+  rebuildMovers();
+  markSceneDirty();
+}
+
+function rebuildMovers() {
+  movers = [];
+  for (let i = 0; i < decorations.length; i++) {
+    const k = decorations[i].kind;
+    if (k === 'mobile' || k === 'flyer') movers.push(decorations[i]);
+  }
+}
+
+function markSceneDirty() {
+  staticDirty = true;
+}
+
+function saveVillage() {
+  try {
+    const w = canvas ? canvas.clientWidth : savedCanvasW;
+    const h = canvas ? canvas.clientHeight : savedCanvasH;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      v: 2,
+      cw: w || null,
+      ch: h || null,
+      items: decorations
+    }));
+  } catch (e) {}
+}
+
+function canvasSize() {
+  return {
+    w: canvas ? canvas.clientWidth : 720,
+    h: canvas ? canvas.clientHeight : 420
+  };
+}
+
+function baseEmoji(emoji) {
+  return String(emoji || '').replace(/\uFE0F/g, '');
+}
+
+function layoutRef(w, h) {
+  const cw = w != null ? w : canvasSize().w;
+  const ch = h != null ? h : canvasSize().h;
+  return Math.min(cw, ch) || cw || 720;
+}
+
+function playScale(w, h) {
+  return Math.max(0.9, Math.min(1.35, layoutRef(w, h) / PLAY_REF));
+}
+
+function animalSizeRange(emoji) {
+  const e = baseEmoji(emoji);
+  if (e === '🐘') return [54, 16];
+  if (e === '🐃' || e === '🐄') return [40, 12];
+  if (e === '🐦' || e === '🐓' || e === '🦆') return [22, 8];
+  if (e === '🐕' || e === '🐈') return [28, 14];
+  return null;
+}
+
+function itemSizePx(emoji, w, h) {
+  const scale = playScale(w, h);
+  const tier = animalSizeRange(emoji);
+  if (tier) return (tier[0] + Math.random() * tier[1]) * scale;
+  if (BUILDING.test(emoji)) return (40 + Math.random() * 10) * scale;
+  if (TREES.test(emoji)) return (36 + Math.random() * 12) * scale;
+  if (PEOPLE.test(emoji)) return (32 + Math.random() * 8) * scale;
+  if (FLYERS.has(baseEmoji(emoji))) return (20 + Math.random() * 8) * scale;
+  if (PLANT_POT.test(emoji)) return (18 + Math.random() * 6) * scale;
+  if (SMALL.test(emoji)) return (26 + Math.random() * 10) * scale;
+  return (28 + Math.random() * 14) * scale;
+}
+
+function flyerSpeed() {
+  return 0.5 + Math.random() * 0.35;
+}
+
+function walkerSpeed(emoji) {
+  const e = baseEmoji(emoji);
+  if (e === '🐘') return 0.28 + Math.random() * 0.18;
+  if (e === '🐃' || e === '🐄') return 0.32 + Math.random() * 0.22;
+  if (e === '🐦' || e === '🐓' || e === '🦆') return 0.45 + Math.random() * 0.35;
+  if (e === '🐕' || e === '🐈') return 0.38 + Math.random() * 0.28;
+  return 0.35 + Math.random() * 0.55;
+}
+
+function migrateToNormalized(w, h) {
+  if (!needsMigrate) return;
+  const refW = savedCanvasW || w;
+  const refH = savedCanvasH || h;
+  decorations.forEach(d => {
+    if (d.xr != null) return;
+    if (typeof d.x === 'number') {
+      d.xr = d.x / refW;
+      d.yr = d.y / refH;
+      d.sr = d.size / layoutRef(refW, refH);
+      if (d.kind === 'mobile' && typeof d.speed === 'number') d.sp = d.speed / refW;
+      delete d.x;
+      delete d.y;
+      delete d.size;
+      delete d.speed;
+    }
+  });
+  needsMigrate = false;
+  saveVillage();
+}
+
+function normalizeItem(d, w, h) {
+  const cw = w || canvasSize().w || 720;
+  const ch = h || canvasSize().h || 420;
+  const ref = layoutRef(cw, ch);
+  const scale = playScale(cw, ch);
+  if (d.emoji === '🌸') d.emoji = '🕊️';
+  d.kind = itemKind(d.emoji);
+  if (d.kind === 'mobile') {
+    if (typeof d.dir !== 'number') d.dir = Math.random() > 0.5 ? 1 : -1;
+    if (typeof d.speed !== 'number') {
+      if (typeof d.sp === 'number') d.speed = d.sp * cw;
+      else d.speed = walkerSpeed(d.emoji);
+      delete d.sp;
+    }
+    if (d.speed < 0.1 || d.speed > 3) d.speed = walkerSpeed(d.emoji);
+  } else if (d.kind === 'flyer') {
+    if (typeof d.dir !== 'number') d.dir = Math.random() > 0.5 ? 1 : -1;
+    if (typeof d.speed !== 'number') d.speed = flyerSpeed();
+    if (typeof d.phase !== 'number') d.phase = Math.random() * Math.PI * 2;
+    if (d.yr > 0.52) d.yr = 0.12 + Math.random() * 0.32;
+    delete d.sp;
+  } else {
+    delete d.speed;
+    delete d.sp;
+    delete d.phase;
+  }
+  if (typeof d.sr !== 'number' && typeof d.size === 'number') {
+    d.sr = d.size / ref;
+  }
+  const tier = animalSizeRange(d.emoji);
+  if (tier) {
+    const px = (d.sr || 0) * ref;
+    const minPx = tier[0] * scale;
+    const maxPx = (tier[0] + tier[1]) * scale;
+    if (typeof d.sr !== 'number' || px < minPx * 0.75 || px > maxPx * 1.35) {
+      d.sr = itemSizePx(d.emoji, cw, ch) / ref;
+    }
+  }
+}
+
+function resizeCanvas() {
+  const stage = document.getElementById('stage');
+  canvas = document.getElementById('gameCanvas');
+  ctx = canvas.getContext('2d');
+  const w = stage.clientWidth;
+  const h = stage.clientHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvasDpr = dpr;
+  canvas.width = Math.floor(w * dpr);
+  canvas.height = Math.floor(h * dpr);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  migrateToNormalized(w, h);
+  if (w !== stageW || h !== stageH || dpr !== stageDpr) {
+    stageW = w;
+    stageH = h;
+    stageDpr = dpr;
+    bgW = 0;
+    markSceneDirty();
+    decorations.forEach(d => { delete d.px; });
+    refreshItemsLayout();
+  }
+}
+
+function offscreenCtx(c, w, h, dpr) {
+  c.width = Math.floor(w * dpr);
+  c.height = Math.floor(h * dpr);
+  const cctx = c.getContext('2d');
+  cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return cctx;
+}
+
+function fitShell() {
+  const h = window.innerHeight + 'px';
+  document.documentElement.style.height = h;
+  document.documentElement.style.minHeight = h;
+  document.body.style.height = h;
+  document.body.style.minHeight = h;
+  const shell = document.querySelector('.game-shell');
+  if (shell) {
+    shell.style.height = h;
+    shell.style.maxHeight = h;
+  }
+}
+
+let resizeTimer = 0;
+function scheduleLayout() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    fitShell();
+    resizeCanvas();
+  }, 80);
+}
+
+function drawEmoji(emoji, x, y, size, flipX, targetCtx) {
+  const c = targetCtx || ctx;
+  const sz = Math.round(size);
+  if (!fontCache[sz]) fontCache[sz] = 'bold ' + sz + 'px ' + FONT;
+  c.font = fontCache[sz];
+  c.textAlign = 'center';
+  c.textBaseline = 'middle';
+  c.fillStyle = '#ffffff';
+  if (flipX) {
+    c.save();
+    c.translate(x, y);
+    c.scale(-1, 1);
+    c.fillText(emoji, 0, 0);
+    c.restore();
+  } else {
+    c.fillText(emoji, x, y);
+  }
+}
+
+function rebuildStaticLayer(w, h) {
+  if (!staticDirty && staticCanvas && staticW === w && staticH === h && staticDpr === canvasDpr) return;
+  if (!staticCanvas) staticCanvas = document.createElement('canvas');
+  staticW = w;
+  staticH = h;
+  staticDpr = canvasDpr;
+  const sctx = offscreenCtx(staticCanvas, w, h, canvasDpr);
+  sctx.clearRect(0, 0, w, h);
+  const ref = layoutRef(w, h);
+  for (let i = 0; i < decorations.length; i++) {
+    const d = decorations[i];
+    if (d.kind !== 'static') continue;
+    drawEmoji(d.emoji, d.xr * w, d.yr * h, d.sr * ref, false, sctx);
+  }
+  staticDirty = false;
+}
+
+function drawStaticLayer(w, h) {
+  rebuildStaticLayer(w, h);
+  ctx.drawImage(staticCanvas, 0, 0, w, h);
+}
+
+function paintVillageBg(targetCtx, w, h) {
+  const sky = targetCtx.createLinearGradient(0, 0, 0, h * 0.58);
+  sky.addColorStop(0, '#87CEEB');
+  sky.addColorStop(0.7, '#FDF8F0');
+  sky.addColorStop(1, '#D4E8C8');
+  targetCtx.fillStyle = sky;
+  targetCtx.fillRect(0, 0, w, h);
+
+  const sunX = w * 0.84;
+  const sunY = h * 0.13;
+  const sunR = Math.min(w, h) * 0.055;
+  const glow = targetCtx.createRadialGradient(sunX, sunY, sunR * 0.3, sunX, sunY, sunR * 2.4);
+  glow.addColorStop(0, 'rgba(255,235,130,0.65)');
+  glow.addColorStop(1, 'rgba(255,235,130,0)');
+  targetCtx.fillStyle = glow;
+  targetCtx.beginPath();
+  targetCtx.arc(sunX, sunY, sunR * 2.4, 0, Math.PI * 2);
+  targetCtx.fill();
+  drawEmoji('☀️', sunX, sunY, sunR * 1.7, false, targetCtx);
+
+  targetCtx.fillStyle = 'rgba(90,120,70,0.45)';
+  targetCtx.beginPath();
+  targetCtx.moveTo(0, h * 0.5);
+  targetCtx.lineTo(w * 0.18, h * 0.36);
+  targetCtx.lineTo(w * 0.42, h * 0.42);
+  targetCtx.lineTo(w * 0.68, h * 0.33);
+  targetCtx.lineTo(w * 0.88, h * 0.4);
+  targetCtx.lineTo(w, h * 0.48);
+  targetCtx.lineTo(w, h * 0.62);
+  targetCtx.lineTo(0, h * 0.58);
+  targetCtx.closePath();
+  targetCtx.fill();
+
+  targetCtx.fillStyle = 'rgba(70,95,55,0.35)';
+  targetCtx.beginPath();
+  targetCtx.moveTo(0, h * 0.56);
+  targetCtx.lineTo(w * 0.3, h * 0.46);
+  targetCtx.lineTo(w * 0.62, h * 0.5);
+  targetCtx.lineTo(w, h * 0.44);
+  targetCtx.lineTo(w, h * 0.66);
+  targetCtx.lineTo(0, h * 0.64);
+  targetCtx.closePath();
+  targetCtx.fill();
+
+  const groundTop = h - GROUND_PAD;
+  const field = targetCtx.createLinearGradient(0, groundTop, 0, h);
+  field.addColorStop(0, '#8BC34A');
+  field.addColorStop(0.45, '#689F38');
+  field.addColorStop(1, '#558B2F');
+  targetCtx.fillStyle = field;
+  targetCtx.fillRect(0, groundTop, w, h - groundTop);
+
+  targetCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+  targetCtx.lineWidth = 1;
+  for (let i = 0; i < 5; i++) {
+    const y = groundTop + 10 + i * 8;
+    targetCtx.beginPath();
+    targetCtx.moveTo(0, y);
+    targetCtx.lineTo(w, y);
+    targetCtx.stroke();
+  }
+
+  targetCtx.fillStyle = 'rgba(0,0,0,0.08)';
+  targetCtx.fillRect(0, groundTop, w, 3);
+}
+
+function ensureBg(w, h) {
+  if (bgCanvas && bgW === w && bgH === h && bgDpr === canvasDpr) return;
+  if (!bgCanvas) bgCanvas = document.createElement('canvas');
+  bgW = w;
+  bgH = h;
+  bgDpr = canvasDpr;
+  paintVillageBg(offscreenCtx(bgCanvas, w, h, canvasDpr), w, h);
+}
+
+function drawVillageBg(w, h) {
+  ensureBg(w, h);
+  ctx.drawImage(bgCanvas, 0, 0, w, h);
+}
+
+function itemKind(emoji) {
+  const e = baseEmoji(emoji);
+  if (FLYERS.has(e)) return 'flyer';
+  if (WALKERS.has(e)) return 'mobile';
+  return 'static';
+}
+
+function itemPixels(d, w, h) {
+  const ref = layoutRef(w, h);
+  const moving = d.kind === 'mobile' || d.kind === 'flyer';
+  const x = moving && typeof d.px === 'number' ? d.px : d.xr * w;
+  return {
+    x: x,
+    y: d.yr * h,
+    size: d.sr * ref
+  };
+}
+
+function syncWalkerPos(d, w) {
+  if (d.kind === 'mobile' || d.kind === 'flyer') {
+    if (typeof d.px !== 'number') d.px = d.xr * w;
+  }
+}
+
+function tickFlyer(d, w, h, dt) {
+  syncWalkerPos(d, w);
+  if (typeof d.dir !== 'number') d.dir = 1;
+  if (typeof d.speed !== 'number') d.speed = flyerSpeed();
+  const ref = layoutRef(w, h);
+  d.px += d.speed * d.dir * dt;
+  const half = d.sr * ref * 0.5;
+  if (d.px <= half) {
+    d.px = half;
+    d.dir = 1;
+  } else if (d.px >= w - half) {
+    d.px = w - half;
+    d.dir = -1;
+  }
+  d.xr = d.px / w;
+}
+
+function flyerY(d, h, t) {
+  if (typeof d.phase !== 'number') d.phase = 0;
+  return d.yr * h + Math.sin(t * 0.002 + d.phase) * 10;
+}
+
+function tickWalker(d, w, h, dt) {
+  syncWalkerPos(d, w);
+  if (typeof d.dir !== 'number') d.dir = 1;
+  if (typeof d.speed !== 'number') d.speed = walkerSpeed(d.emoji);
+  const ref = layoutRef(w, h);
+  d.px += d.speed * d.dir * dt;
+  const half = d.sr * ref * 0.5;
+  if (d.px <= half) {
+    d.px = half;
+    d.dir = 1;
+  } else if (d.px >= w - half) {
+    d.px = w - half;
+    d.dir = -1;
+  }
+  d.xr = d.px / w;
+}
+
+function updateToolUi() {
+  document.getElementById('btnEraser').classList.toggle('active', toolMode === 'eraser');
+  document.getElementById('stage').classList.toggle('eraser-mode', toolMode === 'eraser');
+  document.querySelectorAll('.stamp-btn').forEach(b => {
+    b.classList.toggle('selected', toolMode === 'stamp' && b.dataset.emoji === selectedEmoji);
+  });
+}
+
+function loop(t) {
+  if (!running) return;
+  const dt = lastFrame ? Math.min((t - lastFrame) / 16.667, 2) : 1;
+  lastFrame = t;
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  const ref = layoutRef(w, h);
+
+  drawVillageBg(w, h);
+  drawStaticLayer(w, h);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
+
+  for (let i = 0; i < movers.length; i++) {
+    const d = movers[i];
+    if (d.kind === 'mobile') tickWalker(d, w, h, dt);
+    else tickFlyer(d, w, h, dt);
+    const px = d.px;
+    const size = d.sr * ref;
+    const drawY = d.kind === 'flyer' ? flyerY(d, h, t) : d.yr * h;
+    const flip = d.dir > 0;
+    drawEmoji(d.emoji, px, drawY, size, flip);
+  }
+
+  animId = requestAnimationFrame(loop);
+}
+
+function hitDecoration(x, y, t) {
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+  for (let i = decorations.length - 1; i >= 0; i--) {
+    const d = decorations[i];
+    const p = itemPixels(d, w, h);
+    const py = d.kind === 'flyer' ? flyerY(d, h, t || 0) : p.y;
+    const r = p.size * 0.55;
+    const dx = x - p.x;
+    const dy = y - py;
+    if (dx * dx + dy * dy <= r * r) return i;
+  }
+  return -1;
+}
+
+function eraseAt(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  const x = clientX - r.left;
+  const y = clientY - r.top;
+  const idx = hitDecoration(x, y, performance.now());
+  if (idx < 0) return;
+  const removed = decorations[idx];
+  decorations.splice(idx, 1);
+  rebuildMovers();
+  if (removed.kind === 'static') markSceneDirty();
+  saveVillage();
+}
+
+function placeAt(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  const w = r.width;
+  const h = r.height;
+  const kind = itemKind(selectedEmoji);
+  const size = itemSizePx(selectedEmoji, w, h);
+  const ref = layoutRef(w, h);
+  const sr = size / ref;
+  const skyMax = h * 0.52;
+  const x = Math.max(size * 0.5, Math.min(w - size * 0.5, clientX - r.left));
+  let y = clientY - r.top;
+  if (kind === 'flyer') {
+    y = Math.max(size * 0.5, Math.min(skyMax - size * 0.5, y));
+  } else {
+    y = Math.max(size * 0.5, Math.min(h - size * 0.5, y));
+  }
+  const xr = x / w;
+  const yr = y / h;
+
+  if (kind === 'flyer') {
+    decorations.push({
+      emoji: selectedEmoji,
+      xr: xr,
+      yr: yr,
+      sr: sr,
+      px: x,
+      kind: 'flyer',
+      dir: Math.random() > 0.5 ? 1 : -1,
+      speed: flyerSpeed(),
+      phase: Math.random() * Math.PI * 2,
+    });
+  } else if (kind === 'mobile') {
+    decorations.push({
+      emoji: selectedEmoji,
+      xr: xr,
+      yr: yr,
+      sr: sr,
+      px: x,
+      kind: 'mobile',
+      dir: Math.random() > 0.5 ? 1 : -1,
+      speed: walkerSpeed(selectedEmoji),
+    });
+  } else {
+    decorations.push({
+      emoji: selectedEmoji,
+      xr: xr,
+      yr: yr,
+      sr: sr,
+      kind: 'static',
+    });
+  }
+  rebuildMovers();
+  if (kind === 'static') markSceneDirty();
+  saveVillage();
+}
+
+function startBuilding() {
+  document.getElementById('startScreen').style.display = 'none';
+  running = true;
+  lastFrame = 0;
+  fitShell();
+  resizeCanvas();
+  loop(0);
+}
+
+document.getElementById('btnStart').onclick = startBuilding;
+
+document.querySelectorAll('.stamp-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    toolMode = 'stamp';
+    document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedEmoji = btn.dataset.emoji;
+    updateToolUi();
+  });
+});
+
+document.getElementById('btnEraser').onclick = () => {
+  toolMode = 'eraser';
+  document.querySelectorAll('.stamp-btn').forEach(b => b.classList.remove('selected'));
+  updateToolUi();
+};
+
+document.getElementById('btnUndo').onclick = () => {
+  if (!decorations.length) return;
+  const removed = decorations[decorations.length - 1];
+  decorations.pop();
+  rebuildMovers();
+  if (removed.kind === 'static') markSceneDirty();
+  saveVillage();
+};
+
+document.getElementById('btnClear').onclick = () => {
+  decorations = [];
+  movers = [];
+  markSceneDirty();
+  saveVillage();
+};
+
+function bindTap() {
+  const hit = e => {
+    if (document.getElementById('startScreen').style.display !== 'none') return;
+    const p = e.touches ? e.touches[0] : e;
+    if (toolMode === 'eraser') eraseAt(p.clientX, p.clientY);
+    else placeAt(p.clientX, p.clientY);
+  };
+  canvas.addEventListener('click', hit);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); hit(e); }, { passive: false });
+}
+
+loadVillage();
+fitShell();
+resizeCanvas();
+rebuildMovers();
+markSceneDirty();
+updateToolUi();
+bindTap();
+window.addEventListener('resize', scheduleLayout);
+window.addEventListener('orientationchange', () => { setTimeout(scheduleLayout, 150); });
+</script>
+</body>
+</html>

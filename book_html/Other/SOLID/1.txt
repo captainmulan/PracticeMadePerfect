@@ -1,0 +1,17 @@
+<div class="solid-flashcards">
+  </div>
+  <section class="solid-section"><table>
+      <thead><tr><th>Sub Question</th><th>Answer</th><th>More Explanation</th><th>Example</th><th>Benefit</th></tr></thead>
+      <tbody>
+        <tr><td>What is SOLID</td><td>Design principles for clean code</td><td>Reduces complexity and future risks</td><td>Add new policy without breaking existing code</td><td>Maintainable system</td></tr>
+        <tr><td>SRP - Single Responsibility</td><td>One class = one job</td><td>Avoid mixed responsibilities</td><td>PremiumCalculator only calculates premium</td><td>Easy testing</td></tr>
+        <tr><td>OCP - Open/Closed</td><td>Extend, don't modify</td><td>Add features without changing old code</td><td>Add TravelPolicy without changing core logic</td><td>Safer changes</td></tr>
+        <tr><td>LSP - Liskov Substitution</td><td>Child behaves like parent</td><td>No broken behaviour when substituting</td><td>MotorPolicy works as Policy</td><td>Reliable code</td></tr>
+        <tr><td>ISP - Interface Segregation Principle</td><td>Small focused interfaces</td><td>Don't force unused methods</td><td>IClaimable, IRenewable separated</td><td>Cleaner design</td></tr>
+        <tr><td>DIP - Dependency Inversion</td><td>Depend on abstraction</td><td>Not concrete classes</td><td>ClaimService uses IPaymentService</td><td>Flexible + testable</td></tr>
+        <tr><td>Explain Abstract vs Interface</td><td>Abstract = partial logic, Interface = contract</td><td>Abstract has code, interface only rules</td><td>Policy vs IClaimable</td><td>Flexible design</td></tr>
+        <tr><td>Explain Polymorphism</td><td>Same method, different behaviour</td><td>Behaviour depends on object</td><td>CalculateClaim varies by policy</td><td>Reusable logic</td></tr>
+      </tbody>
+    </table>
+  </section>
+</div>
