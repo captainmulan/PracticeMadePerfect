@@ -890,6 +890,7 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   position: relative;
   width: 100%;
   max-width: 280px;
+  aspect-ratio: 2 / 3;
   border-radius: 8px;
   overflow: hidden;
   background: rgba(15, 23, 42, 0.35);
@@ -902,8 +903,8 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 
 .book-about-cover {
   width: 100%;
-  aspect-ratio: 2 / 3;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
   object-position: center;
   border-radius: 8px;
   display: block;

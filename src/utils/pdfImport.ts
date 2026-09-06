@@ -1,6 +1,8 @@
-import type { BookImportPreview, ParsedHtmlPage } from "./bookImport";
+import type { Course } from "../data/courses";
+import { createDefaultBookFields, type BookImportPreview, type ParsedHtmlPage } from "./bookImport";
+import { getBookAssetUrl } from "../config/externalHosting";
 
-const DEFAULT_BOOK_HTML_DIRECTORY_PATH = "C:\\Users\\65966\\PracticeMadePerfect\\book_html";
+const DEFAULT_BOOK_HTML_DIRECTORY_PATH = "book_html";
 let cachedPdfAssetDirectory: FileSystemDirectoryHandle | null = null;
 
 type PdfJsLib = {
@@ -85,7 +87,7 @@ function escapeHtml(value: string) {
 }
 
 function buildPdfViewerContent(folderName: string, pdfFileName: string, title: string): string {
-  return `/book_html/${folderName}/${pdfFileName}`;
+  return getBookAssetUrl(`${folderName}/${pdfFileName}`);
 }
 
 export interface PdfImportPreviewOptions {
@@ -115,7 +117,7 @@ export async function buildPdfImportPreview(
   const folderName = sanitizeBookFolderName(options?.preferredFolder ?? file.name.replace(/\.pdf$/i, "")) || `pdf-import-${Date.now()}`;
   const bookId = slugify(options?.bookIdOverride?.trim() || folderName) || `book-${Date.now()}`;
   const pdfFileName = `${sanitizeAssetFileName(file.name.replace(/\.pdf$/i, "")) || "document"}.pdf`;
-  const basePdfSource = `/book_html/${folderName}/${pdfFileName}`;
+  const basePdfSource = getBookAssetUrl(`${folderName}/${pdfFileName}`);
 
   let pageCount = 1;
   try {
@@ -174,7 +176,14 @@ export async function writePdfAssetToDirectory(
   }
 
   try {
-    const bookDirectory = await rootDirectory.getDirectoryHandle(folderName, { create: true });
+    const pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
+    if (rootDirectory.name.toLowerCase() === pathParts[0]?.toLowerCase()) {
+      pathParts.shift();
+    }
+    const bookDirectory = await pathParts.reduce(
+      (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
+      Promise.resolve(rootDirectory),
+    );
     const fileHandle = await bookDirectory.getFileHandle(fileName, { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(file);

@@ -25,6 +25,10 @@ export function loadAdminData(): ContentStoreData {
             ...homePageData.shelfFolderIndexes,
             ...parsed.homePageData?.shelfFolderIndexes,
           },
+          shelfFolderCovers: {
+            ...homePageData.shelfFolderCovers,
+            ...parsed.homePageData?.shelfFolderCovers,
+          },
           style: {
             ...homePageData.style,
             ...parsed.homePageData?.style,
@@ -115,6 +119,10 @@ export function loadAdminData(): ContentStoreData {
       shelfFolderIndexes: {
         ...homePageData.shelfFolderIndexes,
         ...parsed.homePageData?.shelfFolderIndexes,
+      },
+      shelfFolderCovers: {
+        ...homePageData.shelfFolderCovers,
+        ...parsed.homePageData?.shelfFolderCovers,
       },
       style: {
         ...homePageData.style,

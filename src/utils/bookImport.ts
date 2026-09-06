@@ -1,6 +1,7 @@
 import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
 import { resolveImportBookHtmlFolder } from "./htmlStepContent";
+import { getBookAssetUrl } from "../config/externalHosting";
 
 export interface ParsedHtmlPage {
   fileName: string;
@@ -189,7 +190,9 @@ export function parseHtmlFileName(fileName: string): { pageNumber: number; sortO
 export const MAX_INLINE_HTML_BYTES = 150_000;
 
 export function bookHtmlIframeContent(folderName: string, fileName: string): string {
-  return `<iframe src="/book_html/${folderName}/${fileName}" style="width:100%;height:100%;border:none;"></iframe>`;
+  const relativePath = `${folderName}/${fileName}`;
+  const url = getBookAssetUrl(relativePath);
+  return `<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>`;
 }
 
 export function usesExternalBookAssets(content: string): boolean {

@@ -53,6 +53,9 @@ export const SERIES_FOLDER_TAGS = new Set([
   "ScoobyDoo",
   "ReadAtHome",
   "BoBo",
+  "OxfordReading",
+  "Pepper And Carrot",
+  "ScienceAdventures",
 ]);
 
 export function isSeriesFolderTag(tag: string): boolean {

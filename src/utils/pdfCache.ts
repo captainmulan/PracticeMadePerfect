@@ -1,3 +1,7 @@
+import type { Course } from "../data/courses";
+import { getBookAssetUrl } from "../config/externalHosting";
+import { bookStorageCategory } from "./htmlStepContent";
+
 type CacheEntry =
   | { status: "loading"; promise: Promise<ArrayBuffer> }
   | { status: "ready"; buffer: ArrayBuffer; fetchedAt: number };
@@ -142,13 +146,42 @@ export function pdfUrlFromBookFolder(bookHtmlFolder?: string | null): string {
   const folder = (bookHtmlFolder ?? "").replace(/^\/+|\/+$/g, "");
   if (!folder) return "";
   const fileName = /\.pdf$/i.test(folder) ? `${folder}.pdf` : `${folder}.pdf`;
-  return `/book_html/${folder}/${fileName}`;
+  return getBookAssetUrl(`${folder}/${fileName}`);
 }
 
 /** Resolve the file URL for a PDF step, including the imported-folder fallback. */
-export function resolvePdfStepFileUrl(contentHtml: string, bookHtmlFolder?: string | null): string {
+export function resolvePdfStepFileUrl(
+  contentHtml: string,
+  bookHtmlFolder?: string | null,
+  category?: string | null,
+): string {
   const fromContent = normalizePdfFileUrl(extractPdfUrlFromHtml(contentHtml));
-  return fromContent || pdfUrlFromBookFolder(bookHtmlFolder);
+  if (fromContent) {
+    const legacyMatch = fromContent.match(/^\/book_html\/([^/]+)\/(.+)$/i);
+    if (legacyMatch && !/^(Comic|Other)\//i.test(legacyMatch[1])) {
+      return getBookAssetUrl(`${bookStorageCategory(category)}/${legacyMatch[1]}/${legacyMatch[2]}`);
+    }
+    if (/^\/book_html\/(Comic|Other)\//i.test(fromContent)) {
+      const [, sourceCategory, assetPath] = fromContent.match(/^\/book_html\/(Comic|Other)\/(.+)$/i)!;
+      const relativePath = `${category ? bookStorageCategory(category) : sourceCategory}/${assetPath}`;
+      return getBookAssetUrl(relativePath);
+    }
+    if (/^https?:\/\//i.test(fromContent) && bookHtmlFolder && category) {
+      const fileName = fromContent.match(/([^/]+\.pdf)(?:[#?]|$)/i)?.[1];
+      if (fileName) {
+        const folder = /^(Comic|Other)\//i.test(bookHtmlFolder)
+          ? bookHtmlFolder
+          : `${bookStorageCategory(category)}/${bookHtmlFolder}`;
+        return getBookAssetUrl(`${folder}/${fileName}`);
+      }
+    }
+    const hostedMatch = fromContent.match(/^https?:\/\/[^/]+\/(Comic|Other)\/(.+)$/i);
+    if (hostedMatch && category) {
+      return getBookAssetUrl(`${bookStorageCategory(category)}/${hostedMatch[2]}`);
+    }
+    return fromContent;
+  }
+  return pdfUrlFromBookFolder(bookHtmlFolder);
 }
 
 export function pdfFetchFallbackUrls(url: string): string[] {

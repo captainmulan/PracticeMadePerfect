@@ -1620,7 +1620,9 @@
                 }
               : {
                   url: source,
+                  disableStream: true,
                   disableAutoFetch: true,
+                  disableRange: true,
                   isEvalSupported: false,
                   maxImageSize: -1,
                   disableFontFace: false,
@@ -1633,7 +1635,21 @@
           if (loaded) return;
           loaded = true;
           try {
-            pdfDoc = await openDocument(source);
+            let documentSource = source;
+            if (typeof source === "string") {
+              const response = await fetch(source, { cache: "no-store" });
+              if (!response.ok) {
+                throw new Error(`Book file request failed (${response.status}).`);
+              }
+              const buffer = await response.arrayBuffer();
+              const header = new Uint8Array(buffer.slice(0, 5));
+              const signature = String.fromCharCode(...header);
+              if (signature !== "%PDF-") {
+                throw new Error("The book file is not a valid PDF response.");
+              }
+              documentSource = buffer;
+            }
+            pdfDoc = await openDocument(documentSource);
             panelsByPage.clear();
             panelIndex = 0;
             currentPage = Math.min(Math.max(1, currentPage), pdfDoc.numPages);

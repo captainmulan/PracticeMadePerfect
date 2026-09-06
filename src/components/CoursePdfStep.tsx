@@ -49,6 +49,7 @@ interface CoursePdfStepProps {
   totalPages: number;
   pageBrief: string;
   bookHtmlFolder?: string | null;
+  category?: string | null;
   pageViewType?: PageViewType | null;
   courseId?: string | null;
   onPrevious?: () => void;
@@ -76,6 +77,7 @@ export default function CoursePdfStep({
   totalPages,
   pageBrief,
   bookHtmlFolder,
+  category,
   pageViewType: pageViewTypeProp,
   onPrevious,
   onNext,
@@ -94,14 +96,14 @@ export default function CoursePdfStep({
   const configuredView = normalizePageViewType(pageViewTypeProp);
   const pdfSource = step.contentHtml?.trim() ?? "";
   const { fileUrl, pageNumber, viewerBindKey } = useMemo(() => {
-    const file = resolvePdfStepFileUrl(pdfSource, bookHtmlFolder);
+    const file = resolvePdfStepFileUrl(pdfSource, bookHtmlFolder, category);
     const hasPageHint = /(?:#|\?)page=\d+/i.test(pdfSource);
     const page = hasPageHint
       ? extractPdfPageNumber(pdfSource)
       : Math.max(1, (typeof step.stepIndex === "number" ? step.stepIndex : 0) + 1);
     const bindKey = file ? `${file}::${configuredView}` : null;
     return { fileUrl: file, pageNumber: page, viewerBindKey: bindKey };
-  }, [bookHtmlFolder, pdfSource, step.stepIndex, configuredView]);
+  }, [bookHtmlFolder, category, pdfSource, step.stepIndex, configuredView]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [viewerReady, setViewerReady] = useState(false);

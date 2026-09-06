@@ -1,6 +1,9 @@
 import type { BookImportPreview, ParsedHtmlPage } from "./bookImport";
+import { createDefaultBookFields } from "./bookImport";
+import type { Course } from "../data/courses";
+import { getBookAssetUrl } from "../config/externalHosting";
 
-const DEFAULT_BOOK_HTML_DIRECTORY_PATH = "C:\\Users\\65966\\PracticeMadePerfect\\book_html";
+const DEFAULT_BOOK_HTML_DIRECTORY_PATH = "book_html";
 let cachedEpubAssetDirectory: FileSystemDirectoryHandle | null = null;
 
 type EpubJsLib = {
@@ -335,7 +338,7 @@ export async function buildEpubImportPreview(
   const folderName = sanitizeBookFolderName(options?.preferredFolder ?? file.name.replace(/\.epub$/i, "")) || `epub-import-${Date.now()}`;
   const bookId = slugify(options?.bookIdOverride?.trim() || folderName) || `book-${Date.now()}`;
   const epubFileName = `${sanitizeAssetFileName(file.name.replace(/\.epub$/i, "")) || "document"}.epub`;
-  const baseEpubSource = `/book_html/${folderName}/${epubFileName}`;
+  const baseEpubSource = getBookAssetUrl(`${folderName}/${epubFileName}`);
 
   const arrayBuffer = await file.arrayBuffer();
   let spineItems: EpubSpineItem[] = [];
@@ -440,7 +443,14 @@ export async function writeEpubAssetToDirectory(
   }
 
   try {
-    const bookDirectory = await rootDirectory.getDirectoryHandle(folderName, { create: true });
+    const pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
+    if (rootDirectory.name.toLowerCase() === pathParts[0]?.toLowerCase()) {
+      pathParts.shift();
+    }
+    const bookDirectory = await pathParts.reduce(
+      (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
+      Promise.resolve(rootDirectory),
+    );
     const fileHandle = await bookDirectory.getFileHandle(fileName, { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(file);

@@ -1,0 +1,47 @@
+{
+  "hosting": {
+    "public": "dist/book_html/Comic",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "headers": [
+      {
+        "source": "/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=86400,must-revalidate"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Access-Control-Allow-Methods",
+            "value": "GET, HEAD, OPTIONS"
+          },
+          {
+            "key": "Access-Control-Allow-Headers",
+            "value": "Range, Content-Type, Accept"
+          },
+          {
+            "key": "Access-Control-Expose-Headers",
+            "value": "Accept-Ranges, Content-Length, Content-Range, Content-Type"
+          }
+        ]
+      },
+      {
+        "source": "/**/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public,max-age=2592000,must-revalidate"
+          }
+        ]
+      }
+    ]
+  }
+}

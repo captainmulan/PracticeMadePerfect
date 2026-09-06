@@ -3,50 +3,55 @@
  * This allows separating bandwidth-heavy assets (PDFs) from the main app
  */
 
-// External Firebase project for PDF hosting
-export const PDF_HOSTING_URL = "https://magiclibrary-d9921.web.app";
-
-// External Firebase project for other large assets if needed
-export const ASSETS_HOSTING_URL = "https://magiclibrary-92246.web.app";
-
-// Whether to use external hosting for PDFs
-export const USE_EXTERNAL_PDF_HOSTING = false; // Enable external PDF hosting
-
-// Whether to use external hosting for HTML book assets
-export const USE_EXTERNAL_ASSETS_HOSTING = false; // Use external hosting for assets on new deployment
+// Whether to use folder-based external hosting for book assets (Comic/Other folders)
+export const USE_EXTERNAL_BOOK_HOSTING = true;
 
 /**
- * Multi-hosting configuration for PDF distribution
- * This enables load balancing across multiple Firebase projects
+ * Multi-hosting configuration for book distribution
+ * Routes different book folders to different Firebase projects
  */
-export const PDF_HOSTS = [
-  "https://magiclibrary-92246.web.app", // Current primary
-  // Add more hosts as needed:
-  // "https://magiclibrary-d9921.web.app",
-  // "https://magiclibrary-xxxxx.web.app",
-];
+export const BOOK_HOSTING_CONFIG = {
+  "Comic": "https://magiclibrary-d9921.web.app",
+  "Other": "https://magiclibrary-143b7.web.app",
+  // Add more mappings as needed
+};
 
 /**
- * Get the full URL for a PDF file
- * @param relativePath - Relative path from book_html (e.g., "folder/file.pdf")
- * @returns Full URL for the PDF file
+ * Get the full URL for a book asset with folder-based routing
+ * @param relativePath - Relative path from book_html (e.g., "Comic/file.html" or "Other/file.pdf")
+ * @returns Full URL for the book asset, routed to appropriate hosting
  */
-export function getPdfUrl(relativePath: string): string {
-  if (USE_EXTERNAL_PDF_HOSTING) {
-    // External hosting (magiclibrary-d9921) serves PDFs at root level
-    return `${PDF_HOSTING_URL}/${relativePath}`;
+export function getBookAssetUrl(relativePath: string): string {
+  const normalizedPath = relativePath.replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+  const pathParts = normalizedPath.split("/").filter(Boolean);
+  if (pathParts.length > 1 && /^(Comic|Other)$/i.test(pathParts[0])) {
+    const root = pathParts[0];
+    while (pathParts.length > 1 && pathParts[1].toLowerCase() === root.toLowerCase()) {
+      pathParts.splice(1, 1);
+    }
+    relativePath = pathParts.join("/");
   }
-  return `/book_html/${relativePath}`;
-}
 
-/**
- * Get the full URL for an HTML book asset
- * @param relativePath - Relative path from book_html (e.g., "folder/file.html")
- * @returns Full URL for the HTML asset
- */
-export function getAssetUrl(relativePath: string): string {
-  if (USE_EXTERNAL_ASSETS_HOSTING) {
-    return `${ASSETS_HOSTING_URL}/book_html/${relativePath}`;
+  // If external book hosting is disabled, always use local hosting
+  if (!USE_EXTERNAL_BOOK_HOSTING) {
+    return `/book_html/${relativePath}`;
   }
+
+  // Extract folder from path (e.g., "Comic" from "Comic/file.html")
+  const folderIndex = pathParts.findIndex((part) => /^(Comic|Other)$/i.test(part));
+  if (folderIndex >= 0) {
+    pathParts[folderIndex] = pathParts[folderIndex].toLowerCase() === "comic" ? "Comic" : "Other";
+  }
+  const folder = pathParts[folderIndex >= 0 ? folderIndex : 0];
+
+  // Check if this folder has external hosting configured
+  const externalHost = BOOK_HOSTING_CONFIG[folder as keyof typeof BOOK_HOSTING_CONFIG];
+
+  if (externalHost) {
+    // Each external Firebase site serves its category folder as the web root.
+    return `${externalHost}/${pathParts.slice(folderIndex + 1).join('/')}`;
+  }
+
+  // Default to local hosting for folders not in config
   return `/book_html/${relativePath}`;
 }

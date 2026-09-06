@@ -152,7 +152,7 @@ export default function AdminBookUploadPanel({
           return;
         }
 
-        const folder = resolveImportBookHtmlFolder(targetBookFull, preview.folderName);
+        const folder = resolveImportBookHtmlFolder(targetBookFull, preview.folderName, category);
         const pages = await readHtmlPagesFromFiles(files, { preferredFolder: folder });
         const result = mergeHtmlPagesIntoExistingCourse(targetBookFull, pages, folder);
         if (result.updatedCount === 0) {
@@ -178,7 +178,7 @@ export default function AdminBookUploadPanel({
       return;
     }
 
-    const folder = resolveImportBookHtmlFolder(null, preview.folderName);
+    const folder = resolveImportBookHtmlFolder(null, preview.folderName, category);
     const pages = await readHtmlPagesFromFiles(files, { preferredFolder: folder });
     const course = buildCourseFromPreview(
       { ...preview, pages },

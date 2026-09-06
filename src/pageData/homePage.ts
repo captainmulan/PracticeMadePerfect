@@ -13,6 +13,7 @@ export const homePageData = {
     Other: { scIndex: 2 },
     Author: { scIndex: 3 },
   } as Record<string, { pIndex?: number; scIndex?: number; sIndex?: number }>,
+  shelfFolderCovers: {} as Record<string, string>,
   style: {
     main: {
       backgroundColor: "#f8fafc",

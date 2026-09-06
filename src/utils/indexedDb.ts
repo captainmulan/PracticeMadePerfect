@@ -4,6 +4,8 @@ import type { Announcement } from "../types/announcement";
 import { BOOK_COVER_SEEDS } from "./bookCoverSeeds";
 import { normalizeBookCategory } from "./bookCategories";
 import { canonicalAuthorName } from "./authorName";
+import { bookStorageCategory, normalizeBookStorageFolder } from "./htmlStepContent";
+import { getBookAssetUrl } from "../config/externalHosting";
 
 const DB_NAME = "magic-library-db";
 const DB_VERSION = 4;
@@ -278,6 +280,54 @@ function assembleChaptersForCourse(
     }));
 }
 
+function normalizeLegacyBookStoragePath(course: Course): Course {
+  const storageCategory = bookStorageCategory(course.category);
+  const rawFolder = course.bookHtmlFolder ? normalizeBookStorageFolder(course.bookHtmlFolder) : "";
+  const firstStep = course.chapters.flatMap((chapter) => chapter.steps).find((step) => step.contentHtml);
+  const sourceFolder = rawFolder || firstStep?.contentHtml?.match(/\/book_html\/([^/"?#]+)\//i)?.[1] || "";
+  const folder = sourceFolder && !/^(Comic|Other)\//i.test(sourceFolder)
+    ? `${storageCategory}/${sourceFolder}`
+    : sourceFolder;
+
+  const chapters = course.chapters.map((chapter) => ({
+    ...chapter,
+    steps: chapter.steps.map((step) => ({
+      ...step,
+      contentHtml: normalizeLegacyStepSource(step.contentHtml, step.stepType, folder, storageCategory),
+    })),
+  }));
+
+  return {
+    ...course,
+    bookHtmlFolder: folder || course.bookHtmlFolder,
+    chapters,
+  };
+}
+
+function normalizeLegacyStepSource(
+  contentHtml: string | undefined,
+  stepType: Course["chapters"][number]["steps"][number]["stepType"],
+  folder: string,
+  storageCategory: "Comic" | "Other",
+): string | undefined {
+  if (!contentHtml) return contentHtml;
+
+  if (stepType === "pdf") {
+    const fileName = contentHtml.match(/([^/"?#]+\.pdf)(?:[#?]|$)/i)?.[1];
+    if (fileName && folder) {
+      const pageSuffix = contentHtml.match(/([#?]page=\d+)$/i)?.[1] ?? "";
+      return `${getBookAssetUrl(`${folder}/${fileName}`)}${pageSuffix}`;
+    }
+  }
+
+  return contentHtml.replace(
+    /\/book_html\/([^/"?#]+)(?=\/)/gi,
+    (match, root: string) => /^(Comic|Other)$/i.test(root)
+      ? `/book_html/${storageCategory}`
+      : `/book_html/${storageCategory}/${root}`,
+  );
+}
+
 export async function getCourseSummaries(): Promise<Course[]> {
   const db = await openDb();
   const courses = await promisifyRequest(
@@ -297,10 +347,10 @@ export async function getCourseOutlineById(courseId: string): Promise<Course | n
 
   const summary = toCourseSummaryRecord(raw);
   if (raw.stepOutline?.length) {
-    return {
+    return normalizeLegacyBookStoragePath({
       ...summary,
       chapters: rebuildChaptersFromStepOutline(courseId, raw.stepOutline),
-    };
+    });
   }
 
   return getCourseById(courseId);
@@ -328,10 +378,10 @@ export async function getCourseById(courseId: string): Promise<Course | null> {
     tx.objectStore(STORE_STEPS).index("courseId").getAll(courseId),
   );
 
-  return {
+  return normalizeLegacyBookStoragePath({
     ...summary,
     chapters: assembleChaptersForCourse(courseId, chapters, steps),
-  } as Course;
+  } as Course);
 }
 
 export async function getCourses(): Promise<Course[]> {
@@ -375,6 +425,7 @@ export async function patchCourseIndexes(
 }
 
 export async function saveCourse(course: Course): Promise<void> {
+  course = normalizeLegacyBookStoragePath(course);
   console.log("saveCourse called for", course.id, course.title);
   const db = await openDb();
 

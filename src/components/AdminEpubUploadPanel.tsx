@@ -191,13 +191,18 @@ export default function AdminEpubUploadPanel({
     setAssetExportProgress(null);
 
     try {
+      const folder = resolveImportBookHtmlFolder(
+        uploadMode === "existing" ? targetBookFull : null,
+        preview.folderName,
+        category,
+      );
       const assetDirectory = await resolveEpubAssetDirectory();
       const assetCount = 1;
       setAssetExportProgress({ completed: 0, total: assetCount });
       if (assetDirectory) {
         await writeEpubAssetToDirectory(
           assetDirectory.directoryHandle,
-          preview.folderName,
+          folder,
           preview.epubFileName,
           selectedEpub,
           (progress: EpubAssetExportProgress) => {
@@ -216,7 +221,6 @@ export default function AdminEpubUploadPanel({
           return;
         }
 
-        const folder = resolveImportBookHtmlFolder(targetBookFull, preview.folderName);
         const merged = buildEpubMergeResult(targetBookFull, preview.pages, folder);
         const summary = saveImmediately
           ? `Updated ${merged.updatedCount} page(s) in "${targetBookFull.title}" from EPUB.${merged.unmatchedFiles.length ? ` Skipped ${merged.unmatchedFiles.length} file(s).` : ""}`
@@ -232,7 +236,6 @@ export default function AdminEpubUploadPanel({
         return;
       }
 
-      const folder = resolveImportBookHtmlFolder(null, preview.folderName);
       const course = buildCourseFromPreview(
         { ...preview, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
         books.length,

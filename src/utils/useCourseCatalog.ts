@@ -6,7 +6,6 @@ import { loadCourseSummariesFromBrowserDb } from "./sqliteBrowserCourses";
 /** Survives Home unmount so Category back does not flash empty placeholder books. */
 let catalogCache: Course[] | null = null;
 let catalogFromIdb = false;
-let packagedCatalogIds: Set<string> | null = null;
 
 function applyPublishedFilter(items: Course[], publishedMode: "published" | "unpublished" | "all") {
   switch (publishedMode) {
@@ -39,7 +38,6 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
       try {
         const early = await fetchHomeCatalogSummaries();
         if (!active || !early || early.length === 0) return;
-        packagedCatalogIds = new Set(early.map((course) => course.id));
         if (!catalogFromIdb) {
           catalogCache = early;
           setCourses(applyPublishedFilter(catalogCache, publishedMode));
@@ -56,12 +54,7 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
         if (!active) return;
         if (data.length > 0) {
           catalogFromIdb = true;
-          if (packagedCatalogIds && packagedCatalogIds.size > 0 && data.length > packagedCatalogIds.size) {
-            const aligned = data.filter((course) => packagedCatalogIds!.has(course.id));
-            catalogCache = aligned.length > 0 ? aligned : data;
-          } else {
-            catalogCache = data;
-          }
+          catalogCache = data;
         }
         const filteredData = applyPublishedFilter(catalogCache ?? data, publishedMode);
         setCourses((prev) => (filteredData.length > 0 ? filteredData : prev.length > 0 ? prev : filteredData));

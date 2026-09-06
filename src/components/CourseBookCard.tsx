@@ -119,7 +119,7 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
         overflow: isEmojiCategory || isBooks3dFolder ? "visible" : "hidden",
       }}>
         {isBooks3dFolder ? (
-          <CategoryBooksFolderCover label={item.title} />
+          <CategoryBooksFolderCover label={item.title} imageUrl={item.coverImageUrl} />
         ) : isEmojiCategory ? (
           item.iconImageUrl ? (
             <img

@@ -12,6 +12,32 @@ function slugify(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
+const MAX_COVER_DATA_URL_BYTES = 800_000;
+
+async function readCoverImage(file: File): Promise<string> {
+  const source = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error ?? new Error("Unable to read cover image."));
+    reader.readAsDataURL(file);
+  });
+
+  if (file.size <= MAX_COVER_DATA_URL_BYTES) return source;
+
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Unable to process cover image."));
+    image.src = source;
+  });
+  const scale = Math.min(1, 1200 / Math.max(image.naturalWidth, image.naturalHeight));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+  canvas.getContext("2d")?.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/webp", 0.82);
+}
+
 function rebuildChaptersFromSteps(courseId: string, steps: CourseStep[]): CourseChapter[] {
   const chapterMap = new Map<string, CourseChapter>();
   steps.forEach((step) => {
@@ -1115,7 +1141,7 @@ export default function AdminCourses() {
                     <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #e2e8f0" }}>
                       <h4 style={{ marginTop: 0, marginBottom: "8px" }}>Cover Image</h4>
                       <p style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "12px" }}>
-                        Upload a cover image for Home_Test live preview (and future shelf). Max 800 KB. JPG, PNG, or WebP.
+                        Upload a cover image for Home_Test live preview (and future shelf). Large images are resized automatically. JPG, PNG, or WebP.
                       </p>
                       {activeBook.coverImageUrl ? (
                         <div style={{ marginBottom: "12px" }}>
@@ -1146,19 +1172,15 @@ export default function AdminCourses() {
                                 setMessage("Please choose an image file.");
                                 return;
                               }
-                              if (file.size > 800_000) {
-                                setMessage("Cover image too large (max 800 KB).");
-                                return;
-                              }
-                              const reader = new FileReader();
-                              reader.onload = () => {
+                              void readCoverImage(file).then((coverImageUrl) => {
                                 updateActiveBook((c) => ({
                                   ...c,
-                                  coverImageUrl: String(reader.result),
+                                  coverImageUrl,
                                 }));
                                 setMessage("Cover image loaded — save the book to keep it.");
-                              };
-                              reader.readAsDataURL(file);
+                              }).catch((error: unknown) => {
+                                setMessage(error instanceof Error ? error.message : "Unable to load cover image.");
+                              });
                               e.target.value = "";
                             }}
                           />

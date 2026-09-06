@@ -1,6 +1,13 @@
 import type { Course } from "./courses";
+import { getBookAssetUrl } from "../config/externalHosting";
 
 export const LITTLE_PROGRAMMER_BOOK_ID = "little-programmer";
+
+// Helper function to generate iframe HTML with external hosting support
+function createIframeHtml(relativePath: string): string {
+  const url = getBookAssetUrl(relativePath);
+  return `<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>`;
+}
 
 export const LITTLE_PROGRAMMER_BOOK: Course = {
   id: LITTLE_PROGRAMMER_BOOK_ID,
@@ -39,7 +46,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Book Briefing",
           description: "Learn about the Little Programmer book",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/index.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("Other/LittleProgrammer/index.html"),
         },
       ],
     },
@@ -60,7 +67,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 1 - What is Programming",
           description: "Learn what programming is",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter1.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter1.html"),
         },
       ],
     },
@@ -81,7 +88,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 2 - What is a Program",
           description: "Learn about programs and algorithms",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter2.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter2.html"),
         },
         {
           id: `${LITTLE_PROGRAMMER_BOOK_ID}-step-2-1`,
@@ -93,7 +100,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Move the Bunny (Interactive)",
           description: "Interactive activity: Move the Bunny",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter2.1_movebunny.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter2.1_movebunny.html"),
         },
       ],
     },
@@ -114,7 +121,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 3 - Events & Input",
           description: "Learn about events and input",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter3.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter3.html"),
         },
         {
           id: `${LITTLE_PROGRAMMER_BOOK_ID}-step-3-1`,
@@ -126,7 +133,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Simple Event Program",
           description: "Interactive event program",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter3.1.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter3.1.html"),
         },
       ],
     },
@@ -147,7 +154,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 4 - Loops & Repetition",
           description: "Learn about loops",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter4.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter4.html"),
         },
         {
           id: `${LITTLE_PROGRAMMER_BOOK_ID}-step-4-1`,
@@ -159,7 +166,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Looping Activity",
           description: "Interactive looping activity",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter4.1.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter4.1.html"),
         },
       ],
     },
@@ -180,7 +187,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 5 - Conditions & Decisions",
           description: "Learn about conditions",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter5.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter5.html"),
         },
         {
           id: `${LITTLE_PROGRAMMER_BOOK_ID}-step-5-1`,
@@ -192,7 +199,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Conditional Activity",
           description: "Interactive conditional activity",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter5.1.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter5.1.html"),
         },
       ],
     },
@@ -213,7 +220,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 6 - Variables & Data",
           description: "Learn about variables",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter6.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter6.html"),
         },
         {
           id: `${LITTLE_PROGRAMMER_BOOK_ID}-step-6-1`,
@@ -225,7 +232,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Using Variables",
           description: "Interactive variable activity",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter6.1.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter6.1.html"),
         },
       ],
     },
@@ -246,7 +253,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 7 - Debugging",
           description: "Learn about debugging",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter7.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter7.html"),
         },
         {
           id: `${LITTLE_PROGRAMMER_BOOK_ID}-step-7-1`,
@@ -258,7 +265,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Debugging Puzzles",
           description: "Interactive debugging puzzles",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter7.1.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter7.1.html"),
         },
       ],
     },
@@ -279,7 +286,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 8 - Projects",
           description: "Learn about projects",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter8.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter8.html"),
         },
         {
           id: `${LITTLE_PROGRAMMER_BOOK_ID}-step-8-1`,
@@ -291,7 +298,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Final Project Ideas",
           description: "Project ideas and examples",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter8.1.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter8.1.html"),
         },
       ],
     },
@@ -312,7 +319,7 @@ export const LITTLE_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 9 - Congratulations",
           description: "Congratulations and next steps",
-          contentHtml: `<iframe src="/book_html/LittleProgrammer/chapter9.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("LittleProgrammer/chapter9.html"),
         },
       ],
     },

@@ -30,13 +30,50 @@ npm run dev
 
 ## Deploy
 
-Use this command for future deployments so the repo's current SQLite database and bundled app data are copied into the Firebase hosting folder first:
+Use this command for future app deployments so the repo's current database and bundled app data are copied into the Firebase hosting folder first:
 
 ```bash
 npm run deploy:firebase
 ```
 
-This command runs the build, syncs the current database into the public hosting assets, and then deploys to Firebase.
+The live Firebase sites are:
+
+- App: `magiclibrary-92246` (`https://magiclibrary-92246.web.app`)
+- Other books: `magiclibrary-143b7` (`https://magiclibrary-143b7.web.app`)
+- Comic books: `magiclibrary-d9921` (`https://magiclibrary-d9921.web.app`)
+
+Deploy individually with:
+
+```bash
+npm run deploy:app
+npm run deploy:other
+npm run deploy:comic
+```
+
+`npm run deploy:app` deploys the app without the `book_html` folder. Use
+`npm run deploy:firebase` when the app deployment should include all built files.
+
+Or deploy all three sites:
+
+```bash
+npm run deploy:all
+```
+
+The book deployments use only these built directories:
+
+- Other: `dist/book_html/Other`
+- Comic: `dist/book_html/Comic`
+
+Firebase Hosting deployments are versioned and atomic. A successful new deploy becomes the complete live file set for that site; files from the previous release that are not in the new directory are no longer served. There is no separate “delete all files” step, and disabling the site first would only create unnecessary downtime.
+
+For a direct deploy from CMD or PowerShell:
+
+```bash
+firebase deploy --config firebase-comic.json --project magiclibrary-d9921
+firebase deploy --config firebase-other.json --project magiclibrary-143b7
+```
+
+Run `npm run build` and `npm run sync-deploy-assets` first when using those direct commands. The `npm run deploy:comic` and `npm run deploy:other` scripts already do that preparation automatically.
 
 ### Deploying custom theme / admin settings
 

@@ -1,4 +1,5 @@
 import type { Course, CourseStep } from "../data/courses";
+import { getBookAssetUrl } from "../config/externalHosting";
 import { extractBookHtmlIframeSrc, resolveBookHtmlFolder } from "./htmlStepContent";
 import { getPopularCourses } from "./courseShelf";
 import { resolveBookCoverUrl } from "./bookCoverSeeds";
@@ -212,7 +213,7 @@ function resolveAssetUrl(src: string, bookHtmlFolder: string | null): string {
     return trimmed;
   }
   if (bookHtmlFolder) {
-    return `/book_html/${bookHtmlFolder}/${trimmed.replace(/^\.\//, "")}`;
+    return getBookAssetUrl(`${bookHtmlFolder}/${trimmed.replace(/^\.\//, "")}`);
   }
   return trimmed;
 }

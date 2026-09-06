@@ -2,6 +2,7 @@ import type { Course } from "../data/courses";
 import {
   indexesForAuthor,
   indexesForFolder,
+  folderIndexKey,
   sortByShelfIndex,
 } from "./shelfItemIndexes";
 import { resolveBookCoverUrl } from "./bookCoverSeeds";
@@ -16,6 +17,7 @@ import {
   getCategoryShelfStyle,
 } from "./bookCategories";
 import { canonicalAuthorName } from "./authorName";
+import { getHomePageData } from "./contentStore";
 
 export interface CourseShelfItem {
   id: string;
@@ -576,6 +578,7 @@ function makeCategoryFolderItem(
   const label = formatCategoryLabel(tag);
   const useBooks3d = books3d && !EMOJI_ROOT_FOLDERS.has(tag);
   const series = isSeriesFolderTag(tag);
+  const folderCover = series ? getHomePageData().shelfFolderCovers?.[folderIndexKey(path)] : undefined;
   return {
     id: `category-${path.join("/")}`,
     title: label,
@@ -585,6 +588,7 @@ function makeCategoryFolderItem(
     coverColorMiddle: style.coverColorMiddle,
     coverColorEnd: style.coverColorEnd,
     icon: flag?.icon ?? style.icon,
+    coverImageUrl: folderCover,
     iconImageUrl: flag?.flagSrc,
     iconColorStart: "#fff",
     iconColorMiddle: "#fff",

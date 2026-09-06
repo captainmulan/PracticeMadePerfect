@@ -1,6 +1,13 @@
 import type { Course } from "./courses";
+import { getBookAssetUrl } from "../config/externalHosting";
 
 export const JS_PROGRAMMER_BOOK_ID = "js-programmer";
+
+// Helper function to generate iframe HTML with external hosting support
+function createIframeHtml(relativePath: string): string {
+  const url = getBookAssetUrl(relativePath);
+  return `<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>`;
+}
 
 export const JS_PROGRAMMER_BOOK: Course = {
   id: JS_PROGRAMMER_BOOK_ID,
@@ -37,7 +44,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Book Briefing",
           description: "Learn about the JS Programmer book",
-          contentHtml: `<iframe src="/book_html/JS programmer/000-Book-Briefing.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("Other/JS programmer/000-Book-Briefing.html"),
         },
       ],
     },
@@ -58,7 +65,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 1 - What is Computer?",
           description: "Learn about computers",
-          contentHtml: `<iframe src="/book_html/JS programmer/01-what-is-computer.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/01-what-is-computer.html"),
         },
       ],
     },
@@ -79,7 +86,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 2 - What is Programming?",
           description: "Learn about programming",
-          contentHtml: `<iframe src="/book_html/JS programmer/02-what-is-programming.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/02-what-is-programming.html"),
         },
       ],
     },
@@ -100,7 +107,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 3 - Hello World",
           description: "Learn about program sequence",
-          contentHtml: `<iframe src="/book_html/JS programmer/03-Hello-World.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/03-Hello-World.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-3-1`,
@@ -112,7 +119,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Hello World Explained",
           description: "Detailed explanation of Hello World",
-          contentHtml: `<iframe src="/book_html/JS programmer/3.1-HelloWorld-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/3.1-HelloWorld-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-3-2`,
@@ -124,7 +131,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Hello World Quiz",
           description: "Quiz on Hello World concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/3.2-HelloWorld-quiz-.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/3.2-HelloWorld-quiz-.html"),
         },
       ],
     },
@@ -145,7 +152,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 4 - Maze Walker",
           description: "Learn about commands",
-          contentHtml: `<iframe src="/book_html/JS programmer/04-Maze-Walker.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/04-Maze-Walker.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-4-1`,
@@ -157,7 +164,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Maze Walker Explained",
           description: "Detailed explanation of Maze Walker",
-          contentHtml: `<iframe src="/book_html/JS programmer/4.1-MazeWalker-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/4.1-MazeWalker-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-4-2`,
@@ -169,7 +176,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Maze Walker Quiz",
           description: "Quiz on Maze Walker concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/4.2-MazeWalker-quiz-.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/4.2-MazeWalker-quiz-.html"),
         },
       ],
     },
@@ -190,7 +197,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 5 - Whack-a-Mole",
           description: "Learn about click events",
-          contentHtml: `<iframe src="/book_html/JS programmer/05-Whack-a-Mole.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/05-Whack-a-Mole.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-5-1`,
@@ -202,7 +209,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Whack-a-Mole Explained",
           description: "Detailed explanation of Whack-a-Mole",
-          contentHtml: `<iframe src="/book_html/JS programmer/5.1-Whack-a-Mole-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/5.1-Whack-a-Mole-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-5-2`,
@@ -214,7 +221,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Whack-a-Mole Quiz",
           description: "Quiz on Whack-a-Mole concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/5.2-Whack-a-Mole.quiz.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/5.2-Whack-a-Mole.quiz.html"),
         },
       ],
     },
@@ -235,7 +242,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 6 - Dice Battle",
           description: "Learn about variables and random numbers",
-          contentHtml: `<iframe src="/book_html/JS programmer/06-Dice-Battle.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/06-Dice-Battle.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-6-1`,
@@ -247,7 +254,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Dice Battle Explained",
           description: "Detailed explanation of Dice Battle",
-          contentHtml: `<iframe src="/book_html/JS programmer/6.1-Dice-Battle-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/6.1-Dice-Battle-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-6-2`,
@@ -259,7 +266,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Dice Battle Quiz",
           description: "Quiz on Dice Battle concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/6.2-Dice-Battle.quiz.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/6.2-Dice-Battle.quiz.html"),
         },
       ],
     },
@@ -280,7 +287,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 7 - Memory Match",
           description: "Learn about if/compare",
-          contentHtml: `<iframe src="/book_html/JS programmer/07-Memory-Match.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/07-Memory-Match.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-7-1`,
@@ -292,7 +299,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Memory Match Explained",
           description: "Detailed explanation of Memory Match",
-          contentHtml: `<iframe src="/book_html/JS programmer/7.1-Memory-Match-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/7.1-Memory-Match-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-7-2`,
@@ -304,7 +311,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Memory Match Quiz",
           description: "Quiz on Memory Match concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/7.2-Memory-Match.quiz.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/7.2-Memory-Match.quiz.html"),
         },
       ],
     },
@@ -325,7 +332,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 8 - Simon Says",
           description: "Learn about loops",
-          contentHtml: `<iframe src="/book_html/JS programmer/08-Simon-Says.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/08-Simon-Says.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-8-1`,
@@ -337,7 +344,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Simon Says Explained",
           description: "Detailed explanation of Simon Says",
-          contentHtml: `<iframe src="/book_html/JS programmer/8.1-Simon-Says-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/8.1-Simon-Says-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-8-2`,
@@ -349,7 +356,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Simon Says Quiz",
           description: "Quiz on Simon Says concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/8.2-Simon-Says.quiz.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/8.2-Simon-Says.quiz.html"),
         },
       ],
     },
@@ -370,7 +377,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 9 - Falling Catcher",
           description: "Learn about game loops and keyboard events",
-          contentHtml: `<iframe src="/book_html/JS programmer/09-Falling-Catcher.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/09-Falling-Catcher.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-9-1`,
@@ -382,7 +389,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Falling Catcher Explained",
           description: "Detailed explanation of Falling Catcher",
-          contentHtml: `<iframe src="/book_html/JS programmer/09.1-Falling-Catcher-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/09.1-Falling-Catcher-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-9-2`,
@@ -394,7 +401,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Falling Catcher Quiz",
           description: "Quiz on Falling Catcher concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/09.2-Falling-Catcher.quiz.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/09.2-Falling-Catcher.quiz.html"),
         },
       ],
     },
@@ -415,7 +422,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Chapter 10 - Breakout",
           description: "Learn about collision detection and bounce",
-          contentHtml: `<iframe src="/book_html/JS programmer/10-Breakout.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/10-Breakout.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-10-1`,
@@ -427,7 +434,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Breakout Explained",
           description: "Detailed explanation of Breakout",
-          contentHtml: `<iframe src="/book_html/JS programmer/10.1-Breakout-Explain.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/10.1-Breakout-Explain.html"),
         },
         {
           id: `${JS_PROGRAMMER_BOOK_ID}-step-10-2`,
@@ -439,7 +446,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Breakout Quiz",
           description: "Quiz on Breakout concepts",
-          contentHtml: `<iframe src="/book_html/JS programmer/10.2-Breakout.quiz.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/10.2-Breakout.quiz.html"),
         },
       ],
     },
@@ -460,7 +467,7 @@ export const JS_PROGRAMMER_BOOK: Course = {
           stepType: "html",
           title: "Congratulations",
           description: "Congratulations and next steps",
-          contentHtml: `<iframe src="/book_html/JS programmer/11-Congrat.html" style="width:100%;height:100%;border:none;"></iframe>`,
+          contentHtml: createIframeHtml("JS programmer/11-Congrat.html"),
         },
       ],
     },

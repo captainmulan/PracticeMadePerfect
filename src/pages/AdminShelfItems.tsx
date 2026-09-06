@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Course } from "../data/courses";
 import { loadCourseSummariesFromBrowserDb, persistCourseIndexes } from "../utils/sqliteBrowserCourses";
+import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import {
   listShelfCatalogItems,
   writeFolderIndexes,
@@ -33,12 +34,14 @@ export default function AdminShelfItems() {
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [folderCovers, setFolderCovers] = useState<Record<string, string>>({});
 
   useEffect(() => {
     loadCourseSummariesFromBrowserDb()
       .then((data) => {
         setBooks(data);
         setRows(listShelfCatalogItems(data));
+        setFolderCovers({ ...(loadAdminData().homePageData.shelfFolderCovers ?? {}) });
         setLoaded(true);
       })
       .catch((err) => setMessage(String(err)));
@@ -55,6 +58,11 @@ export default function AdminShelfItems() {
 
   const updateRow = (key: string, patch: ShelfIndexValues) => {
     setRows((current) => current.map((row) => (row.key === key ? { ...row, ...patch } : row)));
+  };
+
+  const updateFolderCover = (path: string[], value: string) => {
+    const key = path.filter(Boolean).join("/");
+    setFolderCovers((current) => ({ ...current, [key]: value }));
   };
 
   const handleSave = async () => {
@@ -77,6 +85,15 @@ export default function AdminShelfItems() {
         }
       }
       writeFolderIndexes(folderIndexes);
+      const adminData = loadAdminData();
+      const cleanedCovers: Record<string, string> = {};
+      for (const [key, value] of Object.entries(folderCovers)) {
+        if (value.trim()) cleanedCovers[key] = value.trim();
+      }
+      saveAdminData({
+        ...adminData,
+        homePageData: { ...adminData.homePageData, shelfFolderCovers: cleanedCovers },
+      });
       const refreshed = await loadCourseSummariesFromBrowserDb();
       setBooks(refreshed);
       setRows(listShelfCatalogItems(refreshed));
@@ -132,6 +149,7 @@ export default function AdminShelfItems() {
               <th>Popular</th>
               <th>Category</th>
               <th>Series</th>
+              <th>Series cover</th>
             </tr>
           </thead>
           <tbody>
@@ -166,6 +184,31 @@ export default function AdminShelfItems() {
                     value={indexInput(row.sIndex)}
                     onChange={(event) => updateRow(row.key, { sIndex: parseIndex(event.target.value) })}
                   />
+                </td>
+                <td>
+                  {row.kind === "series" ? (
+                    <div>
+                      <input
+                        type="text"
+                        className="admin-grid-input"
+                        placeholder="/flags/series.webp or image URL"
+                        value={folderCovers[row.browsePath.join("/")] ?? ""}
+                        onChange={(event) => updateFolderCover(row.browsePath, event.target.value)}
+                      />
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onload = () => updateFolderCover(row.browsePath, String(reader.result));
+                          reader.readAsDataURL(file);
+                          event.target.value = "";
+                        }}
+                      />
+                    </div>
+                  ) : null}
                 </td>
               </tr>
             ))}
