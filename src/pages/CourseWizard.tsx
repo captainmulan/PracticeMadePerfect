@@ -46,6 +46,7 @@ export default function CourseWizard() {
   const [pdfReady, setPdfReady] = useState(false);
 
   useEffect(() => {
+    setCurrentStep(null);
     setPdfReady(false);
   }, [courseId]);
 
@@ -74,7 +75,6 @@ export default function CourseWizard() {
 
   useEffect(() => {
     const outlineStep = steps[stepIndex];
-    setCurrentStep(null);
     if (!outlineStep) {
       return;
     }
