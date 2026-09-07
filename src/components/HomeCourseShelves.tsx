@@ -7,6 +7,7 @@ interface HomeCourseShelvesProps {
   row: CourseShelfRow;
   /** Home_Test only: show admin/seed cover images on shelf cards. */
   useCoverImages?: boolean;
+  horizontal?: boolean;
   onItemClick?: (item: CourseShelfItem) => void;
 }
 
@@ -40,6 +41,7 @@ function createPlaceholderItem(category: string, index: number): CourseShelfItem
 export default function HomeCourseShelves({ 
   row, 
   useCoverImages = false, 
+  horizontal = false,
   onItemClick 
 }: HomeCourseShelvesProps) {
   const booksPerRow = useShelfColumns();
@@ -70,8 +72,12 @@ export default function HomeCourseShelves({
         ? Math.max(1, Math.ceil(displayItems.length / booksPerRow))
         : Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
 
-  for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
-    groups.push(displayItems.slice(rowIndex * booksPerRow, rowIndex * booksPerRow + booksPerRow));
+  if (horizontal) {
+    groups.push(displayItems);
+  } else {
+    for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
+      groups.push(displayItems.slice(rowIndex * booksPerRow, rowIndex * booksPerRow + booksPerRow));
+    }
   }
 
   const renderCard = (item: CourseShelfItem) => {
@@ -79,15 +85,21 @@ export default function HomeCourseShelves({
   };
 
   return (
-    <div className="bookshelf-container" style={{ ["--shelf-cols" as string]: String(booksPerRow) }}>
+    <section
+      className={`bookshelf-container${horizontal ? " bookshelf-container--horizontal" : ""}`}
+      style={{ ["--shelf-cols" as string]: String(booksPerRow) }}
+    >
+      <h2 className="home-shelf-title">{row.title}</h2>
       {groups.map((group, rowIndex) => (
         <div key={`book-row-wrap-${rowIndex}`} className="shelf">
-          <div className="books" key={`book-row-${rowIndex}`}>
-            {group.map((item) => renderCard(item))}
+          <div className={`shelf-track${horizontal ? " shelf-track--horizontal" : ""}`}>
+            <div className="books" key={`book-row-${rowIndex}`}>
+              {group.map((item) => renderCard(item))}
+            </div>
+            <div className="shelf-board" aria-hidden="true" />
           </div>
-          <div className="shelf-board" aria-hidden="true" />
         </div>
       ))}
-    </div>
+    </section>
   );
 }

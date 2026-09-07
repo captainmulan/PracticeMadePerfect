@@ -12,6 +12,8 @@ import {
   isSeriesFolderTag,
   collectCategoryChildren,
   collectTopCategoryNames,
+  courseMatchesCategoryPath,
+  getCategoryLevels,
   courseIsExactCategoryPath,
   formatCategoryLabel,
   getCategoryShelfStyle,
@@ -529,6 +531,28 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
   ).map((entry) => entry.item);
 
   return [buildShelfRow("Selection", mixed)];
+}
+
+export function getHomeCategoryBookRow(
+  courses: Course[],
+  category: string,
+  popularIds?: Set<string>,
+): CourseShelfRow {
+  const items = courses
+    .filter((course) =>
+      getCategoryLevels(course).some((level) => level.toLowerCase() === category.toLowerCase()),
+    )
+    .sort((a, b) => {
+      const aPopular = popularIds?.has(a.id) ?? false;
+      const bPopular = popularIds?.has(b.id) ?? false;
+      if (aPopular !== bPopular) return aPopular ? 1 : -1;
+      if (aPopular && bPopular) {
+        return (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER);
+      }
+      return (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title);
+    })
+    .map((course) => createShelfItemFromCourse(course, category));
+  return buildShelfRow(category, items);
 }
 
 export function getCategoryPickerRow(courses: Course[]): CourseShelfRow {

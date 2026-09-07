@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { readShelfReturn, saveShelfReturn } from "../utils/shelfReturn";
+import { readShelfReturn, saveShelfReturn, type ShelfReturnState } from "../utils/shelfReturn";
 import BookShowcase from "../components/showcase/BookShowcase";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import AuthorShelfRow from "../components/AuthorShelfRow";
@@ -17,6 +17,7 @@ import {
   getCategoryBrowseRow,
   getCategoryPickerRow,
   getCourseShelfRowForAuthor,
+  getHomeCategoryBookRow,
   getHomeCourseShelfRows,
   getPopularCourses,
   getUnpublishedBooksRow,
@@ -24,6 +25,7 @@ import {
 } from "../utils/courseShelf";
 import { AUTHOR_SHELF_ID } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
+import { getCourseProgressKey } from "../utils/courseUtils";
 import "../styles/home-test-showcase.css";
 
 const HOME_SHELF_TABS = [
@@ -58,19 +60,36 @@ function preloadPopularCovers(courses: ReturnType<typeof useCourseCatalog>["cour
   }
 }
 
+function hasSavedProgress(courseId: string): boolean {
+  try {
+    return window.localStorage.getItem(getCourseProgressKey(courseId)) !== null;
+  } catch {
+    return false;
+  }
+}
+
 type HomeProps = {
   showUnpublishedOnly?: boolean;
 };
 
+function getInitialShelfState(): ShelfReturnState {
+  if (typeof window === "undefined" || new URLSearchParams(window.location.search).get("restoreShelf") !== "1") {
+    return { tab: "Search", categoryPath: [], selectedAuthorName: null, searchQuery: "" };
+  }
+  return readShelfReturn() ?? { tab: "Category", categoryPath: [], selectedAuthorName: null, searchQuery: "" };
+}
+
 export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const initialShelf = getInitialShelfState();
   const [heroCollapsed, setHeroCollapsed] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<HomeShelfTab>("Search");
-  const [categoryPath, setCategoryPath] = useState<string[]>([]);
-  const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTab, setSelectedTab] = useState<HomeShelfTab>(initialShelf.tab as HomeShelfTab);
+  const [categoryPath, setCategoryPath] = useState<string[]>(initialShelf.categoryPath);
+  const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(initialShelf.selectedAuthorName);
+  const [searchQuery, setSearchQuery] = useState(initialShelf.searchQuery);
   const [shelfReady, setShelfReady] = useState(false);
+  const [shelfTransitioning, setShelfTransitioning] = useState(false);
   const data = getHomePageData();
   const style = data.style;
   const { courses, loaded: coursesLoaded } = useCourseCatalog({
@@ -80,6 +99,39 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     () => (showUnpublishedOnly ? [getUnpublishedBooksRow(courses)] : getHomeCourseShelfRows(courses)),
     [courses, showUnpublishedOnly]
   );
+  const homeRows = useMemo(() => {
+    if (showUnpublishedOnly) return [];
+    const popularCourses = getPopularCourses(courses);
+    const popularIds = new Set(popularCourses.map((course) => course.id));
+    const selection = {
+      title: "Selection",
+      items: popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
+    };
+    const categoryRows = ["Kid", "IT", "Interactive", "Language"].map((category) =>
+      getHomeCategoryBookRow(courses, category, popularIds),
+    );
+    const newlyAdded = courses
+      .slice()
+      .sort((a, b) => {
+        const aPopular = popularIds.has(a.id);
+        const bPopular = popularIds.has(b.id);
+        if (aPopular !== bPopular) return aPopular ? 1 : -1;
+        if (aPopular && bPopular) {
+          return (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER);
+        }
+        return (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title);
+      })
+      .map((course) => createShelfItemFromCourse(course, "Newly added"));
+    const currentReading = courses
+      .filter((course) => hasSavedProgress(course.id))
+      .map((course) => createShelfItemFromCourse(course, "Current reading"));
+    return [
+      ...(selection.items.length > 0 ? [selection] : []),
+      ...categoryRows,
+      { title: "Newly added", items: newlyAdded },
+      ...(currentReading.length > 0 ? [{ title: "Current reading", items: currentReading }] : []),
+    ].filter((row): row is NonNullable<typeof row> => Boolean(row && row.items.length > 0));
+  }, [courses, rows, showUnpublishedOnly]);
   const authorGroups = useMemo(() => {
     const groups = new Map<string, { authorName: string; authorPicture?: string }>();
     for (const course of courses) {
@@ -95,7 +147,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     });
   }, [courses]);
   const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
-  const showcaseEnabled = !showUnpublishedOnly && !heroCollapsed && coursesLoaded && courses.length > 0;
+  const showcaseEnabled =
+    !showUnpublishedOnly &&
+    !heroCollapsed &&
+    selectedTab === "Search" &&
+    !isSearching &&
+    coursesLoaded &&
+    courses.length > 0;
   const {
     selection: showcaseSelection,
     excerpt: showcaseExcerpt,
@@ -145,6 +203,12 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     if (row.items.length > 0) return;
     setCategoryPath((path) => path.slice(0, -1));
   }, [categoryPath, courses, coursesLoaded, selectedTab]);
+
+  useEffect(() => {
+    if (!shelfTransitioning) return;
+    const timeoutId = window.setTimeout(() => setShelfTransitioning(false), 260);
+    return () => window.clearTimeout(timeoutId);
+  }, [shelfTransitioning]);
 
   useEffect(() => {
     if (!shelfReady) return;
@@ -209,6 +273,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
 
   return (
     <div className="page-content page-home page-home-showcase">
+      {!coursesLoaded || !shelfReady || shelfTransitioning ? (
+        <div className="home-return-loader" role="status" aria-live="polite">
+          <span className="home-return-loader-emoji" aria-hidden="true">📚</span>
+          <span>Opening your library</span>
+          <span className="home-return-loader-dots" aria-hidden="true">...</span>
+        </div>
+      ) : null}
       <section
         className={`home-hero panel ${heroCollapsed ? "collapsed" : ""}`}
         style={{
@@ -274,21 +345,26 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 type="button"
                 className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
                 onClick={() => {
-                  if (tab.id === "Category") {
-                    if (selectedTab === "Category" && categoryPath.length > 0) {
-                      // Already on Category tab, go back one level
-                      setCategoryPath((path) => path.slice(0, -1));
+                  setShelfTransitioning(true);
+                  const applyTabChange = () => {
+                    if (tab.id === "Category") {
+                      if (selectedTab === "Category" && categoryPath.length > 0) {
+                        setCategoryPath((path) => path.slice(0, -1));
+                      } else {
+                        setSelectedTab("Category");
+                        setCategoryPath([]);
+                        setSelectedAuthorName(null);
+                      }
                     } else {
-                      // Switching to Category tab from another tab or at main level
-                      setSelectedTab("Category");
+                      setSelectedTab(tab.id);
                       setCategoryPath([]);
                       setSelectedAuthorName(null);
                     }
+                  };
+                  if (tab.id === "Search" && selectedTab !== "Search") {
+                    window.setTimeout(applyTabChange, 80);
                   } else {
-                    // Switching to non-Category tab, reset category state
-                    setSelectedTab(tab.id);
-                    setCategoryPath([]);
-                    setSelectedAuthorName(null);
+                    applyTabChange();
                   }
                 }}
               >
@@ -331,6 +407,12 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
             ) : (
               <div className="home-course-loading">No books matched your search.</div>
             )
+          ) : !showUnpublishedOnly && selectedTab === "Search" && !isSearching ? (
+            <div className="home-shelf-stack">
+              {homeRows.map((row) => (
+                <HomeCourseShelves key={row.title} row={row} useCoverImages horizontal />
+              ))}
+            </div>
           ) : (
             selectedRow && (
               selectedTab === "Category" && categoryPath[0] === AUTHOR_SHELF_ID && !selectedAuthorName ? (

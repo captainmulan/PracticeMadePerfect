@@ -22,7 +22,7 @@ import type { BookBookmark } from "../services/types/account";
 import { getPracticePageData } from "../utils/contentStore";
 import { useStageNavRegistration } from "../hooks/useStageNavRegistration";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { coursesShareShelf } from "../utils/bookCategories";
+import { categoryRelationRank } from "../utils/bookCategories";
 import { warmupPdfReaderAssets } from "../utils/pdfCache";
 
 export default function CourseWizard() {
@@ -166,7 +166,12 @@ export default function CourseWizard() {
 
   const relatedBooks = useMemo(() => {
     if (!outline) return [];
-    return courses.filter((course) => course.id !== outline.id && coursesShareShelf(course, outline));
+    return courses
+      .filter((course) => course.id !== outline.id)
+      .map((course) => ({ course, rank: categoryRelationRank(course, outline) }))
+      .filter((entry) => Number.isFinite(entry.rank))
+      .sort((a, b) => a.rank - b.rank || a.course.title.localeCompare(b.course.title))
+      .map((entry) => entry.course);
   }, [courses, outline]);
 
   const uiTotalPages = steps.length;
@@ -204,6 +209,7 @@ export default function CourseWizard() {
   }
 
   const isPdfBook = (currentStep ?? steps[stepIndex] ?? steps[0])?.stepType === "pdf";
+  const canReadBook = !isPdfBook || pdfReady;
   const pdfStep = currentStep?.stepType === "pdf" ? currentStep : null;
   const bookName = `${outline.icon} ${outline.title}`;
   const chapterName = currentStep?.chapterTitle ?? "";
@@ -265,8 +271,9 @@ export default function CourseWizard() {
           <CourseAboutStep
             course={outline}
             related={relatedBooks}
-            onRead={handleNext}
+            onRead={canReadBook ? handleNext : undefined}
             pdfLoading={isPdfBook && !pdfReady}
+            readDisabled={!canReadBook}
           />
         </div>
       ) : null}

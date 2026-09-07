@@ -1,8 +1,9 @@
-import type { ChangeEvent, ReactNode, RefObject } from "react";
+import type { ChangeEvent, MouseEvent, ReactNode, RefObject } from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PracticeCodeEditor from "./PracticeCodeEditor";
 import DictionaryPanel from "./DictionaryPanel";
+import PdfFunLoader from "./PdfFunLoader";
 import { usePageSwipeNavigation } from "../hooks/usePageSwipeNavigation";
 import { getHomePageData } from "../utils/contentStore";
 import { getShelfReturnLabel, SHELF_RETURN_HREF } from "../utils/shelfReturn";
@@ -103,6 +104,7 @@ export default function PracticeWorkspace({
   pageZoomLevels = Array.from({ length: 21 }, (_, i) => 100 + i * 5),
   onPageZoomChange,
 }: PracticeWorkspaceProps) {
+  const navigate = useNavigate();
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
   const style = homeData.style;
@@ -119,6 +121,19 @@ export default function PracticeWorkspace({
   const [showSettingsBar, setShowSettingsBar] = useState(false);
   const [showBookmarkHistory, setShowBookmarkHistory] = useState(false);
   const [dictionaryMode, setDictionaryMode] = useState(false);
+  const [leavingDestination, setLeavingDestination] = useState<"search" | "home" | null>(null);
+
+  const openShelf = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setLeavingDestination("search");
+    window.setTimeout(() => navigate(SHELF_RETURN_HREF), 40);
+  };
+
+  const openHome = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setLeavingDestination("home");
+    window.setTimeout(() => navigate("/"), 40);
+  };
 
   const buildGradient = (start?: string, middle?: string, end?: string, fallback?: string) => {
     const s = start ?? fallback ?? "#ffffff";
@@ -147,6 +162,14 @@ export default function PracticeWorkspace({
       onPointerUp={swipe.onPointerUp}
       onPointerCancel={swipe.onPointerCancel}
     >
+      {leavingDestination ? (
+        <div className="book-about-navigation-loader practice-navigation-loader">
+          <PdfFunLoader
+            compact
+            label={leavingDestination === "search" ? "Opening Search…" : "Opening Home…"}
+          />
+        </div>
+      ) : null}
       {/* Top Bar: Chapter Info + Book Name + Toolbar */}
       <div 
         className="practice-workspace-top-bar"
@@ -178,6 +201,7 @@ export default function PracticeWorkspace({
           <Link
             to={SHELF_RETURN_HREF}
             className="chapter-nav-icon-btn"
+            onClick={openShelf}
             aria-label={shelfReturnLabel.nav}
             title={shelfReturnLabel.nav}
           >
@@ -188,6 +212,7 @@ export default function PracticeWorkspace({
           <Link
             to="/"
             className="chapter-nav-icon-btn"
+            onClick={openHome}
             aria-label="Home"
             style={{ color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a" }}
           >

@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState, type MouseEvent } from "react";
 import type { Course } from "../data/courses";
 import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
@@ -16,6 +16,7 @@ interface CourseAboutStepProps {
   related: Course[];
   onRead?: () => void;
   pdfLoading?: boolean;
+  readDisabled?: boolean;
 }
 
 export default function CourseAboutStep({
@@ -23,10 +24,13 @@ export default function CourseAboutStep({
   related,
   onRead,
   pdfLoading = false,
+  readDisabled = false,
 }: CourseAboutStepProps) {
   const fullCoverUrl = resolveBookCoverUrl(course, { variant: "full" });
   const thumbCoverUrl = resolveBookCoverUrl(course, { variant: "thumb" });
   const [coverUrl, setCoverUrl] = useState(fullCoverUrl || thumbCoverUrl);
+  const [leavingDestination, setLeavingDestination] = useState<"search" | "home" | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setCoverUrl(fullCoverUrl || thumbCoverUrl);
@@ -34,6 +38,18 @@ export default function CourseAboutStep({
   const pageCount = course.stepCount ?? course.chapters.reduce((sum, chapter) => sum + chapter.steps.length, 0);
   const relatedItems = related.slice(0, 12).map((item) => createShelfItemFromCourse(item, item.category));
   const shelfReturnLabel = getShelfReturnLabel();
+
+  const openShelf = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setLeavingDestination("search");
+    window.setTimeout(() => navigate(SHELF_RETURN_HREF), 80);
+  };
+
+  const openHome = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setLeavingDestination("home");
+    window.setTimeout(() => navigate("/"), 80);
+  };
 
   return (
     <div className="book-about-page">
@@ -85,14 +101,27 @@ export default function CourseAboutStep({
           {pdfLoading ? (
             <PdfFunLoader compact label="Getting your book ready…" />
           ) : null}
+          {leavingDestination ? (
+            <div className="book-about-navigation-loader">
+              <PdfFunLoader
+                compact
+                label={leavingDestination === "search" ? "Opening Search…" : "Opening Home…"}
+              />
+            </div>
+          ) : null}
           <div className="book-about-actions">
-            <Link to={SHELF_RETURN_HREF} className="book-about-action">
+            <Link to={SHELF_RETURN_HREF} className="book-about-action" onClick={openShelf}>
               {shelfReturnLabel.about}
             </Link>
-            <Link to="/" className="book-about-action">
+            <Link to="/" className="book-about-action" onClick={openHome}>
               Home
             </Link>
-            <button type="button" className="book-about-action book-about-action--primary" onClick={onRead}>
+            <button
+              type="button"
+              className="book-about-action book-about-action--primary"
+              onClick={onRead}
+              disabled={readDisabled}
+            >
               Read
             </button>
           </div>

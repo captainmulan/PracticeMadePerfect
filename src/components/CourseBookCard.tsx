@@ -195,6 +195,7 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
             className="book-cover-image"
             src={(item.coverImageUrl ?? "").replace(/ /g, "%20")}
             alt=""
+            draggable={false}
             loading="eager"
             decoding="async"
             fetchPriority="high"
@@ -290,6 +291,7 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
         className={`book${showCoverImage ? " book--cover-image" : ""}${isEmojiCategory ? " book--category" : ""}${isBooks3dFolder ? " book--folder-3d" : ""}`}
         style={{ ...bookStyles, border: "none", cursor: "pointer", padding: 0 }}
         onClick={() => onItemClick?.(item)}
+        onDragStart={(event) => event.preventDefault()}
         aria-label={openLabel}
       >
         {content}
@@ -299,7 +301,13 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
 
   if (item.link) {
     return (
-      <Link to={item.link} className={`book${showCoverImage ? " book--cover-image" : ""}`} style={bookStyles}>
+      <Link
+        to={item.link}
+        className={`book${showCoverImage ? " book--cover-image" : ""}`}
+        style={bookStyles}
+        draggable={false}
+        onDragStart={(event) => event.preventDefault()}
+      >
         {content}
       </Link>
     );

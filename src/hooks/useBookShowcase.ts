@@ -66,6 +66,10 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
   const [paused, setPaused] = useState(false);
   const requestIdRef = useRef(0);
   const lastCourseIdRef = useRef<string | null>(null);
+  const hadCachedExcerptRef = useRef(false);
+  if (state.excerpt) {
+    hadCachedExcerptRef.current = true;
+  }
 
   const loadShowcase = useCallback(async () => {
     if (!enabled || courses.length === 0) {
@@ -219,6 +223,8 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
       return;
     }
 
+    const hasCachedExcerpt = hadCachedExcerptRef.current;
+
     let cancelled = false;
     const start = () => {
       if (!cancelled) {
@@ -232,9 +238,9 @@ export function useBookShowcase(courses: Course[], enabled: boolean, autoRotateM
     const ric = window.requestIdleCallback?.bind(window);
     const cic = window.cancelIdleCallback?.bind(window);
     if (ric) {
-      idleId = ric(start, { timeout: 500 });
+      idleId = ric(start, { timeout: hasCachedExcerpt ? 1500 : 500 });
     } else {
-      timeoutId = window.setTimeout(start, 80);
+      timeoutId = window.setTimeout(start, hasCachedExcerpt ? 250 : 80);
     }
 
     return () => {

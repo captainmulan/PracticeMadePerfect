@@ -314,6 +314,18 @@ export function coursesShareShelf(a: CategoryCourse, b: CategoryCourse): boolean
   return true;
 }
 
+export function categoryRelationRank(candidate: CategoryCourse, current: CategoryCourse): number {
+  const candidateLevels = getCategoryLevels(candidate).map((value) => value.toLowerCase());
+  const currentLevels = getCategoryLevels(current).map((value) => value.toLowerCase());
+  if (candidateLevels.length === 0 || currentLevels.length === 0) return Number.MAX_SAFE_INTEGER;
+  const shared = currentLevels.filter((value, index) => candidateLevels[index] === value).length;
+  if (shared === currentLevels.length && candidateLevels.length >= currentLevels.length) {
+    return candidateLevels.length === currentLevels.length ? 0 : 1;
+  }
+  if (shared === Math.max(1, currentLevels.length - 1)) return 2;
+  return Number.MAX_SAFE_INTEGER;
+}
+
 export function getCategoryLevels(course: CategoryCourse): string[] {
   return inferCategoryLevels(course).filter(Boolean);
 }

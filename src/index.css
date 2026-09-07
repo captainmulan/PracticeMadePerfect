@@ -3214,6 +3214,10 @@ textarea {
   transform: translateY(-6px) rotate(-1.5deg);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
   .author-card-button,
   .author-profile-button {
     position: relative;
