@@ -74,8 +74,8 @@ export default function CourseWizard() {
 
   useEffect(() => {
     const outlineStep = steps[stepIndex];
+    setCurrentStep(null);
     if (!outlineStep) {
-      setCurrentStep(null);
       return;
     }
 

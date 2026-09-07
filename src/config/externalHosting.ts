@@ -29,8 +29,8 @@ export function getBookAssetUrl(relativePath: string): string {
     while (pathParts.length > 1 && pathParts[1].toLowerCase() === root.toLowerCase()) {
       pathParts.splice(1, 1);
     }
-    relativePath = pathParts.join("/");
   }
+  relativePath = pathParts.join("/");
 
   // If external book hosting is disabled, always use local hosting
   if (!USE_EXTERNAL_BOOK_HOSTING) {

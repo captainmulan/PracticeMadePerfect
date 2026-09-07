@@ -2,7 +2,12 @@ import { useRef } from "react";
 import type { CourseStep } from "../data/courses";
 import PracticeWorkspace from "./PracticeWorkspace";
 import type { BookBookmark } from "../services/types/account";
-import { buildHtmlStepSrcDoc, extractBookHtmlIframeSrc, resolveBookHtmlFolder } from "../utils/htmlStepContent";
+import {
+  buildHtmlStepSrcDoc,
+  extractBookHtmlIframeSrc,
+  resolveBookHtmlFolder,
+  resolveBookHtmlIframeSrc,
+} from "../utils/htmlStepContent";
 import "../styles/course.css";
 
 interface CourseHtmlStepProps {
@@ -60,6 +65,13 @@ export default function CourseHtmlStep({
     courseId,
     contentHtml,
   });
+  const isLocalApp = typeof window !== "undefined" && /^(localhost|127(?:\.\d+){3})$/.test(window.location.hostname);
+  const localFolder = isLocalApp && courseId === "myfirst100mmwords"
+    ? "Other/MyFirst100MMWords"
+    : resolvedFolder;
+  const resolvedFrameSrc = frameSrc
+    ? resolveBookHtmlIframeSrc(frameSrc, localFolder, !isLocalApp)
+    : null;
   const srcDoc = frameSrc
     ? undefined
     : buildHtmlStepSrcDoc(contentHtml, resolvedFolder);
@@ -91,12 +103,12 @@ export default function CourseHtmlStep({
     >
       <iframe
         ref={iframeRef}
-        key={frameSrc ?? `${step.id}-${(step.contentHtml ?? "").length}`}
+        key={resolvedFrameSrc ?? `${step.id}-${(step.contentHtml ?? "").length}`}
         title={step.title}
         className="practice-html-iframe"
         sandbox="allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-popups"
         allow="autoplay; encrypted-media"
-        src={frameSrc ?? undefined}
+        src={resolvedFrameSrc ?? undefined}
         srcDoc={srcDoc}
         loading="lazy"
       />

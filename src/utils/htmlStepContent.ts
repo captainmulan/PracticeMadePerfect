@@ -29,6 +29,39 @@ export function extractBookHtmlIframeSrc(contentHtml: string): string | null {
   return looseMatch?.[1] ?? null;
 }
 
+export function resolveBookHtmlIframeSrc(
+  src: string,
+  bookHtmlFolder?: string | null,
+  useExternalHosting = true,
+): string {
+  const folder = bookHtmlFolder?.replace(/^\/+|\/+$/g, "");
+  if (!useExternalHosting && folder && /(^|\/)MyFirst100MMWords\//i.test(folder)) {
+    const bookPage = src.match(/(?:^|\/)MyFirst100MMWords\/([^?#]+)/i)?.[1];
+    if (bookPage) {
+      return `/book_html/Other/MyFirst100MMWords/${bookPage}`;
+    }
+  }
+  const match = src.match(/^\/book_html\/(.+)$/i);
+  if (!match) return src;
+  const path = match[1];
+  let pathWithFolder = path;
+  if (folder && !/^(Comic|Other)\//i.test(path)) {
+    const folderName = folder.split("/").filter(Boolean).pop();
+    const repeatedFolder = folderName && new RegExp(`^${folderName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/`, "i").test(path);
+    pathWithFolder = repeatedFolder
+      ? `${folder}/${path.slice(folderName.length + 1)}`
+      : `${folder}/${path}`;
+  }
+  if (!useExternalHosting) {
+    return `/book_html/${pathWithFolder}`;
+  }
+  const resolvedUrl = getBookAssetUrl(pathWithFolder);
+  if (/^Other\/MyFirst100MMWords\//i.test(pathWithFolder)) {
+    return `${resolvedUrl}${resolvedUrl.includes("?") ? "&" : "?"}pmp=mmwords-inline-v5`;
+  }
+  return resolvedUrl;
+}
+
 export function extractBookHtmlFolderFromIframeSrc(src: string): string | null {
   const match = src.match(/^\/book_html\/(.+?\/[^/]+)\//);
   return match?.[1] ?? null;
@@ -40,7 +73,14 @@ export function resolveBookHtmlFolder(options: {
   contentHtml?: string | null;
 }): string | null {
   if (options.bookHtmlFolder) {
-    return options.bookHtmlFolder;
+    const folder = options.bookHtmlFolder.replace(/^\/+|\/+$/g, "");
+    if (/^(Comic|Other)\//i.test(folder)) {
+      return folder;
+    }
+    if (options.courseId && BOOK_HTML_FOLDER_ALIASES[options.courseId]) {
+      return BOOK_HTML_FOLDER_ALIASES[options.courseId];
+    }
+    return folder;
   }
 
   const iframeSrc = options.contentHtml ? extractBookHtmlIframeSrc(options.contentHtml) : null;
@@ -120,7 +160,8 @@ export function buildHtmlStepSrcDoc(contentHtml: string, bookHtmlFolder?: string
     return trimmed;
   }
 
-  const baseUrl = getBookAssetUrl(`${bookHtmlFolder}/`);
+  const resolvedBaseUrl = getBookAssetUrl(`${bookHtmlFolder}/`);
+  const baseUrl = resolvedBaseUrl.endsWith("/") ? resolvedBaseUrl : `${resolvedBaseUrl}/`;
   const baseTag = `<base href="${baseUrl}">`;
   return trimmed.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`);
 }
