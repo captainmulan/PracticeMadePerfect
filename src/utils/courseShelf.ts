@@ -549,7 +549,9 @@ export function getHomeCategoryBookRow(
       if (aPopular && bPopular) {
         return (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER);
       }
-      return (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title);
+      return (a.scIndex ?? Number.MAX_SAFE_INTEGER) - (b.scIndex ?? Number.MAX_SAFE_INTEGER)
+        || (b.courseIndex ?? 0) - (a.courseIndex ?? 0)
+        || a.title.localeCompare(b.title);
     })
     .map((course) => createShelfItemFromCourse(course, category));
   return buildShelfRow(category, items);

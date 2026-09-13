@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import type { Course } from "../data/courses";
 import { readShelfReturn, saveShelfReturn, type ShelfReturnState } from "../utils/shelfReturn";
-import BookShowcase from "../components/showcase/BookShowcase";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import AuthorShelfRow from "../components/AuthorShelfRow";
 import HomeLoginPanel from "../components/HomeLoginPanel";
 import HomeSpaceDecor from "../components/HomeSpaceDecor";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
-import { useBookShowcase } from "../hooks/useBookShowcase";
 import { getHomePageData } from "../utils/contentStore";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
@@ -26,6 +25,7 @@ import {
 import { AUTHOR_SHELF_ID } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
 import { getCourseProgressKey } from "../utils/courseUtils";
+import { useAnnouncements } from "../utils/useAnnouncements";
 import "../styles/home-test-showcase.css";
 
 const HOME_SHELF_TABS = [
@@ -68,6 +68,56 @@ function hasSavedProgress(courseId: string): boolean {
   }
 }
 
+function HomeCoverCarousel({ courses, onOpen }: { courses: Course[]; onOpen: (course: Course) => void }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselCourses = useMemo(() => {
+    const popularIds = new Set(getPopularCourses(courses).map((course) => course.id));
+    const regularBooks = courses.filter((course) => !popularIds.has(course.id));
+    return regularBooks.length > 0 ? regularBooks : courses;
+  }, [courses]);
+
+  useEffect(() => {
+    if (carouselCourses.length < 2) return;
+    const timer = window.setInterval(() => {
+      setActiveIndex((index) => (index + 1) % carouselCourses.length);
+    }, 4200);
+    return () => window.clearInterval(timer);
+  }, [carouselCourses.length]);
+
+  if (carouselCourses.length === 0) return null;
+
+  const visibleCourses = [0, 1, 2].map(
+    (offset) => carouselCourses[(activeIndex + offset) % carouselCourses.length],
+  );
+
+  return (
+    <div className="home-cover-carousel" aria-label="Featured books">
+      <div className="home-cover-carousel-track">
+        {visibleCourses.map((course, offset) => {
+          const coverUrl = resolveBookCoverUrl(course, { variant: "thumb" });
+          return (
+            <button
+              type="button"
+              className={`home-cover-tile home-cover-tile--${offset}`}
+              key={`${course.id}-${offset}`}
+              aria-label={`Open ${course.title}`}
+              onClick={() => onOpen(course)}
+            >
+              {coverUrl ? <img src={coverUrl} alt="" loading="eager" decoding="async" /> : null}
+              <span>{course.title}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="home-cover-carousel-dots" aria-hidden="true">
+        {carouselCourses.slice(0, Math.min(carouselCourses.length, 5)).map((course, index) => (
+          <span key={course.id} className={index === activeIndex % 5 ? "active" : ""} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 type HomeProps = {
   showUnpublishedOnly?: boolean;
 };
@@ -83,7 +133,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const initialShelf = getInitialShelfState();
-  const [heroCollapsed, setHeroCollapsed] = useState(true);
+  const [dismissedAnnouncementId, setDismissedAnnouncementId] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>(initialShelf.tab as HomeShelfTab);
   const [categoryPath, setCategoryPath] = useState<string[]>(initialShelf.categoryPath);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(initialShelf.selectedAuthorName);
@@ -92,6 +142,8 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const [shelfTransitioning, setShelfTransitioning] = useState(false);
   const data = getHomePageData();
   const style = data.style;
+  const { announcements } = useAnnouncements();
+  const featuredAnnouncement = announcements.find((announcement) => announcement.id !== dismissedAnnouncementId);
   const { courses, loaded: coursesLoaded } = useCourseCatalog({
     publishedMode: showUnpublishedOnly ? "unpublished" : "published",
   });
@@ -107,7 +159,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       title: "Selection",
       items: popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
     };
-    const categoryRows = ["Kid", "IT", "Interactive", "Language"].map((category) =>
+    const categoryRows = ["IT", "Kid", "Interactive", "Language"].map((category) =>
       getHomeCategoryBookRow(courses, category, popularIds),
     );
     const newlyAdded = courses
@@ -147,22 +199,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     });
   }, [courses]);
   const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
-  const showcaseEnabled =
-    !showUnpublishedOnly &&
-    !heroCollapsed &&
-    selectedTab === "Search" &&
-    !isSearching &&
-    coursesLoaded &&
-    courses.length > 0;
-  const {
-    selection: showcaseSelection,
-    excerpt: showcaseExcerpt,
-    loading: showcaseLoading,
-    error: showcaseError,
-    shuffle: shuffleShowcase,
-    setPaused: setShowcasePaused,
-  } = useBookShowcase(courses, showcaseEnabled);
-
   useEffect(() => {
     if (!coursesLoaded || courses.length === 0) {
       return;
@@ -259,18 +295,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     return rows.find((row) => row.title === "Selection") || rows[0];
   }, [authorGroups, categoryPath, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedTab, showUnpublishedOnly]);
 
-  const openShowcasedBook = () => {
-    if (showcaseSelection?.course.id) {
-      navigate(`/courses/${showcaseSelection.course.id}`);
-      return;
-    }
-    const popular = getPopularCourses(courses);
-    const fallback = popular[0] ?? courses[0];
-    if (fallback) {
-      navigate(`/courses/${fallback.id}`);
-    }
-  };
-
   return (
     <div className="page-content page-home page-home-showcase">
       {!coursesLoaded || !shelfReady || shelfTransitioning ? (
@@ -281,22 +305,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
         </div>
       ) : null}
       <section
-        className={`home-hero panel ${heroCollapsed ? "collapsed" : ""}`}
+        className="home-hero panel"
         style={{
           background: style?.hero?.useBackgroundColorGradient
             ? `linear-gradient(180deg, ${style.hero.backgroundColorGradientStart} 0%, ${style.hero.backgroundColorGradientMiddle ?? style.hero.backgroundColorGradientStart} 50%, ${style.hero.backgroundColorGradientEnd} 100%)`
             : (style?.hero?.backgroundColor ?? "#ffffff"),
         }}
       >
-        <button
-          type="button"
-          className="home-hero-toggle"
-          onClick={() => setHeroCollapsed((value) => !value)}
-          aria-expanded={!heroCollapsed}
-        >
-          {heroCollapsed ? "+" : "−"}
-        </button>
-
         <div className="home-hero-expanded-layout">
           <div
             className="home-hero-copy"
@@ -309,22 +324,44 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
               {data.title}
             </div>
             <h1 className="home-hero-title" style={{ color: style?.hero?.titleColor ?? "#0f172a" }}>
-              {showUnpublishedOnly ? "Unpublished Books" : data.headline}
+              {showUnpublishedOnly ? "Unpublished Books" : "Magic Library"}
             </h1>
           </div>
 
-          {!heroCollapsed && (
-            <BookShowcase
-              excerpt={showcaseExcerpt}
-              loading={showcaseLoading}
-              error={showcaseError}
-              useAdminCover
-              onOpen={openShowcasedBook}
-              onShuffle={shuffleShowcase}
-              onPauseChange={setShowcasePaused}
-            />
-          )}
+          {coursesLoaded ? (
+            <HomeCoverCarousel courses={courses} onOpen={(course) => navigate(`/courses/${course.id}`)} />
+          ) : null}
         </div>
+
+        <nav className="home-tabs home-tabs--hero" aria-label="Library shortcuts">
+          {HOME_SHELF_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
+              onClick={() => {
+                setShelfTransitioning(true);
+                const applyTabChange = () => {
+                  if (tab.id === "Category" && selectedTab === "Category" && categoryPath.length > 0) {
+                    setCategoryPath((path) => path.slice(0, -1));
+                  } else {
+                    setSelectedTab(tab.id);
+                    setCategoryPath([]);
+                    setSelectedAuthorName(null);
+                  }
+                };
+                if (tab.id === "Search" && selectedTab !== "Search") {
+                  window.setTimeout(applyTabChange, 80);
+                } else {
+                  applyTabChange();
+                }
+              }}
+            >
+              <span aria-hidden="true">{tab.id === "Search" ? "⌕" : tab.id === "Category" ? "▤" : "♙"}</span>
+              {tab.label === "Login" ? "Profile / Login" : tab.label}
+            </button>
+          ))}
+        </nav>
       </section>
 
       <section
@@ -338,43 +375,9 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       >
         <HomeSpaceDecor />
         <div className="container">
-          <nav className="home-tabs">
-            {HOME_SHELF_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
-                onClick={() => {
-                  setShelfTransitioning(true);
-                  const applyTabChange = () => {
-                    if (tab.id === "Category") {
-                      if (selectedTab === "Category" && categoryPath.length > 0) {
-                        setCategoryPath((path) => path.slice(0, -1));
-                      } else {
-                        setSelectedTab("Category");
-                        setCategoryPath([]);
-                        setSelectedAuthorName(null);
-                      }
-                    } else {
-                      setSelectedTab(tab.id);
-                      setCategoryPath([]);
-                      setSelectedAuthorName(null);
-                    }
-                  };
-                  if (tab.id === "Search" && selectedTab !== "Search") {
-                    window.setTimeout(applyTabChange, 80);
-                  } else {
-                    applyTabChange();
-                  }
-                }}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-
           {selectedTab === "Search" && (
             <div className="home-selection-search">
+              <span className="home-selection-search-icon" aria-hidden="true">⌕</span>
               <input
                 className="home-selection-search-input"
                 value={searchQuery}
@@ -391,6 +394,43 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
             </div>
           )}
 
+          {featuredAnnouncement && !showUnpublishedOnly ? (
+            <aside className="home-featured-banner" aria-label="Featured announcement">
+              <span className="home-featured-banner-mark" aria-hidden="true">✦</span>
+              <div>
+                <strong>{featuredAnnouncement.title}</strong>
+                <span>{featuredAnnouncement.body}</span>
+              </div>
+              <button
+                type="button"
+                className="home-featured-banner-close"
+                aria-label="Dismiss announcement"
+                onClick={() => setDismissedAnnouncementId(featuredAnnouncement.id)}
+              >
+                ×
+              </button>
+            </aside>
+          ) : null}
+
+          {selectedTab === "Category" && categoryPath.length > 0 ? (
+            <nav className="home-category-crumb" aria-label="Category navigation">
+              {categoryPath.map((category, index) => (
+                <span key={`${category}-${index}`}>
+                  {index > 0 ? " > " : ""}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategoryPath(categoryPath.slice(0, index + 1));
+                      setSelectedAuthorName(null);
+                    }}
+                  >
+                    {category}
+                  </button>
+                </span>
+              ))}
+            </nav>
+          ) : null}
+
           {selectedTab === "Login" ? (
             <HomeLoginPanel />
           ) : !coursesLoaded ? (
@@ -406,7 +446,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                   row={selectedRow}
                   useCoverImages
                   horizontal
-                  horizontalItemsPerRow={3}
                 />
               )
             ) : (

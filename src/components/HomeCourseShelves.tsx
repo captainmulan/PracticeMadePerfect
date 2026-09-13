@@ -94,15 +94,23 @@ export default function HomeCourseShelves({
       className={`bookshelf-container${horizontal ? " bookshelf-container--horizontal" : ""}`}
       style={{ ["--shelf-cols" as string]: String(booksPerRow) }}
     >
-      <h2 className="home-shelf-title">{row.title}</h2>
       {groups.map((group, rowIndex) => (
-        <div key={`book-row-wrap-${rowIndex}`} className="shelf">
+        <div
+          key={`book-row-wrap-${rowIndex}`}
+          className={`shelf${horizontalItemsPerRow ? " shelf--fixed-row" : ""}`}
+        >
           <div className={`shelf-track${horizontal ? " shelf-track--horizontal" : ""}`}>
-            <div className="books" key={`book-row-${rowIndex}`}>
-              {group.map((item) => renderCard(item))}
+            <div className="shelf-track-content">
+              <div
+                className="books"
+                key={`book-row-${rowIndex}`}
+              >
+                {group.map((item) => renderCard(item))}
+              </div>
+              {horizontalItemsPerRow ? <div className="shelf-board" aria-hidden="true" /> : null}
             </div>
-            <div className="shelf-board" aria-hidden="true" />
           </div>
+          {!horizontalItemsPerRow && rowIndex === 0 ? <h2 className="home-shelf-title">{row.title}</h2> : null}
         </div>
       ))}
     </section>

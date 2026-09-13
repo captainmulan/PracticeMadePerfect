@@ -87,34 +87,21 @@ export default function ExchangeRatePanel() {
   }, []);
 
   return (
-    <div style={{
-      position: "fixed",
-      left: 0,
-      right: 0,
-      bottom: 0,
-      height: 44,
-      background: "rgba(15,23,42,0.95)",
-      color: "#fff",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 18,
-      fontSize: 13,
-      zIndex: 9999,
-    }}>
-      <div style={{ maxWidth: 980, width: "100%", padding: "0 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ fontWeight: 700, opacity: 0.9, fontSize: 12 }}>
-          Exchange (base USD) {isCached && <span style={{ fontSize: 10, opacity: 0.6 }}>– cached</span>}
-          {rates?.date && <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 8 }}>• {rates.date}</span>}
+    <div className="exchange-rate-panel">
+      <div className="exchange-rate-panel-inner">
+        <div className="exchange-rate-heading">
+          <strong>Exchange (base USD)</strong>
+          {isCached && <span>cached</span>}
+          {rates?.date && <span>{rates.date}</span>}
         </div>
-        <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
-          {loading && !rates && <div>Loading…</div>}
-          {error && !rates && <div style={{ color: "#ffb4b4" }}>⚠ {error}</div>}
+        <div className="exchange-rate-values">
+          {loading && !rates && <div>Loading...</div>}
+          {error && !rates && <div className="exchange-rate-error">{error}</div>}
           {rates && (
             <>
-              <div>SGD: <strong>{rates.SGD?.toFixed(4) ?? "—"}</strong></div>
-              <div>MMK: <strong>{rates.MMK?.toFixed(2) ?? "—"}</strong></div>
-              <div>USD: <strong>1.0000</strong></div>
+              <div>SGD <strong>{rates.SGD?.toFixed(4) ?? "-"}</strong></div>
+              <div>MMK <strong>{rates.MMK?.toFixed(2) ?? "-"}</strong></div>
+              <div>USD <strong>1.0000</strong></div>
             </>
           )}
         </div>
