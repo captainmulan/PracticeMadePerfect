@@ -8,6 +8,7 @@ interface HomeCourseShelvesProps {
   /** Home_Test only: show admin/seed cover images on shelf cards. */
   useCoverImages?: boolean;
   horizontal?: boolean;
+  horizontalItemsPerRow?: number;
   onItemClick?: (item: CourseShelfItem) => void;
 }
 
@@ -42,6 +43,7 @@ export default function HomeCourseShelves({
   row, 
   useCoverImages = false, 
   horizontal = false,
+  horizontalItemsPerRow,
   onItemClick 
 }: HomeCourseShelvesProps) {
   const booksPerRow = useShelfColumns();
@@ -73,7 +75,10 @@ export default function HomeCourseShelves({
         : Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
 
   if (horizontal) {
-    groups.push(displayItems);
+    const rowSize = horizontalItemsPerRow ?? displayItems.length;
+    for (let rowIndex = 0; rowIndex < displayItems.length; rowIndex += rowSize) {
+      groups.push(displayItems.slice(rowIndex, rowIndex + rowSize));
+    }
   } else {
     for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
       groups.push(displayItems.slice(rowIndex * booksPerRow, rowIndex * booksPerRow + booksPerRow));

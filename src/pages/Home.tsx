@@ -402,7 +402,12 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
               selectedRow.title === "Author" ? (
                 <AuthorShelfRow row={selectedRow} onItemClick={(item) => setSelectedAuthorName(item.title)} />
               ) : (
-                <HomeCourseShelves row={selectedRow} useCoverImages />
+                <HomeCourseShelves
+                  row={selectedRow}
+                  useCoverImages
+                  horizontal
+                  horizontalItemsPerRow={3}
+                />
               )
             ) : (
               <div className="home-course-loading">No books matched your search.</div>
@@ -427,6 +432,8 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 <HomeCourseShelves
                   row={selectedRow}
                   useCoverImages
+                  horizontal
+                  horizontalItemsPerRow={3}
                   onItemClick={(item) => {
                     if (item.placeholder) return;
                     if (item.actionType === "author") {
