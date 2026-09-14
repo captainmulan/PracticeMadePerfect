@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { Course } from "../data/courses";
 import { readShelfReturn, saveShelfReturn, type ShelfReturnState } from "../utils/shelfReturn";
 import HomeCourseShelves from "../components/HomeCourseShelves";
 import AuthorShelfRow from "../components/AuthorShelfRow";
 import HomeLoginPanel from "../components/HomeLoginPanel";
 import HomeSpaceDecor from "../components/HomeSpaceDecor";
+import LibraryTopBar from "../components/LibraryTopBar";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
 import { getHomePageData } from "../utils/contentStore";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
@@ -28,13 +28,7 @@ import { getCourseProgressKey } from "../utils/courseUtils";
 import { useAnnouncements } from "../utils/useAnnouncements";
 import "../styles/home-test-showcase.css";
 
-const HOME_SHELF_TABS = [
-  { id: "Search", label: "Search" },
-  { id: "Category", label: "Category" },
-  { id: "Login", label: "Login" },
-] as const;
-
-type HomeShelfTab = (typeof HOME_SHELF_TABS)[number]["id"];
+type HomeShelfTab = "Search" | "Category" | "Login";
 
 function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["courses"], query: string) {
   const normalized = query.trim().toLowerCase();
@@ -68,64 +62,18 @@ function hasSavedProgress(courseId: string): boolean {
   }
 }
 
-function HomeCoverCarousel({ courses, onOpen }: { courses: Course[]; onOpen: (course: Course) => void }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const carouselCourses = useMemo(() => {
-    const popularIds = new Set(getPopularCourses(courses).map((course) => course.id));
-    const regularBooks = courses.filter((course) => !popularIds.has(course.id));
-    return regularBooks.length > 0 ? regularBooks : courses;
-  }, [courses]);
-
-  useEffect(() => {
-    if (carouselCourses.length < 2) return;
-    const timer = window.setInterval(() => {
-      setActiveIndex((index) => (index + 1) % carouselCourses.length);
-    }, 4200);
-    return () => window.clearInterval(timer);
-  }, [carouselCourses.length]);
-
-  if (carouselCourses.length === 0) return null;
-
-  const visibleCourses = [0, 1, 2].map(
-    (offset) => carouselCourses[(activeIndex + offset) % carouselCourses.length],
-  );
-
-  return (
-    <div className="home-cover-carousel" aria-label="Featured books">
-      <div className="home-cover-carousel-track">
-        {visibleCourses.map((course, offset) => {
-          const coverUrl = resolveBookCoverUrl(course, { variant: "thumb" });
-          return (
-            <button
-              type="button"
-              className={`home-cover-tile home-cover-tile--${offset}`}
-              key={`${course.id}-${offset}`}
-              aria-label={`Open ${course.title}`}
-              onClick={() => onOpen(course)}
-            >
-              {coverUrl ? <img src={coverUrl} alt="" loading="eager" decoding="async" /> : null}
-              <span>{course.title}</span>
-            </button>
-          );
-        })}
-      </div>
-      <div className="home-cover-carousel-dots" aria-hidden="true">
-        {carouselCourses.slice(0, Math.min(carouselCourses.length, 5)).map((course, index) => (
-          <span key={course.id} className={index === activeIndex % 5 ? "active" : ""} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 type HomeProps = {
   showUnpublishedOnly?: boolean;
 };
 
 function getInitialShelfState(): ShelfReturnState {
-  if (typeof window === "undefined" || new URLSearchParams(window.location.search).get("restoreShelf") !== "1") {
+  if (typeof window === "undefined") {
     return { tab: "Search", categoryPath: [], selectedAuthorName: null, searchQuery: "" };
   }
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("view") === "category") return { tab: "Category", categoryPath: [], selectedAuthorName: null, searchQuery: "" };
+  if (params.get("view") === "login") return { tab: "Login", categoryPath: [], selectedAuthorName: null, searchQuery: "" };
+  if (params.get("restoreShelf") !== "1") return { tab: "Search", categoryPath: [], selectedAuthorName: null, searchQuery: "" };
   return readShelfReturn() ?? { tab: "Category", categoryPath: [], selectedAuthorName: null, searchQuery: "" };
 }
 
@@ -139,7 +87,10 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(initialShelf.selectedAuthorName);
   const [searchQuery, setSearchQuery] = useState(initialShelf.searchQuery);
   const [shelfReady, setShelfReady] = useState(false);
-  const [shelfTransitioning, setShelfTransitioning] = useState(false);
+  const [shelfTransitioning, setShelfTransitioning] = useState(() => {
+    return new URLSearchParams(window.location.search).get("homeLoading") === "1"
+      || window.history.state?.usr?.homeLoading === true;
+  });
   const data = getHomePageData();
   const style = data.style;
   const { announcements } = useAnnouncements();
@@ -209,6 +160,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const restore = params.get("restoreShelf") === "1";
+    const homeLoading = params.get("homeLoading") === "1";
     if (restore && !coursesLoaded) return;
 
     if (restore) {
@@ -227,6 +179,12 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
         setSelectedTab("Category");
       }
       navigate(location.pathname, { replace: true });
+    }
+    if (homeLoading) {
+      navigate(location.pathname, { replace: true });
+    }
+    if (window.history.state?.usr?.homeLoading === true) {
+      navigate(location.pathname, { replace: true, state: null });
     }
     setShelfReady(true);
   }, [coursesLoaded, location.pathname, location.search, navigate]);
@@ -304,65 +262,36 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
           <span className="home-return-loader-dots" aria-hidden="true">...</span>
         </div>
       ) : null}
-      <section
-        className="home-hero panel"
-        style={{
-          background: style?.hero?.useBackgroundColorGradient
-            ? `linear-gradient(180deg, ${style.hero.backgroundColorGradientStart} 0%, ${style.hero.backgroundColorGradientMiddle ?? style.hero.backgroundColorGradientStart} 50%, ${style.hero.backgroundColorGradientEnd} 100%)`
-            : (style?.hero?.backgroundColor ?? "#ffffff"),
+      <LibraryTopBar
+        onHome={() => {
+          setShelfTransitioning(true);
+          setSelectedTab("Search");
+          setCategoryPath([]);
+          setSelectedAuthorName(null);
+          setSearchQuery("");
+          navigate("/", { replace: true });
         }}
-      >
-        <div className="home-hero-expanded-layout">
-          <div
-            className="home-hero-copy"
-            style={{
-              color: style?.hero?.color ?? style?.main?.color ?? "#0f172a",
-              fontFamily: style?.hero?.fontFamily ?? style?.main?.fontFamily,
-            }}
-          >
-            <div className="home-eyebrow" style={{ color: style?.hero?.eyebrowColor ?? "#6b7280" }}>
-              {data.title}
-            </div>
-            <h1 className="home-hero-title" style={{ color: style?.hero?.titleColor ?? "#0f172a" }}>
-              {showUnpublishedOnly ? "Unpublished Books" : "Magic Library"}
-            </h1>
-          </div>
-
-          {coursesLoaded ? (
-            <HomeCoverCarousel courses={courses} onOpen={(course) => navigate(`/courses/${course.id}`)} />
-          ) : null}
-        </div>
-
-        <nav className="home-tabs home-tabs--hero" aria-label="Library shortcuts">
-          {HOME_SHELF_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              className={`home-tab-button ${selectedTab === tab.id ? "active" : ""}`}
-              onClick={() => {
-                setShelfTransitioning(true);
-                const applyTabChange = () => {
-                  if (tab.id === "Category" && selectedTab === "Category" && categoryPath.length > 0) {
-                    setCategoryPath((path) => path.slice(0, -1));
-                  } else {
-                    setSelectedTab(tab.id);
-                    setCategoryPath([]);
-                    setSelectedAuthorName(null);
-                  }
-                };
-                if (tab.id === "Search" && selectedTab !== "Search") {
-                  window.setTimeout(applyTabChange, 80);
-                } else {
-                  applyTabChange();
-                }
-              }}
-            >
-              <span aria-hidden="true">{tab.id === "Search" ? "⌕" : tab.id === "Category" ? "▤" : "♙"}</span>
-              {tab.label === "Login" ? "Profile / Login" : tab.label}
-            </button>
-          ))}
-        </nav>
-      </section>
+        onCategory={() => {
+          if (selectedTab === "Category") {
+            if (selectedAuthorName) {
+              setSelectedAuthorName(null);
+              return;
+            }
+            if (categoryPath.length > 0) {
+              setCategoryPath((path) => path.slice(0, -1));
+              return;
+            }
+          }
+          setSelectedTab("Category");
+          setCategoryPath([]);
+          setSelectedAuthorName(null);
+        }}
+        onLogin={() => {
+          setSelectedTab("Login");
+          setCategoryPath([]);
+          setSelectedAuthorName(null);
+        }}
+      />
 
       <section
         className="home-categories panel home-shelf-panel"
@@ -375,25 +304,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       >
         <HomeSpaceDecor />
         <div className="container">
-          {selectedTab === "Search" && (
-            <div className="home-selection-search">
-              <span className="home-selection-search-icon" aria-hidden="true">⌕</span>
-              <input
-                className="home-selection-search-input"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Search by book name, type, or topic"
-              />
-              <div className="home-selection-search-meta">
-                {isSearching
-                  ? selectedRow && selectedRow.items.length > 0
-                    ? `${selectedRow.items.length} results`
-                    : "No books found"
-                  : "Popular picks — search anytime"}
-              </div>
-            </div>
-          )}
-
           {featuredAnnouncement && !showUnpublishedOnly ? (
             <aside className="home-featured-banner" aria-label="Featured announcement">
               <span className="home-featured-banner-mark" aria-hidden="true">✦</span>
@@ -446,6 +356,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                   row={selectedRow}
                   useCoverImages
                   horizontal
+                  horizontalItemsPerRow={3}
                 />
               )
             ) : (

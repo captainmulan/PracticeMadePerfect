@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { AccountProvider } from "./context/AccountContext";
 import { StageNavProvider } from "./context/StageNavContext";
 import Home from "./pages/Home";
+import Search from "./pages/Search";
 import { getHomePageData } from "./utils/contentStore";
 
 const Practice = lazy(() => import("./pages/Practice"));
@@ -68,6 +69,7 @@ function AppContent() {
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/beta_home" element={<BetaHomeRoute />} />
             <Route path="/home_test" element={<Navigate to="/beta_home" replace />} />
             <Route path="/beta_book" element={<Navigate to="/beta_home" replace />} />

@@ -1007,7 +1007,7 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
   color: var(--shelf-ink-muted);
 }
 
-.page-home .home-return-loader {
+.home-return-loader {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -1026,13 +1026,13 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
   pointer-events: none;
 }
 
-.page-home .home-return-loader-emoji {
+.home-return-loader-emoji {
   display: inline-block;
   font-size: 1.45rem;
   animation: home-return-book-bounce 900ms ease-in-out infinite;
 }
 
-.page-home .home-return-loader-dots {
+.home-return-loader-dots {
   width: 20px;
   overflow: hidden;
   animation: home-return-dots 1.1s steps(4, end) infinite;

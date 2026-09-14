@@ -421,6 +421,96 @@
 
 
 /* Magic Library home treatment */
+.library-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 2px 12px;
+  border-bottom: 1px solid rgba(244, 201, 74, 0.26);
+  background: rgba(15, 12, 41, 0.94);
+  backdrop-filter: blur(12px);
+}
+
+.library-top-bar-brand,
+.library-top-bar-link {
+  color: var(--magic-ink, #f5efd6);
+  text-decoration: none;
+}
+
+.library-top-bar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.library-top-bar-mark { color: var(--magic-gold-bright, #ffe27a); }
+
+.library-top-bar-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.library-top-bar-link {
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--magic-muted, #a9c3bd);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.library-top-bar-link:hover,
+.library-top-bar-link:focus-visible,
+.library-top-bar-link.active {
+  background: rgba(244, 201, 74, 0.14);
+  color: var(--magic-gold-bright, #ffe27a);
+  outline: none;
+}
+
+.page-search-showcase { min-height: 100vh; }
+
+.search-page-content {
+  padding: 28px 2px 72px;
+}
+
+.search-page-heading { margin-bottom: 18px; }
+.search-page-kicker { margin: 0 0 4px; color: var(--magic-gold-bright); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; }
+.search-page-heading h1 { margin: 0; color: var(--magic-ink); font-family: Georgia, "Times New Roman", serif; font-size: 1.65rem; }
+
+.search-page-field {
+  position: relative;
+  display: block;
+  margin-bottom: 26px;
+}
+
+.search-page-field input {
+  width: 100%;
+  padding: 13px 14px 13px 40px;
+  border: 1px solid rgba(129, 207, 194, 0.35);
+  border-radius: 8px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--magic-ink);
+  font: inherit;
+}
+
+.search-page-field input:focus { border-color: var(--magic-gold); box-shadow: 0 0 0 3px rgba(244, 201, 74, 0.13); }
+.search-page-icon { position: absolute; top: 50%; left: 14px; color: var(--magic-gold-bright); font-size: 1.35rem; transform: translateY(-50%); }
+
 .app-shell:has(.page-home-showcase) .app-header {
   padding: max(8px, env(safe-area-inset-top)) 10px 8px;
   border-bottom: 0;
