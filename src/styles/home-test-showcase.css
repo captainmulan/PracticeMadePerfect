@@ -809,7 +809,7 @@
 }
 .page-home-showcase .bookshelf-container--horizontal .shelf { scrollbar-width: none; }
 .page-home-showcase .bookshelf-container--horizontal .shelf::-webkit-scrollbar { display: none; }
-.page-home-showcase .bookshelf-container--horizontal .books { gap: 14px; padding: 0 8px 8px; scroll-snap-type: x mandatory; }
+.page-home-showcase .bookshelf-container--horizontal .books { gap: 14px; padding: 0 8px 1px; scroll-snap-type: x mandatory; }
 .page-home-showcase .bookshelf-container--horizontal .shelf { padding-top: 1px; }
 .page-home-showcase .bookshelf-container--horizontal .course-book-card { scroll-snap-align: start; }
 .page-home-showcase .course-book-card { width: clamp(104px, 29vw, 142px); min-height: 226px; border: 1px solid rgba(129, 207, 194, 0.25); border-radius: 9px; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35); transition: transform 180ms ease, box-shadow 180ms ease; }
@@ -1468,6 +1468,10 @@ body[data-bookshelf-theme] .page-home-showcase .bookshelf-container--horizontal 
 body[data-bookshelf-theme] .page-home-showcase .bookshelf-container--horizontal .books {
   gap: 4px !important;
   padding-inline: 0;
+}
+
+body[data-bookshelf-theme] .page-home-showcase .bookshelf-container--horizontal .book {
+  margin-bottom: 0;
 }
 
 /* Keep every home surface on the same readable vertical edges. */
