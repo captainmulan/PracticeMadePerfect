@@ -1199,9 +1199,9 @@ body[data-bookshelf-theme="space"] .page-home .author-shelf-button:active {
   z-index: 6;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 2.75em;
-  padding: 10px 10px;
+  padding: 7px 8px;
   box-sizing: border-box;
   /* Solid translucent bar like the Riddle shelf cards — not a soft fade. */
   background: rgba(0, 0, 0, 0.55);
@@ -1213,13 +1213,13 @@ body[data-bookshelf-theme="space"] .page-home .author-shelf-button:active {
   width: 100%;
   margin: 0;
   color: #ffffff;
-  font-size: clamp(1rem, 3.6vw, 1.2rem);
+  font-size: clamp(0.78rem, 2.9vw, 0.98rem);
   font-weight: 800;
-  line-height: 1.25;
-  text-align: center;
+  line-height: 1.18;
+  text-align: left;
   text-shadow: none;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-word;
