@@ -29,6 +29,10 @@ export function loadAdminData(): ContentStoreData {
             ...homePageData.shelfFolderCovers,
             ...parsed.homePageData?.shelfFolderCovers,
           },
+          shelfItemKinds: {
+            ...homePageData.shelfItemKinds,
+            ...parsed.homePageData?.shelfItemKinds,
+          },
           style: {
             ...homePageData.style,
             ...parsed.homePageData?.style,
@@ -123,6 +127,10 @@ export function loadAdminData(): ContentStoreData {
       shelfFolderCovers: {
         ...homePageData.shelfFolderCovers,
         ...parsed.homePageData?.shelfFolderCovers,
+      },
+      shelfItemKinds: {
+        ...homePageData.shelfItemKinds,
+        ...parsed.homePageData?.shelfItemKinds,
       },
       style: {
         ...homePageData.style,

@@ -4,12 +4,12 @@ import { loadCourseSummariesFromBrowserDb, persistCourseIndexes } from "../utils
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import {
   listShelfCatalogItems,
-  writeFolderIndexes,
   type ShelfCatalogItem,
   type ShelfIndexValues,
   type ShelfItemKind,
   authorIndexKey,
   folderIndexKey,
+  saveShelfItemSettings,
 } from "../utils/shelfItemIndexes";
 
 type KindFilter = "all" | ShelfItemKind;
@@ -65,12 +65,18 @@ export default function AdminShelfItems() {
     setFolderCovers((current) => ({ ...current, [key]: value }));
   };
 
+  const updateRowKind = (key: string, kind: Exclude<ShelfItemKind, "author">) => {
+    setRows((current) => current.map((row) => (row.key === key ? { ...row, kind } : row)));
+  };
+
   const handleSave = async () => {
     setSaving(true);
     setMessage("");
     try {
       const folderIndexes: Record<string, ShelfIndexValues> = {};
+      const itemKinds: Record<string, Exclude<ShelfItemKind, "author">> = {};
       for (const row of rows) {
+        if (row.kind !== "author") itemKinds[row.key] = row.kind;
         const indexes = {
           pIndex: parseIndex(indexInput(row.pIndex)),
           scIndex: parseIndex(indexInput(row.scIndex)),
@@ -84,16 +90,19 @@ export default function AdminShelfItems() {
           folderIndexes[folderIndexKey(row.browsePath)] = indexes;
         }
       }
-      writeFolderIndexes(folderIndexes);
       const adminData = loadAdminData();
       const cleanedCovers: Record<string, string> = {};
       for (const [key, value] of Object.entries(folderCovers)) {
         if (value.trim()) cleanedCovers[key] = value.trim();
       }
-      saveAdminData({
-        ...adminData,
-        homePageData: { ...adminData.homePageData, shelfFolderCovers: cleanedCovers },
-      });
+      saveShelfItemSettings({ folderIndexes, itemKinds });
+      const currentCovers = adminData.homePageData.shelfFolderCovers ?? {};
+      if (JSON.stringify(currentCovers) !== JSON.stringify(cleanedCovers)) {
+        saveAdminData({
+          ...adminData,
+          homePageData: { ...adminData.homePageData, shelfFolderCovers: cleanedCovers },
+        });
+      }
       const refreshed = await loadCourseSummariesFromBrowserDb();
       setBooks(refreshed);
       setRows(listShelfCatalogItems(refreshed));
@@ -155,7 +164,22 @@ export default function AdminShelfItems() {
           <tbody>
             {visible.map((row) => (
               <tr key={row.key}>
-                <td>{row.kind}</td>
+                <td>
+                  {row.kind === "author" ? (
+                    row.kind
+                  ) : (
+                    <select
+                      className="admin-grid-select admin-shelf-kind-select"
+                      value={row.kind}
+                      onChange={(event) => updateRowKind(row.key, event.target.value as Exclude<ShelfItemKind, "author">)}
+                      aria-label={`Type for ${row.title}`}
+                    >
+                      <option value="book">Book</option>
+                      <option value="subcategory">Subcategory</option>
+                      <option value="series">Series</option>
+                    </select>
+                  )}
+                </td>
                 <td>{row.title}</td>
                 <td>{row.pathLabel}</td>
                 <td>

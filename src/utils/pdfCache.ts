@@ -169,9 +169,9 @@ export function resolvePdfStepFileUrl(
     if (/^https?:\/\//i.test(fromContent) && bookHtmlFolder && category) {
       const fileName = fromContent.match(/([^/]+\.pdf)(?:[#?]|$)/i)?.[1];
       if (fileName) {
-        const folder = /^(Comic|Other)\//i.test(bookHtmlFolder)
-          ? bookHtmlFolder
-          : `${bookStorageCategory(category)}/${bookHtmlFolder}`;
+        const storageCategory = bookStorageCategory(category);
+        const folderPath = bookHtmlFolder.replace(/^(Comic|Other)\//i, "");
+        const folder = `${storageCategory}/${folderPath}`;
         return getBookAssetUrl(`${folder}/${fileName}`);
       }
     }

@@ -14,6 +14,7 @@ export const homePageData = {
     Author: { scIndex: 3 },
   } as Record<string, { pIndex?: number; scIndex?: number; sIndex?: number }>,
   shelfFolderCovers: {} as Record<string, string>,
+  shelfItemKinds: {} as Record<string, "book" | "subcategory" | "series">,
   style: {
     main: {
       backgroundColor: "#f8fafc",

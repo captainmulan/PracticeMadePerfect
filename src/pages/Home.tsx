@@ -25,6 +25,7 @@ import {
 import { AUTHOR_SHELF_ID } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
 import { getCourseProgressKey } from "../utils/courseUtils";
+import { loadShelfItemSettings } from "../utils/shelfItemIndexes";
 import { useAnnouncements } from "../utils/useAnnouncements";
 import "../styles/home-test-showcase.css";
 
@@ -87,6 +88,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(initialShelf.selectedAuthorName);
   const [searchQuery, setSearchQuery] = useState(initialShelf.searchQuery);
   const [shelfReady, setShelfReady] = useState(false);
+  const [shelfSettingsVersion, setShelfSettingsVersion] = useState(0);
   const [shelfTransitioning, setShelfTransitioning] = useState(() => {
     return new URLSearchParams(window.location.search).get("homeLoading") === "1"
       || window.history.state?.usr?.homeLoading === true;
@@ -98,6 +100,14 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const { courses, loaded: coursesLoaded } = useCourseCatalog({
     publishedMode: showUnpublishedOnly ? "unpublished" : "published",
   });
+  useEffect(() => {
+    const refreshShelfSettings = () => {
+      void loadShelfItemSettings().then(() => setShelfSettingsVersion((version) => version + 1));
+    };
+    refreshShelfSettings();
+    window.addEventListener("focus", refreshShelfSettings);
+    return () => window.removeEventListener("focus", refreshShelfSettings);
+  }, []);
   const rows = useMemo(
     () => (showUnpublishedOnly ? [getUnpublishedBooksRow(courses)] : getHomeCourseShelfRows(courses)),
     [courses, showUnpublishedOnly]
@@ -134,7 +144,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       { title: "Newly added", items: newlyAdded },
       ...(currentReading.length > 0 ? [{ title: "Current reading", items: currentReading }] : []),
     ].filter((row): row is NonNullable<typeof row> => Boolean(row && row.items.length > 0));
-  }, [courses, rows, showUnpublishedOnly]);
+  }, [courses, rows, shelfSettingsVersion, showUnpublishedOnly]);
   const authorGroups = useMemo(() => {
     const groups = new Map<string, { authorName: string; authorPicture?: string }>();
     for (const course of courses) {
@@ -251,7 +261,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       return { title: "Selection", items: searchItems };
     }
     return rows.find((row) => row.title === "Selection") || rows[0];
-  }, [authorGroups, categoryPath, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedTab, showUnpublishedOnly]);
+  }, [authorGroups, categoryPath, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedTab, shelfSettingsVersion, showUnpublishedOnly]);
 
   return (
     <div className="page-content page-home page-home-showcase">

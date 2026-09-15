@@ -99,7 +99,8 @@ export function resolveBookHtmlFolder(options: {
 }
 
 export function bookStorageCategory(category?: string | null): "Comic" | "Other" {
-  return /(^|[,>\s])comic([,>\s]|$)/i.test(category ?? "") ? "Comic" : "Other";
+  const firstCategory = (category ?? "").split(/[>,]/, 1)[0]?.trim();
+  return /^comic$/i.test(firstCategory) ? "Comic" : "Other";
 }
 
 export function normalizeBookStorageFolder(folder: string): string {

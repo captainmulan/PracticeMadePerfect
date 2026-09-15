@@ -3,6 +3,7 @@ import {
   indexesForAuthor,
   indexesForFolder,
   folderIndexKey,
+  readShelfItemKinds,
   sortByShelfIndex,
 } from "./shelfItemIndexes";
 import { resolveBookCoverUrl } from "./bookCoverSeeds";
@@ -603,7 +604,8 @@ function makeCategoryFolderItem(
   const flag = LANGUAGE_SUBCATEGORY_FLAGS[tag];
   const label = formatCategoryLabel(tag);
   const useBooks3d = books3d && !EMOJI_ROOT_FOLDERS.has(tag);
-  const series = isSeriesFolderTag(tag);
+  const overrideKind = readShelfItemKinds()[`folder/${folderIndexKey(path)}`];
+  const series = overrideKind === "series" || (overrideKind !== "subcategory" && isSeriesFolderTag(tag));
   const folderCover = series ? getHomePageData().shelfFolderCovers?.[folderIndexKey(path)] : undefined;
   return {
     id: `category-${path.join("/")}`,

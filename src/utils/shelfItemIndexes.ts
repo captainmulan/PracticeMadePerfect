@@ -26,6 +26,86 @@ export type ShelfCatalogItem = {
   bookId?: string;
 } & ShelfIndexValues;
 
+const SHELF_ITEM_SETTINGS_KEY = "pmp-shelf-item-settings";
+const SHELF_SETTINGS_DB = "pmp-shelf-settings";
+const SHELF_SETTINGS_STORE = "settings";
+let memoryShelfSettings: Partial<ShelfItemSettings> = {};
+
+type ShelfItemSettings = {
+  folderIndexes: Record<string, ShelfIndexValues>;
+  itemKinds: Record<string, Exclude<ShelfItemKind, "author">>;
+};
+
+function openShelfSettingsDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(SHELF_SETTINGS_DB, 1);
+    request.onupgradeneeded = () => request.result.createObjectStore(SHELF_SETTINGS_STORE);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function loadShelfItemSettings(): Promise<void> {
+  if (typeof indexedDB === "undefined") return;
+  try {
+    const db = await openShelfSettingsDb();
+    const settings = await new Promise<Partial<ShelfItemSettings> | undefined>((resolve, reject) => {
+      const request = db.transaction(SHELF_SETTINGS_STORE, "readonly").objectStore(SHELF_SETTINGS_STORE).get("current");
+      request.onsuccess = () => resolve(request.result as Partial<ShelfItemSettings> | undefined);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    if (settings) memoryShelfSettings = settings;
+  } catch {
+    // Existing local/session fallbacks remain available.
+  }
+}
+
+function readLocalShelfSettings(): Partial<ShelfItemSettings> {
+  if (typeof window === "undefined") return {};
+  const inMemory = memoryShelfSettings;
+  if (Object.keys(inMemory).length > 0) return inMemory;
+  try {
+    const raw = window.localStorage.getItem(SHELF_ITEM_SETTINGS_KEY);
+    if (raw) return JSON.parse(raw) as Partial<ShelfItemSettings>;
+  } catch {
+    // The localStorage bucket may be full; try the tab-local fallback below.
+  }
+  try {
+    const raw = window.sessionStorage.getItem(SHELF_ITEM_SETTINGS_KEY);
+    if (raw) return JSON.parse(raw) as Partial<ShelfItemSettings>;
+  } catch {
+    // Use the hydrated IndexedDB value below.
+  }
+  return inMemory;
+}
+
+export function saveShelfItemSettings(settings: ShelfItemSettings) {
+  if (typeof window === "undefined") return;
+  memoryShelfSettings = settings;
+  if (typeof indexedDB !== "undefined") {
+    void openShelfSettingsDb().then((db) => {
+      const transaction = db.transaction(SHELF_SETTINGS_STORE, "readwrite");
+      transaction.objectStore(SHELF_SETTINGS_STORE).put(settings, "current");
+      transaction.oncomplete = () => db.close();
+      transaction.onerror = () => db.close();
+    }).catch(() => undefined);
+  }
+  const serialized = JSON.stringify(settings);
+  try {
+    window.localStorage.removeItem(SHELF_ITEM_SETTINGS_KEY);
+    window.localStorage.setItem(SHELF_ITEM_SETTINGS_KEY, serialized);
+    return;
+  } catch {
+    // Keep Shelf Items usable when an oversized admin payload fills localStorage.
+  }
+  try {
+    window.sessionStorage.setItem(SHELF_ITEM_SETTINGS_KEY, serialized);
+  } catch {
+    // In-memory state keeps the current page usable when both storage areas are full.
+  }
+}
+
 export function folderIndexKey(path: string[]): string {
   return path.filter(Boolean).join("/");
 }
@@ -35,7 +115,28 @@ export function authorIndexKey(authorName: string): string {
 }
 
 export function readFolderIndexes(): Record<string, ShelfIndexValues> {
-  return { ...(getHomePageData().shelfFolderIndexes ?? {}) };
+  return {
+    ...(getHomePageData().shelfFolderIndexes ?? {}),
+    ...(readLocalShelfSettings().folderIndexes ?? {}),
+  };
+}
+
+export function readShelfItemKinds(): Record<string, Exclude<ShelfItemKind, "author">> {
+  return {
+    ...(getHomePageData().shelfItemKinds ?? {}),
+    ...(readLocalShelfSettings().itemKinds ?? {}),
+  };
+}
+
+export function writeShelfItemKinds(kinds: Record<string, Exclude<ShelfItemKind, "author">>) {
+  const data = loadAdminData();
+  saveAdminData({
+    ...data,
+    homePageData: {
+      ...data.homePageData,
+      shelfItemKinds: kinds,
+    },
+  });
 }
 
 export function writeFolderIndexes(indexes: Record<string, ShelfIndexValues>) {
@@ -111,13 +212,14 @@ function collectFolderNodes(courses: Course[]): Array<{ tag: string; path: strin
 
 export function listShelfCatalogItems(courses: Course[]): ShelfCatalogItem[] {
   const folderIndexes = readFolderIndexes();
+  const itemKinds = readShelfItemKinds();
   const items: ShelfCatalogItem[] = [];
 
   for (const course of courses) {
     const path = getCategoryLevels(course);
     items.push({
       key: `book/${course.id}`,
-      kind: "book",
+      kind: itemKinds[`book/${course.id}`] ?? "book",
       title: course.title,
       pathLabel: path.map(formatCategoryLabel).join(" > ") || "—",
       browsePath: path,
@@ -132,7 +234,7 @@ export function listShelfCatalogItems(courses: Course[]): ShelfCatalogItem[] {
     const indexes = indexesForFolder(node.path, folderIndexes);
     items.push({
       key: `folder/${folderIndexKey(node.path)}`,
-      kind: node.kind,
+      kind: itemKinds[`folder/${folderIndexKey(node.path)}`] ?? node.kind,
       title: formatCategoryLabel(node.tag),
       pathLabel: node.path.map(formatCategoryLabel).join(" > "),
       browsePath: node.path,
