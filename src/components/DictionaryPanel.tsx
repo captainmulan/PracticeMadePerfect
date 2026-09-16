@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 interface DictionaryPanelProps {
   isVisible: boolean;
   onClose: () => void;
+  selectionText?: string | null;
   styleConfig?: {
     backgroundColor?: string;
     borderColor?: string;
@@ -17,50 +18,34 @@ interface WordDefinition {
   example?: string;
 }
 
+interface DictionaryApiEntry {
+  word?: string;
+  phonetic?: string;
+  meanings?: Array<{
+    partOfSpeech?: string;
+    definitions?: Array<{
+      definition?: string;
+      example?: string;
+    }>;
+  }>;
+}
+
+interface DatamuseEntry {
+  word?: string;
+  defs?: string[];
+}
+
 export default function DictionaryPanel({
   isVisible,
   onClose,
+  selectionText = null,
   styleConfig,
 }: DictionaryPanelProps) {
-  const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const [selectedWord, setSelectedWord] = useState<string | null>(selectionText);
   const [definition, setDefinition] = useState<WordDefinition | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-
-  // Mock dictionary data - replace with actual API call
-  const mockDictionary: Record<string, WordDefinition> = {
-    solar: {
-      word: "solar",
-      partOfSpeech: "adjective",
-      definition: "Relating to or determined by the sun.",
-      example: "The solar system includes the sun and all the planets.",
-    },
-    planet: {
-      word: "planet",
-      partOfSpeech: "noun",
-      definition: "A celestial body moving in an elliptical orbit around a star.",
-      example: "Earth is the third planet from the sun.",
-    },
-    orbit: {
-      word: "orbit",
-      partOfSpeech: "noun",
-      definition: "The curved path of a celestial object around a star, planet, or moon.",
-      example: "The moon orbits the Earth every 27 days.",
-    },
-    gravity: {
-      word: "gravity",
-      partOfSpeech: "noun",
-      definition: "The force that attracts a body toward the center of the earth or toward any other physical body having mass.",
-      example: "Gravity keeps us on the ground.",
-    },
-    galaxy: {
-      word: "galaxy",
-      partOfSpeech: "noun",
-      definition: "A system of millions or billions of stars, together with gas and dust, held together by gravitational attraction.",
-      example: "The Milky Way is our home galaxy.",
-    },
-  };
 
   // Handle text selection
   useEffect(() => {
@@ -72,7 +57,6 @@ export default function DictionaryPanel({
 
       if (text && text.length > 0) {
         setSelectedWord(text);
-        fetchDefinition(text);
       }
     };
 
@@ -85,32 +69,102 @@ export default function DictionaryPanel({
     };
   }, [isVisible]);
 
-  const fetchDefinition = async (word: string) => {
-    setIsLoading(true);
-    setError(null);
+  useEffect(() => {
+    if (!isVisible || !selectionText?.trim()) return;
+    setSelectedWord(selectionText.trim());
+  }, [isVisible, selectionText]);
 
-    // Simulate API call with mock data
-    setTimeout(() => {
-      const lowerWord = word.toLowerCase();
-      const found = mockDictionary[lowerWord];
+  useEffect(() => {
+    if (!isVisible || !selectedWord) return;
+    const word = selectedWord.trim().split(/\s+/)[0].replace(/[^a-zA-Z'-]/g, "");
+    if (!word) {
+      setDefinition(null);
+      setError("Select an English word.");
+      return;
+    }
 
-      if (found) {
-        setDefinition(found);
-      } else {
-        // Try to find partial matches
-        const partialMatch = Object.keys(mockDictionary).find(
-          (key) => key.includes(lowerWord) || lowerWord.includes(key)
-        );
-        if (partialMatch) {
-          setDefinition(mockDictionary[partialMatch]);
-        } else {
-          setError(`No definition found for "${word}"`);
-          setDefinition(null);
+    const controller = new AbortController();
+    let timedOut = false;
+    const fetchDefinition = async () => {
+      setIsLoading(true);
+      setDefinition(null);
+      setError(null);
+      const primaryController = new AbortController();
+      let primaryTimedOut = false;
+      const timeoutId = window.setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+      }, 8000);
+      const primaryTimeoutId = window.setTimeout(() => {
+        primaryTimedOut = true;
+        primaryController.abort();
+      }, 3500);
+
+      try {
+        let response: Response | null = null;
+        try {
+          response = await fetch(
+            `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`,
+            { signal: primaryController.signal },
+          );
+          if (response.ok) {
+            const entries = (await response.json()) as DictionaryApiEntry[];
+            const entry = entries[0];
+            const meaning = entry?.meanings?.find((item) => item.definitions?.[0]);
+            const firstDefinition = meaning?.definitions?.[0];
+            if (entry && firstDefinition?.definition) {
+              setDefinition({
+                word: entry.word ?? word,
+                partOfSpeech: meaning?.partOfSpeech ?? "",
+                definition: firstDefinition.definition,
+                example: firstDefinition.example,
+              });
+              return;
+            }
+          }
+        } catch (primaryError) {
+          if (timedOut && !primaryTimedOut) throw primaryError;
+          /* dictionaryapi.dev may be unavailable or blocked by CORS. */
+        } finally {
+          window.clearTimeout(primaryTimeoutId);
         }
+
+        const fallbackResponse = await fetch(
+          `https://api.datamuse.com/words?sp=${encodeURIComponent(word)}&md=d&max=1`,
+          { signal: controller.signal },
+        );
+        if (!fallbackResponse.ok) throw new Error("service-unavailable");
+        const fallbackEntries = (await fallbackResponse.json()) as DatamuseEntry[];
+        const fallback = fallbackEntries[0];
+        const rawDefinition = fallback?.defs?.[0];
+        if (!fallback?.word || !rawDefinition) throw new Error("not-found");
+        const separator = rawDefinition.indexOf("\t");
+        setDefinition({
+          word: fallback.word,
+          partOfSpeech: separator > 0 ? rawDefinition.slice(0, separator) : "",
+          definition: separator > 0 ? rawDefinition.slice(separator + 1) : rawDefinition,
+        });
+      } catch (fetchError) {
+        if (timedOut) {
+          setError("Dictionary service timed out. Please try again.");
+        } else if ((fetchError as Error).name !== "AbortError") {
+          setDefinition(null);
+          setError(
+            (fetchError as Error).message === "not-found"
+              ? `No short definition found for "${word}".`
+              : "Dictionary service is temporarily unavailable. Please try again.",
+          );
+        }
+      } finally {
+        window.clearTimeout(timeoutId);
+        if (!controller.signal.aborted) setIsLoading(false);
+        else if (timedOut) setIsLoading(false);
       }
-      setIsLoading(false);
-    }, 300);
-  };
+    };
+
+    void fetchDefinition();
+    return () => controller.abort();
+  }, [isVisible, selectedWord]);
 
   if (!isVisible) return null;
 

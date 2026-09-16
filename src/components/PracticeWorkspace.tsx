@@ -57,6 +57,8 @@ interface PracticeWorkspaceProps {
   pageZoom?: number;
   pageZoomLevels?: number[];
   onPageZoomChange?: (zoom: number) => void;
+  dictionarySelection?: string | null;
+  onDictionaryModeChange?: (enabled: boolean) => void;
 }
 
 export default function PracticeWorkspace({
@@ -103,6 +105,8 @@ export default function PracticeWorkspace({
   pageZoom,
   pageZoomLevels = Array.from({ length: 21 }, (_, i) => 100 + i * 5),
   onPageZoomChange,
+  dictionarySelection = null,
+  onDictionaryModeChange,
 }: PracticeWorkspaceProps) {
   const navigate = useNavigate();
   const homeData = getHomePageData();
@@ -122,6 +126,11 @@ export default function PracticeWorkspace({
   const [showBookmarkHistory, setShowBookmarkHistory] = useState(false);
   const [dictionaryMode, setDictionaryMode] = useState(false);
   const [leavingDestination, setLeavingDestination] = useState<"search" | "home" | null>(null);
+
+  const updateDictionaryMode = (enabled: boolean) => {
+    setDictionaryMode(enabled);
+    onDictionaryModeChange?.(enabled);
+  };
 
   const openShelf = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -249,7 +258,7 @@ export default function PracticeWorkspace({
             type="button"
             className="chapter-nav-icon-btn"
             onClick={() => {
-              setDictionaryMode(false);
+              updateDictionaryMode(false);
               const persist = onToggleBookmark
                 ? bookmarked
                   ? Promise.resolve()
@@ -288,7 +297,7 @@ export default function PracticeWorkspace({
               className="practice-settings-btn"
               onClick={() => {
                 setShowBookmarkHistory(!showBookmarkHistory);
-                setDictionaryMode(false);
+                updateDictionaryMode(false);
               }}
               style={{
                 background: "transparent",
@@ -310,7 +319,7 @@ export default function PracticeWorkspace({
               type="button"
               className="practice-settings-btn"
               onClick={() => {
-                setDictionaryMode(!dictionaryMode);
+                updateDictionaryMode(!dictionaryMode);
                 setShowBookmarkHistory(false);
               }}
               style={{
@@ -728,7 +737,7 @@ export default function PracticeWorkspace({
               </span>
               <button
                 type="button"
-                onClick={() => setDictionaryMode(false)}
+                onClick={() => updateDictionaryMode(false)}
                 style={{
                   background: "transparent",
                   border: "none",
@@ -757,7 +766,8 @@ export default function PracticeWorkspace({
       {/* Dictionary Panel Component */}
       <DictionaryPanel
         isVisible={dictionaryMode}
-        onClose={() => setDictionaryMode(false)}
+        selectionText={dictionarySelection}
+        onClose={() => updateDictionaryMode(false)}
         styleConfig={{
           backgroundColor: style?.wizardTopInfo?.backgroundColor,
           borderColor: style?.wizardTopInfo?.borderBottomColor,

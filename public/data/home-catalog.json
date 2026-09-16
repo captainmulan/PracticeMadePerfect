@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-09-14T13:43:06.477Z",
+  "exportedAt": "2026-09-16T12:12:36.911Z",
   "courses": [
     {
       "id": "donald-duck-and-friends-361-dec-2010",
@@ -164,7 +164,7 @@
       "category": "Kid, Comic, Shwe Thway",
       "pIndex": 4,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-8-1711504983477",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-8-1711504983477",
       "stepCount": 16
     },
     {
@@ -188,7 +188,7 @@
       "category": "Kid, Comic, Shwe Thway",
       "pIndex": 4,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-15",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-15",
       "stepCount": 16
     },
     {
@@ -212,7 +212,7 @@
       "category": "Kid, Comic, Asterix",
       "pIndex": 4,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/asterix-in-corsica",
+      "bookHtmlFolder": "Comic/asterix-in-corsica",
       "stepCount": 45
     },
     {
@@ -236,7 +236,7 @@
       "category": "Kid, Comic, BoBo",
       "pIndex": 4,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-new",
+      "bookHtmlFolder": "Comic/bo-bo-new",
       "stepCount": 104
     },
     {
@@ -284,7 +284,7 @@
       "category": "Kid, Comic, ScoobyDoo",
       "pIndex": 5,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/scooby-doo-the-camping-caper",
+      "bookHtmlFolder": "Comic/scooby-doo-the-camping-caper",
       "stepCount": 36
     },
     {
@@ -332,7 +332,7 @@
       "category": "Kid, Comic, Shwe Thway",
       "pIndex": 6,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-10",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-10",
       "stepCount": 16
     },
     {
@@ -356,7 +356,7 @@
       "category": "Kid, Comic, ReadAtHome",
       "pIndex": 6,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/read-at-home-the-secret-of-the-sands",
+      "bookHtmlFolder": "Comic/read-at-home-the-secret-of-the-sands",
       "stepCount": 17
     },
     {
@@ -380,7 +380,7 @@
       "category": "Kid, Comic, TinTin",
       "pIndex": 7,
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tintin-and-destination-moon",
+      "bookHtmlFolder": "Comic/tintin-and-destination-moon",
       "stepCount": 63
     },
     {
@@ -554,7 +554,7 @@
       "courseIndex": 20,
       "category": "Kid, Comic, Shwe Thway",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-9-1711591356943",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-9-1711591356943",
       "stepCount": 16
     },
     {
@@ -623,7 +623,7 @@
       "courseIndex": 23,
       "category": "Kid, Comic, Shwe Thway",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-11",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-11",
       "stepCount": 16
     },
     {
@@ -646,7 +646,7 @@
       "courseIndex": 24,
       "category": "Kid, Comic, Shwe Thway",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-13",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-13",
       "stepCount": 16
     },
     {
@@ -669,7 +669,7 @@
       "courseIndex": 25,
       "category": "Kid, Comic, Shwe Thway",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-14",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-14",
       "stepCount": 16
     },
     {
@@ -692,7 +692,7 @@
       "courseIndex": 27,
       "category": "Kid, Comic, Shwe Thway",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/shwe-thway-journal-vol-56-no-16",
+      "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-16",
       "stepCount": 16
     },
     {
@@ -1405,7 +1405,7 @@
       "courseIndex": 55,
       "category": "Kid, Comic, ReadAtHome",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/read-at-home-floppy-and-the-bone",
+      "bookHtmlFolder": "Comic/read-at-home-floppy-and-the-bone",
       "stepCount": 13
     },
     {
@@ -1451,7 +1451,7 @@
       "courseIndex": 56,
       "category": "Kid, Comic, ReadAtHome",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/read-at-home-floppy-s-phonics-seasick",
+      "bookHtmlFolder": "Comic/read-at-home-floppy-s-phonics-seasick",
       "stepCount": 25
     },
     {
@@ -1497,7 +1497,7 @@
       "courseIndex": 57,
       "category": "Kid, Comic, ReadAtHome",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/read-at-home-hungry-floppy",
+      "bookHtmlFolder": "Comic/read-at-home-hungry-floppy",
       "stepCount": 17
     },
     {
@@ -1520,7 +1520,7 @@
       "courseIndex": 58,
       "category": "Kid, Comic, ReadAtHome",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/read-at-home-looking-after-gran",
+      "bookHtmlFolder": "Comic/read-at-home-looking-after-gran",
       "stepCount": 17
     },
     {
@@ -1566,7 +1566,7 @@
       "courseIndex": 59,
       "category": "Kid, Comic, ReadAtHome",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/read-at-home-the-hairy-scary-monster",
+      "bookHtmlFolder": "Comic/read-at-home-the-hairy-scary-monster",
       "stepCount": 17
     },
     {
@@ -1612,7 +1612,7 @@
       "courseIndex": 60,
       "category": "Kid, Comic, ReadAtHome",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/read-at-home-the-monster-hunt",
+      "bookHtmlFolder": "Comic/read-at-home-the-monster-hunt",
       "stepCount": 13
     },
     {
@@ -1635,7 +1635,7 @@
       "courseIndex": 62,
       "category": "Kid, Comic, ScoobyDoo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/scooby-doo-and-the-scary-snowman",
+      "bookHtmlFolder": "Comic/scooby-doo-and-the-scary-snowman",
       "stepCount": 27
     },
     {
@@ -1658,7 +1658,7 @@
       "courseIndex": 65,
       "category": "Kid, Comic, TinTin",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tintin-and-explorers-on-the-moon",
+      "bookHtmlFolder": "Comic/tintin-and-explorers-on-the-moon",
       "stepCount": 63
     },
     {
@@ -1681,7 +1681,7 @@
       "courseIndex": 66,
       "category": "Kid, Comic, TinTin",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tintin-and-king-ottokar-s-sceptre",
+      "bookHtmlFolder": "Comic/tintin-and-king-ottokar-s-sceptre",
       "stepCount": 64
     },
     {
@@ -1704,7 +1704,7 @@
       "courseIndex": 67,
       "category": "Kid, Comic, TinTin",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tintin-and-red-rackham-s-treasure",
+      "bookHtmlFolder": "Comic/tintin-and-red-rackham-s-treasure",
       "stepCount": 63
     },
     {
@@ -1727,7 +1727,7 @@
       "courseIndex": 68,
       "category": "Kid, Comic, TinTin",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tintin-and-the-castafiore-emerald",
+      "bookHtmlFolder": "Comic/tintin-and-the-castafiore-emerald",
       "stepCount": 64
     },
     {
@@ -1750,7 +1750,7 @@
       "courseIndex": 69,
       "category": "Kid, Comic, TinTin",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tintin-and-the-crab-with-the-golden-claws",
+      "bookHtmlFolder": "Comic/tintin-and-the-crab-with-the-golden-claws",
       "stepCount": 64
     },
     {
@@ -1773,7 +1773,7 @@
       "courseIndex": 70,
       "category": "Kid, Comic",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/town-mouse-and-country-mouse",
+      "bookHtmlFolder": "Comic/town-mouse-and-country-mouse",
       "stepCount": 17
     },
     {
@@ -2026,7 +2026,7 @@
       "courseIndex": 81,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-a-girl-named-mala",
+      "bookHtmlFolder": "Comic/tootpee-a-girl-named-mala",
       "stepCount": 198
     },
     {
@@ -2049,7 +2049,7 @@
       "courseIndex": 82,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-elephant-storm",
+      "bookHtmlFolder": "Comic/tootpee-elephant-storm",
       "stepCount": 246
     },
     {
@@ -2072,7 +2072,7 @@
       "courseIndex": 83,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-tha-man-ka-way",
+      "bookHtmlFolder": "Comic/tootpee-tha-man-ka-way",
       "stepCount": 203
     },
     {
@@ -2095,7 +2095,7 @@
       "courseIndex": 84,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-amyue-tay",
+      "bookHtmlFolder": "Comic/tootpee-amyue-tay",
       "stepCount": 157
     },
     {
@@ -2118,7 +2118,7 @@
       "courseIndex": 85,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-dragon-rubies",
+      "bookHtmlFolder": "Comic/tootpee-dragon-rubies",
       "stepCount": 252
     },
     {
@@ -2141,7 +2141,7 @@
       "courseIndex": 86,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-every-time-i-meet-united",
+      "bookHtmlFolder": "Comic/tootpee-every-time-i-meet-united",
       "stepCount": 206
     },
     {
@@ -2187,7 +2187,7 @@
       "courseIndex": 89,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-kyite-htee-yoe-trip",
+      "bookHtmlFolder": "Comic/tootpee-kyite-htee-yoe-trip",
       "stepCount": 79
     },
     {
@@ -2210,7 +2210,7 @@
       "courseIndex": 90,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-poinsioned-people",
+      "bookHtmlFolder": "Comic/tootpee-poinsioned-people",
       "stepCount": 195
     },
     {
@@ -2233,7 +2233,7 @@
       "courseIndex": 91,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-red-mountain-sky-trip",
+      "bookHtmlFolder": "Comic/tootpee-red-mountain-sky-trip",
       "stepCount": 396
     },
     {
@@ -2256,7 +2256,7 @@
       "courseIndex": 92,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-ring-of-the-bell-from-school",
+      "bookHtmlFolder": "Comic/tootpee-ring-of-the-bell-from-school",
       "stepCount": 160
     },
     {
@@ -2279,7 +2279,7 @@
       "courseIndex": 93,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-way-lar-nal-mha-tiger",
+      "bookHtmlFolder": "Comic/tootpee-way-lar-nal-mha-tiger",
       "stepCount": 187
     },
     {
@@ -2302,7 +2302,7 @@
       "courseIndex": 94,
       "category": "Kid, Comic, Tootpee, MM",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/tootpee-white-tiger-ghost",
+      "bookHtmlFolder": "Comic/tootpee-white-tiger-ghost",
       "stepCount": 244
     },
     {
@@ -2785,7 +2785,7 @@
       "courseIndex": 116,
       "category": "Kid, Comic, Asterix",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/asterix-and-the-black-gold",
+      "bookHtmlFolder": "Comic/asterix-and-the-black-gold",
       "stepCount": 45
     },
     {
@@ -2808,7 +2808,7 @@
       "courseIndex": 117,
       "category": "Kid, Comic, Asterix",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/asterix-and-the-magic-carpet",
+      "bookHtmlFolder": "Comic/asterix-and-the-magic-carpet",
       "stepCount": 64
     },
     {
@@ -2831,7 +2831,7 @@
       "courseIndex": 118,
       "category": "Kid, Comic, Asterix",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/asterix-at-the-olympic-games",
+      "bookHtmlFolder": "Comic/asterix-at-the-olympic-games",
       "stepCount": 45
     },
     {
@@ -2854,7 +2854,7 @@
       "courseIndex": 119,
       "category": "Kid, Comic, Asterix",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/asterix-the-mansions-of-the-gods",
+      "bookHtmlFolder": "Comic/asterix-the-mansions-of-the-gods",
       "stepCount": 45
     },
     {
@@ -2877,7 +2877,7 @@
       "courseIndex": 120,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-cute-rabbit",
+      "bookHtmlFolder": "Comic/bo-bo-cute-rabbit",
       "stepCount": 111
     },
     {
@@ -2900,7 +2900,7 @@
       "courseIndex": 121,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-dangerous-fruit",
+      "bookHtmlFolder": "Comic/bo-bo-dangerous-fruit",
       "stepCount": 112
     },
     {
@@ -2923,7 +2923,7 @@
       "courseIndex": 122,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-effort",
+      "bookHtmlFolder": "Comic/bo-bo-effort",
       "stepCount": 104
     },
     {
@@ -2946,7 +2946,7 @@
       "courseIndex": 123,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-get-relieved",
+      "bookHtmlFolder": "Comic/bo-bo-get-relieved",
       "stepCount": 112
     },
     {
@@ -2969,7 +2969,7 @@
       "courseIndex": 124,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-like-me",
+      "bookHtmlFolder": "Comic/bo-bo-like-me",
       "stepCount": 103
     },
     {
@@ -2992,7 +2992,7 @@
       "courseIndex": 125,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-mango",
+      "bookHtmlFolder": "Comic/bo-bo-mango",
       "stepCount": 104
     },
     {
@@ -3015,7 +3015,7 @@
       "courseIndex": 126,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-mouse",
+      "bookHtmlFolder": "Comic/bo-bo-mouse",
       "stepCount": 104
     },
     {
@@ -3038,7 +3038,7 @@
       "courseIndex": 127,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-new-footwear",
+      "bookHtmlFolder": "Comic/bo-bo-new-footwear",
       "stepCount": 104
     },
     {
@@ -3061,7 +3061,7 @@
       "courseIndex": 129,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-parrot",
+      "bookHtmlFolder": "Comic/bo-bo-parrot",
       "stepCount": 104
     },
     {
@@ -3084,7 +3084,7 @@
       "courseIndex": 130,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-strange-tiny-trip",
+      "bookHtmlFolder": "Comic/bo-bo-strange-tiny-trip",
       "stepCount": 103
     },
     {
@@ -3107,7 +3107,7 @@
       "courseIndex": 131,
       "category": "Kid, Comic, BoBo",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/bo-bo-the-right-way",
+      "bookHtmlFolder": "Comic/bo-bo-the-right-way",
       "stepCount": 104
     },
     {
@@ -3383,7 +3383,7 @@
       "courseIndex": 147,
       "category": "Kid, Science, ThunderboltKids",
       "artifactType": "book",
-      "bookHtmlFolder": "Comic/ScienceAdventuresGrade6_comic-Siyavula-FKB",
+      "bookHtmlFolder": "Other/ScienceAdventuresGrade6_comic-Siyavula-FKB",
       "stepCount": 176
     },
     {
@@ -3406,7 +3406,7 @@
       "courseIndex": 148,
       "category": "Kid, Science, ThunderboltKids",
       "artifactType": "book",
-      "bookHtmlFolder": "Comic/thinkingskills-Siyavula-FKB",
+      "bookHtmlFolder": "Other/thinkingskills-Siyavula-FKB",
       "stepCount": 67
     },
     {
@@ -3429,7 +3429,7 @@
       "courseIndex": 149,
       "category": "Kid, Science, ThunderboltKids",
       "artifactType": "book",
-      "bookHtmlFolder": "Comic/Science_Comic_Adventures_Grade4_FKB",
+      "bookHtmlFolder": "Other/Science_Comic_Adventures_Grade4_FKB",
       "stepCount": 176
     },
     {
@@ -3475,7 +3475,7 @@
       "courseIndex": 150,
       "category": "Kid, Science, ThunderboltKids",
       "artifactType": "book",
-      "bookHtmlFolder": "Comic/ScienceAdventures_Comic_Grade5_siyavula-FKB",
+      "bookHtmlFolder": "Other/ScienceAdventures_Comic_Grade5_siyavula-FKB",
       "stepCount": 176
     },
     {

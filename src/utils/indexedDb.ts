@@ -285,9 +285,8 @@ function normalizeLegacyBookStoragePath(course: Course): Course {
   const rawFolder = course.bookHtmlFolder ? normalizeBookStorageFolder(course.bookHtmlFolder) : "";
   const firstStep = course.chapters.flatMap((chapter) => chapter.steps).find((step) => step.contentHtml);
   const sourceFolder = rawFolder || firstStep?.contentHtml?.match(/\/book_html\/([^/"?#]+)\//i)?.[1] || "";
-  const folder = sourceFolder && !/^(Comic|Other)\//i.test(sourceFolder)
-    ? `${storageCategory}/${sourceFolder}`
-    : sourceFolder;
+  const folderName = sourceFolder.replace(/^(Comic|Other)\//i, "");
+  const folder = sourceFolder ? `${storageCategory}/${folderName}` : "";
 
   const chapters = course.chapters.map((chapter) => ({
     ...chapter,

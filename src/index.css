@@ -620,6 +620,10 @@ textarea {
   touch-action: pan-x pan-y;
 }
 
+.course-wizard-page .practice-pdf-iframe.practice-pdf-iframe--dictionary {
+  touch-action: auto;
+}
+
 .course-wizard-page .practice-right,
 .course-wizard-page .practice-code-page .practice-right {
   background: #ffffff !important;

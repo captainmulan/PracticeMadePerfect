@@ -41,11 +41,15 @@
         height: 100%;
         min-height: 0;
         -webkit-overflow-scrolling: touch;
+        position: relative;
       }
       /* Focus: keep native pan/scroll (swipe) — do not lock overflow. */
       .pdf-canvas-wrap.is-soft-focus {
         touch-action: pan-x pan-y;
         overscroll-behavior: contain;
+      }
+      .pdf-canvas-wrap.is-dictionary-mode {
+        touch-action: auto;
       }
       canvas {
         display: block;
@@ -56,6 +60,57 @@
         transform: translateZ(0);
         flex: 0 0 auto;
         will-change: transform;
+      }
+      .pdf-text-layer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 2;
+        overflow: hidden;
+        color: rgba(15, 23, 42, 0.14);
+        background: rgba(255, 255, 255, 0.01);
+        pointer-events: none;
+        user-select: text;
+        -webkit-user-select: text;
+        -webkit-touch-callout: default;
+        touch-action: text;
+        transform-origin: 0 0;
+      }
+      .pdf-text-layer.is-dictionary-enabled {
+        pointer-events: auto;
+        user-select: text;
+        -webkit-user-select: text;
+        visibility: visible;
+        z-index: 3;
+      }
+      .pdf-text-layer:not(.is-dictionary-enabled) {
+        visibility: hidden;
+      }
+      .pdf-text-layer span {
+        position: absolute;
+        display: inline-block;
+        white-space: pre;
+        color: rgba(15, 23, 42, 0.14);
+        -webkit-text-fill-color: rgba(15, 23, 42, 0.14);
+        cursor: text;
+        user-select: text;
+        -webkit-user-select: text;
+        -webkit-touch-callout: default;
+        touch-action: auto;
+        transform-origin: 0 0;
+      }
+      .pdf-canvas-wrap.is-dictionary-mode canvas {
+        pointer-events: none;
+      }
+      .pdf-canvas-wrap.is-dictionary-mode .pdf-text-layer.is-dictionary-enabled,
+      .pdf-canvas-wrap.is-dictionary-mode .pdf-text-layer.is-dictionary-enabled span {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        cursor: text;
+      }
+      .pdf-text-layer span::selection {
+        background: rgba(37, 99, 235, 0.28);
+        color: rgba(15, 23, 42, 0.95);
       }
       @media (max-width: 767px) {
         .pdf-shell {
@@ -236,6 +291,11 @@
         let lastLayoutKey = "";
         let prefetchTimer = 0;
         let visibleCanvas = null;
+        let visibleTextLayer = null;
+        let visibleEntry = null;
+        let dictionaryMode = params.get("dictionary") === "1";
+        let ocrWorkerPromise = null;
+        let ocrRunToken = 0;
         let pageZoom = 100;
         let lastRenderedPage = null; // Track the last successfully rendered page
         const zoomParam = Number(params.get("zoom"));
@@ -453,6 +513,7 @@
             return;
           }
           releaseVisibleIf(entry.canvas);
+          releaseVisibleIf(entry.textLayer);
           entry.canvas.width = 0;
           entry.canvas.height = 0;
         };
@@ -1294,13 +1355,188 @@
         };
 
         const releaseVisibleIf = (node) => {
-          if (node && node.parentNode === wrap && node !== visibleCanvas) {
+          if (node && node.parentNode === wrap && node !== visibleCanvas && node !== visibleTextLayer) {
             try {
               node.remove();
             } catch {
               /* ignore */
             }
           }
+        };
+
+        const getOcrWorker = async () => {
+          if (!window.Tesseract) {
+            await new Promise((resolve, reject) => {
+              const script = document.createElement("script");
+              script.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+          if (!ocrWorkerPromise) {
+            ocrWorkerPromise = window.Tesseract.createWorker("eng");
+          }
+          return ocrWorkerPromise;
+        };
+
+        const postDictionarySelection = (text) => {
+          const clean = typeof text === "string" ? text.trim() : "";
+          if (!clean) return;
+          try {
+            window.parent?.postMessage(
+              { type: "pdf-viewer:dictionary-selection", text: clean, page: currentPage },
+              "*",
+            );
+          } catch {
+            /* ignore */
+          }
+        };
+
+        const selectWordSpan = (span) => {
+          if (!(span instanceof Element)) return;
+          const text = (span.textContent || "").trim();
+          if (!text) return;
+          const sel = window.getSelection();
+          if (sel) {
+            const range = document.createRange();
+            range.selectNodeContents(span);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+          postDictionarySelection(text);
+        };
+
+        let selectionPointerStart = null;
+        const finishPointerSelection = (event) => {
+          if (!dictionaryMode || !selectionPointerStart) return;
+          const start = selectionPointerStart;
+          selectionPointerStart = null;
+          const pointerTarget = document.elementFromPoint(event.clientX, event.clientY);
+          const end = pointerTarget instanceof Element
+            ? pointerTarget.closest(".pdf-text-layer.is-dictionary-enabled span")
+            : null;
+          if (!(start instanceof Element)) return;
+          const existing = window.getSelection();
+          if (existing?.toString().trim()) return;
+          const spans = [...(visibleTextLayer?.querySelectorAll("span") || [])];
+          const startIndex = spans.indexOf(start);
+          const endIndex = spans.indexOf(end || start);
+          if (startIndex < 0 || endIndex < 0) return;
+          const range = document.createRange();
+          if (startIndex <= endIndex) {
+            range.setStartBefore(start);
+            range.setEndAfter(end);
+          } else {
+            range.setStartBefore(end);
+            range.setEndAfter(start);
+          }
+          existing?.removeAllRanges();
+          existing?.addRange(range);
+          postDictionarySelection(existing?.toString() || "");
+        };
+
+        document.addEventListener(
+          "pointerdown",
+          (event) => {
+            if (!dictionaryMode || event.button !== 0) return;
+            const span = event.target instanceof Element
+              ? event.target.closest(".pdf-text-layer.is-dictionary-enabled span")
+              : null;
+            selectionPointerStart = span;
+          },
+          true,
+        );
+        document.addEventListener("pointerup", finishPointerSelection, true);
+        document.addEventListener("pointercancel", () => {
+          selectionPointerStart = null;
+        }, true);
+        document.addEventListener("click", (event) => {
+          if (!dictionaryMode) return;
+          const span = event.target instanceof Element
+            ? event.target.closest(".pdf-text-layer.is-dictionary-enabled span")
+            : null;
+          if (!(span instanceof Element)) return;
+          const selection = window.getSelection();
+          if (selection?.toString().trim()) {
+            postDictionarySelection(selection.toString());
+            return;
+          }
+          selectWordSpan(span);
+        }, true);
+
+        const buildOcrTextLayer = async (entry) => {
+          if (!entry?.canvas || !entry.textLayer || entry.hasNativeTextLayer || entry.textLayer.childElementCount) return;
+          const runToken = ++ocrRunToken;
+          entry.textLayer.dataset.ocr = "loading";
+          try {
+            const worker = await getOcrWorker();
+            const blob = await new Promise((resolve, reject) => {
+              if (!entry.canvas.toBlob) {
+                resolve(null);
+                return;
+              }
+              const done = (value) => resolve(value || null);
+              entry.canvas.toBlob(done, "image/png", 0.92);
+            });
+            if (!blob) {
+              entry.textLayer.dataset.ocr = "unavailable";
+              return;
+            }
+            const result = await worker.recognize(blob);
+            if (runToken !== ocrRunToken) return;
+            const scaleX = entry.cssWidth / Math.max(1, entry.canvas.width);
+            const scaleY = entry.cssHeight / Math.max(1, entry.canvas.height);
+            const words = result?.data?.words || [];
+            for (const word of words) {
+              const text = typeof word.text === "string" ? word.text.trim() : "";
+              const box = word.bbox;
+              if (!text || !box) continue;
+              const span = document.createElement("span");
+              span.textContent = text;
+              span.setAttribute("tabindex", "0");
+              span.style.left = `${box.x0 * scaleX}px`;
+              span.style.top = `${box.y0 * scaleY}px`;
+              span.style.fontSize = `${Math.max(10, (box.y1 - box.y0) * scaleY)}px`;
+              span.style.lineHeight = "1";
+              span.style.fontFamily = "sans-serif";
+              span.addEventListener("click", () => {
+                if (!dictionaryMode) return;
+                selectWordSpan(span);
+              });
+              entry.textLayer.appendChild(span);
+            }
+            entry.textLayer.dataset.ocr = String(words.length);
+          } catch (ocrError) {
+            entry.textLayer.dataset.ocr = "failed";
+            console.warn("PDF English OCR failed:", ocrError);
+          }
+        };
+
+        const ensureDictionaryLayer = () => {
+          if (!dictionaryMode || !visibleCanvas) return;
+          if (!visibleTextLayer) {
+            const layer = document.createElement("div");
+            layer.className = "pdf-text-layer is-dictionary-enabled";
+            layer.setAttribute("aria-hidden", "true");
+            layer.style.width = `${visibleCanvas.clientWidth || visibleCanvas.width}px`;
+            layer.style.height = `${visibleCanvas.clientHeight || visibleCanvas.height}px`;
+            layer.style.left = `${visibleCanvas.offsetLeft}px`;
+            layer.style.top = `${visibleCanvas.offsetTop}px`;
+            wrap.appendChild(layer);
+            visibleTextLayer = layer;
+          }
+          if (!visibleEntry) {
+            visibleEntry = {
+              canvas: visibleCanvas,
+              textLayer: visibleTextLayer,
+              cssWidth: visibleCanvas.clientWidth || visibleCanvas.width,
+              cssHeight: visibleCanvas.clientHeight || visibleCanvas.height,
+            };
+          } else {
+            visibleEntry.textLayer = visibleTextLayer;
+          }
+          void buildOcrTextLayer(visibleEntry);
         };
 
         const focusContent = (entry) => {
@@ -1311,6 +1547,11 @@
           if (node) {
             node.style.transform = "translateZ(0)";
           }
+          const alignTextLayer = () => {
+            if (!entry.textLayer || !node) return;
+            entry.textLayer.style.left = `${node.offsetLeft}px`;
+            entry.textLayer.style.top = `${node.offsetTop}px`;
+          };
           const applyScroll = () => {
             const availW = Math.max(80, wrap.clientWidth);
             const extra = (entry.cssWidth || 0) - availW;
@@ -1318,22 +1559,25 @@
               wrap.style.justifyContent = extra > 0 ? "flex-start" : "center";
               wrap.scrollLeft = extra > 0 ? Math.round(extra / 2) : 0;
               wrap.scrollTop = 0;
-              return;
+            } else {
+              wrap.style.justifyContent = "flex-start";
+              wrap.scrollLeft = Math.round(entry.scrollLeft || 0);
+              wrap.scrollTop = Math.round(entry.scrollTop || 0);
             }
-            wrap.style.justifyContent = "flex-start";
-            wrap.scrollLeft = Math.round(entry.scrollLeft || 0);
-            wrap.scrollTop = Math.round(entry.scrollTop || 0);
+            alignTextLayer();
           };
           applyScroll();
           requestAnimationFrame(() => {
             applyScroll();
-            requestAnimationFrame(applyScroll);
+            requestAnimationFrame(() => {
+              applyScroll();
+              alignTextLayer();
+            });
           });
         };
 
         const mountEntry = (entry) => {
           const node = entry.canvas;
-          // Validate canvas has content before mounting
           if (!node) {
             console.warn("Null canvas entry - skipping mount");
             return;
@@ -1344,10 +1588,27 @@
             console.warn("Canvas has no dimensions - skipping mount");
             return;
           }
+          if (!entry.textLayer) {
+            entry.textLayer = document.createElement("div");
+            entry.textLayer.className = "pdf-text-layer";
+            entry.textLayer.setAttribute("aria-hidden", "true");
+          }
           node.style.width = `${entry.cssWidth}px`;
           node.style.height = `${entry.cssHeight}px`;
+          if (entry.textLayer) {
+            entry.textLayer.style.width = `${entry.cssWidth}px`;
+            entry.textLayer.style.height = `${entry.cssHeight}px`;
+          }
           const prev = visibleCanvas;
+          const prevTextLayer = visibleTextLayer;
           if (prev === node) {
+            if (entry.textLayer.parentNode !== wrap) {
+              wrap.appendChild(entry.textLayer);
+            }
+            visibleTextLayer = entry.textLayer || null;
+            visibleEntry = entry;
+            if (visibleTextLayer) visibleTextLayer.classList.toggle("is-dictionary-enabled", dictionaryMode);
+            void buildOcrTextLayer(entry);
             focusContent(entry);
             syncPanelChrome();
             return;
@@ -1356,7 +1617,16 @@
           if (node.parentNode !== wrap) {
             wrap.appendChild(node);
           }
+          if (entry.textLayer && entry.textLayer.parentNode !== wrap) {
+            wrap.appendChild(entry.textLayer);
+          }
           visibleCanvas = node;
+          visibleTextLayer = entry.textLayer || null;
+          visibleEntry = entry;
+          if (visibleTextLayer) visibleTextLayer.classList.toggle("is-dictionary-enabled", dictionaryMode);
+          void buildOcrTextLayer(entry);
+          ensureDictionaryLayer();
+          ensureDictionaryLayer();
           focusContent(entry);
           if (prev && prev !== node) {
             try {
@@ -1369,8 +1639,15 @@
               prev.height = 0;
             }
           }
-          while (wrap.childElementCount > 1) {
-            const extra = [...wrap.children].find((c) => c !== node);
+          if (prevTextLayer && prevTextLayer !== visibleTextLayer) {
+            try {
+              prevTextLayer.remove();
+            } catch {
+              /* ignore */
+            }
+          }
+          while (wrap.childElementCount > 2) {
+            const extra = [...wrap.children].find((c) => c !== node && c !== visibleTextLayer);
             if (!extra) break;
             try {
               extra.remove();
@@ -1406,11 +1683,55 @@
             context.fillStyle = "#ffffff";
             context.fillRect(0, 0, off.width, off.height);
           }
+          const textLayer = document.createElement("div");
+          textLayer.className = "pdf-text-layer";
+          textLayer.setAttribute("aria-hidden", "true");
+          textLayer.style.width = `${layout.cssWidth}px`;
+          textLayer.style.height = `${layout.cssHeight}px`;
+          try {
+            const textContent = await page.getTextContent();
+            const textViewport = page.getViewport({ scale: layout.cssScale });
+            const viewportTransform = textViewport.transform;
+            for (const item of textContent.items || []) {
+              try {
+                if (!item?.str || !item.transform) continue;
+                const itemTransform = item.transform;
+                const transform = [
+                  viewportTransform[0] * itemTransform[0] + viewportTransform[2] * itemTransform[1],
+                  viewportTransform[1] * itemTransform[0] + viewportTransform[3] * itemTransform[1],
+                  viewportTransform[0] * itemTransform[2] + viewportTransform[2] * itemTransform[3],
+                  viewportTransform[1] * itemTransform[2] + viewportTransform[3] * itemTransform[3],
+                  viewportTransform[0] * itemTransform[4] + viewportTransform[2] * itemTransform[5] + viewportTransform[4],
+                  viewportTransform[1] * itemTransform[4] + viewportTransform[3] * itemTransform[5] + viewportTransform[5],
+                ];
+                const fontHeight = Math.max(1, Math.hypot(transform[2], transform[3]));
+                const span = document.createElement("span");
+                span.textContent = item.str;
+                span.style.left = `${transform[4]}px`;
+                span.style.top = `${transform[5] - fontHeight}px`;
+                span.style.fontSize = `${fontHeight}px`;
+                span.style.lineHeight = "1";
+                span.style.fontFamily = "sans-serif";
+                textLayer.appendChild(span);
+                const measuredWidth = span.getBoundingClientRect().width;
+                const targetWidth = Math.max(1, (Number(item.width) || 0) * layout.cssScale);
+                if (measuredWidth > 0 && targetWidth > 0) {
+                  span.style.transform = `scaleX(${targetWidth / measuredWidth})`;
+                }
+              } catch {
+                /* Ignore one malformed glyph and keep the remaining text selectable. */
+              }
+            }
+          } catch (textError) {
+            console.warn("PDF text layer failed:", textError);
+          }
           return {
             status: "ready",
             canvas: off,
+            textLayer,
             cssWidth: layout.cssWidth,
             cssHeight: layout.cssHeight,
+            hasNativeTextLayer: textLayer.childElementCount > 0,
             outputScale: layout.outputScale,
             cssScale: layout.cssScale,
             contentBox: layout.contentBox,
@@ -1711,6 +2032,15 @@
             lastLayoutKey = layoutKey();
             prunePageCache(currentPage);
             if (pdfDoc) void renderPage(currentPage);
+          } else if (data.type === "set-dictionary-mode") {
+            dictionaryMode = data.enabled === true;
+            wrap.classList.toggle("is-dictionary-mode", dictionaryMode);
+            if (visibleTextLayer) {
+              visibleTextLayer.classList.toggle("is-dictionary-enabled", dictionaryMode);
+            }
+            if (dictionaryMode && visibleEntry) void buildOcrTextLayer(visibleEntry);
+            ensureDictionaryLayer();
+            if (!dictionaryMode) window.getSelection()?.removeAllRanges();
           } else if (data.type === "set-view") {
             const next = normalizeView(data.view);
             if (next === configuredView && (next !== "Auto" || resolvedView)) return;
@@ -1736,6 +2066,38 @@
             if (pdfDoc) void renderPage(currentPage);
           }
         });
+
+        const notifyDictionarySelection = () => {
+          if (!dictionaryMode || !visibleTextLayer) return;
+          const selection = window.getSelection();
+          const text = selection?.toString().trim() || "";
+          if (!text || !selection?.rangeCount) return;
+          const range = selection.getRangeAt(0);
+          const container = range.commonAncestorContainer;
+          if (!container || !visibleTextLayer.contains(container)) return;
+          postDictionarySelection(text);
+        };
+        document.addEventListener("selectionchange", notifyDictionarySelection);
+        document.addEventListener("mouseup", notifyDictionarySelection);
+        document.addEventListener("pointerup", notifyDictionarySelection, { passive: true });
+        document.addEventListener(
+          "touchend",
+          () => {
+            window.requestAnimationFrame(notifyDictionarySelection);
+            const selection = window.getSelection();
+            if (selection && selection.toString().trim()) {
+              postDictionarySelection(selection.toString());
+            }
+          },
+          { passive: true },
+        );
+        document.addEventListener(
+          "touchcancel",
+          () => {
+            window.requestAnimationFrame(notifyDictionarySelection);
+          },
+          { passive: true },
+        );
 
         /* If the parent never posts a buffer (iOS memory path), load by URL. */
         window.setTimeout(() => {

@@ -5,7 +5,7 @@ const SWIPE_THRESHOLD_PX = 56;
 const TAP_SLOP_PX = 14;
 
 const INTERACTIVE_SELECTOR =
-  "button,a,input,textarea,select,label,canvas,svg,video,audio,[role='button'],[role='slider'],[contenteditable='true'],.ctrl-btn,.planet-grid,.touch-controls";
+  "button,a,input,textarea,select,label,canvas,svg,video,audio,[role='button'],[role='slider'],[contenteditable='true'],.pdf-text-layer,.pdf-text-layer span,.ctrl-btn,.planet-grid,.touch-controls";
 
 interface UsePageSwipeNavigationOptions {
   canPrevious: boolean;

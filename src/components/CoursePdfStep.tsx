@@ -111,6 +111,8 @@ export default function CoursePdfStep({
   const [loadError] = useState<string | null>(null);
   const [pageZoom, setPageZoom] = useState(() => initialZoomForView(configuredView));
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
+  const [dictionarySelection, setDictionarySelection] = useState<string | null>(null);
+  const [dictionaryMode, setDictionaryMode] = useState(false);
 
   useEffect(() => {
     setPageZoom(initialZoomForView(configuredView));
@@ -123,8 +125,9 @@ export default function CoursePdfStep({
     }
     setViewerReady(false);
     setDrawnPage(null);
+    setDictionarySelection(null);
     setViewerSrc(
-      `/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0`,
+      `/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0&dictionary=${dictionaryMode ? "1" : "0"}`,
     );
     // Keep one iframe per book; page turns use postMessage goto-page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -154,11 +157,17 @@ export default function CoursePdfStep({
       }
       if (data.type === "pdf-viewer:page-ready" && typeof data.page === "number") {
         setDrawnPage(data.page);
+        setDictionarySelection(null);
+        postToViewer({ type: "set-dictionary-mode", enabled: dictionaryMode });
+        return;
+      }
+      if (data.type === "pdf-viewer:dictionary-selection" && typeof data.text === "string") {
+        setDictionarySelection(data.text);
       }
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [fileUrl, onViewerReady]);
+  }, [dictionaryMode, fileUrl, onViewerReady, postToViewer]);
 
   const sendZoom = useCallback(
     (zoom: number) => {
@@ -183,6 +192,11 @@ export default function CoursePdfStep({
   }, [pageZoom, viewerReady, sendZoom]);
 
   useEffect(() => {
+    if (!viewerReady) return;
+    postToViewer({ type: "set-dictionary-mode", enabled: dictionaryMode });
+  }, [dictionaryMode, viewerReady, postToViewer]);
+
+  useEffect(() => {
     if (!viewerReady || isWarming) return;
     postToViewer({ type: "reflow" });
   }, [isWarming, viewerReady, postToViewer]);
@@ -198,6 +212,15 @@ export default function CoursePdfStep({
     }
     sendZoom(zoom);
   };
+
+  const handleDictionaryModeChange = useCallback(
+    (enabled: boolean) => {
+      setDictionaryMode(enabled);
+      if (!enabled) setDictionarySelection(null);
+      postToViewer({ type: "set-dictionary-mode", enabled });
+    },
+    [postToViewer],
+  );
 
   return (
     <PracticeWorkspace
@@ -227,13 +250,15 @@ export default function CoursePdfStep({
       pageZoom={pageZoom}
       pageZoomLevels={PDF_ZOOM_LEVELS}
       onPageZoomChange={handlePageZoomChange}
+      dictionarySelection={dictionarySelection}
+      onDictionaryModeChange={handleDictionaryModeChange}
     >
       {viewerSrc ? (
         <div className="practice-pdf-frame-wrap">
           <iframe
             ref={iframeRef}
             title={step.title}
-            className="practice-html-iframe practice-pdf-iframe"
+            className={`practice-html-iframe practice-pdf-iframe${dictionaryMode ? " practice-pdf-iframe--dictionary" : ""}`}
             src={viewerSrc}
             loading="eager"
           />
