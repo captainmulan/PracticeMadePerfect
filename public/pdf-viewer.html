@@ -90,8 +90,8 @@
         position: absolute;
         display: inline-block;
         white-space: pre;
-        color: rgba(15, 23, 42, 0.14);
-        -webkit-text-fill-color: rgba(15, 23, 42, 0.14);
+        color: transparent;
+        -webkit-text-fill-color: transparent;
         cursor: text;
         user-select: text;
         -webkit-user-select: text;
@@ -110,7 +110,8 @@
       }
       .pdf-text-layer span::selection {
         background: rgba(37, 99, 235, 0.28);
-        color: rgba(15, 23, 42, 0.95);
+        color: transparent;
+        -webkit-text-fill-color: transparent;
       }
       @media (max-width: 767px) {
         .pdf-shell {
@@ -132,6 +133,36 @@
       }
       .pdf-shell {
         position: relative;
+      }
+      .pdf-dictionary-status {
+        display: none;
+        position: absolute;
+        left: 50%;
+        bottom: 18px;
+        z-index: 4;
+        transform: translateX(-50%);
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #334155;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.18);
+        font-size: 13px;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+      .pdf-dictionary-status.is-visible {
+        display: flex;
+      }
+      .pdf-dictionary-status-emoji {
+        font-size: 18px;
+        animation: pdf-dictionary-bounce 0.9s ease-in-out infinite alternate;
+      }
+      @keyframes pdf-dictionary-bounce {
+        from { transform: translateY(1px) rotate(-5deg); }
+        to { transform: translateY(-3px) rotate(5deg); }
       }
       .pdf-panel-nav {
         display: none;
@@ -225,6 +256,10 @@
       <div class="pdf-canvas-wrap" id="pdf-wrap">
         <canvas id="pdf-canvas"></canvas>
       </div>
+      <div class="pdf-dictionary-status" id="pdf-dictionary-status" role="status" aria-live="polite">
+        <span class="pdf-dictionary-status-emoji" aria-hidden="true">📚</span>
+        <span>Preparing text...</span>
+      </div>
       <div class="pdf-panel-nav" id="pdf-panel-nav" aria-hidden="true">
         <button type="button" class="pdf-panel-arrow pdf-panel-arrow--left is-hidden" id="pdf-panel-prev" aria-label="Previous panel">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
@@ -245,6 +280,7 @@
         const fileUrl = params.get("file");
         const wrap = document.getElementById("pdf-wrap");
         const shell = document.querySelector(".pdf-shell");
+        const dictionaryStatus = document.getElementById("pdf-dictionary-status");
         const panelPrevBtn = document.getElementById("pdf-panel-prev");
         const panelNextBtn = document.getElementById("pdf-panel-next");
         const panelDots = document.getElementById("pdf-panel-dots");
@@ -295,7 +331,8 @@
         let visibleEntry = null;
         let dictionaryMode = params.get("dictionary") === "1";
         let ocrWorkerPromise = null;
-        let ocrRunToken = 0;
+        const ocrWordsCache = new Map();
+        const ocrPromises = new Map();
         let pageZoom = 100;
         let lastRenderedPage = null; // Track the last successfully rendered page
         const zoomParam = Number(params.get("zoom"));
@@ -1393,6 +1430,29 @@
           }
         };
 
+        const setDictionaryStatus = (pageNumber, ready) => {
+          if (!dictionaryStatus || pageNumber !== currentPage) return;
+          dictionaryStatus.classList.toggle("is-visible", dictionaryMode && !ready);
+          try {
+            window.parent?.postMessage(
+              { type: "pdf-viewer:dictionary-status", page: pageNumber, ready },
+              "*",
+            );
+          } catch {
+            /* ignore */
+          }
+        };
+
+        document.addEventListener("selectionchange", () => {
+          if (!dictionaryMode || !visibleTextLayer) return;
+          const selection = window.getSelection();
+          const anchor = selection?.anchorNode;
+          const anchorElement = anchor instanceof Element ? anchor : anchor?.parentElement;
+          if (!anchorElement?.closest(".pdf-text-layer.is-dictionary-enabled")) return;
+          const text = selection?.toString().trim() || "";
+          if (text) postDictionarySelection(text);
+        });
+
         const selectWordSpan = (span) => {
           if (!(span instanceof Element)) return;
           const text = (span.textContent || "").trim();
@@ -1467,27 +1527,9 @@
 
         const buildOcrTextLayer = async (entry) => {
           if (!entry?.canvas || !entry.textLayer || entry.hasNativeTextLayer || entry.textLayer.childElementCount) return;
-          const runToken = ++ocrRunToken;
-          entry.textLayer.dataset.ocr = "loading";
-          try {
-            const worker = await getOcrWorker();
-            const blob = await new Promise((resolve, reject) => {
-              if (!entry.canvas.toBlob) {
-                resolve(null);
-                return;
-              }
-              const done = (value) => resolve(value || null);
-              entry.canvas.toBlob(done, "image/png", 0.92);
-            });
-            if (!blob) {
-              entry.textLayer.dataset.ocr = "unavailable";
-              return;
-            }
-            const result = await worker.recognize(blob);
-            if (runToken !== ocrRunToken) return;
+          const appendWords = (words) => {
             const scaleX = entry.cssWidth / Math.max(1, entry.canvas.width);
             const scaleY = entry.cssHeight / Math.max(1, entry.canvas.height);
-            const words = result?.data?.words || [];
             for (const word of words) {
               const text = typeof word.text === "string" ? word.text.trim() : "";
               const box = word.bbox;
@@ -1495,9 +1537,9 @@
               const span = document.createElement("span");
               span.textContent = text;
               span.setAttribute("tabindex", "0");
-              span.style.left = `${box.x0 * scaleX}px`;
-              span.style.top = `${box.y0 * scaleY}px`;
-              span.style.fontSize = `${Math.max(10, (box.y1 - box.y0) * scaleY)}px`;
+              span.style.left = `${box.x0 * entry.canvas.width * scaleX}px`;
+              span.style.top = `${box.y0 * entry.canvas.height * scaleY}px`;
+              span.style.fontSize = `${Math.max(10, (box.y1 - box.y0) * entry.canvas.height * scaleY)}px`;
               span.style.lineHeight = "1";
               span.style.fontFamily = "sans-serif";
               span.addEventListener("click", () => {
@@ -1507,8 +1549,56 @@
               entry.textLayer.appendChild(span);
             }
             entry.textLayer.dataset.ocr = String(words.length);
+          };
+          const cachedWords = ocrWordsCache.get(entry.pageNumber);
+          if (cachedWords) {
+            appendWords(cachedWords);
+            setDictionaryStatus(entry.pageNumber, true);
+            return;
+          }
+          let ocrPromise = ocrPromises.get(entry.pageNumber);
+          if (!ocrPromise) {
+            entry.textLayer.dataset.ocr = "loading";
+            setDictionaryStatus(entry.pageNumber, false);
+            ocrPromise = (async () => {
+              const ocrCanvas = document.createElement("canvas");
+              const ocrScale = Math.min(1, 1100 / Math.max(entry.canvas.width, entry.canvas.height));
+              ocrCanvas.width = Math.max(1, Math.round(entry.canvas.width * ocrScale));
+              ocrCanvas.height = Math.max(1, Math.round(entry.canvas.height * ocrScale));
+              const ocrContext = ocrCanvas.getContext("2d", { alpha: false });
+              if (!ocrContext) return [];
+              ocrContext.fillStyle = "#ffffff";
+              ocrContext.fillRect(0, 0, ocrCanvas.width, ocrCanvas.height);
+              ocrContext.drawImage(entry.canvas, 0, 0, ocrCanvas.width, ocrCanvas.height);
+              const blob = await new Promise((resolve) => {
+                ocrCanvas.toBlob((value) => resolve(value || null), "image/png", 0.9);
+              });
+              if (!blob) return [];
+              const worker = await getOcrWorker();
+              const result = await worker.recognize(blob);
+              const width = Math.max(1, ocrCanvas.width);
+              const height = Math.max(1, ocrCanvas.height);
+              return (result?.data?.words || []).map((word) => ({
+                text: word.text,
+                bbox: {
+                  x0: word.bbox.x0 / width,
+                  y0: word.bbox.y0 / height,
+                  x1: word.bbox.x1 / width,
+                  y1: word.bbox.y1 / height,
+                },
+              }));
+            })();
+            ocrPromises.set(entry.pageNumber, ocrPromise);
+          }
+          try {
+            const words = await ocrPromise;
+            ocrWordsCache.set(entry.pageNumber, words);
+            appendWords(words);
+            setDictionaryStatus(entry.pageNumber, true);
           } catch (ocrError) {
+            ocrPromises.delete(entry.pageNumber);
             entry.textLayer.dataset.ocr = "failed";
+            setDictionaryStatus(entry.pageNumber, true);
             console.warn("PDF English OCR failed:", ocrError);
           }
         };
@@ -1658,7 +1748,7 @@
           syncPanelChrome();
         };
 
-        const entryFromLayout = async (page, layout) => {
+        const entryFromLayout = async (page, pageNumber, layout) => {
           const off = document.createElement("canvas");
           off.width = layout.pixelWidth;
           off.height = layout.pixelHeight;
@@ -1725,8 +1815,12 @@
           } catch (textError) {
             console.warn("PDF text layer failed:", textError);
           }
+          if (dictionaryMode && pageNumber === currentPage) {
+            setDictionaryStatus(pageNumber, textLayer.childElementCount > 0);
+          }
           return {
             status: "ready",
+            pageNumber,
             canvas: off,
             textLayer,
             cssWidth: layout.cssWidth,
@@ -1775,7 +1869,7 @@
             if (layout.pixelWidth < 2 || layout.pixelHeight < 2) {
               throw new Error("canvas too small");
             }
-            return entryFromLayout(page, layout);
+            return entryFromLayout(page, pageNumber, layout);
           };
 
           try {
@@ -1850,7 +1944,9 @@
               const hit = pageCache.get(pageNum);
               if (hit?.status === "ready" && hit.key === lastLayoutKey) continue;
               if (hit?.status === "loading" && hit.key === lastLayoutKey) continue;
-              void cachePage(pageNum);
+              void cachePage(pageNum).then((entry) => {
+                if (dictionaryMode && entry) void buildOcrTextLayer(entry);
+              });
             }
           }, lowMem ? 120 : 40);
         };
@@ -2016,6 +2112,7 @@
             // Only update and render if the target page is different from current
             if (targetPage !== currentPage) {
               currentPage = targetPage;
+              if (dictionaryMode && dictionaryStatus) dictionaryStatus.classList.add("is-visible");
               panelIndex = 0;
               // Clear any stale rendered page reference
               lastRenderedPage = null;
@@ -2040,6 +2137,7 @@
             }
             if (dictionaryMode && visibleEntry) void buildOcrTextLayer(visibleEntry);
             ensureDictionaryLayer();
+            if (!dictionaryMode && dictionaryStatus) dictionaryStatus.classList.remove("is-visible");
             if (!dictionaryMode) window.getSelection()?.removeAllRanges();
           } else if (data.type === "set-view") {
             const next = normalizeView(data.view);
