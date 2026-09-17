@@ -314,6 +314,7 @@ export default function PracticeWorkspace({
               title="Bookmark list"
             >
               📜
+              <span className="practice-settings-label">Bookmark</span>
             </button>
             <button
               type="button"
@@ -337,9 +338,11 @@ export default function PracticeWorkspace({
               title="Dictionary"
             >
               🔍
+              <span className="practice-settings-label">Dictionary</span>
             </button>
             {typeof pageZoom === "number" && onPageZoomChange ? (
               <div className="pdf-zoom-control" title="Page zoom">
+                <span className="practice-settings-label pdf-zoom-label">Zoom</span>
                 <button
                   type="button"
                   className="pdf-zoom-btn"

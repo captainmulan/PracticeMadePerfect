@@ -330,6 +330,7 @@
         let visibleTextLayer = null;
         let visibleEntry = null;
         let dictionaryMode = params.get("dictionary") === "1";
+        let largeScreenUserZoom = false;
         let ocrWorkerPromise = null;
         const ocrWordsCache = new Map();
         const ocrPromises = new Map();
@@ -531,8 +532,11 @@
           return screenMin >= 700 || (w >= 700 && h >= 500);
         };
 
+        const isLargeLandscape = () =>
+          isLargeScreen() && wrap.clientWidth > wrap.clientHeight;
+
         const layoutKey = () =>
-          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}:${activeView()}:p${panelIndex}/${panelCount}:f${focusProfile().id}:${isLargeScreen() ? "lg" : "sm"}`;
+          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}:${activeView()}:p${panelIndex}/${panelCount}:f${focusProfile().id}:${isLargeScreen() ? "lg" : "sm"}:${largeScreenUserZoom ? "manual" : "initial"}`;
 
         const pagesInWindow = (center) => {
           if (!pdfDoc) return [];
@@ -1315,11 +1319,14 @@
           const pageW = baseViewport.width;
           const pageH = baseViewport.height;
           const large = isLargeScreen();
-          /* Large screen (iPad portrait + landscape): fit width, no extra zoom. */
-          const appliedZoom = large ? 1 : zoomFactor;
+          /* Large screen (iPad portrait + landscape): fit initially, then honor toolbar zoom. */
+          const appliedZoom = large && !largeScreenUserZoom ? 1 : zoomFactor;
 
           let cssScale;
-          if (large && (isFocusMode(mode) || isComicView(mode) || mode === "Normal" || mode === "Fit")) {
+          if (large && !largeScreenUserZoom && isLargeLandscape()) {
+            const viewW = Math.max(60, availW - edge * 2) / pageW;
+            cssScale = viewW;
+          } else if (large && (isFocusMode(mode) || isComicView(mode) || mode === "Normal" || mode === "Fit")) {
             const sideInset = isFocusMode(mode) ? Math.min(4, focusProfile().sideInset) : 4;
             const viewW = Math.max(60, availW - sideInset * 2);
             cssScale = viewW / Math.max(1, box.w);
@@ -1863,6 +1870,7 @@
             pageW: base.width,
             pageH: base.height,
           };
+          const initialLargeScreenFit = isLargeScreen() && !largeScreenUserZoom;
 
           const tryRender = async (box, boost) => {
             const layout = computeLayout(page, box, boost);
@@ -1873,7 +1881,7 @@
           };
 
           try {
-            return await tryRender(contentBox, 1);
+            return await tryRender(initialLargeScreenFit ? fullBox : contentBox, 1);
           } catch (firstError) {
             console.warn("First render attempt failed:", firstError);
             try {
@@ -2123,6 +2131,7 @@
           } else if (data.type === "set-zoom") {
             const next = Math.floor(Number(data.zoom));
             if (!Number.isFinite(next) || next < 50 || next > 300) return;
+            if (data.userInitiated === true) largeScreenUserZoom = true;
             if (next === pageZoom) return;
             pageZoom = next;
             syncScrollMode();

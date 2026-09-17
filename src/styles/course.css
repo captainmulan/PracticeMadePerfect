@@ -584,6 +584,20 @@
   box-shadow: none !important;
 }
 
+.practice-settings-label {
+  margin-left: 4px;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pdf-zoom-label {
+  margin-left: 0;
+  margin-right: 2px;
+}
+
 .practice-settings-btn:active {
   transform: translateY(0) scale(0.98);
   background: transparent !important;

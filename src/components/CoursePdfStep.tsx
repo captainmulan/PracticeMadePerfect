@@ -169,13 +169,6 @@ export default function CoursePdfStep({
     return () => window.removeEventListener("message", onMessage);
   }, [dictionaryMode, fileUrl, onViewerReady, postToViewer]);
 
-  const sendZoom = useCallback(
-    (zoom: number) => {
-      postToViewer({ type: "set-zoom", zoom });
-    },
-    [postToViewer],
-  );
-
   useEffect(() => {
     if (!viewerReady) return;
     postToViewer({ type: "goto-page", page: pageNumber });
@@ -188,8 +181,8 @@ export default function CoursePdfStep({
 
   useEffect(() => {
     if (!viewerReady) return;
-    sendZoom(pageZoom);
-  }, [pageZoom, viewerReady, sendZoom]);
+    postToViewer({ type: "set-zoom", zoom: pageZoom, userInitiated: false });
+  }, [pageZoom, viewerReady, postToViewer]);
 
   useEffect(() => {
     if (!viewerReady) return;
@@ -210,7 +203,7 @@ export default function CoursePdfStep({
         /* ignore */
       }
     }
-    sendZoom(zoom);
+    postToViewer({ type: "set-zoom", zoom, userInitiated: true });
   };
 
   const handleDictionaryModeChange = useCallback(
