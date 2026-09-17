@@ -207,7 +207,7 @@ export function extractPdfPageNumber(source: string): number {
 
 const PDFJS_SCRIPT = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
 const PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-export const PDF_VIEWER_CACHE_BUST = "viewz34";
+export const PDF_VIEWER_CACHE_BUST = "viewz37";
 
 function addWarmLink(href: string, rel: string, asValue?: string) {
   if (!href || typeof document === "undefined") return;

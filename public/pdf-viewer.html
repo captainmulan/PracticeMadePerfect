@@ -351,6 +351,7 @@
           "ExtraLargeView",
           "Normal",
           "Fit",
+          "Reader",
           "SoftFocus",
           "NormalFocus",
           "BasicFocus",
@@ -400,6 +401,7 @@
           mode === "ExtraLargeView" ||
           mode === "Normal";
         const isComicView = (mode = activeView()) => mode === "ComicView";
+        const isReaderMode = (mode = activeView()) => mode === "Reader";
         const isFocusMode = (mode = activeView()) => FOCUS_MODES.has(mode);
         const presetZoomPct = () => PRESET_ZOOM[configuredView] || PRESET_ZOOM[activeView()] || 0;
 
@@ -467,6 +469,26 @@
               sideInset: 2,
               hangMul: 0.22,
               bodyBand: 0.12,
+            };
+          }
+          if (mode === "Reader") {
+            return {
+              id: "reader",
+              padXFrac: 0,
+              padYFrac: 0,
+              padXPage: 0,
+              padYPage: 0,
+              padXMax: 0,
+              padYMax: 0,
+              frameX: 0,
+              frameY: 0,
+              massX: 0,
+              massY: 0,
+              peakCol: 0.01,
+              peakRow: 0.01,
+              sideInset: 2,
+              hangMul: 0.08,
+              bodyBand: 0.08,
             };
           }
           if (mode === "ComicView") {
@@ -818,14 +840,16 @@
             const bounds = inkBoundsFromImageData(
               ctx.getImageData(0, 0, probe.width, probe.height)
             );
+            const probeWidth = probe.width;
+            const probeHeight = probe.height;
             probe.width = 0;
             probe.height = 0;
             if (!bounds) return null;
             return {
-              x: (bounds.x / bounds.width) * pageW,
-              y: (bounds.y / bounds.height) * pageH,
-              w: (bounds.w / bounds.width) * pageW,
-              h: (bounds.h / bounds.height) * pageH,
+              x: (bounds.x / probeWidth) * pageW,
+              y: (bounds.y / probeHeight) * pageH,
+              w: (bounds.w / probeWidth) * pageW,
+              h: (bounds.h / probeHeight) * pageH,
             };
           } catch {
             return null;
@@ -889,6 +913,32 @@
           padded.sampleCount = samples;
           contentBoxCache.set(cacheKey, padded);
           return padded;
+        };
+
+        const getReaderContentBox = async (page, pageNumber) => {
+          const base = page.getViewport({ scale: 1 });
+          const cacheKey = `${pageNumber || 0}:reader`;
+          const cached = contentBoxCache.get(cacheKey);
+          if (cached) return cached;
+
+          const textMetrics = await getTextMetrics(page, base.width, base.height);
+          const inkBox = await getInkContentBox(page, base.width, base.height);
+          const candidate = textMetrics?.box || inkBox;
+          if (!candidate) return getContentBox(page, pageNumber);
+
+          /* Reader is deliberately tighter than legacy focus modes. */
+          const padX = Math.min(candidate.w * 0.006, base.width * 0.008);
+          const padY = Math.min(candidate.h * 0.006, base.height * 0.008);
+          const box = {
+            x: Math.max(0, candidate.x - padX),
+            y: Math.max(0, candidate.y - padY),
+            w: Math.min(base.width, candidate.x + candidate.w + padX) - Math.max(0, candidate.x - padX),
+            h: Math.min(base.height, candidate.y + candidate.h + padY) - Math.max(0, candidate.y - padY),
+            pageW: base.width,
+            pageH: base.height,
+          };
+          contentBoxCache.set(cacheKey, box);
+          return box;
         };
 
         /**
@@ -1156,6 +1206,10 @@
             return full;
           }
 
+          if (isReaderMode(mode)) {
+            return getReaderContentBox(page, pageNumber);
+          }
+
           if (isComicView(mode)) {
             const content = await getContentBox(page, pageNumber);
             if (content.w * content.h < full.w * full.h * 0.28) return full;
@@ -1319,11 +1373,22 @@
           const pageW = baseViewport.width;
           const pageH = baseViewport.height;
           const large = isLargeScreen();
+          const cropToContent = isReaderMode(mode);
+          let readerWidth = availW;
+          if (cropToContent) {
+            try {
+              readerWidth = Math.max(readerWidth, Number(window.parent?.innerWidth) || 0);
+            } catch {
+              /* Cross-origin parents cannot be measured. */
+            }
+          }
           /* Large screen (iPad portrait + landscape): fit initially, then honor toolbar zoom. */
           const appliedZoom = large && !largeScreenUserZoom ? 1 : zoomFactor;
 
           let cssScale;
-          if (large && !largeScreenUserZoom && isLargeLandscape()) {
+          if (cropToContent) {
+            cssScale = Math.max(60, readerWidth - 8) / Math.max(1, box.w);
+          } else if (large && !largeScreenUserZoom && isLargeLandscape()) {
             const viewW = Math.max(60, availW - edge * 2) / pageW;
             cssScale = viewW;
           } else if (large && (isFocusMode(mode) || isComicView(mode) || mode === "Normal" || mode === "Fit")) {
@@ -1363,8 +1428,8 @@
             : Math.min(2.25, Math.max(1.5, dpr * 1.15))) * scaleBoost;
           outputScale = Math.max(1, outputScale);
 
-          let cssWidth = baseViewport.width * cssScale;
-          let cssHeight = baseViewport.height * cssScale;
+          let cssWidth = (cropToContent ? box.w : baseViewport.width) * cssScale;
+          let cssHeight = (cropToContent ? box.h : baseViewport.height) * cssScale;
           let pixels = cssWidth * outputScale * cssHeight * outputScale;
           if (pixels > MAX_CANVAS_PIXELS) {
             outputScale *= Math.sqrt(MAX_CANVAS_PIXELS / pixels);
@@ -1374,8 +1439,14 @@
           const viewport = page.getViewport({
             scale: Math.max(0.35, cssScale * outputScale),
           });
-          const pixelWidth = Math.max(1, Math.round(viewport.width));
-          const pixelHeight = Math.max(1, Math.round(viewport.height));
+          const pixelWidth = Math.max(
+            1,
+            Math.round((cropToContent ? box.w : baseViewport.width) * cssScale * outputScale),
+          );
+          const pixelHeight = Math.max(
+            1,
+            Math.round((cropToContent ? box.h : baseViewport.height) * cssScale * outputScale),
+          );
           cssWidth = pixelWidth / outputScale;
           cssHeight = pixelHeight / outputScale;
 
@@ -1389,6 +1460,9 @@
             pixelWidth,
             pixelHeight,
             cssScale,
+            cropToContent,
+            cropX: cropToContent ? box.x : 0,
+            cropY: cropToContent ? box.y : 0,
             contentBox: box,
             scrollLeft: focus.scrollLeft,
             scrollTop: focus.scrollTop,
@@ -1768,12 +1842,64 @@
           context.imageSmoothingEnabled = true;
           context.imageSmoothingQuality = lowMem ? "medium" : "high";
           try {
+            if (layout.cropToContent) {
+              context.translate(
+                -layout.cropX * layout.viewport.scale,
+                -layout.cropY * layout.viewport.scale,
+              );
+            }
             await page.render({
               canvasContext: context,
               viewport: layout.viewport,
               intent: "display",
               background: "#ffffff",
             }).promise;
+
+            if (layout.cropToContent) {
+              const rendered = context.getImageData(0, 0, off.width, off.height);
+              const pixels = rendered.data;
+              let minX = off.width;
+              let minY = off.height;
+              let maxX = -1;
+              let maxY = -1;
+              for (let y = 0; y < off.height; y += 2) {
+                for (let x = 0; x < off.width; x += 2) {
+                  const i = (y * off.width + x) * 4;
+                  if (pixels[i] < 245 || pixels[i + 1] < 245 || pixels[i + 2] < 245) {
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                  }
+                }
+              }
+              if (maxX >= minX && maxY >= minY) {
+                const cropWidth = maxX - minX + 1;
+                const cropHeight = maxY - minY + 1;
+                const cropped = document.createElement("canvas");
+                cropped.width = cropWidth;
+                cropped.height = cropHeight;
+                cropped.getContext("2d").putImageData(
+                  context.getImageData(minX, minY, cropWidth, cropHeight),
+                  0,
+                  0,
+                );
+                const targetWidth = off.width;
+                const targetHeight = Math.max(1, Math.round((cropHeight / cropWidth) * targetWidth));
+                off.width = targetWidth;
+                off.height = targetHeight;
+                const cropContext = off.getContext("2d", { alpha: true });
+                cropContext.fillStyle = "#ffffff";
+                cropContext.fillRect(0, 0, targetWidth, targetHeight);
+                cropContext.imageSmoothingEnabled = true;
+                cropContext.imageSmoothingQuality = "high";
+                cropContext.drawImage(cropped, 0, 0, targetWidth, targetHeight);
+                layout.pixelWidth = targetWidth;
+                layout.pixelHeight = targetHeight;
+                layout.cssWidth = targetWidth / layout.outputScale;
+                layout.cssHeight = targetHeight / layout.outputScale;
+              }
+            }
           } catch (renderError) {
             console.error("PDF render failed:", renderError);
             // Ensure canvas still has white background even if render fails
@@ -1786,6 +1912,25 @@
           textLayer.style.width = `${layout.cssWidth}px`;
           textLayer.style.height = `${layout.cssHeight}px`;
           try {
+            if (layout.cropToContent) {
+              return {
+                status: "ready",
+                pageNumber,
+                canvas: off,
+                textLayer,
+                cssWidth: layout.cssWidth,
+                cssHeight: layout.cssHeight,
+                hasNativeTextLayer: false,
+                outputScale: layout.outputScale,
+                cssScale: layout.cssScale,
+                contentBox: layout.contentBox,
+                scrollLeft: 0,
+                scrollTop: 0,
+                shiftX: 0,
+                shiftY: 0,
+                key: layout.key,
+              };
+            }
             const textContent = await page.getTextContent();
             const textViewport = page.getViewport({ scale: layout.cssScale });
             const viewportTransform = textViewport.transform;
@@ -1804,8 +1949,10 @@
                 const fontHeight = Math.max(1, Math.hypot(transform[2], transform[3]));
                 const span = document.createElement("span");
                 span.textContent = item.str;
-                span.style.left = `${transform[4]}px`;
-                span.style.top = `${transform[5] - fontHeight}px`;
+                const cropOffsetX = layout.cropToContent ? layout.cropX * layout.cssScale : 0;
+                const cropOffsetY = layout.cropToContent ? layout.cropY * layout.cssScale : 0;
+                span.style.left = `${transform[4] - cropOffsetX}px`;
+                span.style.top = `${transform[5] - fontHeight - cropOffsetY}px`;
                 span.style.fontSize = `${fontHeight}px`;
                 span.style.lineHeight = "1";
                 span.style.fontFamily = "sans-serif";

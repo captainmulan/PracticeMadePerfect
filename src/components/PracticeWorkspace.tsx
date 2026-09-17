@@ -7,6 +7,7 @@ import PdfFunLoader from "./PdfFunLoader";
 import { usePageSwipeNavigation } from "../hooks/usePageSwipeNavigation";
 import { getHomePageData } from "../utils/contentStore";
 import { getShelfReturnLabel, SHELF_RETURN_HREF } from "../utils/shelfReturn";
+import type { PageViewType } from "../data/pageViewType";
 import "../styles/course.css";
 
 interface PracticeWorkspaceProps {
@@ -57,6 +58,8 @@ interface PracticeWorkspaceProps {
   pageZoom?: number;
   pageZoomLevels?: number[];
   onPageZoomChange?: (zoom: number) => void;
+  viewMode?: PageViewType;
+  onViewModeChange?: (view: PageViewType) => void;
   dictionarySelection?: string | null;
   onDictionaryModeChange?: (enabled: boolean) => void;
 }
@@ -105,6 +108,8 @@ export default function PracticeWorkspace({
   pageZoom,
   pageZoomLevels = Array.from({ length: 21 }, (_, i) => 100 + i * 5),
   onPageZoomChange,
+  viewMode,
+  onViewModeChange,
   dictionarySelection = null,
   onDictionaryModeChange,
 }: PracticeWorkspaceProps) {
@@ -340,47 +345,22 @@ export default function PracticeWorkspace({
               🔍
               <span className="practice-settings-label">Dictionary</span>
             </button>
-            {typeof pageZoom === "number" && onPageZoomChange ? (
-              <div className="pdf-zoom-control" title="Page zoom">
-                <span className="practice-settings-label pdf-zoom-label">Zoom</span>
-                <button
-                  type="button"
-                  className="pdf-zoom-btn"
-                  aria-label="Zoom out"
-                  disabled={pageZoom <= pageZoomLevels[0]}
-                  onClick={() => {
-                    const idx = Math.max(0, pageZoomLevels.indexOf(pageZoom));
-                    onPageZoomChange(pageZoomLevels[Math.max(0, idx - 1)]);
-                  }}
-                >
-                  −
-                </button>
+            {viewMode && onViewModeChange ? (
+              <label className="pdf-zoom-control" title="View mode">
+                <span className="practice-settings-label pdf-zoom-label">View</span>
                 <select
                   className="pdf-zoom-select"
-                  aria-label="Page zoom"
-                  value={pageZoom}
-                  onChange={(event) => onPageZoomChange(Number(event.target.value))}
+                  aria-label="View mode"
+                  value={viewMode}
+                  onChange={(event) => onViewModeChange(event.target.value as PageViewType)}
                 >
-                  {pageZoomLevels.map((level) => (
-                    <option key={level} value={level}>
-                      {level}%
+                  {(["Auto", "NormalView", "Reader", "ComicView", "PanelJump"] as PageViewType[]).map((mode) => (
+                    <option key={mode} value={mode}>
+                      {mode}
                     </option>
                   ))}
                 </select>
-                <button
-                  type="button"
-                  className="pdf-zoom-btn"
-                  aria-label="Zoom in"
-                  disabled={pageZoom >= pageZoomLevels[pageZoomLevels.length - 1]}
-                  onClick={() => {
-                    const last = pageZoomLevels.length - 1;
-                    const idx = pageZoomLevels.indexOf(pageZoom);
-                    onPageZoomChange(pageZoomLevels[Math.min(last, (idx < 0 ? 0 : idx) + 1)]);
-                  }}
-                >
-                  +
-                </button>
-              </div>
+              </label>
             ) : null}
           </div>
         </div>

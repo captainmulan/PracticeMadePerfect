@@ -110,12 +110,14 @@ export default function CoursePdfStep({
   const [drawnPage, setDrawnPage] = useState<number | null>(null);
   const [loadError] = useState<string | null>(null);
   const [pageZoom, setPageZoom] = useState(() => initialZoomForView(configuredView));
+  const [activeView, setActiveView] = useState<PageViewType>(configuredView);
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
   const [dictionarySelection, setDictionarySelection] = useState<string | null>(null);
   const [dictionaryMode, setDictionaryMode] = useState(false);
 
   useEffect(() => {
     setPageZoom(initialZoomForView(configuredView));
+    setActiveView(configuredView);
   }, [configuredView]);
 
   useEffect(() => {
@@ -176,8 +178,8 @@ export default function CoursePdfStep({
 
   useEffect(() => {
     if (!viewerReady) return;
-    postToViewer({ type: "set-view", view: configuredView });
-  }, [configuredView, viewerReady, postToViewer]);
+    postToViewer({ type: "set-view", view: activeView });
+  }, [activeView, viewerReady, postToViewer]);
 
   useEffect(() => {
     if (!viewerReady) return;
@@ -205,6 +207,14 @@ export default function CoursePdfStep({
     }
     postToViewer({ type: "set-zoom", zoom, userInitiated: true });
   };
+
+  const handleViewModeChange = useCallback(
+    (view: PageViewType) => {
+      setActiveView(view);
+      postToViewer({ type: "set-view", view });
+    },
+    [postToViewer],
+  );
 
   const handleDictionaryModeChange = useCallback(
     (enabled: boolean) => {
@@ -241,8 +251,8 @@ export default function CoursePdfStep({
       onRemoveBookmark={onRemoveBookmark}
       onJumpToBookmark={onJumpToBookmark}
       pageZoom={pageZoom}
-      pageZoomLevels={PDF_ZOOM_LEVELS}
-      onPageZoomChange={handlePageZoomChange}
+      viewMode={activeView}
+      onViewModeChange={handleViewModeChange}
       dictionarySelection={dictionarySelection}
       onDictionaryModeChange={handleDictionaryModeChange}
     >
