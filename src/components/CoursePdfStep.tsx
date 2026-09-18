@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
 import {
   defaultZoomForPageViewType,
+  defaultPdfViewForCategory,
   normalizePageViewType,
   PAGE_VIEW_TYPE_ZOOM,
   type PageViewType,
@@ -93,7 +94,13 @@ export default function CoursePdfStep({
   isWarming = false,
   onViewerReady,
 }: CoursePdfStepProps) {
-  const configuredView = normalizePageViewType(pageViewTypeProp);
+  const inferredDefaultView = defaultPdfViewForCategory(category);
+  const configuredView = pageViewTypeProp &&
+    pageViewTypeProp !== "NormalView" &&
+    pageViewTypeProp !== "ComicView" &&
+    pageViewTypeProp !== "Auto"
+    ? normalizePageViewType(pageViewTypeProp)
+    : inferredDefaultView;
   const pdfSource = step.contentHtml?.trim() ?? "";
   const { fileUrl, pageNumber, viewerBindKey } = useMemo(() => {
     const file = resolvePdfStepFileUrl(pdfSource, bookHtmlFolder, category);

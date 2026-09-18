@@ -1387,7 +1387,9 @@
 
           let cssScale;
           if (cropToContent) {
-            cssScale = Math.max(60, readerWidth - 8) / Math.max(1, box.w);
+            const narrowReader = readerWidth <= 600;
+            const readerZoom = narrowReader ? 1.35 : 1;
+            cssScale = (Math.max(60, readerWidth - 8) * readerZoom) / Math.max(1, box.w);
           } else if (large && !largeScreenUserZoom && isLargeLandscape()) {
             const viewW = Math.max(60, availW - edge * 2) / pageW;
             cssScale = viewW;
