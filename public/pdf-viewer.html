@@ -57,6 +57,7 @@
         background: #ffffff;
         box-shadow: none;
         image-rendering: auto;
+        filter: contrast(1.08) saturate(1.05) brightness(1.02);
         transform: translateZ(0);
         flex: 0 0 auto;
         will-change: transform;
@@ -545,6 +546,142 @@
           }
         };
         syncScrollMode();
+
+        const clampChannel = (value) => Math.min(255, Math.max(0, value));
+        const buildTextMask = (imageData) => {
+          const { data, width, height } = imageData;
+          const mask = new Uint8Array(width * height);
+
+          for (let y = 1; y < height - 1; y += 1) {
+            for (let x = 1; x < width - 1; x += 1) {
+              const idx = (y * width + x) * 4;
+              const r = data[idx];
+              const g = data[idx + 1];
+              const b = data[idx + 2];
+              const maxC = Math.max(r, g, b);
+              const minC = Math.min(r, g, b);
+              const sat = maxC - minC;
+              const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+              if (lum > 220) continue;
+              if (sat > 20) continue;
+              if (maxC > 110) continue;
+
+              let localLum = 0;
+              let count = 0;
+              for (let yy = -1; yy <= 1; yy += 1) {
+                for (let xx = -1; xx <= 1; xx += 1) {
+                  const nIdx = ((y + yy) * width + (x + xx)) * 4;
+                  const nr = data[nIdx];
+                  const ng = data[nIdx + 1];
+                  const nb = data[nIdx + 2];
+                  localLum += 0.2126 * nr + 0.7152 * ng + 0.0722 * nb;
+                  count += 1;
+                }
+              }
+              const contrast = Math.abs(lum - (localLum / count));
+              if (contrast >= 12 && lum < 175 && maxC < 110) {
+                mask[y * width + x] = 1;
+              }
+            }
+          }
+          return mask;
+        };
+
+        const sharpenTextOnly = (imageData, strength = 5.5) => {
+          const { data, width, height } = imageData;
+          const output = new Uint8ClampedArray(data.length);
+          const mask = buildTextMask(imageData);
+
+          for (let y = 1; y < height - 1; y += 1) {
+            for (let x = 1; x < width - 1; x += 1) {
+              const idx = (y * width + x) * 4;
+              const inMask = mask[y * width + x];
+              if (!inMask) {
+                output[idx] = data[idx];
+                output[idx + 1] = data[idx + 1];
+                output[idx + 2] = data[idx + 2];
+                output[idx + 3] = data[idx + 3];
+                continue;
+              }
+
+              let rSum = 0;
+              let gSum = 0;
+              let bSum = 0;
+              let count = 0;
+              for (let yy = -1; yy <= 1; yy += 1) {
+                for (let xx = -1; xx <= 1; xx += 1) {
+                  if (xx === 0 && yy === 0) continue;
+                  const nIdx = ((y + yy) * width + (x + xx)) * 4;
+                  rSum += data[nIdx];
+                  gSum += data[nIdx + 1];
+                  bSum += data[nIdx + 2];
+                  count += 1;
+                }
+              }
+              const avgR = rSum / count;
+              const avgG = gSum / count;
+              const avgB = bSum / count;
+
+              const baseR = data[idx];
+              const baseG = data[idx + 1];
+              const baseB = data[idx + 2];
+              const sharpenR = baseR + (baseR - avgR) * strength;
+              const sharpenG = baseG + (baseG - avgG) * strength;
+              const sharpenB = baseB + (baseB - avgB) * strength;
+
+              output[idx] = clampChannel(sharpenR);
+              output[idx + 1] = clampChannel(sharpenG);
+              output[idx + 2] = clampChannel(sharpenB);
+              output[idx + 3] = data[idx + 3];
+            }
+          }
+          return new ImageData(output, width, height);
+        };
+
+        const getEnhancementProfile = () => {
+          const mode = activeView();
+          const textModes = new Set([
+            "Normal",
+            "Reader",
+            "NormalView",
+            "MediumView",
+            "LargeView",
+            "ExtraLargeView",
+            "SoftFocus",
+            "NormalFocus",
+            "BasicFocus",
+            "MediumFocus",
+            "HardFocus",
+          ]);
+          if (!textModes.has(mode)) {
+            return null;
+          }
+          return {
+            enabled: true,
+            strength: 5.5,
+            filter: "contrast(1.12) brightness(1.02)",
+          };
+        };
+
+        const enhanceRenderedCanvas = (sourceCanvas) => {
+          const target = document.createElement("canvas");
+          target.width = sourceCanvas.width;
+          target.height = sourceCanvas.height;
+          const context = target.getContext("2d", { alpha: false });
+          if (!context) return sourceCanvas;
+
+          const profile = getEnhancementProfile();
+          if (!profile || !profile.enabled) return sourceCanvas;
+
+          context.filter = profile.filter;
+          context.drawImage(sourceCanvas, 0, 0);
+
+          const base = context.getImageData(0, 0, target.width, target.height);
+          const refined = sharpenTextOnly(base, profile.strength);
+          context.putImageData(refined, 0, 0);
+          return target;
+        };
 
         /* iPad portrait + landscape (and similar tablets) — large reading surface. */
         const isLargeScreen = () => {
@@ -1908,6 +2045,12 @@
             context.fillStyle = "#ffffff";
             context.fillRect(0, 0, off.width, off.height);
           }
+
+          const refined = enhanceRenderedCanvas(off);
+          const displayCanvas = refined || off;
+          const profile = getEnhancementProfile();
+          displayCanvas.style.filter = profile && profile.enabled ? profile.filter : "none";
+
           const textLayer = document.createElement("div");
           textLayer.className = "pdf-text-layer";
           textLayer.setAttribute("aria-hidden", "true");
@@ -1977,7 +2120,7 @@
           return {
             status: "ready",
             pageNumber,
-            canvas: off,
+            canvas: displayCanvas,
             textLayer,
             cssWidth: layout.cssWidth,
             cssHeight: layout.cssHeight,
