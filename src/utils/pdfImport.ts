@@ -117,7 +117,7 @@ export async function buildPdfImportPreview(
   const folderName = sanitizeBookFolderName(options?.preferredFolder ?? file.name.replace(/\.pdf$/i, "")) || `pdf-import-${Date.now()}`;
   const bookId = slugify(options?.bookIdOverride?.trim() || folderName) || `book-${Date.now()}`;
   const pdfFileName = `${sanitizeAssetFileName(file.name.replace(/\.pdf$/i, "")) || "document"}.pdf`;
-  const basePdfSource = getBookAssetUrl(`${folderName}/${pdfFileName}`);
+  const basePdfSource = getBookAssetUrl(`Other/${folderName}/${pdfFileName}`);
 
   let pageCount = 1;
   try {

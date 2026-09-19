@@ -48,7 +48,9 @@ export default function HomeCourseShelves({
   onItemClick 
 }: HomeCourseShelvesProps) {
   const booksPerRow = useShelfColumns();
-  const horizontalPageSize = Math.min(horizontalItemsPerRow ?? 5, booksPerRow);
+  const horizontalPageSize = horizontal
+    ? Math.min((horizontalItemsPerRow ?? 5) + 1, booksPerRow + 1)
+    : booksPerRow;
   const [horizontalPage, setHorizontalPage] = useState(0);
   const DEFAULT_SHELF_ROWS = 2;
   const minSlots = DEFAULT_SHELF_ROWS * booksPerRow;

@@ -154,6 +154,11 @@ This copies the updated export to:
 - `public/data/indexeddb-export.json` (for dev server)
 - `dist/data/indexeddb-export.json` (for production build)
 
+Production startup now uses `home-catalog.json`, `tasks.json`, and `announcements.json`.
+Full course content is generated into `data/course-details/<course-id>.json` and fetched
+only when a course is opened, then cached in IndexedDB. The full export remains as a
+legacy/admin fallback and is not part of normal catalog startup.
+
 **Step 4: Clear Browser IndexedDB**
 Since the app loads from IndexedDB, you must clear the old data:
 - Open DevTools (F12) → Application tab → IndexedDB

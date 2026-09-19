@@ -167,7 +167,7 @@ export async function saveTasks(tasks: PracticeTask[]): Promise<void> {
 }
 
 // --- Courses operations ---
-type CourseRecord = Course & { stepOutline?: CourseStepOutline[] };
+type CourseRecord = Course & { stepOutline?: CourseStepOutline[]; detailLoaded?: boolean };
 
 function buildStepOutline(course: Course): CourseStepOutline[] {
   return course.chapters
@@ -344,6 +344,10 @@ export async function getCourseOutlineById(courseId: string): Promise<Course | n
   ) as CourseRecord | undefined;
   if (!raw) return null;
 
+  if (raw.detailLoaded === false) {
+    return getCourseById(courseId);
+  }
+
   const summary = toCourseSummaryRecord(raw);
   if (raw.stepOutline?.length) {
     return normalizeLegacyBookStoragePath({
@@ -368,6 +372,16 @@ export async function getCourseById(courseId: string): Promise<Course | null> {
   const tx = db.transaction([STORE_COURSES, STORE_CHAPTERS, STORE_STEPS], "readonly");
   const raw = await promisifyRequest(tx.objectStore(STORE_COURSES).get(courseId));
   if (!raw) return null;
+
+  if ((raw as CourseRecord).detailLoaded === false) {
+    const response = await fetch(`/data/course-details/${encodeURIComponent(courseId)}.json`);
+    if (!response.ok) {
+      throw new Error(`Unable to load course details for ${courseId} (${response.status})`);
+    }
+    const detail = (await response.json()) as Course;
+    await saveCourse(detail);
+    return getCourseById(courseId);
+  }
 
   const summary = toCourseSummaryRecord(raw as CourseRecord);
   const chapters = await promisifyRequest(
@@ -459,6 +473,7 @@ export async function saveCourse(course: Course): Promise<void> {
       category: normalizeBookCategory(course.category),
       chapters: [],
       stepOutline,
+      detailLoaded: true,
       stepCount: stepOutline.length,
     });
 
@@ -482,6 +497,28 @@ export async function saveCourse(course: Course): Promise<void> {
     writeTransaction.onerror = () => reject(writeTransaction.error);
   });
   console.log("saveCourse complete");
+}
+
+export async function saveCourseSummary(course: Course): Promise<void> {
+  const db = await openDb();
+  const existing = await promisifyRequest(
+    db.transaction(STORE_COURSES, "readonly").objectStore(STORE_COURSES).get(course.id),
+  ) as CourseRecord | undefined;
+  const { chapters: _chapters, ...summary } = course;
+  const record: CourseRecord = {
+    ...(existing ?? {} as CourseRecord),
+    ...summary,
+    category: normalizeBookCategory(course.category),
+    chapters: [],
+    detailLoaded: existing?.detailLoaded ?? Boolean(existing?.stepOutline?.length),
+    stepOutline: existing?.stepOutline ?? [],
+  };
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(STORE_COURSES, "readwrite");
+    transaction.objectStore(STORE_COURSES).put(record);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
 }
 
 export async function deleteCourse(courseId: string): Promise<void> {
@@ -640,6 +677,44 @@ async function loadCoursesFromOldSqlite(): Promise<Course[]> {
   } catch (e) {
     console.error("Failed to load from old SQLite DB:", e);
     return [];
+  }
+}
+
+async function loadFromCatalogFiles(): Promise<boolean> {
+  try {
+    const catalogResponse = await fetch("/data/home-catalog.json");
+    if (!catalogResponse.ok) return false;
+    const catalog = (await catalogResponse.json()) as {
+      exportedAt?: string;
+      courses?: Course[];
+    };
+    if (!Array.isArray(catalog.courses) || catalog.courses.length === 0) return false;
+
+    const tasksResponse = await fetch("/data/tasks.json");
+    const tasks = tasksResponse.ok ? await tasksResponse.json() as PracticeTask[] : [];
+    const existingSummaries = await getCourseSummaries();
+    const packagedIds = new Set(catalog.courses.map((course) => course.id));
+    for (const summary of catalog.courses) {
+      await saveCourseSummary(summary);
+    }
+    for (const summary of existingSummaries) {
+      if (!packagedIds.has(summary.id)) await deleteCourse(summary.id);
+    }
+    if (tasks.length > 0) await saveTasks(tasks);
+    const announcementsResponse = await fetch("/data/announcements.json");
+    if (announcementsResponse.ok) {
+      const announcements = await announcementsResponse.json() as Announcement[];
+      for (const announcement of announcements) await saveAnnouncement(announcement);
+    }
+    rememberCatalogStamp({
+      exportedAt: catalog.exportedAt ?? "",
+      courseCount: catalog.courses.length,
+    });
+    console.log(`Loaded ${catalog.courses.length} course summaries without full course content`);
+    return true;
+  } catch (error) {
+    console.warn("Summary catalog bootstrap failed:", error);
+    return false;
   }
 }
 
@@ -803,8 +878,9 @@ async function runInitialMigration(): Promise<void> {
     console.log("Refreshing catalog from deployed indexeddb-export.json");
   }
 
-  // Try to load from indexeddb-export.json first (new format)
-  const loadedFromExport = await loadFromIndexedDbExport();
+  // Prefer summary metadata; keep the full export as a compatibility fallback.
+  const loadedFromCatalog = await loadFromCatalogFiles();
+  const loadedFromExport = loadedFromCatalog || await loadFromIndexedDbExport();
   if (loadedFromExport) {
     console.log("Initialization complete (from indexeddb-export.json)");
     const remote = await fetchDeployedCatalogVersion();

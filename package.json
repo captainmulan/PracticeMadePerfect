@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "sync-deploy-assets": "python scripts/sync_deploy_assets.py",
-    "optimize:catalog": "node scripts/generate-cover-thumbs.cjs && node scripts/optimize-catalog-assets.cjs && node scripts/generate-home-catalog.cjs && node -e \"require('fs').copyFileSync('public/data/home-catalog.json','dist/data/home-catalog.json')\"",
+    "optimize:catalog": "node scripts/generate-cover-thumbs.cjs && node scripts/optimize-catalog-assets.cjs && node scripts/generate-home-catalog.cjs && node -e \"require('fs').copyFileSync('public/data/home-catalog.json','dist/data/home-catalog.json')\" && node scripts/generate-course-details.cjs",
     "clear-firebase-dist-cache": "node scripts/clear_firebase_dist_cache.mjs",
     "deploy:app": "npm run deploy:app-only",
     "deploy:app-only": "npm run clear-firebase-dist-cache && npm run build && npm run sync-deploy-assets && npm run optimize:catalog && firebase deploy --config firebase-app-only.json --project magiclibrary-92246",

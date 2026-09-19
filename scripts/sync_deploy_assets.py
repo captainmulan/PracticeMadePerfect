@@ -53,6 +53,17 @@ if DEPLOY_INDEXEDDB_SRC.exists():
     public_version.write_text(version_json, encoding='utf-8')
     print(f'Wrote catalog version: {public_version} ({version_payload})')
 
+    for name, value in (
+        ('tasks.json', export_meta.get('tasks') or []),
+        ('announcements.json', export_meta.get('announcements') or []),
+    ):
+        output = ROOT / 'public' / 'data' / name
+        output.write_text(json.dumps(value, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
+        print(f'Wrote {output}')
+        if DIST_DIR.exists():
+            dist_output = DIST_DIR / 'data' / name
+            dist_output.write_text(output.read_text(encoding='utf-8'), encoding='utf-8')
+
     # Tiny home shelf catalog (summaries only, popular first) for cold-start paint
     try:
         export_courses = export_meta.get('courses') or []
@@ -61,6 +72,7 @@ if DEPLOY_INDEXEDDB_SRC.exists():
             'coverColorEnd', 'coverWidth', 'coverHeight', 'coverImageUrl', 'icon',
             'iconColorStart', 'iconColorMiddle', 'iconColorEnd', 'iconSize', 'iconPosition',
             'courseIndex', 'category', 'pIndex', 'artifactType', 'bookHtmlFolder', 'stepCount',
+            'isPublished', 'cat1', 'cat2', 'cat3', 'cat4',
         )
 
         def pick_summary(course: dict) -> dict:
