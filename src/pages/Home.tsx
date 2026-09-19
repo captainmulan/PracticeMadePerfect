@@ -370,8 +370,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                 <HomeCourseShelves
                   row={selectedRow}
                   useCoverImages
-                  horizontal
-                  horizontalItemsPerRow={5}
                   onItemClick={(item) => {
                     if (item.placeholder) return;
                     if (item.actionType === "author") {

@@ -130,7 +130,9 @@ export default function HomeCourseShelves({
               >
                 {group.map((item) => renderCard(item))}
               </div>
-              {horizontalItemsPerRow ? <div className="shelf-board" aria-hidden="true" /> : null}
+              {horizontalItemsPerRow || !horizontal ? (
+                <div className="shelf-board" aria-hidden="true" />
+              ) : null}
             </div>
             {horizontal && horizontalPageCount > 1 ? (
               <button
@@ -144,7 +146,7 @@ export default function HomeCourseShelves({
               </button>
             ) : null}
           </div>
-          {!horizontalItemsPerRow && rowIndex === 0 ? <h2 className="home-shelf-title">{row.title}</h2> : null}
+          {!horizontalItemsPerRow && horizontal ? <h2 className="home-shelf-title">{row.title}</h2> : null}
         </div>
       ))}
     </section>
