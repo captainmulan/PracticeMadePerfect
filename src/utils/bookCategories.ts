@@ -272,10 +272,9 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
   }
 
   if (has("Language") || cat1 === "Language" || cat2 === "Language") {
-    const lang =
-      tags.find((tag) => isLanguageSubcategoryTag(tag)) ||
-      (isLanguageSubcategoryTag(cat3) ? cat3 : isLanguageSubcategoryTag(cat2) ? cat2 : "");
-    return [audienceTag(has, cat1, cat2), "Language", lang, ""];
+    const languageSubcategory = cat3 || tags.find((tag) => isLanguageSubcategoryTag(tag)) || "";
+    const seriesOrSubcategory = (course.cat4 ?? "").trim();
+    return [audienceTag(has, cat1, cat2), "Language", languageSubcategory, seriesOrSubcategory];
   }
 
   if (has("AI")) {

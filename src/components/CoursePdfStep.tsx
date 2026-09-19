@@ -40,6 +40,11 @@ function initialZoomForView(view: PageViewType): number {
   return defaultZoomForPageViewType(view);
 }
 
+function isPhonePdfViewport(): boolean {
+  if (typeof window === "undefined") return true;
+  return Math.min(window.innerWidth, window.innerHeight) <= 640;
+}
+
 interface CoursePdfStepProps {
   step: CourseStep;
   bookName: string;
@@ -95,12 +100,27 @@ export default function CoursePdfStep({
   onViewerReady,
 }: CoursePdfStepProps) {
   const inferredDefaultView = defaultPdfViewForCategory(category);
-  const configuredView = pageViewTypeProp &&
+  const baseConfiguredView = pageViewTypeProp &&
     pageViewTypeProp !== "NormalView" &&
     pageViewTypeProp !== "ComicView" &&
     pageViewTypeProp !== "Auto"
     ? normalizePageViewType(pageViewTypeProp)
     : inferredDefaultView;
+  const [phonePdfViewport, setPhonePdfViewport] = useState(isPhonePdfViewport);
+  const configuredView = baseConfiguredView === "Reader"
+    ? phonePdfViewport ? "Reader" : "Normal"
+    : baseConfiguredView;
+
+  useEffect(() => {
+    const updateViewportMode = () => setPhonePdfViewport(isPhonePdfViewport());
+    window.addEventListener("resize", updateViewportMode);
+    window.addEventListener("orientationchange", updateViewportMode);
+    return () => {
+      window.removeEventListener("resize", updateViewportMode);
+      window.removeEventListener("orientationchange", updateViewportMode);
+    };
+  }, []);
+
   const pdfSource = step.contentHtml?.trim() ?? "";
   const { fileUrl, pageNumber, viewerBindKey } = useMemo(() => {
     const file = resolvePdfStepFileUrl(pdfSource, bookHtmlFolder, category);

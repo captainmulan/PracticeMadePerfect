@@ -563,9 +563,9 @@
               const sat = maxC - minC;
               const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
-              if (lum > 220) continue;
-              if (sat > 20) continue;
-              if (maxC > 110) continue;
+              if (lum > 235) continue;
+              if (sat > 18) continue;
+              if (maxC > 105) continue;
 
               let localLum = 0;
               let count = 0;
@@ -580,7 +580,7 @@
                 }
               }
               const contrast = Math.abs(lum - (localLum / count));
-              if (contrast >= 12 && lum < 175 && maxC < 110) {
+              if (contrast >= 8 && lum < 185 && maxC < 105) {
                 mask[y * width + x] = 1;
               }
             }
@@ -588,7 +588,7 @@
           return mask;
         };
 
-        const sharpenTextOnly = (imageData, strength = 5.5) => {
+        const sharpenTextOnly = (imageData, strength = 8) => {
           const { data, width, height } = imageData;
           const output = new Uint8ClampedArray(data.length);
           const mask = buildTextMask(imageData);
@@ -641,7 +641,8 @@
 
         const getEnhancementProfile = () => {
           const mode = activeView();
-          const textModes = new Set([
+          const allModes = new Set([
+            "Auto",
             "Normal",
             "Reader",
             "NormalView",
@@ -653,14 +654,17 @@
             "BasicFocus",
             "MediumFocus",
             "HardFocus",
+            "ComicView",
+            "PanelJump",
+            "Fit",
           ]);
-          if (!textModes.has(mode)) {
+          if (!allModes.has(mode)) {
             return null;
           }
           return {
             enabled: true,
-            strength: 5.5,
-            filter: "contrast(1.12) brightness(1.02)",
+            strength: 10,
+            filter: "contrast(1.18) brightness(1.04)",
           };
         };
 
@@ -1374,8 +1378,15 @@
           return full;
         };
 
-        /** Auto → SoftFocus: trim margins, fit width, vertical scroll. (unchanged) */
-        const autoDetectViewMode = async (_doc) => "SoftFocus";
+        /**
+         * Auto mode uses Reader on phone-sized screens and Normal on larger tablet screens.
+         * This keeps mobile reading tight while iPad-sized displays use the wider normal layout.
+         */
+        const autoDetectViewMode = async (_doc) => {
+          const ua = navigator.userAgent || "";
+          const phoneLike = /iPhone|iPod|Android.*Mobile|Mobile/i.test(ua) || Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 640;
+          return phoneLike ? "Reader" : isLargeScreen() ? "Normal" : "Reader";
+        };
 
         const ensureResolvedView = async (doc) => {
           if (configuredView !== "Auto") {
