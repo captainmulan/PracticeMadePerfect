@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { getHomePageData } from "../utils/contentStore";
 import type { CourseShelfRow, CourseShelfItem } from "../utils/courseShelf";
 import CourseBookCard from "./CourseBookCard";
@@ -48,10 +47,6 @@ export default function HomeCourseShelves({
   onItemClick 
 }: HomeCourseShelvesProps) {
   const booksPerRow = useShelfColumns();
-  const horizontalPageSize = horizontal
-    ? Math.min((horizontalItemsPerRow ?? 5) + 1, booksPerRow + 1)
-    : booksPerRow;
-  const [horizontalPage, setHorizontalPage] = useState(0);
   const DEFAULT_SHELF_ROWS = 2;
   const minSlots = DEFAULT_SHELF_ROWS * booksPerRow;
   const displayItems: CourseShelfItem[] = [...row.items];
@@ -80,22 +75,15 @@ export default function HomeCourseShelves({
         : Math.max(DEFAULT_SHELF_ROWS, Math.ceil(displayItems.length / booksPerRow));
 
   if (horizontal) {
-    const pageCount = Math.max(1, Math.ceil(displayItems.length / horizontalPageSize));
-    const page = Math.min(horizontalPage, pageCount - 1);
-    groups.push(displayItems.slice(page * horizontalPageSize, (page + 1) * horizontalPageSize));
+    const rowSize = horizontalItemsPerRow ?? displayItems.length;
+    for (let rowIndex = 0; rowIndex < displayItems.length; rowIndex += rowSize) {
+      groups.push(displayItems.slice(rowIndex, rowIndex + rowSize));
+    }
   } else {
     for (let rowIndex = 0; rowIndex < totalRows; rowIndex += 1) {
       groups.push(displayItems.slice(rowIndex * booksPerRow, rowIndex * booksPerRow + booksPerRow));
     }
   }
-
-  useEffect(() => {
-    setHorizontalPage(0);
-  }, [row.title, row.items.length, horizontalPageSize]);
-
-  const horizontalPageCount = Math.max(1, Math.ceil(displayItems.length / horizontalPageSize));
-  const canGoLeft = horizontalPage > 0;
-  const canGoRight = horizontalPage < horizontalPageCount - 1;
 
   const renderCard = (item: CourseShelfItem) => {
     return <CourseBookCard key={item.id} item={item} useCoverImage={useCoverImages} onItemClick={onItemClick} />;
@@ -112,17 +100,6 @@ export default function HomeCourseShelves({
           className={`shelf${horizontalItemsPerRow ? " shelf--fixed-row" : ""}`}
         >
           <div className={`shelf-track${horizontal ? " shelf-track--horizontal" : ""}`}>
-            {horizontal && horizontalPageCount > 1 ? (
-              <button
-                type="button"
-                className="shelf-page-button shelf-page-button--left"
-                aria-label={`Previous ${row.title} books`}
-                disabled={!canGoLeft}
-                onClick={() => setHorizontalPage((page) => Math.max(0, page - 1))}
-              >
-                ‹
-              </button>
-            ) : null}
             <div className="shelf-track-content">
               <div
                 className="books"
@@ -134,17 +111,6 @@ export default function HomeCourseShelves({
                 <div className="shelf-board" aria-hidden="true" />
               ) : null}
             </div>
-            {horizontal && horizontalPageCount > 1 ? (
-              <button
-                type="button"
-                className="shelf-page-button shelf-page-button--right"
-                aria-label={`Next ${row.title} books`}
-                disabled={!canGoRight}
-                onClick={() => setHorizontalPage((page) => Math.min(horizontalPageCount - 1, page + 1))}
-              >
-                ›
-              </button>
-            ) : null}
           </div>
           {!horizontalItemsPerRow && horizontal ? <h2 className="home-shelf-title">{row.title}</h2> : null}
         </div>

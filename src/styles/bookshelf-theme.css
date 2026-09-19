@@ -1086,6 +1086,11 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
   touch-action: pan-x pan-y;
 }
 
+.page-home-showcase .bookshelf-container--horizontal .shelf {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
 .page-home .bookshelf-container--horizontal .shelf-board {
   user-select: none;
   pointer-events: none;
@@ -1094,7 +1099,6 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
 
 .page-home .bookshelf-container--horizontal .shelf-track--horizontal {
   position: relative;
-  overflow: hidden;
 }
 
 .page-home .shelf-page-button {

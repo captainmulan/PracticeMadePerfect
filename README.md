@@ -36,6 +36,16 @@ Use this command for future app deployments so the repo's current database and b
 npm run deploy:firebase
 ```
 
+Deploy the app to Cloudflare Pages without publishing `book_html`:
+
+```bash
+pnpm run deploy:cloudflare:app
+```
+
+This builds the app, syncs and optimizes its deployment assets, stages them in
+`cloudflare-dist`, verifies that `book_html` is excluded, and deploys the
+`magiclibrary` Pages project from the `main` branch.
+
 The live Firebase sites are:
 
 - App: `magiclibrary-92246` (`https://magiclibrary-92246.web.app`)
