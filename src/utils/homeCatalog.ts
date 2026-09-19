@@ -47,7 +47,7 @@ export interface HomeCatalogFile {
 
 export async function fetchHomeCatalogSummaries(): Promise<Course[] | null> {
   try {
-    const response = await fetch("/data/home-catalog.json", { cache: "no-store" });
+    const response = await fetch("/data/home-catalog.json");
     if (!response.ok) {
       return null;
     }

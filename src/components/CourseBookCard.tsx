@@ -196,9 +196,9 @@ export default function CourseBookCard({ item, useCoverImage = false, hideTitleR
             src={(item.coverImageUrl ?? "").replace(/ /g, "%20")}
             alt=""
             draggable={false}
-            loading="eager"
+            loading="lazy"
             decoding="async"
-            fetchPriority="high"
+            fetchPriority="auto"
             sizes="(max-width: 640px) 46vw, (max-width: 980px) 28vw, 18vw"
             style={{
               position: "absolute",

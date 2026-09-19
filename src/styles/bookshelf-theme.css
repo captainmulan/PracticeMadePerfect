@@ -1092,6 +1092,43 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
   cursor: default;
 }
 
+.page-home .bookshelf-container--horizontal .shelf-track--horizontal {
+  position: relative;
+  overflow: hidden;
+}
+
+.page-home .shelf-page-button {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 30px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.78);
+  color: #fff;
+  cursor: pointer;
+  font-size: 30px;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.page-home .shelf-page-button:hover:not(:disabled),
+.page-home .shelf-page-button:focus-visible:not(:disabled) {
+  background: rgba(15, 23, 42, 0.95);
+  outline: 2px solid rgba(255, 226, 122, 0.8);
+  outline-offset: 2px;
+}
+
+.page-home .shelf-page-button:disabled {
+  cursor: default;
+  opacity: 0.28;
+}
+
+.page-home .shelf-page-button--left { left: 2px; }
+.page-home .shelf-page-button--right { right: 2px; }
+
 .page-home .bookshelf-container--horizontal .books {
   display: flex;
   align-items: flex-end;

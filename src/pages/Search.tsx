@@ -48,7 +48,7 @@ export default function Search() {
         ) : query.trim() && row.items.length === 0 ? (
           <div className="home-course-loading">No books matched your search.</div>
         ) : (
-          <HomeCourseShelves row={row} useCoverImages horizontal horizontalItemsPerRow={3} />
+          <HomeCourseShelves row={row} useCoverImages horizontal horizontalItemsPerRow={5} />
         )}
       </main>
     </div>

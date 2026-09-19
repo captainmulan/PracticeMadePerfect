@@ -9,7 +9,6 @@ import LibraryTopBar from "../components/LibraryTopBar";
 import ExchangeRatePanel from "../components/ExchangeRatePanel";
 import { getHomePageData } from "../utils/contentStore";
 import { useCourseCatalog } from "../utils/useCourseCatalog";
-import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import {
   createShelfItemFromCourse,
   getAuthorShelfRow,
@@ -39,20 +38,6 @@ function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["cour
       String(value).toLowerCase().includes(normalized)
     )
   );
-}
-
-function preloadPopularCovers(courses: ReturnType<typeof useCourseCatalog>["courses"]) {
-  const popular = getPopularCourses(courses);
-  const targets = popular.length > 0 ? popular : courses.slice(0, 8);
-  for (const course of targets) {
-    const url = resolveBookCoverUrl(course, { variant: "thumb" });
-    if (!url) {
-      continue;
-    }
-    const img = new Image();
-    img.decoding = "async";
-    img.src = url;
-  }
 }
 
 function hasSavedProgress(courseId: string): boolean {
@@ -160,13 +145,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     });
   }, [courses]);
   const isSearching = selectedTab === "Search" && searchQuery.trim().length > 0;
-  useEffect(() => {
-    if (!coursesLoaded || courses.length === 0) {
-      return;
-    }
-    preloadPopularCovers(courses);
-  }, [courses, coursesLoaded]);
-
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const restore = params.get("restoreShelf") === "1";
@@ -366,7 +344,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                   row={selectedRow}
                   useCoverImages
                   horizontal
-                  horizontalItemsPerRow={3}
+                  horizontalItemsPerRow={5}
                 />
               )
             ) : (
@@ -393,7 +371,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                   row={selectedRow}
                   useCoverImages
                   horizontal
-                  horizontalItemsPerRow={3}
+                  horizontalItemsPerRow={5}
                   onItemClick={(item) => {
                     if (item.placeholder) return;
                     if (item.actionType === "author") {
