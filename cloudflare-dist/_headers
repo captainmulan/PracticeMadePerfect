@@ -1,0 +1,14 @@
+/index.html
+  Cache-Control: no-cache
+
+/data/catalog-version.json
+  Cache-Control: no-cache
+
+/data/*
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/book_covers/*
+  Cache-Control: public, max-age=86400, must-revalidate

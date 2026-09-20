@@ -7,7 +7,6 @@ pnpm-lock.yaml
 # production
 dist
 build
-cloudflare-dist
 
 # environment variables
 .env

@@ -1,5 +1,0 @@
-name = "magiclibrary"
-pages_build_output_dir = "cloudflare-dist"
-
-[vars]
-DEPLOY_TARGET = "app"
