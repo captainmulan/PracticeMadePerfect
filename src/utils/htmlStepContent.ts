@@ -8,6 +8,8 @@ const BOOK_HTML_FOLDER_ALIASES: Record<string, string> = {
   solarsystem: "Other/SolarSystem",
   oceanadventure: "Other/OceanAdventure",
   continents: "Other/Continents",
+  nzmigrationmm: "Other/NZMigrationMM",
+  "nz-migration-mm": "Other/NZMigrationMM",
   "let-s-speak-myanmar-story": "Other/Mudra holiday trip to Myanmar",
   letsspeakmyanmarstory: "Other/Mudra holiday trip to Myanmar",
   "mudra-holiday-trip-to-myanmar": "Other/Mudra holiday trip to Myanmar",
