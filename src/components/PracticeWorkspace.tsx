@@ -354,9 +354,9 @@ export default function PracticeWorkspace({
                   value={viewMode}
                   onChange={(event) => onViewModeChange(event.target.value as PageViewType)}
                 >
-                  {(["Reader", "NormalView"] as PageViewType[]).map((mode) => (
+                  {(["Reader", "NormalView", "Dark", "Sepia", "Comfort"] as PageViewType[]).map((mode) => (
                     <option key={mode} value={mode}>
-                      {mode === "NormalView" ? "Normal" : mode.replace("View", "")}
+                      {mode === "NormalView" ? "Normal" : mode === "Dark" ? "Dark" : mode === "Sepia" ? "Sepia" : mode === "Comfort" ? "Comfort" : mode.replace("View", "")}
                     </option>
                   ))}
                 </select>

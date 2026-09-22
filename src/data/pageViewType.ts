@@ -9,6 +9,9 @@ export type PageViewType =
   | "Normal"
   | "Fit"
   | "Reader"
+  | "Dark"
+  | "Sepia"
+  | "Comfort"
   | "SoftFocus"
   | "NormalFocus"
   | "BasicFocus"
@@ -29,6 +32,9 @@ export const PAGE_VIEW_TYPES: PageViewType[] = [
   "Normal",
   "Fit",
   "Reader",
+  "Dark",
+  "Sepia",
+  "Comfort",
   "SoftFocus",
   "NormalFocus",
   "BasicFocus",

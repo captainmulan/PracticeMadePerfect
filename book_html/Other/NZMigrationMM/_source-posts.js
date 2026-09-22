@@ -71,4 +71,4 @@ Consultation, antibiotics and test fees တွေ အကုန် ကိုယ�
 ကျေးဇူးပါ
 LDML`}
 };
-NZMM.renderPosts=function(ids){const esc=s=>s.replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));return ids.map(id=>{const p=NZMM_POSTS[id];return `<article class="source-post" id="article-${id}"><h2>${esc(p.title)}</h2><div class="post-meta">မူရင်း Myanmar post · <a href="${p.url}" target="_blank" rel="noreferrer">Facebook မူရင်းကိုဖွင့်ရန်</a> · <a href="#top">အပေါ်သို့</a></div><pre>${esc(p.text)}</pre></article>`}).join('')};
+NZMM.renderPosts=function(ids){const esc=s=>s.replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));return ids.map(id=>{const p={...NZMM_POSTS[id],title:id==='schoolApplication'?'NZ ကျောင်း ဘယ်လိုရှာပြီး ဘယ်လိုလျှောက်ရမလဲ':NZMM_POSTS[id].title};return `<details class="source-post" id="article-${id}"><summary><h2>${esc(p.title)}</h2></summary><div class="post-body"><div class="post-meta">မူရင်း Myanmar post · <a href="${p.url}" target="_blank" rel="noreferrer">Facebook မူရင်းကိုဖွင့်ရန်</a> · <a href="#top">အပေါ်သို့</a></div><pre>${esc(p.text)}</pre></div></details>`}).join('')};

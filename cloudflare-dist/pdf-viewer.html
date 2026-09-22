@@ -43,15 +43,93 @@
         -webkit-overflow-scrolling: touch;
         position: relative;
       }
+      .pdf-theme-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        display: none;
+        background: transparent;
+      }
       /* Focus: keep native pan/scroll (swipe) — do not lock overflow. */
       .pdf-canvas-wrap.is-soft-focus {
         touch-action: pan-x pan-y;
         overscroll-behavior: contain;
       }
+      .pdf-shell.is-dark {
+        background: #0b1016;
+      }
+      .pdf-shell.is-dark .pdf-canvas-wrap {
+        background:
+          radial-gradient(circle at top, rgba(148, 163, 184, 0.09), transparent 42%),
+          #0b1016;
+        box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
+      }
+      .pdf-shell.is-dark .pdf-theme-overlay {
+        display: block;
+        background: linear-gradient(180deg, rgba(12, 16, 22, 0.08), rgba(12, 16, 22, 0.26));
+      }
+      .pdf-shell.is-dark canvas {
+        filter: brightness(0.96) contrast(1.08) saturate(0.72) sepia(0.12) hue-rotate(-8deg);
+      }
+      .pdf-shell.is-sepia {
+        background: #f0e4cc;
+      }
+      .pdf-shell.is-sepia .pdf-canvas-wrap {
+        background:
+          radial-gradient(circle at top, rgba(136, 86, 44, 0.08), transparent 38%),
+          #f0e4cc;
+        box-shadow: inset 0 0 0 1px rgba(120, 83, 40, 0.16);
+      }
+      .pdf-shell.is-sepia .pdf-theme-overlay {
+        display: block;
+        background: linear-gradient(180deg, rgba(142, 111, 79, 0.08), rgba(111, 78, 40, 0.14));
+      }
+      .pdf-shell.is-sepia canvas {
+        filter: sepia(0.75) saturate(0.8) brightness(0.96) contrast(1.05);
+      }
+      .pdf-shell.is-comfort {
+        background: #efe5d9;
+      }
+      .pdf-shell.is-comfort .pdf-canvas-wrap {
+        background:
+          radial-gradient(circle at top, rgba(118, 93, 71, 0.08), transparent 36%),
+          #efe5d9;
+        touch-action: pan-y;
+        overscroll-behavior: none;
+        scroll-behavior: smooth;
+        box-shadow: inset 0 0 0 1px rgba(118, 93, 71, 0.12);
+      }
+      .pdf-shell.is-comfort .pdf-theme-overlay {
+        display: block;
+        background: linear-gradient(180deg, rgba(112, 90, 72, 0.08), rgba(91, 75, 62, 0.12));
+      }
+      .pdf-shell.is-comfort canvas {
+        filter: sepia(0.22) saturate(0.88) brightness(0.94) contrast(1.03);
+      }
+      .pdf-comfort-guide {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 42%;
+        height: 2.4em;
+        transform: translateY(-50%);
+        z-index: 2;
+        border-top: 1px solid rgba(255, 224, 173, 0.12);
+        border-bottom: 1px solid rgba(255, 224, 173, 0.12);
+        background: rgba(255, 224, 173, 0.045);
+        pointer-events: none;
+      }
+      .pdf-shell.is-comfort .pdf-comfort-guide {
+        display: block;
+      }
       .pdf-canvas-wrap.is-dictionary-mode {
         touch-action: auto;
       }
       canvas {
+        position: relative;
+        z-index: 0;
         display: block;
         margin: 0;
         background: #ffffff;
@@ -255,8 +333,10 @@
   <body>
     <div class="pdf-shell">
       <div class="pdf-canvas-wrap" id="pdf-wrap">
+        <div class="pdf-theme-overlay" aria-hidden="true"></div>
         <canvas id="pdf-canvas"></canvas>
       </div>
+      <div class="pdf-comfort-guide" aria-hidden="true"></div>
       <div class="pdf-dictionary-status" id="pdf-dictionary-status" role="status" aria-live="polite">
         <span class="pdf-dictionary-status-emoji" aria-hidden="true">📚</span>
         <span>Preparing text...</span>
@@ -353,6 +433,9 @@
           "Normal",
           "Fit",
           "Reader",
+          "Dark",
+          "Sepia",
+          "Comfort",
           "SoftFocus",
           "NormalFocus",
           "BasicFocus",
@@ -403,6 +486,9 @@
           mode === "Normal";
         const isComicView = (mode = activeView()) => mode === "ComicView";
         const isReaderMode = (mode = activeView()) => mode === "Reader";
+        const isDarkMode = (mode = activeView()) => mode === "Dark";
+        const isSepiaMode = (mode = activeView()) => mode === "Sepia";
+        const isComfortMode = (mode = activeView()) => mode === "Comfort";
         const isFocusMode = (mode = activeView()) => FOCUS_MODES.has(mode);
         const presetZoomPct = () => PRESET_ZOOM[configuredView] || PRESET_ZOOM[activeView()] || 0;
 
@@ -536,6 +622,12 @@
         const syncScrollMode = () => {
           const mode = activeView();
           const focus = isFocusMode(mode);
+          const dark = isDarkMode(mode);
+          const sepia = isSepiaMode(mode);
+          const comfort = isComfortMode(mode);
+          shell.classList.toggle("is-dark", dark);
+          shell.classList.toggle("is-sepia", sepia);
+          shell.classList.toggle("is-comfort", comfort);
           wrap.classList.toggle("is-soft-focus", focus);
           wrap.style.overflowX = "auto";
           wrap.style.overflowY = "auto";
@@ -543,6 +635,9 @@
           wrap.style.justifyContent = "flex-start";
           if (mode === "PanelJump") {
             wrap.style.overflowX = "hidden";
+          }
+          if (comfort || dark || sepia) {
+            wrap.style.overflowX = "auto";
           }
         };
         syncScrollMode();
@@ -668,6 +763,73 @@
           };
         };
 
+        const applyThemeToRenderedCanvas = (sourceCanvas) => {
+          const mode = activeView();
+          if (mode !== "Dark" && mode !== "Sepia" && mode !== "Comfort") {
+            return sourceCanvas;
+          }
+
+          const theme = {
+            Dark: {
+              bg: [11, 15, 20],
+              text: [214, 220, 230],
+              paperThreshold: 210,
+              textLift: 0.28,
+              paperLift: 0.28,
+            },
+            Sepia: {
+              bg: [242, 230, 205],
+              text: [52, 42, 33],
+              paperThreshold: 218,
+              textLift: 0.2,
+              paperLift: 0.22,
+            },
+            Comfort: {
+              bg: [239, 229, 216],
+              text: [54, 43, 34],
+              paperThreshold: 218,
+              textLift: 0.18,
+              paperLift: 0.2,
+            },
+          }[mode];
+
+          const target = document.createElement("canvas");
+          target.width = sourceCanvas.width;
+          target.height = sourceCanvas.height;
+          const ctx = target.getContext("2d", { alpha: false });
+          if (!ctx) return sourceCanvas;
+
+          ctx.drawImage(sourceCanvas, 0, 0);
+          const image = ctx.getImageData(0, 0, target.width, target.height);
+          const data = image.data;
+          const [bgR, bgG, bgB] = theme.bg;
+          const [textR, textG, textB] = theme.text;
+
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+            if (lum > theme.paperThreshold) {
+              const paperMix = theme.paperLift;
+              data[i] = Math.round(r * (1 - paperMix) + bgR * paperMix);
+              data[i + 1] = Math.round(g * (1 - paperMix) + bgG * paperMix);
+              data[i + 2] = Math.round(b * (1 - paperMix) + bgB * paperMix);
+              continue;
+            }
+
+            const lift = theme.textLift;
+            const blend = (value, targetValue) => Math.round(value * (1 - lift) + targetValue * lift);
+            data[i] = blend(r, textR);
+            data[i + 1] = blend(g, textG);
+            data[i + 2] = blend(b, textB);
+          }
+
+          ctx.putImageData(image, 0, 0);
+          return target;
+        };
+
         const enhanceRenderedCanvas = (sourceCanvas) => {
           const target = document.createElement("canvas");
           target.width = sourceCanvas.width;
@@ -676,7 +838,10 @@
           if (!context) return sourceCanvas;
 
           const profile = getEnhancementProfile();
-          if (!profile || !profile.enabled) return sourceCanvas;
+          if (!profile || !profile.enabled) {
+            const themed = applyThemeToRenderedCanvas(sourceCanvas);
+            return themed;
+          }
 
           context.filter = profile.filter;
           context.drawImage(sourceCanvas, 0, 0);
@@ -684,7 +849,9 @@
           const base = context.getImageData(0, 0, target.width, target.height);
           const refined = sharpenTextOnly(base, profile.strength);
           context.putImageData(refined, 0, 0);
-          return target;
+
+          const themed = applyThemeToRenderedCanvas(target);
+          return themed;
         };
 
         /* iPad portrait + landscape (and similar tablets) — large reading surface. */
@@ -1538,6 +1705,9 @@
             const narrowReader = readerWidth <= 600;
             const readerZoom = narrowReader ? 1.35 : 1;
             cssScale = (Math.max(60, readerWidth - 8) * readerZoom) / Math.max(1, box.w);
+          } else if (isComfortMode(mode)) {
+            const viewW = Math.max(60, availW - edge * 2);
+            cssScale = (viewW / pageW) * appliedZoom;
           } else if (large && !largeScreenUserZoom && isLargeLandscape()) {
             const viewW = Math.max(60, availW - edge * 2) / pageW;
             cssScale = viewW;
@@ -2060,7 +2230,11 @@
           const refined = enhanceRenderedCanvas(off);
           const displayCanvas = refined || off;
           const profile = getEnhancementProfile();
-          displayCanvas.style.filter = profile && profile.enabled ? profile.filter : "none";
+          if (activeView() === "Dark" || activeView() === "Sepia" || activeView() === "Comfort") {
+            displayCanvas.style.filter = "none";
+          } else {
+            displayCanvas.style.filter = profile && profile.enabled ? profile.filter : "none";
+          }
 
           const textLayer = document.createElement("div");
           textLayer.className = "pdf-text-layer";
