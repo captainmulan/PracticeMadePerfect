@@ -10,6 +10,7 @@ export type PageViewType =
   | "Fit"
   | "Reader"
   | "Dark"
+  | "Night"
   | "Sepia"
   | "Comfort"
   | "SoftFocus"
@@ -33,6 +34,7 @@ export const PAGE_VIEW_TYPES: PageViewType[] = [
   "Fit",
   "Reader",
   "Dark",
+  "Night",
   "Sepia",
   "Comfort",
   "SoftFocus",
@@ -61,12 +63,12 @@ export const FOCUS_PAGE_VIEW_TYPES: PageViewType[] = [
   "HardFocus",
 ];
 
-export const DEFAULT_PAGE_VIEW_TYPE: PageViewType = "Reader";
+export const DEFAULT_PAGE_VIEW_TYPE: PageViewType = "Normal";
 
 export function defaultPdfViewForCategory(category: string | null | undefined): PageViewType {
   const value = String(category || "").toLowerCase();
   if (value.includes("interactive")) return "NormalView";
-  return "Reader";
+  return "Normal";
 }
 
 export function normalizePageViewType(value: unknown): PageViewType {

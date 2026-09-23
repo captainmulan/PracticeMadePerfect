@@ -72,6 +72,22 @@
       .pdf-shell.is-dark canvas {
         filter: brightness(0.96) contrast(1.08) saturate(0.72) sepia(0.12) hue-rotate(-8deg);
       }
+      .pdf-shell.is-night {
+        background: #101821;
+      }
+      .pdf-shell.is-night .pdf-canvas-wrap {
+        background:
+          radial-gradient(circle at top, rgba(163, 178, 194, 0.08), transparent 42%),
+          #101821;
+        box-shadow: inset 0 0 0 1px rgba(144, 169, 201, 0.18);
+      }
+      .pdf-shell.is-night .pdf-theme-overlay {
+        display: block;
+        background: linear-gradient(180deg, rgba(11, 15, 22, 0.14), rgba(11, 15, 22, 0.22));
+      }
+      .pdf-shell.is-night canvas {
+        filter: brightness(0.9) contrast(1.16) saturate(0.66) sepia(0.08) hue-rotate(-12deg);
+      }
       .pdf-shell.is-sepia {
         background: #f0e4cc;
       }
@@ -434,6 +450,7 @@
           "Fit",
           "Reader",
           "Dark",
+          "Night",
           "Sepia",
           "Comfort",
           "SoftFocus",
@@ -487,6 +504,7 @@
         const isComicView = (mode = activeView()) => mode === "ComicView";
         const isReaderMode = (mode = activeView()) => mode === "Reader";
         const isDarkMode = (mode = activeView()) => mode === "Dark";
+        const isNightMode = (mode = activeView()) => mode === "Night";
         const isSepiaMode = (mode = activeView()) => mode === "Sepia";
         const isComfortMode = (mode = activeView()) => mode === "Comfort";
         const isFocusMode = (mode = activeView()) => FOCUS_MODES.has(mode);
@@ -623,9 +641,11 @@
           const mode = activeView();
           const focus = isFocusMode(mode);
           const dark = isDarkMode(mode);
+          const night = isNightMode(mode);
           const sepia = isSepiaMode(mode);
           const comfort = isComfortMode(mode);
           shell.classList.toggle("is-dark", dark);
+          shell.classList.toggle("is-night", night);
           shell.classList.toggle("is-sepia", sepia);
           shell.classList.toggle("is-comfort", comfort);
           wrap.classList.toggle("is-soft-focus", focus);
@@ -765,7 +785,7 @@
 
         const applyThemeToRenderedCanvas = (sourceCanvas) => {
           const mode = activeView();
-          if (mode !== "Dark" && mode !== "Sepia" && mode !== "Comfort") {
+          if (mode !== "Dark" && mode !== "Night" && mode !== "Sepia" && mode !== "Comfort") {
             return sourceCanvas;
           }
 
@@ -776,6 +796,13 @@
               paperThreshold: 210,
               textLift: 0.28,
               paperLift: 0.28,
+            },
+            Night: {
+              bg: [15, 21, 28],
+              text: [214, 220, 230],
+              paperThreshold: 205,
+              textLift: 0.24,
+              paperLift: 0.26,
             },
             Sepia: {
               bg: [242, 230, 205],
@@ -1705,9 +1732,6 @@
             const narrowReader = readerWidth <= 600;
             const readerZoom = narrowReader ? 1.35 : 1;
             cssScale = (Math.max(60, readerWidth - 8) * readerZoom) / Math.max(1, box.w);
-          } else if (isComfortMode(mode)) {
-            const viewW = Math.max(60, availW - edge * 2);
-            cssScale = (viewW / pageW) * appliedZoom;
           } else if (large && !largeScreenUserZoom && isLargeLandscape()) {
             const viewW = Math.max(60, availW - edge * 2) / pageW;
             cssScale = viewW;
