@@ -40,9 +40,11 @@ function initialZoomForView(view: PageViewType): number {
   return defaultZoomForPageViewType(view);
 }
 
-function isPhonePdfViewport(): boolean {
+function isNarrowPdfViewport(): boolean {
   if (typeof window === "undefined") return true;
-  return Math.min(window.innerWidth, window.innerHeight) <= 640;
+  const width = window.innerWidth || 0;
+  const height = window.innerHeight || 0;
+  return width <= 640 || Math.min(width, height) <= 640;
 }
 
 interface CoursePdfStepProps {
@@ -106,13 +108,19 @@ export default function CoursePdfStep({
     pageViewTypeProp !== "Auto"
     ? normalizePageViewType(pageViewTypeProp)
     : inferredDefaultView;
-  const [phonePdfViewport, setPhonePdfViewport] = useState(isPhonePdfViewport);
-  const configuredView = baseConfiguredView === "Reader"
-    ? phonePdfViewport ? "Reader" : "Normal"
-    : baseConfiguredView;
+  const [phonePdfViewport, setPhonePdfViewport] = useState(isNarrowPdfViewport);
+  const configuredView = (() => {
+    if (baseConfiguredView === "Crop" || baseConfiguredView === "Reader") {
+      return phonePdfViewport ? "Crop" : "Normal";
+    }
+    if (baseConfiguredView === "Normal") {
+      return phonePdfViewport ? "Crop" : "Normal";
+    }
+    return baseConfiguredView;
+  })();
 
   useEffect(() => {
-    const updateViewportMode = () => setPhonePdfViewport(isPhonePdfViewport());
+    const updateViewportMode = () => setPhonePdfViewport(isNarrowPdfViewport());
     window.addEventListener("resize", updateViewportMode);
     window.addEventListener("orientationchange", updateViewportMode);
     return () => {

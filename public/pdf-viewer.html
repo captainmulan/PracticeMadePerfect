@@ -448,6 +448,7 @@
           "ExtraLargeView",
           "Normal",
           "Fit",
+          "Crop",
           "Reader",
           "Dark",
           "Night",
@@ -474,8 +475,17 @@
           LargeView: 175,
           ExtraLargeView: 195,
         };
+        const isNarrowPdfViewport = () => {
+          const width = window.innerWidth || 0;
+          const height = window.innerHeight || 0;
+          return width <= 640 || Math.min(width, height) <= 640;
+        };
         const normalizeView = (value) => {
           const raw = typeof value === "string" ? value.trim() : "";
+          if (raw === "Reader") return "Crop";
+          if (raw === "Normal") {
+            return isNarrowPdfViewport() ? "Crop" : "Normal";
+          }
           return VIEW_MODES.includes(raw) ? raw : "Auto";
         };
         let configuredView = normalizeView(params.get("view"));
@@ -502,7 +512,7 @@
           mode === "ExtraLargeView" ||
           mode === "Normal";
         const isComicView = (mode = activeView()) => mode === "ComicView";
-        const isReaderMode = (mode = activeView()) => mode === "Reader";
+        const isReaderMode = (mode = activeView()) => mode === "Reader" || mode === "Crop";
         const isDarkMode = (mode = activeView()) => mode === "Dark";
         const isNightMode = (mode = activeView()) => mode === "Night";
         const isSepiaMode = (mode = activeView()) => mode === "Sepia";
@@ -576,7 +586,7 @@
               bodyBand: 0.12,
             };
           }
-          if (mode === "Reader") {
+          if (mode === "Reader" || mode === "Crop") {
             return {
               id: "reader",
               padXFrac: 0,
@@ -1577,9 +1587,7 @@
          * This keeps mobile reading tight while iPad-sized displays use the wider normal layout.
          */
         const autoDetectViewMode = async (_doc) => {
-          const ua = navigator.userAgent || "";
-          const phoneLike = /iPhone|iPod|Android.*Mobile|Mobile/i.test(ua) || Math.min(window.innerWidth || 0, window.innerHeight || 0) <= 640;
-          return phoneLike ? "Reader" : isLargeScreen() ? "Normal" : "Reader";
+          return isNarrowPdfViewport() ? "Crop" : "Normal";
         };
 
         const ensureResolvedView = async (doc) => {

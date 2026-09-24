@@ -8,6 +8,7 @@ export type PageViewType =
   | "ExtraLargeView"
   | "Normal"
   | "Fit"
+  | "Crop"
   | "Reader"
   | "Dark"
   | "Night"
@@ -32,6 +33,7 @@ export const PAGE_VIEW_TYPES: PageViewType[] = [
   "ExtraLargeView",
   "Normal",
   "Fit",
+  "Crop",
   "Reader",
   "Dark",
   "Night",
@@ -73,8 +75,9 @@ export function defaultPdfViewForCategory(category: string | null | undefined): 
 
 export function normalizePageViewType(value: unknown): PageViewType {
   const raw = typeof value === "string" ? value.trim() : "";
-  if ((PAGE_VIEW_TYPES as string[]).includes(raw)) {
-    return raw as PageViewType;
+  const normalized = raw === "Reader" ? "Crop" : raw;
+  if ((PAGE_VIEW_TYPES as string[]).includes(normalized)) {
+    return normalized as PageViewType;
   }
   return DEFAULT_PAGE_VIEW_TYPE;
 }
