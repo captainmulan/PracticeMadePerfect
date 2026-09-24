@@ -1,6 +1,6 @@
 # NZMigrationMM Collection Status
 
-Last checked: 2026-09-20
+Last checked: 2026-09-24
 
 ## Current status
 
@@ -16,6 +16,8 @@ This is a source-collection project. The book is **not complete yet**.
 - Reader organization: blog landing page with VISA, SCHOOL, BUDGET & MONEY, SETTLEMENT, and INSURANCE hubs; grouped pages now generate article-title jump panels automatically
 - Pending direct fetch: the remaining linked posts and video posts
 - Latest pass: added NZ pros/cons and seasonal travel; visa-types link remains pending text verification
+- Structured collection ledger: `data/collection.json`
+- Latest batch: sequences 31-35 captured as text-only posts; resume at sequence 36
 - Unrelated shared posts: exclude from the book
 - Blocked/private/media-only posts: record as blocked rather than inventing text
 
@@ -117,4 +119,22 @@ This is a source-collection project. The book is **not complete yet**.
 
 ## Next batch
 
-Process the pending **study planning and education** links first, then **visa/SOP**, then **rent/settlement**, then interviews and general NZ content. Update this file after every batch.
+Batch 1 captured the first five pending study-planning links in `data/collection.json`:
+
+1. Master's cost video - caption only
+2. Choosing a university video - caption only
+3. University intake video - caption only
+4. Part-time living-cost video - caption only
+5. Tight-budget pathway post - full text
+
+Batch 2 captured sequences 6-10: affordable-universities video, scholarships, master's requirements, university application experience, and insurance.
+
+Batch 3 captured sequences 11-15 as text-only posts: house rent, utilities, NZ education, preschool, and single-parent guidance.
+
+Batch 4 captured sequences 16-20 as text-only posts: government benefits, home ties, show money, SMC changes, and NZ pros/cons.
+
+Batch 5 captured sequences 21-25 as text-only posts: visa categories, NZ city selection, NZ facts, the author's migration journey, and seasonal travel.
+
+Batch 6 captured sequences 26-30 as text-only posts: SOP, living-together proof, Singapore COC, AEWV, and family visas.
+
+Batch 7 captured sequences 31-35 as text-only posts: study-to-NZ roadmap, REA/SMC pathway, Australia EOI, PTE preparation, and NZ study costs. Resume at sequence 36. Video links are skipped; choose a written migration-related post instead when the inventory points to video.
