@@ -20,10 +20,10 @@ The archive is meant to remain easy to extend without hard-coding new posts into
 
 ## Folder structure
 
-- `data/posts.js` - source-of-truth dataset for all posts and category membership
-- `_nzmm.js` - shared logic for summary counts, author detection, filtering, and detail rendering
-- `001-Original-Post-Groups.html` - landing page with total counts, category counts, author filters, and searchable post library
-- `006-Planning-Application-Original.html` - example topic page that renders a selected article using `?id=`
+- `data/collection.json` - source-of-truth dataset for all collected records
+- `_nzmm.js` - shared logic for loading, searching, and rendering collection records
+- `001-Original-Post-Groups.html` - directory page with the process banner and searchable article list
+- `article.html` - single detail page that renders a selected record using `?id=`
 - `_source-posts-*.js` - source extraction and content-review files
 - Styling files such as `_nzmm-home.css`, `_nzmm-theme.css`, and `_nzmm-tree.css` - app styling
 
@@ -31,14 +31,8 @@ The archive is meant to remain easy to extend without hard-coding new posts into
 
 The app uses a data-first model:
 
-1. `window.NZMM_POSTS` stores all canonical article entries
-2. `window.NZMM_CATEGORIES` maps article keys to category buckets
-3. `_nzmm.js` reads those arrays and builds:
-   - total count
-   - category totals
-   - author buttons
-   - library view
-   - single-article detail view
+1. `data/collection.json` stores all canonical article entries
+2. `_nzmm.js` fetches the collection and builds the directory and detail view
 
 This means new content should be added in the dataset instead of being pasted directly into multiple HTML pages.
 
@@ -192,7 +186,7 @@ Before publishing new content, confirm:
 
 ## Maintenance reminder
 
-The source of truth is `data/posts.js`. All counts, filters, library groups, and article rendering should come from that canonical dataset, not from manually duplicated HTML text.
+The source of truth is `data/collection.json`. The directory and article rendering should come from that canonical dataset, not from manually duplicated HTML text.
 
 This archive is designed for local reading and source preservation. It is not a redirect portal to social media pages.
 

@@ -1,212 +1,155 @@
 const NZMM={
-  speak(text){if(!('speechSynthesis' in window)){return} window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='my-MM';u.rate=.85;window.speechSynthesis.speak(u)},
-  nav(n){const links={1:'001-Original-Post-Groups.html',2:'002-SOP-Home-Ties.html',3:'003-Budget-Room-Rent.html',4:'004-Show-Money-Dependent.html',5:'005-Study-Education-Original.html',6:'006-Planning-Application-Original.html',7:'007-SOP-Settlement-Original.html',8:'008-Work-Family-PTE-Original.html',9:'009-Education-Family-Original.html',10:'010-NZ-Life-Original.html'};return `<div class="nav"><a href="${links[Math.max(1,n-1)]}">← နောက်သို့</a><a href="001-Original-Post-Groups.html">မာတိကာ</a><a href="${links[Math.min(10,n+1)]}">ရှေ့သို့ →</a></div>`},
   escapeHtml(value=''){return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[char]));},
-  renderPosts(ids=[]){
-    const posts=window.NZMM_POSTS || {};
-    const requestedId=new URLSearchParams(window.location.search).get('id');
-    const safeIds=(ids||[]).filter(id=>posts[id]);
-    const selectedIds=requestedId && posts[requestedId] ? [requestedId] : safeIds;
-    return selectedIds.map(id=>{
-      const post=posts[id];
-      const title=post.title || id;
-      const text=post.text || '';
-      const sourceLink = post.url ? `<div class="post-source"><a href="${this.escapeHtml(post.url)}" target="_blank" rel="noopener noreferrer">Original Facebook post</a></div>` : '';
-      if(selectedIds.length===1){
-        return `<article class="source-post single-post" id="article-${id}"><div class="post-meta">Local copy · kept inside NZMigrationMM app</div>${sourceLink}<h2>${this.escapeHtml(title)}</h2><div class="post-body"><pre>${this.escapeHtml(text)}</pre></div></article>`;
-      }
-      return `<details class="source-post" id="article-${id}"><summary><h2>${this.escapeHtml(title)}</h2></summary><div class="post-body"><div class="post-meta">Local copy · kept inside NZMigrationMM app</div>${sourceLink}<pre>${this.escapeHtml(text)}</pre></div></details>`;
-    }).join('');
-  },
-  initHome(){
-    const app=document.querySelector('[data-nzmm-app]');
-    if(!app)return;
-    const search=app.querySelector('[data-search]');
-    const empty=app.querySelector('[data-empty]');
-    const filterButtons=[...app.querySelectorAll('[data-filter]')];
-    const authorFilterRow=app.querySelector('#author-filter-row');
-    const totalCountEl=app.querySelector('#nzmm-total-count');
-    const categoryCountEls=[...app.querySelectorAll('[data-count]')];
-    const categoryMap=window.NZMM_CATEGORIES||{};
-    const posts=window.NZMM_POSTS||{};
-    const textPostIds=Object.keys(posts);
-    const totalPosts=textPostIds.length;
-    const authorNames=['Kiwi Land','Crystal'];
-    const authorCounts=textPostIds.reduce((acc,id)=>{
-      const source=posts[id]||{};
-      const name=/crystal/i.test(`${source.title || ''} ${source.text || ''}`)?'Crystal':'Kiwi Land';
-      acc[name]=(acc[name]||0)+1;
-      return acc;
-    },{});
-    const getAuthorForId=(id)=>{
-      const source=posts[id]||{};
-      return /crystal/i.test(`${source.title || ''} ${source.text || ''}`)?'Crystal':'Kiwi Land';
-    };
-    const getCategoryCount=(category, author='all')=>{
-      const ids=(categoryMap[category]||[]).filter(id=>posts[id]);
-      if(author==='all')return ids.length;
-      return ids.filter(id=>getAuthorForId(id)===author).length;
-    };
-    const getTotalCount=(author='all')=>{
-      if(author==='all')return textPostIds.length;
-      return textPostIds.filter(id=>getAuthorForId(id)===author).length;
-    };
-    if(authorFilterRow){
-      authorFilterRow.innerHTML='';
-      const allBtn=document.createElement('button');
-      allBtn.type='button';
-      allBtn.className='filter-button is-active';
-      allBtn.dataset.author='all';
-      allBtn.textContent=`ALL AUTHORS (${totalPosts})`;
-      authorFilterRow.appendChild(allBtn);
-      authorNames.forEach(name=>{
-        const btn=document.createElement('button');
-        btn.type='button';
-        btn.className='filter-button';
-        btn.dataset.author=name;
-        btn.textContent=`${name.toUpperCase()} (${authorCounts[name]||0})`;
-        authorFilterRow.appendChild(btn);
-      });
+  async loadCollection(){
+    try{
+      const response=await fetch('data/collection.json');
+      if(!response.ok)throw new Error(`Collection request failed: ${response.status}`);
+      return response.json();
+    }catch(error){
+      if(window.NZMM_COLLECTION_FALLBACK)return window.NZMM_COLLECTION_FALLBACK;
+      throw error;
     }
-    const refreshSummary=()=>{
-      const activeAuthor=app.querySelector('#author-filter-row .filter-button.is-active')?.dataset.author||'all';
-      if(totalCountEl) totalCountEl.textContent=String(getTotalCount(activeAuthor));
-      categoryCountEls.forEach(el=>{
-        const key=el.dataset.count;
-        el.textContent=String(getCategoryCount(key, activeAuthor));
-      });
-    };
-    refreshSummary();
-    const detailPageByTopic={
-      planning:'006-Planning-Application-Original.html',
-      visa:'008-Work-Family-PTE-Original.html',
-      school:'005-Study-Education-Original.html',
-      money:'004-Show-Money-Dependent.html',
-      family:'009-Education-Family-Original.html',
-      arrival:'007-SOP-Settlement-Original.html'
-    };
-    const buildLibraryFromData=()=>{
-      if(!app.querySelector('.library-tree'))return;
-      const libraryTree=app.querySelector('.library-tree');
-      const activeTopic=(app.querySelector('[data-filter].is-active')?.dataset.filter)||'all';
-      const activeAuthor=(app.querySelector('#author-filter-row .filter-button.is-active')?.dataset.author)||'all';
-      const order=['planning','visa','school','money','family','arrival'];
-      libraryTree.innerHTML='';
-      order.forEach(topic=>{
-        const ids=((window.NZMM_CATEGORIES||{})[topic]||[]).filter(id=>posts[id]).filter(id=>{
-          const matchesAuthor = activeAuthor === 'all' || getAuthorForId(id) === activeAuthor;
-          const matchesTopic = activeTopic === 'all' || activeTopic === topic;
-          return matchesAuthor && matchesTopic;
+  },
+  formatText(value=''){return this.escapeHtml(value).replace(/\n/g,'<br>');},
+  editStorageKey(key){return `nzmm-article-edit:${key}`;},
+  getEditedRecord(record){
+    try{
+      const saved=JSON.parse(localStorage.getItem(this.editStorageKey(record.key))||'null');
+      return saved?{...record,title:saved.title||record.title,text:saved.text??record.text}:record;
+    }catch(error){
+      return record;
+    }
+  },
+  categorySequences:{planning:[1,2,3,4,5,6,7,8,9,24,31,33,35],visa:[17,18,19,21,26,27,28,29,30,32,34],school:[1,2,3,6,7,8,9,10,13,14,15,31,35],money:[1,4,5,6,7,8,10,18,35],family:[13,14,15,17,18,30,35],arrival:[11,12,13,14,15,16,20,22,23,25,35]},
+  getCategory(record){return Object.keys(this.categorySequences).find(category=>this.categorySequences[category].includes(record.sequence))||'planning';},
+  getAuthor(record){return /crystal/i.test(`${record.title||''} ${record.text||''}`)?'Crystal':'Kiwi Land';},
+  getTextPosts(collection){return (collection.records||[]).filter(record=>record.kind==='post');},
+  renderCard(record){
+    const summary=(record.text||'').replace(/\s+/g,' ').trim();
+    const status=record.status||record.kind||'record';
+    return `<article class="collection-card" data-category="${this.getCategory(record)}" data-author="${this.escapeHtml(this.getAuthor(record))}"><div class="collection-meta">${String(record.sequence).padStart(2,'0')} · ${this.escapeHtml(status)} · ${this.escapeHtml(this.getAuthor(record))}</div><h2>${this.escapeHtml(record.title||record.key)}</h2><p>${this.escapeHtml(summary.length>190?`${summary.slice(0,190)}...`:summary)}</p><a class="read-link" href="article.html?id=${encodeURIComponent(record.key)}">Read article <span aria-hidden="true">→</span></a></article>`;
+  },
+  async initDirectory(){
+    const app=document.querySelector('[data-nzmm-directory]');
+    if(!app)return;
+    if(app.nzmmRefresh){await app.nzmmRefresh();return;}
+    const list=app.querySelector('[data-collection-list]');
+    const search=app.querySelector('[data-search]');
+    const count=app.querySelector('[data-count]');
+    const empty=app.querySelector('[data-empty]');
+    const categoryFilters=[...app.querySelectorAll('[data-category]')];
+    const authorFilters=[...app.querySelectorAll('[data-author]')];
+    try{
+      const collection=await this.loadCollection();
+      let records=this.getTextPosts(collection).map(record=>this.getEditedRecord(record));
+      const refreshButtons=()=>{
+        const category=app.querySelector('[data-category].is-active')?.dataset.category||'all';
+        const author=app.querySelector('[data-author].is-active')?.dataset.author||'all';
+        categoryFilters.forEach(button=>{
+          const total=category==='all'?records.length:records.filter(record=>this.getCategory(record)===button.dataset.category).length;
+          button.textContent=`${button.dataset.category==='all'?'ALL TOPICS':button.dataset.category.toUpperCase()} (${total})`;
         });
-        if(!ids.length) return;
-        const branch=document.createElement('div');
-        branch.className='tree-branch';
-        branch.id=topic;
-        branch.dataset.branch=topic;
-        const header=document.createElement('h2');
-        header.textContent=topic.toUpperCase();
-        branch.appendChild(header);
-        const children=document.createElement('div');
-        children.className='tree-children';
-        const articles=document.createElement('div');
-        articles.className='tree-articles';
-        ids.forEach(id=>{
-          const post=posts[id];
-          if(!post)return;
-          const article=document.createElement('article');
-          article.className='app-article';
-          article.dataset.article='';
-          article.dataset.topic=topic;
-          article.dataset.postId=id;
-          article.dataset.author=getAuthorForId(id);
-          article.dataset.title=post.title || id;
-          const detailHref=(detailPageByTopic[topic] || '001-Original-Post-Groups.html');
-          article.dataset.detailHref=`${detailHref}?id=${encodeURIComponent(id)}`;
-          const tag=document.createElement('div');
-          tag.className='tag';
-          tag.textContent=`${topic.toUpperCase()} · ${getAuthorForId(id).toUpperCase()}`;
-          const heading=document.createElement('h4');
-          heading.textContent=post.title || id;
-          const summary=document.createElement('p');
-          const raw=(post.text||'').replace(/\s+/g,' ').trim();
-          summary.textContent=raw.length>160?`${raw.slice(0,160)}…`:raw;
-          article.appendChild(tag);
-          article.appendChild(heading);
-          article.appendChild(summary);
-          article.addEventListener('click',event=>{
-            if(event.target.closest('button, input, a'))return;
-            window.location.href=article.dataset.detailHref;
-          });
-          articles.appendChild(article);
+        authorFilters.forEach(button=>{
+          const total=author==='all'?records.filter(record=>this.getAuthor(record)===button.dataset.author).length:records.filter(record=>this.getAuthor(record)===button.dataset.author).length;
+          button.textContent=`${button.dataset.author==='all'?'ALL AUTHORS':button.dataset.author.toUpperCase()} (${total})`;
         });
-        if(articles.children.length){
-          children.appendChild(articles);
-          branch.appendChild(children);
-          libraryTree.appendChild(branch);
-        }
-      });
-    };
-    buildLibraryFromData();
-    const cards=[...app.querySelectorAll('[data-article]')];
-    const getAuthor=(card)=>{
-      const heading=(card.querySelector('h4')?.textContent||'').toLowerCase();
-      if(heading.includes('crystal'))return 'Crystal';
-      return 'Kiwi Land';
-    };
-    cards.forEach(card=>{
-      card.dataset.author=getAuthor(card);
-      const tag=card.querySelector(':scope > .tag');
-      if(tag){tag.classList.add('card-tags');}
-      const summary=card.querySelector(':scope > p');
-      if(summary&&!card.querySelector(':scope > .overview-label')){
-        const label=document.createElement('div');
-        label.className='overview-label';
-        label.textContent='Summary:';
-        summary.classList.add('overview-details');
-        card.insertBefore(label,summary);
-      }
-      const detailHref=card.dataset.detailHref;
-      if(detailHref){
-        card.dataset.clickable='true';
-        card.addEventListener('click',event=>{
-          if(event.target.closest('button, input, a'))return;
-          window.location.href=detailHref;
+      };
+      const render=()=>{
+        const query=(search?.value||'').trim().toLowerCase();
+        const category=app.querySelector('[data-category].is-active')?.dataset.category||'all';
+        const author=app.querySelector('[data-author].is-active')?.dataset.author||'all';
+        const filtered=records.filter(record=>{
+          const matchesQuery=`${record.title||''} ${record.text||''} ${record.status||''}`.toLowerCase().includes(query);
+          return matchesQuery&&(category==='all'||this.getCategory(record)===category)&&(author==='all'||this.getAuthor(record)===author);
         });
-      }
-    });
-    const apply=()=>{
-      buildLibraryFromData();
-      const cardsAfterBuild=[...app.querySelectorAll('[data-article]')];
-      const query=(search?.value||'').trim().toLowerCase();
-      const active=app.querySelector('[data-filter].is-active')?.dataset.filter||'all';
-      const activeAuthor=app.querySelector('#author-filter-row .filter-button.is-active')?.dataset.author||'all';
-      let visible=0;
-      cardsAfterBuild.forEach(card=>{
-        const matchesTopic=active==='all'||card.dataset.topic===active;
-        const matchesAuthor=activeAuthor==='all'||card.dataset.author===activeAuthor;
-        const matchesText=!query||card.textContent.toLowerCase().includes(query);
-        card.hidden=!(matchesTopic&&matchesAuthor&&matchesText);
-        if(!card.hidden)visible++;
+        list.innerHTML=filtered.map(record=>this.renderCard(record)).join('');
+        count.textContent=String(filtered.length);
+        empty.hidden=filtered.length>0;
+      };
+      app.nzmmRefresh=async()=>{
+        const refreshed=await this.loadCollection();
+        records=this.getTextPosts(refreshed).map(record=>this.getEditedRecord(record));
+        refreshButtons();
+        render();
+      };
+      categoryFilters.forEach(button=>button.addEventListener('click',()=>{categoryFilters.forEach(item=>item.classList.remove('is-active'));button.classList.add('is-active');refreshButtons();render();}));
+      authorFilters.forEach(button=>button.addEventListener('click',()=>{authorFilters.forEach(item=>item.classList.remove('is-active'));button.classList.add('is-active');refreshButtons();render();}));
+      search?.addEventListener('input',render);
+      refreshButtons();
+      render();
+    }catch(error){
+      list.innerHTML='<p class="load-error">Collection could not be loaded.</p>';
+      count.textContent='0';
+      console.error(error);
+    }
+  },
+  async initArticle(){
+    const app=document.querySelector('[data-nzmm-article]');
+    if(!app)return;
+    try{
+      const collection=await this.loadCollection();
+      const key=new URLSearchParams(window.location.search).get('id');
+      const record=this.getTextPosts(collection).find(item=>item.key===key);
+      if(!record)throw new Error('Article not found');
+      const title=app.querySelector('[data-article-title]');
+      const body=app.querySelector('[data-article-body]');
+      const editButton=app.querySelector('[data-edit-article]');
+      const saveButton=app.querySelector('[data-save-article]');
+      const cancelButton=app.querySelector('[data-cancel-article]');
+      const resetButton=app.querySelector('[data-reset-article]');
+      let saved={};
+      try{saved=JSON.parse(localStorage.getItem(this.editStorageKey(key))||'{}');}catch(error){console.warn('Saved article edit could not be read.',error);}
+      const original={title:record.title||record.key,text:record.text||''};
+      const current={title:saved.title||original.title,text:saved.text||original.text};
+      const setEditMode=(editing)=>{
+        title.contentEditable=String(editing);
+        body.contentEditable=String(editing);
+        editButton.hidden=editing;
+        saveButton.hidden=!editing;
+        cancelButton.hidden=!editing;
+        resetButton.hidden=!editing;
+      };
+      const renderArticle=(value)=>{
+        title.textContent=value.title;
+        body.innerHTML=this.formatText(value.text);
+        document.title=`${value.title} | NZMigrationMM`;
+      };
+      document.title=`${current.title} | NZMigrationMM`;
+      title.textContent=current.title;
+      app.querySelector('[data-article-meta]').textContent=`Record ${String(record.sequence).padStart(2,'0')} · ${record.status||record.kind||'collection item'}`;
+      body.innerHTML=this.formatText(current.text);
+      const source=app.querySelector('[data-source-link]');
+      if(record.sourceUrl){source.href=record.sourceUrl;source.hidden=false;}
+      else source.hidden=true;
+      editButton.addEventListener('click',()=>{
+        setEditMode(true);
+        title.focus();
       });
-      refreshSummary();
-      if(empty)empty.hidden=visible>0;
-    };
-    search?.addEventListener('input',apply);
-    filterButtons.forEach(button=>button.addEventListener('click',()=>{filterButtons.forEach(item=>item.classList.remove('is-active'));button.classList.add('is-active');apply()}));
-    const authorButtons=[...app.querySelectorAll('#author-filter-row .filter-button')];
-    authorButtons.forEach(button=>button.addEventListener('click',()=>{authorButtons.forEach(item=>item.classList.remove('is-active'));button.classList.add('is-active');apply()}));
-    app.querySelectorAll('[data-check]').forEach(check=>{
-      const key=`nzmm-check-${check.dataset.check}`;
-      check.checked=localStorage.getItem(key)==='1';
-      check.addEventListener('change',()=>localStorage.setItem(key,check.checked?'1':'0'));
-    });
-    app.querySelectorAll('[data-expand]').forEach(button=>button.addEventListener('click',()=>{
-      const panel=app.querySelector(`#${button.getAttribute('aria-controls')}`);
-      const open=panel?.hasAttribute('hidden');
-      if(!panel)return;
-      panel.toggleAttribute('hidden',!open);button.setAttribute('aria-expanded',String(open));
-    }));
-    apply();
+      saveButton.addEventListener('click',()=>{
+        const edited={title:title.textContent.trim()||current.title,text:(body.innerText||body.textContent||'').trim()};
+        localStorage.setItem(this.editStorageKey(key),JSON.stringify(edited));
+        current.title=edited.title;
+        current.text=edited.text;
+        renderArticle(current);
+        setEditMode(false);
+      });
+      cancelButton.addEventListener('click',()=>{
+        renderArticle(current);
+        setEditMode(false);
+      });
+      resetButton.addEventListener('click',()=>{
+        localStorage.removeItem(this.editStorageKey(key));
+        current.title=original.title;
+        current.text=original.text;
+        renderArticle(current);
+        setEditMode(false);
+      });
+    }catch(error){
+      app.querySelector('[data-article-title]').textContent='Article unavailable';
+      app.querySelector('[data-article-body]').textContent='The requested collection record could not be found.';
+      console.error(error);
+    }
   }
 };
-document.addEventListener('DOMContentLoaded',()=>{NZMM.initHome()});
+document.addEventListener('DOMContentLoaded',()=>{NZMM.initDirectory();NZMM.initArticle()});
+window.addEventListener('pageshow',()=>NZMM.initDirectory());
