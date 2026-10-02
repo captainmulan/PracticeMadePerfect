@@ -774,6 +774,12 @@
   outline: none;
 }
 
+@media (min-width: 600px) {
+  .page-home-showcase .home-category-crumb {
+    font-size: 1.5rem;
+  }
+}
+
 .home-featured-banner {
   display: none;
 }
