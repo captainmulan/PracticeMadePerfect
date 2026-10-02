@@ -100,25 +100,16 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const homeRows = useMemo(() => {
     if (showUnpublishedOnly) return [];
     const popularCourses = getPopularCourses(courses);
-    const popularIds = new Set(popularCourses.map((course) => course.id));
     const selection = {
       title: "Selection",
       items: popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
     };
     const categoryRows = ["IT", "Kid", "Interactive", "Language"].map((category) =>
-      getHomeCategoryBookRow(courses, category, popularIds),
+      getHomeCategoryBookRow(courses, category),
     );
     const newlyAdded = courses
       .slice()
-      .sort((a, b) => {
-        const aPopular = popularIds.has(a.id);
-        const bPopular = popularIds.has(b.id);
-        if (aPopular !== bPopular) return aPopular ? 1 : -1;
-        if (aPopular && bPopular) {
-          return (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER);
-        }
-        return (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title);
-      })
+      .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
       .map((course) => createShelfItemFromCourse(course, "Newly added"));
     const currentReading = courses
       .filter((course) => hasSavedProgress(course.id))

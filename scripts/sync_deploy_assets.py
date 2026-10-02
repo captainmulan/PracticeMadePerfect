@@ -41,7 +41,7 @@ if DEPLOY_INDEXEDDB_SRC.exists():
     try:
         export_meta = json.loads(DEPLOY_INDEXEDDB_SRC.read_text(encoding='utf-8'))
         version_payload = {
-            'exportedAt': export_meta.get('exportedAt') or '',
+            'exportedAt': f"{export_meta.get('exportedAt') or ''}:shelf-index-v2",
             'courseCount': len(export_meta.get('courses') or []),
         }
     except Exception as exc:
@@ -71,8 +71,8 @@ if DEPLOY_INDEXEDDB_SRC.exists():
             'id', 'title', 'description', 'color', 'coverColorStart', 'coverColorMiddle',
             'coverColorEnd', 'coverWidth', 'coverHeight', 'coverImageUrl', 'icon',
             'iconColorStart', 'iconColorMiddle', 'iconColorEnd', 'iconSize', 'iconPosition',
-            'courseIndex', 'category', 'pIndex', 'artifactType', 'bookHtmlFolder', 'stepCount',
-            'isPublished', 'cat1', 'cat2', 'cat3', 'cat4',
+            'courseIndex', 'category', 'pIndex', 'scIndex', 'sIndex', 'artifactType', 'bookHtmlFolder', 'stepCount',
+            'authorName', 'isPublished', 'cat1', 'cat2', 'cat3', 'cat4',
         )
 
         def pick_summary(course: dict) -> dict:

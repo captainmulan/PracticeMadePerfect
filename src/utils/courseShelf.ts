@@ -464,7 +464,9 @@ export function getPopularCourses(courses: Course[]): Course[] {
   return courses
     .filter((course) => typeof course.pIndex === "number" && (course.pIndex ?? 0) > 0)
     .slice()
-    .sort((a, b) => (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER));
+    .sort((a, b) => (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER)
+      || (b.courseIndex ?? 0) - (a.courseIndex ?? 0)
+      || a.title.localeCompare(b.title));
 }
 
 export function pickRandomPopularCourse(courses: Course[]): Course | null {
@@ -486,8 +488,9 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
   const popularBooks = getPopularCourses(courses).map((course) => ({
     item: createShelfItemFromCourse(course, "Selection"),
     pIndex: course.pIndex,
+    courseIndex: course.courseIndex,
   }));
-  const folderNodes: Array<{ item: CourseShelfItem; pIndex?: number }> = [];
+  const folderNodes: Array<{ item: CourseShelfItem; pIndex?: number; courseIndex: number }> = [];
   const walk = (path: string[]) => {
     for (const tag of collectCategoryChildren(courses, path)) {
       const next = [...path, tag];
@@ -496,6 +499,7 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
         folderNodes.push({
           item: makeCategoryFolderItem(tag, "category", isSeriesFolderTag(tag), next),
           pIndex,
+          courseIndex: 0,
         });
       }
       walk(next);
@@ -507,6 +511,7 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     folderNodes.push({
       item: makeCategoryFolderItem(AUTHOR_SHELF_ID, "category", false, [AUTHOR_SHELF_ID]),
       pIndex: authorPIndex,
+      courseIndex: 0,
     });
   }
   const authors = new Map<string, { authorName: string; authorPicture?: string }>();
@@ -523,13 +528,14 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
     .map((entry) => ({
       item: createAuthorShelfItem(entry.author.authorName, entry.author.authorPicture),
       pIndex: entry.pIndex,
+      courseIndex: 0,
     }));
 
-  const mixed = sortByShelfIndex(
-    [...popularBooks, ...folderNodes, ...authorTiles],
-    (entry) => entry.pIndex,
-    (entry) => entry.item.title,
-  ).map((entry) => entry.item);
+  const mixed = [...popularBooks, ...folderNodes, ...authorTiles]
+    .sort((a, b) => (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER)
+      || (b.courseIndex ?? 0) - (a.courseIndex ?? 0)
+      || a.item.title.localeCompare(b.item.title, undefined, { sensitivity: "base" }))
+    .map((entry) => entry.item);
 
   return [buildShelfRow("Selection", mixed)];
 }
@@ -537,19 +543,12 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
 export function getHomeCategoryBookRow(
   courses: Course[],
   category: string,
-  popularIds?: Set<string>,
 ): CourseShelfRow {
   const items = courses
     .filter((course) =>
       getCategoryLevels(course).some((level) => level.toLowerCase() === category.toLowerCase()),
     )
     .sort((a, b) => {
-      const aPopular = popularIds?.has(a.id) ?? false;
-      const bPopular = popularIds?.has(b.id) ?? false;
-      if (aPopular !== bPopular) return aPopular ? 1 : -1;
-      if (aPopular && bPopular) {
-        return (a.pIndex ?? Number.MAX_SAFE_INTEGER) - (b.pIndex ?? Number.MAX_SAFE_INTEGER);
-      }
       return (a.scIndex ?? Number.MAX_SAFE_INTEGER) - (b.scIndex ?? Number.MAX_SAFE_INTEGER)
         || (b.courseIndex ?? 0) - (a.courseIndex ?? 0)
         || a.title.localeCompare(b.title);
@@ -669,6 +668,7 @@ export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseS
       item: makeCategoryFolderItem(tag, "category", isSeriesFolderTag(tag), next),
       scIndex: indexes.scIndex,
       sIndex: indexes.sIndex,
+      courseIndex: 0,
     };
   });
   const bookItems = courses
@@ -677,12 +677,15 @@ export function getCategoryBrowseRow(courses: Course[], path: string[]): CourseS
       item: createShelfItemFromCourse(course, path[path.length - 1] ?? "Category"),
       scIndex: course.scIndex,
       sIndex: course.sIndex,
+      courseIndex: course.courseIndex,
     }));
-  const mixed = sortByShelfIndex(
-    [...childItems, ...bookItems],
-    (entry) => (inSeries ? entry.sIndex : entry.scIndex) ?? entry.sIndex,
-    (entry) => entry.item.title,
-  ).map((entry) => entry.item);
+  const mixed = [...childItems, ...bookItems].sort((a, b) => {
+    const aIndex = inSeries ? a.sIndex ?? a.scIndex : a.scIndex ?? a.sIndex;
+    const bIndex = inSeries ? b.sIndex ?? b.scIndex : b.scIndex ?? b.sIndex;
+    return (aIndex ?? Number.MAX_SAFE_INTEGER) - (bIndex ?? Number.MAX_SAFE_INTEGER)
+      || (b.courseIndex ?? 0) - (a.courseIndex ?? 0)
+      || a.item.title.localeCompare(b.item.title, undefined, { sensitivity: "base" });
+  }).map((entry) => entry.item);
   const title = path.map(formatCategoryLabel).join(" > ") || "Category";
   return { title, items: mixed };
 }

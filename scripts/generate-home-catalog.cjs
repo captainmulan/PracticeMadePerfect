@@ -24,6 +24,8 @@ const SUMMARY_KEYS = [
   "iconSize",
   "iconPosition",
   "courseIndex",
+  "scIndex",
+  "sIndex",
     "authorName",
     "category",
   "isPublished",
