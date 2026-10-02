@@ -2576,9 +2576,9 @@
                 throw new Error(`Book file request failed (${response.status}).`);
               }
               const buffer = await response.arrayBuffer();
-              const header = new Uint8Array(buffer.slice(0, 5));
-              const signature = String.fromCharCode(...header);
-              if (signature !== "%PDF-") {
+              const headerProbe = new Uint8Array(buffer.slice(0, 1024));
+              const headerText = String.fromCharCode(...headerProbe);
+              if (!headerText.includes("%PDF-")) {
                 throw new Error("The book file is not a valid PDF response.");
               }
               documentSource = buffer;
