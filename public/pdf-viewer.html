@@ -480,6 +480,14 @@
           const height = window.innerHeight || 0;
           return width <= 640 || Math.min(width, height) <= 640;
         };
+        /* iPad portrait + landscape (and similar tablets) — large reading surface. */
+        const isLargeScreen = () => {
+          const w = Math.max(80, wrap.clientWidth);
+          const h = Math.max(80, wrap.clientHeight);
+          const screenMin = Math.min(window.screen?.width || w, window.screen?.height || h);
+          return screenMin >= 700 || (w >= 700 && h >= 500);
+        };
+        const THEME_MODES = new Set(["Dark", "Night", "Sepia", "Comfort"]);
         const normalizeView = (value) => {
           const raw = typeof value === "string" ? value.trim() : "";
           if (raw === "Reader") return "Crop";
@@ -504,7 +512,15 @@
         };
 
         /* Auto on narrow stays Auto (SoftFocus layout). Landscape always fit. */
-        const activeView = () => resolvedView || (configuredView === "Auto" ? "SoftFocus" : configuredView);
+        const activeTheme = () => {
+          const mode = resolvedView || configuredView;
+          return THEME_MODES.has(mode) ? mode : null;
+        };
+        const activeView = () => {
+          const mode = resolvedView || (configuredView === "Auto" ? "SoftFocus" : configuredView);
+          if (THEME_MODES.has(mode)) return isLargeScreen() ? "Normal" : "Crop";
+          return mode;
+        };
         const isTopCenterMode = (mode = activeView()) =>
           mode === "NormalView" ||
           mode === "MediumView" ||
@@ -513,10 +529,10 @@
           mode === "Normal";
         const isComicView = (mode = activeView()) => mode === "ComicView";
         const isReaderMode = (mode = activeView()) => mode === "Reader" || mode === "Crop";
-        const isDarkMode = (mode = activeView()) => mode === "Dark";
-        const isNightMode = (mode = activeView()) => mode === "Night";
-        const isSepiaMode = (mode = activeView()) => mode === "Sepia";
-        const isComfortMode = (mode = activeView()) => mode === "Comfort";
+        const isDarkMode = () => activeTheme() === "Dark";
+        const isNightMode = () => activeTheme() === "Night";
+        const isSepiaMode = () => activeTheme() === "Sepia";
+        const isComfortMode = () => activeTheme() === "Comfort";
         const isFocusMode = (mode = activeView()) => FOCUS_MODES.has(mode);
         const presetZoomPct = () => PRESET_ZOOM[configuredView] || PRESET_ZOOM[activeView()] || 0;
 
@@ -794,10 +810,8 @@
         };
 
         const applyThemeToRenderedCanvas = (sourceCanvas) => {
-          const mode = activeView();
-          if (mode !== "Dark" && mode !== "Night" && mode !== "Sepia" && mode !== "Comfort") {
-            return sourceCanvas;
-          }
+          const mode = activeTheme();
+          if (!mode) return sourceCanvas;
 
           const theme = {
             Dark: {
@@ -891,19 +905,11 @@
           return themed;
         };
 
-        /* iPad portrait + landscape (and similar tablets) — large reading surface. */
-        const isLargeScreen = () => {
-          const w = Math.max(80, wrap.clientWidth);
-          const h = Math.max(80, wrap.clientHeight);
-          const screenMin = Math.min(window.screen?.width || w, window.screen?.height || h);
-          return screenMin >= 700 || (w >= 700 && h >= 500);
-        };
-
         const isLargeLandscape = () =>
           isLargeScreen() && wrap.clientWidth > wrap.clientHeight;
 
         const layoutKey = () =>
-          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}:${activeView()}:p${panelIndex}/${panelCount}:f${focusProfile().id}:${isLargeScreen() ? "lg" : "sm"}:${largeScreenUserZoom ? "manual" : "initial"}`;
+          `${wrap.clientWidth}x${wrap.clientHeight}@${window.devicePixelRatio || 1}:${pageZoom}:${lowMem ? "l" : "h"}:${activeView()}:${activeTheme() || "none"}:p${panelIndex}/${panelCount}:f${focusProfile().id}:${isLargeScreen() ? "lg" : "sm"}:${largeScreenUserZoom ? "manual" : "initial"}`;
 
         const pagesInWindow = (center) => {
           if (!pdfDoc) return [];
@@ -2262,7 +2268,7 @@
           const refined = enhanceRenderedCanvas(off);
           const displayCanvas = refined || off;
           const profile = getEnhancementProfile();
-          if (activeView() === "Dark" || activeView() === "Sepia" || activeView() === "Comfort") {
+          if (activeTheme()) {
             displayCanvas.style.filter = "none";
           } else {
             displayCanvas.style.filter = profile && profile.enabled ? profile.filter : "none";
@@ -2278,7 +2284,7 @@
               return {
                 status: "ready",
                 pageNumber,
-                canvas: off,
+                canvas: displayCanvas,
                 textLayer,
                 cssWidth: layout.cssWidth,
                 cssHeight: layout.cssHeight,
