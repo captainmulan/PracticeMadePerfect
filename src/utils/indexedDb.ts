@@ -505,17 +505,45 @@ export async function saveCourseSummary(course: Course): Promise<void> {
     db.transaction(STORE_COURSES, "readonly").objectStore(STORE_COURSES).get(course.id),
   ) as CourseRecord | undefined;
   const { chapters: _chapters, ...summary } = course;
+  const stepOutlineIsStale =
+    existing?.detailLoaded !== false &&
+    typeof course.stepCount === "number" &&
+    Array.isArray(existing?.stepOutline) &&
+    existing.stepOutline.length !== course.stepCount;
   const record: CourseRecord = {
     ...(existing ?? {} as CourseRecord),
     ...summary,
     category: normalizeBookCategory(course.category),
     chapters: [],
-    detailLoaded: existing?.detailLoaded ?? Boolean(existing?.stepOutline?.length),
-    stepOutline: existing?.stepOutline ?? [],
+    detailLoaded: stepOutlineIsStale ? false : existing?.detailLoaded ?? Boolean(existing?.stepOutline?.length),
+    stepOutline: stepOutlineIsStale ? [] : existing?.stepOutline ?? [],
   };
   await new Promise<void>((resolve, reject) => {
     const transaction = db.transaction(STORE_COURSES, "readwrite");
     transaction.objectStore(STORE_COURSES).put(record);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+}
+
+async function invalidateMismatchedStepOutline(courseId: string): Promise<void> {
+  const db = await openDb();
+  const raw = await promisifyRequest(
+    db.transaction(STORE_COURSES, "readonly").objectStore(STORE_COURSES).get(courseId),
+  ) as CourseRecord | undefined;
+  if (
+    !raw ||
+    raw.detailLoaded === false ||
+    typeof raw.stepCount !== "number" ||
+    !Array.isArray(raw.stepOutline) ||
+    raw.stepOutline.length === raw.stepCount
+  ) {
+    return;
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(STORE_COURSES, "readwrite");
+    transaction.objectStore(STORE_COURSES).put({ ...raw, detailLoaded: false, stepOutline: [] });
     transaction.oncomplete = () => resolve();
     transaction.onerror = () => reject(transaction.error);
   });
@@ -862,6 +890,7 @@ async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Prom
 
 async function runInitialMigration(): Promise<void> {
   console.log("migrateFromSqlJs called");
+  await invalidateMismatchedStepOutline("n8n-book");
   const summaries = await getCourseSummaries();
   const refreshFromDeploy =
     summaries.length > 0 ? await shouldRefreshCatalogFromDeploy(summaries.length) : false;

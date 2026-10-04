@@ -384,7 +384,9 @@ export async function buildEpubImportPreview(
     Prefer TOC entries (often file.xhtml#chapter-id) so each library page is one
     chapter. Spine alone can be a handful of huge HTML files with many chapters.
   */
-  const useToc = tocFlat.some((t) => t.href.includes("#")) && tocFlat.length >= 2;
+  const useToc =
+    tocFlat.length >= 2 &&
+    (tocFlat.some((entry) => entry.href.includes("#")) || tocFlat.length < spineItems.length);
   const chapterEntries: Array<{ label: string; href: string }> = useToc
     ? tocFlat
     : spineItems.map((item, index) => ({
