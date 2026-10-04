@@ -31,3 +31,5 @@ build
 
 # Accidental Cursor workspace path copies in asset folders
 **/c__Users_*.png
+
+/book_html/

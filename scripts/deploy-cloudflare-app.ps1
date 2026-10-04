@@ -18,6 +18,12 @@ if (Test-Path -LiteralPath (Join-Path $cloudflareDist "book_html")) {
     throw "book_html was included in cloudflare-dist. Deployment stopped."
 }
 
+$indexedDbExport = Join-Path $cloudflareDist "data\indexeddb-export.json"
+Remove-Item -LiteralPath $indexedDbExport -Force -ErrorAction SilentlyContinue
+if (Test-Path -LiteralPath $indexedDbExport) {
+    throw "indexeddb-export.json was included in cloudflare-dist. Deployment stopped."
+}
+
 Push-Location $root
 try {
     pnpm dlx wrangler@latest pages deploy cloudflare-dist --project-name magiclibrary --branch main
