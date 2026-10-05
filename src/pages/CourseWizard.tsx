@@ -164,6 +164,12 @@ export default function CourseWizard() {
     setStepIndex(clamped);
   }, [steps.length]);
 
+  const handleNavigateToPage = useCallback((targetStepIndex: number) => {
+    const clamped = Math.max(0, Math.min(steps.length - 1, targetStepIndex));
+    setViewingIntro(false);
+    setStepIndex(clamped);
+  }, [steps.length]);
+
   const relatedBooks = useMemo(() => {
     if (!outline) return [];
     return courses
@@ -247,6 +253,7 @@ export default function CourseWizard() {
         courseId: outline.id,
         onPrevious: handlePrevious,
         onNext: handleNext,
+        onNavigateToPage: handleNavigateToPage,
         canPrevious: canGoPrevious,
         canNext: canGoNext,
         isWarming: viewingIntro,
@@ -291,6 +298,7 @@ export default function CourseWizard() {
           courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}
+          onNavigateToPage={handleNavigateToPage}
           canPrevious={canGoPrevious}
           canNext={canGoNext}
           {...bookmarkProps}

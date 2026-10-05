@@ -290,7 +290,8 @@
           loaded = true;
           console.log("[EPUB Viewer] Loading from source:", typeof source === "string" ? "URL" : "ArrayBuffer");
           try {
-            epubBook = window.ePub(source, {
+            const epubSource = typeof source === "string" ? source : new Uint8Array(source);
+            epubBook = window.ePub(epubSource, {
               storage: false,
             });
             console.log("[EPUB Viewer] EPUB book created");

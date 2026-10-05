@@ -12,6 +12,7 @@ import PracticeWorkspace from "./PracticeWorkspace";
 import PdfFunLoader from "./PdfFunLoader";
 import {
   extractPdfPageNumber,
+  getPdfBuffer,
   PDF_VIEWER_CACHE_BUST,
   resolvePdfStepFileUrl,
 } from "../utils/pdfCache";
@@ -62,6 +63,7 @@ interface CoursePdfStepProps {
   courseId?: string | null;
   onPrevious?: () => void;
   onNext?: () => void;
+  onNavigateToPage?: (pageIndex: number) => void;
   canPrevious?: boolean;
   canNext?: boolean;
   bookId?: string | null;
@@ -89,6 +91,7 @@ export default function CoursePdfStep({
   pageViewType: pageViewTypeProp,
   onPrevious,
   onNext,
+  onNavigateToPage,
   canPrevious = false,
   canNext = false,
   bookId,
@@ -141,6 +144,7 @@ export default function CoursePdfStep({
   }, [bookHtmlFolder, category, pdfSource, step.stepIndex, configuredView]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const pdfLoadSequenceRef = useRef(0);
   const [viewerReady, setViewerReady] = useState(false);
   const [drawnPage, setDrawnPage] = useState<number | null>(null);
   const [loadError] = useState<string | null>(null);
@@ -164,7 +168,7 @@ export default function CoursePdfStep({
     setDrawnPage(null);
     setDictionarySelection(null);
     setViewerSrc(
-      `/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0&dictionary=${dictionaryMode ? "1" : "0"}`,
+      `/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0&dictionary=${dictionaryMode ? "1" : "0"}&defer=1`,
     );
     // Keep one iframe per book; page turns use postMessage goto-page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,6 +186,32 @@ export default function CoursePdfStep({
       /* ignore */
     }
   }, []);
+
+  const loadPdfIntoViewer = async () => {
+    const frame = iframeRef.current;
+    if (!frame?.contentWindow || !fileUrl) return;
+    const sequence = ++pdfLoadSequenceRef.current;
+    let buffer: ArrayBuffer | undefined;
+    try {
+      buffer = await getPdfBuffer(fileUrl);
+    } catch {
+      /* Let the PDF viewer retry from the URL if buffer caching is unavailable. */
+    }
+    if (sequence !== pdfLoadSequenceRef.current || !frame.contentWindow) return;
+    const message = {
+      target: "pdf-viewer",
+      type: "load-buffer",
+      url: fileUrl,
+      view: configuredView,
+      panel: 0,
+      buffer,
+    };
+    if (buffer) {
+      frame.contentWindow.postMessage(message, window.location.origin, [buffer]);
+    } else {
+      frame.contentWindow.postMessage(message, window.location.origin);
+    }
+  };
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
@@ -272,6 +302,7 @@ export default function CoursePdfStep({
       title={step.title}
       onPrevious={onPrevious}
       onNext={onNext}
+      onNavigateToPage={onNavigateToPage}
       canPrevious={canPrevious}
       canNext={canNext}
       loadError={loadError ?? undefined}
@@ -299,6 +330,7 @@ export default function CoursePdfStep({
             className={`practice-html-iframe practice-pdf-iframe${dictionaryMode ? " practice-pdf-iframe--dictionary" : ""}`}
             src={viewerSrc}
             loading="eager"
+            onLoad={() => void loadPdfIntoViewer()}
           />
           {!isWarming && (!viewerReady || drawnPage !== pageNumber) ? (
             <div className="pdf-fun-loader-overlay">

@@ -1,10 +1,13 @@
+import { getBookAssetUrl } from "../config/externalHosting";
+import { bookStorageCategory } from "./htmlStepContent";
+
 type CacheEntry =
   | { status: "loading"; promise: Promise<ArrayBuffer> }
   | { status: "ready"; buffer: ArrayBuffer; fetchedAt: number };
 
 const bufferCache = new Map<string, CacheEntry>();
 
-const MAX_CACHE_SIZE = 8;
+const MAX_CACHE_SIZE = 2;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 const IDB_NAME = "magic-library-epub-cache";
 const IDB_VERSION = 1;
@@ -88,27 +91,52 @@ async function idbGet(url: string): Promise<{ url: string; buffer: ArrayBuffer; 
 async function idbPut(url: string, buffer: ArrayBuffer, fetchedAt: number): Promise<void> {
   try {
     const db = await openEpubIdb();
-    const tx = db.transaction(IDB_STORE, "readwrite");
-    const store = tx.objectStore(IDB_STORE);
-    store.put({ url, buffer: buffer.slice(0), fetchedAt });
-    try {
-      const idx = store.index("fetchedAt");
-      const allReq = idx.openCursor();
-      const cutoff = Date.now() - CACHE_TTL_MS;
-      allReq.onsuccess = () => {
-        const cursor = allReq.result;
-        if (!cursor) return;
-        if (cursor.value.fetchedAt < cutoff) {
-          cursor.delete();
-        }
-        cursor.continue();
-      };
-    } catch {
-      /* ignore prune errors */
-    }
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).put({ url, buffer: buffer.slice(0), fetchedAt });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+    await pruneEpubIdb(db);
   } catch {
     /* ignore idb put errors */
   }
+}
+
+async function pruneEpubIdb(db: IDBDatabase): Promise<void> {
+  const entries = await new Promise<Array<{ url: string; fetchedAt: number }>>((resolve, reject) => {
+    const records: Array<{ url: string; fetchedAt: number }> = [];
+    const request = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).openCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) {
+        resolve(records);
+        return;
+      }
+      records.push({ url: cursor.value.url, fetchedAt: cursor.value.fetchedAt });
+      cursor.continue();
+    };
+    request.onerror = () => reject(request.error);
+  });
+  const cutoff = Date.now() - CACHE_TTL_MS;
+  const keep = new Set(
+    entries
+      .filter((entry) => entry.fetchedAt >= cutoff)
+      .sort((a, b) => b.fetchedAt - a.fetchedAt)
+      .slice(0, MAX_CACHE_SIZE)
+      .map((entry) => entry.url),
+  );
+  const remove = entries.filter((entry) => !keep.has(entry.url));
+  if (!remove.length) return;
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, "readwrite");
+    const store = tx.objectStore(IDB_STORE);
+    for (const entry of remove) store.delete(entry.url);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
 }
 
 /**
@@ -118,6 +146,35 @@ async function idbPut(url: string, buffer: ArrayBuffer, fetchedAt: number): Prom
 export function normalizeEpubFileUrl(source: string): string {
   if (!source) return "";
   return source.replace(/#.+$/, "");
+}
+
+/** Route book_html EPUB assets through their configured external host. */
+export function resolveEpubFileUrl(source: string, category?: string | null): string {
+  const fileUrl = normalizeEpubFileUrl(source);
+  if (!fileUrl) return "";
+
+  let pathname = fileUrl;
+  let sourceOrigin = "";
+  if (/^https?:\/\//i.test(fileUrl)) {
+    try {
+      const url = new URL(fileUrl);
+      pathname = url.pathname;
+      sourceOrigin = url.origin;
+    } catch {
+      return fileUrl;
+    }
+  }
+
+  const bookHtmlPath = pathname.match(/^\/book_html\/(.+)$/i)?.[1];
+  if (!bookHtmlPath) return fileUrl;
+
+  const relativePath = /^(Comic|Other)\//i.test(bookHtmlPath)
+    ? bookHtmlPath
+    : `${bookStorageCategory(category)}/${bookHtmlPath}`;
+  const hostedUrl = getBookAssetUrl(relativePath);
+  return sourceOrigin && hostedUrl.startsWith("/")
+    ? new URL(hostedUrl, sourceOrigin).href
+    : hostedUrl;
 }
 
 /**

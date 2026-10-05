@@ -1,5 +1,5 @@
 import type { ChangeEvent, MouseEvent, ReactNode, RefObject } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PracticeCodeEditor from "./PracticeCodeEditor";
 import DictionaryPanel from "./DictionaryPanel";
@@ -131,6 +131,21 @@ export default function PracticeWorkspace({
   const [showBookmarkHistory, setShowBookmarkHistory] = useState(false);
   const [dictionaryMode, setDictionaryMode] = useState(false);
   const [leavingDestination, setLeavingDestination] = useState<"search" | "home" | null>(null);
+  const [pageDraft, setPageDraft] = useState(String(pageIndex ?? ""));
+
+  useEffect(() => {
+    setPageDraft(String(pageIndex ?? ""));
+  }, [pageIndex]);
+
+  const commitPageJump = () => {
+    const target = Number.parseInt(pageDraft, 10);
+    if (!Number.isFinite(target) || !totalPages || target < 1 || target > totalPages) {
+      setPageDraft(String(pageIndex ?? ""));
+      return;
+    }
+    onNavigateToPage?.(target - 1);
+    setPageDraft(String(target));
+  };
 
   const updateDictionaryMode = (enabled: boolean) => {
     setDictionaryMode(enabled);
@@ -232,22 +247,31 @@ export default function PracticeWorkspace({
           >
             🏠
           </Link>
-          <span
-            className="chapter-label"
-            style={{
-              padding: "0",
-              borderRadius: "0",
-              background: "transparent",
-              border: "none",
-              color: style?.wizardTopInfo?.chapterLabel?.color ?? "#0f172a",
-              fontSize: `${(style?.wizardTopInfo?.chapterLabel?.fontSize ?? 15) / 16}rem`,
-              fontWeight: style?.wizardTopInfo?.chapterLabel?.fontWeight ?? 700,
-              opacity: 1,
-              textTransform: "none",
-            }}
-          >
-            {`Page ${pageIndex ?? ""}/${totalPages ?? ""}`}
-          </span>
+          <label className="chapter-label page-index-control">
+            <span className="page-index-prefix">Page</span>
+            <input
+              className="page-index-input"
+              type="number"
+              min={1}
+              max={totalPages}
+              value={pageDraft}
+              aria-label={`Current page, from 1 to ${totalPages ?? 1}`}
+              onChange={(event) => setPageDraft(event.target.value)}
+              onBlur={commitPageJump}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  commitPageJump();
+                  event.currentTarget.blur();
+                }
+              }}
+              style={{
+                color: style?.wizardTopInfo?.chapterLabel?.color ?? "#0f172a",
+                fontSize: `${(style?.wizardTopInfo?.chapterLabel?.fontSize ?? 15) / 16}rem`,
+                fontWeight: style?.wizardTopInfo?.chapterLabel?.fontWeight ?? 700,
+              }}
+            />
+            <span className="page-index-total">/{totalPages ?? ""}</span>
+          </label>
           <button
             type="button"
             className="chapter-nav-icon-btn chapter-settings-gear"

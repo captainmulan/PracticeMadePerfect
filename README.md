@@ -64,6 +64,26 @@ The book deployments use only these built directories:
 - Other: `dist/book_html/Other`
 - Comic: `dist/book_html/Comic`
 
+### Book Traffic and Hosting Quota Discussion
+
+Discussion handoff for planning additional promotion (no analytics or caching code changes made):
+
+- The Cloudflare Pages app is separate from the book-file hosts. Other EPUB/PDF assets are served from `magiclibrary-143b7.web.app`; Comic assets are served from `magiclibrary-d9921.web.app`. Cloudflare app request totals do not include those Firebase Hosting file downloads.
+- Firebase Console usage screenshot for project `magiclibrary-143b7` (October 2026) showed Spark Hosting downloads at 1.8 GB of the 10 GB monthly limit (17.6%), and stored files at 1.7 GB of the 10 GB storage limit (17.3%). Recheck the live quota before a campaign; these are a point-in-time snapshot.
+- The Vibe EPUB observed in DevTools was 72,515,758 bytes (about 72.5 MB decimal). At one full download per new visitor, 100 visitors would transfer about 7.25 GB, before repeat visits, caching, or other books. This can consume most of the remaining monthly download quota, so larger IT-group promotion should be staged and monitored.
+- The active EPUB reader now loads through `getEpubBuffer()` in `src/utils/epubCache.ts`; the PDF course reader now loads through `getPdfBuffer()` in `src/utils/pdfCache.ts` and transfers the buffer to its viewer iframe. Both use in-memory and IndexedDB caches with a 24-hour TTL and retain at most the 2 most recently downloaded files per media type. IndexedDB read/write failures are non-fatal; PDF fetch failures fall back to a URL load, while EPUB fetch failures show the reader error. This can avoid repeat file transfers on the same browser/device, but every new visitor still needs the initial full download. Browser storage can also be evicted by the browser or user.
+- Firebase Hosting responses observed in DevTools include `Cache-Control: public, max-age=86400, must-revalidate`. Browser HTTP caching may avoid some repeat transfers on the same device/browser during that period, but it is not a shared cache across visitors and should not be used to budget first visits. Verify response headers for each asset host and file type.
+- There is no current centralized `book_open` analytics event. Cloudflare’s account-level request graph is aggregate traffic, not distinct app users or a ranking of books opened. Decide whether to add privacy-conscious book-open analytics before claiming per-book popularity.
+- Hosting requirement: prefer a predictable $0/month solution. Cloudflare Pages static assets have a 25 MB per-file limit, so the observed 72.5 MB EPUB cannot simply be deployed as a Pages asset. Cloudflare R2 is not selected because the owner requires a free plan and wants to avoid usage-based charges.
+- At a target of 200 monthly visitors, 200 full downloads of the 72.5 MB EPUB would transfer about 14.5 GB. With 1.8 GB already used in the screenshot, approximately 8.2 GB remained that month, equal to about 113 such full downloads before other files. Visitor count alone does not equal book downloads; measure opened books and actual transfer before deciding whether the Spark quota is sufficient.
+- Free-plan-first options for discussion: reduce EPUB/PDF payloads (especially oversized embedded images), promote in stages while monitoring Firebase Hosting usage, and investigate whether a Cloudflare cache in front of Firebase can safely serve book files without adding a paid storage service. A cache is not a guarantee for first-time visitors or cache misses; verify provider terms, cache rules, custom-domain requirements, and cache hit ratio before relying on it.
+
+Questions for the follow-up discussion:
+
+1. Estimate downloads per EPUB/PDF from Firebase Hosting request logs or exported usage data, and determine whether per-file URL rankings are available on the current plan.
+2. Decide whether to add a `book_open` event keyed by course ID/category to measure reader interest independently of file-host requests.
+3. Compare the free-plan-first options above before increasing promotion. Do not assume Pages can host EPUBs larger than 25 MB or that a paid/usage-billed service is acceptable without owner approval.
+
 Firebase Hosting deployments are versioned and atomic. A successful new deploy becomes the complete live file set for that site; files from the previous release that are not in the new directory are no longer served. There is no separate “delete all files” step, and disabling the site first would only create unnecessary downtime.
 
 For a direct deploy from CMD or PowerShell:

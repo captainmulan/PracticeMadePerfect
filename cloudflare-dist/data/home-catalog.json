@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-10-04T00:31:22.310Z:shelf-index-v2",
+  "exportedAt": "2026-10-05T00:43:34.518Z:shelf-index-v2",
   "courses": [
     {
       "id": "donald-duck-and-friends-361-dec-2010",
@@ -831,7 +831,7 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 29,
-      "scIndex": 1,
+      "scIndex": 2,
       "authorName": "Ko Ei Maung",
       "category": "Other, IT",
       "isPublished": true,
@@ -861,7 +861,7 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 30,
-      "scIndex": 2,
+      "scIndex": 1,
       "authorName": "Ko Ei Maung",
       "category": "Other, IT, AI",
       "isPublished": true,
@@ -891,7 +891,7 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 31,
-      "scIndex": 2,
+      "scIndex": 1,
       "authorName": "Ko Ei Maung",
       "category": "Other, IT, AI",
       "isPublished": true,
@@ -921,7 +921,7 @@
       "iconSize": 80,
       "iconPosition": "center-center",
       "courseIndex": 32,
-      "scIndex": 2,
+      "scIndex": 1,
       "authorName": "Ko Ei Maung",
       "category": "Other, IT, AI",
       "isPublished": true,

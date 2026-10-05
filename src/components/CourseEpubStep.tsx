@@ -2,12 +2,13 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { CourseStep } from "../data/courses";
 import type { BookBookmark } from "../services/types/account";
 import PracticeWorkspace from "./PracticeWorkspace";
+import PdfFunLoader from "./PdfFunLoader";
 import {
   defaultPdfViewForCategory,
   normalizePageViewType,
   type PageViewType,
 } from "../data/pageViewType";
-import { extractEpubLocation, normalizeEpubFileUrl } from "../utils/epubCache";
+import { extractEpubLocation, getEpubBuffer, resolveEpubFileUrl } from "../utils/epubCache";
 import "../styles/course.css";
 
 type EpubContents = { document?: Document };
@@ -235,6 +236,8 @@ function styleEpubContents(doc: Document, mode: PageViewType, getHostWidth: () =
       body:not(.pmp-fixed-epub-layout)>.body,body:not(.pmp-fixed-epub-layout)>.body *:not(img):not(span:has(>img)){position:static!important;inset:auto!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;max-width:100%!important;height:auto!important;min-height:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;float:none!important;transform:none!important}
       body:not(.pmp-fixed-epub-layout)>.body{position:relative!important}
       body:not(.pmp-fixed-epub-layout)>.body>div{display:block!important;width:100%!important}
+      body:not(.pmp-fixed-epub-layout)>.body span:has(>img){display:block!important;position:static!important;inset:auto!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;max-width:100%!important;height:auto!important;min-height:0!important;white-space:normal!important;float:none!important;transform:none!important}
+      body:not(.pmp-fixed-epub-layout)>.body span:has(>img)>img{width:auto!important;height:auto!important;max-width:100%!important;max-height:none!important;object-fit:contain!important}
     }
   `;
   doc.head.appendChild(style);
@@ -294,6 +297,7 @@ interface CourseEpubStepProps {
   courseId?: string | null;
   onPrevious?: () => void;
   onNext?: () => void;
+  onNavigateToPage?: (pageIndex: number) => void;
   canPrevious?: boolean;
   canNext?: boolean;
   bookId?: string | null;
@@ -318,6 +322,7 @@ export default function CourseEpubStep({
   pageViewType: pageViewTypeProp,
   onPrevious,
   onNext,
+  onNavigateToPage,
   canPrevious = false,
   canNext = false,
   bookId,
@@ -344,13 +349,13 @@ export default function CourseEpubStep({
   const { fileUrl, location } = useMemo(() => {
     const raw = epubSource;
     const isUrl = Boolean(raw && (raw.startsWith("/") || /^https?:\/\//i.test(raw)));
-    const file = normalizeEpubFileUrl(isUrl ? raw : "");
+    const file = resolveEpubFileUrl(isUrl ? raw : "", category);
     const loc = extractEpubLocation(isUrl ? raw : "");
     if (!isUrl || !file) {
       return { fileUrl: "", location: null as string | null };
     }
     return { fileUrl: file, location: loc };
-  }, [epubSource]);
+  }, [category, epubSource]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const viewerRef = useRef<HTMLDivElement | null>(null);
@@ -361,10 +366,15 @@ export default function CourseEpubStep({
   const locationRef = useRef<string | null>(location);
   const activeViewRef = useRef<PageViewType>(activeView);
   const [viewerReady, setViewerReady] = useState(false);
+  const [contentLoading, setContentLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [dictionarySelection, setDictionarySelection] = useState<string | null>(null);
+  const [dictionaryMode, setDictionaryMode] = useState(false);
+  const dictionaryModeRef = useRef(false);
 
   locationRef.current = location;
   activeViewRef.current = activeView;
+  dictionaryModeRef.current = dictionaryMode;
 
   useEffect(() => {
     const updateViewportMode = () => setNarrowViewport(isNarrowEpubViewport());
@@ -385,6 +395,7 @@ export default function CourseEpubStep({
 
     setLoadError(null);
     setViewerReady(false);
+    setContentLoading(true);
     displayedLocationRef.current = null;
     let active = true;
     viewerRef.current?.replaceChildren();
@@ -394,7 +405,9 @@ export default function CourseEpubStep({
         const createEpub = await loadEpubLibrary();
         if (!active || !viewerRef.current) return;
 
-        const book = createEpub(fileUrl, { storage: false });
+        const epubBuffer = await getEpubBuffer(fileUrl);
+        if (!active || !viewerRef.current) return;
+        const book = createEpub(new Uint8Array(epubBuffer), { storage: false });
         bookRef.current = book;
         if (book.ready) await book.ready;
         if (!active || !viewerRef.current) return;
@@ -434,12 +447,69 @@ export default function CourseEpubStep({
           }
         };
 
+        const handleDictionaryInteraction = (doc: Document, event: MouseEvent | TouchEvent) => {
+          if (!dictionaryModeRef.current) return;
+          const selection = doc.getSelection();
+          const selectedText = selection?.toString().trim();
+          if (selectedText) {
+            setDictionarySelection(selectedText);
+            return;
+          }
+          if (event.type !== "click") return;
+          const point = "touches" in event ? event.touches[0] : event;
+          if (!point) return;
+          const caretDoc = doc as Document & {
+            caretRangeFromPoint?: (x: number, y: number) => Range | null;
+            caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+          };
+          let range = caretDoc.caretRangeFromPoint?.(point.clientX, point.clientY) ?? null;
+          if (!range) {
+            const position = caretDoc.caretPositionFromPoint?.(point.clientX, point.clientY);
+            if (position) {
+              range = doc.createRange();
+              range.setStart(position.offsetNode, position.offset);
+              range.collapse(true);
+            }
+          }
+          const node = range?.startContainer;
+          if (!node || node.nodeType !== Node.TEXT_NODE) return;
+          const text = node.textContent ?? "";
+          const offset = range?.startOffset ?? 0;
+          const wordPattern = /[\p{L}\p{N}'’-]/u;
+          let start = Math.min(offset, text.length);
+          let end = start;
+          while (start > 0 && wordPattern.test(text[start - 1])) start -= 1;
+          while (end < text.length && wordPattern.test(text[end])) end += 1;
+          if (start === end) return;
+          const wordRange = doc.createRange();
+          wordRange.setStart(node, start);
+          wordRange.setEnd(node, end);
+          selection?.removeAllRanges();
+          selection?.addRange(wordRange);
+          setDictionarySelection(wordRange.toString().trim());
+        };
+
+        const bindDictionarySelection = (doc: Document) => {
+          if ((doc as Document & { __pmpDictionaryBound?: boolean }).__pmpDictionaryBound) return;
+          doc.addEventListener("selectionchange", () => {
+            if (!dictionaryModeRef.current) return;
+            const selected = doc.getSelection()?.toString().trim();
+            if (selected) setDictionarySelection(selected);
+          });
+          doc.addEventListener("mouseup", (event) => handleDictionaryInteraction(doc, event));
+          doc.addEventListener("touchend", (event) => handleDictionaryInteraction(doc, event), { passive: true });
+          doc.addEventListener("click", (event) => handleDictionaryInteraction(doc, event));
+          (doc as Document & { __pmpDictionaryBound?: boolean }).__pmpDictionaryBound = true;
+        };
+
         rendition.hooks?.content?.register((contents) => {
           if (!contents.document) return;
           const doc = contents.document;
           doc.defaultView?.requestAnimationFrame(() => {
             styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
             applyEpubViewMode(doc, activeViewRef.current);
+            bindDictionarySelection(doc);
+            bindDictionarySelection(doc);
             applyChapterIsolation(doc, locationFragment(locationRef.current));
           });
         });
@@ -448,6 +518,7 @@ export default function CourseEpubStep({
         const displayLocation = (target: string) => {
           if (displayedLocationRef.current === target) return Promise.resolve();
           displayedLocationRef.current = target;
+          setContentLoading(true);
           const sequence = ++displaySequence;
           for (const contents of contentsList()) {
             if (contents.document) clearChapterIsolation(contents.document);
@@ -468,12 +539,27 @@ export default function CourseEpubStep({
                 });
               }
             }, 200);
+          }).finally(() => {
+            if (active && sequence === displaySequence) setContentLoading(false);
           });
         };
         displayLocationRef.current = displayLocation;
 
         const initialLocation = locationRef.current;
         const initialDisplay = initialLocation ? displayLocation(initialLocation) : rendition.display();
+        if (!initialLocation) {
+          void initialDisplay.then(() => {
+            if (active) {
+              applyContents("");
+              setContentLoading(false);
+            }
+          }).catch((err) => {
+            if (active) {
+              setContentLoading(false);
+              setLoadError(err instanceof Error ? err.message : "Unable to display EPUB page.");
+            }
+          });
+        }
         window.requestAnimationFrame(() => {
           iframeRef.current = viewerRef.current?.querySelector("iframe") ?? null;
         });
@@ -531,6 +617,7 @@ export default function CourseEpubStep({
       pageBrief=""
       onPrevious={onPrevious}
       onNext={onNext}
+      onNavigateToPage={onNavigateToPage}
       canPrevious={canPrevious}
       canNext={canNext}
       loadError={loadError ?? undefined}
@@ -546,14 +633,27 @@ export default function CourseEpubStep({
       onJumpToBookmark={onJumpToBookmark}
       viewMode={activeView}
       onViewModeChange={setActiveView}
+      dictionarySelection={dictionarySelection}
+      onDictionaryModeChange={(enabled) => {
+        setDictionaryMode(enabled);
+        dictionaryModeRef.current = enabled;
+        if (!enabled) setDictionarySelection(null);
+      }}
     >
       {fileUrl ? (
-        <div
-          id={viewerId}
-          ref={viewerRef}
-          className="practice-html-iframe practice-epub-iframe"
-          aria-label={step.title}
-        />
+        <div className="practice-epub-frame-wrap">
+          <div
+            id={viewerId}
+            ref={viewerRef}
+            className="practice-html-iframe practice-epub-iframe"
+            aria-label={step.title}
+          />
+          {contentLoading && !loadError ? (
+            <div className="pdf-fun-loader-overlay">
+              <PdfFunLoader label="Opening your book…" />
+            </div>
+          ) : null}
+        </div>
       ) : (
         <div className="practice-error-message">
           <pre>No EPUB source is available for this page.</pre>
