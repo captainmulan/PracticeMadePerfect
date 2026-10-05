@@ -253,7 +253,7 @@ function applyEpubViewMode(doc: Document, mode: PageViewType) {
     Normal: { background: "#ffffff", color: "#111827", link: "#1d4ed8", lineHeight: "1.55", padding: ".5em 12px 1.5em", filter: "none", overlay: "none" },
     Crop: { background: "#ffffff", color: "#111827", link: "#1d4ed8", lineHeight: "1.55", padding: "0 2px .5em", filter: "none", overlay: "none" },
     Dark: { background: "#0b1016", color: "#d6dce6", link: "#93c5fd", lineHeight: "1.55", padding: ".5em 12px 1.5em", filter: "brightness(0.96) contrast(1.08) saturate(0.72) sepia(0.12) hue-rotate(-8deg)", overlay: "linear-gradient(180deg, rgba(12, 16, 22, 0.08), rgba(12, 16, 22, 0.26))" },
-    Night: { background: "#101821", color: "#d6dce6", link: "#93c5fd", lineHeight: "1.55", padding: ".5em 12px 1.5em", filter: "brightness(0.9) contrast(1.16) saturate(0.66) sepia(0.08) hue-rotate(-12deg)", overlay: "linear-gradient(180deg, rgba(11, 15, 22, 0.14), rgba(11, 15, 22, 0.22))" },
+    Night: { background: "#34383b", color: "#d6dce6", link: "#a9c9ef", lineHeight: "1.55", padding: ".5em 12px 1.5em", filter: "brightness(0.96) contrast(1.04) saturate(0.88) sepia(0.03)", overlay: "linear-gradient(180deg, rgba(11, 15, 22, 0.03), rgba(11, 15, 22, 0.08))" },
     Sepia: { background: "#f0e4cc", color: "#43352a", link: "#795329", lineHeight: "1.65", padding: ".5em 12px 1.5em", filter: "none", overlay: "none" },
     Comfort: { background: "#efe5d9", color: "#44382f", link: "#795b3e", lineHeight: "1.8", padding: ".6em 14px 1.6em", filter: "none", overlay: "none" },
   }[mode as "Normal" | "Crop" | "Dark" | "Night" | "Sepia" | "Comfort"] ?? {
