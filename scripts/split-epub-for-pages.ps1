@@ -126,6 +126,8 @@ try {
     }
   }
   if ($pages.Count -eq 0) { throw 'No page-N.xhtml items were found in the EPUB spine.' }
+  $titleNode = $opf.SelectSingleNode('//dc:title', $opfNs)
+  $bookTitle = if ($titleNode -and $titleNode.InnerText.Trim()) { $titleNode.InnerText.Trim() } else { [IO.Path]::GetFileNameWithoutExtension($source) }
 
   $shared = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
   foreach ($item in $manifest.Values) {
@@ -155,8 +157,6 @@ try {
     $current.Add($page)
   }
   if ($current.Count -gt 0) { $groups.Add(@($current.ToArray())) }
-  if ($groups.Count -gt 3) { throw "The EPUB needs $($groups.Count) parts at this size budget; choose a different host or increase the allowed part count." }
-
   [void][IO.Directory]::CreateDirectory($output)
   $partResults = [Collections.Generic.List[object]]::new()
   for ($groupIndex = 0; $groupIndex -lt $groups.Count; $groupIndex++) {
@@ -222,8 +222,8 @@ try {
       [void]$spine.AppendChild($pageRef)
     }
 
-    $titleNode = $partOpf.SelectSingleNode('//dc:title', $partNs)
-    if ($titleNode) { $titleNode.InnerText = "Vibe Coding Book (pages $first-$last)" }
+    $partTitleNode = $partOpf.SelectSingleNode('//dc:title', $partNs)
+    if ($partTitleNode) { $partTitleNode.InnerText = "$bookTitle (pages $first-$last)" }
     $identifierNode = $partOpf.SelectSingleNode("//dc:identifier[@id='BookId']", $partNs)
     if ($identifierNode) { $identifierNode.InnerText = "8397A700-CEF2-41CE-BE0B-CE393EE08173-part-$($groupIndex + 1)" }
 

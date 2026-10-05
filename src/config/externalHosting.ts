@@ -4,7 +4,7 @@
  */
 
 // Whether to use folder-based external hosting for book assets (Comic/Other folders)
-export const USE_EXTERNAL_BOOK_HOSTING = false;
+export const USE_EXTERNAL_BOOK_HOSTING = true;
 
 /**
  * Multi-hosting configuration for book distribution
@@ -12,7 +12,7 @@ export const USE_EXTERNAL_BOOK_HOSTING = false;
  */
 export const BOOK_HOSTING_CONFIG = {
   "Comic": "https://magiclibrary-d9921.web.app",
-  "Other": "https://magiclibrary-143b7.web.app",
+  "Other": "https://magiclibrary-daw.pages.dev",
   // Add more mappings as needed
 };
 

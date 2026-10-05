@@ -635,6 +635,89 @@ async function migrateVibeBookPdfToEpub(): Promise<void> {
   }
 }
 
+const SPLIT_BOOK_ASSET_MIGRATION_KEY = "pmp-split-book-assets-v5";
+const SPLIT_BOOK_ASSET_COURSE_IDS = [
+  "elon-musk",
+  "harrypotter-deadlyhollow-part2",
+  "hp-chamber",
+  "hp-deadly",
+  "hp-goblet",
+  "hp-half",
+  "hp-order",
+  "hp-prisoner",
+  "hp-stone",
+  "html-css-lwin-moe-paing",
+  "n8n-book",
+  "narnia-boxen",
+  "narnia-chair",
+  "narnia-horse",
+  "narnia-last",
+  "narnia-lion",
+  "narnia-nephew",
+  "narnia-prince",
+  "narnia-voyage",
+  "openclaw-book",
+  "science-comic-adventures-grade4-fkb",
+  "scienceadventures-comic-grade5-siyavula-fkb",
+  "vibe-book-final",
+];
+
+async function migrateSplitBookAssetSources(): Promise<void> {
+  try {
+    if (localStorage.getItem(SPLIT_BOOK_ASSET_MIGRATION_KEY) === "1") return;
+
+    let updatedSteps = 0;
+    let everyCourseFound = true;
+    for (const courseId of SPLIT_BOOK_ASSET_COURSE_IDS) {
+      const current = await getCourseById(courseId);
+      if (!current) {
+        everyCourseFound = false;
+        continue;
+      }
+
+      const response = await fetch(`/data/course-details/${encodeURIComponent(courseId)}.json`, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Unable to load split-book metadata for ${courseId} (${response.status})`);
+      }
+      const packaged = await response.json() as Course;
+      const packagedSteps = packaged.chapters.flatMap((chapter) => chapter.steps);
+      const packagedByPage = new Map(packagedSteps.map((step) => [step.stepIndex, step]));
+      const currentSteps = current.chapters.flatMap((chapter) => chapter.steps);
+      if (currentSteps.length !== packagedSteps.length || packagedByPage.size !== packagedSteps.length) {
+        throw new Error(`Page count mismatch while updating split-book metadata for ${courseId}`);
+      }
+
+      const chapters = current.chapters.map((chapter) => ({
+        ...chapter,
+        steps: chapter.steps.map((step) => {
+          const packagedStep = packagedByPage.get(step.stepIndex);
+          if (!packagedStep?.contentHtml) {
+            throw new Error(`Missing packaged page ${step.stepIndex} for ${courseId}`);
+          }
+          if (step.contentHtml === packagedStep.contentHtml && step.stepType === packagedStep.stepType) {
+            return step;
+          }
+          updatedSteps += 1;
+          return {
+            ...step,
+            contentHtml: packagedStep.contentHtml,
+            stepType: packagedStep.stepType,
+          };
+        }),
+      }));
+
+      await saveCourse({ ...current, chapters });
+    }
+
+    if (everyCourseFound) {
+      localStorage.setItem(SPLIT_BOOK_ASSET_MIGRATION_KEY, "1");
+      console.info(`Updated split-book asset sources in this browser (${updatedSteps} page(s)).`);
+    }
+  } catch (error) {
+    console.warn("Could not update split-book asset sources in this browser:", error);
+  }
+}
+
 export async function deleteCourse(courseId: string): Promise<void> {
   const db = await openDb();
   let chaptersToDelete: string[] = [];
@@ -988,6 +1071,7 @@ async function runInitialMigration(): Promise<void> {
     await migrateLegacyBookCategories();
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
+    await migrateSplitBookAssetSources();
     return;
   }
 
@@ -1006,6 +1090,7 @@ async function runInitialMigration(): Promise<void> {
     }
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
+    await migrateSplitBookAssetSources();
     return;
   }
 
@@ -1014,6 +1099,7 @@ async function runInitialMigration(): Promise<void> {
     console.log("Catalog refresh failed; keeping existing IndexedDB courses");
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
+    await migrateSplitBookAssetSources();
     return;
   }
 
@@ -1037,6 +1123,7 @@ async function runInitialMigration(): Promise<void> {
   }
   await ensureAnnouncementsSeeded();
   await applyBookCoverSeeds();
+  await migrateSplitBookAssetSources();
   console.log("Initialization complete!");
 }
 

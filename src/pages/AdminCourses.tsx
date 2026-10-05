@@ -76,6 +76,7 @@ export default function AdminCourses() {
   const [sourceRangeEnd, setSourceRangeEnd] = useState("1");
   const [sourceRangeUrl, setSourceRangeUrl] = useState("");
   const [sourceRangeFilePage, setSourceRangeFilePage] = useState("1");
+  const [splitPartType, setSplitPartType] = useState<"pdf" | "epub">("epub");
   const [epubPartRanges, setEpubPartRanges] = useState([
     { firstPage: "1", lastPage: "10", url: "" },
     { firstPage: "11", lastPage: "20", url: "" },
@@ -151,6 +152,15 @@ export default function AdminCourses() {
     }
     return allSteps[0];
   }, [allSteps, selectedStepId]);
+  const splitAssetTypes = useMemo(
+    () => new Set(allSteps.filter((step) => step.stepType === "pdf" || step.stepType === "epub").map((step) => step.stepType)),
+    [allSteps],
+  );
+  const activeSplitPartType = splitAssetTypes.has(splitPartType)
+    ? splitPartType
+    : splitAssetTypes.has("pdf")
+      ? "pdf"
+      : splitPartType;
 
   function updateStyleConfig(key: string, value: string | boolean | number) {
     if (!adminData) return;
@@ -322,11 +332,11 @@ export default function AdminCourses() {
     setMessage(`Applied ${sourceUrl} to ${matchingSteps.length} ${sourceRangeType.toUpperCase()} page(s). Save Book to keep the changes.`);
   }
 
-  function applyEpubPartRanges() {
+  function applySplitPartRanges() {
     if (!activeBook) return;
-    const epubSteps = flattenCourseSteps(activeBook).filter((step) => step.stepType === "epub");
-    if (epubSteps.length === 0) {
-      setMessage("This book has no EPUB pages to map.");
+    const matchingSteps = flattenCourseSteps(activeBook).filter((step) => step.stepType === activeSplitPartType);
+    if (matchingSteps.length === 0) {
+      setMessage(`This book has no ${activeSplitPartType.toUpperCase()} pages to map.`);
       return;
     }
 
@@ -355,22 +365,30 @@ export default function AdminCourses() {
     const sortedRanges = ranges.slice().sort((a, b) => a.firstPage - b.firstPage);
     for (let index = 1; index < sortedRanges.length; index += 1) {
       if (sortedRanges[index].firstPage <= sortedRanges[index - 1].lastPage) {
-        setMessage("EPUB part page ranges cannot overlap.");
+        setMessage(`${activeSplitPartType.toUpperCase()} part ranges overlap. Set each next part's first page to the previous part's last page plus one.`);
         return;
       }
     }
 
     const sourceUpdates = new Map<string, string>();
-    for (const step of epubSteps) {
+    for (const step of matchingSteps) {
+      const pageNumber = activeSplitPartType === "pdf"
+        ? Number(step.contentHtml?.match(/#page=(\d+)/i)?.[1] ?? step.stepIndex)
+        : step.stepIndex;
       const range = sortedRanges.find((candidate) =>
-        step.stepIndex >= candidate.firstPage && step.stepIndex <= candidate.lastPage,
+        pageNumber >= candidate.firstPage && pageNumber <= candidate.lastPage,
       );
       if (!range) {
-        setMessage(`No EPUB part range covers page ${step.stepIndex}. Add or extend a range before applying.`);
+        setMessage(`No ${activeSplitPartType.toUpperCase()} part range covers page ${pageNumber}. Add or extend a range before applying.`);
         return;
       }
-      const location = step.contentHtml?.match(/#(.+)$/)?.[1] ?? `page-${step.stepIndex}.xhtml`;
-      sourceUpdates.set(step.id, `${range.url.replace(/#.*$/, "")}#${location}`);
+      const partUrl = range.url.replace(/#.*$/, "");
+      if (activeSplitPartType === "pdf") {
+        sourceUpdates.set(step.id, `${partUrl}#page=${pageNumber - range.firstPage + 1}`);
+      } else {
+        const location = step.contentHtml?.match(/#(.+)$/)?.[1] ?? `page-${pageNumber}.xhtml`;
+        sourceUpdates.set(step.id, `${partUrl}#${location}`);
+      }
     }
 
     updateActiveBook((book) => ({
@@ -383,7 +401,7 @@ export default function AdminCourses() {
         }),
       })),
     }));
-    setMessage(`Mapped ${epubSteps.length} EPUB page(s) across ${ranges.length} part(s). Save Book to keep the changes.`);
+    setMessage(`Mapped ${matchingSteps.length} ${activeSplitPartType.toUpperCase()} page(s) across ${ranges.length} part(s). Save Book to keep the changes.`);
   }
 
   function deleteStep(stepId: string) {
@@ -921,10 +939,21 @@ export default function AdminCourses() {
                   <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                     <h4 style={{ marginTop: 0 }}>General</h4>
                     <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                      <h4 style={{ marginTop: 0 }}>Map split EPUB parts</h4>
+                      <h4 style={{ marginTop: 0 }}>Map split {activeSplitPartType.toUpperCase()} parts</h4>
                       <p className="admin-book-upload-help">
-                        Split the EPUB into files below 25 MiB first. Add each output file and its inclusive book-page range; applying updates every EPUB page while preserving its original page location.
+                        Split the source into files below 25 MiB first. Add each output file and its inclusive original page range; PDF page numbers are translated to each part, while EPUB locations are preserved.
                       </p>
+                      <label className="admin-task-editor-field" style={{ marginBottom: "12px" }}>
+                        <span className="admin-task-editor-label">Asset type</span>
+                        <select
+                          value={activeSplitPartType}
+                          onChange={(event) => setSplitPartType(event.target.value as "pdf" | "epub")}
+                          className="admin-grid-select"
+                        >
+                          <option value="pdf">PDF</option>
+                          <option value="epub">EPUB</option>
+                        </select>
+                      </label>
                       {epubPartRanges.map((range, index) => (
                         <div className="admin-search-row" key={`epub-part-${index}`} style={{ alignItems: "end", marginBottom: "10px" }}>
                           <label className="admin-task-editor-field">
@@ -952,7 +981,7 @@ export default function AdminCourses() {
                             />
                           </label>
                           <label className="admin-task-editor-field admin-task-editor-full">
-                            <span className="admin-task-editor-label">Part {index + 1} EPUB URL</span>
+                            <span className="admin-task-editor-label">Part {index + 1} {activeSplitPartType.toUpperCase()} URL</span>
                             <input
                               type="text"
                               value={range.url}
@@ -960,7 +989,7 @@ export default function AdminCourses() {
                                 itemIndex === index ? { ...item, url: event.target.value } : item,
                               ))}
                               className="admin-grid-input"
-                              placeholder={`/book_html/Other/${activeBook.bookHtmlFolder ?? "book-folder"}/part${index + 1}.epub`}
+                              placeholder={`/book_html/${activeBook.bookHtmlFolder?.replace(/^\/+/, "") || `Other/book-folder`}/part-${String(index + 1).padStart(2, "0")}.${activeSplitPartType}`}
                             />
                           </label>
                           {epubPartRanges.length > 1 ? (
@@ -990,7 +1019,7 @@ export default function AdminCourses() {
                         <button
                           type="button"
                           className="admin-btn admin-btn-book small"
-                          onClick={applyEpubPartRanges}
+                          onClick={applySplitPartRanges}
                           disabled={!activeBook || bookLoading}
                         >
                           Apply part URLs

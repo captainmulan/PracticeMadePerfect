@@ -122,7 +122,7 @@ export default defineConfig({
   server: {
     port: 4173,
     watch: {
-      ignored: ["**/book_html/**/cloudflare-pages/**"],
+      ignored: ["**/book_html/**"],
     },
   },
 });

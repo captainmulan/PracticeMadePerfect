@@ -39,7 +39,7 @@ npm run deploy:firebase
 The live Firebase sites are:
 
 - App: `magiclibrary-92246` (`https://magiclibrary-92246.web.app`)
-- Other books: `magiclibrary-143b7` (`https://magiclibrary-143b7.web.app`)
+- Legacy Other books host: `magiclibrary-143b7` (`https://magiclibrary-143b7.web.app`)
 - Comic books: `magiclibrary-d9921` (`https://magiclibrary-d9921.web.app`)
 
 Deploy individually with:
@@ -59,6 +59,25 @@ Or deploy all three sites:
 npm run deploy:all
 ```
 
+### Deploy Other books to Cloudflare Pages
+
+The `magiclibrary` Pages project is reserved for the static files under `book_html/Other` only. It does not deploy the React app, Comic books, or any other folder. First authenticate Wrangler with the new Cloudflare account and create the Pages project once:
+
+```bash
+pnpm dlx wrangler@latest login
+pnpm dlx wrangler@latest pages project create magiclibrary --production-branch main --force
+```
+
+Then deploy the Other books:
+
+```bash
+npm run deploy:cloudflare:other
+```
+
+The deploy script checks the Pages per-file and project file-count limits, confirms the active Wrangler account, and applies temporary CORS/cache headers during upload without changing `book_html/Other`. The project is live at `https://magiclibrary-daw.pages.dev`.
+
+The app's `Other` asset route now points to this Pages host, while `Comic` remains on Firebase. Deploy the app separately with `npm run deploy:app` for the live app to start using the new `Other` host; the static-file deploy command above never deploys the app.
+
 The book deployments use only these built directories:
 
 - Other: `dist/book_html/Other`
@@ -68,27 +87,29 @@ The book deployments use only these built directories:
 
 Discussion handoff for planning additional promotion (no analytics or caching code changes made):
 
-- The Cloudflare Pages app is separate from the book-file hosts. Other EPUB/PDF assets are served from `magiclibrary-143b7.web.app`; Comic assets are served from `magiclibrary-d9921.web.app`. Cloudflare app request totals do not include those Firebase Hosting file downloads.
+- The Cloudflare Pages app is separate from the book-file hosts. The current Other host is `magiclibrary-daw.pages.dev`; Comic assets remain on `magiclibrary-d9921.web.app`. The Firebase quota figures below are a historical snapshot from before the Other-host migration. Cloudflare app request totals do not include separate book-file host requests.
 - Firebase Console usage screenshot for project `magiclibrary-143b7` (October 2026) showed Spark Hosting downloads at 1.8 GB of the 10 GB monthly limit (17.6%), and stored files at 1.7 GB of the 10 GB storage limit (17.3%). Recheck the live quota before a campaign; these are a point-in-time snapshot.
 - The Vibe EPUB observed in DevTools was 72,515,758 bytes (about 72.5 MB decimal). At one full download per new visitor, 100 visitors would transfer about 7.25 GB, before repeat visits, caching, or other books. This can consume most of the remaining monthly download quota, so larger IT-group promotion should be staged and monitored.
 - The active EPUB reader now loads through `getEpubBuffer()` in `src/utils/epubCache.ts`; the PDF course reader now loads through `getPdfBuffer()` in `src/utils/pdfCache.ts` and transfers the buffer to its viewer iframe. Both use in-memory and IndexedDB caches with a 24-hour TTL and retain at most the 2 most recently downloaded files per media type. IndexedDB read/write failures are non-fatal; PDF fetch failures fall back to a URL load, while EPUB fetch failures show the reader error. This can avoid repeat file transfers on the same browser/device, but every new visitor still needs the initial full download. Browser storage can also be evicted by the browser or user.
 - Firebase Hosting responses observed in DevTools include `Cache-Control: public, max-age=86400, must-revalidate`. Browser HTTP caching may avoid some repeat transfers on the same device/browser during that period, but it is not a shared cache across visitors and should not be used to budget first visits. Verify response headers for each asset host and file type.
 - There is no current centralized `book_open` analytics event. Cloudflare’s account-level request graph is aggregate traffic, not distinct app users or a ranking of books opened. Decide whether to add privacy-conscious book-open analytics before claiming per-book popularity.
-- Hosting requirement: prefer a predictable $0/month solution and preserve reading quality. Current book files remain on Firebase Hosting. The pilot Pages file host is a separate project, `pmp-book-assets`, intended for a separate free Cloudflare account and only book assets. Pages does not list a monthly bandwidth allowance in its Free limits documentation, but each deployed asset must be below 25 MiB and each Free project supports up to 20,000 files. A second account does not increase either per-project limit.
+- Hosting requirement: prefer a predictable $0/month solution and preserve reading quality. Other books are now on the separate Cloudflare Pages project `magiclibrary`; Comic books remain on Firebase. Pages does not list a monthly bandwidth allowance in its Free limits documentation, but each deployed asset must be below 25 MiB and each Free project supports up to 20,000 files. A second account does not increase either per-project limit.
 - The pilot asset bundle is intentionally isolated from the app deployment: `Book_html_cloudflare/Other/vibe-book-final/cloudflare-pages/`. This folder sits outside `book_html`, so the current working app/book folders are untouched while the Cloudflare pilot is staged separately. The split script keeps the original page XHTML names and embedded resources without rasterizing or recompressing page images. It generates a `_headers` file for CORS and long-lived asset caching. Local verification rendered pages 1, 108, and 157 from the split packages.
-- To regenerate the pilot parts, run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/split-epub-for-pages.ps1`. After manually logging Wrangler into the separate file-host account, deploy with `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-cloudflare-book-assets.ps1`. The deploy helper checks that there are 2-3 split EPUB files, all below the Pages asset cap, and that `_headers` is present. The live Pages deployment and final URLs still need to be completed after the new account is authenticated.
+- The former `pmp-book-assets` split-EPUB pilot was superseded by the full `book_html/Other` deployment to `magiclibrary`. Its split workflow notes below are historical; use `npm run deploy:cloudflare:other` for future updates to the active Other host.
 - Existing-book Manual Update > Pages now has a page-range URL mapper. Apply each Pages-host URL to its inclusive range: EPUB mappings retain each original page location; PDF mappings calculate the page number within each segment. Use a local URL such as `http://localhost:4173/@fs/C:/.../Book_html_cloudflare/Other/vibe-book-final/cloudflare-pages/part-01.epub` for local preview, then apply the final `https://pmp-book-assets.pages.dev/part-01.epub`-style URLs after deployment and save/export the book metadata. Because the readers fetch files cross-origin into JavaScript buffers, CORS must remain enabled on the file host.
-- Manual Update > General also has **Map split EPUB parts** for applying multiple segment URLs in one operation. Run the splitter first; then enter each generated part's inclusive book-page range and URL. The mapper keeps each original `#page-*.xhtml` location, rejects overlapping or uncovered page ranges, and updates the draft metadata. Click **Save Book** afterward. This admin control maps metadata; it does not create the EPUB files itself.
+- Split files are stored directly in each book folder (for example, `book_html/Other/elon-musk/part-01.pdf`); course metadata uses `/book_html/Other/<book>/part-01.pdf` or `.epub`, without a `parts/` subfolder. The oversized originals present during the Other-books split were removed after checking their replacements. No PDF or EPUB over 25 MiB remains in `book_html/Other`.
+- Existing browser profiles have separate IndexedDB databases. On the first course-database initialization after loading the updated app, a versioned migration updates the 23 split books' direct-root asset URLs and EPUB/PDF types by page index while preserving local book fields and unrelated records. The migration is scoped to the current browser profile.
+- Manual Update > General has **Map split PDF/EPUB parts** for applying multiple segment URLs in one operation. Enter each generated part's inclusive original page range and URL. PDF page numbers are translated to each segment; EPUB `#page-*.xhtml` locations are retained. The mapper rejects overlapping or uncovered ranges. Click **Save Book** afterward. This control updates metadata; it does not create the part files.
 - Splitting does not reduce total bytes if a reader downloads every segment, but it allows smaller initial downloads when only one range is opened. It also adds manual mapping and deployment steps; test page turns at each range boundary before moving more books.
 - Cloudflare R2 remains an alternative if splitting and maintaining multiple page mappings proves too cumbersome. Its Standard free tier includes 10 GB-month storage, 1 million Class A operations, 10 million Class B operations, and free egress, but usage beyond the free allowances is billable, so it is not a hard $0 cap.
 - At a target of 200 monthly visitors, 200 full downloads of the 72.5 MB EPUB would transfer about 14.5 GB. With 1.8 GB already used in the screenshot, approximately 8.2 GB remained that month, equal to about 113 such full downloads before other files. Visitor count alone does not equal book downloads; measure opened books and actual transfer before deciding whether the Spark quota is sufficient.
-- Until the Pages file-host pilot is verified, Firebase remains the active book host. Continue monitoring Firebase usage; optional lossless optimization of oversized embedded images may reduce transfers, but do not reduce reading quality just to fit a quota. Do not rely on browser or CDN caching as a guarantee for first-time readers.
+- Continue monitoring Firebase usage for the remaining Firebase-hosted sites; optional lossless optimization of oversized embedded images may reduce transfers, but do not reduce reading quality just to fit a quota. Do not rely on browser or CDN caching as a guarantee for first-time readers.
 
 Questions for the follow-up discussion:
 
 1. Estimate downloads per EPUB/PDF from Firebase Hosting request logs or exported usage data, and determine whether per-file URL rankings are available on the current plan.
 2. Decide whether to add a `book_open` event keyed by course ID/category to measure reader interest independently of file-host requests.
-3. Finish the Pages asset-host pilot by logging into the separate account, deploying `pmp-book-assets`, and applying the deployed part URLs to the Vibe page ranges. Verify cross-origin fetches and page turns at pages 107/108 and 156/157. Do not treat Pages bandwidth as an unconditional guarantee or R2's free tier as a hard spending cap.
+3. Verify cross-origin fetches and page turns against the deployed Other host, especially at pages 107/108 and 156/157. Do not treat Pages bandwidth as an unconditional guarantee or R2's free tier as a hard spending cap.
 
 Firebase Hosting deployments are versioned and atomic. A successful new deploy becomes the complete live file set for that site; files from the previous release that are not in the new directory are no longer served. There is no separate “delete all files” step, and disabling the site first would only create unnecessary downtime.
 
