@@ -42,6 +42,9 @@ async function resolveBookHtmlFile(filePath: string): Promise<string | null> {
   if (existsSync(filePath)) {
     return filePath;
   }
+  if (path.extname(filePath)) {
+    return null;
+  }
   const withPdf = `${filePath}.pdf`;
   if (existsSync(withPdf)) {
     return withPdf;
@@ -77,6 +80,11 @@ async function serveBookHtml(
   try {
     const filePath = await resolveBookHtmlFile(requested);
     if (!filePath) {
+      if (path.extname(requested)) {
+        res.statusCode = 404;
+        res.end("Book asset not found");
+        return;
+      }
       next();
       return;
     }

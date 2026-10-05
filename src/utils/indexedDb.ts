@@ -549,6 +549,55 @@ async function invalidateMismatchedStepOutline(courseId: string): Promise<void> 
   });
 }
 
+async function migrateN8nBookPdfToEpub(): Promise<void> {
+  try {
+    const current = await getCourseById("n8n-book");
+    const currentSteps = current?.chapters.flatMap((chapter) => chapter.steps) ?? [];
+    const hasLegacyPdf = currentSteps.some((step) => step.stepType === "pdf");
+    const hasStaleEpubLocations = currentSteps.some((step) =>
+      step.stepType === "epub" && /n8n-book\.epub#OPS\/page-\d+\.xhtml$/i.test(step.contentHtml ?? ""),
+    );
+    if (!current || (!hasLegacyPdf && !hasStaleEpubLocations)) {
+      return;
+    }
+
+    const response = await fetch("/data/course-details/n8n-book.json", { cache: "no-store" });
+    if (!response.ok) return;
+
+    const replacement = (await response.json()) as Course;
+    if (!replacement.chapters.some((chapter) => chapter.steps.some((step) => step.stepType === "epub"))) {
+      return;
+    }
+    const replacementChapters = replacement.chapters.map((chapter) => ({
+      ...chapter,
+      steps: chapter.steps.map((step) => ({
+        ...step,
+        contentHtml: step.contentHtml?.replace(
+          /(n8n-book\.epub)#(?:OPS\/)?(page-\d+\.xhtml)$/i,
+          "$1#$2",
+        ),
+      })),
+    }));
+
+    const {
+      chapters: _currentChapters,
+      stepCount: _currentStepCount,
+      bookHtmlFolder: _currentBookHtmlFolder,
+      ...currentMetadata
+    } = current;
+    await saveCourse({
+      ...replacement,
+      ...currentMetadata,
+      bookHtmlFolder: replacement.bookHtmlFolder ?? current.bookHtmlFolder,
+      stepCount: replacement.stepCount ?? replacementChapters.reduce((count, chapter) => count + chapter.steps.length, 0),
+      chapters: replacementChapters,
+    });
+    console.info("Migrated local n8n-book pages to the packaged EPUB while preserving book metadata.");
+  } catch (error) {
+    console.warn("Could not migrate local n8n-book pages to EPUB:", error);
+  }
+}
+
 export async function deleteCourse(courseId: string): Promise<void> {
   const db = await openDb();
   let chaptersToDelete: string[] = [];
@@ -890,6 +939,7 @@ async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Prom
 
 async function runInitialMigration(): Promise<void> {
   console.log("migrateFromSqlJs called");
+  await migrateN8nBookPdfToEpub();
   await invalidateMismatchedStepOutline("n8n-book");
   const summaries = await getCourseSummaries();
   const refreshFromDeploy =

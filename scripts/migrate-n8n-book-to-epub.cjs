@@ -9,22 +9,7 @@ const catalogVersionPath = path.join(root, "public", "data", "catalog-version.js
 const courseDetailPath = path.join(root, "public", "data", "course-details", "n8n-book.json");
 const epubPath = path.join(root, "book_html", "Other", "n8n-book", "n8n-book.epub");
 const epubUrl = "/book_html/Other/n8n-book/n8n-book.epub";
-
-const chapters = [
-  ["မိတ်ဆက်", "page-4.xhtml"],
-  ["အခန်း (၁) - Docker နှင့် Install ပြုလုပ်ခြင်း", "page-10.xhtml"],
-  ["အခန်း (၂) - NPM နှင့် Install ပြုလုပ်ခြင်း", "page-29.xhtml"],
-  ["အခန်း (၃) - JSON", "page-33.xhtml"],
-  ["အခန်း (၄) - API", "page-36.xhtml"],
-  ["အခန်း (၅) - First Workflow", "page-44.xhtml"],
-  ["အခန်း (၆) - Weather Chat", "page-61.xhtml"],
-  ["အခန်း (၇) - Invoice & Reminder Workflow", "page-77.xhtml"],
-  ["အခန်း (၈) - Support Ticket Workflow", "page-106.xhtml"],
-  ["အခန်း (၉) - AI Agent Workflow", "page-126.xhtml"],
-  ["အခန်း (၁၀) - AI နှင့် Workflow များဖန်တီးခြင်း", "page-150.xhtml"],
-  ["အခန်း (၁၁) - ngrok နှင့် အသုံးပြုခြင်း", "page-159.xhtml"],
-  ["နိဂုံးချုပ်", "page-173.xhtml"],
-];
+const pageCount = 177;
 
 if (!fs.existsSync(epubPath)) {
   throw new Error(`Missing EPUB asset: ${epubPath}`);
@@ -37,11 +22,13 @@ if (!course) {
 }
 
 course.bookHtmlFolder = "Other/n8n-book";
-course.stepCount = chapters.length;
-course.chapters = chapters.map(([title, href], index) => {
+course.stepCount = pageCount;
+course.chapters = Array.from({ length: pageCount }, (_, index) => {
+  const pageNumber = index + 1;
+  const title = `Page ${pageNumber}`;
   const chapterIndex = index;
-  const stepIndex = index + 1;
-  const chapterId = `n8n-book-epub-chapter-${String(stepIndex).padStart(2, "0")}`;
+  const stepIndex = pageNumber;
+  const chapterId = `n8n-book-epub-page-${String(pageNumber).padStart(3, "0")}`;
   return {
     id: chapterId,
     courseId: course.id,
@@ -58,7 +45,7 @@ course.chapters = chapters.map(([title, href], index) => {
         stepType: "epub",
         title,
         description: "",
-        contentHtml: `${epubUrl}#${href}`,
+        contentHtml: `${epubUrl}#page-${pageNumber}.xhtml`,
       },
     ],
   };
@@ -74,4 +61,4 @@ fs.writeFileSync(
   "utf8",
 );
 fs.writeFileSync(courseDetailPath, `${JSON.stringify(course)}\n`, "utf8");
-console.log(`Updated n8n-book to ${chapters.length} EPUB TOC chapters.`);
+console.log(`Updated n8n-book to ${pageCount} sequential EPUB pages.`);

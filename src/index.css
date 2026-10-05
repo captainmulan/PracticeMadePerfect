@@ -589,6 +589,12 @@ textarea {
   max-height: none !important;
 }
 
+.course-wizard-page .practice-workspace--epub .practice-workspace-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
 .course-wizard-page.course-wizard-page--about,
 .course-wizard-page.course-wizard-page--about .book-about-page {
   background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
@@ -618,6 +624,17 @@ textarea {
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
+}
+
+.course-wizard-page .practice-epub-iframe {
+  overflow: auto !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.course-wizard-page .practice-workspace--epub .practice-workspace-editor-shell {
+  overflow: visible !important;
 }
 
 .course-wizard-page .practice-pdf-iframe.practice-pdf-iframe--dictionary {

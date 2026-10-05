@@ -316,6 +316,7 @@ export interface EpubImportPreviewOptions {
   bookIdOverride?: string;
   courseIndex?: number;
   existingBookIds?: string[];
+  preferSpine?: boolean;
 }
 
 export interface EpubImportPreview extends BookImportPreview {
@@ -384,17 +385,22 @@ export async function buildEpubImportPreview(
     Prefer TOC entries (often file.xhtml#chapter-id) so each library page is one
     chapter. Spine alone can be a handful of huge HTML files with many chapters.
   */
-  const useToc =
+  const useToc = !options?.preferSpine &&
     tocFlat.length >= 2 &&
     (tocFlat.some((entry) => entry.href.includes("#")) || tocFlat.length < spineItems.length);
+  const readingSpineItems = spineItems.filter((item) =>
+    !/^(?:.*\/)?cover\.(?:xhtml?|html?)$/i.test(item.href ?? ""),
+  );
   const chapterEntries: Array<{ label: string; href: string }> = useToc
     ? tocFlat
-    : spineItems.map((item, index) => ({
-        label: item.label || item.title || `Chapter ${index + 1}`,
+    : readingSpineItems.map((item, index) => ({
+        label: options?.preferSpine
+          ? `Page ${index + 1}`
+          : item.label || item.title || `Chapter ${index + 1}`,
         href: (item.href ?? "").replace(/^\.\//, ""),
       }));
 
-  const pageCount = Math.max(1, chapterEntries.length || spineItems.length);
+  const pageCount = Math.max(1, chapterEntries.length || readingSpineItems.length || spineItems.length);
 
   const pages: ParsedHtmlPage[] = [];
   for (let i = 0; i < pageCount; i++) {
@@ -446,8 +452,11 @@ export async function writeEpubAssetToDirectory(
 
   try {
     const pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
-    if (rootDirectory.name.toLowerCase() === pathParts[0]?.toLowerCase()) {
+    const rootName = rootDirectory.name.toLowerCase();
+    if (rootName === pathParts[0]?.toLowerCase()) {
       pathParts.shift();
+    } else if (rootName === pathParts[pathParts.length - 1]?.toLowerCase()) {
+      pathParts.pop();
     }
     const bookDirectory = await pathParts.reduce(
       (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),

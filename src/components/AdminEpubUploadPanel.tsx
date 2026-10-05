@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
-import { flattenCourseSteps } from "../data/courses";
 import { resolveImportBookHtmlFolder } from "../utils/htmlStepContent";
-import { buildCourseFromPreview, type BookImportPreview, type ParsedHtmlPage } from "../utils/bookImport";
+import { buildCourseFromPreview, type BookImportPreview } from "../utils/bookImport";
 import { buildEpubImportPreview, resolveEpubAssetDirectory, writeEpubAssetToDirectory, type EpubAssetExportProgress, type EpubImportPreview } from "../utils/epubImport";
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
+import { getBookAssetUrl } from "../config/externalHosting";
 
 type UploadMode = "new" | "existing";
 
@@ -17,66 +17,35 @@ interface AdminEpubUploadPanelProps {
   onCancel: () => void;
 }
 
-function findStepForPageNumber(steps: CourseStep[], pageNumber: number): CourseStep | undefined {
-  const byStepIndex = steps.find((step) => step.stepIndex === pageNumber);
-  if (byStepIndex) return byStepIndex;
+function buildEpubReplacementCourse(course: Course, preview: EpubImportPreview, folder: string): Course {
+  const epubUrl = getBookAssetUrl(`${folder}/${preview.epubFileName}`);
+  const chapters: CourseChapter[] = preview.pages.map((page, index) => {
+    const pageNumber = page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : index + 1;
+    const title = page.title?.trim() || `Page ${pageNumber}`;
+    const chapterIndex = index;
+    const chapterId = `${course.id}-epub-page-${String(pageNumber).padStart(3, "0")}`;
+    const href = page.content.match(/#(.+)$/)?.[1] ?? "";
+    const step: CourseStep = {
+      id: `${chapterId}-step`,
+      courseId: course.id,
+      chapterId,
+      chapterTitle: title,
+      chapterIndex,
+      stepIndex: pageNumber,
+      stepType: "epub",
+      title,
+      description: "",
+      contentHtml: `${epubUrl}${href ? `#${href}` : ""}`,
+    };
+    return { id: chapterId, courseId: course.id, chapterIndex, title, steps: [step] };
+  });
 
-  const byZeroBasedIndex = steps.find((step) => step.stepIndex === pageNumber - 1);
-  if (byZeroBasedIndex) return byZeroBasedIndex;
-
-  if (pageNumber >= 1 && pageNumber <= steps.length) {
-    return steps[pageNumber - 1];
-  }
-
-  return undefined;
-}
-
-function buildEpubMergeResult(course: Course, pages: ParsedHtmlPage[], folder: string) {
-  const steps = flattenCourseSteps(course);
-  const contentUpdates = new Map<string, string>();
-  const titleUpdates = new Map<string, string>();
-  const unmatchedFiles: string[] = [];
-  let updatedCount = 0;
-
-  for (const page of pages) {
-    const pageNumber = page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : null;
-    if (pageNumber == null) {
-      unmatchedFiles.push(page.fileName);
-      continue;
-    }
-
-    const step = findStepForPageNumber(steps, pageNumber);
-    if (!step || step.stepType !== "epub") {
-      unmatchedFiles.push(page.fileName);
-      continue;
-    }
-
-    contentUpdates.set(step.id, page.content);
-    if (page.title) {
-      titleUpdates.set(step.id, page.title);
-    }
-    updatedCount += 1;
-  }
-
-  const mergedCourse: Course = {
+  return {
     ...course,
     bookHtmlFolder: folder,
-    chapters: course.chapters.map((chapter) => ({
-      ...chapter,
-      steps: chapter.steps.map((step) => {
-        if (!contentUpdates.has(step.id)) {
-          return step;
-        }
-        return {
-          ...step,
-          contentHtml: contentUpdates.get(step.id),
-          title: titleUpdates.get(step.id) ?? step.title,
-        };
-      }),
-    })),
+    stepCount: chapters.length,
+    chapters,
   };
-
-  return { course: mergedCourse, updatedCount, unmatchedFiles };
 }
 
 export default function AdminEpubUploadPanel({
@@ -164,6 +133,7 @@ export default function AdminEpubUploadPanel({
     try {
       const nextPreview = await buildEpubImportPreview(file, books.length, books.map((book) => book.id), {
         preferredFolder: file.name.replace(/\.epub$/i, ""),
+        preferSpine: uploadMode === "existing",
       });
       if (!nextPreview) {
         setError("No pages could be read from the selected EPUB.");
@@ -197,18 +167,22 @@ export default function AdminEpubUploadPanel({
         category,
       );
       const assetDirectory = await resolveEpubAssetDirectory();
+      if (!assetDirectory?.directoryHandle) {
+        throw new Error("EPUB was not saved: grant access to the project's book_html folder and retry.");
+      }
       const assetCount = 1;
       setAssetExportProgress({ completed: 0, total: assetCount });
-      if (assetDirectory) {
-        await writeEpubAssetToDirectory(
-          assetDirectory.directoryHandle,
-          folder,
-          preview.epubFileName,
-          selectedEpub,
-          (progress: EpubAssetExportProgress) => {
-            setAssetExportProgress(progress);
-          },
-        );
+      const assetResult = await writeEpubAssetToDirectory(
+        assetDirectory.directoryHandle,
+        folder,
+        preview.epubFileName,
+        selectedEpub,
+        (progress: EpubAssetExportProgress) => {
+          setAssetExportProgress(progress);
+        },
+      );
+      if (assetResult.written !== assetCount || assetResult.errors.length > 0) {
+        throw new Error(`EPUB was not saved: ${assetResult.errors.join("; ") || "asset write did not complete."}`);
       }
 
       if (uploadMode === "existing") {
@@ -221,12 +195,12 @@ export default function AdminEpubUploadPanel({
           return;
         }
 
-        const merged = buildEpubMergeResult(targetBookFull, preview.pages, folder);
+        const replacement = buildEpubReplacementCourse(targetBookFull, preview, folder);
         const summary = saveImmediately
-          ? `Updated ${merged.updatedCount} page(s) in "${targetBookFull.title}" from EPUB.${merged.unmatchedFiles.length ? ` Skipped ${merged.unmatchedFiles.length} file(s).` : ""}`
-          : `Loaded ${merged.updatedCount} updated page(s) for "${targetBookFull.title}" from EPUB. Review pages, then click Save Book.`;
+          ? `Replaced "${targetBookFull.title}" with ${replacement.stepCount} sequential EPUB page(s).`
+          : `Loaded ${replacement.stepCount} sequential EPUB page(s) for "${targetBookFull.title}". Review, then click Save Book.`;
 
-        onImported(merged.course, summary, saveImmediately);
+        onImported(replacement, summary, saveImmediately);
         return;
       }
 
