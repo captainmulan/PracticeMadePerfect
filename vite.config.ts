@@ -121,5 +121,8 @@ export default defineConfig({
   plugins: [react(), bookHtmlStaticPlugin()],
   server: {
     port: 4173,
+    watch: {
+      ignored: ["**/book_html/**/cloudflare-pages/**"],
+    },
   },
 });

@@ -71,6 +71,15 @@ export default function AdminCourses() {
   const [bookMethod, setBookMethod] = useState<"upload" | "manual">("upload");
   const [uploadKind, setUploadKind] = useState<"html" | "pdf" | "epub">("html");
   const [bookSubTab, setBookSubTab] = useState<"general" | "pages" | "title" | "cover" | "logo">("general");
+  const [sourceRangeType, setSourceRangeType] = useState<"pdf" | "epub">("epub");
+  const [sourceRangeStart, setSourceRangeStart] = useState("1");
+  const [sourceRangeEnd, setSourceRangeEnd] = useState("1");
+  const [sourceRangeUrl, setSourceRangeUrl] = useState("");
+  const [sourceRangeFilePage, setSourceRangeFilePage] = useState("1");
+  const [epubPartRanges, setEpubPartRanges] = useState([
+    { firstPage: "1", lastPage: "10", url: "" },
+    { firstPage: "11", lastPage: "20", url: "" },
+  ]);
   const [adminData, setAdminData] = useState<any>(null);
   const [isDeletingBook, setIsDeletingBook] = useState(false);
   const stepTypeSelectRef = useRef<HTMLSelectElement>(null);
@@ -260,6 +269,121 @@ export default function AdminCourses() {
       ...book,
       chapters: rebuildChaptersFromSteps(book.id, steps),
     }));
+  }
+
+  function applySourceUrlToPageRange() {
+    if (!activeBook) return;
+    const firstPage = Number(sourceRangeStart);
+    const lastPage = Number(sourceRangeEnd);
+    const firstFilePage = Number(sourceRangeFilePage);
+    const sourceUrl = sourceRangeUrl.trim();
+    if (!Number.isInteger(firstPage) || !Number.isInteger(lastPage) || firstPage < 1 || lastPage < firstPage) {
+      setMessage("Enter a valid inclusive page range.");
+      return;
+    }
+    if (!sourceUrl || (!sourceUrl.startsWith("/") && !/^https?:\/\//i.test(sourceUrl))) {
+      setMessage("Enter a root-relative or absolute HTTP(S) asset URL.");
+      return;
+    }
+    if (sourceRangeType === "pdf" && (!Number.isInteger(firstFilePage) || firstFilePage < 1)) {
+      setMessage("Enter a valid first page number within this PDF segment.");
+      return;
+    }
+
+    const baseUrl = sourceUrl.replace(/#.*$/, "");
+    const matchingSteps = flattenCourseSteps(activeBook).filter(
+      (step) => step.stepType === sourceRangeType && step.stepIndex >= firstPage && step.stepIndex <= lastPage,
+    );
+    if (matchingSteps.length === 0) {
+      setMessage(`No ${sourceRangeType.toUpperCase()} pages found in that range.`);
+      return;
+    }
+
+    const sources = new Map<string, string>();
+    for (const step of matchingSteps) {
+      if (sourceRangeType === "pdf") {
+        sources.set(step.id, `${baseUrl}#page=${firstFilePage + step.stepIndex - firstPage}`);
+      } else {
+        const location = step.contentHtml?.match(/#(.+)$/)?.[1] ?? `page-${step.stepIndex}.xhtml`;
+        sources.set(step.id, `${baseUrl}#${location}`);
+      }
+    }
+
+    updateActiveBook((book) => ({
+      ...book,
+      chapters: book.chapters.map((chapter) => ({
+        ...chapter,
+        steps: chapter.steps.map((step) => {
+          const contentHtml = sources.get(step.id);
+          return contentHtml ? { ...step, contentHtml } : step;
+        }),
+      })),
+    }));
+    setMessage(`Applied ${sourceUrl} to ${matchingSteps.length} ${sourceRangeType.toUpperCase()} page(s). Save Book to keep the changes.`);
+  }
+
+  function applyEpubPartRanges() {
+    if (!activeBook) return;
+    const epubSteps = flattenCourseSteps(activeBook).filter((step) => step.stepType === "epub");
+    if (epubSteps.length === 0) {
+      setMessage("This book has no EPUB pages to map.");
+      return;
+    }
+
+    const ranges = epubPartRanges.map((range) => ({
+      firstPage: Number(range.firstPage),
+      lastPage: Number(range.lastPage),
+      url: range.url.trim().replace(/\\/g, "/"),
+    }));
+    const invalidRangeIndex = ranges.findIndex((range) =>
+      !Number.isInteger(range.firstPage) || !Number.isInteger(range.lastPage) ||
+      range.firstPage < 1 || range.lastPage < range.firstPage,
+    );
+    if (invalidRangeIndex >= 0) {
+      const invalidRange = ranges[invalidRangeIndex];
+      setMessage(`Part ${invalidRangeIndex + 1} has an invalid page range: last page must be at least ${invalidRange.firstPage}.`);
+      return;
+    }
+    const invalidUrlIndex = ranges.findIndex((range) =>
+      !range.url || (!range.url.startsWith("/") && !/^https?:\/\//i.test(range.url)),
+    );
+    if (invalidUrlIndex >= 0) {
+      setMessage(`Enter a root-relative (/book_html/...) or absolute HTTP(S) URL for Part ${invalidUrlIndex + 1}.`);
+      return;
+    }
+
+    const sortedRanges = ranges.slice().sort((a, b) => a.firstPage - b.firstPage);
+    for (let index = 1; index < sortedRanges.length; index += 1) {
+      if (sortedRanges[index].firstPage <= sortedRanges[index - 1].lastPage) {
+        setMessage("EPUB part page ranges cannot overlap.");
+        return;
+      }
+    }
+
+    const sourceUpdates = new Map<string, string>();
+    for (const step of epubSteps) {
+      const range = sortedRanges.find((candidate) =>
+        step.stepIndex >= candidate.firstPage && step.stepIndex <= candidate.lastPage,
+      );
+      if (!range) {
+        setMessage(`No EPUB part range covers page ${step.stepIndex}. Add or extend a range before applying.`);
+        return;
+      }
+      const location = step.contentHtml?.match(/#(.+)$/)?.[1] ?? `page-${step.stepIndex}.xhtml`;
+      sourceUpdates.set(step.id, `${range.url.replace(/#.*$/, "")}#${location}`);
+    }
+
+    updateActiveBook((book) => ({
+      ...book,
+      chapters: book.chapters.map((chapter) => ({
+        ...chapter,
+        steps: chapter.steps.map((step) => {
+          const contentHtml = sourceUpdates.get(step.id);
+          return contentHtml ? { ...step, contentHtml } : step;
+        }),
+      })),
+    }));
+    setMessage(`Mapped ${epubSteps.length} EPUB page(s) across ${ranges.length} part(s). Save Book to keep the changes.`);
   }
 
   function deleteStep(stepId: string) {
@@ -796,6 +920,83 @@ export default function AdminCourses() {
             {bookSubTab === "general" && (
                   <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
                     <h4 style={{ marginTop: 0 }}>General</h4>
+                    <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                      <h4 style={{ marginTop: 0 }}>Map split EPUB parts</h4>
+                      <p className="admin-book-upload-help">
+                        Split the EPUB into files below 25 MiB first. Add each output file and its inclusive book-page range; applying updates every EPUB page while preserving its original page location.
+                      </p>
+                      {epubPartRanges.map((range, index) => (
+                        <div className="admin-search-row" key={`epub-part-${index}`} style={{ alignItems: "end", marginBottom: "10px" }}>
+                          <label className="admin-task-editor-field">
+                            <span className="admin-task-editor-label">Part {index + 1} first page</span>
+                            <input
+                              type="number"
+                              min={1}
+                              value={range.firstPage}
+                              onChange={(event) => setEpubPartRanges((current) => current.map((item, itemIndex) =>
+                                itemIndex === index ? { ...item, firstPage: event.target.value } : item,
+                              ))}
+                              className="admin-grid-input"
+                            />
+                          </label>
+                          <label className="admin-task-editor-field">
+                            <span className="admin-task-editor-label">Last page</span>
+                            <input
+                              type="number"
+                              min={1}
+                              value={range.lastPage}
+                              onChange={(event) => setEpubPartRanges((current) => current.map((item, itemIndex) =>
+                                itemIndex === index ? { ...item, lastPage: event.target.value } : item,
+                              ))}
+                              className="admin-grid-input"
+                            />
+                          </label>
+                          <label className="admin-task-editor-field admin-task-editor-full">
+                            <span className="admin-task-editor-label">Part {index + 1} EPUB URL</span>
+                            <input
+                              type="text"
+                              value={range.url}
+                              onChange={(event) => setEpubPartRanges((current) => current.map((item, itemIndex) =>
+                                itemIndex === index ? { ...item, url: event.target.value } : item,
+                              ))}
+                              className="admin-grid-input"
+                              placeholder={`/book_html/Other/${activeBook.bookHtmlFolder ?? "book-folder"}/part${index + 1}.epub`}
+                            />
+                          </label>
+                          {epubPartRanges.length > 1 ? (
+                            <button
+                              type="button"
+                              className="admin-btn admin-btn-book danger small"
+                              onClick={() => setEpubPartRanges((current) => current.filter((_, itemIndex) => itemIndex !== index))}
+                              aria-label={`Remove part ${index + 1}`}
+                            >
+                              Remove
+                            </button>
+                          ) : null}
+                        </div>
+                      ))}
+                      <div className="admin-course-step-actions">
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-book secondary small"
+                          onClick={() => setEpubPartRanges((current) => {
+                            const previous = current[current.length - 1];
+                            const firstPage = previous ? Number(previous.lastPage) + 1 : 1;
+                            return [...current, { firstPage: String(firstPage), lastPage: String(firstPage + 9), url: "" }];
+                          })}
+                        >
+                          Add part range
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-book small"
+                          onClick={applyEpubPartRanges}
+                          disabled={!activeBook || bookLoading}
+                        >
+                          Apply part URLs
+                        </button>
+                      </div>
+                    </div>
                     <label className="admin-task-editor-field admin-task-editor-full">
                       <span className="admin-task-editor-label">ID</span>
                       <input
@@ -1326,6 +1527,75 @@ export default function AdminCourses() {
                       </button>
                     ))}
                   </div>
+                </div>
+                <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
+                  <h4 style={{ marginTop: 0 }}>Map asset URL to page range</h4>
+                  <p className="admin-book-upload-help">
+                    Apply one segmented file URL to matching PDF or EPUB pages. EPUB page locations are preserved; PDF page numbers are translated to the segment.
+                  </p>
+                  <div className="admin-search-row">
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Asset type</span>
+                      <select
+                        value={sourceRangeType}
+                        onChange={(event) => setSourceRangeType(event.target.value as "pdf" | "epub")}
+                        className="admin-grid-select"
+                      >
+                        <option value="epub">EPUB</option>
+                        <option value="pdf">PDF</option>
+                      </select>
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">First book page</span>
+                      <input
+                        type="number"
+                        min={1}
+                        value={sourceRangeStart}
+                        onChange={(event) => setSourceRangeStart(event.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    <label className="admin-task-editor-field">
+                      <span className="admin-task-editor-label">Last book page</span>
+                      <input
+                        type="number"
+                        min={1}
+                        value={sourceRangeEnd}
+                        onChange={(event) => setSourceRangeEnd(event.target.value)}
+                        className="admin-grid-input"
+                      />
+                    </label>
+                    {sourceRangeType === "pdf" ? (
+                      <label className="admin-task-editor-field">
+                        <span className="admin-task-editor-label">First page in this PDF</span>
+                        <input
+                          type="number"
+                          min={1}
+                          value={sourceRangeFilePage}
+                          onChange={(event) => setSourceRangeFilePage(event.target.value)}
+                          className="admin-grid-input"
+                        />
+                      </label>
+                    ) : null}
+                  </div>
+                  <label className="admin-task-editor-field admin-task-editor-full">
+                    <span className="admin-task-editor-label">Asset URL</span>
+                    <input
+                      type="text"
+                      value={sourceRangeUrl}
+                      onChange={(event) => setSourceRangeUrl(event.target.value)}
+                      className="admin-grid-input"
+                      placeholder="https://assets.example.com/vibe/part-01.epub"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-book small"
+                    onClick={applySourceUrlToPageRange}
+                    disabled={!activeBook || bookLoading}
+                  >
+                    Apply URL to range
+                  </button>
                 </div>
               </>
             )}
