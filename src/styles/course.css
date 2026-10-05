@@ -116,6 +116,48 @@
   line-height: 1;
 }
 
+.chapter-label.page-index-control {
+  gap: 2px;
+  min-height: 30px;
+  padding: 2px 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.page-index-input {
+  width: 3.2em;
+  min-width: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: none;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: center;
+  appearance: textfield;
+}
+
+.page-index-input::-webkit-inner-spin-button,
+.page-index-input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.page-index-control:focus-within {
+  background: rgba(255, 255, 255, 0.26) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.28);
+}
+
+.page-index-total {
+  opacity: 0.88;
+  font-variant-numeric: tabular-nums;
+}
+
 .step-title {
   margin: 0;
   font-size: 1.55rem;
@@ -383,6 +425,26 @@
   border-radius: 0;
   padding: 0;
 }
+
+.practice-epub-frame-wrap {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.practice-epub-iframe {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .practice-workspace .practice-codearea,
 .practice-workspace .practice-textarea {
   padding: 12px 16px;

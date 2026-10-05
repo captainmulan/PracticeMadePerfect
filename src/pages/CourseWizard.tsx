@@ -298,7 +298,6 @@ export default function CourseWizard() {
           courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}
-          onNavigateToPage={handleNavigateToPage}
           canPrevious={canGoPrevious}
           canNext={canGoNext}
           {...bookmarkProps}

@@ -375,6 +375,7 @@
       (() => {
         const params = new URLSearchParams(window.location.search);
         const fileUrl = params.get("file");
+        const deferBufferLoad = params.get("defer") === "1";
         const wrap = document.getElementById("pdf-wrap");
         const shell = document.querySelector(".pdf-shell");
         const dictionaryStatus = document.getElementById("pdf-dictionary-status");
@@ -2723,7 +2724,7 @@
 
         /* If the parent never posts a buffer (iOS memory path), load by URL. */
         window.setTimeout(() => {
-          if (!loaded) loadPdfFromSource(resolvedFileUrl);
+          if (!deferBufferLoad && !loaded) loadPdfFromSource(resolvedFileUrl);
         }, 50);
 
         let resizeTimer = 0;

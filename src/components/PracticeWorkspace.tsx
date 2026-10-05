@@ -248,7 +248,6 @@ export default function PracticeWorkspace({
             🏠
           </Link>
           <label className="chapter-label page-index-control">
-            <span className="page-index-prefix">Page</span>
             <input
               className="page-index-input"
               type="number"

@@ -598,6 +598,43 @@ async function migrateN8nBookPdfToEpub(): Promise<void> {
   }
 }
 
+async function migrateVibeBookPdfToEpub(): Promise<void> {
+  try {
+    const current = await getCourseById("vibe-book-final");
+    const currentSteps = current?.chapters.flatMap((chapter) => chapter.steps) ?? [];
+    if (!current || !currentSteps.some((step) => step.stepType === "pdf")) {
+      return;
+    }
+
+    const response = await fetch("/data/course-details/vibe-book-final.json", { cache: "no-store" });
+    if (!response.ok) return;
+
+    const replacement = (await response.json()) as Course;
+    if (!replacement.chapters.some((chapter) => chapter.steps.some((step) => step.stepType === "epub"))) {
+      return;
+    }
+
+    const {
+      chapters: _currentChapters,
+      stepCount: _currentStepCount,
+      bookHtmlFolder: _currentBookHtmlFolder,
+      ...currentMetadata
+    } = current;
+    await saveCourse({
+      ...replacement,
+      ...currentMetadata,
+      bookHtmlFolder: replacement.bookHtmlFolder ?? current.bookHtmlFolder,
+      stepCount: replacement.stepCount ?? replacement.chapters.reduce(
+        (count, chapter) => count + chapter.steps.length,
+        0,
+      ),
+    });
+    console.info("Migrated local vibe-book-final pages from the missing PDF to the packaged EPUB.");
+  } catch (error) {
+    console.warn("Could not migrate local vibe-book-final pages to EPUB:", error);
+  }
+}
+
 export async function deleteCourse(courseId: string): Promise<void> {
   const db = await openDb();
   let chaptersToDelete: string[] = [];
@@ -940,6 +977,7 @@ async function shouldRefreshCatalogFromDeploy(existingCourseCount: number): Prom
 async function runInitialMigration(): Promise<void> {
   console.log("migrateFromSqlJs called");
   await migrateN8nBookPdfToEpub();
+  await migrateVibeBookPdfToEpub();
   await invalidateMismatchedStepOutline("n8n-book");
   const summaries = await getCourseSummaries();
   const refreshFromDeploy =

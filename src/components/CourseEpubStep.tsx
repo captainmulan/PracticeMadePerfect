@@ -35,6 +35,7 @@ type EpubBook = {
 type EpubFactory = (source: string | Uint8Array, options?: Record<string, unknown>) => EpubBook;
 
 let epubLibraryPromise: Promise<EpubFactory> | null = null;
+const EPUB_LOADING_INDICATOR_DELAY_MS = 300;
 
 function loadScript(src: string, ready: () => boolean): Promise<void> {
   if (ready()) return Promise.resolve();
@@ -367,6 +368,7 @@ export default function CourseEpubStep({
   const activeViewRef = useRef<PageViewType>(activeView);
   const [viewerReady, setViewerReady] = useState(false);
   const [contentLoading, setContentLoading] = useState(true);
+  const [showLoadingIndicator, setShowLoadingIndicator] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [dictionarySelection, setDictionarySelection] = useState<string | null>(null);
   const [dictionaryMode, setDictionaryMode] = useState(false);
@@ -375,6 +377,18 @@ export default function CourseEpubStep({
   locationRef.current = location;
   activeViewRef.current = activeView;
   dictionaryModeRef.current = dictionaryMode;
+
+  useEffect(() => {
+    if (!contentLoading) {
+      setShowLoadingIndicator(false);
+      return;
+    }
+    const timeoutId = window.setTimeout(
+      () => setShowLoadingIndicator(true),
+      EPUB_LOADING_INDICATOR_DELAY_MS,
+    );
+    return () => window.clearTimeout(timeoutId);
+  }, [contentLoading, pageIndex]);
 
   useEffect(() => {
     const updateViewportMode = () => setNarrowViewport(isNarrowEpubViewport());
@@ -648,7 +662,7 @@ export default function CourseEpubStep({
             className="practice-html-iframe practice-epub-iframe"
             aria-label={step.title}
           />
-          {contentLoading && !loadError ? (
+          {showLoadingIndicator && contentLoading && !loadError ? (
             <div className="pdf-fun-loader-overlay">
               <PdfFunLoader label="Opening your book…" />
             </div>
