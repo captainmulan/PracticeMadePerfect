@@ -9,6 +9,7 @@ import {
   saveCourse as saveCourseToIndexedDb,
   deleteCourse as deleteCourseFromIndexedDb,
   migrateFromSqlJs,
+  migrateSplitBookAssetSources,
   patchCourseIndexes,
 } from "./indexedDb";
 
@@ -109,7 +110,10 @@ export async function loadFullCourseById(courseId: string): Promise<Course | nul
 
 export async function loadCourseOutlineById(courseId: string): Promise<Course | null> {
   await migrateFromSqlJs();
-  return getCourseOutlineByIdFromIndexedDb(courseId);
+  await migrateSplitBookAssetSources(courseId);
+  const outline = await getCourseOutlineByIdFromIndexedDb(courseId);
+  void migrateSplitBookAssetSources();
+  return outline;
 }
 
 export async function loadCourseStepById(stepId: string): Promise<CourseStep | null> {

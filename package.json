@@ -12,6 +12,7 @@
     "clear-firebase-dist-cache": "node scripts/clear_firebase_dist_cache.mjs",
     "deploy:cloudflare:app": "pnpm run build && pnpm run sync-deploy-assets && pnpm run optimize:catalog && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-cloudflare-app.ps1",
     "deploy:cloudflare:other": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-cloudflare-other.ps1",
+    "deploy:cloudflare:comic": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-cloudflare-comic.ps1",
     "deploy:app": "npm run deploy:app-only",
     "deploy:app-only": "npm run clear-firebase-dist-cache && npm run build && npm run sync-deploy-assets && npm run optimize:catalog && firebase deploy --config firebase-app-only.json --project magiclibrary-92246",
     "deploy:other": "npm run build && npm run sync-deploy-assets && npm run optimize:catalog && firebase deploy --config firebase-other.json --project magiclibrary-143b7",
@@ -27,6 +28,7 @@
     "audit:solar-ui:visual": "node book_html/SolarSystem/_audit-solar-ui-headless.mjs",
     "compress:book-assets": "node scripts/compress-book-assets.cjs",
     "compress:book-assets:all": "node scripts/compress-book-assets.cjs --all",
+    "split:comic-pdfs": "node scripts/split-oversized-comic-pdfs.cjs",
     "generate:home-catalog": "node scripts/generate-home-catalog.cjs",
     "generate:cover-thumbs": "node scripts/generate-cover-thumbs.cjs"
   },
@@ -41,6 +43,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "pdf-lib": "^1.17.1",
     "sharp": "^0.35.3",
     "typescript": "^5.5.4",
     "vite": "^5.4.1"

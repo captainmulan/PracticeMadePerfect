@@ -6,6 +6,7 @@ import { normalizeBookCategory } from "./bookCategories";
 import { canonicalAuthorName } from "./authorName";
 import { bookStorageCategory, normalizeBookStorageFolder } from "./htmlStepContent";
 import { getBookAssetUrl } from "../config/externalHosting";
+import { evictPdfBuffer } from "./pdfCache";
 
 const DB_NAME = "magic-library-db";
 const DB_VERSION = 4;
@@ -635,7 +636,7 @@ async function migrateVibeBookPdfToEpub(): Promise<void> {
   }
 }
 
-const SPLIT_BOOK_ASSET_MIGRATION_KEY = "pmp-split-book-assets-v5";
+const SPLIT_BOOK_ASSET_MIGRATION_KEY = "pmp-split-book-assets-v8";
 const SPLIT_BOOK_ASSET_COURSE_IDS = [
   "elon-musk",
   "harrypotter-deadlyhollow-part2",
@@ -659,32 +660,90 @@ const SPLIT_BOOK_ASSET_COURSE_IDS = [
   "openclaw-book",
   "science-comic-adventures-grade4-fkb",
   "scienceadventures-comic-grade5-siyavula-fkb",
+  "peppa-pig-daddy-pigs-old-chair",
+  "peppa-pig-school-bus-trip",
+  "tootpee-a-girl-named-mala",
+  "tootpee-amyue-tay",
+  "tootpee-dragon-rubies",
+  "tootpee-elephant-storm",
+  "tootpee-every-time-i-meet-united",
+  "tootpee-grandpa-poksi-1",
+  "tootpee-grandpa-poksi-2",
+  "tootpee-monster-from-maze-mountain",
+  "tootpee-parent-love",
+  "tootpee-poinsioned-people",
+  "tootpee-red-mountain-sky-trip",
+  "tootpee-royal",
+  "tootpee-single-men-trouble",
+  "tootpee-tha-man-ka-way",
+  "tootpee-way-lar-nal-mha-tiger",
+  "tootpee-white-tiger-ghost",
+  "tootpee-wild-and-civilized",
   "vibe-book-final",
 ];
 
-async function migrateSplitBookAssetSources(): Promise<void> {
+const splitBookAssetCourseMigrations = new Map<string, Promise<void>>();
+let splitBookAssetMigrationPromise: Promise<void> | null = null;
+const ENCRYPTED_SPLIT_COMIC_COURSE_IDS = new Set([
+  "tootpee-a-girl-named-mala",
+  "tootpee-dragon-rubies",
+  "tootpee-elephant-storm",
+  "tootpee-every-time-i-meet-united",
+  "tootpee-grandpa-poksi-1",
+  "tootpee-grandpa-poksi-2",
+  "tootpee-poinsioned-people",
+  "tootpee-red-mountain-sky-trip",
+  "tootpee-royal",
+  "tootpee-single-men-trouble",
+  "tootpee-tha-man-ka-way",
+  "tootpee-way-lar-nal-mha-tiger",
+  "tootpee-white-tiger-ghost",
+]);
+
+export function migrateSplitBookAssetSources(courseId?: string): Promise<void> {
+  if (courseId) {
+    let migration = splitBookAssetCourseMigrations.get(courseId);
+    if (!migration) {
+      migration = updateSplitBookAssetSources(courseId);
+      splitBookAssetCourseMigrations.set(courseId, migration);
+    }
+    return migration;
+  }
+
+  if (!splitBookAssetMigrationPromise) {
+    splitBookAssetMigrationPromise = updateSplitBookAssetSources().finally(() => {
+      splitBookAssetMigrationPromise = null;
+    });
+  }
+  return splitBookAssetMigrationPromise;
+}
+
+async function updateSplitBookAssetSources(courseId?: string): Promise<void> {
   try {
     if (localStorage.getItem(SPLIT_BOOK_ASSET_MIGRATION_KEY) === "1") return;
 
     let updatedSteps = 0;
     let everyCourseFound = true;
-    for (const courseId of SPLIT_BOOK_ASSET_COURSE_IDS) {
-      const current = await getCourseById(courseId);
+    const courseIds = courseId
+      ? SPLIT_BOOK_ASSET_COURSE_IDS.includes(courseId) ? [courseId] : []
+      : SPLIT_BOOK_ASSET_COURSE_IDS;
+    for (const targetCourseId of courseIds) {
+      const current = await getCourseById(targetCourseId);
       if (!current) {
         everyCourseFound = false;
         continue;
       }
 
-      const response = await fetch(`/data/course-details/${encodeURIComponent(courseId)}.json`, { cache: "no-store" });
+      const response = await fetch(`/data/course-details/${encodeURIComponent(targetCourseId)}.json`, { cache: "no-store" });
       if (!response.ok) {
-        throw new Error(`Unable to load split-book metadata for ${courseId} (${response.status})`);
+        throw new Error(`Unable to load split-book metadata for ${targetCourseId} (${response.status})`);
       }
       const packaged = await response.json() as Course;
       const packagedSteps = packaged.chapters.flatMap((chapter) => chapter.steps);
       const packagedByPage = new Map(packagedSteps.map((step) => [step.stepIndex, step]));
       const currentSteps = current.chapters.flatMap((chapter) => chapter.steps);
       if (currentSteps.length !== packagedSteps.length || packagedByPage.size !== packagedSteps.length) {
-        throw new Error(`Page count mismatch while updating split-book metadata for ${courseId}`);
+        throw new Error(`Page count mismatch while updating split-book metadata for ${targetCourseId}`);
       }
 
       const chapters = current.chapters.map((chapter) => ({
@@ -692,7 +751,7 @@ async function migrateSplitBookAssetSources(): Promise<void> {
         steps: chapter.steps.map((step) => {
           const packagedStep = packagedByPage.get(step.stepIndex);
           if (!packagedStep?.contentHtml) {
-            throw new Error(`Missing packaged page ${step.stepIndex} for ${courseId}`);
+            throw new Error(`Missing packaged page ${step.stepIndex} for ${targetCourseId}`);
           }
           if (step.contentHtml === packagedStep.contentHtml && step.stepType === packagedStep.stepType) {
             return step;
@@ -707,9 +766,21 @@ async function migrateSplitBookAssetSources(): Promise<void> {
       }));
 
       await saveCourse({ ...current, chapters });
+      if (ENCRYPTED_SPLIT_COMIC_COURSE_IDS.has(targetCourseId)) {
+        const pdfUrls = new Set(
+          packagedSteps
+            .filter((step): step is CourseStep & { contentHtml: string } =>
+              step.stepType === "pdf" &&
+              typeof step.contentHtml === "string" &&
+              /\.pdf(?:[#?]|$)/i.test(step.contentHtml),
+            )
+            .map((step) => step.contentHtml),
+        );
+        await Promise.all([...pdfUrls].map((url) => evictPdfBuffer(url)));
+      }
     }
 
-    if (everyCourseFound) {
+    if (!courseId && everyCourseFound) {
       localStorage.setItem(SPLIT_BOOK_ASSET_MIGRATION_KEY, "1");
       console.info(`Updated split-book asset sources in this browser (${updatedSteps} page(s)).`);
     }
@@ -1071,7 +1142,6 @@ async function runInitialMigration(): Promise<void> {
     await migrateLegacyBookCategories();
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
-    await migrateSplitBookAssetSources();
     return;
   }
 
@@ -1090,7 +1160,6 @@ async function runInitialMigration(): Promise<void> {
     }
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
-    await migrateSplitBookAssetSources();
     return;
   }
 
@@ -1099,7 +1168,6 @@ async function runInitialMigration(): Promise<void> {
     console.log("Catalog refresh failed; keeping existing IndexedDB courses");
     await applyBookCoverSeeds();
     await ensureAnnouncementsSeeded();
-    await migrateSplitBookAssetSources();
     return;
   }
 
@@ -1123,7 +1191,6 @@ async function runInitialMigration(): Promise<void> {
   }
   await ensureAnnouncementsSeeded();
   await applyBookCoverSeeds();
-  await migrateSplitBookAssetSources();
   console.log("Initialization complete!");
 }
 

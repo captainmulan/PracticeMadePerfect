@@ -11,7 +11,7 @@ export const USE_EXTERNAL_BOOK_HOSTING = true;
  * Routes different book folders to different Firebase projects
  */
 export const BOOK_HOSTING_CONFIG = {
-  "Comic": "https://magiclibrary-d9921.web.app",
+  "Comic": "https://magiclibrary-comic.pages.dev",
   "Other": "https://magiclibrary-daw.pages.dev",
   // Add more mappings as needed
 };

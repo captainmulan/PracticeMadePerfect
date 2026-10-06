@@ -337,19 +337,22 @@ export function getCachedPdfBuffer(fileUrl: string): ArrayBuffer | null {
   return null;
 }
 
-/** Clear a single PDF cache entry (useful for tests / explicit invalidation). */
-export function evictPdfBuffer(fileUrl: string) {
+/** Clear a single PDF cache entry before loading a corrected asset at the same URL. */
+export async function evictPdfBuffer(fileUrl: string): Promise<void> {
   const key = normalizePdfFileUrl(fileUrl);
   bufferCache.delete(key);
-  // Also remove from IndexedDB (fire-and-forget)
-  openPdfIdb()
-    .then((db) => {
+  try {
+    const db = await openPdfIdb();
+    await new Promise<void>((resolve) => {
       const tx = db.transaction(IDB_STORE, "readwrite");
       tx.objectStore(IDB_STORE).delete(key);
-    })
-    .catch(() => {
-      /* ignore */
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+      tx.onabort = () => resolve();
     });
+  } catch {
+    /* PDF caching is optional; do not block the reader if IndexedDB is unavailable. */
+  }
 }
 
 /** Wipe the whole cache (memory + IndexedDB). */

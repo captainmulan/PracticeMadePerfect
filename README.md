@@ -50,6 +50,8 @@ npm run deploy:other
 npm run deploy:comic
 ```
 
+`npm run deploy:other` and the Other target in `npm run deploy:all` are legacy Firebase deployments. The active Other book host is Cloudflare Pages; use `npm run deploy:cloudflare:other` to update it.
+
 `npm run deploy:app` deploys the app without the `book_html` folder. Use
 `npm run deploy:firebase` when the app deployment should include all built files.
 
@@ -78,6 +80,33 @@ The deploy script checks the Pages per-file and project file-count limits, confi
 
 The app's `Other` asset route now points to this Pages host, while `Comic` remains on Firebase. Deploy the app separately with `npm run deploy:app` for the live app to start using the new `Other` host; the static-file deploy command above never deploys the app.
 
+### Deploy Comic books to Cloudflare Pages
+
+The `deploy:cloudflare:comic` target deploys only `book_html/Comic` to the separate Pages project `magiclibrary-comic`. Sign in with the intended Cloudflare account and create the project once:
+
+```bash
+pnpm dlx wrangler@latest login
+pnpm dlx wrangler@latest pages project create magiclibrary-comic --production-branch main --force
+```
+
+Then deploy the Comic files:
+
+```bash
+pnpm run deploy:cloudflare:comic
+```
+
+The deploy script confirms the active Wrangler account, requires confirmation, checks the Pages file-count and per-file size limits, and applies temporary CORS/cache headers. It does not build or deploy the app or any other book folder. After the first successful deployment, update the app's Comic asset host separately before deploying the app.
+
+Comic PDFs at or above the Pages 25 MiB asset limit can be split and their admin page URLs remapped with:
+
+```bash
+pnpm run split:comic-pdfs
+pnpm run sync-deploy-assets
+node scripts/generate-course-details.cjs
+```
+
+The script writes numbered PDF parts into each Comic book folder, updates `deploy/indexeddb-export.json`, and moves the original PDFs to `comic-source-pdfs/` outside the deploy tree. The sync and detail-generation commands refresh the admin/public export, course details, and home catalog. App startup also has a versioned IndexedDB migration (`pmp-split-book-assets-v6`) that updates cached records for the affected Comic books. Comic hosting remains configured separately from the Other Pages project.
+
 The book deployments use only these built directories:
 
 - Other: `dist/book_html/Other`
@@ -94,9 +123,8 @@ Discussion handoff for planning additional promotion (no analytics or caching co
 - Firebase Hosting responses observed in DevTools include `Cache-Control: public, max-age=86400, must-revalidate`. Browser HTTP caching may avoid some repeat transfers on the same device/browser during that period, but it is not a shared cache across visitors and should not be used to budget first visits. Verify response headers for each asset host and file type.
 - There is no current centralized `book_open` analytics event. Cloudflare’s account-level request graph is aggregate traffic, not distinct app users or a ranking of books opened. Decide whether to add privacy-conscious book-open analytics before claiming per-book popularity.
 - Hosting requirement: prefer a predictable $0/month solution and preserve reading quality. Other books are now on the separate Cloudflare Pages project `magiclibrary`; Comic books remain on Firebase. Pages does not list a monthly bandwidth allowance in its Free limits documentation, but each deployed asset must be below 25 MiB and each Free project supports up to 20,000 files. A second account does not increase either per-project limit.
-- The pilot asset bundle is intentionally isolated from the app deployment: `Book_html_cloudflare/Other/vibe-book-final/cloudflare-pages/`. This folder sits outside `book_html`, so the current working app/book folders are untouched while the Cloudflare pilot is staged separately. The split script keeps the original page XHTML names and embedded resources without rasterizing or recompressing page images. It generates a `_headers` file for CORS and long-lived asset caching. Local verification rendered pages 1, 108, and 157 from the split packages.
-- The former `pmp-book-assets` split-EPUB pilot was superseded by the full `book_html/Other` deployment to `magiclibrary`. Its split workflow notes below are historical; use `npm run deploy:cloudflare:other` for future updates to the active Other host.
-- Existing-book Manual Update > Pages now has a page-range URL mapper. Apply each Pages-host URL to its inclusive range: EPUB mappings retain each original page location; PDF mappings calculate the page number within each segment. Use a local URL such as `http://localhost:4173/@fs/C:/.../Book_html_cloudflare/Other/vibe-book-final/cloudflare-pages/part-01.epub` for local preview, then apply the final `https://pmp-book-assets.pages.dev/part-01.epub`-style URLs after deployment and save/export the book metadata. Because the readers fetch files cross-origin into JavaScript buffers, CORS must remain enabled on the file host.
+- The former `pmp-book-assets` split-EPUB pilot and its `Book_html_cloudflare/Other/vibe-book-final/cloudflare-pages/` packages are historical and are not the active Other host. The active full Other deployment is `book_html/Other` to `magiclibrary-daw.pages.dev`; do not use the old `pmp-book-assets.pages.dev` URLs for new book mappings.
+- Existing-book Manual Update > Pages has a page-range URL mapper for books that use split-file URLs. EPUB mappings retain each original page location; PDF mappings calculate the page number within each segment. The mapper updates metadata only; it does not create or deploy part files.
 - Split files are stored directly in each book folder (for example, `book_html/Other/elon-musk/part-01.pdf`); course metadata uses `/book_html/Other/<book>/part-01.pdf` or `.epub`, without a `parts/` subfolder. The oversized originals present during the Other-books split were removed after checking their replacements. No PDF or EPUB over 25 MiB remains in `book_html/Other`.
 - Existing browser profiles have separate IndexedDB databases. On the first course-database initialization after loading the updated app, a versioned migration updates the 23 split books' direct-root asset URLs and EPUB/PDF types by page index while preserving local book fields and unrelated records. The migration is scoped to the current browser profile.
 - Manual Update > General has **Map split PDF/EPUB parts** for applying multiple segment URLs in one operation. Enter each generated part's inclusive original page range and URL. PDF page numbers are translated to each segment; EPUB `#page-*.xhtml` locations are retained. The mapper rejects overlapping or uncovered ranges. Click **Save Book** afterward. This control updates metadata; it does not create the part files.
