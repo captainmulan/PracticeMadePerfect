@@ -26,6 +26,7 @@ export interface CourseStep {
   title: string;
   description: string;
   contentHtml?: string;
+  epubNextLocation?: string;
   checklist?: string[];
   starterCode?: string;
   verificationKeywords?: string[][];

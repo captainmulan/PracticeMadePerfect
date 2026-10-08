@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-10-06T13:46:35.861Z:shelf-index-v2",
+  "exportedAt": "2026-10-06T15:35:26.594Z",
   "courses": [
     {
       "id": "donald-duck-and-friends-361-dec-2010",
@@ -6192,8 +6192,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Boxen",
-      "stepCount": 351
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 20
     },
     {
       "id": "narnia-last",
@@ -6221,8 +6221,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Last",
-      "stepCount": 119
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 18
     },
     {
       "id": "narnia-chair",
@@ -6250,8 +6250,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Chair",
-      "stepCount": 141
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 19
     },
     {
       "id": "narnia-voyage",
@@ -6279,8 +6279,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Voyage",
-      "stepCount": 145
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 19
     },
     {
       "id": "narnia-prince",
@@ -6308,8 +6308,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Prince",
-      "stepCount": 125
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 18
     },
     {
       "id": "narnia-horse",
@@ -6337,8 +6337,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Horse",
-      "stepCount": 131
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 18
     },
     {
       "id": "narnia-lion",
@@ -6366,8 +6366,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Lion",
-      "stepCount": 109
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 20
     },
     {
       "id": "narnia-nephew",
@@ -6395,8 +6395,8 @@
       "cat2": "JuniorNovel",
       "cat3": "Narnia",
       "artifactType": "book",
-      "bookHtmlFolder": "Other/Narnia_Nephew",
-      "stepCount": 117
+      "bookHtmlFolder": "Other/Narnia_Complete",
+      "stepCount": 18
     }
   ]
 }

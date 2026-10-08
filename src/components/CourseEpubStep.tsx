@@ -90,16 +90,20 @@ function clearChapterIsolation(doc: Document) {
   doc.querySelectorAll("[data-pmp-hide='1']").forEach((element) => element.removeAttribute("data-pmp-hide"));
 }
 
-function applyChapterIsolation(doc: Document, fragment: string) {
+function applyChapterIsolation(doc: Document, fragment: string, nextFragment?: string) {
   if (!doc.body || !fragment) return;
   clearChapterIsolation(doc);
   const start = findChapterAnchor(doc, fragment);
   if (!start) return;
 
-  const marker = /^(?:pgepubid|chap|chapter|part|sec|section)[-_]?\d*/i;
   const anchors = [...doc.querySelectorAll("[id], a[name]")];
   const startIndex = anchors.indexOf(start);
-  const end = anchors.slice(startIndex + 1).find((element) => marker.test(element.id || element.getAttribute("name") || ""));
+  const requestedEnd = nextFragment ? findChapterAnchor(doc, nextFragment) : null;
+  const endIndex = requestedEnd ? anchors.indexOf(requestedEnd) : -1;
+  const marker = /^(?:pgepubid|chap|chapter|part|sec|section)[-_]?\d*/i;
+  const end = endIndex > startIndex
+    ? requestedEnd
+    : anchors.slice(startIndex + 1).find((element) => marker.test(element.id || element.getAttribute("name") || ""));
   const style = doc.createElement("style");
   style.id = "pmp-isolate-style";
   style.textContent = "[data-pmp-hide='1']{display:none!important;}";
@@ -357,6 +361,7 @@ export default function CourseEpubStep({
     }
     return { fileUrl: file, location: loc };
   }, [category, epubSource]);
+  const nextLocation = step.epubNextLocation ?? null;
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const viewerRef = useRef<HTMLDivElement | null>(null);
@@ -457,7 +462,7 @@ export default function CourseEpubStep({
           for (const doc of documents) {
             styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
             applyEpubViewMode(doc, activeViewRef.current);
-            applyChapterIsolation(doc, fragment);
+            applyChapterIsolation(doc, fragment, locationFragment(nextLocation));
           }
         };
 
@@ -524,7 +529,7 @@ export default function CourseEpubStep({
             applyEpubViewMode(doc, activeViewRef.current);
             bindDictionarySelection(doc);
             bindDictionarySelection(doc);
-            applyChapterIsolation(doc, locationFragment(locationRef.current));
+            applyChapterIsolation(doc, locationFragment(locationRef.current), locationFragment(nextLocation));
           });
         });
 
@@ -616,8 +621,9 @@ export default function CourseEpubStep({
     for (const doc of documents) {
       styleEpubContents(doc, activeView, () => viewerRef.current?.clientWidth ?? 0);
       applyEpubViewMode(doc, activeView);
+      applyChapterIsolation(doc, locationFragment(location), locationFragment(nextLocation));
     }
-  }, [activeView, viewerReady]);
+  }, [activeView, location, nextLocation, viewerReady]);
 
   return (
     <PracticeWorkspace
