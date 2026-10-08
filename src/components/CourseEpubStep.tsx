@@ -69,6 +69,17 @@ function locationFragment(location: string | null) {
   return hash < 0 ? "" : location!.slice(hash + 1);
 }
 
+function removeObjectReplacementCharacters(doc: Document) {
+  const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
+  while (node) {
+    if (node.textContent?.includes("\uFFFC")) {
+      node.textContent = node.textContent.replace(/\uFFFC/g, "");
+    }
+    node = walker.nextNode();
+  }
+}
+
 function findChapterAnchor(doc: Document, fragment: string) {
   if (!fragment) return null;
   let decoded = fragment;
@@ -90,6 +101,24 @@ function clearChapterIsolation(doc: Document) {
   doc.querySelectorAll("[data-pmp-hide='1']").forEach((element) => element.removeAttribute("data-pmp-hide"));
 }
 
+function hideAnchorSiblings(anchor: Element, hideBefore: boolean) {
+  const parent = anchor.parentNode;
+  if (!parent) return;
+  const siblings = [...parent.childNodes];
+  const anchorIndex = siblings.indexOf(anchor);
+  const clipped = hideBefore ? siblings.slice(0, anchorIndex) : siblings.slice(anchorIndex);
+  for (const node of clipped) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const wrapper = anchor.ownerDocument.createElement("span");
+      wrapper.setAttribute("data-pmp-hide", "1");
+      parent.insertBefore(wrapper, node);
+      wrapper.appendChild(node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      (node as Element).setAttribute("data-pmp-hide", "1");
+    }
+  }
+}
+
 function applyChapterIsolation(doc: Document, fragment: string, nextFragment?: string) {
   if (!doc.body || !fragment) return;
   clearChapterIsolation(doc);
@@ -100,7 +129,7 @@ function applyChapterIsolation(doc: Document, fragment: string, nextFragment?: s
   const startIndex = anchors.indexOf(start);
   const requestedEnd = nextFragment ? findChapterAnchor(doc, nextFragment) : null;
   const endIndex = requestedEnd ? anchors.indexOf(requestedEnd) : -1;
-  const marker = /^(?:pgepubid|chap|chapter|part|sec|section)[-_]?\d*/i;
+  const marker = /^(?:p\d+|pgepubid|chap|chapter|part|sec|section)[-_]?\d*/i;
   const end = endIndex > startIndex
     ? requestedEnd
     : anchors.slice(startIndex + 1).find((element) => marker.test(element.id || element.getAttribute("name") || ""));
@@ -119,6 +148,8 @@ function applyChapterIsolation(doc: Document, fragment: string, nextFragment?: s
       element.setAttribute("data-pmp-hide", "1");
     }
   }
+  hideAnchorSiblings(start, true);
+  if (end) hideAnchorSiblings(end, false);
   start.scrollIntoView({ block: "start" });
   doc.documentElement.scrollTop = 0;
   doc.body.scrollTop = 0;
@@ -460,6 +491,7 @@ export default function CourseEpubStep({
           const contentDocument = viewerRef.current?.querySelector("iframe")?.contentDocument;
           if (contentDocument) documents.add(contentDocument);
           for (const doc of documents) {
+            removeObjectReplacementCharacters(doc);
             styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
             applyEpubViewMode(doc, activeViewRef.current);
             applyChapterIsolation(doc, fragment, locationFragment(nextLocation));
@@ -525,6 +557,7 @@ export default function CourseEpubStep({
           if (!contents.document) return;
           const doc = contents.document;
           doc.defaultView?.requestAnimationFrame(() => {
+            removeObjectReplacementCharacters(doc);
             styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
             applyEpubViewMode(doc, activeViewRef.current);
             bindDictionarySelection(doc);
