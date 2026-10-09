@@ -147,6 +147,10 @@ export default function CourseWizard() {
     setBookmarked(Boolean(result.created));
   }, [outline?.id, currentStep, stepIndex, viewingIntro]);
 
+  const handlePdfViewerReady = useCallback(() => {
+    setPdfReady(true);
+  }, []);
+
   const handleRemoveBookmark = useCallback(async (bookmarkId: string) => {
     const bookId = outline?.id;
     if (!bookId) return;
@@ -158,10 +162,6 @@ export default function CourseWizard() {
       setBookmarked(false);
     }
   }, [outline?.id, stepIndex]);
-
-  const handlePdfViewerReady = useCallback(() => {
-    setPdfReady(true);
-  }, []);
 
   const handleJumpToBookmark = useCallback((targetStepIndex: number) => {
     const clamped = Math.max(0, Math.min(steps.length - 1, targetStepIndex));
@@ -220,7 +220,7 @@ export default function CourseWizard() {
   }
 
   const isPdfBook = (currentStep ?? steps[stepIndex] ?? steps[0])?.stepType === "pdf";
-  const canReadBook = !isPdfBook || pdfReady;
+    const canReadBook = !isPdfBook || pdfReady || viewingIntro;
   const pdfStep = currentStep?.stepType === "pdf" ? currentStep : null;
   const bookName = `${outline.icon} ${outline.title}`;
   const chapterName = currentStep?.chapterTitle ?? "";

@@ -183,6 +183,7 @@ function buildStepOutline(course: Course): CourseStepOutline[] {
         stepType: step.stepType,
         title: step.title,
         description: step.description,
+        epubImageIndex: step.epubImageIndex,
       })),
     )
     .sort((a, b) => a.stepIndex - b.stepIndex);
@@ -211,6 +212,7 @@ function rebuildChaptersFromStepOutline(courseId: string, outline: CourseStepOut
       stepType: item.stepType,
       title: item.title,
       description: item.description,
+      epubImageIndex: item.epubImageIndex,
     });
   });
   return [...chapterMap.values()]
@@ -344,6 +346,22 @@ export async function getCourseOutlineById(courseId: string): Promise<Course | n
     db.transaction(STORE_COURSES, "readonly").objectStore(STORE_COURSES).get(courseId),
   ) as CourseRecord | undefined;
   if (!raw) return null;
+
+  const hasStaleEpubOutline = raw.stepOutline?.some(
+    (step) => step.stepType === "epub" && !Object.prototype.hasOwnProperty.call(step, "epubImageIndex"),
+  );
+  if (hasStaleEpubOutline) {
+    try {
+      const response = await fetch(`/data/course-details/${encodeURIComponent(courseId)}.json`, { cache: "no-store" });
+      if (response.ok) {
+        const detail = (await response.json()) as Course;
+        await saveCourse(detail);
+        return getCourseOutlineById(courseId);
+      }
+    } catch (error) {
+      console.warn(`Could not refresh EPUB outline metadata for ${courseId}:`, error);
+    }
+  }
 
   if (raw.detailLoaded === false) {
     return getCourseById(courseId);

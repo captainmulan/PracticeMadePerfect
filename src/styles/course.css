@@ -798,6 +798,13 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   height: 100%;
 }
 
+.course-wizard-page--pdf-warm .book-about-related {
+  position: relative;
+  bottom: auto;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .pdf-reader-layer {
   position: relative;
   z-index: 1;

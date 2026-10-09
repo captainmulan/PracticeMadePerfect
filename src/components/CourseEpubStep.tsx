@@ -65,7 +65,7 @@ function loadEpubLibrary(): Promise<EpubFactory> {
 }
 
 function locationFragment(location: string | null) {
-  const hash = location?.indexOf("#") ?? -1;
+  const hash = location?.lastIndexOf("#") ?? -1;
   return hash < 0 ? "" : location!.slice(hash + 1);
 }
 
@@ -119,13 +119,20 @@ function hideAnchorSiblings(anchor: Element, hideBefore: boolean) {
   }
 }
 
-function applyChapterIsolation(doc: Document, fragment: string, nextFragment?: string) {
-  if (!doc.body || !fragment) return;
+function applyChapterIsolation(
+  doc: Document,
+  fragment: string,
+  nextFragment?: string,
+  imageIndex?: number,
+) {
+  if (!doc.body) return;
   clearChapterIsolation(doc);
-  const start = findChapterAnchor(doc, fragment);
+  const anchors = [...doc.querySelectorAll("[id], a[name]")];
+  const start = findChapterAnchor(doc, fragment) ?? (!fragment
+    ? anchors.find((element) => /^p\d+$/i.test(element.id || element.getAttribute("name") || "")) ?? null
+    : null);
   if (!start) return;
 
-  const anchors = [...doc.querySelectorAll("[id], a[name]")];
   const startIndex = anchors.indexOf(start);
   const requestedEnd = nextFragment ? findChapterAnchor(doc, nextFragment) : null;
   const endIndex = requestedEnd ? anchors.indexOf(requestedEnd) : -1;
@@ -150,9 +157,167 @@ function applyChapterIsolation(doc: Document, fragment: string, nextFragment?: s
   }
   hideAnchorSiblings(start, true);
   if (end) hideAnchorSiblings(end, false);
+  if (typeof imageIndex === "number" && Number.isInteger(imageIndex) && imageIndex >= 0) {
+    const pageImages = [...doc.images].filter((image) => !image.closest("[data-pmp-hide='1']"));
+    const selectedImage = pageImages[imageIndex];
+    if (selectedImage) {
+      for (const image of pageImages) {
+        if (image === selectedImage) continue;
+        const paragraph = image.parentElement;
+        if (paragraph?.querySelectorAll("img").length === 1 && paragraph.tagName.toLowerCase() === "p") {
+          paragraph.setAttribute("data-pmp-hide", "1");
+        } else {
+          image.setAttribute("data-pmp-hide", "1");
+        }
+      }
+    }
+  }
   start.scrollIntoView({ block: "start" });
   doc.documentElement.scrollTop = 0;
   doc.body.scrollTop = 0;
+}
+
+const comicSpreadOriginalStyles = new WeakMap<Element, string | null>();
+
+function applyComicSpreadPage(
+  doc: Document,
+  side: "left" | "right",
+  getHostWidth: () => number,
+  getHostHeight: () => number,
+): { sides: Array<"left" | "right">; activeSide: "left" | "right" } | null {
+  doc.querySelectorAll("[data-pmp-comic-spread], [data-pmp-comic-spread-image]").forEach((element) => {
+    const originalStyle = comicSpreadOriginalStyles.get(element);
+    if (originalStyle === null) element.removeAttribute("style");
+    else if (typeof originalStyle === "string") element.setAttribute("style", originalStyle);
+    comicSpreadOriginalStyles.delete(element);
+    element.removeAttribute("data-pmp-comic-spread");
+    element.removeAttribute("data-pmp-comic-spread-image");
+  });
+
+  const image = [...doc.images].find((item) =>
+    item.complete &&
+    item.naturalWidth > item.naturalHeight * 1.05 &&
+    !item.closest("[data-pmp-hide='1']"),
+  );
+  const wrapper = image?.parentElement;
+  if (!image || !wrapper) return null;
+
+  let split = 0.5;
+  let sides: Array<"left" | "right"> = ["left", "right"];
+  try {
+    const sampleWidth = 320;
+    const sampleHeight = Math.max(120, Math.round(sampleWidth * image.naturalHeight / image.naturalWidth));
+    const canvas = doc.createElement("canvas");
+    canvas.width = sampleWidth;
+    canvas.height = sampleHeight;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (context) {
+      context.drawImage(image, 0, 0, sampleWidth, sampleHeight);
+      const pixels = context.getImageData(0, 0, sampleWidth, sampleHeight).data;
+      const columns = new Float32Array(sampleWidth);
+      let leftInk = 0;
+      let rightInk = 0;
+      const midTop = Math.floor(sampleHeight * 0.08);
+      const midBottom = Math.ceil(sampleHeight * 0.92);
+      let leftSamples = 0;
+      let rightSamples = 0;
+      for (let y = midTop; y < midBottom; y += 1) {
+        for (let x = 0; x < sampleWidth; x += 1) {
+          const offset = (y * sampleWidth + x) * 4;
+          const ink = pixels[offset] < 242 || pixels[offset + 1] < 242 || pixels[offset + 2] < 242;
+          if (ink) {
+            columns[x] += 1;
+            if (x < sampleWidth / 2) leftInk += 1;
+            else rightInk += 1;
+          }
+          if (x < sampleWidth / 2) leftSamples += 1;
+          else rightSamples += 1;
+        }
+      }
+
+      const leftDensity = leftInk / Math.max(1, leftSamples);
+      const rightDensity = rightInk / Math.max(1, rightSamples);
+      if (leftDensity < 0.012 && rightDensity >= 0.02) sides = ["right"];
+      else if (rightDensity < 0.012 && leftDensity >= 0.02) sides = ["left"];
+      else {
+        const windowWidth = Math.max(3, Math.round(sampleWidth * 0.025));
+        const minX = Math.floor(sampleWidth * 0.35);
+        const maxX = Math.ceil(sampleWidth * 0.65);
+        let bestX = Math.floor(sampleWidth / 2);
+        let bestDensity = Number.POSITIVE_INFINITY;
+        for (let x = minX; x <= maxX; x += 1) {
+          const start = Math.max(0, x - Math.floor(windowWidth / 2));
+          const end = Math.min(sampleWidth, start + windowWidth);
+          let total = 0;
+          for (let column = start; column < end; column += 1) total += columns[column];
+          const density = total / Math.max(1, (end - start) * (midBottom - midTop));
+          if (density < bestDensity) {
+            bestDensity = density;
+            bestX = x;
+          }
+        }
+        const centerDensity = columns.slice(minX, maxX).reduce((sum, value) => sum + value, 0) /
+          Math.max(1, (maxX - minX) * (midBottom - midTop));
+        if (bestDensity < 0.12 && bestDensity < centerDensity * 0.45) {
+          split = bestX / sampleWidth;
+        }
+      }
+    }
+  } catch {
+    // Some EPUB image URLs may be canvas-tainted; retain a centered split in that case.
+  }
+
+  const activeSide = sides.includes(side) ? side : sides[0];
+  const sideStart = activeSide === "left" ? 0 : split;
+  const sideEnd = activeSide === "left" ? split : 1;
+  const sideFraction = Math.max(0.1, sideEnd - sideStart);
+
+  let style = doc.getElementById("pmp-comic-spread-style");
+  if (!style) {
+    style = doc.createElement("style");
+    style.id = "pmp-comic-spread-style";
+    doc.head.appendChild(style);
+  }
+  style.textContent = `
+    [data-pmp-comic-spread="1"]{position:relative!important;display:block!important;width:var(--pmp-comic-visible-width)!important;height:var(--pmp-comic-page-height)!important;min-height:var(--pmp-comic-page-height)!important;overflow:hidden!important;box-sizing:border-box!important;margin:0 auto!important;padding:0!important;transform:none!important}
+    [data-pmp-comic-spread-image="1"]{position:absolute!important;display:block!important;left:var(--pmp-comic-image-left)!important;top:0!important;width:var(--pmp-comic-image-width)!important;height:var(--pmp-comic-page-height)!important;max-width:none!important;max-height:none!important;object-fit:fill!important;transform:none!important;margin:0!important}
+  `;
+
+  const hostWidth = Math.max(1, getHostWidth());
+  const hostHeight = Math.max(1, getHostHeight());
+  const cropWidth = image.naturalWidth * sideFraction;
+  const scale = Math.min((hostWidth - 24) / cropWidth, (hostHeight - 24) / image.naturalHeight);
+  if (!Number.isFinite(scale) || scale <= 0) return null;
+  const pageHeight = image.naturalHeight * scale;
+  const visibleWidth = cropWidth * scale;
+  const imageWidth = image.naturalWidth * scale;
+  comicSpreadOriginalStyles.set(wrapper, wrapper.getAttribute("style"));
+  comicSpreadOriginalStyles.set(image, image.getAttribute("style"));
+  wrapper.setAttribute("data-pmp-comic-spread", "1");
+  image.setAttribute("data-pmp-comic-spread-image", "1");
+  wrapper.style.setProperty("--pmp-comic-page-height", `${pageHeight}px`);
+  wrapper.style.setProperty("--pmp-comic-visible-width", `${visibleWidth}px`);
+  wrapper.style.setProperty("position", "relative", "important");
+  wrapper.style.setProperty("display", "block", "important");
+  wrapper.style.setProperty("left", "auto", "important");
+  wrapper.style.setProperty("width", `${visibleWidth}px`, "important");
+  wrapper.style.setProperty("height", `${pageHeight}px`, "important");
+  wrapper.style.setProperty("min-height", `${pageHeight}px`, "important");
+  wrapper.style.setProperty("overflow", "hidden", "important");
+  wrapper.style.setProperty("transform", "none", "important");
+  wrapper.style.setProperty("margin", "0 auto", "important");
+  image.style.setProperty("--pmp-comic-page-height", `${pageHeight}px`);
+  image.style.setProperty("--pmp-comic-image-width", `${imageWidth}px`);
+  image.style.setProperty("--pmp-comic-image-left", `${-sideStart * imageWidth}px`);
+  image.style.setProperty("position", "absolute", "important");
+  image.style.setProperty("left", `${-sideStart * imageWidth}px`, "important");
+  image.style.setProperty("top", "0", "important");
+  image.style.setProperty("width", `${imageWidth}px`, "important");
+  image.style.setProperty("height", `${pageHeight}px`, "important");
+  image.style.setProperty("max-width", "none", "important");
+  image.style.setProperty("max-height", "none", "important");
+  image.style.setProperty("transform", "none", "important");
+  return { sides, activeSide };
 }
 
 function configureFixedEpubPage(
@@ -376,10 +541,14 @@ export default function CourseEpubStep({
     ? normalizePageViewType(pageViewTypeProp)
     : defaultPdfViewForCategory(category);
   const [narrowViewport, setNarrowViewport] = useState(isNarrowEpubViewport);
-  const configuredView = ["Normal", "Crop"].includes(baseConfiguredView)
-    ? narrowViewport ? "Crop" : "Normal"
-    : baseConfiguredView;
+  const configuredView = narrowViewport && baseConfiguredView === "ComicView"
+    ? "Crop"
+    : ["Normal", "Crop"].includes(baseConfiguredView)
+      ? narrowViewport ? "Crop" : "Normal"
+      : baseConfiguredView;
   const [activeView, setActiveView] = useState<PageViewType>(configuredView);
+  const [comicSpreadSide, setComicSpreadSide] = useState<"left" | "right">("left");
+  const [comicSpreadSides, setComicSpreadSides] = useState<Array<"left" | "right">>(["left"]);
   const viewerId = useId().replace(/:/g, "");
   const epubSource = step.contentHtml?.trim() ?? "";
   const { fileUrl, location } = useMemo(() => {
@@ -401,7 +570,12 @@ export default function CourseEpubStep({
   const displayLocationRef = useRef<((target: string) => Promise<void>) | null>(null);
   const displayedLocationRef = useRef<string | null>(null);
   const locationRef = useRef<string | null>(location);
+  const nextLocationRef = useRef<string | null>(nextLocation);
+  const epubImageIndexRef = useRef<number | undefined>(step.epubImageIndex);
   const activeViewRef = useRef<PageViewType>(activeView);
+  const comicSpreadSideRef = useRef<"left" | "right">(comicSpreadSide);
+  const comicSpreadSidesRef = useRef<Array<"left" | "right">>(comicSpreadSides);
+  const stepStartSideRef = useRef<"left" | "right">("left");
   const [viewerReady, setViewerReady] = useState(false);
   const [contentLoading, setContentLoading] = useState(true);
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(false);
@@ -411,8 +585,40 @@ export default function CourseEpubStep({
   const dictionaryModeRef = useRef(false);
 
   locationRef.current = location;
+  nextLocationRef.current = nextLocation;
+  epubImageIndexRef.current = step.epubImageIndex;
   activeViewRef.current = activeView;
+  comicSpreadSideRef.current = comicSpreadSide;
+  comicSpreadSidesRef.current = comicSpreadSides;
   dictionaryModeRef.current = dictionaryMode;
+  const isComicBook = /\bcomic\b/i.test(category ?? "");
+
+  useEffect(() => {
+    setComicSpreadSide("left");
+  }, [fileUrl]);
+
+  useEffect(() => {
+    setComicSpreadSide(stepStartSideRef.current);
+    stepStartSideRef.current = "left";
+  }, [location, pageIndex]);
+
+  const applyPagePresentation = (doc: Document, fragment: string) => {
+    styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
+    applyEpubViewMode(doc, activeViewRef.current);
+    applyChapterIsolation(doc, fragment, locationFragment(nextLocationRef.current), epubImageIndexRef.current);
+    const layout = isComicBook ? applyComicSpreadPage(
+      doc,
+      comicSpreadSideRef.current,
+      () => viewerRef.current?.clientWidth ?? 0,
+      () => viewerRef.current?.parentElement?.clientHeight ?? 0,
+    ) : null;
+    if (layout) {
+      setComicSpreadSides(layout.sides);
+      if (layout.activeSide !== comicSpreadSideRef.current) setComicSpreadSide(layout.activeSide);
+    } else {
+      setComicSpreadSides(["left"]);
+    }
+  };
 
   useEffect(() => {
     if (!contentLoading) {
@@ -492,9 +698,7 @@ export default function CourseEpubStep({
           if (contentDocument) documents.add(contentDocument);
           for (const doc of documents) {
             removeObjectReplacementCharacters(doc);
-            styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
-            applyEpubViewMode(doc, activeViewRef.current);
-            applyChapterIsolation(doc, fragment, locationFragment(nextLocation));
+            applyPagePresentation(doc, fragment);
           }
         };
 
@@ -558,11 +762,9 @@ export default function CourseEpubStep({
           const doc = contents.document;
           doc.defaultView?.requestAnimationFrame(() => {
             removeObjectReplacementCharacters(doc);
-            styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
-            applyEpubViewMode(doc, activeViewRef.current);
+            applyPagePresentation(doc, locationFragment(locationRef.current));
             bindDictionarySelection(doc);
             bindDictionarySelection(doc);
-            applyChapterIsolation(doc, locationFragment(locationRef.current), locationFragment(nextLocation));
           });
         });
 
@@ -652,11 +854,44 @@ export default function CourseEpubStep({
     const contentDocument = viewerRef.current?.querySelector("iframe")?.contentDocument;
     if (contentDocument) documents.add(contentDocument);
     for (const doc of documents) {
-      styleEpubContents(doc, activeView, () => viewerRef.current?.clientWidth ?? 0);
-      applyEpubViewMode(doc, activeView);
-      applyChapterIsolation(doc, locationFragment(location), locationFragment(nextLocation));
+      applyPagePresentation(doc, locationFragment(location));
     }
-  }, [activeView, location, nextLocation, viewerReady]);
+  }, [activeView, comicSpreadSide, isComicBook, location, nextLocation, step.epubImageIndex, viewerReady]);
+
+  const handlePreviousPage = () => {
+    const sides = comicSpreadSidesRef.current;
+    const sideIndex = sides.indexOf(comicSpreadSideRef.current);
+    if (sideIndex > 0) {
+      setComicSpreadSide(sides[sideIndex - 1]);
+      return;
+    }
+    stepStartSideRef.current = "right";
+    onPrevious?.();
+  };
+
+  const handleNextPage = () => {
+    const sides = comicSpreadSidesRef.current;
+    const sideIndex = sides.indexOf(comicSpreadSideRef.current);
+    if (sideIndex >= 0 && sideIndex < sides.length - 1) {
+      setComicSpreadSide(sides[sideIndex + 1]);
+      return;
+    }
+    stepStartSideRef.current = "left";
+    setComicSpreadSide("left");
+    onNext?.();
+  };
+
+  const handleNavigateToPage = (targetStepIndex: number) => {
+    stepStartSideRef.current = "left";
+    setComicSpreadSide("left");
+    onNavigateToPage?.(targetStepIndex);
+  };
+
+  const handleJumpToBookmark = (targetStepIndex: number) => {
+    stepStartSideRef.current = "left";
+    setComicSpreadSide("left");
+    onJumpToBookmark?.(targetStepIndex);
+  };
 
   return (
     <PracticeWorkspace
@@ -668,11 +903,11 @@ export default function CourseEpubStep({
       totalPages={totalPages}
       title={step.title}
       pageBrief=""
-      onPrevious={onPrevious}
-      onNext={onNext}
-      onNavigateToPage={onNavigateToPage}
-      canPrevious={canPrevious}
-      canNext={canNext}
+      onPrevious={handlePreviousPage}
+      onNext={handleNextPage}
+      onNavigateToPage={handleNavigateToPage}
+      canPrevious={canPrevious || comicSpreadSides.indexOf(comicSpreadSide) > 0}
+      canNext={canNext || comicSpreadSides.indexOf(comicSpreadSide) >= 0 && comicSpreadSides.indexOf(comicSpreadSide) < comicSpreadSides.length - 1}
       loadError={loadError ?? undefined}
       contentIframeRef={iframeRef}
       contentIframeBindKey={viewerReady ? fileUrl : null}
@@ -683,7 +918,7 @@ export default function CourseEpubStep({
       bookmarks={bookmarks}
       onToggleBookmark={onToggleBookmark}
       onRemoveBookmark={onRemoveBookmark}
-      onJumpToBookmark={onJumpToBookmark}
+      onJumpToBookmark={handleJumpToBookmark}
       viewMode={activeView}
       onViewModeChange={setActiveView}
       dictionarySelection={dictionarySelection}

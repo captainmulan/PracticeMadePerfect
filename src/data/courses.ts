@@ -27,6 +27,7 @@ export interface CourseStep {
   description: string;
   contentHtml?: string;
   epubNextLocation?: string;
+  epubImageIndex?: number;
   checklist?: string[];
   starterCode?: string;
   verificationKeywords?: string[][];
@@ -122,6 +123,7 @@ export interface CourseStepOutline {
   stepType: CourseStepType;
   title: string;
   description: string;
+  epubImageIndex?: number;
 }
 
 export function flattenCourseSteps(course: Course): CourseStep[] {

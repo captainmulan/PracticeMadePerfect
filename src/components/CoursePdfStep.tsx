@@ -12,10 +12,10 @@ import PracticeWorkspace from "./PracticeWorkspace";
 import PdfFunLoader from "./PdfFunLoader";
 import {
   extractPdfPageNumber,
-  getPdfBuffer,
   PDF_VIEWER_CACHE_BUST,
   resolvePdfStepFileUrl,
 } from "../utils/pdfCache";
+import { getPdfBuffer } from "../utils/pdfCache";
 import "../styles/course.css";
 
 const PDF_ZOOM_STORAGE_KEY = "pmp-pdf-page-zoom-v11";
@@ -144,7 +144,7 @@ export default function CoursePdfStep({
   }, [bookHtmlFolder, category, pdfSource, step.stepIndex, configuredView]);
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
-  const pdfLoadSequenceRef = useRef(0);
+    const pdfLoadSequenceRef = useRef(0);
   const [viewerReady, setViewerReady] = useState(false);
   const [drawnPage, setDrawnPage] = useState<number | null>(null);
   const [loadError] = useState<string | null>(null);

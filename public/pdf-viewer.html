@@ -2548,7 +2548,7 @@
 
         const openDocument = (source) => {
           const options =
-            source instanceof ArrayBuffer || ArrayBuffer.isView(source)
+            Object.prototype.toString.call(source) === "[object ArrayBuffer]" || ArrayBuffer.isView(source)
               ? {
                   data: source instanceof Uint8Array ? source : new Uint8Array(source),
                   disableStream: true,
@@ -2624,7 +2624,7 @@
             if (Number.isFinite(Number(data.panel))) {
               panelIndex = Math.max(0, Math.floor(Number(data.panel)));
             }
-            if (data.buffer instanceof ArrayBuffer) {
+            if (Object.prototype.toString.call(data.buffer) === "[object ArrayBuffer]") {
               loadPdfFromSource(data.buffer);
             } else if (typeof data.url === "string" && !loaded) {
               loadPdfFromSource(data.url);
