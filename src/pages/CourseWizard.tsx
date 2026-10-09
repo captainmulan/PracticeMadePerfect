@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CourseAboutStep from "../components/CourseAboutStep";
 import CourseCodeStep from "../components/CourseCodeStep";
@@ -49,6 +49,11 @@ export default function CourseWizard() {
     setCurrentStep(null);
     setPdfReady(false);
   }, [courseId]);
+
+  useLayoutEffect(() => {
+    const main = document.querySelector<HTMLElement>(".app-main");
+    if (main) main.scrollTop = 0;
+  }, [courseId, stepIndex, viewingIntro]);
 
   useEffect(() => {
     if (viewingIntro) warmupPdfReaderAssets();

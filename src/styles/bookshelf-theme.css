@@ -887,6 +887,11 @@ body[data-bookshelf-theme="ocean"] .practice-workspace-top {
   overflow-x: clip;
 }
 
+.app-main:has(.course-wizard-page:not(.course-wizard-page--about) .practice-workspace--epub) {
+  padding-bottom: 0;
+  overflow-y: clip;
+}
+
 .page-home,
 .practice-page,
 .course-wizard-page {
