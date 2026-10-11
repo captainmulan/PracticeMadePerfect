@@ -168,6 +168,9 @@ export function resolveEpubFileUrl(source: string, category?: string | null): st
   const bookHtmlPath = pathname.match(/^\/book_html\/(.+)$/i)?.[1];
   if (!bookHtmlPath) return fileUrl;
   if (import.meta.env.DEV && /^Other\/Narnia_Complete\//i.test(bookHtmlPath)) return fileUrl;
+  if (import.meta.env.DEV && /-part-\d+\.epub$/i.test(bookHtmlPath)) {
+    return `/book_html/${bookHtmlPath}`;
+  }
 
   const relativePath = /^(Comic|Other)\//i.test(bookHtmlPath)
     ? bookHtmlPath

@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-10-10T05:59:46.876Z:shelf-index-v2",
+  "exportedAt": "2026-10-11T06:39:58.324Z:shelf-index-v2",
   "courses": [
     {
       "id": "donald-duck-and-friends-361-dec-2010",
@@ -6193,7 +6193,7 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 20
+      "stepCount": 351
     },
     {
       "id": "narnia-last",
@@ -6222,7 +6222,7 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 18
+      "stepCount": 119
     },
     {
       "id": "narnia-chair",
@@ -6251,7 +6251,7 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 19
+      "stepCount": 141
     },
     {
       "id": "narnia-voyage",
@@ -6280,7 +6280,7 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 19
+      "stepCount": 145
     },
     {
       "id": "narnia-prince",
@@ -6309,7 +6309,7 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 18
+      "stepCount": 125
     },
     {
       "id": "narnia-horse",
@@ -6338,7 +6338,7 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 18
+      "stepCount": 131
     },
     {
       "id": "narnia-lion",
@@ -6396,7 +6396,7 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 18
+      "stepCount": 117
     },
     {
       "id": "percy-jackson-lightning-thief",

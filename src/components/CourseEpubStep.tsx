@@ -362,7 +362,13 @@ function configureFixedEpubPage(
   doc: Document,
   mode: PageViewType,
   getHostWidth: () => number,
+  allowNarrowViewport: boolean,
 ): boolean {
+  const viewport = doc.defaultView;
+  if (!allowNarrowViewport && viewport && (viewport.innerWidth <= 640 || Math.min(viewport.innerWidth, viewport.innerHeight) <= 640)) {
+    return false;
+  }
+
   const page = doc.querySelector<HTMLElement>(".body");
   if (!page) return false;
 
@@ -442,9 +448,14 @@ function configureFixedEpubPage(
   return true;
 }
 
-function styleEpubContents(doc: Document, mode: PageViewType, getHostWidth: () => number) {
+function styleEpubContents(
+  doc: Document,
+  mode: PageViewType,
+  getHostWidth: () => number,
+  allowNarrowViewport = false,
+) {
   if (!doc.head) return;
-  configureFixedEpubPage(doc, mode, getHostWidth);
+  configureFixedEpubPage(doc, mode, getHostWidth, allowNarrowViewport);
   if (doc.getElementById("pmp-epub-reader-style")) return;
   const style = doc.createElement("style");
   style.id = "pmp-epub-reader-style";
@@ -567,6 +578,7 @@ export default function CourseEpubStep({
   onRemoveBookmark,
   onJumpToBookmark,
 }: CourseEpubStepProps) {
+  const isComicBook = /\bcomic\b/i.test(category ?? "");
   const baseConfiguredView = pageViewTypeProp &&
     pageViewTypeProp !== "NormalView" &&
     pageViewTypeProp !== "ComicView" &&
@@ -576,6 +588,8 @@ export default function CourseEpubStep({
   const [narrowViewport, setNarrowViewport] = useState(isNarrowEpubViewport);
   const configuredView = narrowViewport && baseConfiguredView === "ComicView"
     ? "Crop"
+    : narrowViewport && !isComicBook && ["Normal", "Crop"].includes(baseConfiguredView)
+      ? "Normal"
     : ["Normal", "Crop"].includes(baseConfiguredView)
       ? narrowViewport ? "Crop" : "Normal"
       : baseConfiguredView;
@@ -624,7 +638,6 @@ export default function CourseEpubStep({
   comicSpreadSideRef.current = comicSpreadSide;
   comicSpreadSidesRef.current = comicSpreadSides;
   dictionaryModeRef.current = dictionaryMode;
-  const isComicBook = /\bcomic\b/i.test(category ?? "");
 
   useEffect(() => {
     setComicSpreadSide("left");
@@ -636,7 +649,7 @@ export default function CourseEpubStep({
   }, [location, pageIndex]);
 
   const applyPagePresentation = (doc: Document, fragment: string) => {
-    styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
+    styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0, isComicBook);
     applyEpubViewMode(doc, activeViewRef.current, isComicBook);
     applyChapterIsolation(doc, fragment, locationFragment(nextLocationRef.current), epubImageIndexRef.current);
     const layout = isComicBook ? applyComicSpreadPage(

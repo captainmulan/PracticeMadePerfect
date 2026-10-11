@@ -5,6 +5,7 @@ import os
 import posixpath
 import re
 import shutil
+import sys
 import tempfile
 import urllib.parse
 import zipfile
@@ -213,7 +214,9 @@ def make_part(
         and info.filename not in {"mimetype", package_info["path"]}
     }
     resources = shared_paths | page_images | set(selected_by_document) | {package_info["path"], "META-INF/container.xml"}
-    package = package_info["package"]
+    package = ElementTree.fromstring(
+        ElementTree.tostring(package_info["package"], encoding="utf-8")
+    )
     manifest = package.find(f"{{{EPUB_OPF_NS}}}manifest")
     spine = package.find(f"{{{EPUB_OPF_NS}}}spine")
     assert manifest is not None and spine is not None
@@ -228,6 +231,35 @@ def make_part(
     for itemref in list(spine.findall(f"{{{EPUB_OPF_NS}}}itemref")):
         if itemref.get("idref", "") not in kept_ids:
             spine.remove(itemref)
+
+    existing_ids = {item.get("id", "") for item in manifest.findall(f"{{{EPUB_OPF_NS}}}item")}
+    existing_paths = {
+        path for item_id, path in package_info["manifest"].items()
+        if item_id in kept_ids
+    }
+    next_image_id = 1
+    for image_path in sorted(page_images - existing_paths):
+        extension = Path(image_path).suffix.lower()
+        media_type = {
+            ".gif": "image/gif",
+            ".jpeg": "image/jpeg",
+            ".jpg": "image/jpeg",
+            ".png": "image/png",
+            ".svg": "image/svg+xml",
+            ".webp": "image/webp",
+        }.get(extension)
+        if not media_type:
+            continue
+        while f"pmp-image-{next_image_id}" in existing_ids:
+            next_image_id += 1
+        image_id = f"pmp-image-{next_image_id}"
+        next_image_id += 1
+        existing_ids.add(image_id)
+        href = posixpath.relpath(image_path, package_info["base"] or ".")
+        manifest.append(ElementTree.Element(
+            f"{{{EPUB_OPF_NS}}}item",
+            {"id": image_id, "href": href, "media-type": media_type},
+        ))
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(output_path, "w") as target:
@@ -253,6 +285,80 @@ def make_part(
         raise ValueError(f"Generated EPUB part is not below 25 MiB: {output_path} ({output_path.stat().st_size} bytes).")
     validate_part(output_path, group, page_info)
     return resources
+
+
+def repair_split_epub_manifest(path: Path) -> int:
+    with zipfile.ZipFile(path) as source:
+        names = {info.filename for info in source.infolist()}
+        container = ElementTree.fromstring(source.read("META-INF/container.xml"))
+        rootfile = next((node for node in container.iter() if node.tag.endswith("rootfile")), None)
+        if rootfile is None or not rootfile.get("full-path"):
+            raise ValueError(f"{path}: EPUB package root file is missing.")
+        opf_path = urllib.parse.unquote(rootfile.attrib["full-path"])
+        package = ElementTree.fromstring(source.read(opf_path))
+        manifest = package.find(f"{{{EPUB_OPF_NS}}}manifest")
+        if manifest is None:
+            raise ValueError(f"{path}: EPUB package manifest is missing.")
+
+        opf_base = posixpath.dirname(opf_path)
+        manifested_paths = {
+            resolved for item in manifest.findall(f"{{{EPUB_OPF_NS}}}item")
+            if (resolved := normalize_zip_path(opf_base, item.get("href", "")))
+        }
+        referenced_images: set[str] = set()
+        for name in names:
+            if not name.lower().endswith((".html", ".xhtml", ".htm")):
+                continue
+            text = source.read(name).decode("utf-8", errors="replace")
+            for reference in IMAGE_PATTERN.findall(text):
+                image_path = normalize_zip_path(posixpath.dirname(name), reference)
+                if image_path in names and Path(image_path).suffix.lower() in IMAGE_EXTENSIONS:
+                    referenced_images.add(image_path)
+
+        missing_images = sorted(referenced_images - manifested_paths)
+        if not missing_images:
+            return 0
+
+        existing_ids = {item.get("id", "") for item in manifest.findall(f"{{{EPUB_OPF_NS}}}item")}
+        next_image_id = 1
+        for image_path in missing_images:
+            extension = Path(image_path).suffix.lower()
+            media_type = {
+                ".gif": "image/gif",
+                ".jpeg": "image/jpeg",
+                ".jpg": "image/jpeg",
+                ".png": "image/png",
+                ".webp": "image/webp",
+            }[extension]
+            while f"pmp-image-{next_image_id}" in existing_ids:
+                next_image_id += 1
+            image_id = f"pmp-image-{next_image_id}"
+            next_image_id += 1
+            existing_ids.add(image_id)
+            href = posixpath.relpath(image_path, opf_base or ".")
+            manifest.append(ElementTree.Element(
+                f"{{{EPUB_OPF_NS}}}item",
+                {"id": image_id, "href": href, "media-type": media_type},
+            ))
+
+        updated_opf = ElementTree.tostring(package, encoding="utf-8", xml_declaration=True)
+        temp_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(prefix=f"{path.stem}-", suffix=".epub", dir=path.parent, delete=False) as temp:
+                temp_path = Path(temp.name)
+            with zipfile.ZipFile(temp_path, "w") as target:
+                for entry in source.infolist():
+                    data = updated_opf if entry.filename == opf_path else source.read(entry.filename)
+                    target.writestr(entry, data)
+            with zipfile.ZipFile(temp_path) as repaired:
+                if repaired.testzip() is not None:
+                    raise ValueError(f"{path}: repaired EPUB failed ZIP CRC validation.")
+            source.close()
+            os.replace(temp_path, path)
+            return len(missing_images)
+        finally:
+            if temp_path:
+                temp_path.unlink(missing_ok=True)
 
 
 def validate_part(path: Path, group: list[dict], page_info: dict) -> None:
@@ -321,6 +427,17 @@ def process_epub(source_path: Path, export_data: dict, staging: Path) -> dict:
 
 
 def main() -> None:
+    if "--repair-existing" in sys.argv:
+        split_epubs = sorted(COMIC_ROOT.rglob("*-part-*.epub"))
+        repaired_count = 0
+        for path in split_epubs:
+            added = repair_split_epub_manifest(path)
+            repaired_count += added
+            if added:
+                print(f"{path.relative_to(BOOK_ROOT).as_posix()}: added {added} image manifest entries")
+        print(f"Checked {len(split_epubs)} split EPUBs; repaired {repaired_count} missing image manifest entries.")
+        return
+
     export_data = read_json(EXPORT_PATH)
     home_catalog = read_json(HOME_PATH)
     oversized_epubs = sorted(
