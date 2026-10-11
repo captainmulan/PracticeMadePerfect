@@ -100,15 +100,20 @@ function readEpubPageLocations() {
 function buildPageLocations(startHref, endHref, pageLocations) {
   const start = /^(.*)#p(\d+)$/.exec(startHref);
   const end = /^(.*)#p(\d+)$/.exec(endHref ?? "");
-  if (!start || !end) return [startHref];
+  if (!start) return [startHref];
+
+  const lastPageNumber = Math.max(
+    ...Object.keys(pageLocations).map((id) => Number(/^p(\d+)$/.exec(id)?.[1] ?? 0)),
+  );
+  const endPageNumber = end ? Number(end[2]) : lastPageNumber + 1;
 
   const pages = [];
-  for (let pageNumber = Number(start[2]); pageNumber < Number(end[2]); pageNumber += 1) {
+  for (let pageNumber = Number(start[2]); pageNumber < endPageNumber; pageNumber += 1) {
     const file = pageLocations[`p${pageNumber}`];
     if (!file) throw new Error(`Missing EPUB page anchor p${pageNumber}.`);
     pages.push(`${file}#p${pageNumber}`);
   }
-  if (pages.length === 0) throw new Error(`No EPUB pages found between ${startHref} and ${endHref}.`);
+  if (pages.length === 0) throw new Error(`No EPUB pages found between ${startHref} and ${endHref ?? "the end of the EPUB"}.`);
   return pages;
 }
 
@@ -129,15 +134,13 @@ function buildEpubCourse(course, tocByTitle, bookStarts, pageLocations) {
   const chapters = courseEntries.map((entry, index) => {
     const chapterId = `${course.id}-epub-chapter-${String(index + 1).padStart(3, "0")}`;
     const nextChapterHref = courseEntries[index + 1]?.href ?? tocByTitle[nextBookTocTitles[course.id]]?.[0]?.href;
-    const chapterPages = course.id === "narnia-lion"
-      ? buildPageLocations(entry.href, nextChapterHref, pageLocations)
-      : [entry.href];
+    const chapterPages = buildPageLocations(entry.href, nextChapterHref, pageLocations);
     const steps = chapterPages.map((href, pageIndex) => {
       stepIndex += 1;
       const pageNumber = /#p(\d+)$/.exec(href)?.[1];
       const nextHref = chapterPages[pageIndex + 1] ?? nextChapterHref;
       return {
-        id: `${course.id}-epub-${course.id === "narnia-lion" ? "page" : "step"}-${String(stepIndex).padStart(3, "0")}`,
+        id: `${course.id}-epub-page-${String(stepIndex).padStart(3, "0")}`,
         courseId: course.id,
         chapterId,
         chapterTitle: entry.title,
@@ -166,19 +169,32 @@ const tocData = readEpubToc();
 const tocByTitle = tocData.books;
 const bookStarts = tocData.starts;
 const pageLocations = readEpubPageLocations();
-const targetCourseId = process.argv[2];
-if (targetCourseId && !Object.hasOwn(courseTocTitles, targetCourseId)) {
-  throw new Error(`Unknown Narnia course: ${targetCourseId}.`);
+const targetCourseIds = new Set(process.argv.slice(2));
+for (const targetCourseId of targetCourseIds) {
+  if (!Object.hasOwn(courseTocTitles, targetCourseId)) {
+    throw new Error(`Unknown Narnia course: ${targetCourseId}.`);
+  }
 }
 const matchedCourses = exportData.courses.filter((course) =>
-  Object.hasOwn(courseTocTitles, course.id) && (!targetCourseId || course.id === targetCourseId),
+  Object.hasOwn(courseTocTitles, course.id) && (!targetCourseIds.size || targetCourseIds.has(course.id)),
 );
-if (matchedCourses.length === 0) throw new Error(`No matching Narnia course found for ${targetCourseId ?? "update"}.`);
+if (matchedCourses.length === 0) throw new Error(`No matching Narnia course found for ${[...targetCourseIds].join(", ") || "update"}.`);
 
 const updatedById = new Map(matchedCourses.map((course) => [course.id, buildEpubCourse(course, tocByTitle, bookStarts, pageLocations)]));
 exportData.courses = exportData.courses.map((course) => updatedById.get(course.id) ?? course);
 exportData.exportedAt = new Date().toISOString();
 writeJson(exportPath, exportData, true);
+
+const deployExportPath = "deploy/indexeddb-export.json";
+const deployExportData = readJson(deployExportPath);
+const deployUpdatedById = new Map(
+  deployExportData.courses
+    .filter((course) => updatedById.has(course.id))
+    .map((course) => [course.id, buildEpubCourse(course, tocByTitle, bookStarts, pageLocations)]),
+);
+deployExportData.courses = deployExportData.courses.map((course) => deployUpdatedById.get(course.id) ?? course);
+deployExportData.exportedAt = exportData.exportedAt;
+writeJson(deployExportPath, deployExportData, true);
 
 const catalogPath = "public/data/home-catalog.json";
 const catalog = readJson(catalogPath);

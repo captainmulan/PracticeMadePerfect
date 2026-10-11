@@ -654,8 +654,11 @@ async function migrateVibeBookPdfToEpub(): Promise<void> {
   }
 }
 
-const SPLIT_BOOK_ASSET_MIGRATION_KEY = "pmp-split-book-assets-v8";
+const SPLIT_BOOK_ASSET_MIGRATION_KEY = "pmp-split-book-assets-v9";
 const SPLIT_BOOK_ASSET_COURSE_IDS = [
+  "catwoman-lonely-city",
+  "dog-man-grime-and-punishment-from-the-creator-of-captain-underpants-dog-man-9",
+  "english-writing-upper-intermediate-part-3",
   "elon-musk",
   "harrypotter-deadlyhollow-part2",
   "hp-chamber",
@@ -678,6 +681,10 @@ const SPLIT_BOOK_ASSET_COURSE_IDS = [
   "openclaw-book",
   "science-comic-adventures-grade4-fkb",
   "scienceadventures-comic-grade5-siyavula-fkb",
+  "spawn-cerebus",
+  "star-wars-darth-vader-vol-4-end-of-games-darth-vader-2015-2016",
+  "teen-titans-beast-boy",
+  "the-adventure-zone",
   "peppa-pig-daddy-pigs-old-chair",
   "peppa-pig-school-bus-trip",
   "tootpee-a-girl-named-mala",
@@ -697,6 +704,8 @@ const SPLIT_BOOK_ASSET_COURSE_IDS = [
   "tootpee-way-lar-nal-mha-tiger",
   "tootpee-white-tiger-ghost",
   "tootpee-wild-and-civilized",
+  "zita-2-legends-of-zita-the-spacegirl",
+  "zita-3-the-return-of-zita-the-spacegirl",
   "vibe-book-final",
 ];
 

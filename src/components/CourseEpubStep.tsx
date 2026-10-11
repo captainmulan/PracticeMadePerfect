@@ -182,10 +182,10 @@ const comicSpreadOriginalStyles = new WeakMap<Element, string | null>();
 function applyComicSpreadPage(
   doc: Document,
   side: "left" | "right",
+  mode: PageViewType,
   getHostWidth: () => number,
-  getHostHeight: () => number,
 ): { sides: Array<"left" | "right">; activeSide: "left" | "right" } | null {
-  doc.querySelectorAll("[data-pmp-comic-spread], [data-pmp-comic-spread-image]").forEach((element) => {
+  doc.querySelectorAll("[data-pmp-comic-spread], [data-pmp-comic-spread-image], [data-pmp-comic-spread-container]").forEach((element) => {
     const originalStyle = comicSpreadOriginalStyles.get(element);
     if (originalStyle === null) element.removeAttribute("style");
     else if (typeof originalStyle === "string") element.setAttribute("style", originalStyle);
@@ -201,9 +201,20 @@ function applyComicSpreadPage(
   );
   const wrapper = image?.parentElement;
   if (!image || !wrapper) return null;
+  const container = wrapper.parentElement;
+  if (container) {
+    comicSpreadOriginalStyles.set(container, container.getAttribute("style"));
+    container.setAttribute("data-pmp-comic-spread-container", "1");
+    container.style.setProperty("width", "100%", "important");
+    container.style.setProperty("margin", "0", "important");
+    container.style.setProperty("padding", "0", "important");
+  }
 
   let split = 0.5;
   let sides: Array<"left" | "right"> = ["left", "right"];
+  let sampledColumns: Float32Array | null = null;
+  let sampledColumnHeight = 0;
+  let sampledWidth = 0;
   try {
     const sampleWidth = 320;
     const sampleHeight = Math.max(120, Math.round(sampleWidth * image.naturalHeight / image.naturalWidth));
@@ -234,6 +245,9 @@ function applyComicSpreadPage(
           else rightSamples += 1;
         }
       }
+      sampledColumns = columns;
+      sampledColumnHeight = midBottom - midTop;
+      sampledWidth = sampleWidth;
 
       const leftDensity = leftInk / Math.max(1, leftSamples);
       const rightDensity = rightInk / Math.max(1, rightSamples);
@@ -268,8 +282,28 @@ function applyComicSpreadPage(
   }
 
   const activeSide = sides.includes(side) ? side : sides[0];
-  const sideStart = activeSide === "left" ? 0 : split;
-  const sideEnd = activeSide === "left" ? split : 1;
+  const pageStart = activeSide === "left" ? 0 : split;
+  const pageEnd = activeSide === "left" ? split : 1;
+  let sideStart = pageStart;
+  let sideEnd = pageEnd;
+  if (sampledColumns && sampledWidth > 0 && sampledColumnHeight > 0) {
+    const firstColumn = Math.floor(pageStart * sampledWidth);
+    const lastColumn = Math.min(sampledWidth - 1, Math.ceil(pageEnd * sampledWidth) - 1);
+    let contentStart = firstColumn;
+    let contentEnd = lastColumn;
+    while (contentStart <= lastColumn && sampledColumns[contentStart] / sampledColumnHeight < 0.02) {
+      contentStart += 1;
+    }
+    while (contentEnd >= firstColumn && sampledColumns[contentEnd] / sampledColumnHeight < 0.02) {
+      contentEnd -= 1;
+    }
+    if (contentStart <= contentEnd) {
+      const pageWidth = lastColumn - firstColumn + 1;
+      const safetyMargin = pageWidth * 0.03;
+      sideStart = Math.max(firstColumn, contentStart - safetyMargin) / sampledWidth;
+      sideEnd = Math.min(lastColumn + 1, contentEnd + 1 + safetyMargin) / sampledWidth;
+    }
+  }
   const sideFraction = Math.max(0.1, sideEnd - sideStart);
 
   let style = doc.getElementById("pmp-comic-spread-style");
@@ -284,10 +318,14 @@ function applyComicSpreadPage(
   `;
 
   const hostWidth = Math.max(1, getHostWidth());
-  const hostHeight = Math.max(1, getHostHeight());
   const cropWidth = image.naturalWidth * sideFraction;
-  const scale = Math.min((hostWidth - 24) / cropWidth, (hostHeight - 24) / image.naturalHeight);
+  const cropZoom = mode === "Crop" && hostWidth <= 600 ? 1.35 : 1;
+  const scale = ((hostWidth - 8) * cropZoom) / cropWidth;
   if (!Number.isFinite(scale) || scale <= 0) return null;
+  const allowHorizontalOverflow = mode === "Crop" && hostWidth <= 600;
+  const overflowX = allowHorizontalOverflow ? "auto" : "hidden";
+  doc.documentElement.style.setProperty("overflow-x", overflowX, "important");
+  doc.body.style.setProperty("overflow-x", overflowX, "important");
   const pageHeight = image.naturalHeight * scale;
   const visibleWidth = cropWidth * scale;
   const imageWidth = image.naturalWidth * scale;
@@ -338,11 +376,6 @@ function configureFixedEpubPage(
     return ancestor === page;
   });
   if (positioned.length === 0) return false;
-  const viewport = doc.defaultView;
-  if (viewport && (viewport.innerWidth <= 640 || Math.min(viewport.innerWidth, viewport.innerHeight) <= 640)) {
-    return false;
-  }
-
   const bounds = positioned.map((element) => ({
     left: Number.parseFloat(element.style.left) || 0,
     top: Number.parseFloat(element.style.top) || 0,
@@ -444,7 +477,7 @@ function styleEpubContents(doc: Document, mode: PageViewType, getHostWidth: () =
   doc.head.appendChild(style);
 }
 
-function applyEpubViewMode(doc: Document, mode: PageViewType) {
+function applyEpubViewMode(doc: Document, mode: PageViewType, tightComicLayout = false) {
   if (!doc.head) return;
   let style = doc.getElementById("pmp-epub-view-mode-style") as HTMLStyleElement | null;
   if (!style) {
@@ -471,7 +504,7 @@ function applyEpubViewMode(doc: Document, mode: PageViewType) {
   };
   style.textContent = `
     html,body{background:${theme.background}!important;color:${theme.color}!important}
-    body{padding:${theme.padding}!important;line-height:${theme.lineHeight}!important;filter:${theme.filter ?? "none"}!important}
+    body{padding:${tightComicLayout ? "0" : theme.padding}!important;line-height:${theme.lineHeight}!important;filter:${theme.filter ?? "none"}!important}
     body::after{content:"";position:fixed;inset:0;z-index:2147483647;pointer-events:none;background:${theme.overlay}}
     body *:not(img):not(svg):not(canvas):not(video){color:inherit!important;background-color:transparent!important}
     a,a *{color:${theme.link}!important}
@@ -604,13 +637,13 @@ export default function CourseEpubStep({
 
   const applyPagePresentation = (doc: Document, fragment: string) => {
     styleEpubContents(doc, activeViewRef.current, () => viewerRef.current?.clientWidth ?? 0);
-    applyEpubViewMode(doc, activeViewRef.current);
+    applyEpubViewMode(doc, activeViewRef.current, isComicBook);
     applyChapterIsolation(doc, fragment, locationFragment(nextLocationRef.current), epubImageIndexRef.current);
     const layout = isComicBook ? applyComicSpreadPage(
       doc,
       comicSpreadSideRef.current,
+      activeViewRef.current,
       () => viewerRef.current?.clientWidth ?? 0,
-      () => viewerRef.current?.parentElement?.clientHeight ?? 0,
     ) : null;
     if (layout) {
       setComicSpreadSides(layout.sides);

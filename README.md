@@ -28,6 +28,19 @@ npm run dev
 
 3. Open the app at: `http://localhost:4173`
 
+## Import an EPUB in Admin (local)
+
+Use the Admin EPUB uploader to add an EPUB to this browser's library and save its source file in the project. This workflow does not deploy or publish the book.
+
+1. Start the local app with `npm run dev` and open `http://localhost:4173/admin` in Chrome or Edge. The uploader uses the browser's folder-access picker, which is available on localhost in supported browsers.
+2. Open **Book Builder**, choose **New Book** to add a book or select an existing book to replace, then choose **EPUB upload**.
+3. Click **Choose EPUB** and select the `.epub` file. For a new book, review/edit its book ID and category. For an existing book, confirm the selected target; the EPUB will replace its page list.
+4. When the folder picker appears, grant write access to the destination category folder in this workspace: choose `book_html/Comic` for a Comic category or `book_html/Other` for other categories. The original EPUB is saved under a book-specific folder there. If access is denied or the wrong folder is selected, the uploader reports that the EPUB was not saved.
+5. Review the detected page count and preview. **Load as Draft** or **Apply to Draft** stages the metadata for review; inspect the pages and click **Save Book** in Book Builder. **Create & Save Book** or **Apply & Save Book** saves the metadata immediately to this browser's IndexedDB.
+6. Verify the saved book from `/courses/<book-id>`. Check the first page, page count, a few page turns, and the last page. For Comic books, check on a phone-sized viewport as well as a wider tablet/desktop viewport.
+
+New-book preview uses the EPUB table of contents; replacing an existing book reads sequential pages from the EPUB spine. Course metadata is stored in the current browser's IndexedDB, while the EPUB asset is stored in `book_html/`. Other browser profiles do not automatically share this local database or folder permission. Keep the EPUB source file and back up library data separately if you need to move the book to another machine.
+
 ## Deploy
 
 Use this command for future app deployments so the repo's current database and bundled app data are copied into the Firebase hosting folder first:
