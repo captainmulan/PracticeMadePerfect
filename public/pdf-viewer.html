@@ -438,6 +438,7 @@
           ? Math.min(2.5, Math.max(1, readerScaleParam))
           : 1.35;
         const alignMobileReaderLeft = params.get("readerAlignLeft") === "1";
+        const useMobileNormalContent = params.get("readerNormalContent") === "1";
         let lastRenderedPage = null; // Track the last successfully rendered page
         const zoomParam = Number(params.get("zoom"));
         if (Number.isFinite(zoomParam) && zoomParam >= 50 && zoomParam <= 300) {
@@ -497,9 +498,6 @@
         const normalizeView = (value) => {
           const raw = typeof value === "string" ? value.trim() : "";
           if (raw === "Reader") return "Crop";
-          if (raw === "Normal") {
-            return isNarrowPdfViewport() ? "Crop" : "Normal";
-          }
           return VIEW_MODES.includes(raw) ? raw : "Auto";
         };
         let configuredView = normalizeView(params.get("view"));
@@ -532,9 +530,11 @@
           mode === "MediumView" ||
           mode === "LargeView" ||
           mode === "ExtraLargeView" ||
-          mode === "Normal";
+          (mode === "Normal" && !(useMobileNormalContent && isNarrowPdfViewport()));
         const isComicView = (mode = activeView()) => mode === "ComicView";
-        const isReaderMode = (mode = activeView()) => mode === "Reader" || mode === "Crop";
+        const isReaderMode = (mode = activeView()) =>
+          mode === "Reader" || mode === "Crop" ||
+          (mode === "Normal" && useMobileNormalContent && isNarrowPdfViewport());
         const isDarkMode = () => activeTheme() === "Dark";
         const isNightMode = () => activeTheme() === "Night";
         const isSepiaMode = () => activeTheme() === "Sepia";
@@ -1559,7 +1559,7 @@
           };
           const mode = activeView();
 
-          if (mode === "Normal" || mode === "Fit" || isTopCenterMode(mode)) {
+          if ((mode === "Normal" && !isReaderMode(mode)) || mode === "Fit" || isTopCenterMode(mode)) {
             return full;
           }
 
@@ -1753,7 +1753,7 @@
           let cssScale;
           if (cropToContent) {
             const narrowReader = readerWidth <= 600;
-            const readerZoom = narrowReader ? mobileReaderScale : 1;
+            const readerZoom = narrowReader && mode !== "Normal" ? mobileReaderScale : 1;
             cssScale = (Math.max(60, readerWidth - 8) * readerZoom) / Math.max(1, box.w);
           } else if (large && !largeScreenUserZoom && isLargeLandscape()) {
             const viewW = Math.max(60, availW - edge * 2) / pageW;

@@ -21,7 +21,7 @@ import {
   getUnpublishedBooksRow,
   type CourseShelfRow,
 } from "../utils/courseShelf";
-import { AUTHOR_SHELF_ID } from "../utils/bookCategories";
+import { AUTHOR_SHELF_ID, bookHasCategoryTag } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
 import { getCourseProgressKey } from "../utils/courseUtils";
 import { loadShelfItemSettings } from "../utils/shelfItemIndexes";
@@ -111,12 +111,16 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       .slice()
       .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
       .map((course) => createShelfItemFromCourse(course, "Newly added"));
+    const myanmarBooks = courses
+      .filter((course) => course.language === "MM" || (!course.language && bookHasCategoryTag(course.category, "MM")))
+      .map((course) => createShelfItemFromCourse(course, "Myanmar books"));
     const currentReading = courses
       .filter((course) => hasSavedProgress(course.id))
       .map((course) => createShelfItemFromCourse(course, "Current reading"));
     return [
       ...(selection.items.length > 0 ? [selection] : []),
       ...categoryRows,
+      ...(myanmarBooks.length > 0 ? [{ title: "Myanmar books", items: myanmarBooks }] : []),
       { title: "Newly added", items: newlyAdded },
       ...(currentReading.length > 0 ? [{ title: "Current reading", items: currentReading }] : []),
     ].filter((row): row is NonNullable<typeof row> => Boolean(row && row.items.length > 0));
