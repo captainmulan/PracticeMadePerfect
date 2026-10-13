@@ -461,6 +461,7 @@ function styleEpubContents(
   style.id = "pmp-epub-reader-style";
   style.textContent = `
     html,body{margin:0!important;padding:0!important;width:100%!important;max-width:none!important;overflow-x:hidden!important}
+    body,body *{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important}
     body{padding:.5em 12px 1.5em!important;box-sizing:border-box!important;line-height:1.55!important}
     body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:16px!important;line-height:1.65!important}
     @media(max-width:640px){body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:20px!important;line-height:1.7!important}}
@@ -809,7 +810,6 @@ export default function CourseEpubStep({
           doc.defaultView?.requestAnimationFrame(() => {
             removeObjectReplacementCharacters(doc);
             applyPagePresentation(doc, locationFragment(locationRef.current));
-            bindDictionarySelection(doc);
             bindDictionarySelection(doc);
           });
         });

@@ -2200,6 +2200,9 @@
           context.fillRect(0, 0, off.width, off.height);
           context.imageSmoothingEnabled = true;
           context.imageSmoothingQuality = lowMem ? "medium" : "high";
+          let textTrimX = 0;
+          let textTrimY = 0;
+          let textTrimScale = 1;
           try {
             if (layout.cropToContent) {
               context.translate(
@@ -2238,13 +2241,16 @@
                 const cropped = document.createElement("canvas");
                 cropped.width = cropWidth;
                 cropped.height = cropHeight;
+                const targetWidth = off.width;
+                const targetHeight = Math.max(1, Math.round((cropHeight / cropWidth) * targetWidth));
+                textTrimX = minX / layout.outputScale;
+                textTrimY = minY / layout.outputScale;
+                textTrimScale = targetWidth / cropWidth;
                 cropped.getContext("2d").putImageData(
                   context.getImageData(minX, minY, cropWidth, cropHeight),
                   0,
                   0,
                 );
-                const targetWidth = off.width;
-                const targetHeight = Math.max(1, Math.round((cropHeight / cropWidth) * targetWidth));
                 off.width = targetWidth;
                 off.height = targetHeight;
                 const cropContext = off.getContext("2d", { alpha: true });
@@ -2281,25 +2287,6 @@
           textLayer.style.width = `${layout.cssWidth}px`;
           textLayer.style.height = `${layout.cssHeight}px`;
           try {
-            if (layout.cropToContent) {
-              return {
-                status: "ready",
-                pageNumber,
-                canvas: displayCanvas,
-                textLayer,
-                cssWidth: layout.cssWidth,
-                cssHeight: layout.cssHeight,
-                hasNativeTextLayer: false,
-                outputScale: layout.outputScale,
-                cssScale: layout.cssScale,
-                contentBox: layout.contentBox,
-                scrollLeft: 0,
-                scrollTop: 0,
-                shiftX: 0,
-                shiftY: 0,
-                key: layout.key,
-              };
-            }
             const textContent = await page.getTextContent();
             const textViewport = page.getViewport({ scale: layout.cssScale });
             const viewportTransform = textViewport.transform;
@@ -2320,14 +2307,14 @@
                 span.textContent = item.str;
                 const cropOffsetX = layout.cropToContent ? layout.cropX * layout.cssScale : 0;
                 const cropOffsetY = layout.cropToContent ? layout.cropY * layout.cssScale : 0;
-                span.style.left = `${transform[4] - cropOffsetX}px`;
-                span.style.top = `${transform[5] - fontHeight - cropOffsetY}px`;
-                span.style.fontSize = `${fontHeight}px`;
+                span.style.left = `${(transform[4] - cropOffsetX - textTrimX) * textTrimScale}px`;
+                span.style.top = `${(transform[5] - fontHeight - cropOffsetY - textTrimY) * textTrimScale}px`;
+                span.style.fontSize = `${fontHeight * textTrimScale}px`;
                 span.style.lineHeight = "1";
                 span.style.fontFamily = "sans-serif";
                 textLayer.appendChild(span);
                 const measuredWidth = span.getBoundingClientRect().width;
-                const targetWidth = Math.max(1, (Number(item.width) || 0) * layout.cssScale);
+                const targetWidth = Math.max(1, (Number(item.width) || 0) * layout.cssScale * textTrimScale);
                 if (measuredWidth > 0 && targetWidth > 0) {
                   span.style.transform = `scaleX(${targetWidth / measuredWidth})`;
                 }
