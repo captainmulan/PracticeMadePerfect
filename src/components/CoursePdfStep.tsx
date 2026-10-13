@@ -104,6 +104,7 @@ export default function CoursePdfStep({
   isWarming = false,
   onViewerReady,
 }: CoursePdfStepProps) {
+  const isComicBook = /\bcomic\b/i.test(category ?? "");
   const inferredDefaultView = defaultPdfViewForCategory(category);
   const baseConfiguredView = pageViewTypeProp &&
     pageViewTypeProp !== "NormalView" &&
@@ -168,11 +169,11 @@ export default function CoursePdfStep({
     setDrawnPage(null);
     setDictionarySelection(null);
     setViewerSrc(
-      `/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&panel=0&dictionary=${dictionaryMode ? "1" : "0"}&defer=1`,
+      `/pdf-viewer.html?v=${PDF_VIEWER_CACHE_BUST}&file=${encodeURIComponent(fileUrl)}&page=${pageNumber}&zoom=${pageZoom}&view=${encodeURIComponent(configuredView)}&readerScale=${isComicBook ? 1.35 : 1.8}&readerAlignLeft=${isComicBook ? 0 : 1}&panel=0&dictionary=${dictionaryMode ? "1" : "0"}&defer=1`,
     );
     // Keep one iframe per book; page turns use postMessage goto-page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileUrl, configuredView]);
+  }, [fileUrl, configuredView, isComicBook]);
 
   const postToViewer = useCallback((payload: Record<string, unknown>) => {
     const frame = iframeRef.current;
@@ -275,10 +276,13 @@ export default function CoursePdfStep({
 
   const handleViewModeChange = useCallback(
     (view: PageViewType) => {
+      if (phonePdfViewport && !isComicBook && view === "Normal") {
+        setPageZoom(100);
+      }
       setActiveView(view);
       postToViewer({ type: "set-view", view });
     },
-    [postToViewer],
+    [isComicBook, phonePdfViewport, postToViewer],
   );
 
   const handleDictionaryModeChange = useCallback(

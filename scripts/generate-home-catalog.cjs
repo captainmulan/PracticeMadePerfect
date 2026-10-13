@@ -28,6 +28,7 @@ const SUMMARY_KEYS = [
   "sIndex",
     "authorName",
     "category",
+    "language",
   "isPublished",
   "cat1",
   "cat2",
@@ -45,6 +46,10 @@ function pickSummary(course) {
     if (Object.prototype.hasOwnProperty.call(course, key) && course[key] !== undefined) {
       out[key] = course[key];
     }
+  }
+  if (out.language !== "Eng" && out.language !== "MM") {
+    const tags = String(course.category || "").split(",").map((tag) => tag.trim().toLowerCase());
+    out.language = tags.includes("eng") ? "Eng" : tags.includes("mm") ? "MM" : "Eng";
   }
   return out;
 }

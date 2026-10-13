@@ -88,6 +88,8 @@ export interface Course {
   courseIndex: number;
   /** Legacy comma-separated tags (search + display fallback). */
   category: string;
+  /** Primary language stored for catalog filtering and display. */
+  language?: "Eng" | "MM";
   /** Category tree: Comic > Kid > Shwe Thway */
   cat1?: string;
   cat2?: string;

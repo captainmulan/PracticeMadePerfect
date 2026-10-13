@@ -9,7 +9,7 @@ import { getBookAssetUrl } from "../config/externalHosting";
 import { evictPdfBuffer } from "./pdfCache";
 
 const DB_NAME = "magic-library-db";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 // Define our store names
 const STORE_TASKS = "tasks";
@@ -17,6 +17,14 @@ const STORE_COURSES = "courses";
 const STORE_CHAPTERS = "chapters";
 const STORE_STEPS = "steps";
 const STORE_ANNOUNCEMENTS = "announcements";
+
+function normalizeBookLanguage(language: unknown, category: string | null | undefined): "Eng" | "MM" {
+  if (language === "Eng" || language === "MM") return language;
+  const tags = normalizeBookCategory(category).split(",").map((tag) => tag.trim().toLowerCase());
+  if (tags.includes("eng")) return "Eng";
+  if (tags.includes("mm")) return "MM";
+  return "Eng";
+}
 
 // IndexedDB helper function to promisify requests
 function promisifyRequest<T>(request: IDBRequest<T>): Promise<T> {
@@ -51,6 +59,7 @@ async function openDb(): Promise<IDBDatabase> {
         courseStore.createIndex("isPublished", "isPublished", { unique: false });
         courseStore.createIndex("authorName", "authorName", { unique: false });
         courseStore.createIndex("authorPicture", "authorPicture", { unique: false });
+        courseStore.createIndex("language", "language", { unique: false });
       } else {
         const existingStore = request.transaction?.objectStore(STORE_COURSES);
         if (existingStore && !existingStore.indexNames.contains("isPublished")) {
@@ -61,6 +70,20 @@ async function openDb(): Promise<IDBDatabase> {
         }
         if (existingStore && !existingStore.indexNames.contains("authorPicture")) {
           existingStore.createIndex("authorPicture", "authorPicture", { unique: false });
+        }
+        if (existingStore && !existingStore.indexNames.contains("language")) {
+          existingStore.createIndex("language", "language", { unique: false });
+        }
+        if (existingStore) {
+          const cursorRequest = existingStore.openCursor();
+          cursorRequest.onsuccess = () => {
+            const cursor = cursorRequest.result;
+            if (!cursor) return;
+            const course = cursor.value as CourseRecord;
+            const language = normalizeBookLanguage(course.language, course.category);
+            if (course.language !== language) cursor.update({ ...course, language });
+            cursor.continue();
+          };
         }
       }
 
@@ -252,6 +275,7 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     iconPosition: raw.iconPosition,
     courseIndex: raw.courseIndex,
     category: normalizeBookCategory(raw.category),
+    language: normalizeBookLanguage(raw.language, raw.category),
     cat1: raw.cat1,
     cat2: raw.cat2,
     cat3: raw.cat3,
@@ -490,6 +514,7 @@ export async function saveCourse(course: Course): Promise<void> {
     writeTransaction.objectStore(STORE_COURSES).put({
       ...courseMeta,
       category: normalizeBookCategory(course.category),
+      language: normalizeBookLanguage(course.language, course.category),
       chapters: [],
       stepOutline,
       detailLoaded: true,
@@ -533,6 +558,7 @@ export async function saveCourseSummary(course: Course): Promise<void> {
     ...(existing ?? {} as CourseRecord),
     ...summary,
     category: normalizeBookCategory(course.category),
+    language: normalizeBookLanguage(course.language, course.category),
     chapters: [],
     detailLoaded: stepOutlineIsStale ? false : existing?.detailLoaded ?? Boolean(existing?.stepOutline?.length),
     stepOutline: stepOutlineIsStale ? [] : existing?.stepOutline ?? [],
@@ -1275,6 +1301,7 @@ export async function importIndexedDb(
     for (const course of data.courses) {
       if (merge && existingCourseIds.has(course.id)) {
         const packagedCategory = normalizeBookCategory(course.category);
+        const packagedLanguage = normalizeBookLanguage(course.language, course.category);
         const packagedView = typeof course.pageViewType === "string" ? course.pageViewType : "";
         const packagedAuthor = canonicalAuthorName(course.authorName);
         if (packagedCategory || packagedView || course.coverImageUrl || packagedAuthor !== "Unknown") {
@@ -1284,6 +1311,7 @@ export async function importIndexedDb(
             existing &&
             (
               (packagedCategory && existing.category !== packagedCategory) ||
+              !existing.language ||
               (packagedView && existing.pageViewType !== packagedView) ||
               (packagedCover && existing.coverImageUrl !== packagedCover) ||
               (course.cat1 && existing.cat1 !== course.cat1) ||
@@ -1293,6 +1321,7 @@ export async function importIndexedDb(
             await saveCourse({
               ...existing,
               category: packagedCategory || existing.category,
+              language: existing.language ?? packagedLanguage,
               pageViewType: packagedView || existing.pageViewType,
               coverImageUrl: packagedCover || existing.coverImageUrl,
               title: course.title ?? existing.title,
@@ -1308,6 +1337,7 @@ export async function importIndexedDb(
       }
       await saveCourse({
         ...course,
+        language: normalizeBookLanguage(course.language, course.category),
         authorName: canonicalAuthorName(course.authorName),
       });
       importedCourses += 1;

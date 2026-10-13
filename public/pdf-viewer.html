@@ -433,6 +433,11 @@
         const ocrWordsCache = new Map();
         const ocrPromises = new Map();
         let pageZoom = 100;
+        const readerScaleParam = Number(params.get("readerScale"));
+        const mobileReaderScale = Number.isFinite(readerScaleParam)
+          ? Math.min(2.5, Math.max(1, readerScaleParam))
+          : 1.35;
+        const alignMobileReaderLeft = params.get("readerAlignLeft") === "1";
         let lastRenderedPage = null; // Track the last successfully rendered page
         const zoomParam = Number(params.get("zoom"));
         if (Number.isFinite(zoomParam) && zoomParam >= 50 && zoomParam <= 300) {
@@ -1677,7 +1682,10 @@
 
           let scrollLeft = 0;
           let shiftX = 0;
-          if (topCenter) {
+          if (alignMobileReaderLeft && isNarrowPdfViewport() && isReaderMode(mode)) {
+            scrollLeft = 0;
+            shiftX = 0;
+          } else if (topCenter) {
             /* Full page, top-center: no pan into a crop box. */
             const extra = cssWidth - availW;
             scrollLeft = extra > 0 ? extra / 2 : 0;
@@ -1745,7 +1753,7 @@
           let cssScale;
           if (cropToContent) {
             const narrowReader = readerWidth <= 600;
-            const readerZoom = narrowReader ? 1.35 : 1;
+            const readerZoom = narrowReader ? mobileReaderScale : 1;
             cssScale = (Math.max(60, readerWidth - 8) * readerZoom) / Math.max(1, box.w);
           } else if (large && !largeScreenUserZoom && isLargeLandscape()) {
             const viewW = Math.max(60, availW - edge * 2) / pageW;

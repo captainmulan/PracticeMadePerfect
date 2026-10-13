@@ -1085,6 +1085,17 @@ export default function AdminCourses() {
                         placeholder="IT, Other, AI"
                       />
                     </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Language</span>
+                      <select
+                        value={activeBook.language ?? "Eng"}
+                        onChange={(e) => updateActiveBook((c) => ({ ...c, language: e.target.value as "Eng" | "MM" }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="Eng">Eng</option>
+                        <option value="MM">MM</option>
+                      </select>
+                    </label>
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Cat 1</span>
                       <input
