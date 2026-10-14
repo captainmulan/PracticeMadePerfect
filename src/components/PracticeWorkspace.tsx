@@ -60,6 +60,9 @@ interface PracticeWorkspaceProps {
   onPageZoomChange?: (zoom: number) => void;
   viewMode?: PageViewType;
   onViewModeChange?: (view: PageViewType) => void;
+  readingAssistanceAvailable?: boolean;
+  readingAssistanceEnabled?: boolean;
+  onReadingAssistanceChange?: (enabled: boolean) => void;
   dictionarySelection?: string | null;
   onDictionaryModeChange?: (enabled: boolean) => void;
 }
@@ -110,6 +113,9 @@ export default function PracticeWorkspace({
   onPageZoomChange,
   viewMode,
   onViewModeChange,
+  readingAssistanceAvailable = false,
+  readingAssistanceEnabled = false,
+  onReadingAssistanceChange,
   dictionarySelection = null,
   onDictionaryModeChange,
 }: PracticeWorkspaceProps) {
@@ -368,6 +374,16 @@ export default function PracticeWorkspace({
               🔍
               <span className="practice-settings-label">Dictionary</span>
             </button>
+            {readingAssistanceAvailable && onReadingAssistanceChange ? (
+              <label className="practice-reading-assist-toggle" title="Show directional scroll keys and reading line">
+                <input
+                  type="checkbox"
+                  checked={readingAssistanceEnabled}
+                  onChange={(event) => onReadingAssistanceChange(event.target.checked)}
+                />
+                <span className="practice-settings-label">Reading assist</span>
+              </label>
+            ) : null}
             {viewMode && onViewModeChange ? (
               <label className="pdf-zoom-control" title="View mode">
                 <span className="practice-settings-label pdf-zoom-label">View</span>

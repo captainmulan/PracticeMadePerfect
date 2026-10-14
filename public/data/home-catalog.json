@@ -29,7 +29,8 @@
       "pIndex": 1,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/donald-duck-and-friends-361-dec-2010",
-      "stepCount": 28
+      "stepCount": 28,
+      "language": "Eng"
     },
     {
       "id": "tootpee-grandpa-poksi-1",
@@ -58,7 +59,8 @@
       "pIndex": 1,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-grandpa-poksi-1",
-      "stepCount": 145
+      "stepCount": 145,
+      "language": "MM"
     },
     {
       "id": "solarsystem",
@@ -87,7 +89,8 @@
       "cat4": "",
       "pIndex": 2,
       "artifactType": "book",
-      "stepCount": 43
+      "stepCount": 43,
+      "language": "Eng"
     },
     {
       "id": "myfirst100mmwords",
@@ -117,7 +120,8 @@
       "pIndex": 3,
       "artifactType": "book",
       "bookHtmlFolder": "Other/MyFirst100MMWords",
-      "stepCount": 38
+      "stepCount": 38,
+      "language": "Eng"
     },
     {
       "id": "koeimaung-programming-for-kids",
@@ -147,7 +151,8 @@
       "pIndex": 3,
       "artifactType": "book",
       "bookHtmlFolder": "Other/koeimaung-programming-for-kids",
-      "stepCount": 125
+      "stepCount": 125,
+      "language": "Eng"
     },
     {
       "id": "little-programmer",
@@ -176,7 +181,8 @@
       "cat4": "",
       "pIndex": 4,
       "artifactType": "book",
-      "stepCount": 29
+      "stepCount": 29,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-8",
@@ -206,7 +212,8 @@
       "pIndex": 4,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-8-1711504983477",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-15",
@@ -236,7 +243,8 @@
       "pIndex": 4,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-15",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-new",
@@ -265,7 +273,8 @@
       "pIndex": 4,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-new",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "tootpee-victim",
@@ -294,7 +303,8 @@
       "pIndex": 5,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-victim",
-      "stepCount": 259
+      "stepCount": 259,
+      "language": "MM"
     },
     {
       "id": "scooby-doo-the-camping-caper",
@@ -324,7 +334,8 @@
       "pIndex": 5,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/scooby-doo-the-camping-caper",
-      "stepCount": 36
+      "stepCount": 36,
+      "language": "Eng"
     },
     {
       "id": "oceanadventure",
@@ -354,7 +365,8 @@
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "Other/OceanAdventure",
-      "stepCount": 35
+      "stepCount": 35,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-10",
@@ -384,7 +396,8 @@
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-10",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-the-secret-of-the-sands",
@@ -414,7 +427,8 @@
       "pIndex": 6,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-the-secret-of-the-sands",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "rich-dad-s-increase-your-financial-iq",
@@ -443,7 +457,8 @@
       "pIndex": 8,
       "artifactType": "book",
       "bookHtmlFolder": "Other/rich-dad-s-increase-your-financial-iq",
-      "stepCount": 206
+      "stepCount": 206,
+      "language": "Eng"
     },
     {
       "id": "solid-interview-practice",
@@ -470,7 +485,8 @@
       "cat2": "IT",
       "cat3": "",
       "cat4": "",
-      "stepCount": 4
+      "stepCount": 4,
+      "language": "Eng"
     },
     {
       "id": "angular-interview-practice",
@@ -497,7 +513,8 @@
       "cat2": "IT",
       "cat3": "",
       "cat4": "",
-      "stepCount": 15
+      "stepCount": 15,
+      "language": "Eng"
     },
     {
       "id": "csharp-interview-practice",
@@ -524,7 +541,8 @@
       "cat2": "IT",
       "cat3": "",
       "cat4": "",
-      "stepCount": 12
+      "stepCount": 12,
+      "language": "Eng"
     },
     {
       "id": "sql-interview-practice",
@@ -551,7 +569,8 @@
       "cat2": "IT",
       "cat3": "",
       "cat4": "",
-      "stepCount": 12
+      "stepCount": 12,
+      "language": "Eng"
     },
     {
       "id": "new-book",
@@ -579,7 +598,8 @@
       "cat3": "",
       "cat4": "",
       "artifactType": "newspaper",
-      "stepCount": 1
+      "stepCount": 1,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-9-1711591356943",
@@ -608,7 +628,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-9-1711591356943",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "autobiographyofbenjaminfranklin",
@@ -637,7 +658,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/AutobiographyOfBenjaminFranklin",
-      "stepCount": 35
+      "stepCount": 35,
+      "language": "Eng"
     },
     {
       "id": "the-richest-man-in-babylon",
@@ -666,7 +688,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/The_Richest_Man_In_Babylon",
-      "stepCount": 90
+      "stepCount": 90,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-11",
@@ -695,7 +718,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-11",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-13",
@@ -724,7 +748,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-13",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-14",
@@ -753,7 +778,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-14",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "shwe-thway-journal-vol-56-no-16",
@@ -782,7 +808,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/shwe-thway-journal-vol-56-no-16",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "lyra-and-silent-frequency",
@@ -811,7 +838,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/lyra-and-silent-frequency",
-      "stepCount": 306
+      "stepCount": 306,
+      "language": "Eng"
     },
     {
       "id": "rockstar-developer-2025",
@@ -841,7 +869,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/rockstar-developer-2025",
-      "stepCount": 435
+      "stepCount": 435,
+      "language": "Eng"
     },
     {
       "id": "n8n-book",
@@ -871,7 +900,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/n8n-book",
-      "stepCount": 177
+      "stepCount": 177,
+      "language": "Eng"
     },
     {
       "id": "openclaw-book",
@@ -901,7 +931,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/openclaw-book",
-      "stepCount": 129
+      "stepCount": 129,
+      "language": "Eng"
     },
     {
       "id": "vibe-book-final",
@@ -931,7 +962,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/vibe-book-final",
-      "stepCount": 209
+      "stepCount": 209,
+      "language": "Eng"
     },
     {
       "id": "english-american-idioms-meaning-way-of-uses",
@@ -960,7 +992,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/english-american-idioms-meaning-way-of-uses",
-      "stepCount": 117
+      "stepCount": 117,
+      "language": "Eng"
     },
     {
       "id": "english-writing-upper-intermediate-part-3",
@@ -989,7 +1022,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/english-writing-upper-intermediate-part-3",
-      "stepCount": 216
+      "stepCount": 216,
+      "language": "Eng"
     },
     {
       "id": "high-school-english-grammar-and-composation",
@@ -1018,7 +1052,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/high-school-english-grammar-and-composation",
-      "stepCount": 275
+      "stepCount": 275,
+      "language": "Eng"
     },
     {
       "id": "how-to-write-in-english",
@@ -1047,7 +1082,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/how-to-write-in-english",
-      "stepCount": 235
+      "stepCount": 235,
+      "language": "Eng"
     },
     {
       "id": "modern-american-english-speaking-and-grammar",
@@ -1076,7 +1112,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/modern-american-english-speaking-and-grammar",
-      "stepCount": 200
+      "stepCount": 200,
+      "language": "Eng"
     },
     {
       "id": "practice-with-exercises",
@@ -1105,7 +1142,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/practice-with-exercises",
-      "stepCount": 199
+      "stepCount": 199,
+      "language": "Eng"
     },
     {
       "id": "speak-english-for-nurses",
@@ -1134,7 +1172,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/speak-english-for-nurses",
-      "stepCount": 123
+      "stepCount": 123,
+      "language": "Eng"
     },
     {
       "id": "the-easiest-idioms",
@@ -1163,7 +1202,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/the-easiest-idioms",
-      "stepCount": 133
+      "stepCount": 133,
+      "language": "Eng"
     },
     {
       "id": "the-good-grammar-book-with-answers",
@@ -1192,7 +1232,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/the-good-grammar-book-with-answers",
-      "stepCount": 318
+      "stepCount": 318,
+      "language": "Eng"
     },
     {
       "id": "the-most-beautiful-idiom",
@@ -1221,7 +1262,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/the-most-beautiful-idiom",
-      "stepCount": 167
+      "stepCount": 167,
+      "language": "Eng"
     },
     {
       "id": "writing-method-essay-and-letter",
@@ -1250,7 +1292,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/writing-method-essay-and-letter",
-      "stepCount": 185
+      "stepCount": 185,
+      "language": "Eng"
     },
     {
       "id": "modern-japanese-language-conversation",
@@ -1279,7 +1322,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/modern-japanese-language-conversation",
-      "stepCount": 211
+      "stepCount": 211,
+      "language": "Eng"
     },
     {
       "id": "the-easiest-way-to-speak-japanese",
@@ -1308,7 +1352,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/the-easiest-way-to-speak-japanese",
-      "stepCount": 118
+      "stepCount": 118,
+      "language": "Eng"
     },
     {
       "id": "speak-thai-burmese-and-english-daily",
@@ -1337,7 +1382,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/speak-thai-burmese-and-english-daily",
-      "stepCount": 225
+      "stepCount": 225,
+      "language": "Eng"
     },
     {
       "id": "che-guevara",
@@ -1366,7 +1412,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/che-guevara",
-      "stepCount": 208
+      "stepCount": 208,
+      "language": "Eng"
     },
     {
       "id": "tootpee-immortal-pill",
@@ -1394,7 +1441,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-immortal-pill",
-      "stepCount": 147
+      "stepCount": 147,
+      "language": "MM"
     },
     {
       "id": "elon-musk",
@@ -1423,7 +1471,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/elon-musk",
-      "stepCount": 391
+      "stepCount": 391,
+      "language": "Eng"
     },
     {
       "id": "tootpee-mandaly-trip",
@@ -1451,7 +1500,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-mandaly-trip",
-      "stepCount": 85
+      "stepCount": 85,
+      "language": "MM"
     },
     {
       "id": "florence-nightingale",
@@ -1480,7 +1530,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/florence-nightingale",
-      "stepCount": 190
+      "stepCount": 190,
+      "language": "Eng"
     },
     {
       "id": "tootpee-monster-from-maze-mountain",
@@ -1508,7 +1559,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-monster-from-maze-mountain",
-      "stepCount": 259
+      "stepCount": 259,
+      "language": "MM"
     },
     {
       "id": "georg-washington",
@@ -1537,7 +1589,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/georg-washington",
-      "stepCount": 109
+      "stepCount": 109,
+      "language": "Eng"
     },
     {
       "id": "tootpee-monster-messenger",
@@ -1565,7 +1618,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-monster-messenger",
-      "stepCount": 80
+      "stepCount": 80,
+      "language": "MM"
     },
     {
       "id": "tootpee-naughty-tiger",
@@ -1593,7 +1647,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-naughty-tiger",
-      "stepCount": 142
+      "stepCount": 142,
+      "language": "MM"
     },
     {
       "id": "tootpee-parent-love",
@@ -1621,7 +1676,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-parent-love",
-      "stepCount": 224
+      "stepCount": 224,
+      "language": "MM"
     },
     {
       "id": "tootpee-royal",
@@ -1649,7 +1705,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-royal",
-      "stepCount": 204
+      "stepCount": 204,
+      "language": "MM"
     },
     {
       "id": "read-at-home-floppy-and-the-bone",
@@ -1678,7 +1735,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-floppy-and-the-bone",
-      "stepCount": 13
+      "stepCount": 13,
+      "language": "Eng"
     },
     {
       "id": "tootpee-short-story-1",
@@ -1706,7 +1764,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-short-story-1",
-      "stepCount": 135
+      "stepCount": 135,
+      "language": "MM"
     },
     {
       "id": "read-at-home-floppy-s-phonics-seasick",
@@ -1735,7 +1794,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-floppy-s-phonics-seasick",
-      "stepCount": 25
+      "stepCount": 25,
+      "language": "Eng"
     },
     {
       "id": "tootpee-single-men-trouble",
@@ -1763,7 +1823,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-single-men-trouble",
-      "stepCount": 189
+      "stepCount": 189,
+      "language": "MM"
     },
     {
       "id": "read-at-home-hungry-floppy",
@@ -1792,7 +1853,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-hungry-floppy",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-looking-after-gran",
@@ -1821,7 +1883,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-looking-after-gran",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "tootpee-village-donation",
@@ -1849,7 +1912,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-village-donation",
-      "stepCount": 113
+      "stepCount": 113,
+      "language": "MM"
     },
     {
       "id": "read-at-home-the-hairy-scary-monster",
@@ -1878,7 +1942,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-the-hairy-scary-monster",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "tootpee-wild-and-civilized",
@@ -1906,7 +1971,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-wild-and-civilized",
-      "stepCount": 145
+      "stepCount": 145,
+      "language": "MM"
     },
     {
       "id": "read-at-home-the-monster-hunt",
@@ -1935,7 +2001,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-the-monster-hunt",
-      "stepCount": 13
+      "stepCount": 13,
+      "language": "Eng"
     },
     {
       "id": "scooby-doo-and-the-scary-snowman",
@@ -1964,7 +2031,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/scooby-doo-and-the-scary-snowman",
-      "stepCount": 27
+      "stepCount": 27,
+      "language": "Eng"
     },
     {
       "id": "town-mouse-and-country-mouse",
@@ -1993,7 +2061,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/town-mouse-and-country-mouse",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "alexander-the-great-the-greatest-ruler-of-the-ancient-world",
@@ -2022,7 +2091,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/alexander-the-great-the-greatest-ruler-of-the-ancient-world",
-      "stepCount": 33
+      "stepCount": 33,
+      "language": "Eng"
     },
     {
       "id": "alice-in-wonderland",
@@ -2051,7 +2121,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/alice-in-wonderland",
-      "stepCount": 52
+      "stepCount": 52,
+      "language": "Eng"
     },
     {
       "id": "all-about-korea-stories",
@@ -2080,7 +2151,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/all-about-korea-stories",
-      "stepCount": 66
+      "stepCount": 66,
+      "language": "Eng"
     },
     {
       "id": "all-about-thailand-stories",
@@ -2109,7 +2181,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/all-about-thailand-stories",
-      "stepCount": 67
+      "stepCount": 67,
+      "language": "Eng"
     },
     {
       "id": "cassandra-the-lucky",
@@ -2138,7 +2211,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/cassandra-the-lucky",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "harrypotter-deadlyhollow-part2",
@@ -2168,7 +2242,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/harrypotter-deadlyhollow-part2",
-      "stepCount": 405
+      "stepCount": 405,
+      "language": "Eng"
     },
     {
       "id": "harrypotter-philosopherstone",
@@ -2198,7 +2273,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/harrypotter-philosopherstone",
-      "stepCount": 183
+      "stepCount": 183,
+      "language": "Eng"
     },
     {
       "id": "harrypotter-prionsnerofaskaban",
@@ -2228,7 +2304,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/harrypotter-prionsnerofaskaban",
-      "stepCount": 329
+      "stepCount": 329,
+      "language": "Eng"
     },
     {
       "id": "jungle-book",
@@ -2257,7 +2334,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/jungle-book",
-      "stepCount": 79
+      "stepCount": 79,
+      "language": "Eng"
     },
     {
       "id": "squirrel-s-world",
@@ -2286,7 +2364,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/squirrel-s-world",
-      "stepCount": 50
+      "stepCount": 50,
+      "language": "Eng"
     },
     {
       "id": "tootpee-a-girl-named-mala",
@@ -2314,7 +2393,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-a-girl-named-mala",
-      "stepCount": 198
+      "stepCount": 198,
+      "language": "MM"
     },
     {
       "id": "tootpee-elephant-storm",
@@ -2342,7 +2422,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-elephant-storm",
-      "stepCount": 246
+      "stepCount": 246,
+      "language": "MM"
     },
     {
       "id": "tootpee-tha-man-ka-way",
@@ -2370,7 +2451,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-tha-man-ka-way",
-      "stepCount": 203
+      "stepCount": 203,
+      "language": "MM"
     },
     {
       "id": "tootpee-amyue-tay",
@@ -2398,7 +2480,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-amyue-tay",
-      "stepCount": 157
+      "stepCount": 157,
+      "language": "MM"
     },
     {
       "id": "tootpee-dragon-rubies",
@@ -2426,7 +2509,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-dragon-rubies",
-      "stepCount": 252
+      "stepCount": 252,
+      "language": "MM"
     },
     {
       "id": "tootpee-every-time-i-meet-united",
@@ -2454,7 +2538,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-every-time-i-meet-united",
-      "stepCount": 206
+      "stepCount": 206,
+      "language": "MM"
     },
     {
       "id": "tootpee-grandpa-poksi-2",
@@ -2482,7 +2567,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-grandpa-poksi-2",
-      "stepCount": 160
+      "stepCount": 160,
+      "language": "MM"
     },
     {
       "id": "tootpee-kyite-htee-yoe-trip",
@@ -2510,7 +2596,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-kyite-htee-yoe-trip",
-      "stepCount": 79
+      "stepCount": 79,
+      "language": "MM"
     },
     {
       "id": "tootpee-poinsioned-people",
@@ -2538,7 +2625,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-poinsioned-people",
-      "stepCount": 195
+      "stepCount": 195,
+      "language": "MM"
     },
     {
       "id": "tootpee-red-mountain-sky-trip",
@@ -2566,7 +2654,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-red-mountain-sky-trip",
-      "stepCount": 396
+      "stepCount": 396,
+      "language": "MM"
     },
     {
       "id": "tootpee-ring-of-the-bell-from-school",
@@ -2594,7 +2683,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-ring-of-the-bell-from-school",
-      "stepCount": 160
+      "stepCount": 160,
+      "language": "MM"
     },
     {
       "id": "tootpee-way-lar-nal-mha-tiger",
@@ -2622,7 +2712,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-way-lar-nal-mha-tiger",
-      "stepCount": 187
+      "stepCount": 187,
+      "language": "MM"
     },
     {
       "id": "tootpee-white-tiger-ghost",
@@ -2650,7 +2741,8 @@
       "cat3": "Tootpee",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/tootpee-white-tiger-ghost",
-      "stepCount": 244
+      "stepCount": 244,
+      "language": "MM"
     },
     {
       "id": "gandhi-the-father-of-modern-india",
@@ -2678,7 +2770,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/gandhi-the-father-of-modern-india",
-      "stepCount": 33
+      "stepCount": 33,
+      "language": "Eng"
     },
     {
       "id": "who-was-steve-jobs",
@@ -2706,7 +2799,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/who-was-steve-jobs",
-      "stepCount": 88
+      "stepCount": 88,
+      "language": "Eng"
     },
     {
       "id": "aung-san-su-kyi-interview",
@@ -2734,7 +2828,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/aung-san-su-kyi-interview",
-      "stepCount": 365
+      "stepCount": 365,
+      "language": "Eng"
     },
     {
       "id": "26-keys-to-winning-the-a-z-of-success",
@@ -2762,7 +2857,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/26-keys-to-winning-the-a-z-of-success",
-      "stepCount": 62
+      "stepCount": 62,
+      "language": "Eng"
     },
     {
       "id": "secrets-of-the-millionaire-mind",
@@ -2790,7 +2886,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/secrets-of-the-millionaire-mind",
-      "stepCount": 155
+      "stepCount": 155,
+      "language": "Eng"
     },
     {
       "id": "speak-with-confidence-powerful-presentations-that-inform-inspire-and-persuade",
@@ -2818,7 +2915,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/speak-with-confidence-powerful-presentations-that-inform-inspire-and-persuade",
-      "stepCount": 242
+      "stepCount": 242,
+      "language": "Eng"
     },
     {
       "id": "start-your-own-business-2010",
@@ -2846,7 +2944,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/start-your-own-business-2010",
-      "stepCount": 291
+      "stepCount": 291,
+      "language": "Eng"
     },
     {
       "id": "ai-in-marketing-sales-and-service",
@@ -2875,7 +2974,8 @@
       "cat3": "AI",
       "artifactType": "book",
       "bookHtmlFolder": "Other/ai-in-marketing-sales-and-service",
-      "stepCount": 280
+      "stepCount": 280,
+      "language": "Eng"
     },
     {
       "id": "programming-game-ai",
@@ -2904,7 +3004,8 @@
       "cat3": "AI",
       "artifactType": "book",
       "bookHtmlFolder": "Other/programming-game-ai",
-      "stepCount": 521
+      "stepCount": 521,
+      "language": "Eng"
     },
     {
       "id": "java-coding-interview",
@@ -2933,7 +3034,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/java-coding-interview",
-      "stepCount": 457
+      "stepCount": 457,
+      "language": "Eng"
     },
     {
       "id": "sql-nosql-databases",
@@ -2962,7 +3064,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/sql-nosql-databases",
-      "stepCount": 238
+      "stepCount": 238,
+      "language": "Eng"
     },
     {
       "id": "web-programming-with-html5-css-and-javascript",
@@ -2991,7 +3094,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/web-programming-with-html5-css-and-javascript",
-      "stepCount": 699
+      "stepCount": 699,
+      "language": "Eng"
     },
     {
       "id": "winning-job-interviews",
@@ -3020,7 +3124,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/winning-job-interviews",
-      "stepCount": 225
+      "stepCount": 225,
+      "language": "Eng"
     },
     {
       "id": "mya-than-tint-chit-thaw-yoon-khin-khin",
@@ -3048,7 +3153,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/mya-than-tint-chit-thaw-yoon-khin-khin",
-      "stepCount": 427
+      "stepCount": 427,
+      "language": "Eng"
     },
     {
       "id": "nat-nwe-pyan-lay-thi-nyat-khar",
@@ -3076,7 +3182,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/nat-nwe-pyan-lay-thi-nyat-khar",
-      "stepCount": 132
+      "stepCount": 132,
+      "language": "Eng"
     },
     {
       "id": "salayminkhway",
@@ -3104,7 +3211,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/salayminkhway",
-      "stepCount": 202
+      "stepCount": 202,
+      "language": "Eng"
     },
     {
       "id": "thar-du-storyline",
@@ -3132,7 +3240,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/thar-du-storyline",
-      "stepCount": 219
+      "stepCount": 219,
+      "language": "Eng"
     },
     {
       "id": "myanmar-village-stories",
@@ -3160,7 +3269,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/myanmar-village-stories",
-      "stepCount": 237
+      "stepCount": 237,
+      "language": "Eng"
     },
     {
       "id": "iron-heel",
@@ -3188,7 +3298,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/iron-heel",
-      "stepCount": 151
+      "stepCount": 151,
+      "language": "Eng"
     },
     {
       "id": "the-vatican-target",
@@ -3216,7 +3327,8 @@
       "cat3": "",
       "artifactType": "book",
       "bookHtmlFolder": "Other/the-vatican-target",
-      "stepCount": 302
+      "stepCount": 302,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-cute-rabbit",
@@ -3244,7 +3356,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-cute-rabbit",
-      "stepCount": 111
+      "stepCount": 111,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-dangerous-fruit",
@@ -3272,7 +3385,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-dangerous-fruit",
-      "stepCount": 112
+      "stepCount": 112,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-effort",
@@ -3300,7 +3414,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-effort",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-get-relieved",
@@ -3328,7 +3443,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-get-relieved",
-      "stepCount": 112
+      "stepCount": 112,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-like-me",
@@ -3356,7 +3472,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-like-me",
-      "stepCount": 103
+      "stepCount": 103,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-mango",
@@ -3384,7 +3501,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-mango",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-mouse",
@@ -3412,7 +3530,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-mouse",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-new-footwear",
@@ -3440,7 +3559,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-new-footwear",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-parrot",
@@ -3468,7 +3588,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-parrot",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-strange-tiny-trip",
@@ -3496,7 +3617,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-strange-tiny-trip",
-      "stepCount": 103
+      "stepCount": 103,
+      "language": "Eng"
     },
     {
       "id": "bo-bo-the-right-way",
@@ -3524,7 +3646,8 @@
       "cat3": "BoBo",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/bo-bo-the-right-way",
-      "stepCount": 104
+      "stepCount": 104,
+      "language": "Eng"
     },
     {
       "id": "html-css-lwin-moe-paing",
@@ -3552,7 +3675,8 @@
       "cat2": "IT",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HTML-CSS-Lwin-Moe-Paing",
-      "stepCount": 270
+      "stepCount": 270,
+      "language": "Eng"
     },
     {
       "id": "javascript-book-ei-maung",
@@ -3580,7 +3704,8 @@
       "cat2": "IT",
       "artifactType": "book",
       "bookHtmlFolder": "Other/JavaScript-Book-Ei-Maung",
-      "stepCount": 191
+      "stepCount": 191,
+      "language": "Eng"
     },
     {
       "id": "oop-basic-mrthetkhing",
@@ -3608,7 +3733,8 @@
       "cat2": "IT",
       "artifactType": "book",
       "bookHtmlFolder": "Other/oop-basic-MrThetKhing",
-      "stepCount": 40
+      "stepCount": 40,
+      "language": "Eng"
     },
     {
       "id": "oop-anddesignpattern-mrthetkhing",
@@ -3636,7 +3762,8 @@
       "cat2": "IT",
       "artifactType": "book",
       "bookHtmlFolder": "Other/OOP-AndDesignPattern-MrThetKhing",
-      "stepCount": 141
+      "stepCount": 141,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-trapped-1706167800403",
@@ -3664,7 +3791,8 @@
       "cat3": "ReadAtHome",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-trapped-1706167800403",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-the-palace-statues-1785265143680",
@@ -3689,7 +3817,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-the-palace-statues-1785265143680",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-the-golden-touch-1762652779896",
@@ -3714,7 +3843,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-the-golden-touch-1762652779896",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-poor-old-rabbit-1760774869144",
@@ -3739,7 +3869,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-poor-old-rabbit-1760774869144",
-      "stepCount": 13
+      "stepCount": 13,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-i-can-trick-a-tiger-1760772531623",
@@ -3764,7 +3895,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-i-can-trick-a-tiger-1760772531623",
-      "stepCount": 13
+      "stepCount": 13,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-silly-races-1759684177219",
@@ -3789,7 +3921,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-silly-races-1759684177219",
-      "stepCount": 13
+      "stepCount": 13,
+      "language": "Eng"
     },
     {
       "id": "Read-at-home-ouch",
@@ -3814,7 +3947,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-ouch-1786767052338",
-      "stepCount": 13
+      "stepCount": 13,
+      "language": "Eng"
     },
     {
       "id": "scienceadventuresgrade6-comic-siyavula-fkb",
@@ -3842,7 +3976,8 @@
       "cat3": "ThunderboltKids",
       "artifactType": "book",
       "bookHtmlFolder": "Other/ScienceAdventuresGrade6_comic-Siyavula-FKB",
-      "stepCount": 176
+      "stepCount": 176,
+      "language": "Eng"
     },
     {
       "id": "thinkingskills-siyavula-fkb",
@@ -3870,7 +4005,8 @@
       "cat3": "ThunderboltKids",
       "artifactType": "book",
       "bookHtmlFolder": "Other/thinkingskills-Siyavula-FKB",
-      "stepCount": 67
+      "stepCount": 67,
+      "language": "Eng"
     },
     {
       "id": "science-comic-adventures-grade4-fkb",
@@ -3898,7 +4034,8 @@
       "cat3": "ThunderboltKids",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Science_Comic_Adventures_Grade4_FKB",
-      "stepCount": 176
+      "stepCount": 176,
+      "language": "Eng"
     },
     {
       "id": "read-at-home-mountain-rescue-1785265133477",
@@ -3923,7 +4060,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-at-home-_-mountain-rescue-1785265133477",
-      "stepCount": 17
+      "stepCount": 17,
+      "language": "Eng"
     },
     {
       "id": "scienceadventures-comic-grade5-siyavula-fkb",
@@ -3951,7 +4089,8 @@
       "cat3": "ThunderboltKids",
       "artifactType": "book",
       "bookHtmlFolder": "Other/ScienceAdventures_Comic_Grade5_siyavula-FKB",
-      "stepCount": 176
+      "stepCount": 176,
+      "language": "Eng"
     },
     {
       "id": "2608-milo-and-pip-fkb",
@@ -3976,7 +4115,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/2608-milo_and_pip-FKB",
-      "stepCount": 26
+      "stepCount": 26,
+      "language": "Eng"
     },
     {
       "id": "pepper-and-carrot-comic-episode-02-fkb-v3",
@@ -4004,7 +4144,8 @@
       "cat3": "Pepper And Carrot",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/Pepper_and_Carrot_Comic_Episode_02_FKB-v3",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "pepper-and-carrot-comic-episode-14-fkb-m",
@@ -4032,7 +4173,8 @@
       "cat3": "Pepper And Carrot",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/Pepper_and_Carrot_Comic_Episode_14_FKB_M",
-      "stepCount": 20
+      "stepCount": 20,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-songbirds-phonics-the-odd-pet-1767388726782",
@@ -4060,7 +4202,8 @@
       "cat3": "OxfordReading",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-songbirds-phonics-_-the-odd-pet-1767388726782",
-      "stepCount": 19
+      "stepCount": 19,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-songbirds-phonics-doctor-duck-1767388704311",
@@ -4085,7 +4228,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-songbirds-phonics-_-doctor-duck-1767388704311",
-      "stepCount": 19
+      "stepCount": 19,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-5-leroy-1759224538818",
@@ -4110,7 +4254,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-5-_-leroy-1759224538818",
-      "stepCount": 27
+      "stepCount": 27,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-songbirds-phonics-stage-3-splash-and-squelch-1759224510190",
@@ -4135,7 +4280,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-songbirds-phonics-stage-3-_-splash-and-squelch-1759224510190",
-      "stepCount": 19
+      "stepCount": 19,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-6-clare-and-the-fair-1775345677647",
@@ -4160,7 +4306,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-6-_-clare-and-the-fair-1775345677647",
-      "stepCount": 27
+      "stepCount": 27,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-6-jack-and-the-giants-1775345662845",
@@ -4185,7 +4332,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-6-_-jack-and-the-giants-1775345662845",
-      "stepCount": 27
+      "stepCount": 27,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-2-the-big-match-1759224430935",
@@ -4210,7 +4358,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-2-_-the-big-match-1759224430935",
-      "stepCount": 19
+      "stepCount": 19,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-6-tara-s-party-1778833965138",
@@ -4235,7 +4384,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-6-_-tara-s-party-1778833965138",
-      "stepCount": 27
+      "stepCount": 27,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-5-no-milk-today-1766046857833",
@@ -4260,7 +4410,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-5-_-no-milk-today-1766046857833",
-      "stepCount": 26
+      "stepCount": 26,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-4-spike-says-1766044097939",
@@ -4285,7 +4436,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-4-_-spike-says-1766044097939",
-      "stepCount": 19
+      "stepCount": 19,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-songbirds-phonics-stage-3-gran-is-cross-1767388617821",
@@ -4310,7 +4462,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-songbirds-phonics-stage-3-_-gran-is-cross-1767388617821",
-      "stepCount": 19
+      "stepCount": 19,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-2-first-phonics-the-big-egg-1767388594379",
@@ -4335,7 +4488,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-2-_-first-phonics-the-big-egg-1767388594379",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-2-first-phonics-poor-floppy-1767388575440",
@@ -4360,7 +4514,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-2-_-first-phonics-poor-floppy-1767388575440",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-songbirds-phonics-level-5-the-cinderella-play-1761736754830",
@@ -4385,7 +4540,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-songbirds-phonics-level-5-_-the-cinderella-play-1761736754830",
-      "stepCount": 15
+      "stepCount": 15,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-songbirds-phonics-stage-1-mix-mix-mix-1766042557719",
@@ -4410,7 +4566,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-songbirds-phonics-stage-1-_-mix-mix-mix-1766042557719",
-      "stepCount": 12
+      "stepCount": 12,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-3-first-phonics-sniff-1766043169960",
@@ -4435,7 +4592,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-3-_-first-phonics-sniff-1766043169960",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-1-more-floppy-s-phonics-cats-1785274787314",
@@ -4460,7 +4618,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-1-_-more-floppy-s-phonics-cats-1785274787314",
-      "stepCount": 12
+      "stepCount": 12,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-3-first-phonics-the-mud-bath-1761742836909",
@@ -4485,7 +4644,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-3-_-first-phonics-the-mud-bath-1761742836909",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-3-floppy-s-phonics-fiction-leek-hotpot-1760773913330",
@@ -4510,7 +4670,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-3-_-floppy-s-phonics-fiction-leek-hotpot-1760773913330",
-      "stepCount": 20
+      "stepCount": 20,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-9-more-stories-a-the-flying-machine-1759594419990",
@@ -4535,7 +4696,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-9-_-more-stories-a-the-flying-machine-1759594419990",
-      "stepCount": 36
+      "stepCount": 36,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-9-more-stories-a-key-trouble-1778833310195",
@@ -4560,7 +4722,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-9-_-more-stories-a-key-trouble-1778833310195",
-      "stepCount": 36
+      "stepCount": 36,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-7-owls-storybooks-red-planet-1760883049983",
@@ -4585,7 +4748,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-7-_-owls-storybooks-red-planet-1760883049983",
-      "stepCount": 34
+      "stepCount": 34,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-6-owls-storybooks-in-the-garden-1702809981282",
@@ -4610,7 +4774,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-6-_-owls-storybooks-in-the-garden-1702809981282",
-      "stepCount": 26
+      "stepCount": 26,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-2-first-phonics-in-a-bit-1759684926317",
@@ -4635,7 +4800,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-2-_-first-phonics-in-a-bit-1759684926317",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-level-6-stories-land-of-the-dinosaurs-1759684923099",
@@ -4660,7 +4826,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-level-6-_-stories-land-of-the-dinosaurs-1759684923099",
-      "stepCount": 28
+      "stepCount": 28,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-6-owls-storybooks-kipper-and-the-giant-1760773554779",
@@ -4685,7 +4852,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-6-_-owls-storybooks-kipper-and-the-giant-1760773554779",
-      "stepCount": 26
+      "stepCount": 26,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-2-first-phonics-put-it-back-1760359343461",
@@ -4710,7 +4878,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-2-_-first-phonics-put-it-back-1760359343461",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-2-first-phonics-a-present-for-mum-1760772583664",
@@ -4735,7 +4904,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-2-_-first-phonics-a-present-for-mum-1760772583664",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "oxford-reading-tree-stage-4-floppy-s-phonics-seasick-1759224366545",
@@ -4760,7 +4930,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/oxford-reading-tree-stage-4-_-floppy-s-phonics-seasick-1759224366545",
-      "stepCount": 25
+      "stepCount": 25,
+      "language": "Eng"
     },
     {
       "id": "jack-ma-and-ali-ba-ba-1666183896002",
@@ -4787,7 +4958,8 @@
       "cat2": "Biography",
       "artifactType": "book",
       "bookHtmlFolder": "Other/jack-ma-and-ali-ba-ba-1666183896002",
-      "stepCount": 214
+      "stepCount": 214,
+      "language": "Eng"
     },
     {
       "id": "who-took-my-money-1685081341236",
@@ -4814,7 +4986,8 @@
       "cat2": "Finance",
       "artifactType": "book",
       "bookHtmlFolder": "Other/who-took-my-money-1685081341236",
-      "stepCount": 167
+      "stepCount": 167,
+      "language": "Eng"
     },
     {
       "id": "the-richest-man-in-babylon-1773549932594",
@@ -4841,7 +5014,8 @@
       "cat2": "Finance",
       "artifactType": "book",
       "bookHtmlFolder": "Other/the-richest-man-in-babylon-1773549932594",
-      "stepCount": 301
+      "stepCount": 301,
+      "language": "Eng"
     },
     {
       "id": "lost-in-the-internet-fkb",
@@ -4868,7 +5042,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/lost-in-the-internet-FKB",
-      "stepCount": 20
+      "stepCount": 20,
+      "language": "Eng"
     },
     {
       "id": "eye-can-see-pratham-fkb",
@@ -4895,7 +5070,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/eye-can-see-pratham-FKB",
-      "stepCount": 21
+      "stepCount": 21,
+      "language": "Eng"
     },
     {
       "id": "why-do-sunflowers-love-the-sun-pratham-fkb",
@@ -4922,7 +5098,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/why-do-sunflowers-love-the-sun-pratham-FKB",
-      "stepCount": 18
+      "stepCount": 18,
+      "language": "Eng"
     },
     {
       "id": "there-s-a-hole-in-my-galaxy-pratham-fkb",
@@ -4949,7 +5126,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/there-s-a-hole-in-my-galaxy-pratham-fkb",
-      "stepCount": 26
+      "stepCount": 26,
+      "language": "Eng"
     },
     {
       "id": "the-mighty-solar-panel-solar-panel-childrens-book-fkb",
@@ -4976,7 +5154,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/The-Mighty-Solar-Panel-Solar-Panel-Childrens-Book-FKB",
-      "stepCount": 31
+      "stepCount": 31,
+      "language": "Eng"
     },
     {
       "id": "kahani-koala-book",
@@ -5003,7 +5182,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Kahani_koala_book",
-      "stepCount": 13
+      "stepCount": 13,
+      "language": "Eng"
     },
     {
       "id": "peppa-pig-georges-birthday-1776220991182",
@@ -5031,7 +5211,8 @@
       "cat3": "PeppaPig",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/peppa-pig-georges-birthday-1776220991182",
-      "stepCount": 20
+      "stepCount": 20,
+      "language": "Eng"
     },
     {
       "id": "2209-all-about-sirenia-db-fkb",
@@ -5058,7 +5239,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/2209-All-About-Sirenia-DB-FKB",
-      "stepCount": 22
+      "stepCount": 22,
+      "language": "Eng"
     },
     {
       "id": "peppa-pig-tiny-creatures-1776221071244",
@@ -5086,7 +5268,8 @@
       "cat3": "PeppaPig",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/peppa-pig-tiny-creatures-1776221071244",
-      "stepCount": 15
+      "stepCount": 15,
+      "language": "Eng"
     },
     {
       "id": "2505-biology-bookbot-fkb",
@@ -5113,7 +5296,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/2505-Biology-BookBot-FKB",
-      "stepCount": 16
+      "stepCount": 16,
+      "language": "Eng"
     },
     {
       "id": "peppa-pig-peppas-space-trip-and-teddys-day-out-1776221053170",
@@ -5141,7 +5325,8 @@
       "cat3": "PeppaPig",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/peppa-pig-peppas-space-trip-and-teddys-day-out-1776221053170",
-      "stepCount": 20
+      "stepCount": 20,
+      "language": "Eng"
     },
     {
       "id": "2604-our-beautiful-world-sw-fkb",
@@ -5168,7 +5353,8 @@
       "cat2": "Science",
       "artifactType": "book",
       "bookHtmlFolder": "Other/2604-Our_Beautiful_World-SW-FKB",
-      "stepCount": 28
+      "stepCount": 28,
+      "language": "Eng"
     },
     {
       "id": "ielts-speaking-strategies-2020-1682398539737",
@@ -5197,7 +5383,8 @@
       "cat4": "IELTS",
       "artifactType": "book",
       "bookHtmlFolder": "Other/ielts-speaking-strategies-2020-1682398539737",
-      "stepCount": 261
+      "stepCount": 261,
+      "language": "Eng"
     },
     {
       "id": "the-aristocats-1774939627256",
@@ -5222,7 +5409,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/the-aristocats-1774939627256",
-      "stepCount": 14
+      "stepCount": 14,
+      "language": "Eng"
     },
     {
       "id": "the-sorcerer-s-stone",
@@ -5251,7 +5439,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/The-Sorcerer-s-Stone",
-      "stepCount": 250
+      "stepCount": 250,
+      "language": "Eng"
     },
     {
       "id": "time-to-talk-low-intermediate-b1-1706904691564",
@@ -5279,7 +5468,8 @@
       "cat3": "Eng",
       "artifactType": "book",
       "bookHtmlFolder": "Other/time-to-talk-low-intermediate-b1-1706904691564",
-      "stepCount": 83
+      "stepCount": 83,
+      "language": "Eng"
     },
     {
       "id": "read-it-yourself-thumbelina-level-3-1686033074316",
@@ -5307,7 +5497,8 @@
       "cat3": "ReadItYourself",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-it-yourself-thumbelina-_-level-3-1686033074316",
-      "stepCount": 25
+      "stepCount": 25,
+      "language": "Eng"
     },
     {
       "id": "snow-white-and-the-seven-dwarfs-1702069258429",
@@ -5332,7 +5523,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Comic/snow-white-and-the-seven-dwarfs-1702069258429",
-      "stepCount": 25
+      "stepCount": 25,
+      "language": "Eng"
     },
     {
       "id": "beano-16-may-2020-1707089648572",
@@ -5360,7 +5552,8 @@
       "cat3": "Beano",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/beano-16-may-2020-1707089648572",
-      "stepCount": 36
+      "stepCount": 36,
+      "language": "Eng"
     },
     {
       "id": "read-it-yourself-dick-whittington-1707097073260",
@@ -5388,7 +5581,8 @@
       "cat3": "ReadItYourself",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-it-yourself-_-dick-whittington-1707097073260",
-      "stepCount": 25
+      "stepCount": 25,
+      "language": "Eng"
     },
     {
       "id": "beano-30-may-2020-1707089640786",
@@ -5416,7 +5610,8 @@
       "cat3": "Beano",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/beano-30-may-2020-1707089640786",
-      "stepCount": 36
+      "stepCount": 36,
+      "language": "Eng"
     },
     {
       "id": "read-it-yourself-the-pied-piper-of-hamelin-1706905892794",
@@ -5444,7 +5639,8 @@
       "cat3": "ReadItYourself",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-it-yourself-_-the-pied-piper-of-hamelin-1706905892794",
-      "stepCount": 25
+      "stepCount": 25,
+      "language": "Eng"
     },
     {
       "id": "my-little-pony-friendship-is-magic-v1-2013",
@@ -5471,7 +5667,8 @@
       "cat2": "Comic",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/My-Little-Pony-Friendship-Is-Magic-v1-2013",
-      "stepCount": 118
+      "stepCount": 118,
+      "language": "Eng"
     },
     {
       "id": "read-it-yourself-the-wizard-of-oz-1707096910333",
@@ -5499,7 +5696,8 @@
       "cat3": "ReadItYourself",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-it-yourself-_-the-wizard-of-oz-1707096910333",
-      "stepCount": 21
+      "stepCount": 21,
+      "language": "Eng"
     },
     {
       "id": "read-it-yourself-little-red-riding-hood-1707096924607",
@@ -5527,7 +5725,8 @@
       "cat3": "ReadItYourself",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/read-it-yourself-_-little-red-riding-hood-1707096924607",
-      "stepCount": 25
+      "stepCount": 25,
+      "language": "Eng"
     },
     {
       "id": "peppa-pig-school-bus-trip",
@@ -5555,7 +5754,8 @@
       "cat3": "PeppaPig",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/Peppa-Pig-School-Bus-Trip",
-      "stepCount": 27
+      "stepCount": 27,
+      "language": "Eng"
     },
     {
       "id": "pinocchio-1686023316687",
@@ -5583,7 +5783,8 @@
       "cat3": "ReadItYourself",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/pinocchio-1686023316687",
-      "stepCount": 24
+      "stepCount": 24,
+      "language": "Eng"
     },
     {
       "id": "peppa-pig-daddy-pigs-old-chair",
@@ -5611,7 +5812,8 @@
       "cat3": "PeppaPig",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/Peppa-Pig-Daddy-Pigs-Old-Chair",
-      "stepCount": 26
+      "stepCount": 26,
+      "language": "Eng"
     },
     {
       "id": "peter-pan-1707086205565",
@@ -5639,7 +5841,8 @@
       "cat3": "ReadItYourself",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/peter-pan-1707086205565",
-      "stepCount": 24
+      "stepCount": 24,
+      "language": "Eng"
     },
     {
       "id": "html-mm",
@@ -5664,7 +5867,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Other/HTML_MM",
-      "stepCount": 51
+      "stepCount": 51,
+      "language": "Eng"
     },
     {
       "id": "linus-os-mm",
@@ -5689,7 +5893,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Other/Linus-OS_MM",
-      "stepCount": 75
+      "stepCount": 75,
+      "language": "Eng"
     },
     {
       "id": "content-management-system-dynamic-web-portal-mm",
@@ -5714,7 +5919,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Other/Content-Management-System-dynamic-web-portal-_MM",
-      "stepCount": 30
+      "stepCount": 30,
+      "language": "Eng"
     },
     {
       "id": "rich-dad-s-before-you-quite-your-job",
@@ -5741,7 +5947,8 @@
       "cat2": "Finance",
       "artifactType": "book",
       "bookHtmlFolder": "Other/rich-dad-s-before-you-quite-your-job",
-      "stepCount": 266
+      "stepCount": 266,
+      "language": "Eng"
     },
     {
       "id": "rich-dad-poor-dad",
@@ -5768,7 +5975,8 @@
       "cat2": "Finance",
       "artifactType": "book",
       "bookHtmlFolder": "Other/rich-dad-poor-dad",
-      "stepCount": 241
+      "stepCount": 241,
+      "language": "Eng"
     },
     {
       "id": "richdadpoordadforteens-the-secrets-about-money",
@@ -5795,7 +6003,8 @@
       "cat2": "Finance",
       "artifactType": "book",
       "bookHtmlFolder": "Other/RichDadPoorDadforTeens_The-Secrets-about-Money",
-      "stepCount": 140
+      "stepCount": 140,
+      "language": "Eng"
     },
     {
       "id": "php-notesforprofessionals",
@@ -5820,7 +6029,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Other/PHP_NotesForProfessionals",
-      "stepCount": 481
+      "stepCount": 481,
+      "language": "Eng"
     },
     {
       "id": "a-programmers-guide-to-computer-science",
@@ -5845,7 +6055,8 @@
       "isPublished": true,
       "artifactType": "book",
       "bookHtmlFolder": "Other/a-programmers-guide-to-computer-science",
-      "stepCount": 122
+      "stepCount": 122,
+      "language": "Eng"
     },
     {
       "id": "harryp-halfbloodprince-mm",
@@ -5874,7 +6085,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HarryP_HalfBloodPrince_MM",
-      "stepCount": 761
+      "stepCount": 761,
+      "language": "Eng"
     },
     {
       "id": "harryp-gobletfire-part2-mm",
@@ -5903,7 +6115,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HarryP_GobletFire_Part2_MM",
-      "stepCount": 257
+      "stepCount": 257,
+      "language": "Eng"
     },
     {
       "id": "harryp-gobletfire-part1-mm",
@@ -5932,7 +6145,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HarryP_GobletFire_Part1_MM",
-      "stepCount": 209
+      "stepCount": 209,
+      "language": "Eng"
     },
     {
       "id": "harryp-chambersecret-part2-mm",
@@ -5961,7 +6175,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HarryP_ChamberSecret_Part2_MM",
-      "stepCount": 161
+      "stepCount": 161,
+      "language": "Eng"
     },
     {
       "id": "hp-stone",
@@ -5990,7 +6205,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HP_Stone",
-      "stepCount": 269
+      "stepCount": 269,
+      "language": "Eng"
     },
     {
       "id": "hp-chamber",
@@ -6019,7 +6235,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HP_Chamber",
-      "stepCount": 291
+      "stepCount": 291,
+      "language": "Eng"
     },
     {
       "id": "hp-prisoner",
@@ -6048,7 +6265,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HP_Prisoner",
-      "stepCount": 374
+      "stepCount": 374,
+      "language": "Eng"
     },
     {
       "id": "hp-goblet",
@@ -6077,7 +6295,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HP_Goblet",
-      "stepCount": 621
+      "stepCount": 621,
+      "language": "Eng"
     },
     {
       "id": "hp-order",
@@ -6106,7 +6325,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HP_Order",
-      "stepCount": 846
+      "stepCount": 846,
+      "language": "Eng"
     },
     {
       "id": "hp-half",
@@ -6135,7 +6355,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HP_Half",
-      "stepCount": 558
+      "stepCount": 558,
+      "language": "Eng"
     },
     {
       "id": "hp-deadly",
@@ -6164,7 +6385,8 @@
       "cat3": "HarryPotter",
       "artifactType": "book",
       "bookHtmlFolder": "Other/HP_Deadly",
-      "stepCount": 657
+      "stepCount": 657,
+      "language": "Eng"
     },
     {
       "id": "narnia-boxen",
@@ -6193,7 +6415,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 351
+      "stepCount": 351,
+      "language": "Eng"
     },
     {
       "id": "narnia-last",
@@ -6222,7 +6445,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 119
+      "stepCount": 119,
+      "language": "Eng"
     },
     {
       "id": "narnia-chair",
@@ -6251,7 +6475,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 141
+      "stepCount": 141,
+      "language": "Eng"
     },
     {
       "id": "narnia-voyage",
@@ -6280,7 +6505,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 145
+      "stepCount": 145,
+      "language": "Eng"
     },
     {
       "id": "narnia-prince",
@@ -6309,7 +6535,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 125
+      "stepCount": 125,
+      "language": "Eng"
     },
     {
       "id": "narnia-horse",
@@ -6338,7 +6565,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 131
+      "stepCount": 131,
+      "language": "Eng"
     },
     {
       "id": "narnia-lion",
@@ -6367,7 +6595,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 109
+      "stepCount": 109,
+      "language": "Eng"
     },
     {
       "id": "narnia-nephew",
@@ -6396,7 +6625,8 @@
       "cat3": "Narnia",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Narnia_Complete",
-      "stepCount": 117
+      "stepCount": 117,
+      "language": "Eng"
     },
     {
       "id": "percy-jackson-lightning-thief",
@@ -6425,7 +6655,8 @@
       "cat3": "Percy Jackson",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Percy_Jackson_Complete",
-      "stepCount": 258
+      "stepCount": 258,
+      "language": "Eng"
     },
     {
       "id": "percy-jackson-sea-of-monsters",
@@ -6454,7 +6685,8 @@
       "cat3": "Percy Jackson",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Percy_Jackson_Complete",
-      "stepCount": 196
+      "stepCount": 196,
+      "language": "Eng"
     },
     {
       "id": "percy-jackson-titans-curse",
@@ -6483,7 +6715,8 @@
       "cat3": "Percy Jackson",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Percy_Jackson_Complete",
-      "stepCount": 213
+      "stepCount": 213,
+      "language": "Eng"
     },
     {
       "id": "percy-jackson-battle-of-the-labyrinth",
@@ -6512,7 +6745,8 @@
       "cat3": "Percy Jackson",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Percy_Jackson_Complete",
-      "stepCount": 247
+      "stepCount": 247,
+      "language": "Eng"
     },
     {
       "id": "percy-jackson-last-olympian",
@@ -6541,7 +6775,8 @@
       "cat3": "Percy Jackson",
       "artifactType": "book",
       "bookHtmlFolder": "Other/Percy_Jackson_Complete",
-      "stepCount": 267
+      "stepCount": 267,
+      "language": "Eng"
     },
     {
       "id": "captain-underpants-and-the-tyrannical-retaliation-of-the-turbo-toilet-2000",
@@ -6570,7 +6805,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/captain-underpants-and-the-tyrannical-retaliation-of-the-turbo-toilet-2000",
-      "stepCount": 220
+      "stepCount": 220,
+      "language": "Eng"
     },
     {
       "id": "catwoman-lonely-city",
@@ -6599,7 +6835,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/catwoman-lonely-city",
-      "stepCount": 224
+      "stepCount": 224,
+      "language": "Eng"
     },
     {
       "id": "darth-vader-and-friends",
@@ -6628,7 +6865,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/darth-vader-and-friends",
-      "stepCount": 68
+      "stepCount": 68,
+      "language": "Eng"
     },
     {
       "id": "dog-man-brawl-of-the-wild-from-the-creator-of-captain-underpants-dog-man-6",
@@ -6657,7 +6895,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/dog-man-brawl-of-the-wild-from-the-creator-of-captain-underpants-dog-man-6",
-      "stepCount": 224
+      "stepCount": 224,
+      "language": "Eng"
     },
     {
       "id": "dog-man-grime-and-punishment-from-the-creator-of-captain-underpants-dog-man-9",
@@ -6686,7 +6925,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/dog-man-grime-and-punishment-from-the-creator-of-captain-underpants-dog-man-9",
-      "stepCount": 240
+      "stepCount": 240,
+      "language": "Eng"
     },
     {
       "id": "legends-from-castle-grayskull",
@@ -6715,7 +6955,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/legends-from-castle-grayskull",
-      "stepCount": 79
+      "stepCount": 79,
+      "language": "Eng"
     },
     {
       "id": "mighty-jack-2-and-the-goblin-king",
@@ -6744,7 +6985,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/mighty-jack-2-and-the-goblin-king",
-      "stepCount": 107
+      "stepCount": 107,
+      "language": "Eng"
     },
     {
       "id": "nobody-likes-a-goblin",
@@ -6773,7 +7015,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/nobody-likes-a-goblin",
-      "stepCount": 21
+      "stepCount": 21,
+      "language": "Eng"
     },
     {
       "id": "phoebe-and-her-unicorn-vol-5-unicorn-crossing",
@@ -6802,7 +7045,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/phoebe-and-her-unicorn-vol-5-unicorn-crossing",
-      "stepCount": 173
+      "stepCount": 173,
+      "language": "Eng"
     },
     {
       "id": "sisters",
@@ -6831,7 +7075,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/sisters",
-      "stepCount": 212
+      "stepCount": 212,
+      "language": "Eng"
     },
     {
       "id": "spawn-cerebus",
@@ -6860,7 +7105,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/spawn-cerebus",
-      "stepCount": 23
+      "stepCount": 23,
+      "language": "Eng"
     },
     {
       "id": "star-wars-darth-vader-vol-4-end-of-games-darth-vader-2015-2016",
@@ -6889,7 +7135,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/star-wars-darth-vader-vol-4-end-of-games-darth-vader-2015-2016",
-      "stepCount": 158
+      "stepCount": 158,
+      "language": "Eng"
     },
     {
       "id": "teen-titans-beast-boy",
@@ -6918,7 +7165,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/teen-titans-beast-boy",
-      "stepCount": 188
+      "stepCount": 188,
+      "language": "Eng"
     },
     {
       "id": "the-adventure-zone",
@@ -6947,7 +7195,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/the-adventure-zone",
-      "stepCount": 274
+      "stepCount": 274,
+      "language": "Eng"
     },
     {
       "id": "the-last-kids-on-earth-and-the-zombie-parade",
@@ -6976,7 +7225,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/the-last-kids-on-earth-and-the-zombie-parade",
-      "stepCount": 229
+      "stepCount": 229,
+      "language": "Eng"
     },
     {
       "id": "zita-2-legends-of-zita-the-spacegirl",
@@ -7005,7 +7255,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/zita-2-legends-of-zita-the-spacegirl",
-      "stepCount": 115
+      "stepCount": 115,
+      "language": "Eng"
     },
     {
       "id": "zita-3-the-return-of-zita-the-spacegirl",
@@ -7034,7 +7285,8 @@
       "cat4": "",
       "artifactType": "book",
       "bookHtmlFolder": "Comic/zita-3-the-return-of-zita-the-spacegirl",
-      "stepCount": 122
+      "stepCount": 122,
+      "language": "Eng"
     }
   ]
 }

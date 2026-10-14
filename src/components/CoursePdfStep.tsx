@@ -151,6 +151,7 @@ export default function CoursePdfStep({
   const [loadError] = useState<string | null>(null);
   const [pageZoom, setPageZoom] = useState(() => initialZoomForView(configuredView));
   const [activeView, setActiveView] = useState<PageViewType>(configuredView);
+  const [readingAssistanceEnabled, setReadingAssistanceEnabled] = useState(true);
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
   const [dictionarySelection, setDictionarySelection] = useState<string | null>(null);
   const [dictionaryMode, setDictionaryMode] = useState(false);
@@ -258,6 +259,11 @@ export default function CoursePdfStep({
   }, [dictionaryMode, viewerReady, postToViewer]);
 
   useEffect(() => {
+    if (!viewerReady) return;
+    postToViewer({ type: "set-reading-assistance", enabled: readingAssistanceEnabled });
+  }, [readingAssistanceEnabled, viewerReady, postToViewer]);
+
+  useEffect(() => {
     if (!viewerReady || isWarming) return;
     postToViewer({ type: "reflow" });
   }, [isWarming, viewerReady, postToViewer]);
@@ -323,6 +329,9 @@ export default function CoursePdfStep({
       pageZoom={pageZoom}
       viewMode={activeView}
       onViewModeChange={handleViewModeChange}
+      readingAssistanceAvailable={phonePdfViewport && !isComicBook && activeView === "Crop"}
+      readingAssistanceEnabled={readingAssistanceEnabled}
+      onReadingAssistanceChange={setReadingAssistanceEnabled}
       dictionarySelection={dictionarySelection}
       onDictionaryModeChange={handleDictionaryModeChange}
     >

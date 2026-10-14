@@ -665,6 +665,40 @@
   margin-right: 2px;
 }
 
+.practice-reading-assist-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.practice-reading-assist-toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #2563eb;
+}
+
+@media (max-width: 640px) {
+  .practice-settings-buttons {
+    flex-wrap: wrap;
+  }
+
+  .practice-settings-buttons .pdf-zoom-control {
+    justify-content: center;
+    margin-left: 0;
+  }
+
+  .practice-reading-assist-toggle {
+    margin-left: 0;
+    padding: 5px 7px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.06);
+  }
+}
+
 .practice-settings-btn:active {
   transform: translateY(0) scale(0.98);
   background: transparent !important;

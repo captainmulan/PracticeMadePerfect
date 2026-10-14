@@ -112,7 +112,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
       .map((course) => createShelfItemFromCourse(course, "Newly added"));
     const myanmarBooks = courses
-      .filter((course) => course.language === "MM" || (!course.language && bookHasCategoryTag(course.category, "MM")))
+      .filter((course) =>
+        course.language === "MM" ||
+        bookHasCategoryTag(course.category, "MM") ||
+        bookHasCategoryTag(course.category, "Myanmar") ||
+        bookHasCategoryTag(course.category, "Shwe Thway") ||
+        bookHasCategoryTag(course.category, "Tootpee"),
+      )
       .map((course) => createShelfItemFromCourse(course, "Myanmar books"));
     const currentReading = courses
       .filter((course) => hasSavedProgress(course.id))

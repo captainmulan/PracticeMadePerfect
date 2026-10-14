@@ -137,6 +137,69 @@
         background: rgba(255, 224, 173, 0.045);
         pointer-events: none;
       }
+      .pdf-reading-line-guide,
+      .pdf-reading-dpad {
+        display: none;
+        position: absolute;
+        z-index: 6;
+        pointer-events: none;
+      }
+      .pdf-reading-line-guide {
+        left: 0;
+        right: 0;
+        top: 25%;
+        height: 2px;
+        border-top: 2px solid rgba(18, 95, 130, 0.48);
+        background: rgba(18, 95, 130, 0.16);
+      }
+      .pdf-reading-line-guide--lower {
+        top: 76%;
+      }
+      .pdf-reading-dpad {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        grid-template-columns: repeat(3, 40px);
+        grid-template-rows: repeat(3, 40px);
+        gap: 3px;
+        pointer-events: auto;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .pdf-reading-dpad button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: 1px solid rgba(18, 95, 130, 0.28);
+        border-radius: 8px;
+        background: rgba(18, 95, 130, 0.12);
+        color: rgba(18, 95, 130, 0.62);
+        font: 24px/1 Arial, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: none;
+      }
+      .pdf-reading-dpad button:active {
+        background: rgba(18, 95, 130, 0.24);
+        color: rgba(18, 95, 130, 0.88);
+      }
+      .pdf-shell.is-reading-assist .pdf-reading-line-guide,
+      .pdf-shell.is-reading-assist .pdf-reading-dpad {
+        display: block;
+      }
+      .pdf-shell.is-reading-assist .pdf-reading-dpad {
+        display: grid;
+      }
+      @media (min-width: 641px) {
+        .pdf-shell.is-reading-assist .pdf-reading-line-guide,
+        .pdf-shell.is-reading-assist .pdf-reading-dpad {
+          display: none;
+        }
+      }
       .pdf-shell.is-comfort .pdf-comfort-guide {
         display: block;
       }
@@ -353,6 +416,19 @@
         <canvas id="pdf-canvas"></canvas>
       </div>
       <div class="pdf-comfort-guide" aria-hidden="true"></div>
+      <div class="pdf-reading-line-guide" aria-hidden="true"></div>
+      <div class="pdf-reading-line-guide pdf-reading-line-guide--lower" aria-hidden="true"></div>
+      <div class="pdf-reading-dpad" id="pdf-reading-dpad" aria-label="Page scroll controls">
+        <span></span>
+        <button type="button" data-scroll-direction="up" aria-label="Scroll up">&#9650;</button>
+        <span></span>
+        <button type="button" data-scroll-direction="left" aria-label="Scroll left">&#9664;</button>
+        <span></span>
+        <button type="button" data-scroll-direction="right" aria-label="Scroll right">&#9654;</button>
+        <span></span>
+        <button type="button" data-scroll-direction="down" aria-label="Scroll down">&#9660;</button>
+        <span></span>
+      </div>
       <div class="pdf-dictionary-status" id="pdf-dictionary-status" role="status" aria-live="polite">
         <span class="pdf-dictionary-status-emoji" aria-hidden="true">📚</span>
         <span>Preparing text...</span>
@@ -382,6 +458,7 @@
         const panelPrevBtn = document.getElementById("pdf-panel-prev");
         const panelNextBtn = document.getElementById("pdf-panel-next");
         const panelDots = document.getElementById("pdf-panel-dots");
+        const readingDpad = document.getElementById("pdf-reading-dpad");
 
         if (!fileUrl) {
           shell.innerHTML = '<div class="pdf-error">No PDF file source was provided.</div>';
@@ -428,11 +505,18 @@
         let visibleTextLayer = null;
         let visibleEntry = null;
         let dictionaryMode = params.get("dictionary") === "1";
+        let readingAssistanceEnabled = false;
         let largeScreenUserZoom = false;
         let ocrWorkerPromise = null;
         const ocrWordsCache = new Map();
         const ocrPromises = new Map();
         let pageZoom = 100;
+        const readerScaleParam = Number(params.get("readerScale"));
+        const mobileReaderScale = Number.isFinite(readerScaleParam)
+          ? Math.min(2.5, Math.max(1, readerScaleParam))
+          : 1.35;
+        const alignMobileReaderLeft = params.get("readerAlignLeft") === "1";
+        const useMobileNormalContent = params.get("readerNormalContent") === "1";
         let lastRenderedPage = null; // Track the last successfully rendered page
         const zoomParam = Number(params.get("zoom"));
         if (Number.isFinite(zoomParam) && zoomParam >= 50 && zoomParam <= 300) {
@@ -492,9 +576,6 @@
         const normalizeView = (value) => {
           const raw = typeof value === "string" ? value.trim() : "";
           if (raw === "Reader") return "Crop";
-          if (raw === "Normal") {
-            return isNarrowPdfViewport() ? "Crop" : "Normal";
-          }
           return VIEW_MODES.includes(raw) ? raw : "Auto";
         };
         let configuredView = normalizeView(params.get("view"));
@@ -527,9 +608,16 @@
           mode === "MediumView" ||
           mode === "LargeView" ||
           mode === "ExtraLargeView" ||
-          mode === "Normal";
+          (mode === "Normal" && !(useMobileNormalContent && isNarrowPdfViewport()));
         const isComicView = (mode = activeView()) => mode === "ComicView";
-        const isReaderMode = (mode = activeView()) => mode === "Reader" || mode === "Crop";
+        const isReaderMode = (mode = activeView()) =>
+          mode === "Reader" || mode === "Crop" ||
+          (mode === "Normal" && useMobileNormalContent && isNarrowPdfViewport());
+        const syncReadingAssistance = () => {
+          const enabled = readingAssistanceEnabled && isNarrowPdfViewport() &&
+            !isComicView() && isReaderMode();
+          shell.classList.toggle("is-reading-assist", enabled);
+        };
         const isDarkMode = () => activeTheme() === "Dark";
         const isNightMode = () => activeTheme() === "Night";
         const isSepiaMode = () => activeTheme() === "Sepia";
@@ -1554,7 +1642,7 @@
           };
           const mode = activeView();
 
-          if (mode === "Normal" || mode === "Fit" || isTopCenterMode(mode)) {
+          if ((mode === "Normal" && !isReaderMode(mode)) || mode === "Fit" || isTopCenterMode(mode)) {
             return full;
           }
 
@@ -1618,6 +1706,7 @@
           const on = activeView() === "PanelJump";
           shell.classList.toggle("is-panel-jump", on);
           syncScrollMode();
+          syncReadingAssistance();
           const nav = document.getElementById("pdf-panel-nav");
           if (nav) nav.setAttribute("aria-hidden", on ? "false" : "true");
           if (!panelPrevBtn || !panelNextBtn) return;
@@ -1666,6 +1755,38 @@
           });
         }
 
+        let readingScrollTimer = 0;
+        const stopReadingScroll = () => {
+          if (readingScrollTimer) window.clearInterval(readingScrollTimer);
+          readingScrollTimer = 0;
+        };
+        const startReadingScroll = (button) => {
+          stopReadingScroll();
+          const direction = button.dataset.scrollDirection;
+          const deltas = {
+            up: [0, -14],
+            down: [0, 14],
+            left: [-14, 0],
+            right: [14, 0],
+          };
+          const delta = deltas[direction];
+          if (!delta) return;
+          const scroll = () => wrap.scrollBy({ left: delta[0], top: delta[1], behavior: "auto" });
+          scroll();
+          readingScrollTimer = window.setInterval(scroll, 70);
+        };
+        readingDpad?.querySelectorAll("button[data-scroll-direction]").forEach((button) => {
+          button.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
+            button.setPointerCapture(event.pointerId);
+            startReadingScroll(button);
+          });
+          button.addEventListener("pointerup", stopReadingScroll);
+          button.addEventListener("pointercancel", stopReadingScroll);
+          button.addEventListener("lostpointercapture", stopReadingScroll);
+          button.addEventListener("contextmenu", (event) => event.preventDefault());
+        });
+
         const scrollForBox = (box, cssScale, cssWidth, cssHeight) => {
           const availW = Math.max(80, wrap.clientWidth);
           const availH = Math.max(80, wrap.clientHeight);
@@ -1677,7 +1798,10 @@
 
           let scrollLeft = 0;
           let shiftX = 0;
-          if (topCenter) {
+          if (alignMobileReaderLeft && isNarrowPdfViewport() && isReaderMode(mode)) {
+            scrollLeft = 0;
+            shiftX = 0;
+          } else if (topCenter) {
             /* Full page, top-center: no pan into a crop box. */
             const extra = cssWidth - availW;
             scrollLeft = extra > 0 ? extra / 2 : 0;
@@ -1745,7 +1869,7 @@
           let cssScale;
           if (cropToContent) {
             const narrowReader = readerWidth <= 600;
-            const readerZoom = narrowReader ? 1.35 : 1;
+            const readerZoom = narrowReader && mode !== "Normal" ? mobileReaderScale : 1;
             cssScale = (Math.max(60, readerWidth - 8) * readerZoom) / Math.max(1, box.w);
           } else if (large && !largeScreenUserZoom && isLargeLandscape()) {
             const viewW = Math.max(60, availW - edge * 2) / pageW;
@@ -2651,6 +2775,9 @@
             ensureDictionaryLayer();
             if (!dictionaryMode && dictionaryStatus) dictionaryStatus.classList.remove("is-visible");
             if (!dictionaryMode) window.getSelection()?.removeAllRanges();
+          } else if (data.type === "set-reading-assistance") {
+            readingAssistanceEnabled = data.enabled === true;
+            syncReadingAssistance();
           } else if (data.type === "set-view") {
             const next = normalizeView(data.view);
             if (next === configuredView && (next !== "Auto" || resolvedView)) return;
