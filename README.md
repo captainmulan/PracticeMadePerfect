@@ -28,7 +28,45 @@ npm run dev
 
 3. Open the app at: `http://localhost:4173`
 
+## Important: Project Structure Constraints
+
+**DO NOT introduce new deployment workflows or scripts.** The project follows these established patterns:
+
+### EPUB Import Workflow
+- **Only method**: Use the Admin EPUB uploader in the browser at `http://localhost:4173/admin`
+- **No batch import scripts**: Do not create custom scripts for importing EPUBs from local folders
+- **EPUB upload**: Uses browser's folder-access picker to save EPUBs to `book_html/Comic` or `book_html/Other`
+- **Metadata storage**: Course metadata is stored in browser IndexedDB, not in static JSON files for EPUBs
+- **See "Import an EPUB in Admin (local)" section below for detailed steps**
+
+### Deploy Folder Structure
+The `deploy/` folder contains **minimal configuration only**. Do NOT add large data files to `deploy/`:
+
+**Contents of `deploy/`:**
+- `admin.json` - optional theme/admin settings for deployment
+- Firebase config files (firebase.json, firebase-comic.json, firebase-other.json)
+- `indexeddb-export.json` - legacy full database export (DO NOT add course-details or book_html here)
+
+**What belongs elsewhere:**
+- `book_html/` - actual book files (source of truth, created by Admin uploader)
+- `public/data/` - local dev data (indexeddb-export.json, home-catalog.json, course-details/)
+- `public/book_covers/` - book covers for local dev
+- `dist/` - built production version (created during `npm run build`)
+- `deploy/book_html/` - **DO NOT CREATE** - not part of deploy structure
+- `deploy/book_covers/` - **DO NOT CREATE** - not part of deploy structure
+- `deploy/course-details/` - **DO NOT CREATE** - not part of deploy structure
+
+### Deployment Flow
+1. Run `npm run build` to create `dist/` with built files
+2. Run `npm run sync-deploy-assets` to copy data from `public/` to `dist/` and `deploy/`
+3. Run deployment commands (e.g., `npm run deploy:firebase`)
+4. The deploy scripts handle copying from `dist/` to hosting targets
+
+**Never manually copy large folders to `deploy/`** - this breaks the established deployment flow.
+
 ## Import an EPUB in Admin (local)
+
+**IMPORTANT: This is the ONLY supported method for importing EPUBs.** Do not create custom batch import scripts or manually manipulate catalog files for EPUB books. The Admin uploader handles all necessary metadata generation and file placement automatically.
 
 Use the Admin EPUB uploader to add an EPUB to this browser's library and save its source file in the project. This workflow does not deploy or publish the book.
 
@@ -296,6 +334,8 @@ Age 7–8 ebooks (Solar System, Ocean Adventure, etc.) live in [book_html/](book
 
 After editing book HTML, sync into `deploy/indexeddb-export.json` and re-import in admin if the reader loads from the database.
 
+**Note about EPUB books:** EPUB files (.epub) should be imported using the Admin EPUB uploader at `/admin`. Do not manually copy EPUB files into `book_html/` folders or attempt to batch-import them via custom scripts. The Admin uploader ensures proper metadata generation, folder structure, and IndexedDB integration.
+
 ## Mobile-First HTML Lesson Design
 
 HTML lesson files are designed with mobile-first principles to ensure optimal viewing across all devices:
@@ -391,3 +431,38 @@ The quiz end screen has been updated to provide a clean, engaging experience:
 - Introduced bookshelf UI with customizable book covers and responsive mobile layout.
 - Added HTML-based interactive books, including **Little Programmer**, **JS Programmer**, **IT Newspaper**, Interview books, Fiction and Myanmar learning books.
 - Continually improved mobile UX, offline support, deployment workflow and content authoring.
+
+## Development Guidelines for Future AIs/Developers
+
+### ❌ DO NOT DO THESE THINGS
+
+1. **Do NOT create custom batch import scripts for EPUBs**
+   - The Admin EPUB uploader at `/admin` is the only supported method
+   - Custom scripts break the established metadata generation and deployment flow
+   - Manual catalog manipulation for EPUBs is not supported
+
+2. **Do NOT add large data files to `deploy/` folder**
+   - `deploy/` is for configuration only (Firebase configs, admin.json, indexeddb-export.json)
+   - Never create `deploy/book_html/`, `deploy/book_covers/`, or `deploy/course-details/`
+   - Never copy large folders manually to `deploy/`
+   - The deployment scripts handle copying from `dist/` to hosting targets
+
+3. **Do NOT introduce new deployment workflows**
+   - Use existing `npm run deploy:*` commands
+   - Do not modify the sync-deploy-assets flow
+   - Do not create new deploy folders or scripts
+
+4. **Do NOT manually manipulate EPUB catalog files**
+   - EPUB metadata is stored in browser IndexedDB, not static JSON
+   - The Admin uploader handles all catalog updates for EPUBs
+   - Manual edits to `home-catalog.json` for EPUBs will be overwritten
+
+### ✅ USE THESE ESTABLISHED PATTERNS
+
+1. **For EPUB books**: Use Admin EPUB uploader at `/admin` → Book Builder → EPUB upload
+2. **For HTML courses**: Edit HTML files in `book_html/`, sync with `npm run sync-deploy-assets`
+3. **For deployment**: Use `npm run deploy:firebase` or individual deploy commands
+4. **For data sync**: Use `npm run sync-deploy-assets` (copies from `public/` to `dist/` and `deploy/`)
+5. **For covers**: Let the Admin uploader generate covers, do not manually add them
+
+These constraints ensure the project remains maintainable and follows the established architecture.
