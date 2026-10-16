@@ -4,7 +4,7 @@
  */
 
 // Whether to use folder-based external hosting for book assets (Comic/Other folders)
-export const USE_EXTERNAL_BOOK_HOSTING = true;
+export const USE_EXTERNAL_BOOK_HOSTING = false;
 
 /**
  * Multi-hosting configuration for book distribution

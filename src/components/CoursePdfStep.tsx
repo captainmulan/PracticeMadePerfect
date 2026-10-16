@@ -151,7 +151,7 @@ export default function CoursePdfStep({
   const [loadError] = useState<string | null>(null);
   const [pageZoom, setPageZoom] = useState(() => initialZoomForView(configuredView));
   const [activeView, setActiveView] = useState<PageViewType>(configuredView);
-  const [readingAssistanceEnabled, setReadingAssistanceEnabled] = useState(true);
+  const [readingAssistanceEnabled, setReadingAssistanceEnabled] = useState(false);
   const [viewerSrc, setViewerSrc] = useState<string | null>(null);
   const [dictionarySelection, setDictionarySelection] = useState<string | null>(null);
   const [dictionaryMode, setDictionaryMode] = useState(false);
