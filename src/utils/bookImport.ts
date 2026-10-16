@@ -396,3 +396,49 @@ export function buildCourseFromPreview(
     bookIdOverride || preview.bookId,
   );
 }
+
+export function buildCourseFromEpubPreview(
+  preview: BookImportPreview,
+  courseIndex: number,
+  category: string,
+  bookIdOverride?: string,
+): Course {
+  const bookId = bookIdOverride?.trim() || preview.bookId;
+  const stamp = Date.now();
+  const chapterId = `${bookId}-epub-chapter-001`;
+
+  const steps: CourseStep[] = preview.pages.map((page, index) => {
+    const pageNumber = page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : index + 1;
+    const stepId = `${bookId}-epub-page-${String(pageNumber).padStart(3, "0")}`;
+    const stepType = page.stepType ?? "epub";
+
+    const step: CourseStep = {
+      id: stepId,
+      courseId: bookId,
+      chapterId,
+      chapterTitle: preview.bookTitle,
+      chapterIndex: 0,
+      stepIndex: pageNumber,
+      stepType,
+      title: page.title,
+      description: "",
+      contentHtml: page.content,
+    };
+    return step;
+  });
+
+  const chapter: CourseChapter = {
+    id: chapterId,
+    courseId: bookId,
+    chapterIndex: 0,
+    title: preview.bookTitle,
+    steps,
+  };
+
+  return {
+    ...createDefaultBookFields(courseIndex, preview.bookTitle, bookId, category),
+    bookHtmlFolder: preview.folderName,
+    stepCount: steps.length,
+    chapters: [chapter],
+  };
+}

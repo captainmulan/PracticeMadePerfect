@@ -127,7 +127,13 @@ async function loadJsZip(): Promise<NonNullable<Window["JSZip"]> | null> {
 }
 
 function slugify(value: string) {
-  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[<>:"|?*\/\\]/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function sanitizeBookFolderName(value: string) {
@@ -137,14 +143,14 @@ function sanitizeBookFolderName(value: string) {
     .split(/[\/]+/)
     .filter(Boolean)
     .join("-")
-    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/[<>:"|?*]/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "") || "imported-epub-book";
 }
 
 function sanitizeAssetFileName(value: string) {
   const normalized = value.trim().replace(/\\/g, "/").split(/[\/]+/).filter(Boolean).join("-");
-  return normalized.replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "document";
+  return normalized.replace(/[<>:"|?*]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "document";
 }
 
 function flattenToc(entries: EpubTocEntry[] | undefined, out: Array<{ label: string; href: string }> = []) {
@@ -382,23 +388,18 @@ export async function buildEpubImportPreview(
   }
 
   /*
-    Prefer TOC entries (often file.xhtml#chapter-id) so each library page is one
-    chapter. Spine alone can be a handful of huge HTML files with many chapters.
+    Always use spine items (actual XHTML files) instead of TOC entries.
+    The EPUB viewer will handle splitting each file into individual pages internally.
+    TOC entries only give chapter-level granularity, but spine items give file-level
+    granularity which allows the viewer to paginate more granularly.
   */
-  const useToc = !options?.preferSpine &&
-    tocFlat.length >= 2 &&
-    (tocFlat.some((entry) => entry.href.includes("#")) || tocFlat.length < spineItems.length);
   const readingSpineItems = spineItems.filter((item) =>
     !/^(?:.*\/)?cover\.(?:xhtml?|html?)$/i.test(item.href ?? ""),
   );
-  const chapterEntries: Array<{ label: string; href: string }> = useToc
-    ? tocFlat
-    : readingSpineItems.map((item, index) => ({
-        label: options?.preferSpine
-          ? `Page ${index + 1}`
-          : item.label || item.title || `Chapter ${index + 1}`,
-        href: (item.href ?? "").replace(/^\.\//, ""),
-      }));
+  const chapterEntries: Array<{ label: string; href: string }> = readingSpineItems.map((item, index) => ({
+    label: item.label || item.title || titleForHref(item.href, tocFlat, `Page ${index + 1}`),
+    href: (item.href ?? "").replace(/^\.\//, ""),
+  }));
 
   const pageCount = Math.max(1, chapterEntries.length || readingSpineItems.length || spineItems.length);
 

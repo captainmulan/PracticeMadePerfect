@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
 import { resolveImportBookHtmlFolder } from "../utils/htmlStepContent";
-import { buildCourseFromPreview, type BookImportPreview } from "../utils/bookImport";
+import { buildCourseFromPreview, buildCourseFromEpubPreview, type BookImportPreview } from "../utils/bookImport";
 import { buildEpubImportPreview, resolveEpubAssetDirectory, writeEpubAssetToDirectory, type EpubAssetExportProgress, type EpubImportPreview } from "../utils/epubImport";
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 import { getBookAssetUrl } from "../config/externalHosting";
@@ -19,32 +19,40 @@ interface AdminEpubUploadPanelProps {
 
 function buildEpubReplacementCourse(course: Course, preview: EpubImportPreview, folder: string): Course {
   const epubUrl = getBookAssetUrl(`${folder}/${preview.epubFileName}`);
-  const chapters: CourseChapter[] = preview.pages.map((page, index) => {
+  const chapterId = `${course.id}-epub-chapter-001`;
+  const steps: CourseStep[] = preview.pages.map((page, index) => {
     const pageNumber = page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : index + 1;
     const title = page.title?.trim() || `Page ${pageNumber}`;
-    const chapterIndex = index;
-    const chapterId = `${course.id}-epub-page-${String(pageNumber).padStart(3, "0")}`;
     const href = page.content.match(/#(.+)$/)?.[1] ?? "";
+    const stepId = `${course.id}-epub-page-${String(pageNumber).padStart(3, "0")}`;
     const step: CourseStep = {
-      id: `${chapterId}-step`,
+      id: stepId,
       courseId: course.id,
       chapterId,
-      chapterTitle: title,
-      chapterIndex,
+      chapterTitle: course.title,
+      chapterIndex: 0,
       stepIndex: pageNumber,
       stepType: "epub",
       title,
       description: "",
       contentHtml: `${epubUrl}${href ? `#${href}` : ""}`,
     };
-    return { id: chapterId, courseId: course.id, chapterIndex, title, steps: [step] };
+    return step;
   });
+
+  const chapter: CourseChapter = {
+    id: chapterId,
+    courseId: course.id,
+    chapterIndex: 0,
+    title: course.title,
+    steps,
+  };
 
   return {
     ...course,
     bookHtmlFolder: folder,
-    stepCount: chapters.length,
-    chapters,
+    stepCount: steps.length,
+    chapters: [chapter],
   };
 }
 
@@ -133,7 +141,7 @@ export default function AdminEpubUploadPanel({
     try {
       const nextPreview = await buildEpubImportPreview(file, books.length, books.map((book) => book.id), {
         preferredFolder: file.name.replace(/\.epub$/i, ""),
-        preferSpine: uploadMode === "existing",
+        preferSpine: false,
       });
       if (!nextPreview) {
         setError("No pages could be read from the selected EPUB.");
@@ -210,15 +218,15 @@ export default function AdminEpubUploadPanel({
         return;
       }
 
-      const course = buildCourseFromPreview(
+      const course = buildCourseFromEpubPreview(
         { ...preview, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
         books.length,
         category,
         trimmedId,
       );
       const summary = saveImmediately
-        ? `Uploaded and saved "${course.title}" with ${preview.pages.length} chapter page(s) from EPUB.`
-        : `Loaded "${course.title}" with ${preview.pages.length} chapter page(s) from EPUB (table of contents). Review pages, then click Save Book.`;
+        ? `Uploaded and saved "${course.title}" with ${preview.pages.length} page(s) from EPUB.`
+        : `Loaded "${course.title}" with ${preview.pages.length} page(s) from EPUB. Review pages, then click Save Book.`;
 
       onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
     } catch (err) {
