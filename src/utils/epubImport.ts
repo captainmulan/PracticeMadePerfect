@@ -401,14 +401,21 @@ export async function buildEpubImportPreview(
     href: (item.href ?? "").replace(/^\.\//, ""),
   }));
 
-  const pageCount = Math.max(1, chapterEntries.length || readingSpineItems.length || spineItems.length);
+  // Estimate page count: assume average 3-5 pages per spine item for better UX
+  const estimatedPagesPerSpine = 4;
+  const pageCount = Math.max(
+    chapterEntries.length * estimatedPagesPerSpine,
+    chapterEntries.length || readingSpineItems.length || spineItems.length,
+  );
 
   const pages: ParsedHtmlPage[] = [];
   for (let i = 0; i < pageCount; i++) {
     const pageNumber = i + 1;
-    const entry = chapterEntries[i];
+    // Distribute pages across spine items
+    const spineIndex = Math.floor(i / estimatedPagesPerSpine);
+    const entry = chapterEntries[spineIndex] || chapterEntries[chapterEntries.length - 1];
     const href = (entry?.href ?? "").replace(/^\.\//, "");
-    const title = entry?.label || titleForHref(href, tocFlat, `Chapter ${pageNumber}`);
+    const title = entry?.label || titleForHref(href, tocFlat, `Page ${pageNumber}`);
     const chapterLocation = href ? `#${href}` : "";
     const pageSource = `${baseEpubSource}${chapterLocation}`;
 
