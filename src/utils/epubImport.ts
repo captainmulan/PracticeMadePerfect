@@ -388,32 +388,29 @@ export async function buildEpubImportPreview(
   }
 
   /*
-    Always use spine items (actual XHTML files) instead of TOC entries.
-    The EPUB viewer will handle splitting each file into individual pages internally.
-    TOC entries only give chapter-level granularity, but spine items give file-level
-    granularity which allows the viewer to paginate more granularly.
+    Use TOC entries for maximum granularity. TOC often has file.xhtml#section-id
+    which gives us chapter/section-level page markers. This is better than
+    spine items (just files) and doesn't require running the full viewer.
   */
   const readingSpineItems = spineItems.filter((item) =>
     !/^(?:.*\/)?cover\.(?:xhtml?|html?)$/i.test(item.href ?? ""),
   );
-  const chapterEntries: Array<{ label: string; href: string }> = readingSpineItems.map((item, index) => ({
-    label: item.label || item.title || titleForHref(item.href, tocFlat, `Page ${index + 1}`),
-    href: (item.href ?? "").replace(/^\.\//, ""),
-  }));
 
-  // Estimate page count: assume average 3-5 pages per spine item for better UX
-  const estimatedPagesPerSpine = 4;
-  const pageCount = Math.max(
-    chapterEntries.length * estimatedPagesPerSpine,
-    chapterEntries.length || readingSpineItems.length || spineItems.length,
-  );
+  // Prefer TOC if it has fragment identifiers (better granularity)
+  const useToc = tocFlat.length >= 2 && tocFlat.some((entry) => entry.href.includes("#"));
+  const chapterEntries: Array<{ label: string; href: string }> = useToc
+    ? tocFlat
+    : readingSpineItems.map((item, index) => ({
+        label: item.label || item.title || titleForHref(item.href, tocFlat, `Page ${index + 1}`),
+        href: (item.href ?? "").replace(/^\.\//, ""),
+      }));
+
+  const pageCount = Math.max(1, chapterEntries.length || readingSpineItems.length || spineItems.length);
 
   const pages: ParsedHtmlPage[] = [];
   for (let i = 0; i < pageCount; i++) {
     const pageNumber = i + 1;
-    // Distribute pages across spine items
-    const spineIndex = Math.floor(i / estimatedPagesPerSpine);
-    const entry = chapterEntries[spineIndex] || chapterEntries[chapterEntries.length - 1];
+    const entry = chapterEntries[i];
     const href = (entry?.href ?? "").replace(/^\.\//, "");
     const title = entry?.label || titleForHref(href, tocFlat, `Page ${pageNumber}`);
     const chapterLocation = href ? `#${href}` : "";
