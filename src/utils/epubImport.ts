@@ -639,16 +639,29 @@ async function buildChapterPlans(options: {
 
   /* Expand all chapters into page anchors to create more granular pages. */
   if (zip) {
+    const MAX_PAGES_PER_CHAPTER = 100; // Safeguard against excessive splits
+    
     for (let index = 0; index < plans.length; index += 1) {
       const plan = plans[index];
       const nextHref = plans.slice(index + 1).find((next) => next.pages[0]?.href)?.pages[0]?.href;
       
-      // Expand each page in the chapter
+      // Expand each page in the chapter, but only if it doesn't already have anchors
       const expandedPages: Array<{ title: string; href: string }> = [];
       for (const page of plan.pages) {
+        // Don't expand if the page already has an anchor (#)
+        if (page.href.includes("#")) {
+          expandedPages.push(page);
+          continue;
+        }
+        
         const expanded = await expandChapterAnchors(zip, opfDir, page.href, nextHref, page.title);
         if (expanded?.length) {
-          expandedPages.push(...expanded);
+          // Limit expansion to prevent excessive page counts
+          if (expandedPages.length + expanded.length > MAX_PAGES_PER_CHAPTER) {
+            expandedPages.push(page); // Fall back to original if too many
+          } else {
+            expandedPages.push(...expanded);
+          }
         } else {
           expandedPages.push(page);
         }
