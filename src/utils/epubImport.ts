@@ -590,24 +590,46 @@ async function buildChapterPlans(options: {
     if (usable.length) plans.push({ title: title || usable[0].title || bookTitle, pages: usable });
   };
 
-  if (tocTree?.length) {
-    const flattenToc = (entries: EpubTocEntry[]) => {
-      for (const entry of entries) {
-        const title = cleanTocLabel(entry.label);
-        const href = normalizeHref(entry.href);
-        if (href) {
-          addChapter(title || href, [{ title: title || href, href }]);
+  // Smart source selection: choose between TOC and spine based on quality
+  const useToc = () => {
+    if (tocTree?.length) {
+      const flattenToc = (entries: EpubTocEntry[]) => {
+        for (const entry of entries) {
+          const title = cleanTocLabel(entry.label);
+          const href = normalizeHref(entry.href);
+          if (href) {
+            addChapter(title || href, [{ title: title || href, href }]);
+          }
+          if (entry.subitems?.length) {
+            flattenToc(entry.subitems);
+          }
         }
-        if (entry.subitems?.length) {
-          flattenToc(entry.subitems);
-        }
-      }
-    };
-    flattenToc(tocTree);
-  } else if (tocFlat.length) {
-    for (const entry of tocFlat) {
-      addChapter(entry.label, [{ title: entry.label || entry.href, href: entry.href }]);
+      };
+      flattenToc(tocTree);
+      return true;
     }
+    if (tocFlat.length) {
+      // Check if TOC is better than spine items
+      const tocHasFragments = tocFlat.some((entry) => entry.href.includes("#"));
+      const tocHasMoreEntries = tocFlat.length > spinePages.length;
+      const tocHasMultipleEntries = tocFlat.length >= 2;
+      
+      // Use TOC if it has fragments, more entries, or at least 2 entries
+      if (tocHasFragments || tocHasMoreEntries || tocHasMultipleEntries) {
+        for (const entry of tocFlat) {
+          addChapter(entry.label, [{ title: entry.label || entry.href, href: entry.href }]);
+        }
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Try TOC first, fall back to spine if TOC is minimal
+  const usedToc = useToc();
+
+  if (!usedToc) {
+    addChapter(bookTitle, spinePages);
   }
 
   if (!plans.length) {
@@ -615,14 +637,24 @@ async function buildChapterPlans(options: {
     return plans;
   }
 
-  /* Chapters listed as a single page get expanded into the page anchors of their document. */
+  /* Expand all chapters into page anchors to create more granular pages. */
   if (zip) {
     for (let index = 0; index < plans.length; index += 1) {
       const plan = plans[index];
-      if (plan.pages.length !== 1) continue;
       const nextHref = plans.slice(index + 1).find((next) => next.pages[0]?.href)?.pages[0]?.href;
-      const expanded = await expandChapterAnchors(zip, opfDir, plan.pages[0].href, nextHref, plan.title);
-      if (expanded?.length) plan.pages = expanded;
+      
+      // Expand each page in the chapter
+      const expandedPages: Array<{ title: string; href: string }> = [];
+      for (const page of plan.pages) {
+        const expanded = await expandChapterAnchors(zip, opfDir, page.href, nextHref, page.title);
+        if (expanded?.length) {
+          expandedPages.push(...expanded);
+        } else {
+          expandedPages.push(page);
+        }
+      }
+      
+      if (expandedPages.length) plan.pages = expandedPages;
     }
   }
 

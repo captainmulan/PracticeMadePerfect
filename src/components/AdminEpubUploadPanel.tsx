@@ -229,7 +229,7 @@ export default function AdminEpubUploadPanel({
       }
 
       const safeId = slugify(trimmedId) || trimmedId;
-      const safeEpubFileName = `${slugify(preview.epubFileName.replace(/\.epub$/i, "")) || preview.epubFileName.replace(/\.epub$/i, "")}.epub`;
+      const safeEpubFileName = `${slugify((preview.epubFileName || "book").replace(/\.epub$/i, "")) || (preview.epubFileName || "book").replace(/\.epub$/i, "")}.epub`;
 
       const folder = resolveImportBookHtmlFolder(
         uploadMode === "existing" ? targetBookFull : null,
@@ -252,7 +252,7 @@ export default function AdminEpubUploadPanel({
         folder,
         safeEpubFileName,
         preview.modifiedEpubData
-          ? new File([preview.modifiedEpubData], safeEpubFileName, { type: "application/epub+zip" })
+          ? new File([preview.modifiedEpubData.buffer as ArrayBuffer], safeEpubFileName, { type: "application/epub+zip" })
           : selectedEpub,
         preview.coverImageUrl,
         (progress: EpubAssetExportProgress) => {
@@ -278,6 +278,10 @@ export default function AdminEpubUploadPanel({
           setError("Loading book pages for matching. Try again in a moment.");
           return;
         }
+
+        const savedCoverPath = assetResult.written >= assetCount && preview.coverImageUrl?.startsWith("data:")
+          ? `${coverFolder}/${coverFileName}`
+          : preview.coverImageUrl;
 
         const replacement = buildEpubReplacementCourse(targetBookFull, { ...preview, epubFileName: safeEpubFileName }, folder, savedCoverPath);
         const summary = saveImmediately
