@@ -105,10 +105,10 @@ function hideAnchorSiblings(anchor: Element, hideBefore: boolean) {
   const preceding = Node.DOCUMENT_POSITION_PRECEDING;
   const following = Node.DOCUMENT_POSITION_FOLLOWING;
 
-  let current: Node | null = anchor;
+  let current: Element | null = anchor;
   while (current && current.parentElement && current.parentElement.tagName.toLowerCase() !== "body") {
-    const parent = current.parentElement;
-    const siblings = [...parent.childNodes];
+    const parent: Element = current.parentElement;
+    const siblings = Array.from(parent.childNodes);
     const index = siblings.indexOf(current);
     const clipped = hideBefore ? siblings.slice(0, index) : siblings.slice(index + 1);
 

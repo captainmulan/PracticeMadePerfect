@@ -39,6 +39,16 @@ export interface BookImportPreview {
   existingBookId?: string;
   /** EPUB only: chapter/page grouping read from the spine + TOC. */
   chapters?: BookImportChapterPlan[];
+  /** EPUB only: total page count across all chapters. */
+  pageCount?: number;
+  /** EPUB only: original or sanitized filename. */
+  epubFileName?: string;
+  /** EPUB only: total chapter count. */
+  chapterCount?: number;
+  /** EPUB only: cover image data URL. */
+  coverImageUrl?: string;
+  /** EPUB only: modified ZIP data. */
+  modifiedEpubData?: Uint8Array;
 }
 
 export interface EpubCourseExtras {

@@ -428,8 +428,8 @@ function injectPageAnchors(html: string): string {
     pageNumber += 1;
   }
 
-  /* Look for common block elements to insert anchors before. */
-  const tagPattern = /<(p|div|h[1-6]|section|article|blockquote|li)\b/gi;
+  /* Look for common block elements and images to insert anchors before. */
+  const tagPattern = /<(p|div|h[1-6]|section|article|blockquote|li|img)\b/gi;
   let match: RegExpExecArray | null;
 
   while ((match = tagPattern.exec(html))) {
@@ -441,21 +441,25 @@ function injectPageAnchors(html: string): string {
 
     if (tagName === "p") {
       paragraphCount += 1;
+    } else if (tagName === "img") {
+      /* Give images a virtual character weight to trigger splits in media-heavy content. */
+      charCount += 3000;
+      paragraphCount += 1;
     }
 
     /*
       Split logic:
       1. Force split if we hit maxChars (safety limit).
       2. Split if we hit a heading and have at least minChars.
-      3. Split if we have at least minChars AND enough paragraphs AND it's a good break point (p or div).
-      4. Split if we hit targetChars regardless of paragraph count.
+      3. Split if we have at least minChars AND enough content density (p, img, or enough text).
     */
     const isHeading = /^h[1-6]$/.test(tagName);
+    const isContentTag = tagName === "p" || tagName === "div" || tagName === "img";
     const shouldSplit =
       charCount >= maxChars ||
       (charCount >= minChars && isHeading) ||
-      (charCount >= minChars && paragraphCount >= minParagraphs && (tagName === "p" || tagName === "div")) ||
-      (charCount >= targetChars);
+      (charCount >= minChars && paragraphCount >= minParagraphs && isContentTag) ||
+      (charCount >= targetChars && isContentTag);
 
     if (shouldSplit) {
       result += html.slice(lastIndex, match.index);
@@ -465,6 +469,21 @@ function injectPageAnchors(html: string): string {
       paragraphCount = 0;
       pageNumber += 1;
     }
+  }
+
+  /* Fallback: if we have a lot of text remaining and no tags were found, split at intervals. */
+  if (html.length - lastIndex > maxChars && pageNumber === 2) {
+    // This handles books with no block tags at all.
+    const remaining = html.slice(lastIndex);
+    let offset = 0;
+    while (offset + targetChars < remaining.length) {
+      result += remaining.slice(offset, offset + targetChars);
+      result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
+      offset += targetChars;
+      pageNumber += 1;
+    }
+    result += remaining.slice(offset);
+    lastIndex = html.length;
   }
 
   result += html.slice(lastIndex);
@@ -572,15 +591,19 @@ async function buildChapterPlans(options: {
   };
 
   if (tocTree?.length) {
-    for (const entry of tocTree) {
-      const title = cleanTocLabel(entry.label);
-      const href = normalizeHref(entry.href);
-      const pages: Array<{ title: string; href: string }> = [];
-      if (href) pages.push({ title: title || href, href });
-      collectDescendantPages(entry.subitems, pages);
-      if (!pages.length) continue;
-      addChapter(title || pages[0].title || bookTitle, pages);
-    }
+    const flattenToc = (entries: EpubTocEntry[]) => {
+      for (const entry of entries) {
+        const title = cleanTocLabel(entry.label);
+        const href = normalizeHref(entry.href);
+        if (href) {
+          addChapter(title || href, [{ title: title || href, href }]);
+        }
+        if (entry.subitems?.length) {
+          flattenToc(entry.subitems);
+        }
+      }
+    };
+    flattenToc(tocTree);
   } else if (tocFlat.length) {
     for (const entry of tocFlat) {
       addChapter(entry.label, [{ title: entry.label || entry.href, href: entry.href }]);
@@ -733,15 +756,7 @@ export interface EpubImportPreviewOptions {
   preferSpine?: boolean;
 }
 
-export interface EpubImportPreview extends BookImportPreview {
-  pageCount: number;
-  epubFileName: string;
-  chapterCount: number;
-  /** Cover rasterized from the EPUB front page as a `data:image/webp` URL. */
-  coverImageUrl?: string;
-  /** Modified EPUB data (with injected anchors) if applicable. */
-  modifiedEpubData?: Uint8Array;
-}
+export type EpubImportPreview = BookImportPreview;
 
 export interface EpubAssetExportProgress {
   completed: number;
