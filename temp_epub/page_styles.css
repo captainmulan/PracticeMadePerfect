@@ -1,0 +1,33 @@
+@page {
+  margin-bottom: 5pt;
+  margin-top: 5pt;
+}
+@font-face {
+  font-family: "Pyidaungsu";
+  src: url(fonts/Pyidaungsu_-_Regular.ttf);
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pyidaungsu";
+  src: url(fonts/Pyidaungsu.ttf);
+}
+@font-face {
+  font-family: "Pyidaungsu";
+  src: url(fonts/Pyidaungsu-Bold.ttf);
+  font-weight: bold;
+}
+@font-face {
+  font-family: "Pyidaungsu";
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  src: url(fonts/Pyidaungsu1.ttf);
+}
+@font-face {
+  font-family: "Pyidaungsu";
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  src: url(fonts/Pyidaungsu-Bold1.ttf);
+}

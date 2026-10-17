@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Course, CourseChapter, CourseStep } from "../data/courses";
 import { resolveImportBookHtmlFolder } from "../utils/htmlStepContent";
-import { buildCourseFromPreview, buildCourseFromEpubPreview, type BookImportPreview } from "../utils/bookImport";
-import { buildEpubImportPreview, resolveEpubAssetDirectory, writeEpubAssetToDirectory, type EpubAssetExportProgress, type EpubImportPreview } from "../utils/epubImport";
+import { buildCourseFromEpubPreview, type BookImportChapterPlan, type BookImportPreview } from "../utils/bookImport";
+import { buildEpubImportPreview, resolveEpubAssetDirectory, slugify, writeEpubAssetToDirectory, type EpubAssetExportProgress, type EpubImportPreview } from "../utils/epubImport";
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
+import { evictEpubBuffer } from "../utils/epubCache";
 import { getBookAssetUrl } from "../config/externalHosting";
+import { collectCategoryChildren, collectTopCategoryNames, formatCategoryLabel } from "../utils/bookCategories";
 
 type UploadMode = "new" | "existing";
+
+const CATALOG_LEVELS = [0, 1, 2, 3];
 
 interface AdminEpubUploadPanelProps {
   books: Course[];
@@ -17,42 +21,68 @@ interface AdminEpubUploadPanelProps {
   onCancel: () => void;
 }
 
-function buildEpubReplacementCourse(course: Course, preview: EpubImportPreview, folder: string): Course {
-  const epubUrl = getBookAssetUrl(`${folder}/${preview.epubFileName}`);
-  const chapterId = `${course.id}-epub-chapter-001`;
-  const steps: CourseStep[] = preview.pages.map((page, index) => {
-    const pageNumber = page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : index + 1;
-    const title = page.title?.trim() || `Page ${pageNumber}`;
-    const href = page.content.match(/#(.+)$/)?.[1] ?? "";
-    const stepId = `${course.id}-epub-page-${String(pageNumber).padStart(3, "0")}`;
-    const step: CourseStep = {
-      id: stepId,
-      courseId: course.id,
-      chapterId,
-      chapterTitle: course.title,
-      chapterIndex: 0,
-      stepIndex: pageNumber,
-      stepType: "epub",
-      title,
-      description: "",
-      contentHtml: `${epubUrl}${href ? `#${href}` : ""}`,
-    };
-    return step;
-  });
+/** Chapters become reader steppers; every page inside a chapter becomes a step. */
+function buildEpubChapters(
+  courseId: string,
+  preview: EpubImportPreview,
+  fallbackTitle: string,
+  assetUrl: string,
+): CourseChapter[] {
+  const contentFor = (href: string | undefined, fallback: string) =>
+    href ? `${assetUrl}#${href}` : assetUrl || fallback;
 
-  const chapter: CourseChapter = {
-    id: chapterId,
-    courseId: course.id,
-    chapterIndex: 0,
-    title: course.title,
-    steps,
-  };
+  const plans: BookImportChapterPlan[] = preview.chapters?.length
+    ? preview.chapters
+    : [
+        {
+          title: fallbackTitle,
+          pages: preview.pages.map((page) => ({
+            title: page.title,
+            href: page.content.match(/#(.+)$/)?.[1] ?? "",
+            content: page.content,
+          })),
+        },
+      ];
+
+  let stepIndex = 0;
+  return plans.map((plan, chapterIndex) => {
+    const chapterId = `${courseId}-epub-chapter-${String(chapterIndex + 1).padStart(3, "0")}`;
+    const steps: CourseStep[] = plan.pages.map((page) => {
+      stepIndex += 1;
+      const step: CourseStep = {
+        id: `${courseId}-epub-page-${String(stepIndex).padStart(3, "0")}`,
+        courseId,
+        chapterId,
+        chapterTitle: plan.title,
+        chapterIndex,
+        stepIndex,
+        stepType: "epub",
+        title: page.title,
+        description: "",
+        contentHtml: contentFor(page.href, page.content),
+        ...(page.nextHref ? { epubNextLocation: page.nextHref } : {}),
+      };
+      return step;
+    });
+
+    return { id: chapterId, courseId, chapterIndex, title: plan.title, steps };
+  });
+}
+
+function buildEpubReplacementCourse(course: Course, preview: EpubImportPreview, folder: string, savedCoverPath?: string): Course {
+  const chapters = buildEpubChapters(
+    course.id,
+    preview,
+    course.title,
+    getBookAssetUrl(`${folder}/${preview.epubFileName}`),
+  );
 
   return {
     ...course,
     bookHtmlFolder: folder,
-    stepCount: steps.length,
-    chapters: [chapter],
+    coverImageUrl: savedCoverPath || preview.coverImageUrl || course.coverImageUrl,
+    stepCount: chapters.reduce((total, chapter) => total + chapter.steps.length, 0),
+    chapters,
   };
 }
 
@@ -70,13 +100,36 @@ export default function AdminEpubUploadPanel({
   const [targetBookFull, setTargetBookFull] = useState<Course | null>(null);
   const [targetBookLoading, setTargetBookLoading] = useState(false);
   const [preview, setPreview] = useState<EpubImportPreview | null>(null);
-  const [category, setCategory] = useState("IT");
+  const [storageRoot, setStorageRoot] = useState<"Other" | "Comic">("Other");
+  const [catalogPath, setCatalogPath] = useState<string[]>(["IT", "", "", ""]);
+  const [language, setLanguage] = useState<"Eng" | "MM">("Eng");
+  const [categoryOverride, setCategoryOverride] = useState("");
   const [bookId, setBookId] = useState("");
   const [selectedEpub, setSelectedEpub] = useState<File | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [isExportingAssets, setIsExportingAssets] = useState(false);
   const [assetExportProgress, setAssetExportProgress] = useState<EpubAssetExportProgress | null>(null);
   const [error, setError] = useState("");
+
+  /* Legacy tag column + Comic/Other asset routing both read this value. */
+  const category = categoryOverride.trim() || catalogPath.filter(Boolean).join(", ");
+  const catalogPathLabel = catalogPath.filter(Boolean).map(formatCategoryLabel).join(" > ");
+
+  const catalogOptions = CATALOG_LEVELS.map((level) =>
+    level === 0
+      ? collectTopCategoryNames(books)
+      : collectCategoryChildren(books, catalogPath.slice(0, level).filter(Boolean)),
+  );
+
+  function setCatalogLevel(level: number, value: string) {
+    setCatalogPath((current) => {
+      const next = [...current];
+      next[level] = value.trim();
+      /* Deeper levels belong to the previous choice. */
+      for (let index = level + 1; index < CATALOG_LEVELS.length; index += 1) next[index] = "";
+      return next;
+    });
+  }
 
   const targetBookSummary = useMemo(
     () => books.find((book) => book.id === targetBookId) ?? null,
@@ -169,26 +222,49 @@ export default function AdminEpubUploadPanel({
     setAssetExportProgress(null);
 
     try {
+      const trimmedId = bookId.trim() || preview.bookId;
+      if (!trimmedId) {
+        setError("Book id is required.");
+        return;
+      }
+
+      const safeId = slugify(trimmedId) || trimmedId;
+      const safeEpubFileName = `${slugify(preview.epubFileName.replace(/\.epub$/i, "")) || preview.epubFileName.replace(/\.epub$/i, "")}.epub`;
+
       const folder = resolveImportBookHtmlFolder(
         uploadMode === "existing" ? targetBookFull : null,
-        preview.folderName,
+        safeId,
         category,
+        storageRoot,
       );
       const assetDirectory = await resolveEpubAssetDirectory();
       if (!assetDirectory?.directoryHandle) {
-        throw new Error("EPUB was not saved: grant access to the project's book_html folder and retry.");
+        throw new Error("EPUB was not saved: grant access to the project's root folder and retry.");
       }
-      const assetCount = 1;
+
+      const coverFileName = `${safeId}.webp`;
+      const coverFolder = "/book_covers/thumbs";
+
+      const assetCount = preview.coverImageUrl?.startsWith("data:") ? 2 : 1;
       setAssetExportProgress({ completed: 0, total: assetCount });
       const assetResult = await writeEpubAssetToDirectory(
         assetDirectory.directoryHandle,
         folder,
-        preview.epubFileName,
-        selectedEpub,
+        safeEpubFileName,
+        preview.modifiedEpubData
+          ? new File([preview.modifiedEpubData], safeEpubFileName, { type: "application/epub+zip" })
+          : selectedEpub,
+        preview.coverImageUrl,
         (progress: EpubAssetExportProgress) => {
           setAssetExportProgress(progress);
         },
+        { folder: coverFolder, fileName: coverFileName }
       );
+
+      /* Ensure the reader fetches the fresh EPUB with new anchors, not the cached version. */
+      if (assetResult.written > 0) {
+        evictEpubBuffer(getBookAssetUrl(`${folder}/${safeEpubFileName}`));
+      }
       if (assetResult.written !== assetCount || assetResult.errors.length > 0) {
         throw new Error(`EPUB was not saved: ${assetResult.errors.join("; ") || "asset write did not complete."}`);
       }
@@ -203,7 +279,7 @@ export default function AdminEpubUploadPanel({
           return;
         }
 
-        const replacement = buildEpubReplacementCourse(targetBookFull, preview, folder);
+        const replacement = buildEpubReplacementCourse(targetBookFull, { ...preview, epubFileName: safeEpubFileName }, folder, savedCoverPath);
         const summary = saveImmediately
           ? `Replaced "${targetBookFull.title}" with ${replacement.stepCount} sequential EPUB page(s).`
           : `Loaded ${replacement.stepCount} sequential EPUB page(s) for "${targetBookFull.title}". Review, then click Save Book.`;
@@ -212,21 +288,28 @@ export default function AdminEpubUploadPanel({
         return;
       }
 
-      const trimmedId = bookId.trim() || preview.bookId;
-      if (!trimmedId) {
-        setError("Book id is required.");
-        return;
-      }
+      const savedCoverPath = assetResult.written >= assetCount && preview.coverImageUrl?.startsWith("data:")
+        ? `${coverFolder}/${coverFileName}`
+        : preview.coverImageUrl;
 
       const course = buildCourseFromEpubPreview(
-        { ...preview, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
+        { ...preview, epubFileName: safeEpubFileName, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
         books.length,
         category,
-        trimmedId,
+        safeId,
+        {
+          coverImageUrl: savedCoverPath,
+          epubAssetUrl: getBookAssetUrl(`${folder}/${safeEpubFileName}`),
+          language,
+          cat1: catalogPath[0] || undefined,
+          cat2: catalogPath[1] || undefined,
+          cat3: catalogPath[2] || undefined,
+          cat4: catalogPath[3] || undefined,
+        },
       );
       const summary = saveImmediately
-        ? `Uploaded and saved "${course.title}" with ${preview.pages.length} page(s) from EPUB.`
-        : `Loaded "${course.title}" with ${preview.pages.length} page(s) from EPUB. Review pages, then click Save Book.`;
+        ? `Uploaded and saved "${course.title}" with ${course.chapters.length} chapter(s) / ${preview.pageCount} page(s) from EPUB.`
+        : `Loaded "${course.title}" with ${course.chapters.length} chapter(s) / ${preview.pageCount} page(s) from EPUB. Review pages, then click Save Book.`;
 
       onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
     } catch (err) {
@@ -332,14 +415,56 @@ export default function AdminEpubUploadPanel({
                 <input value={bookId} onChange={(e) => setBookId(e.target.value)} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Category</span>
+                <span className="admin-task-editor-label">Storage Root</span>
+                <select
+                  value={storageRoot}
+                  onChange={(e) => setStorageRoot(e.target.value as "Other" | "Comic")}
+                  className="admin-grid-select"
+                >
+                  <option value="Other">Other</option>
+                  <option value="Comic">Comic</option>
+                </select>
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Category Tags</span>
                 <input
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  value={categoryOverride}
+                  onChange={(e) => setCategoryOverride(e.target.value)}
                   className="admin-grid-input"
-                  placeholder="Myanmar, Kid, Comic"
+                  placeholder={catalogPath.filter(Boolean).join(", ")}
                 />
               </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Language</span>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as "Eng" | "MM")}
+                  className="admin-grid-select"
+                >
+                  <option value="Eng">Eng</option>
+                  <option value="MM">MM</option>
+                </select>
+              </label>
+              {CATALOG_LEVELS.map((level) => (
+                <label key={level} className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Catalog {level + 1}</span>
+                  <input
+                    value={catalogPath[level] ?? ""}
+                    onChange={(e) => setCatalogLevel(level, e.target.value)}
+                    className="admin-grid-input"
+                    list={`epub-catalog-${level}`}
+                    placeholder={level === 0 ? "Kid" : level === 1 ? "JuniorNovel" : ""}
+                  />
+                  <datalist id={`epub-catalog-${level}`}>
+                    {catalogOptions[level].map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
+                </label>
+              ))}
+              <span className="admin-task-editor-hint" style={{ gridColumn: "1 / -1", opacity: 0.75, fontSize: 12 }}>
+                Catalog path: {catalogPathLabel || "—"}
+              </span>
             </div>
           ) : (
             <div className="admin-book-upload-meta">
@@ -354,7 +479,12 @@ export default function AdminEpubUploadPanel({
           )}
 
           <div className="admin-book-upload-summary">
-            EPUB ready for built-in viewer
+            {preview.coverImageUrl ? (
+              <img className="admin-book-upload-cover" src={preview.coverImageUrl} alt="EPUB cover" />
+            ) : null}
+            <span>
+              {preview.chapterCount} chapter(s) · {preview.pageCount} page(s) ready for the built-in viewer
+            </span>
           </div>
 
           {isExportingAssets && assetExportProgress ? (
@@ -370,15 +500,15 @@ export default function AdminEpubUploadPanel({
           ) : null}
 
           <ul className="admin-book-upload-page-list">
-            {preview.pages.slice(0, 12).map((page, index) => (
-              <li key={`${page.fileName}-${index}`}>
-                <strong>Page {page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : index + 1}</strong>
-                <span>{page.fileName}</span>
-                <span>{page.title}</span>
+            {(preview.chapters ?? []).slice(0, 12).map((chapter, index) => (
+              <li key={`${chapter.title}-${index}`}>
+                <strong>Chapter {index + 1}</strong>
+                <span>{chapter.title}</span>
+                <span>{chapter.pages.length} page(s)</span>
               </li>
             ))}
-            {preview.pages.length > 12 ? (
-              <li className="admin-book-upload-more">…and {preview.pages.length - 12} more pages</li>
+            {preview.chapters && preview.chapters.length > 12 ? (
+              <li className="admin-book-upload-more">…and {preview.chapters.length - 12} more chapters</li>
             ) : null}
           </ul>
 

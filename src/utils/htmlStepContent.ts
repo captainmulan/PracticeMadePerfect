@@ -123,6 +123,7 @@ export function resolveImportBookHtmlFolder(
   course?: { id?: string; bookHtmlFolder?: string | null } | null,
   uploadFolderName?: string,
   category?: string | null,
+  explicitStorageRoot?: "Comic" | "Other",
 ): string {
   const fromCourse = resolveBookHtmlFolder({
     bookHtmlFolder: course?.bookHtmlFolder,
@@ -138,10 +139,11 @@ export function resolveImportBookHtmlFolder(
     return `${root[0].toUpperCase()}${root.slice(1).toLowerCase()}/${rest.join("/")}`;
   }
 
+  const root = explicitStorageRoot || bookStorageCategory(category);
   if (uploadFolderName && uploadFolderName !== "Imported Book") {
-    return `${bookStorageCategory(category)}/${normalizedUploadFolder}`;
+    return `${root}/${normalizedUploadFolder}`;
   }
-  return `${bookStorageCategory(category)}/${normalizedUploadFolder || "Imported Book"}`;
+  return `${root}/${normalizedUploadFolder || "Imported Book"}`;
 }
 
 /** Relative book scripts/assets (e.g. _ocean-img-overview.js, assets/foo.png) need a base href in srcDoc. */

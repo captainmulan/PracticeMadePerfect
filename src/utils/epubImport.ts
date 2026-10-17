@@ -1,4 +1,4 @@
-import type { BookImportPreview, ParsedHtmlPage } from "./bookImport";
+import type { BookImportChapterPlan, BookImportPagePlan, BookImportPreview, ParsedHtmlPage } from "./bookImport";
 import { createDefaultBookFields } from "./bookImport";
 import type { Course } from "../data/courses";
 import { getBookAssetUrl } from "../config/externalHosting";
@@ -40,15 +40,25 @@ type EpubTocEntry = {
   subitems?: EpubTocEntry[];
 };
 
+type EpubZipFile = {
+  async: (type: "string" | "uint8array") => Promise<string | Uint8Array>;
+};
+
+type EpubZip = {
+  file(name: string): EpubZipFile | null;
+  file(name: string, data: string | Uint8Array): void;
+  files: Record<string, { dir: boolean }>;
+  generateAsync(options: { type: "uint8array" }): Promise<Uint8Array>;
+};
+
+type EpubZipConstructor = new () => {
+  loadAsync: (data: ArrayBuffer) => Promise<EpubZip>;
+};
+
 declare global {
   interface Window {
     ePub?: EpubJsLib;
-    JSZip?: new () => {
-      loadAsync: (data: ArrayBuffer) => Promise<{
-        file: (name: string) => { async: (type: "string" | "uint8array") => Promise<string | Uint8Array> } | null;
-        files: Record<string, { dir: boolean }>;
-      }>;
-    };
+    JSZip?: EpubZipConstructor;
     showDirectoryPicker?: (options: { mode: "readwrite" }) => Promise<FileSystemDirectoryHandle>;
   }
 }
@@ -93,7 +103,7 @@ async function loadEpubJsLib(): Promise<EpubJsLib | null> {
   return typeof window.ePub === "function" ? window.ePub : null;
 }
 
-async function loadJsZip(): Promise<NonNullable<Window["JSZip"]> | null> {
+async function loadJsZip(): Promise<EpubZipConstructor | null> {
   if (typeof window === "undefined") return null;
   if (window.JSZip) return window.JSZip;
 
@@ -126,31 +136,22 @@ async function loadJsZip(): Promise<NonNullable<Window["JSZip"]> | null> {
   return window.JSZip ?? null;
 }
 
-function slugify(value: string) {
+export function slugify(value: string) {
   return value
     .trim()
     .toLowerCase()
-    .replace(/[<>:"|?*\/\\]/g, "-")
-    .replace(/\s+/g, "-")
+    .replace(/[<>:"|?*\/\\]/g, "-") // remove OS-illegal characters
+    .replace(/\s+/g, "-") // replace spaces with hyphens
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 }
 
 function sanitizeBookFolderName(value: string) {
-  return value
-    .trim()
-    .replace(/\\/g, "/")
-    .split(/[\/]+/)
-    .filter(Boolean)
-    .join("-")
-    .replace(/[<>:"|?*]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "") || "imported-epub-book";
+  return slugify(value) || "imported-epub-book";
 }
 
 function sanitizeAssetFileName(value: string) {
-  const normalized = value.trim().replace(/\\/g, "/").split(/[\/]+/).filter(Boolean).join("-");
-  return normalized.replace(/[<>:"|?*]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "document";
+  return slugify(value) || "document";
 }
 
 function flattenToc(entries: EpubTocEntry[] | undefined, out: Array<{ label: string; href: string }> = []) {
@@ -212,62 +213,16 @@ function collectSpineFromBook(book: EpubBook): EpubSpineItem[] {
 }
 
 /** Fallback when EPUB.js spine is empty: read spine order from the OPF inside the ZIP. */
-async function collectSpineFromZip(arrayBuffer: ArrayBuffer): Promise<EpubSpineItem[]> {
-  const JSZip = await loadJsZip();
-  if (!JSZip) return [];
-
-  try {
-    const zip = await new JSZip().loadAsync(arrayBuffer);
-    const names = Object.keys(zip.files).filter((name) => !zip.files[name].dir);
-    const container = zip.file("META-INF/container.xml");
-    let opfPath = names.find((n) => n.toLowerCase().endsWith(".opf")) ?? "";
-    if (container) {
-      const xml = String(await container.async("string"));
-      const match = xml.match(/full-path=["']([^"']+\.opf)["']/i);
-      if (match?.[1]) opfPath = match[1];
-    }
-    if (!opfPath) return [];
-
-    const opfFile = zip.file(opfPath);
-    if (!opfFile) return [];
-    const opf = String(await opfFile.async("string"));
-
-    const idToHref = new Map<string, string>();
-    const itemRe = /<item\b[^>]*>/gi;
-    let itemMatch: RegExpExecArray | null;
-    while ((itemMatch = itemRe.exec(opf))) {
-      const tag = itemMatch[0];
-      const id = tag.match(/\bid=["']([^"']+)["']/i)?.[1];
-      const href = tag.match(/\bhref=["']([^"']+)["']/i)?.[1];
-      if (id && href) idToHref.set(id, href);
-    }
-
-    const refs: EpubSpineItem[] = [];
-    const refRe = /<itemref\b[^>]*>/gi;
-    let refMatch: RegExpExecArray | null;
-    while ((refMatch = refRe.exec(opf))) {
-      const tag = refMatch[0];
-      const idref = tag.match(/\bidref=["']([^"']+)["']/i)?.[1];
-      const linear = tag.match(/\blinear=["']([^"']+)["']/i)?.[1];
-      if (!idref || linear === "no") continue;
-      const href = idToHref.get(idref);
-      if (!href) continue;
-      /* Keep OPF-relative hrefs — epub.js display() expects package-relative paths. */
-      refs.push({ idref, href: href.replace(/\\/g, "/"), index: refs.length });
-    }
-    return refs;
-  } catch {
-    return [];
-  }
+async function collectSpineFromZip(zip: EpubZip): Promise<EpubSpineItem[]> {
+  const info = await readOpfInfo(zip);
+  if (!info) return [];
+  /* Keep OPF-relative hrefs — epub.js display() expects package-relative paths. */
+  return info.spineHrefs.map((href, index) => ({ href, index }));
 }
 
 /** Read nav/toc links from the EPUB zip when EPUB.js navigation is thin. */
-async function collectTocFromZip(arrayBuffer: ArrayBuffer): Promise<Array<{ label: string; href: string }>> {
-  const JSZip = await loadJsZip();
-  if (!JSZip) return [];
-
+async function collectTocFromZip(zip: EpubZip): Promise<Array<{ label: string; href: string }>> {
   try {
-    const zip = await new JSZip().loadAsync(arrayBuffer);
     const names = Object.keys(zip.files).filter((name) => !zip.files[name].dir);
     const candidates = names.filter((n) => {
       const lower = n.toLowerCase();
@@ -302,7 +257,7 @@ async function collectTocFromZip(arrayBuffer: ArrayBuffer): Promise<Array<{ labe
           }
           const label = match[2].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
           if (!label || !hrefRaw) continue;
-          let href = hrefRaw.replace(/^\.\//, "");
+          const href = hrefRaw.replace(/^\.\//, "");
           if (!href.includes("/") && baseDir && !href.startsWith("#")) {
             /* relative to nav file folder — strip OEBPS/ if already in href from epub.js style */
           }
@@ -317,6 +272,459 @@ async function collectTocFromZip(arrayBuffer: ArrayBuffer): Promise<Array<{ labe
   }
 }
 
+async function loadEpubZip(arrayBuffer: ArrayBuffer): Promise<EpubZip | null> {
+  const JSZip = await loadJsZip();
+  if (!JSZip) return null;
+  try {
+    return await new JSZip().loadAsync(arrayBuffer);
+  } catch {
+    return null;
+  }
+}
+
+interface EpubManifestItem {
+  href: string;
+  mediaType: string;
+  properties: string;
+}
+
+interface EpubOpfInfo {
+  opfPath: string;
+  opfDir: string;
+  manifest: Map<string, EpubManifestItem>;
+  spineHrefs: string[];
+  metaCoverId: string;
+}
+
+async function readOpfInfo(zip: EpubZip): Promise<EpubOpfInfo | null> {
+  try {
+    const names = Object.keys(zip.files).filter((name) => !zip.files[name].dir);
+    let opfPath = names.find((n) => n.toLowerCase().endsWith(".opf")) ?? "";
+    const container = zip.file("META-INF/container.xml");
+    if (container) {
+      const xml = String(await container.async("string"));
+      const match = xml.match(/full-path=["']([^"']+\.opf)["']/i);
+      if (match?.[1]) opfPath = match[1];
+    }
+    if (!opfPath) return null;
+
+    const opfFile = zip.file(opfPath);
+    if (!opfFile) return null;
+    const opf = String(await opfFile.async("string"));
+
+    const manifest = new Map<string, EpubManifestItem>();
+    const itemRe = /<item\b[^>]*>/gi;
+    let match: RegExpExecArray | null;
+    while ((match = itemRe.exec(opf))) {
+      const tag = match[0];
+      const id = tag.match(/\bid=["']([^"']+)["']/i)?.[1];
+      const href = tag.match(/\bhref=["']([^"']+)["']/i)?.[1];
+      if (!id || !href) continue;
+      manifest.set(id, {
+        href: href.replace(/\\/g, "/"),
+        mediaType: tag.match(/\bmedia-type=["']([^"']+)["']/i)?.[1] ?? "",
+        properties: tag.match(/\bproperties=["']([^"']+)["']/i)?.[1] ?? "",
+      });
+    }
+
+    const spineHrefs: string[] = [];
+    const refRe = /<itemref\b[^>]*>/gi;
+    while ((match = refRe.exec(opf))) {
+      const tag = match[0];
+      const idref = tag.match(/\bidref=["']([^"']+)["']/i)?.[1];
+      const linear = tag.match(/\blinear=["']([^"']+)["']/i)?.[1];
+      if (!idref || linear === "no") continue;
+      const item = manifest.get(idref);
+      if (item) spineHrefs.push(item.href);
+    }
+
+    const opfDir = opfPath.includes("/") ? opfPath.slice(0, opfPath.lastIndexOf("/") + 1) : "";
+    const metaCoverId = opf.match(/<meta\b[^>]*name=["']cover["'][^>]*content=["']([^"']+)["']/i)?.[1] ?? "";
+    return { opfPath, opfDir, manifest, spineHrefs, metaCoverId };
+  } catch {
+    return null;
+  }
+}
+
+function joinZipPath(baseDir: string, relative: string): string {
+  const parts = `${baseDir}${relative}`.split("/");
+  const out: string[] = [];
+  for (const part of parts) {
+    if (!part || part === ".") continue;
+    if (part === "..") {
+      out.pop();
+      continue;
+    }
+    out.push(part);
+  }
+  return out.join("/");
+}
+
+/**
+ * Resolve a TOC/manifest href (OPF-relative or package-relative) to a real ZIP entry name.
+ * EPUB.js resolves against the OPF folder while raw NCX hrefs stay relative, so try both.
+ */
+function resolveZipEntryName(zip: EpubZip, href: string, opfDir: string): string | null {
+  const raw = href.split("#")[0].split("?")[0].trim().replace(/\\/g, "/").replace(/^\.?\//, "");
+  if (!raw) return null;
+  const names = Object.keys(zip.files).filter((name) => !zip.files[name].dir);
+  const direct = [raw, `${opfDir}${raw}`].find((candidate) => names.includes(candidate));
+  if (direct) return direct;
+
+  const lower = raw.toLowerCase();
+  return (
+    names.find((name) => name.toLowerCase() === lower) ??
+    names.find((name) => name.toLowerCase().endsWith(`/${lower}`)) ??
+    null
+  );
+}
+
+const PAGE_ANCHOR_PATTERN = /(?:^|[\s"'<])(?:id|name)\s*=\s*["']([^"']+)["']/gi;
+const PAGE_ANCHOR_MARKER = /^(?:p\d+|pgepubid[\w.-]*|page[-_]?\d+|pmp-p\d+)$/i;
+
+/** Page-break style anchors (#p12, #pgepubid00000) in document order. */
+function collectPageAnchors(html: string): string[] {
+  const anchors: string[] = [];
+  PAGE_ANCHOR_PATTERN.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = PAGE_ANCHOR_PATTERN.exec(html))) {
+    const id = match[1].trim();
+    if (!id || !PAGE_ANCHOR_MARKER.test(id) || anchors.includes(id)) continue;
+    anchors.push(id);
+  }
+  return anchors;
+}
+
+/**
+ * Inject physical anchors (<a id="pmp-p1">, etc.) into an HTML string every ~1400 characters.
+ * Favors inserting before tags like <p>, <div>, <h1>, etc. to ensure consistent granularity.
+ */
+function injectPageAnchors(html: string): string {
+  /* Don't double-inject if it already has our specific pattern. */
+  if (html.includes('id="pmp-p1"') || html.includes('id="pmp-p2"')) return html;
+
+  const minChars = 6000;
+  const targetChars = 10000;
+  const maxChars = 15000;
+  const minParagraphs = 10;
+
+  let result = "";
+  let lastIndex = 0;
+  let charCount = 0;
+  let paragraphCount = 0;
+  let pageNumber = 1;
+
+  /* Always inject the first anchor at the start of the body or the content. */
+  const bodyMatch = /<body[^>]*>/i.exec(html);
+  if (bodyMatch) {
+    const insertPos = bodyMatch.index + bodyMatch[0].length;
+    result += html.slice(0, insertPos);
+    /* Use <a> with both id and name for maximum compatibility. */
+    result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
+    lastIndex = insertPos;
+    pageNumber += 1;
+  } else {
+    result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
+    pageNumber += 1;
+  }
+
+  /* Look for common block elements to insert anchors before. */
+  const tagPattern = /<(p|div|h[1-6]|section|article|blockquote|li)\b/gi;
+  let match: RegExpExecArray | null;
+
+  while ((match = tagPattern.exec(html))) {
+    if (match.index < lastIndex) continue;
+
+    const tagName = match[1].toLowerCase();
+    const textBefore = html.slice(lastIndex, match.index).replace(/<[^>]+>/g, "");
+    charCount += textBefore.length;
+
+    if (tagName === "p") {
+      paragraphCount += 1;
+    }
+
+    /*
+      Split logic:
+      1. Force split if we hit maxChars (safety limit).
+      2. Split if we hit a heading and have at least minChars.
+      3. Split if we have at least minChars AND enough paragraphs AND it's a good break point (p or div).
+      4. Split if we hit targetChars regardless of paragraph count.
+    */
+    const isHeading = /^h[1-6]$/.test(tagName);
+    const shouldSplit =
+      charCount >= maxChars ||
+      (charCount >= minChars && isHeading) ||
+      (charCount >= minChars && paragraphCount >= minParagraphs && (tagName === "p" || tagName === "div")) ||
+      (charCount >= targetChars);
+
+    if (shouldSplit) {
+      result += html.slice(lastIndex, match.index);
+      result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
+      lastIndex = match.index;
+      charCount = 0;
+      paragraphCount = 0;
+      pageNumber += 1;
+    }
+  }
+
+  result += html.slice(lastIndex);
+  return result;
+}
+
+function isCoverDocument(href: string | undefined): boolean {
+  return /^(?:.*\/)?cover\.(?:xhtml?|html?)$/i.test((href ?? "").split("#")[0]);
+}
+
+function normalizeHref(href: string | undefined): string {
+  return (href ?? "").trim().replace(/^\.\//, "");
+}
+
+function cleanTocLabel(label: string | undefined): string {
+  return (label ?? "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+}
+
+function pageTitleForAnchor(chapterTitle: string, anchor: string): string {
+  const number = /(\d+)/.exec(anchor)?.[1];
+  return number ? `${chapterTitle} - ${number}` : `${chapterTitle} - ${anchor}`;
+}
+
+interface ChapterPlanDraft {
+  title: string;
+  pages: Array<{ title: string; href: string }>;
+}
+
+function collectDescendantPages(
+  entries: EpubTocEntry[] | undefined,
+  out: Array<{ title: string; href: string }>,
+) {
+  if (!entries?.length) return;
+  for (const entry of entries) {
+    const href = normalizeHref(entry.href);
+    const label = cleanTocLabel(entry.label);
+    if (href) out.push({ title: label || href, href });
+    collectDescendantPages(entry.subitems, out);
+  }
+}
+
+/** Split a chapter document into one page per page-break anchor, bounded by the next chapter. */
+async function expandChapterAnchors(
+  zip: EpubZip,
+  opfDir: string,
+  chapterHref: string,
+  nextChapterHref: string | undefined,
+  chapterTitle: string,
+): Promise<Array<{ title: string; href: string }> | null> {
+  const entryName = resolveZipEntryName(zip, chapterHref, opfDir);
+  if (!entryName) return null;
+  const file = zip.file(entryName);
+  if (!file) return null;
+
+  let html = String(await file.async("string"));
+  let anchors = collectPageAnchors(html);
+
+  /* Fallback: if no physical anchors exist, inject them every ~1400 chars. */
+  if (anchors.length < 2) {
+    const injected = injectPageAnchors(html);
+    if (injected !== html) {
+      html = injected;
+      zip.file(entryName, html);
+      anchors = collectPageAnchors(html);
+    }
+  }
+
+  /* We return anchors even if only 1 exists, to ensure the reader gets a start anchor like #pmp-p1. */
+  if (!anchors.length) return null;
+
+  const filePart = chapterHref.split("#")[0];
+  const startAnchor = chapterHref.split("#")[1] ?? "";
+  const nextFilePart = nextChapterHref ? nextChapterHref.split("#")[0] : "";
+  const nextAnchor = nextChapterHref && nextFilePart === filePart ? nextChapterHref.split("#")[1] ?? "" : "";
+
+  const startIndex = Math.max(0, startAnchor ? anchors.indexOf(startAnchor) : 0);
+  const requestedEnd = nextAnchor ? anchors.indexOf(nextAnchor) : -1;
+  const endIndex = requestedEnd > startIndex ? requestedEnd : anchors.length;
+  const range = anchors.slice(startIndex, endIndex);
+
+  return range.map((anchor) => ({
+    title: pageTitleForAnchor(chapterTitle, anchor),
+    href: `${filePart}#${anchor}`,
+  }));
+}
+
+/**
+ * Group the EPUB TOC into chapters (reader steppers) with pages inside each chapter.
+ * Falls back to a single chapter holding the spine pages when the book has no TOC.
+ */
+async function buildChapterPlans(options: {
+  tocTree?: EpubTocEntry[];
+  tocFlat: Array<{ label: string; href: string }>;
+  zip: EpubZip | null;
+  opfDir: string;
+  spinePages: Array<{ title: string; href: string }>;
+  bookTitle: string;
+}): Promise<ChapterPlanDraft[]> {
+  const { tocTree, tocFlat, zip, opfDir, spinePages, bookTitle } = options;
+  const plans: ChapterPlanDraft[] = [];
+
+  const addChapter = (title: string, pages: Array<{ title: string; href: string }>) => {
+    const usable = pages.filter((page) => page.href && !isCoverDocument(page.href));
+    if (usable.length) plans.push({ title: title || usable[0].title || bookTitle, pages: usable });
+  };
+
+  if (tocTree?.length) {
+    for (const entry of tocTree) {
+      const title = cleanTocLabel(entry.label);
+      const href = normalizeHref(entry.href);
+      const pages: Array<{ title: string; href: string }> = [];
+      if (href) pages.push({ title: title || href, href });
+      collectDescendantPages(entry.subitems, pages);
+      if (!pages.length) continue;
+      addChapter(title || pages[0].title || bookTitle, pages);
+    }
+  } else if (tocFlat.length) {
+    for (const entry of tocFlat) {
+      addChapter(entry.label, [{ title: entry.label || entry.href, href: entry.href }]);
+    }
+  }
+
+  if (!plans.length) {
+    addChapter(bookTitle, spinePages);
+    return plans;
+  }
+
+  /* Chapters listed as a single page get expanded into the page anchors of their document. */
+  if (zip) {
+    for (let index = 0; index < plans.length; index += 1) {
+      const plan = plans[index];
+      if (plan.pages.length !== 1) continue;
+      const nextHref = plans.slice(index + 1).find((next) => next.pages[0]?.href)?.pages[0]?.href;
+      const expanded = await expandChapterAnchors(zip, opfDir, plan.pages[0].href, nextHref, plan.title);
+      if (expanded?.length) plan.pages = expanded;
+    }
+  }
+
+  return plans;
+}
+
+const COVER_MAX_WIDTH = 480;
+const COVER_WEBP_QUALITY = 0.82;
+
+function imageMimeTypeForName(name: string): string {
+  const extension = name.split(".").pop()?.toLowerCase() ?? "";
+  if (extension === "png") return "image/png";
+  if (extension === "gif") return "image/gif";
+  if (extension === "webp") return "image/webp";
+  if (extension === "svg") return "image/svg+xml";
+  return "image/jpeg";
+}
+
+/** Rasterize cover bytes to a webp data URL (used as the book cover thumbnail). */
+async function rasterizeCoverToWebp(bytes: Uint8Array, name: string): Promise<string | null> {
+  if (typeof document === "undefined" || typeof Image === "undefined") return null;
+
+  const objectUrl = URL.createObjectURL(new Blob([bytes as unknown as BlobPart], { type: imageMimeTypeForName(name) }));
+  try {
+    const image = await new Promise<HTMLImageElement | null>((resolve) => {
+      const element = new Image();
+      element.onload = () => resolve(element);
+      element.onerror = () => resolve(null);
+      element.src = objectUrl;
+    });
+    if (!image) return null;
+
+    const naturalWidth = image.naturalWidth || COVER_MAX_WIDTH;
+    const naturalHeight = image.naturalHeight || naturalWidth;
+    const scale = Math.min(1, COVER_MAX_WIDTH / naturalWidth);
+    const width = Math.max(1, Math.round(naturalWidth * scale));
+    const height = Math.max(1, Math.round(naturalHeight * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) return null;
+    context.drawImage(image, 0, 0, width, height);
+
+    const dataUrl = canvas.toDataURL("image/webp", COVER_WEBP_QUALITY);
+    return dataUrl.startsWith("data:image/") ? dataUrl : null;
+  } catch {
+    return null;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+/** First image referenced by an EPUB front/cover page document. */
+async function readDocumentCoverImage(zip: EpubZip, docHref: string, opfDir: string): Promise<string | null> {
+  const entryName = resolveZipEntryName(zip, docHref, opfDir);
+  if (!entryName) return null;
+  const file = zip.file(entryName);
+  if (!file) return null;
+
+  const html = String(await file.async("string"));
+  const src =
+    html.match(/<img\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1] ??
+    html.match(/<image\b[^>]*\bxlink:href=["']([^"']+)["']/i)?.[1] ??
+    html.match(/<image\b[^>]*\bhref=["']([^"']+)["']/i)?.[1];
+  if (!src || /^(?:https?:|data:)/i.test(src)) return null;
+
+  const docDir = entryName.includes("/") ? entryName.slice(0, entryName.lastIndexOf("/") + 1) : "";
+  const candidate = joinZipPath(docDir, src.split("?")[0].split("#")[0].replace(/\\/g, "/"));
+  return resolveZipEntryName(zip, candidate, opfDir) ? candidate : null;
+}
+
+/**
+ * Cover image from the EPUB front page, falling back to the OPF cover metadata.
+ * Returns a `data:image/webp` URL so it can be stored straight on the course.
+ */
+async function extractEpubCover(zip: EpubZip): Promise<string | null> {
+  const info = await readOpfInfo(zip);
+  if (!info) return null;
+
+  const candidates: string[] = [];
+  const push = (href: string | null | undefined) => {
+    const clean = href?.trim();
+    if (clean && !candidates.some((item) => item.toLowerCase() === clean.toLowerCase())) candidates.push(clean);
+  };
+
+  /* 1. Front page: cover document (or first spine document) and its first image. */
+  const frontPages = [...info.manifest.values()]
+    .map((item) => item.href)
+    .filter((href) => isCoverDocument(href));
+  if (info.spineHrefs[0]) frontPages.push(info.spineHrefs[0]);
+  for (const page of frontPages) {
+    push(await readDocumentCoverImage(zip, page, info.opfDir));
+  }
+
+  /* 2. OPF cover metadata. */
+  const metaCover = info.metaCoverId ? info.manifest.get(info.metaCoverId) : undefined;
+  if (metaCover && /^image\//i.test(metaCover.mediaType)) push(metaCover.href);
+  for (const item of info.manifest.values()) {
+    if (/cover-image/i.test(item.properties)) push(item.href);
+  }
+
+  /* 3. Manifest / ZIP name heuristics. */
+  for (const [id, item] of info.manifest) {
+    if (/^image\//i.test(item.mediaType) && /cover/i.test(`${id} ${item.href}`)) push(item.href);
+  }
+  for (const name of Object.keys(zip.files)) {
+    if (zip.files[name].dir) continue;
+    if (/(^|\/)cover[_\-.]?[^/]*\.(?:jpe?g|png|gif|webp)$/i.test(name)) push(name);
+  }
+
+  for (const href of candidates) {
+    if (/\.svg$/i.test(href.split("#")[0])) continue;
+    const entryName = resolveZipEntryName(zip, href, info.opfDir);
+    if (!entryName) continue;
+    const file = zip.file(entryName);
+    if (!file) continue;
+    const dataUrl = await rasterizeCoverToWebp((await file.async("uint8array")) as Uint8Array, entryName);
+    if (dataUrl) return dataUrl;
+  }
+
+  return null;
+}
+
 export interface EpubImportPreviewOptions {
   preferredFolder?: string;
   bookIdOverride?: string;
@@ -328,6 +736,11 @@ export interface EpubImportPreviewOptions {
 export interface EpubImportPreview extends BookImportPreview {
   pageCount: number;
   epubFileName: string;
+  chapterCount: number;
+  /** Cover rasterized from the EPUB front page as a `data:image/webp` URL. */
+  coverImageUrl?: string;
+  /** Modified EPUB data (with injected anchors) if applicable. */
+  modifiedEpubData?: Uint8Array;
 }
 
 export interface EpubAssetExportProgress {
@@ -348,7 +761,11 @@ export async function buildEpubImportPreview(
   const baseEpubSource = getBookAssetUrl(`${folderName}/${epubFileName}`);
 
   const arrayBuffer = await file.arrayBuffer();
+  const zip = await loadEpubZip(arrayBuffer.slice(0));
+  const opfDir = (await (zip ? readOpfInfo(zip) : null))?.opfDir ?? "";
+
   let spineItems: EpubSpineItem[] = [];
+  let tocTree: EpubTocEntry[] = [];
   let tocFlat: Array<{ label: string; href: string }> = [];
 
   try {
@@ -365,8 +782,10 @@ export async function buildEpubImportPreview(
       spineItems = collectSpineFromBook(book);
       try {
         const navigation = await book.loaded?.navigation;
+        tocTree = navigation?.toc ?? [];
         tocFlat = dedupeTocEntries(flattenToc(navigation?.toc));
       } catch {
+        tocTree = [];
         tocFlat = [];
       }
       try {
@@ -379,53 +798,80 @@ export async function buildEpubImportPreview(
     spineItems = [];
   }
 
-  if (!spineItems.length) {
-    spineItems = await collectSpineFromZip(arrayBuffer.slice(0));
+  if (!spineItems.length && zip) {
+    spineItems = await collectSpineFromZip(zip);
   }
-  if (tocFlat.length < 2) {
-    const zipToc = await collectTocFromZip(arrayBuffer.slice(0));
+  if (tocFlat.length < 2 && zip) {
+    const zipToc = await collectTocFromZip(zip);
     if (zipToc.length > tocFlat.length) tocFlat = zipToc;
   }
 
+  const spinePages = spineItems
+    .filter((item) => !isCoverDocument(item.href))
+    .map((item, index) => {
+      const href = normalizeHref(item.href);
+      if (!href) return null;
+      return { title: item.label || item.title || titleForHref(href, tocFlat, `Page ${index + 1}`), href };
+    })
+    .filter((page): page is { title: string; href: string } => Boolean(page));
+
   /*
-    Use TOC entries for maximum granularity. TOC often has file.xhtml#section-id
-    which gives us chapter/section-level page markers. This is better than
-    spine items (just files) and doesn't require running the full viewer.
+    Group the TOC into chapters (reader steppers); each chapter holds one step
+    per page anchor so a chapter with several pages gets several steps.
   */
-  const readingSpineItems = spineItems.filter((item) =>
-    !/^(?:.*\/)?cover\.(?:xhtml?|html?)$/i.test(item.href ?? ""),
-  );
+  const chapterPlans = (await buildChapterPlans({
+    tocTree,
+    tocFlat,
+    zip,
+    opfDir,
+    spinePages,
+    bookTitle: folderName,
+  })).filter((plan) => plan.pages.length);
 
-  // Prefer TOC if it has fragment identifiers (better granularity)
-  const useToc = tocFlat.length >= 2 && tocFlat.some((entry) => entry.href.includes("#"));
-  const chapterEntries: Array<{ label: string; href: string }> = useToc
-    ? tocFlat
-    : readingSpineItems.map((item, index) => ({
-        label: item.label || item.title || titleForHref(item.href, tocFlat, `Page ${index + 1}`),
-        href: (item.href ?? "").replace(/^\.\//, ""),
-      }));
+  if (!chapterPlans.length) {
+    chapterPlans.push({ title: folderName, pages: [{ title: folderName, href: "" }] });
+  }
 
-  const pageCount = Math.max(1, chapterEntries.length || readingSpineItems.length || spineItems.length);
+  /* Flatten first so every page knows its successor, even across chapter borders. */
+  const sequence: Array<{ title: string; href: string }> = [];
+  const chapterStarts: number[] = [];
+  for (const plan of chapterPlans) {
+    chapterStarts.push(sequence.length);
+    for (const page of plan.pages) sequence.push({ title: page.title, href: normalizeHref(page.href) });
+  }
+  chapterStarts.push(sequence.length);
+
+  const chapters: BookImportChapterPlan[] = [];
+  for (let c = 0; c < chapterStarts.length - 1; c += 1) {
+    const steps: BookImportPagePlan[] = [];
+    for (let i = chapterStarts[c]; i < chapterStarts[c + 1]; i += 1) {
+      const page = sequence[i];
+      steps.push({
+        title: page.title || `Page ${i + 1}`,
+        href: page.href,
+        content: page.href ? `${baseEpubSource}#${page.href}` : baseEpubSource,
+        nextHref: sequence[i + 1]?.href || undefined,
+      });
+    }
+    chapters.push({ title: chapterPlans[c].title || `Chapter ${c + 1}`, pages: steps });
+  }
 
   const pages: ParsedHtmlPage[] = [];
-  for (let i = 0; i < pageCount; i++) {
-    const pageNumber = i + 1;
-    const entry = chapterEntries[i];
-    const href = (entry?.href ?? "").replace(/^\.\//, "");
-    const title = entry?.label || titleForHref(href, tocFlat, `Page ${pageNumber}`);
-    const chapterLocation = href ? `#${href}` : "";
-    const pageSource = `${baseEpubSource}${chapterLocation}`;
-
-    pages.push({
-      fileName: `chapter-${String(pageNumber).padStart(2, "0")}.html`,
-      relativePath: `chapter-${String(pageNumber).padStart(2, "0")}.html`,
-      pageNumber,
-      sortOrder: pageNumber,
-      title,
-      content: pageSource,
-      stepType: "epub",
-      assets: [],
-    });
+  for (const chapter of chapters) {
+    for (const page of chapter.pages) {
+      const pageNumber = pages.length + 1;
+      const fileName = `chapter-${String(pageNumber).padStart(2, "0")}.html`;
+      pages.push({
+        fileName,
+        relativePath: fileName,
+        pageNumber,
+        sortOrder: pageNumber,
+        title: page.title,
+        content: page.content,
+        stepType: "epub",
+        assets: [],
+      });
+    }
   }
 
   return {
@@ -434,9 +880,13 @@ export async function buildEpubImportPreview(
     bookId,
     bookTitle: folderName,
     pages,
+    chapters,
     existingBookId: existingBookIds.includes(bookId) ? bookId : undefined,
-    pageCount,
+    pageCount: pages.length,
     epubFileName,
+    chapterCount: chapters.length,
+    coverImageUrl: (await (zip ? extractEpubCover(zip) : null)) ?? undefined,
+    modifiedEpubData: zip ? await zip.generateAsync({ type: "uint8array" }) : undefined,
   };
 }
 
@@ -445,10 +895,14 @@ export async function writeEpubAssetToDirectory(
   folderName: string,
   fileName: string,
   file: File,
+  coverImageUrl?: string,
   onProgress?: (progress: EpubAssetExportProgress) => void,
+  coverOptions?: { folder: string; fileName: string }
 ): Promise<{ written: number; total: number; errors: string[] }> {
-  const total = 1;
+  const hasCover = !!(coverImageUrl && coverImageUrl.startsWith("data:"));
+  const total = hasCover ? 2 : 1;
   const errors: string[] = [];
+  let written = 0;
 
   if (!rootDirectory) {
     onProgress?.({ completed: 0, total, currentFileName: fileName });
@@ -456,26 +910,88 @@ export async function writeEpubAssetToDirectory(
   }
 
   try {
-    const pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
+    // 1. Write EPUB to book_html/[category]/[book]
+    let pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
     const rootName = rootDirectory.name.toLowerCase();
-    if (rootName === pathParts[0]?.toLowerCase()) {
-      pathParts.shift();
-    } else if (rootName === pathParts[pathParts.length - 1]?.toLowerCase()) {
-      pathParts.pop();
+
+    // If user picked a subfolder (e.g. 'book_html', 'Other', 'Comic'), adjust pathParts
+    if (rootName === "book_html") {
+      // Already in book_html, no need to navigate into it
+    } else if (rootName === "other" || rootName === "comic") {
+      // Already in the category folder, skip the first part if it matches
+      if (pathParts.length > 0 && pathParts[0].toLowerCase() === rootName) {
+        pathParts = pathParts.slice(1);
+      }
     }
+
+    // If user picked project root, we might need to go into book_html first
+    let bookHtmlRoot = rootDirectory;
+    if (rootName !== "book_html" && rootName !== "other" && rootName !== "comic") {
+      try {
+        bookHtmlRoot = await rootDirectory.getDirectoryHandle("book_html", { create: false });
+      } catch {
+        // Fallback: assume rootDirectory IS book_html or we just create folders relative to it
+        bookHtmlRoot = rootDirectory;
+      }
+    }
+
     const bookDirectory = await pathParts.reduce(
       (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
-      Promise.resolve(rootDirectory),
+      Promise.resolve(bookHtmlRoot),
     );
+
     const fileHandle = await bookDirectory.getFileHandle(fileName, { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(file);
     await writable.close();
-    onProgress?.({ completed: 1, total, currentFileName: fileName });
-    return { written: 1, total, errors: [] };
+    written += 1;
+    onProgress?.({ completed: written, total, currentFileName: fileName });
+
+    // 2. Write Cover if present
+    if (hasCover) {
+      try {
+        const coverFileName = coverOptions?.fileName || "cover.webp";
+        let targetCoverDirectory: FileSystemDirectoryHandle | null = null;
+
+        if (coverOptions?.folder.startsWith("/book_covers")) {
+          const coverPathParts = coverOptions.folder.split("/").filter(Boolean);
+
+          try {
+            // Try to find 'public' folder in the selected root
+            const publicDir = await rootDirectory.getDirectoryHandle("public", { create: false });
+            targetCoverDirectory = await coverPathParts.reduce(
+              (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
+              Promise.resolve(publicDir),
+            );
+          } catch {
+            // Fallback: If 'public' not found, save the cover INSIDE the book's own folder
+            // so it's not lost, and warn the user.
+            targetCoverDirectory = bookDirectory;
+            errors.push(`Note: 'public' folder not found in "${rootDirectory.name}". The cover was saved to the book folder instead. For global covers, please select the project root (PracticeMadePerfect).`);
+          }
+        } else {
+          targetCoverDirectory = bookDirectory;
+        }
+
+        if (targetCoverDirectory) {
+          const response = await fetch(coverImageUrl!);
+          const blob = await response.blob();
+          const coverHandle = await targetCoverDirectory.getFileHandle(coverFileName, { create: true });
+          const coverWritable = await coverHandle.createWritable();
+          await coverWritable.write(blob);
+          await coverWritable.close();
+          written += 1;
+          onProgress?.({ completed: written, total, currentFileName: coverFileName });
+        }
+      } catch (err) {
+        errors.push(`Cover not saved: ${String(err)}`);
+      }
+    }
+
+    return { written, total, errors };
   } catch (error) {
-    onProgress?.({ completed: 0, total, currentFileName: fileName });
-    return { written: 0, total, errors: [String(error)] };
+    onProgress?.({ completed: written, total, currentFileName: fileName });
+    return { written, total, errors: [String(error)] };
   }
 }
 

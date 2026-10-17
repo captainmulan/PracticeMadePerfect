@@ -14,6 +14,22 @@ export interface ParsedHtmlPage {
   assets?: Array<{ fileName: string; mimeType: string; dataUrl: string }>;
 }
 
+/** One reader page inside an EPUB chapter (chapter = stepper, page = step). */
+export interface BookImportPagePlan {
+  title: string;
+  /** Location inside the EPUB, e.g. "index_split_001.html#p134". */
+  href: string;
+  /** Full step source: asset url + "#" + href. */
+  content: string;
+  /** Location of the following page, used to isolate this page's range. */
+  nextHref?: string;
+}
+
+export interface BookImportChapterPlan {
+  title: string;
+  pages: BookImportPagePlan[];
+}
+
 export interface BookImportPreview {
   folderPath: string;
   folderName: string;
@@ -21,6 +37,19 @@ export interface BookImportPreview {
   bookTitle: string;
   pages: ParsedHtmlPage[];
   existingBookId?: string;
+  /** EPUB only: chapter/page grouping read from the spine + TOC. */
+  chapters?: BookImportChapterPlan[];
+}
+
+export interface EpubCourseExtras {
+  coverImageUrl?: string;
+  /** Resolved EPUB asset url (Comic/Other folder included) used to rebuild step sources. */
+  epubAssetUrl?: string;
+  language?: "Eng" | "MM";
+  cat1?: string;
+  cat2?: string;
+  cat3?: string;
+  cat4?: string;
 }
 
 export interface ExistingBookPageMapping {
@@ -402,43 +431,71 @@ export function buildCourseFromEpubPreview(
   courseIndex: number,
   category: string,
   bookIdOverride?: string,
+  extras?: EpubCourseExtras,
 ): Course {
   const bookId = bookIdOverride?.trim() || preview.bookId;
-  const stamp = Date.now();
-  const chapterId = `${bookId}-epub-chapter-001`;
+  const assetUrl = extras?.epubAssetUrl?.trim();
 
-  const steps: CourseStep[] = preview.pages.map((page, index) => {
-    const pageNumber = page.pageNumber !== Number.MAX_SAFE_INTEGER ? page.pageNumber : index + 1;
-    const stepId = `${bookId}-epub-page-${String(pageNumber).padStart(3, "0")}`;
-    const stepType = page.stepType ?? "epub";
+  /* Step source rebuilt against the resolved folder when the caller knows it. */
+  const contentFor = (href: string | undefined, fallback: string) =>
+    assetUrl ? (href ? `${assetUrl}#${href}` : assetUrl) : fallback;
 
-    const step: CourseStep = {
-      id: stepId,
+  /* One chapter per TOC entry (reader stepper), one step per EPUB page inside it. */
+  const chapterPlans: BookImportChapterPlan[] = preview.chapters?.length
+    ? preview.chapters
+    : [
+        {
+          title: preview.bookTitle,
+          pages: preview.pages.map((page) => ({
+            title: page.title,
+            href: page.content.match(/#(.+)$/)?.[1] ?? "",
+            content: page.content,
+          })),
+        },
+      ];
+
+  let stepIndex = 0;
+  const chapters: CourseChapter[] = chapterPlans.map((plan, chapterIndex) => {
+    const chapterId = `${bookId}-epub-chapter-${String(chapterIndex + 1).padStart(3, "0")}`;
+    const steps: CourseStep[] = plan.pages.map((page) => {
+      stepIndex += 1;
+      const step: CourseStep = {
+        id: `${bookId}-epub-page-${String(stepIndex).padStart(3, "0")}`,
+        courseId: bookId,
+        chapterId,
+        chapterTitle: plan.title,
+        chapterIndex,
+        stepIndex,
+        stepType: "epub",
+        title: page.title,
+        description: "",
+        contentHtml: contentFor(page.href, page.content),
+        ...(page.nextHref ? { epubNextLocation: page.nextHref } : {}),
+      };
+      return step;
+    });
+
+    return {
+      id: chapterId,
       courseId: bookId,
-      chapterId,
-      chapterTitle: preview.bookTitle,
-      chapterIndex: 0,
-      stepIndex: pageNumber,
-      stepType,
-      title: page.title,
-      description: "",
-      contentHtml: page.content,
+      chapterIndex,
+      title: plan.title,
+      steps,
     };
-    return step;
   });
 
-  const chapter: CourseChapter = {
-    id: chapterId,
-    courseId: bookId,
-    chapterIndex: 0,
-    title: preview.bookTitle,
-    steps,
-  };
+  const stepCount = chapters.reduce((total, chapter) => total + chapter.steps.length, 0);
 
   return {
     ...createDefaultBookFields(courseIndex, preview.bookTitle, bookId, category),
+    ...(extras?.coverImageUrl ? { coverImageUrl: extras.coverImageUrl } : {}),
+    ...(extras?.language ? { language: extras.language } : {}),
+    ...(extras?.cat1 ? { cat1: extras.cat1 } : {}),
+    ...(extras?.cat2 ? { cat2: extras.cat2 } : {}),
+    ...(extras?.cat3 ? { cat3: extras.cat3 } : {}),
+    ...(extras?.cat4 ? { cat4: extras.cat4 } : {}),
     bookHtmlFolder: preview.folderName,
-    stepCount: steps.length,
-    chapters: [chapter],
+    stepCount,
+    chapters,
   };
 }

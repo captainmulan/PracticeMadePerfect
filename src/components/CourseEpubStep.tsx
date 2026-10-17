@@ -102,20 +102,30 @@ function clearChapterIsolation(doc: Document) {
 }
 
 function hideAnchorSiblings(anchor: Element, hideBefore: boolean) {
-  const parent = anchor.parentNode;
-  if (!parent) return;
-  const siblings = [...parent.childNodes];
-  const anchorIndex = siblings.indexOf(anchor);
-  const clipped = hideBefore ? siblings.slice(0, anchorIndex) : siblings.slice(anchorIndex);
-  for (const node of clipped) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const wrapper = anchor.ownerDocument.createElement("span");
-      wrapper.setAttribute("data-pmp-hide", "1");
-      parent.insertBefore(wrapper, node);
-      wrapper.appendChild(node);
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
-      (node as Element).setAttribute("data-pmp-hide", "1");
+  const preceding = Node.DOCUMENT_POSITION_PRECEDING;
+  const following = Node.DOCUMENT_POSITION_FOLLOWING;
+
+  let current: Node | null = anchor;
+  while (current && current.parentElement && current.parentElement.tagName.toLowerCase() !== "body") {
+    const parent = current.parentElement;
+    const siblings = [...parent.childNodes];
+    const index = siblings.indexOf(current);
+    const clipped = hideBefore ? siblings.slice(0, index) : siblings.slice(index + 1);
+
+    for (const node of clipped) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent?.trim();
+        if (text) {
+          const wrapper = anchor.ownerDocument.createElement("span");
+          wrapper.setAttribute("data-pmp-hide", "1");
+          parent.insertBefore(wrapper, node);
+          wrapper.appendChild(node);
+        }
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        (node as Element).setAttribute("data-pmp-hide", "1");
+      }
     }
+    current = parent;
   }
 }
 
@@ -128,18 +138,25 @@ function applyChapterIsolation(
   if (!doc.body) return;
   clearChapterIsolation(doc);
   const anchors = [...doc.querySelectorAll("[id], a[name]")];
-  const start = findChapterAnchor(doc, fragment) ?? (!fragment
-    ? anchors.find((element) => /^p\d+$/i.test(element.id || element.getAttribute("name") || "")) ?? null
-    : null);
-  if (!start) return;
+  const start = findChapterAnchor(doc, fragment) ?? 
+    anchors.find((element) => (element.id || element.getAttribute("name")) === fragment) ??
+    (!fragment ? anchors.find((element) => /^(?:p\d+|pmp-p\d+)$/i.test(element.id || element.getAttribute("name") || "")) : null) ??
+    null;
+
+  if (!start) {
+    /* If we can't find the anchor, the page might be broken or not yet injected. */
+    console.warn(`EPUB isolation: Anchor "${fragment}" not found in document.`);
+    return;
+  }
 
   const startIndex = anchors.indexOf(start);
   const requestedEnd = nextFragment ? findChapterAnchor(doc, nextFragment) : null;
   const endIndex = requestedEnd ? anchors.indexOf(requestedEnd) : -1;
-  const marker = /^(?:p\d+|pgepubid|chap|chapter|part|sec|section)[-_]?\d*/i;
+  const marker = /^(?:p\d+|pgepubid|chap|chapter|part|sec|section|pmp-p)[-_]?\d*/i;
   const end = endIndex > startIndex
     ? requestedEnd
     : anchors.slice(startIndex + 1).find((element) => marker.test(element.id || element.getAttribute("name") || ""));
+
   const style = doc.createElement("style");
   style.id = "pmp-isolate-style";
   style.textContent = "[data-pmp-hide='1']{display:none!important;}";
@@ -147,34 +164,45 @@ function applyChapterIsolation(
 
   const preceding = doc.defaultView?.Node.DOCUMENT_POSITION_PRECEDING ?? 2;
   const following = doc.defaultView?.Node.DOCUMENT_POSITION_FOLLOWING ?? 4;
+
+  /* 
+    Isolate the page content by hiding everything outside the [start, end) range.
+    We check every element's position relative to our anchors.
+  */
   for (const element of doc.body.querySelectorAll("*")) {
     if (element.contains(start)) continue;
-    if (start.compareDocumentPosition(element) & preceding) {
+    if (end && element.contains(end)) continue;
+
+    const posToStart = start.compareDocumentPosition(element);
+    if (posToStart & preceding) {
       element.setAttribute("data-pmp-hide", "1");
-    } else if (end && (element === end || end.contains(element) || (end.compareDocumentPosition(element) & following))) {
-      element.setAttribute("data-pmp-hide", "1");
+      continue;
     }
-  }
-  hideAnchorSiblings(start, true);
-  if (end) hideAnchorSiblings(end, false);
-  if (typeof imageIndex === "number" && Number.isInteger(imageIndex) && imageIndex >= 0) {
-    const pageImages = [...doc.images].filter((image) => !image.closest("[data-pmp-hide='1']"));
-    const selectedImage = pageImages[imageIndex];
-    if (selectedImage) {
-      for (const image of pageImages) {
-        if (image === selectedImage) continue;
-        const paragraph = image.parentElement;
-        if (paragraph?.querySelectorAll("img").length === 1 && paragraph.tagName.toLowerCase() === "p") {
-          paragraph.setAttribute("data-pmp-hide", "1");
-        } else {
-          image.setAttribute("data-pmp-hide", "1");
-        }
+
+    if (end) {
+      const posToEnd = end.compareDocumentPosition(element);
+      if (element === end || (posToEnd & following)) {
+        element.setAttribute("data-pmp-hide", "1");
       }
     }
   }
-  start.scrollIntoView({ block: "start" });
-  doc.documentElement.scrollTop = 0;
-  doc.body.scrollTop = 0;
+
+  /* Clip text nodes at the start and end boundaries. */
+  hideAnchorSiblings(start, true);
+  if (end) hideAnchorSiblings(end, false);
+
+  if (imageIndex !== undefined) {
+    const images = [...doc.querySelectorAll("img, image")];
+    const target = images[imageIndex];
+    if (target) {
+      target.removeAttribute("data-pmp-hide");
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  } else {
+    start.scrollIntoView({ block: "start" });
+    doc.documentElement.scrollTop = 0;
+    doc.body.scrollTop = 0;
+  }
 }
 
 const comicSpreadOriginalStyles = new WeakMap<Element, string | null>();

@@ -924,10 +924,22 @@
 }
 
 .admin-book-upload-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 8px;
   font-size: 0.9rem;
   font-weight: 700;
   color: #0f172a;
+}
+
+.admin-book-upload-cover {
+  width: 48px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--admin-border-soft, #b8c3d0);
+  flex-shrink: 0;
 }
 
 .admin-book-upload-page-list {

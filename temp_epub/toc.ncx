@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="my">
+  <head>
+    <meta name="dtb:uid" content="0d7d2c60-275b-4f20-b5a8-09c6bb5b1b29"/>
+    <meta name="dtb:depth" content="3"/>
+    <meta name="dtb:generator" content="calibre (8.7.0)"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle>
+    <text>ပါစီဂျက်ဆန်နင့် အိုလံပစ် နတ်ဘုရားများ ကျိန်စာသင့်ဓား</text>
+  </docTitle>
+  <navMap>
+    <navPoint id="num_1" playOrder="1">
+      <navLabel>
+        <text>About Us</text>
+      </navLabel>
+      <content src="index_split_000.html"/>
+      <navPoint id="num_2" playOrder="2">
+        <navLabel>
+          <text>"စာရေးဆရာများနှင့် စာပေထုတ်လုပ်ရေးများသို့ ပန်ကြားချက်"</text>
+        </navLabel>
+        <content src="index_split_001.html"/>
+      </navPoint>
+      <navPoint id="num_3" playOrder="3">
+        <navLabel>
+          <text>"စာဖတ်သူများသို့ ပန်ကြားချက်"</text>
+        </navLabel>
+        <content src="index_split_002.html"/>
+      </navPoint>
+    </navPoint>
+    <navPoint id="num_4" playOrder="4">
+      <navLabel>
+        <text>“Rick Riordan”</text>
+      </navLabel>
+      <content src="index_split_003.html#id_hsriywmwmjb9"/>
+    </navPoint>
+    <navPoint id="num_5" playOrder="5">
+      <navLabel>
+        <text>ဘာသာပြန်သူ၏ အမှာစာ</text>
+      </navLabel>
+      <content src="index_split_005.html"/>
+    </navPoint>
+    <navPoint id="num_6" playOrder="6">
+      <navLabel>
+        <text>ပါစီဂျက်ဆန်၏ ဂရိနတ်ဘုရား မိသားစုဝင်များစာရင်း</text>
+      </navLabel>
+      <content src="index_split_006.html"/>
+    </navPoint>
+    <navPoint id="num_7" playOrder="7">
+      <navLabel>
+        <text>အခန်း (၁)</text>
+      </navLabel>
+      <content src="index_split_007.html#id_zg6ifbcqaz4t"/>
+    </navPoint>
+    <navPoint id="num_8" playOrder="8">
+      <navLabel>
+        <text>အခန်း (၂)</text>
+      </navLabel>
+      <content src="index_split_008.html#id_4cz4d66ht5bh"/>
+    </navPoint>
+    <navPoint id="num_9" playOrder="9">
+      <navLabel>
+        <text>အခန်း (၃)</text>
+      </navLabel>
+      <content src="index_split_009.html#id_adckvj7a7dhx"/>
+    </navPoint>
+    <navPoint id="num_10" playOrder="10">
+      <navLabel>
+        <text>အခန်း (၄)</text>
+      </navLabel>
+      <content src="index_split_010.html#id_px2d1sqtjocm"/>
+    </navPoint>
+    <navPoint id="num_11" playOrder="11">
+      <navLabel>
+        <text>အခန်း (၅)</text>
+      </navLabel>
+      <content src="index_split_011.html#id_rghmqcjhkr70"/>
+    </navPoint>
+    <navPoint id="num_12" playOrder="12">
+      <navLabel>
+        <text>အခန်း (၆)</text>
+      </navLabel>
+      <content src="index_split_012.html#id_if3jkjrjcoqd"/>
+    </navPoint>
+    <navPoint id="num_13" playOrder="13">
+      <navLabel>
+        <text>အခန်း (၇)</text>
+      </navLabel>
+      <content src="index_split_013.html#id_ivsoa8mh1cbk"/>
+    </navPoint>
+    <navPoint id="num_14" playOrder="14">
+      <navLabel>
+        <text>အခန်း (၈)</text>
+      </navLabel>
+      <content src="index_split_014.html#id_noyi15tbz7gd"/>
+    </navPoint>
+    <navPoint id="num_15" playOrder="15">
+      <navLabel>
+        <text>အခန်း (၉)</text>
+      </navLabel>
+      <content src="index_split_015.html#id_4tbk106r012h"/>
+    </navPoint>
+    <navPoint id="num_16" playOrder="16">
+      <navLabel>
+        <text>အခန်း (၁ဝ)</text>
+      </navLabel>
+      <content src="index_split_016.html#id_8mwi85hnnxts"/>
+    </navPoint>
+    <navPoint id="num_17" playOrder="17">
+      <navLabel>
+        <text>အခန်း (၁၁)</text>
+      </navLabel>
+      <content src="index_split_017.html#id_b0b0yx9yzme9"/>
+    </navPoint>
+    <navPoint id="num_18" playOrder="18">
+      <navLabel>
+        <text>အခန်း (၁၂)</text>
+      </navLabel>
+      <content src="index_split_018.html#id_dkrqsw4u0vz"/>
+    </navPoint>
+    <navPoint id="num_19" playOrder="19">
+      <navLabel>
+        <text>အခန်း (၁၃)</text>
+      </navLabel>
+      <content src="index_split_019.html#id_k368wi4gtuj5"/>
+    </navPoint>
+    <navPoint id="num_20" playOrder="20">
+      <navLabel>
+        <text>အခန်း (၁၄)</text>
+      </navLabel>
+      <content src="index_split_020.html#id_dvh1baom7ucf"/>
+    </navPoint>
+    <navPoint id="num_21" playOrder="21">
+      <navLabel>
+        <text>အခန်း (၁၅)</text>
+      </navLabel>
+      <content src="index_split_021.html#id_bwts38lh7ovr"/>
+    </navPoint>
+    <navPoint id="num_22" playOrder="22">
+      <navLabel>
+        <text>အခန်း (၁၆)</text>
+      </navLabel>
+      <content src="index_split_022.html#id_9uypfo8ckc3o"/>
+    </navPoint>
+    <navPoint id="num_23" playOrder="23">
+      <navLabel>
+        <text>အခန်း (၁၇)</text>
+      </navLabel>
+      <content src="index_split_023.html#id_sunj0ghm76wa"/>
+    </navPoint>
+    <navPoint id="num_24" playOrder="24">
+      <navLabel>
+        <text>အခန်း (၁၈)</text>
+      </navLabel>
+      <content src="index_split_024.html#id_lnzsnqyeth1w"/>
+    </navPoint>
+    <navPoint id="num_25" playOrder="25">
+      <navLabel>
+        <text>အခန်း (၁၉)</text>
+      </navLabel>
+      <content src="index_split_025.html#id_g5b2qhxacf2a"/>
+    </navPoint>
+    <navPoint id="num_26" playOrder="26">
+      <navLabel>
+        <text>အခန်း (၂ဝ)</text>
+      </navLabel>
+      <content src="index_split_026.html#id_cbnlt2qu6cuz"/>
+    </navPoint>
+    <navPoint id="num_27" playOrder="27">
+      <navLabel>
+        <text>အခန်း (၂၁)</text>
+      </navLabel>
+      <content src="index_split_027.html#id_7ub3p6fm3eve"/>
+    </navPoint>
+    <navPoint id="num_28" playOrder="28">
+      <navLabel>
+        <text>အခန်း (၂၂)</text>
+      </navLabel>
+      <content src="index_split_028.html#id_iggw1qtq6ezp"/>
+    </navPoint>
+    <navPoint id="num_29" playOrder="29">
+      <navLabel>
+        <text>အခန်း (၂၃)</text>
+      </navLabel>
+      <content src="index_split_029.html#id_5y1atyvyuafs"/>
+    </navPoint>
+  </navMap>
+</ncx>
