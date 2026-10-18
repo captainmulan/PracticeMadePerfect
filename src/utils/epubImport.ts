@@ -403,10 +403,10 @@ function injectPageAnchors(html: string): string {
   /* Don't double-inject if it already has our specific pattern. */
   if (html.includes('id="pmp-p1"') || html.includes('id="pmp-p2"')) return html;
 
-  const minChars = 6000;
-  const targetChars = 10000;
-  const maxChars = 15000;
-  const minParagraphs = 10;
+  const minChars = 2000;
+  const targetChars = 4000;
+  const maxChars = 6000;
+  const minParagraphs = 5;
 
   let result = "";
   let lastIndex = 0;
