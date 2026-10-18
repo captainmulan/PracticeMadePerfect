@@ -18,6 +18,23 @@ const STORE_CHAPTERS = "chapters";
 const STORE_STEPS = "steps";
 const STORE_ANNOUNCEMENTS = "announcements";
 
+function getCourseDetailUrl(courseId: string): string {
+  const encodedId = encodeURIComponent(courseId);
+  if (/^[\x00-\x7F]*$/.test(courseId) && encodedId.length <= 180) {
+    return `/data/course-details/${encodedId}.json`;
+  }
+
+  let firstHash = 2166136261;
+  let secondHash = 2166136261 ^ 0x9e3779b9;
+  for (let index = 0; index < courseId.length; index += 1) {
+    const codeUnit = courseId.charCodeAt(index);
+    firstHash = Math.imul(firstHash ^ codeUnit, 16777619) >>> 0;
+    secondHash = Math.imul(secondHash ^ codeUnit, 16777619) >>> 0;
+  }
+  const hash = `${firstHash.toString(16).padStart(8, "0")}${secondHash.toString(16).padStart(8, "0")}`;
+  return `/data/course-details/id-${hash}.json`;
+}
+
 function normalizeBookLanguage(language: unknown, category: string | null | undefined): "Eng" | "MM" {
   if (language === "Eng" || language === "MM") return language;
   const tags = normalizeBookCategory(category).split(",").map((tag) => tag.trim().toLowerCase());
@@ -376,7 +393,7 @@ export async function getCourseOutlineById(courseId: string): Promise<Course | n
   );
   if (hasStaleEpubOutline) {
     try {
-      const response = await fetch(`/data/course-details/${encodeURIComponent(courseId)}.json`, { cache: "no-store" });
+      const response = await fetch(getCourseDetailUrl(courseId), { cache: "no-store" });
       if (response.ok) {
         const detail = (await response.json()) as Course;
         await saveCourse(detail);
@@ -417,7 +434,7 @@ export async function getCourseById(courseId: string): Promise<Course | null> {
   if (!raw) return null;
 
   if ((raw as CourseRecord).detailLoaded === false) {
-    const response = await fetch(`/data/course-details/${encodeURIComponent(courseId)}.json`);
+    const response = await fetch(getCourseDetailUrl(courseId));
     if (!response.ok) {
       throw new Error(`Unable to load course details for ${courseId} (${response.status})`);
     }
@@ -787,7 +804,7 @@ async function updateSplitBookAssetSources(courseId?: string): Promise<void> {
         continue;
       }
 
-      const response = await fetch(`/data/course-details/${encodeURIComponent(targetCourseId)}.json`, { cache: "no-store" });
+      const response = await fetch(getCourseDetailUrl(targetCourseId), { cache: "no-store" });
       if (!response.ok) {
         throw new Error(`Unable to load split-book metadata for ${targetCourseId} (${response.status})`);
       }

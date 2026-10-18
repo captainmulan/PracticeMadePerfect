@@ -34,16 +34,19 @@
   },
   "dependencies": {
     "firebase": "11.10.0",
+    "jszip": "^3.10.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.17.0",
     "sql.js": "^1.8.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.1",
     "pdf-lib": "^1.17.1",
+    "playwright": "^1.64.1",
     "sharp": "^0.35.3",
     "typescript": "^5.5.4",
     "vite": "^5.4.1"

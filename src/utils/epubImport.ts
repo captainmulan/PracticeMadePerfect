@@ -396,98 +396,98 @@ function collectPageAnchors(html: string): string[] {
 }
 
 /**
- * Inject physical anchors (<a id="pmp-p1">, etc.) into an HTML string every ~1400 characters.
- * Favors inserting before tags like <p>, <div>, <h1>, etc. to ensure consistent granularity.
+ * Inject physical anchors (<a id="pmp-p1">, etc.) by splitting large prose chunks
+ * on actual block elements. This is more reliable for EPUBs that contain a single
+ * giant XHTML file with many divs and no explicit page-break metadata.
  */
 function injectPageAnchors(html: string): string {
-  /* Don't double-inject if it already has our specific pattern. */
-  if (html.includes('id="pmp-p1"') || html.includes('id="pmp-p2"')) return html;
+  if (!html.trim()) return html;
 
-  const minChars = 2000;
-  const targetChars = 4000;
-  const maxChars = 6000;
-  const minParagraphs = 5;
-
-  let result = "";
-  let lastIndex = 0;
-  let charCount = 0;
-  let paragraphCount = 0;
-  let pageNumber = 1;
-
-  /* Always inject the first anchor at the start of the body or the content. */
-  const bodyMatch = /<body[^>]*>/i.exec(html);
-  if (bodyMatch) {
-    const insertPos = bodyMatch.index + bodyMatch[0].length;
-    result += html.slice(0, insertPos);
-    /* Use <a> with both id and name for maximum compatibility. */
-    result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
-    lastIndex = insertPos;
-    pageNumber += 1;
-  } else {
-    result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
-    pageNumber += 1;
+  /* Keep existing injected markers idempotent. */
+  if (html.includes('id="pmp-p1"') || html.includes('id="pmp-p2"')) {
+    console.log('[EPUB] Skipping anchor injection - already has pmp-p anchors');
+    return html;
   }
 
-  /* Look for common block elements and images to insert anchors before. */
-  const tagPattern = /<(p|div|h[1-6]|section|article|blockquote|li|img)\b/gi;
-  let match: RegExpExecArray | null;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const body = doc.body || doc.documentElement;
+  if (!body) {
+    return html;
+  }
 
-  while ((match = tagPattern.exec(html))) {
-    if (match.index < lastIndex) continue;
+  const blockSelector = "p, div, h1, h2, h3, h4, h5, h6, section, article, blockquote, li, figure, table, img";
+  const blocks = Array.from(body.querySelectorAll(blockSelector));
+  if (!blocks.length) {
+    return html;
+  }
 
-    const tagName = match[1].toLowerCase();
-    const textBefore = html.slice(lastIndex, match.index).replace(/<[^>]+>/g, "");
-    charCount += textBefore.length;
+  const targetChars = 1600;
+  const minChars = 350;
+  let pageNumber = 1;
+  let currentChars = 0;
 
-    if (tagName === "p") {
-      paragraphCount += 1;
-    } else if (tagName === "img") {
-      /* Give images a virtual character weight to trigger splits in media-heavy content. */
-      charCount += 3000;
-      paragraphCount += 1;
-    }
+  const addAnchor = (before: Node | null) => {
+    if (!before || !body.contains(before)) return;
+    const anchor = doc.createElement("a");
+    anchor.id = `pmp-p${pageNumber}`;
+    anchor.setAttribute("name", `pmp-p${pageNumber}`);
+    body.insertBefore(anchor, before);
+    pageNumber += 1;
+  };
 
-    /*
-      Split logic:
-      1. Force split if we hit maxChars (safety limit).
-      2. Split if we hit a heading and have at least minChars.
-      3. Split if we have at least minChars AND enough content density (p, img, or enough text).
-    */
-    const isHeading = /^h[1-6]$/.test(tagName);
-    const isContentTag = tagName === "p" || tagName === "div" || tagName === "img";
+  addAnchor(body.firstChild);
+
+  for (const block of blocks) {
+    const tag = block.tagName.toLowerCase();
+    const textLength = (block.textContent ?? "").replace(/\s+/g, " ").trim().length;
+    const weight = tag === "img" ? 1800 : Math.max(textLength, 120);
+    currentChars += weight;
+
+    const isHeading = /^h[1-6]$/.test(tag);
     const shouldSplit =
-      charCount >= maxChars ||
-      (charCount >= minChars && isHeading) ||
-      (charCount >= minChars && paragraphCount >= minParagraphs && isContentTag) ||
-      (charCount >= targetChars && isContentTag);
+      currentChars >= targetChars ||
+      (currentChars >= minChars && isHeading) ||
+      (currentChars >= minChars && block.tagName.toLowerCase() === "img");
 
     if (shouldSplit) {
-      result += html.slice(lastIndex, match.index);
-      result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
-      lastIndex = match.index;
-      charCount = 0;
-      paragraphCount = 0;
-      pageNumber += 1;
+      addAnchor(block);
+      currentChars = 0;
     }
   }
 
-  /* Fallback: if we have a lot of text remaining and no tags were found, split at intervals. */
-  if (html.length - lastIndex > maxChars && pageNumber === 2) {
-    // This handles books with no block tags at all.
-    const remaining = html.slice(lastIndex);
-    let offset = 0;
-    while (offset + targetChars < remaining.length) {
-      result += remaining.slice(offset, offset + targetChars);
-      result += `<a id="pmp-p${pageNumber}" name="pmp-p${pageNumber}"></a>`;
-      offset += targetChars;
-      pageNumber += 1;
+  const anchorCount = body.querySelectorAll("[id^='pmp-p']").length;
+  if (anchorCount <= 2 && (body.textContent ?? "").replace(/\s+/g, " ").trim().length > 4000) {
+    console.log('[EPUB] Dense prose fallback: splitting body text into page-sized chunks.');
+    const fullText = body.textContent ?? "";
+    const cleanText = fullText.replace(/\s+/g, " ").trim();
+    const chunkSize = 1800;
+    const temp = body.cloneNode(true) as HTMLElement;
+    body.replaceChildren();
+    const firstAnchor = doc.createElement("a");
+    firstAnchor.id = "pmp-p1";
+    firstAnchor.setAttribute("name", "pmp-p1");
+    body.appendChild(firstAnchor);
+
+    const textParts = [] as string[];
+    for (let i = 0; i < cleanText.length; i += chunkSize) {
+      textParts.push(cleanText.slice(i, i + chunkSize));
     }
-    result += remaining.slice(offset);
-    lastIndex = html.length;
+
+    for (let i = 0; i < textParts.length; i += 1) {
+      const p = doc.createElement("p");
+      p.textContent = textParts[i];
+      const anchor = doc.createElement("a");
+      anchor.id = `pmp-p${i + 2}`;
+      anchor.setAttribute("name", `pmp-p${i + 2}`);
+      body.appendChild(p);
+      body.appendChild(anchor);
+    }
   }
 
-  result += html.slice(lastIndex);
-  return result;
+  const serialized = body.innerHTML;
+  console.log('[EPUB] Anchor injection complete. Page anchors created:', body.querySelectorAll("[id^='pmp-p']").length);
+  return serialized;
 }
 
 function isCoverDocument(href: string | undefined): boolean {
@@ -533,21 +533,34 @@ async function expandChapterAnchors(
   nextChapterHref: string | undefined,
   chapterTitle: string,
 ): Promise<Array<{ title: string; href: string }> | null> {
+  console.log('[EPUB] expandChapterAnchors called for:', chapterHref, 'title:', chapterTitle);
   const entryName = resolveZipEntryName(zip, chapterHref, opfDir);
-  if (!entryName) return null;
+  if (!entryName) {
+    console.log('[EPUB] Could not resolve entry name for:', chapterHref);
+    return null;
+  }
   const file = zip.file(entryName);
-  if (!file) return null;
+  if (!file) {
+    console.log('[EPUB] File not found:', entryName);
+    return null;
+  }
 
   let html = String(await file.async("string"));
+  console.log('[EPUB] HTML length:', html.length, 'for:', entryName);
   let anchors = collectPageAnchors(html);
+  console.log('[EPUB] Initial anchors found:', anchors.length);
 
   /* Fallback: if no physical anchors exist, inject them every ~1400 chars. */
   if (anchors.length < 2) {
+    console.log('[EPUB] Less than 2 anchors, injecting page anchors');
     const injected = injectPageAnchors(html);
     if (injected !== html) {
       html = injected;
       zip.file(entryName, html);
       anchors = collectPageAnchors(html);
+      console.log('[EPUB] After injection, anchors:', anchors.length);
+    } else {
+      console.log('[EPUB] Injection did not change HTML');
     }
   }
 
@@ -639,35 +652,38 @@ async function buildChapterPlans(options: {
 
   /* Expand all chapters into page anchors to create more granular pages. */
   if (zip) {
-    const MAX_PAGES_PER_CHAPTER = 100; // Safeguard against excessive splits
+    const MAX_PAGES_PER_CHAPTER = 500; // Safeguard against excessive splits
+    console.log('[EPUB] Expanding chapters, total plans:', plans.length, 'zip available:', !!zip);
     
     for (let index = 0; index < plans.length; index += 1) {
       const plan = plans[index];
+      console.log('[EPUB] Processing chapter', index, 'with', plan.pages.length, 'initial pages');
       const nextHref = plans.slice(index + 1).find((next) => next.pages[0]?.href)?.pages[0]?.href;
       
-      // Expand each page in the chapter, but only if it doesn't already have anchors
+      // Expand each page in the chapter
       const expandedPages: Array<{ title: string; href: string }> = [];
       for (const page of plan.pages) {
-        // Don't expand if the page already has an anchor (#)
-        if (page.href.includes("#")) {
-          expandedPages.push(page);
-          continue;
-        }
-        
+        console.log('[EPUB] Expanding page:', page.href);
         const expanded = await expandChapterAnchors(zip, opfDir, page.href, nextHref, page.title);
         if (expanded?.length) {
+          console.log('[EPUB] Expanded to', expanded.length, 'pages');
           // Limit expansion to prevent excessive page counts
           if (expandedPages.length + expanded.length > MAX_PAGES_PER_CHAPTER) {
+            console.log('[EPUB] Hit MAX_PAGES limit, using original');
             expandedPages.push(page); // Fall back to original if too many
           } else {
             expandedPages.push(...expanded);
           }
         } else {
+          console.log('[EPUB] Expansion returned null, using original');
           expandedPages.push(page);
         }
       }
       
-      if (expandedPages.length) plan.pages = expandedPages;
+      if (expandedPages.length) {
+        console.log('[EPUB] Chapter', index, 'final page count:', expandedPages.length);
+        plan.pages = expandedPages;
+      }
     }
   }
 
@@ -815,13 +831,17 @@ export async function buildEpubImportPreview(
   existingBookIds: string[],
   options?: EpubImportPreviewOptions,
 ): Promise<EpubImportPreview | null> {
+  console.log('[EPUB] buildEpubImportPreview called for file:', file.name);
   const folderName = sanitizeBookFolderName(options?.preferredFolder ?? file.name.replace(/\.epub$/i, "")) || `epub-import-${Date.now()}`;
   const bookId = slugify(options?.bookIdOverride?.trim() || folderName) || `book-${Date.now()}`;
   const epubFileName = `${sanitizeAssetFileName(file.name.replace(/\.epub$/i, "")) || "document"}.epub`;
   const baseEpubSource = getBookAssetUrl(`${folderName}/${epubFileName}`);
 
+  console.log('[EPUB] Reading file array buffer...');
   const arrayBuffer = await file.arrayBuffer();
+  console.log('[EPUB] Array buffer size:', arrayBuffer.byteLength);
   const zip = await loadEpubZip(arrayBuffer.slice(0));
+  console.log('[EPUB] ZIP loaded:', !!zip);
   const opfDir = (await (zip ? readOpfInfo(zip) : null))?.opfDir ?? "";
 
   let spineItems: EpubSpineItem[] = [];
