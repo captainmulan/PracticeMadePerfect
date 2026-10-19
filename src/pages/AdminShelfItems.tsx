@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Course } from "../data/courses";
-import { loadCourseSummariesFromBrowserDb, persistCourseIndexes } from "../utils/sqliteBrowserCourses";
+import {
+  loadCourseSummariesFromBrowserDb,
+  persistCourseIndexes,
+  persistCourseSummary,
+  removeCourse,
+} from "../utils/sqliteBrowserCourses";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
+import {
+  courseMatchesCategoryPath,
+  getCategoryLevels,
+  parseCategoryTags,
+  serializeCategoryTags,
+} from "../utils/bookCategories";
 import {
   listShelfCatalogItems,
   type ShelfCatalogItem,
@@ -9,6 +20,8 @@ import {
   type ShelfItemKind,
   authorIndexKey,
   folderIndexKey,
+  readFolderIndexes,
+  readShelfItemKinds,
   saveShelfItemSettings,
 } from "../utils/shelfItemIndexes";
 
@@ -26,7 +39,7 @@ function indexInput(value: number | undefined): string {
   return typeof value === "number" && value > 0 ? String(value) : "";
 }
 
-export default function AdminShelfItems() {
+export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: string) => void }) {
   const [books, setBooks] = useState<Course[]>([]);
   const [rows, setRows] = useState<ShelfCatalogItem[]>([]);
   const [kindFilter, setKindFilter] = useState<KindFilter>("all");
@@ -35,6 +48,8 @@ export default function AdminShelfItems() {
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [folderCovers, setFolderCovers] = useState<Record<string, string>>({});
+  const [deletingBookId, setDeletingBookId] = useState<string | null>(null);
+  const [deletingSeriesPath, setDeletingSeriesPath] = useState<string | null>(null);
 
   useEffect(() => {
     loadCourseSummariesFromBrowserDb()
@@ -67,6 +82,121 @@ export default function AdminShelfItems() {
 
   const updateRowKind = (key: string, kind: Exclude<ShelfItemKind, "author">) => {
     setRows((current) => current.map((row) => (row.key === key ? { ...row, kind } : row)));
+  };
+
+  const handleDeleteBook = async (row: ShelfCatalogItem) => {
+    if (!row.bookId || deletingBookId) return;
+    if (!window.confirm(`Delete "${row.title}" and all of its pages? This cannot be undone.`)) return;
+
+    const enteredPassword = window.prompt("Enter admin password to confirm book deletion:", "");
+    if (!enteredPassword) return;
+    if (enteredPassword !== "admin123") {
+      setMessage("Incorrect password. Deletion cancelled.");
+      return;
+    }
+
+    setDeletingBookId(row.bookId);
+    setMessage("Deleting book...");
+    try {
+      await removeCourse(row.bookId);
+      const refreshed = await loadCourseSummariesFromBrowserDb();
+      setBooks(refreshed);
+      setRows(listShelfCatalogItems(refreshed));
+      setMessage(`Deleted "${row.title}". Other books in its series were not changed.`);
+    } catch (err) {
+      setMessage(String(err));
+    } finally {
+      setDeletingBookId(null);
+    }
+  };
+
+  const handleDeleteSeries = async (row: ShelfCatalogItem) => {
+    if (row.kind !== "series" || row.bookId || deletingSeriesPath) return;
+    const pathKey = folderIndexKey(row.browsePath);
+    const seriesBooks = books.filter((book) => courseMatchesCategoryPath(book, row.browsePath));
+    if (!seriesBooks.length) return;
+
+    if (!window.confirm(`Remove series "${row.title}"? Its ${seriesBooks.length} books will be kept and moved up one category level.`)) return;
+
+    const enteredPassword = window.prompt("Enter admin password to confirm series removal:", "");
+    if (!enteredPassword) return;
+    if (enteredPassword !== "admin123") {
+      setMessage("Incorrect password. Deletion cancelled.");
+      return;
+    }
+
+    setDeletingSeriesPath(pathKey);
+    setMessage(`Removing series "${row.title}"...`);
+    try {
+      const seriesDepth = row.browsePath.length - 1;
+      const seriesTag = row.browsePath[seriesDepth];
+      for (const book of seriesBooks) {
+        const levels = getCategoryLevels(book);
+        const promotedLevels = levels.filter((_, index) => index !== seriesDepth);
+        const category = serializeCategoryTags(
+          parseCategoryTags(book.category).filter((tag) => tag.toLowerCase() !== seriesTag.toLowerCase()),
+        );
+        await persistCourseSummary({
+          ...book,
+          category,
+          cat1: promotedLevels[0],
+          cat2: promotedLevels[1],
+          cat3: promotedLevels[2],
+          cat4: promotedLevels[3],
+          removedSeriesFolder: seriesTag,
+        });
+      }
+
+      const prefix = `${pathKey}/`;
+      const folderIndexes = Object.fromEntries(
+        Object.entries(readFolderIndexes()).filter(([key]) => key !== pathKey && !key.startsWith(prefix)),
+      );
+      const itemKinds = Object.fromEntries(
+        Object.entries(readShelfItemKinds()).filter(
+          ([key]) => key !== `folder/${pathKey}` && !key.startsWith(`folder/${pathKey}/`),
+        ),
+      );
+      saveShelfItemSettings({ folderIndexes, itemKinds });
+
+      const adminData = loadAdminData();
+      const cleanedCovers = Object.fromEntries(
+        Object.entries(adminData.homePageData.shelfFolderCovers ?? {}).filter(
+          ([key]) => key !== pathKey && !key.startsWith(prefix),
+        ),
+      );
+      const cleanedIndexes = Object.fromEntries(
+        Object.entries(adminData.homePageData.shelfFolderIndexes ?? {}).filter(
+          ([key]) => key !== pathKey && !key.startsWith(prefix),
+        ),
+      );
+      const cleanedKinds = Object.fromEntries(
+        Object.entries(adminData.homePageData.shelfItemKinds ?? {}).filter(
+          ([key]) => key !== `folder/${pathKey}` && !key.startsWith(`folder/${pathKey}/`),
+        ),
+      );
+      saveAdminData({
+        ...adminData,
+        homePageData: {
+          ...adminData.homePageData,
+          shelfFolderCovers: cleanedCovers,
+          shelfFolderIndexes: cleanedIndexes,
+          shelfItemKinds: cleanedKinds,
+        },
+      });
+      setFolderCovers(cleanedCovers);
+
+      const refreshed = await loadCourseSummariesFromBrowserDb();
+      setBooks(refreshed);
+      setRows(listShelfCatalogItems(refreshed));
+      setMessage(`Removed series "${row.title}". Kept ${seriesBooks.length} books and moved them up one category level.`);
+    } catch (err) {
+      const refreshed = await loadCourseSummariesFromBrowserDb();
+      setBooks(refreshed);
+      setRows(listShelfCatalogItems(refreshed));
+      setMessage(String(err));
+    } finally {
+      setDeletingSeriesPath(null);
+    }
   };
 
   const handleSave = async () => {
@@ -159,6 +289,7 @@ export default function AdminShelfItems() {
               <th>Category</th>
               <th>Series</th>
               <th>Series cover</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -232,6 +363,36 @@ export default function AdminShelfItems() {
                         }}
                       />
                     </div>
+                  ) : null}
+                </td>
+                <td>
+                  {row.bookId ? (
+                    <div className="admin-shelf-item-actions">
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-book secondary small"
+                        onClick={() => onEditBook(row.bookId!)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-book danger small"
+                        onClick={() => void handleDeleteBook(row)}
+                        disabled={deletingBookId === row.bookId}
+                      >
+                        {deletingBookId === row.bookId ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
+                  ) : row.kind === "series" ? (
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-book danger small"
+                      onClick={() => void handleDeleteSeries(row)}
+                      disabled={deletingSeriesPath === folderIndexKey(row.browsePath)}
+                    >
+                      {deletingSeriesPath === folderIndexKey(row.browsePath) ? "Deleting..." : "Delete series"}
+                    </button>
                   ) : null}
                 </td>
               </tr>

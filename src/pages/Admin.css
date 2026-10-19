@@ -1159,6 +1159,13 @@
   width: 88px;
 }
 
+.admin-shelf-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
 @media (max-width: 900px) {
   .admin-announcements-layout {
     grid-template-columns: 1fr;

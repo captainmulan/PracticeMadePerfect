@@ -58,7 +58,7 @@ function rebuildChaptersFromSteps(courseId: string, steps: CourseStep[]): Course
   }));
 }
 
-export default function AdminCourses() {
+export default function AdminCourses({ initialBookId }: { initialBookId?: string | null } = {}) {
   const [books, setBooks] = useState<Course[]>([]);
   const [loadedBook, setLoadedBook] = useState<Course | null>(null);
   const [bookLoading, setBookLoading] = useState(false);
@@ -90,7 +90,14 @@ export default function AdminCourses() {
     loadCourseSummariesFromBrowserDb()
       .then((data) => {
         setBooks(data);
-        if (data.length > 0) setSelectedBookId(data[0].id);
+        const targetBookId = initialBookId && data.some((book) => book.id === initialBookId)
+          ? initialBookId
+          : data[0]?.id;
+        if (targetBookId) setSelectedBookId(targetBookId);
+        if (initialBookId && targetBookId === initialBookId) {
+          setBookSection("existing");
+          setBookMethod("manual");
+        }
         setLoaded(true);
       })
       .catch((err) => setMessage(String(err)));

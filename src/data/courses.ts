@@ -95,6 +95,7 @@ export interface Course {
   cat2?: string;
   cat3?: string;
   cat4?: string;
+  removedSeriesFolder?: string;
   pIndex?: number;
   /** Order on a specific category shelf. Lower first. Empty = natural order, not pinned. */
   scIndex?: number;

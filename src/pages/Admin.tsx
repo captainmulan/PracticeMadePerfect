@@ -231,6 +231,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<PracticeTask | null>(null);
   const [adminTab, setAdminTab] = useState<"home" | "books" | "shelf" | "system">("home");
+  const [shelfEditBookId, setShelfEditBookId] = useState<string | null>(null);
   const [systemSubTab, setSystemSubTab] = useState<"database" | "data-sync" | "reading-style">("database");
   const [homeSection, setHomeSection] = useState<"style" | "json" | "announcements">("announcements");
   const [homeStyleTab, setHomeStyleTab] = useState<"main" | "hero" | "topmenu" | "buttons" | "bookshelf" | "tabs">("main");
@@ -2372,7 +2373,12 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
             <p>Set Popular, Category, and Series indexes for books, folders, series, and authors in one table.</p>
           </div>
           <div className="admin-section-body">
-            <AdminShelfItems />
+            <AdminShelfItems
+              onEditBook={(bookId) => {
+                setShelfEditBookId(bookId);
+                setAdminTab("books");
+              }}
+            />
           </div>
         </section>
       ) : (
@@ -2382,7 +2388,7 @@ export default function Admin({ onLogout }: { onLogout: () => void }) {
             <p>Create, import, and edit interactive book courses.</p>
           </div>
           <div className="admin-section-body">
-            <AdminCourses />
+            <AdminCourses initialBookId={shelfEditBookId} />
           </div>
         </section>
       )}

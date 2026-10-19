@@ -105,7 +105,9 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       items: popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
     };
     const categoryRows = [
-      ...["IT", "Kid", "Interactive"].map((category) => getHomeCategoryBookRow(courses, category)),
+      getHomeCategoryBookRow(courses, "IT"),
+      getHomeCategoryBookRow(courses, "Kid_JuniorNovel", ["Kid", "JuniorNovel"], true),
+      getHomeCategoryBookRow(courses, "Interactive"),
       getHomeCategoryBookRow(courses, "Kid_OxfordReading", ["Kid", "Comic", "OxfordReading"]),
       getHomeCategoryBookRow(courses, "Kid_Comic", ["Kid", "Comic"]),
       getHomeCategoryBookRow(courses, "Other_Novel", ["Other", "Novel"]),

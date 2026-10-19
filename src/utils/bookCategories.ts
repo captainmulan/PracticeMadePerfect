@@ -234,6 +234,7 @@ export type CategoryCourse = {
   cat2?: string | null;
   cat3?: string | null;
   cat4?: string | null;
+  removedSeriesFolder?: string | null;
 };
 
 function pickSeriesTag(tags: string[], stored?: string | null): string {
@@ -279,6 +280,7 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
     if (id.includes("shwe-thway") || has("Shwe Thway")) series = "Shwe Thway";
     if (id.includes("asterix") || has("Asterix")) series = "Asterix";
     if (id.startsWith("bobo-") || id.startsWith("bo-bo-") || has("BoBo") || has("Bobo")) series = "BoBo";
+    if (series.toLowerCase() === (course.removedSeriesFolder ?? "").trim().toLowerCase()) series = "";
     return ["Kid", "Comic", series, ""];
   }
 
@@ -287,7 +289,13 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
   }
 
   if (has("Short Stories") || cat1 === "Short Stories" || cat2 === "Short Stories") {
-    return [audienceTag(has, cat1, cat2), "Short Stories", pickSeriesTag(tags, cat3), ""];
+    const series = pickSeriesTag(tags, cat3);
+    return [
+      audienceTag(has, cat1, cat2),
+      "Short Stories",
+      series.toLowerCase() === (course.removedSeriesFolder ?? "").trim().toLowerCase() ? "" : series,
+      "",
+    ];
   }
 
   if (has("Language") || cat1 === "Language" || cat2 === "Language") {

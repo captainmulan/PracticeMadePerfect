@@ -544,11 +544,14 @@ export function getHomeCategoryBookRow(
   courses: Course[],
   category: string,
   exactPath?: string[],
+  includeNestedPath = false,
 ): CourseShelfRow {
   const items = courses
     .filter((course) =>
       exactPath
-        ? courseIsExactCategoryPath(course, exactPath)
+        ? includeNestedPath
+          ? courseMatchesCategoryPath(course, exactPath)
+          : courseIsExactCategoryPath(course, exactPath)
         : getCategoryLevels(course).some((level) => level.toLowerCase() === category.toLowerCase()),
     )
     .sort((a, b) => {

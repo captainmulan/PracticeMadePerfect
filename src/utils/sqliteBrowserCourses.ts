@@ -7,6 +7,7 @@ import {
   getCourseOutlineById as getCourseOutlineByIdFromIndexedDb,
   getCourseStepById as getCourseStepByIdFromIndexedDb,
   saveCourse as saveCourseToIndexedDb,
+  saveCourseSummary as saveCourseSummaryToIndexedDb,
   deleteCourse as deleteCourseFromIndexedDb,
   migrateFromSqlJs,
   migrateSplitBookAssetSources,
@@ -140,6 +141,10 @@ export async function persistCourses(courses: Course[]): Promise<void> {
 
 export async function persistCourse(course: Course): Promise<void> {
   await saveCourseToIndexedDb(course);
+}
+
+export async function persistCourseSummary(course: Course): Promise<void> {
+  await saveCourseSummaryToIndexedDb(course);
 }
 
 export async function persistCourseIndexes(
