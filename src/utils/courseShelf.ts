@@ -543,10 +543,13 @@ export function getHomeCourseShelfRows(courses: Course[]): CourseShelfRow[] {
 export function getHomeCategoryBookRow(
   courses: Course[],
   category: string,
+  exactPath?: string[],
 ): CourseShelfRow {
   const items = courses
     .filter((course) =>
-      getCategoryLevels(course).some((level) => level.toLowerCase() === category.toLowerCase()),
+      exactPath
+        ? courseIsExactCategoryPath(course, exactPath)
+        : getCategoryLevels(course).some((level) => level.toLowerCase() === category.toLowerCase()),
     )
     .sort((a, b) => {
       return (a.scIndex ?? Number.MAX_SAFE_INTEGER) - (b.scIndex ?? Number.MAX_SAFE_INTEGER)

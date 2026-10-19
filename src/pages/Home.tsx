@@ -104,9 +104,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       title: "Selection",
       items: popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
     };
-    const categoryRows = ["IT", "Kid", "Interactive", "Language"].map((category) =>
-      getHomeCategoryBookRow(courses, category),
-    );
+    const categoryRows = [
+      ...["IT", "Kid", "Interactive"].map((category) => getHomeCategoryBookRow(courses, category)),
+      getHomeCategoryBookRow(courses, "Kid_OxfordReading", ["Kid", "Comic", "OxfordReading"]),
+      getHomeCategoryBookRow(courses, "Kid_Comic", ["Kid", "Comic"]),
+      getHomeCategoryBookRow(courses, "Other_Novel", ["Other", "Novel"]),
+      getHomeCategoryBookRow(courses, "Language"),
+    ];
     const newlyAdded = courses
       .slice()
       .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
