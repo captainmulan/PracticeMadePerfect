@@ -5,8 +5,11 @@ import { resolveImportBookHtmlFolder } from "../utils/htmlStepContent";
 import { buildCourseFromPreview, type BookImportPreview, type ParsedHtmlPage } from "../utils/bookImport";
 import { buildPdfImportPreview, resolvePdfAssetDirectory, writePdfAssetToDirectory, type PdfAssetExportProgress, type PdfImportPreview } from "../utils/pdfImport";
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
+import { getBookAssetUrl } from "../config/externalHosting";
+import { collectCategoryChildren, collectTopCategoryNames, formatCategoryLabel } from "../utils/bookCategories";
 
 type UploadMode = "new" | "existing";
+const CATALOG_LEVELS = [0, 1, 2, 3];
 
 interface AdminPdfUploadPanelProps {
   books: Course[];
@@ -93,13 +96,34 @@ export default function AdminPdfUploadPanel({
   const [targetBookFull, setTargetBookFull] = useState<Course | null>(null);
   const [targetBookLoading, setTargetBookLoading] = useState(false);
   const [preview, setPreview] = useState<PdfImportPreview | null>(null);
-  const [category, setCategory] = useState("IT");
+  const [storageRoot, setStorageRoot] = useState<"Other" | "Comic">("Other");
+  const [catalogPath, setCatalogPath] = useState<string[]>(["IT", "", "", ""]);
+  const [language, setLanguage] = useState<"Eng" | "MM">("Eng");
+  const [categoryOverride, setCategoryOverride] = useState("");
+  const [bookTitle, setBookTitle] = useState("");
   const [bookId, setBookId] = useState("");
   const [selectedPdf, setSelectedPdf] = useState<File | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [isExportingAssets, setIsExportingAssets] = useState(false);
   const [assetExportProgress, setAssetExportProgress] = useState<PdfAssetExportProgress | null>(null);
   const [error, setError] = useState("");
+
+  const category = categoryOverride.trim() || catalogPath.filter(Boolean).join(", ");
+  const catalogPathLabel = catalogPath.filter(Boolean).map(formatCategoryLabel).join(" > ");
+  const catalogOptions = CATALOG_LEVELS.map((level) =>
+    level === 0
+      ? collectTopCategoryNames(books)
+      : collectCategoryChildren(books, catalogPath.slice(0, level).filter(Boolean)),
+  );
+
+  function setCatalogLevel(level: number, value: string) {
+    setCatalogPath((current) => {
+      const next = [...current];
+      next[level] = value.trim();
+      for (let index = level + 1; index < CATALOG_LEVELS.length; index += 1) next[index] = "";
+      return next;
+    });
+  }
 
   const targetBookSummary = useMemo(
     () => books.find((book) => book.id === targetBookId) ?? null,
@@ -171,6 +195,7 @@ export default function AdminPdfUploadPanel({
         return;
       }
       setPreview(nextPreview as PdfImportPreview);
+      setBookTitle(nextPreview.bookTitle);
       setBookId(nextPreview.bookId);
     } catch (err) {
       setError(String(err));
@@ -191,25 +216,42 @@ export default function AdminPdfUploadPanel({
     setAssetExportProgress(null);
 
     try {
+      const trimmedId = bookId.trim() || preview.bookId;
+      const safeId = trimmedId.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || trimmedId;
       const folder = resolveImportBookHtmlFolder(
         uploadMode === "existing" ? targetBookFull : null,
-        preview.folderName,
+        safeId,
         category,
+        storageRoot,
       );
       const assetDirectory = await resolvePdfAssetDirectory();
-      const assetCount = 1;
-      setAssetExportProgress({ completed: 0, total: assetCount });
-      if (assetDirectory) {
-        await writePdfAssetToDirectory(
-          assetDirectory.directoryHandle,
-          folder,
-          preview.pdfFileName,
-          selectedPdf,
-          (progress: PdfAssetExportProgress) => {
-            setAssetExportProgress(progress);
-          },
-        );
+      if (!assetDirectory?.directoryHandle) {
+        throw new Error("PDF was not saved: grant access to the project's root folder and retry.");
       }
+      const coverFolder = "/book_covers/thumbs";
+      const coverFileName = `${safeId}.webp`;
+      const assetCount = preview.coverImageUrl?.startsWith("data:") ? 2 : 1;
+      setAssetExportProgress({ completed: 0, total: assetCount });
+      const assetResult = await writePdfAssetToDirectory(
+        assetDirectory.directoryHandle,
+        folder,
+        preview.pdfFileName,
+        selectedPdf,
+        preview.coverImageUrl,
+        (progress: PdfAssetExportProgress) => setAssetExportProgress(progress),
+        { folder: coverFolder, fileName: coverFileName },
+      );
+      if (assetResult.written !== assetCount || assetResult.errors.length > 0) {
+        throw new Error(`PDF was not saved: ${assetResult.errors.join("; ") || "asset write did not complete."}`);
+      }
+
+      const savedCoverPath = preview.coverImageUrl?.startsWith("data:")
+        ? `${coverFolder}/${coverFileName}`
+        : undefined;
+      const pagesWithResolvedPdf = preview.pages.map((page) => ({
+        ...page,
+        content: `${getBookAssetUrl(`${folder}/${preview.pdfFileName}`)}#page=${page.pageNumber}`,
+      }));
 
       if (uploadMode === "existing") {
         if (!targetBookSummary) {
@@ -221,7 +263,8 @@ export default function AdminPdfUploadPanel({
           return;
         }
 
-        const merged = buildPdfMergeResult(targetBookFull, preview.pages, folder);
+        const merged = buildPdfMergeResult(targetBookFull, pagesWithResolvedPdf, folder);
+        if (savedCoverPath) merged.course.coverImageUrl = savedCoverPath;
         const summary = saveImmediately
           ? `Updated ${merged.updatedCount} page(s) in "${targetBookFull.title}" from PDF.${merged.unmatchedFiles.length ? ` Skipped ${merged.unmatchedFiles.length} file(s).` : ""}`
           : `Loaded ${merged.updatedCount} updated page(s) for "${targetBookFull.title}" from PDF. Review pages, then click Save Book.`;
@@ -230,18 +273,28 @@ export default function AdminPdfUploadPanel({
         return;
       }
 
-      const trimmedId = bookId.trim() || preview.bookId;
       if (!trimmedId) {
         setError("Book id is required.");
         return;
       }
+      const trimmedTitle = bookTitle.trim();
+      if (!trimmedTitle) {
+        setError("Book name is required.");
+        return;
+      }
 
       const course = buildCourseFromPreview(
-        { ...preview, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
+        { ...preview, bookTitle: trimmedTitle, pages: pagesWithResolvedPdf.map((page) => ({ ...page, assets: [] })) },
         books.length,
         category,
-        trimmedId,
+        safeId,
       );
+      course.coverImageUrl = savedCoverPath;
+      course.language = language;
+      course.cat1 = catalogPath[0] || undefined;
+      course.cat2 = catalogPath[1] || undefined;
+      course.cat3 = catalogPath[2] || undefined;
+      course.cat4 = catalogPath[3] || undefined;
       const summary = saveImmediately
         ? `Uploaded and saved "${course.title}" with ${preview.pages.length} page(s) from PDF.`
         : `Loaded "${course.title}" with ${preview.pages.length} page(s) from PDF. Review pages, then click Save Book.`;
@@ -343,21 +396,61 @@ export default function AdminPdfUploadPanel({
             <div className="admin-book-upload-meta">
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Book name</span>
-                <input value={preview.bookTitle} readOnly className="admin-grid-input" />
+                <input value={bookTitle} onChange={(event) => setBookTitle(event.target.value)} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Book id</span>
                 <input value={bookId} onChange={(e) => setBookId(e.target.value)} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
-                <span className="admin-task-editor-label">Category</span>
+                <span className="admin-task-editor-label">Storage Root</span>
+                <select
+                  value={storageRoot}
+                  onChange={(e) => setStorageRoot(e.target.value as "Other" | "Comic")}
+                  className="admin-grid-select"
+                >
+                  <option value="Other">Other</option>
+                  <option value="Comic">Comic</option>
+                </select>
+              </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Category Tags</span>
                 <input
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  value={categoryOverride}
+                  onChange={(e) => setCategoryOverride(e.target.value)}
                   className="admin-grid-input"
-                  placeholder="Myanmar, Kid, Comic"
+                  placeholder={catalogPath.filter(Boolean).join(", ")}
                 />
               </label>
+              <label className="admin-task-editor-field">
+                <span className="admin-task-editor-label">Language</span>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as "Eng" | "MM")}
+                  className="admin-grid-select"
+                >
+                  <option value="Eng">Eng</option>
+                  <option value="MM">MM</option>
+                </select>
+              </label>
+              {CATALOG_LEVELS.map((level) => (
+                <label key={level} className="admin-task-editor-field">
+                  <span className="admin-task-editor-label">Catalog {level + 1}</span>
+                  <input
+                    value={catalogPath[level] ?? ""}
+                    onChange={(e) => setCatalogLevel(level, e.target.value)}
+                    className="admin-grid-input"
+                    list={`pdf-catalog-${level}`}
+                    placeholder={level === 0 ? "Kid" : level === 1 ? "JuniorNovel" : ""}
+                  />
+                  <datalist id={`pdf-catalog-${level}`}>
+                    {catalogOptions[level].map((option) => <option key={option} value={option} />)}
+                  </datalist>
+                </label>
+              ))}
+              <span className="admin-task-editor-hint" style={{ gridColumn: "1 / -1", opacity: 0.75, fontSize: 12 }}>
+                Catalog path: {catalogPathLabel || "—"}
+              </span>
             </div>
           ) : (
             <div className="admin-book-upload-meta">
@@ -372,7 +465,10 @@ export default function AdminPdfUploadPanel({
           )}
 
           <div className="admin-book-upload-summary">
-            PDF ready for built-in viewer
+            {preview.coverImageUrl ? (
+              <img className="admin-book-upload-cover" src={preview.coverImageUrl} alt="PDF first-page cover" />
+            ) : null}
+            <span>{preview.pageCount} page(s) ready for the built-in viewer</span>
           </div>
 
           {isExportingAssets && assetExportProgress ? (

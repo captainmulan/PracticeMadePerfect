@@ -39,6 +39,7 @@ export default function AdminBookUploadPanel({
   const [targetBookLoading, setTargetBookLoading] = useState(false);
   const [preview, setPreview] = useState<BookImportPreview | null>(null);
   const [category, setCategory] = useState("IT");
+  const [bookTitle, setBookTitle] = useState("");
   const [bookId, setBookId] = useState("");
   const [isReading, setIsReading] = useState(false);
   const [error, setError] = useState("");
@@ -122,6 +123,7 @@ export default function AdminBookUploadPanel({
         return;
       }
       setPreview(nextPreview);
+      setBookTitle(nextPreview.bookTitle);
       setBookId(nextPreview.bookId);
     } catch (err) {
       setError(String(err));
@@ -172,6 +174,12 @@ export default function AdminBookUploadPanel({
         return;
       }
 
+      const trimmedTitle = bookTitle.trim();
+      if (!trimmedTitle) {
+        setError("Book name is required.");
+        return;
+      }
+
       const trimmedId = bookId.trim() || preview.bookId;
     if (!trimmedId) {
       setError("Book id is required.");
@@ -181,7 +189,7 @@ export default function AdminBookUploadPanel({
     const folder = resolveImportBookHtmlFolder(null, preview.folderName, category);
     const pages = await readHtmlPagesFromFiles(files, { preferredFolder: folder });
     const course = buildCourseFromPreview(
-      { ...preview, pages },
+      { ...preview, bookTitle: trimmedTitle, pages },
       books.length,
       category,
       trimmedId,
@@ -291,7 +299,7 @@ export default function AdminBookUploadPanel({
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Book name</span>
-                <input value={preview.bookTitle} readOnly className="admin-grid-input" />
+                <input value={bookTitle} onChange={(event) => setBookTitle(event.target.value)} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Book id</span>

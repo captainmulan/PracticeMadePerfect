@@ -104,6 +104,7 @@ export default function AdminEpubUploadPanel({
   const [catalogPath, setCatalogPath] = useState<string[]>(["IT", "", "", ""]);
   const [language, setLanguage] = useState<"Eng" | "MM">("Eng");
   const [categoryOverride, setCategoryOverride] = useState("");
+  const [bookTitle, setBookTitle] = useState("");
   const [bookId, setBookId] = useState("");
   const [selectedEpub, setSelectedEpub] = useState<File | null>(null);
   const [isReading, setIsReading] = useState(false);
@@ -202,6 +203,7 @@ export default function AdminEpubUploadPanel({
         return;
       }
       setPreview(nextPreview as EpubImportPreview);
+      setBookTitle(nextPreview.bookTitle);
       setBookId(nextPreview.bookId);
     } catch (err) {
       setError(String(err));
@@ -225,6 +227,11 @@ export default function AdminEpubUploadPanel({
       const trimmedId = bookId.trim() || preview.bookId;
       if (!trimmedId) {
         setError("Book id is required.");
+        return;
+      }
+      const trimmedTitle = bookTitle.trim();
+      if (!trimmedTitle) {
+        setError("Book name is required.");
         return;
       }
 
@@ -297,7 +304,7 @@ export default function AdminEpubUploadPanel({
         : preview.coverImageUrl;
 
       const course = buildCourseFromEpubPreview(
-        { ...preview, epubFileName: safeEpubFileName, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
+        { ...preview, bookTitle: trimmedTitle, epubFileName: safeEpubFileName, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
         books.length,
         category,
         safeId,
@@ -412,7 +419,7 @@ export default function AdminEpubUploadPanel({
             <div className="admin-book-upload-meta">
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Book name</span>
-                <input value={preview.bookTitle} readOnly className="admin-grid-input" />
+                <input value={bookTitle} onChange={(event) => setBookTitle(event.target.value)} className="admin-grid-input" />
               </label>
               <label className="admin-task-editor-field">
                 <span className="admin-task-editor-label">Book id</span>

@@ -100,6 +100,7 @@ export interface PdfImportPreviewOptions {
 export interface PdfImportPreview extends BookImportPreview {
   pageCount: number;
   pdfFileName: string;
+  coverImageUrl?: string;
 }
 
 export interface PdfAssetExportProgress {
@@ -120,6 +121,7 @@ export async function buildPdfImportPreview(
   const basePdfSource = getBookAssetUrl(`Other/${folderName}/${pdfFileName}`);
 
   let pageCount = 1;
+  let coverImageUrl: string | undefined;
   try {
     const pdfjsLib = await loadPdfJsLib();
     if (pdfjsLib) {
@@ -128,6 +130,22 @@ export async function buildPdfImportPreview(
       if (Number.isFinite(pdf?.numPages) && pdf?.numPages > 0) {
         pageCount = pdf.numPages;
       }
+      const firstPage = await pdf.getPage(1);
+      const originalViewport = firstPage.getViewport({ scale: 1 });
+      const scale = Math.min(2, 720 / originalViewport.width, 1080 / originalViewport.height);
+      const viewport = firstPage.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      const context = canvas.getContext("2d");
+      if (context) {
+        await firstPage.render({ canvasContext: context, viewport }).promise;
+        coverImageUrl = canvas.toDataURL("image/webp", 0.82);
+      }
+      canvas.width = 0;
+      canvas.height = 0;
+      firstPage.cleanup?.();
+      await pdf.destroy?.();
     }
   } catch {
     pageCount = 1;
@@ -157,6 +175,7 @@ export async function buildPdfImportPreview(
     existingBookId: existingBookIds.includes(bookId) ? bookId : undefined,
     pageCount,
     pdfFileName,
+    coverImageUrl,
   };
 }
 
@@ -165,9 +184,12 @@ export async function writePdfAssetToDirectory(
   folderName: string,
   fileName: string,
   file: File,
+  coverImageUrl?: string,
   onProgress?: (progress: PdfAssetExportProgress) => void,
+  coverOptions?: { folder: string; fileName: string },
 ): Promise<{ written: number; total: number; errors: string[] }> {
-  const total = 1;
+  const hasCover = Boolean(coverImageUrl?.startsWith("data:"));
+  const total = hasCover ? 2 : 1;
   const errors: string[] = [];
 
   if (!rootDirectory) {
@@ -176,20 +198,57 @@ export async function writePdfAssetToDirectory(
   }
 
   try {
-    const pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
-    if (rootDirectory.name.toLowerCase() === pathParts[0]?.toLowerCase()) {
-      pathParts.shift();
+    let pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
+    const rootName = rootDirectory.name.toLowerCase();
+    if (rootName === "book_html") {
+      if (pathParts[0]?.toLowerCase() === "other" || pathParts[0]?.toLowerCase() === "comic") pathParts.shift();
+    } else if (rootName === "other" || rootName === "comic") {
+      if (pathParts[0]?.toLowerCase() === rootName) pathParts.shift();
+    }
+    let bookRoot = rootDirectory;
+    if (rootName !== "book_html" && rootName !== "other" && rootName !== "comic") {
+      try {
+        bookRoot = await rootDirectory.getDirectoryHandle("book_html", { create: false });
+      } catch {
+        bookRoot = rootDirectory;
+      }
     }
     const bookDirectory = await pathParts.reduce(
       (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
-      Promise.resolve(rootDirectory),
+      Promise.resolve(bookRoot),
     );
     const fileHandle = await bookDirectory.getFileHandle(fileName, { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(file);
     await writable.close();
     onProgress?.({ completed: 1, total, currentFileName: fileName });
-    return { written: 1, total, errors: [] };
+    let written = 1;
+    if (hasCover) {
+      try {
+        let coverDirectory: FileSystemDirectoryHandle = bookDirectory;
+        if (coverOptions?.folder.startsWith("/book_covers")) {
+          try {
+            const publicDirectory = await rootDirectory.getDirectoryHandle("public", { create: false });
+            coverDirectory = await coverOptions.folder.split("/").filter(Boolean).reduce(
+              (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
+              Promise.resolve(publicDirectory),
+            );
+          } catch {
+            errors.push(`'public' folder not found in "${rootDirectory.name}"; cover saved in the PDF folder instead.`);
+          }
+        }
+        const coverBlob = await (await fetch(coverImageUrl!)).blob();
+        const coverHandle = await coverDirectory.getFileHandle(coverOptions?.fileName || "cover.webp", { create: true });
+        const coverWritable = await coverHandle.createWritable();
+        await coverWritable.write(coverBlob);
+        await coverWritable.close();
+        written += 1;
+        onProgress?.({ completed: written, total, currentFileName: coverOptions?.fileName || "cover.webp" });
+      } catch (error) {
+        errors.push(`Cover not saved: ${String(error)}`);
+      }
+    }
+    return { written, total, errors };
   } catch (error) {
     onProgress?.({ completed: 0, total, currentFileName: fileName });
     return { written: 0, total, errors: [String(error)] };
