@@ -1,4 +1,4 @@
-import { getBookAssetUrl } from "../config/externalHosting";
+import { getBookAssetUrl, getLocalBookAssetUrl, USE_EXTERNAL_BOOK_HOSTING } from "../config/externalHosting";
 import { bookStorageCategory } from "./htmlStepContent";
 
 type CacheEntry =
@@ -153,6 +153,11 @@ export function resolveEpubFileUrl(source: string, category?: string | null): st
   const fileUrl = normalizeEpubFileUrl(source);
   if (!fileUrl) return "";
 
+  if (!USE_EXTERNAL_BOOK_HOSTING) {
+    const localUrl = getLocalBookAssetUrl(fileUrl);
+    if (localUrl) return localUrl;
+  }
+
   let pathname = fileUrl;
   let sourceOrigin = "";
   if (/^https?:\/\//i.test(fileUrl)) {
@@ -215,11 +220,13 @@ export async function getEpubBuffer(fileUrl: string): Promise<ArrayBuffer> {
     }
   }
 
-  const idbHit = await idbGet(key);
-  if (idbHit) {
-    bufferCache.set(key, { status: "ready", buffer: idbHit.buffer.slice(0), fetchedAt: idbHit.fetchedAt });
-    pruneCache();
-    return idbHit.buffer.slice(0);
+  if (!import.meta.env.DEV) {
+    const idbHit = await idbGet(key);
+    if (idbHit) {
+      bufferCache.set(key, { status: "ready", buffer: idbHit.buffer.slice(0), fetchedAt: idbHit.fetchedAt });
+      pruneCache();
+      return idbHit.buffer.slice(0);
+    }
   }
 
   const promise = (async () => {
@@ -232,7 +239,7 @@ export async function getEpubBuffer(fileUrl: string): Promise<ArrayBuffer> {
     const fetchedAt = Date.now();
     bufferCache.set(key, { status: "ready", buffer: buffer.slice(0), fetchedAt });
     pruneCache();
-    void idbPut(key, buffer, fetchedAt);
+    if (!import.meta.env.DEV) void idbPut(key, buffer, fetchedAt);
     return buffer.slice(0);
   })();
 

@@ -4,7 +4,7 @@
  */
 
 // Whether to use folder-based external hosting for book assets (Comic/Other folders)
-export const USE_EXTERNAL_BOOK_HOSTING = true;
+export const USE_EXTERNAL_BOOK_HOSTING = false;
 
 /**
  * Multi-hosting configuration for book distribution
@@ -15,6 +15,18 @@ export const BOOK_HOSTING_CONFIG = {
   "Other": "https://magiclibrary-daw.pages.dev",
   // Add more mappings as needed
 };
+
+/** Convert a URL served from a configured book host to its local book_html path. */
+export function getLocalBookAssetUrl(hostedUrl: string): string | null {
+  try {
+    const url = new URL(hostedUrl);
+    const folder = Object.entries(BOOK_HOSTING_CONFIG).find(([, host]) => new URL(host).origin === url.origin)?.[0];
+    if (!folder) return null;
+    return `/book_html/${folder}${url.pathname}${url.search}`;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Get the full URL for a book asset with folder-based routing

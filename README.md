@@ -79,6 +79,12 @@ Use the Admin EPUB uploader to add an EPUB to this browser's library and save it
 
 New-book preview uses the EPUB table of contents; replacing an existing book reads sequential pages from the EPUB spine. Course metadata is stored in the current browser's IndexedDB, while the EPUB asset is stored in `book_html/`. Other browser profiles do not automatically share this local database or folder permission. Keep the EPUB source file and back up library data separately if you need to move the book to another machine.
 
+### EPUB XHTML troubleshooting
+
+The local EPUB `book_html/Other/ခမည်းကြိုး/ခမည်းကြိုး.epub` had chapter files containing HTML fragments instead of complete XHTML documents. The fragments were wrapped in XHTML document roots, and HTML-only `&nbsp;` entities were converted to the XML-compatible `&#160;` form. The original EPUB is preserved outside the deployable book tree at `book_html_temp_problematic/ခမည်းကြိုး.epub.original`.
+
+For similar `Extra content at the end of the document` or XML parser errors, inspect the EPUB's `.xhtml` files for a single `<html>` document root and XML-valid entities. Verify by opening the actual course at a mobile-sized viewport, checking that the local EPUB request returns `200`, and confirming that chapter text renders without a parser-error page. Run `npm run build` afterward to confirm the updated EPUB is copied into `dist/book_html`.
+
 ## Deploy
 
 Use this command for future app deployments so the repo's current database and bundled app data are copied into the Firebase hosting folder first:

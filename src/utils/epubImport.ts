@@ -410,8 +410,12 @@ function injectPageAnchors(html: string): string {
   }
 
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  const body = doc.body || doc.documentElement;
+  const doc = parser.parseFromString(html, "application/xhtml+xml");
+  if (doc.querySelector("parsererror")) {
+    console.warn('[EPUB] XHTML is not well-formed; skipping page anchor injection');
+    return html;
+  }
+  const body = doc.getElementsByTagName("body")[0];
   if (!body) {
     return html;
   }
@@ -428,11 +432,12 @@ function injectPageAnchors(html: string): string {
   let currentChars = 0;
 
   const addAnchor = (before: Node | null) => {
-    if (!before || !body.contains(before)) return;
-    const anchor = doc.createElement("a");
+    const parent = before?.parentNode;
+    if (!before || !parent || !body.contains(before)) return;
+    const anchor = doc.createElementNS(body.namespaceURI, "a");
     anchor.id = `pmp-p${pageNumber}`;
     anchor.setAttribute("name", `pmp-p${pageNumber}`);
-    body.insertBefore(anchor, before);
+    parent.insertBefore(anchor, before);
     pageNumber += 1;
   };
 
@@ -462,9 +467,8 @@ function injectPageAnchors(html: string): string {
     const fullText = body.textContent ?? "";
     const cleanText = fullText.replace(/\s+/g, " ").trim();
     const chunkSize = 1800;
-    const temp = body.cloneNode(true) as HTMLElement;
     body.replaceChildren();
-    const firstAnchor = doc.createElement("a");
+    const firstAnchor = doc.createElementNS(body.namespaceURI, "a");
     firstAnchor.id = "pmp-p1";
     firstAnchor.setAttribute("name", "pmp-p1");
     body.appendChild(firstAnchor);
@@ -475,9 +479,9 @@ function injectPageAnchors(html: string): string {
     }
 
     for (let i = 0; i < textParts.length; i += 1) {
-      const p = doc.createElement("p");
+      const p = doc.createElementNS(body.namespaceURI, "p");
       p.textContent = textParts[i];
-      const anchor = doc.createElement("a");
+      const anchor = doc.createElementNS(body.namespaceURI, "a");
       anchor.id = `pmp-p${i + 2}`;
       anchor.setAttribute("name", `pmp-p${i + 2}`);
       body.appendChild(p);
@@ -485,7 +489,7 @@ function injectPageAnchors(html: string): string {
     }
   }
 
-  const serialized = body.innerHTML;
+  const serialized = new XMLSerializer().serializeToString(doc);
   console.log('[EPUB] Anchor injection complete. Page anchors created:', body.querySelectorAll("[id^='pmp-p']").length);
   return serialized;
 }
