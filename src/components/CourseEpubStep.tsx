@@ -705,7 +705,7 @@ export default function CourseEpubStep({
       EPUB_LOADING_INDICATOR_DELAY_MS,
     );
     return () => window.clearTimeout(timeoutId);
-  }, [contentLoading, pageIndex]);
+  }, [contentLoading, location, pageIndex]);
 
   useEffect(() => {
     const updateViewportMode = () => setNarrowViewport(isNarrowEpubViewport());
