@@ -283,6 +283,7 @@ export default function CourseWizard() {
           <CourseAboutStep
             course={outline}
             related={relatedBooks}
+            bookType={isPdfBook ? "PDF" : "EPUB"}
             onRead={canReadBook ? handleNext : undefined}
             pdfLoading={isPdfBook && !pdfReady}
             readDisabled={!canReadBook}

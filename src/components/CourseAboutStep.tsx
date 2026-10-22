@@ -14,6 +14,7 @@ import "../styles/course.css";
 interface CourseAboutStepProps {
   course: Course;
   related: Course[];
+  bookType: "PDF" | "EPUB";
   onRead?: () => void;
   pdfLoading?: boolean;
   readDisabled?: boolean;
@@ -22,6 +23,7 @@ interface CourseAboutStepProps {
 export default function CourseAboutStep({
   course,
   related,
+  bookType,
   onRead,
   pdfLoading = false,
   readDisabled = false,
@@ -91,12 +93,20 @@ export default function CourseAboutStep({
                 <dt>Pages</dt>
                 <dd>{pageCount || "—"}</dd>
               </div>
+              <div>
+                <dt>Language</dt>
+                <dd>{course.language === "MM" ? "Myanmar" : "English"}</dd>
+              </div>
+              <div>
+                <dt>Book Type</dt>
+                <dd>{bookType}</dd>
+              </div>
             </dl>
           </div>
           {course.description?.trim() ? (
-            <p className="book-about-blurb">{course.description}</p>
+            <p className="book-about-blurb" tabIndex={0}>{course.description}</p>
           ) : (
-            <p className="book-about-blurb book-about-blurb--empty">No description yet.</p>
+            <p className="book-about-blurb book-about-blurb--empty" tabIndex={0}>No description yet.</p>
           )}
           {pdfLoading ? (
             <PdfFunLoader compact label="Getting your book ready…" />

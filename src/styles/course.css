@@ -930,6 +930,15 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 .book-about-page {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+}
+
+.course-wizard-page--about .pdf-about-layer {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   height: 100%;
   min-height: 0;
 }
@@ -989,16 +998,21 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;
-  padding: 8px 16px 12px;
+  overflow: hidden;
+  padding: 8px 16px calc(12px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   background: transparent;
 }
 
 .book-about-inner {
+  flex: 1 1 auto;
   width: 100%;
   max-width: 920px;
+  min-height: 0;
   margin: 0 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
 
 .book-about .home-space-decor {
@@ -1127,8 +1141,15 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 }
 
 .book-about-blurb {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 760px;
+  max-height: 7.75em;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
   margin: 18px 0 0;
-  font-size: 1.15rem;
+  font-size: 1rem;
   line-height: 1.55;
   color: #e2e8f0;
 }
@@ -1138,10 +1159,10 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 }
 
 .book-about-related {
+  flex: 0 0 auto;
   margin-top: auto;
   padding-top: 18px;
-  position: sticky;
-  bottom: 0;
+  position: relative;
   background: linear-gradient(180deg, rgba(15, 12, 41, 0) 0%, #24243e 28%);
   padding-bottom: 4px;
 }
