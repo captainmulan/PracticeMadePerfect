@@ -32,7 +32,7 @@ export default function Search() {
 
   return (
     <div className="page-content page-home page-home-showcase page-search-showcase">
-      <LibraryTopBar onHome={openHome} />
+      <LibraryTopBar onHome={openHome} showHomeMenu />
       <main className="search-page-content">
         <label className="search-page-field">
           <span className="search-page-icon" aria-hidden="true">⌕</span>

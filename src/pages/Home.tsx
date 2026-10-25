@@ -21,7 +21,7 @@ import {
   getUnpublishedBooksRow,
   type CourseShelfRow,
 } from "../utils/courseShelf";
-import { AUTHOR_SHELF_ID, bookHasCategoryTag } from "../utils/bookCategories";
+import { AUTHOR_SHELF_ID, bookHasCategoryTag, courseMatchesCategoryPath } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
 import { getCourseProgressKey } from "../utils/courseUtils";
 import { loadShelfItemSettings } from "../utils/shelfItemIndexes";
@@ -29,6 +29,7 @@ import { useAnnouncements } from "../utils/useAnnouncements";
 import "../styles/home-test-showcase.css";
 
 type HomeShelfTab = "Search" | "Category" | "Login";
+type HomeAudience = "Other" | "Kid";
 
 function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["courses"], query: string) {
   const normalized = query.trim().toLowerCase();
@@ -72,6 +73,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const [categoryPath, setCategoryPath] = useState<string[]>(initialShelf.categoryPath);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(initialShelf.selectedAuthorName);
   const [searchQuery, setSearchQuery] = useState(initialShelf.searchQuery);
+  const [selectedAudience, setSelectedAudience] = useState<HomeAudience>("Other");
   const [shelfReady, setShelfReady] = useState(false);
   const [shelfSettingsVersion, setShelfSettingsVersion] = useState(0);
   const [shelfTransitioning, setShelfTransitioning] = useState(() => {
@@ -97,8 +99,35 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     () => (showUnpublishedOnly ? [getUnpublishedBooksRow(courses)] : getHomeCourseShelfRows(courses)),
     [courses, showUnpublishedOnly]
   );
+  const kidCourses = useMemo(
+    () => courses.filter((course) => courseMatchesCategoryPath(course, ["Kid"])),
+    [courses],
+  );
   const homeRows = useMemo(() => {
     if (showUnpublishedOnly) return [];
+    if (selectedAudience === "Kid") {
+      const selection = {
+        title: "Selection",
+        items: getPopularCourses(kidCourses).map((course) => createShelfItemFromCourse(course, "Selection")),
+      };
+      const categories = ["JuniorNovel", "Comic", "Interactive", "IT", "Science", "Biography", "Short Stories"]
+        .map((category) => getHomeCategoryBookRow(kidCourses, category));
+      const newlyAdded = {
+        title: "Newly Added",
+        items: kidCourses
+          .slice()
+          .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
+          .map((course) => createShelfItemFromCourse(course, "Newly Added")),
+      };
+      const currentReading = {
+        title: "Current Reading",
+        items: kidCourses
+          .filter((course) => hasSavedProgress(course.id))
+          .map((course) => createShelfItemFromCourse(course, "Current Reading")),
+      };
+      return [selection, ...categories, newlyAdded, currentReading]
+        .filter((row) => row.items.length > 0);
+    }
     const popularCourses = getPopularCourses(courses);
     const selection = {
       title: "Selection",
@@ -136,7 +165,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       { title: "Newly added", items: newlyAdded },
       ...(currentReading.length > 0 ? [{ title: "Current reading", items: currentReading }] : []),
     ].filter((row): row is NonNullable<typeof row> => Boolean(row && row.items.length > 0));
-  }, [courses, rows, shelfSettingsVersion, showUnpublishedOnly]);
+  }, [courses, kidCourses, rows, selectedAudience, shelfSettingsVersion, showUnpublishedOnly]);
   const authorGroups = useMemo(() => {
     const groups = new Map<string, { authorName: string; authorPicture?: string }>();
     for (const course of courses) {
@@ -247,7 +276,6 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     }
     return rows.find((row) => row.title === "Selection") || rows[0];
   }, [authorGroups, categoryPath, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedTab, shelfSettingsVersion, showUnpublishedOnly]);
-
   return (
     <div className="page-content page-home page-home-showcase">
       {!coursesLoaded || !shelfReady || shelfTransitioning ? (
@@ -258,6 +286,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
         </div>
       ) : null}
       <LibraryTopBar
+        showHomeMenu
         onHome={() => {
           setShelfTransitioning(true);
           setSelectedTab("Search");
@@ -281,10 +310,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
           setCategoryPath([]);
           setSelectedAuthorName(null);
         }}
-        onLogin={() => {
-          setSelectedTab("Login");
+        selectedAudience={selectedAudience}
+        onAudienceChange={(audience) => {
+          setSelectedAudience(audience);
+          setSelectedTab("Search");
           setCategoryPath([]);
           setSelectedAuthorName(null);
+          setSearchQuery("");
         }}
       />
 
