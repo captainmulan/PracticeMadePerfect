@@ -427,13 +427,124 @@ function configureFixedEpubPage(
   }
 
   doc.body.classList.add("pmp-fixed-epub-layout");
+  const ipadTextBlock = isIPadEpubViewport()
+    ? Array.from(page.children)
+        .filter((element): element is HTMLElement => element.nodeType === 1)
+        .map((element) => ({
+          element,
+          paragraphs: Array.from(element.children).filter(
+            (child): child is HTMLElement => child.nodeType === 1 && child.tagName === "P",
+          ),
+        }))
+        .filter(({ paragraphs }) => paragraphs.length >= 3)
+        .sort((left, right) => right.paragraphs.length - left.paragraphs.length)[0] ?? null
+    : null;
+  if (ipadTextBlock) page.classList.add("pmp-ipad-text-reflow");
   const layoutPage = () => {
     const hostWidth = getHostWidth();
-    const availableWidth = Math.max(
-      1,
-      doc.documentElement.clientWidth,
-      hostWidth > 640 ? hostWidth : 0,
-    );
+    const documentWidth = doc.documentElement.clientWidth;
+    const availableWidth = ipadTextBlock
+      ? Math.max(1, hostWidth > 0 ? Math.min(hostWidth, documentWidth || hostWidth) : documentWidth)
+      : Math.max(1, documentWidth, hostWidth > 640 ? hostWidth : 0);
+    if (ipadTextBlock) {
+      page.style.setProperty("position", "relative", "important");
+      page.style.setProperty("width", `${availableWidth}px`, "important");
+      page.style.setProperty("max-width", `${availableWidth}px`, "important");
+      page.style.setProperty("height", "auto", "important");
+      page.style.setProperty("min-height", "100%", "important");
+      page.style.setProperty("transform", "none", "important");
+      page.style.setProperty("overflow", "visible", "important");
+      page.style.setProperty("white-space", "normal", "important");
+
+      const textColumn = ipadTextBlock.element;
+      textColumn.style.setProperty("position", "static", "important");
+      textColumn.style.setProperty("left", "auto", "important");
+      textColumn.style.setProperty("top", "auto", "important");
+      textColumn.style.setProperty("width", "100%", "important");
+      textColumn.style.setProperty("max-width", "100%", "important");
+      textColumn.style.setProperty("height", "auto", "important");
+      textColumn.style.setProperty("box-sizing", "border-box", "important");
+      textColumn.style.setProperty("margin", "0", "important");
+      textColumn.style.setProperty("padding", "85px clamp(20px, 6%, 40px) 24px", "important");
+      textColumn.style.setProperty("white-space", "normal", "important");
+
+      for (const item of Array.from(page.children).filter(
+        (child): child is HTMLElement => child.nodeType === 1 && child !== textColumn,
+      )) {
+        const top = Number.parseFloat(item.style.top);
+        const headerText = item.querySelector<HTMLElement>(":scope > p");
+        if (!headerText || !Number.isFinite(top) || top > 60) continue;
+
+        const isPageNumber = /^\d+$/.test((headerText.textContent || "").trim());
+        item.style.setProperty("height", "auto", "important");
+        item.style.setProperty("width", isPageNumber ? "auto" : "70%", "important");
+        item.style.setProperty("max-width", isPageNumber ? "none" : "70%", "important");
+        item.style.setProperty("left", isPageNumber ? "auto" : "24px", "important");
+        item.style.setProperty("right", "24px", "important");
+        item.style.setProperty("top", "20px", "important");
+        item.style.setProperty("white-space", "normal", "important");
+        if (isPageNumber) item.style.setProperty("text-align", "right", "important");
+
+        headerText.style.setProperty("position", "static", "important");
+        headerText.style.setProperty("left", "auto", "important");
+        headerText.style.setProperty("top", "auto", "important");
+        headerText.style.setProperty("width", "auto", "important");
+        headerText.style.setProperty("height", "auto", "important");
+        headerText.style.setProperty("font-size", "14px", "important");
+        headerText.style.setProperty("line-height", "1.35", "important");
+        headerText.style.setProperty("white-space", "nowrap", "important");
+      }
+
+      const flowItems = Array.from(textColumn.children)
+        .filter((child): child is HTMLElement => child.nodeType === 1)
+        .sort((left, right) =>
+          (Number.parseFloat(left.style.top) || 0) - (Number.parseFloat(right.style.top) || 0),
+        );
+      for (const item of flowItems) {
+        for (const property of ["position", "left", "top", "right", "bottom", "height"]) {
+          item.style.setProperty(property, property === "position" ? "static" : "auto", "important");
+        }
+        item.style.setProperty("display", "block", "important");
+        item.style.setProperty("white-space", "normal", "important");
+        item.style.setProperty("overflow-wrap", "anywhere", "important");
+        item.style.setProperty("margin", "0 0 0.65em", "important");
+        if (item.tagName === "P") {
+          item.style.setProperty("width", "auto", "important");
+          item.style.setProperty("font-size", "20px", "important");
+          item.style.setProperty("line-height", "1.7", "important");
+          item.querySelectorAll<HTMLElement>("*").forEach((inlineText) => {
+            inlineText.style.setProperty("white-space", "normal", "important");
+            inlineText.style.setProperty("overflow-wrap", "anywhere", "important");
+            inlineText.style.setProperty("max-width", "100%", "important");
+          });
+        } else if (item.querySelector("img,svg,video,canvas")) {
+          item.style.setProperty("width", "100%", "important");
+          item.style.setProperty("max-width", "100%", "important");
+          item.querySelectorAll<HTMLElement>("img,svg,video,canvas").forEach((media) => {
+            media.style.setProperty("position", "relative", "important");
+            media.style.setProperty("left", "auto", "important");
+            media.style.setProperty("top", "auto", "important");
+            media.style.setProperty("width", "auto", "important");
+            media.style.setProperty("height", "auto", "important");
+            media.style.setProperty("max-width", "100%", "important");
+            media.style.setProperty("max-height", "none", "important");
+            media.style.setProperty("object-fit", "contain", "important");
+          });
+        } else {
+          item.style.setProperty("width", "auto", "important");
+        }
+      }
+
+      doc.body.style.setProperty("width", `${availableWidth}px`, "important");
+      doc.body.style.setProperty("height", "auto", "important");
+      doc.body.style.setProperty("min-height", "100%", "important");
+      doc.body.style.setProperty("padding", "0", "important");
+      doc.body.style.setProperty("transform", "none", "important");
+      doc.body.style.setProperty("transform-origin", "top left", "important");
+      doc.body.style.setProperty("overflow-x", "hidden", "important");
+      doc.body.style.setProperty("overflow-y", "auto", "important");
+      return;
+    }
     const fullBleed = minLeft <= 1 && minTop <= 1 && maxRight >= pageWidth - 1;
     const crop = mode === "Crop" && !fullBleed;
     const contentWidth = Math.max(1, maxRight - minLeft);
@@ -483,6 +594,7 @@ function styleEpubContents(
   allowNarrowViewport = false,
 ) {
   if (!doc.head) return;
+  if (isIPadEpubViewport()) doc.body.classList.add("pmp-ipad-epub");
   configureFixedEpubPage(doc, mode, getHostWidth, allowNarrowViewport);
   if (doc.getElementById("pmp-epub-reader-style")) return;
   const style = doc.createElement("style");
@@ -495,6 +607,9 @@ function styleEpubContents(
     @media(max-width:640px){body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:20px!important;line-height:1.7!important}}
     @media(min-width:641px) and (max-width:1024px){
       body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:20px!important;line-height:1.7!important}
+      body.pmp-ipad-epub.pmp-fixed-epub-layout{transform:none!important;transform-origin:top left!important;width:100%!important;height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;background-size:auto!important}
+      body.pmp-ipad-epub.pmp-fixed-epub-layout>.body{width:100%!important;max-width:100%!important;height:auto!important;min-height:100%!important;transform:none!important;overflow:visible!important}
+      body.pmp-ipad-epub.pmp-fixed-epub-layout .body p,body.pmp-ipad-epub.pmp-fixed-epub-layout .body li,body.pmp-ipad-epub.pmp-fixed-epub-layout .body td,body.pmp-ipad-epub.pmp-fixed-epub-layout .body th,body.pmp-ipad-epub.pmp-fixed-epub-layout .body blockquote,body.pmp-ipad-epub.pmp-fixed-epub-layout .body p *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body li *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body td *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body th *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body blockquote *{font-size:20px!important;line-height:1.7!important}
       body:not(.pmp-fixed-epub-layout),body:not(.pmp-fixed-epub-layout) .body{width:100%!important;max-width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important}
       body:not(.pmp-fixed-epub-layout)>.body{display:block!important;width:100%!important}
       body:not(.pmp-fixed-epub-layout)>.body>div{display:block!important;width:100%!important}
@@ -554,6 +669,12 @@ function applyEpubViewMode(doc: Document, mode: PageViewType, tightComicLayout =
 function isNarrowEpubViewport() {
   if (typeof window === "undefined") return true;
   return window.innerWidth <= 640 || Math.min(window.innerWidth, window.innerHeight) <= 640;
+}
+
+function isIPadEpubViewport() {
+  if (typeof navigator === "undefined") return false;
+  return /iPad/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 }
 
 interface CourseEpubStepProps {
@@ -753,7 +874,13 @@ export default function CourseEpubStep({
         renditionRef.current = rendition;
 
         const shortSide = Math.min(window.innerWidth || 400, window.innerHeight || 700);
-        rendition.themes?.fontSize?.(shortSide <= 430 ? "118%" : shortSide <= 768 ? "110%" : "100%");
+        rendition.themes?.fontSize?.(
+          shortSide <= 430 || (isIPadEpubViewport() && shortSide <= 1024)
+            ? "118%"
+            : shortSide <= 768
+              ? "110%"
+              : "100%",
+        );
         rendition.themes?.default?.({
           html: { margin: "0 !important", padding: "0 !important", width: "100% !important", "max-width": "none !important" },
           body: { margin: "0 !important", padding: "0.5em 10px 1.25em !important", "box-sizing": "border-box !important", "line-height": "1.55 !important" },
@@ -786,7 +913,9 @@ export default function CourseEpubStep({
             return;
           }
           if (event.type !== "click") return;
-          const point = "touches" in event ? event.touches[0] : event;
+          const point = "changedTouches" in event
+            ? event.changedTouches[0] ?? event.touches[0]
+            : event;
           if (!point) return;
           const caretDoc = doc as Document & {
             caretRangeFromPoint?: (x: number, y: number) => Range | null;
