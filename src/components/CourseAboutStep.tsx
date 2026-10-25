@@ -74,6 +74,12 @@ export default function CourseAboutStep({
               ) : (
                 <div className="book-about-cover book-about-cover--fallback">{course.icon}</div>
               )}
+              <span className="book-about-cover-badge book-about-cover-badge--language">
+                {course.language === "MM" ? "MM" : "Eng"}
+              </span>
+              <span className={`book-about-cover-badge book-about-cover-badge--type book-about-cover-badge--${bookType.toLowerCase()}`}>
+                {bookType}
+              </span>
               <div className="book-spine" aria-hidden="true" />
             </div>
             <dl className="book-about-meta">
@@ -92,14 +98,6 @@ export default function CourseAboutStep({
               <div>
                 <dt>Pages</dt>
                 <dd>{pageCount || "—"}</dd>
-              </div>
-              <div>
-                <dt>Language</dt>
-                <dd>{course.language === "MM" ? "Myanmar" : "English"}</dd>
-              </div>
-              <div>
-                <dt>Book Type</dt>
-                <dd>{bookType}</dd>
               </div>
             </dl>
           </div>

@@ -428,6 +428,21 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
     setMessage("Page deleted.");
   }
 
+  function resetPageIndexes() {
+    if (!activeBook || allSteps.length === 0) return;
+    updateActiveBook((book) => {
+      const steps = flattenCourseSteps(book).map((step, index) => ({
+        ...step,
+        stepIndex: index + 1,
+      }));
+      return {
+        ...book,
+        chapters: rebuildChaptersFromSteps(book.id, steps),
+      };
+    });
+    setMessage("Page indexes reset from 1 in the current reading order. Save Book to keep the changes.");
+  }
+
   function addPage(stepType: CourseStepType = "html") {
     if (!activeBook) return;
     const newChapterIndex = 0; // Default to 0
@@ -1559,7 +1574,17 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
                   </div>
                 </div>
                 <div className="panel panel-bordered" style={{ padding: "16px", marginBottom: "16px" }}>
-                  <h4 style={{ marginTop: 0 }}>Pages</h4>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "12px" }}>
+                    <h4 style={{ margin: 0 }}>Pages</h4>
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-book secondary small"
+                      onClick={resetPageIndexes}
+                      disabled={allSteps.length === 0}
+                    >
+                      Reset Index
+                    </button>
+                  </div>
                   <div className="admin-course-step-list">
                     {allSteps.map((step) => (
                       <button

@@ -309,7 +309,7 @@
 
 .practice-page-nav-arrow:disabled,
 .practice-page-nav-arrow.is-hidden {
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
   animation: none;
 }
@@ -836,7 +836,6 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   position: relative;
   bottom: auto;
   z-index: 0;
-  pointer-events: none;
 }
 
 .pdf-reader-layer {
@@ -1048,6 +1047,44 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   background: rgba(15, 23, 42, 0.35);
 }
 
+.book-about-cover-badge {
+  position: absolute;
+  top: 0;
+  z-index: 4;
+  padding: 5px 8px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.book-about-cover-badge--language {
+  top: 0;
+  left: 10px;
+  border-color: rgba(217, 119, 6, 0.65);
+  background: rgba(255, 237, 213, 0.94);
+  color: #c2410c;
+}
+
+.book-about-cover-badge--type {
+  right: 0;
+}
+
+.book-about-cover-badge--epub {
+  border-color: rgba(217, 119, 6, 0.65);
+  background: rgba(255, 237, 213, 0.94);
+  color: #c2410c;
+}
+
+.book-about-cover-badge--pdf {
+  border-color: rgba(244, 63, 94, 0.65);
+  background: rgba(255, 228, 230, 0.94);
+  color: #e11d48;
+}
+
 .book-about-cover-wrap .book-spine {
   width: 10px;
   z-index: 3;
@@ -1091,7 +1128,7 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #cbd5e1;
+  color: #facc15;
 }
 
 .book-about-meta dd {
@@ -1144,13 +1181,13 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   box-sizing: border-box;
   width: 100%;
   max-width: 760px;
-  max-height: 7.75em;
+  max-height: 4.35em;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   margin: 18px 0 0;
-  font-size: 1rem;
-  line-height: 1.55;
+  font-size: 0.92rem;
+  line-height: 1.5;
   color: #e2e8f0;
 }
 
@@ -1161,41 +1198,41 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
 .book-about-related {
   flex: 0 0 auto;
   margin-top: auto;
-  padding-top: 18px;
+  padding-top: 12px;
   position: relative;
   background: linear-gradient(180deg, rgba(15, 12, 41, 0) 0%, #24243e 28%);
   padding-bottom: 4px;
 }
 
 .book-about-related h3 {
-  margin: 0 0 10px;
+  margin: 0 0 6px;
   font-size: 1.05rem;
   color: #f8fafc;
 }
 
 .book-about-related-scroller {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   overflow-x: auto;
-  padding: 4px 2px 12px;
+  padding: 4px 2px 8px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
 
 .book-about-related-item {
-  flex: 0 0 140px;
-  width: 140px;
+  flex: 0 0 120px;
+  width: 120px;
   scroll-snap-align: start;
 }
 
 .book-about-related-item .book,
 .book-about-related-item .book-cover {
-  width: 140px !important;
-  max-width: 140px;
+  width: 120px !important;
+  max-width: 120px;
 }
 
 .book-about-related-item .book-cover {
-  height: 196px !important;
+  height: 168px !important;
 }
 
 .book-about-related-item .book-cover-image {
