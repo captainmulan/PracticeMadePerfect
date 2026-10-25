@@ -510,7 +510,7 @@ function configureFixedEpubPage(
         item.style.setProperty("margin", "0 0 0.65em", "important");
         if (item.tagName === "P") {
           item.style.setProperty("width", "auto", "important");
-          item.style.setProperty("font-size", "20px", "important");
+          item.style.setProperty("font-size", "var(--pmp-epub-text-size)", "important");
           item.style.setProperty("line-height", "1.7", "important");
           item.querySelectorAll<HTMLElement>("*").forEach((inlineText) => {
             inlineText.style.setProperty("white-space", "normal", "important");
@@ -606,10 +606,8 @@ function styleEpubContents(
     body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:16px!important;line-height:1.65!important}
     @media(max-width:640px){body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:20px!important;line-height:1.7!important}}
     @media(min-width:641px) and (max-width:1024px){
-      body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:20px!important;line-height:1.7!important}
       body.pmp-ipad-epub.pmp-fixed-epub-layout{transform:none!important;transform-origin:top left!important;width:100%!important;height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;background-size:auto!important}
       body.pmp-ipad-epub.pmp-fixed-epub-layout>.body{width:100%!important;max-width:100%!important;height:auto!important;min-height:100%!important;transform:none!important;overflow:visible!important}
-      body.pmp-ipad-epub.pmp-fixed-epub-layout .body p,body.pmp-ipad-epub.pmp-fixed-epub-layout .body li,body.pmp-ipad-epub.pmp-fixed-epub-layout .body td,body.pmp-ipad-epub.pmp-fixed-epub-layout .body th,body.pmp-ipad-epub.pmp-fixed-epub-layout .body blockquote,body.pmp-ipad-epub.pmp-fixed-epub-layout .body p *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body li *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body td *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body th *,body.pmp-ipad-epub.pmp-fixed-epub-layout .body blockquote *{font-size:20px!important;line-height:1.7!important}
       body:not(.pmp-fixed-epub-layout),body:not(.pmp-fixed-epub-layout) .body{width:100%!important;max-width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important}
       body:not(.pmp-fixed-epub-layout)>.body{display:block!important;width:100%!important}
       body:not(.pmp-fixed-epub-layout)>.body>div{display:block!important;width:100%!important}
@@ -628,6 +626,8 @@ function styleEpubContents(
       body:not(.pmp-fixed-epub-layout)>.body span:has(>img){display:block!important;position:static!important;inset:auto!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;width:auto!important;max-width:100%!important;height:auto!important;min-height:0!important;white-space:normal!important;float:none!important;transform:none!important}
       body:not(.pmp-fixed-epub-layout)>.body span:has(>img)>img{width:auto!important;height:auto!important;max-width:100%!important;max-height:none!important;object-fit:contain!important}
     }
+    body.pmp-ipad-epub{--pmp-epub-text-size:20px;--pmp-epub-line-height:1.7;--pmp-epub-font-family:Arial,sans-serif}
+    body.pmp-ipad-epub :is(h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,pre),body.pmp-ipad-epub :is(h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,pre) *:not(img):not(svg):not(canvas):not(video){font-family:var(--pmp-epub-font-family)!important;font-size:var(--pmp-epub-text-size)!important;line-height:var(--pmp-epub-line-height)!important}
   `;
   doc.head.appendChild(style);
 }
