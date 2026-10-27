@@ -9,6 +9,7 @@ import {
   type PageViewType,
 } from "../data/pageViewType";
 import { extractEpubLocation, getEpubBuffer, resolveEpubFileUrl } from "../utils/epubCache";
+import { watchEpubDictionarySelection } from "../utils/epubDictionarySelection";
 import "../styles/course.css";
 
 type EpubContents = { document?: Document };
@@ -427,6 +428,18 @@ function configureFixedEpubPage(
   }
 
   doc.body.classList.add("pmp-fixed-epub-layout");
+  doc.documentElement.style.setProperty("overflow-y", "auto", "important");
+  const scrollDocument = doc as Document & { __pmpFixedPageWheelScroll?: boolean };
+  if (!scrollDocument.__pmpFixedPageWheelScroll) {
+    doc.addEventListener("wheel", (event) => {
+      if (!doc.body.classList.contains("pmp-fixed-epub-layout")) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const scroller = doc.scrollingElement ?? doc.documentElement;
+      scroller.scrollTop += event.deltaY;
+    }, { capture: true, passive: false });
+    scrollDocument.__pmpFixedPageWheelScroll = true;
+  }
   const ipadTextBlock = isIPadEpubViewport()
     ? Array.from(page.children)
         .filter((element): element is HTMLElement => element.nodeType === 1)
@@ -901,51 +914,80 @@ export default function CourseEpubStep({
           for (const doc of documents) {
             removeObjectReplacementCharacters(doc);
             applyPagePresentation(doc, fragment);
+            bindDictionarySelection(doc);
           }
         };
 
-        const handleDictionaryInteraction = (doc: Document, event: MouseEvent | TouchEvent) => {
+        const handleDictionaryInteraction = (doc: Document, event: MouseEvent | PointerEvent | TouchEvent) => {
           if (!dictionaryModeRef.current) return;
-          const selection = doc.getSelection();
-          const selectedText = selection?.toString().trim();
-          if (selectedText) {
-            setDictionarySelection(selectedText);
+          if (event.type === "pointerup") {
+            const selectedText = doc.getSelection()?.toString().trim();
+            if (selectedText) setDictionarySelection(selectedText);
             return;
           }
-          if (event.type !== "click") return;
           const point = "changedTouches" in event
             ? event.changedTouches[0] ?? event.touches[0]
             : event;
           if (!point) return;
-          const caretDoc = doc as Document & {
-            caretRangeFromPoint?: (x: number, y: number) => Range | null;
-            caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+          const coordinates = { clientX: point.clientX, clientY: point.clientY };
+          const updateSelection = () => {
+            const selectedText = doc.getSelection()?.toString().trim();
+            if (!selectedText) return false;
+            setDictionarySelection(selectedText);
+            return true;
           };
-          let range = caretDoc.caretRangeFromPoint?.(point.clientX, point.clientY) ?? null;
-          if (!range) {
-            const position = caretDoc.caretPositionFromPoint?.(point.clientX, point.clientY);
-            if (position) {
-              range = doc.createRange();
-              range.setStart(position.offsetNode, position.offset);
-              range.collapse(true);
+          const selectWordAtPoint = (preserveSelection = true) => {
+            if (!dictionaryModeRef.current || (preserveSelection && updateSelection())) return;
+            if (event.type !== "click" && event.type !== "touchend") return;
+            const caretDoc = doc as Document & {
+              caretRangeFromPoint?: (x: number, y: number) => Range | null;
+              caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+            };
+            let range = caretDoc.caretRangeFromPoint?.(coordinates.clientX, coordinates.clientY) ?? null;
+            if (!range) {
+              const position = caretDoc.caretPositionFromPoint?.(coordinates.clientX, coordinates.clientY);
+              if (position) {
+                range = doc.createRange();
+                range.setStart(position.offsetNode, position.offset);
+                range.collapse(true);
+              }
             }
+            const node = range?.startContainer;
+            if (!node || node.nodeType !== Node.TEXT_NODE) return;
+            const text = node.textContent ?? "";
+            const offset = range?.startOffset ?? 0;
+            const wordPattern = /[\p{L}\p{N}'’-]/u;
+            let start = Math.min(offset, text.length);
+            let end = start;
+            while (start > 0 && wordPattern.test(text[start - 1])) start -= 1;
+            while (end < text.length && wordPattern.test(text[end])) end += 1;
+            if (start === end) return;
+            const wordRange = doc.createRange();
+            wordRange.setStart(node, start);
+            wordRange.setEnd(node, end);
+            const selection = doc.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(wordRange);
+            setDictionarySelection(wordRange.toString().trim());
+          };
+
+          if (event.type === "touchend") {
+            const readTouchSelection = (attempt: number) => {
+              const selectedText = doc.getSelection()?.toString().trim();
+              if (selectedText) {
+                setDictionarySelection(selectedText);
+                return;
+              }
+              if (attempt < 3) {
+                window.setTimeout(() => readTouchSelection(attempt + 1), 100);
+                return;
+              }
+              selectWordAtPoint(false);
+            };
+            window.setTimeout(() => readTouchSelection(0), 0);
+            return;
           }
-          const node = range?.startContainer;
-          if (!node || node.nodeType !== Node.TEXT_NODE) return;
-          const text = node.textContent ?? "";
-          const offset = range?.startOffset ?? 0;
-          const wordPattern = /[\p{L}\p{N}'’-]/u;
-          let start = Math.min(offset, text.length);
-          let end = start;
-          while (start > 0 && wordPattern.test(text[start - 1])) start -= 1;
-          while (end < text.length && wordPattern.test(text[end])) end += 1;
-          if (start === end) return;
-          const wordRange = doc.createRange();
-          wordRange.setStart(node, start);
-          wordRange.setEnd(node, end);
-          selection?.removeAllRanges();
-          selection?.addRange(wordRange);
-          setDictionarySelection(wordRange.toString().trim());
+          selectWordAtPoint();
         };
 
         const bindDictionarySelection = (doc: Document) => {
@@ -956,6 +998,7 @@ export default function CourseEpubStep({
             if (selected) setDictionarySelection(selected);
           });
           doc.addEventListener("mouseup", (event) => handleDictionaryInteraction(doc, event));
+          doc.addEventListener("pointerup", (event) => handleDictionaryInteraction(doc, event));
           doc.addEventListener("touchend", (event) => handleDictionaryInteraction(doc, event), { passive: true });
           doc.addEventListener("click", (event) => handleDictionaryInteraction(doc, event));
           (doc as Document & { __pmpDictionaryBound?: boolean }).__pmpDictionaryBound = true;
@@ -1060,6 +1103,24 @@ export default function CourseEpubStep({
       applyPagePresentation(doc, locationFragment(location));
     }
   }, [activeView, comicSpreadSide, isComicBook, location, nextLocation, step.epubImageIndex, viewerReady]);
+
+  useEffect(() => {
+    if (!viewerReady || !dictionaryMode) return;
+    return watchEpubDictionarySelection(() => {
+      const documents = new Set<Document>();
+      const contents = renditionRef.current?.getContents?.();
+      for (const content of Array.isArray(contents) ? contents : contents ? [contents] : []) {
+        if (content.document) documents.add(content.document);
+      }
+      const contentDocument = viewerRef.current?.querySelector("iframe")?.contentDocument;
+      if (contentDocument) documents.add(contentDocument);
+      return documents;
+    }, (selectedText) => {
+      setDictionarySelection((currentSelection) =>
+        currentSelection === selectedText ? currentSelection : selectedText,
+      );
+    });
+  }, [dictionaryMode, viewerReady]);
 
   const handlePreviousPage = () => {
     const sides = comicSpreadSidesRef.current;

@@ -630,7 +630,7 @@ textarea {
   overflow: auto !important;
   overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  touch-action: auto;
 }
 
 .course-wizard-page .practice-workspace--epub .practice-workspace-editor-shell {

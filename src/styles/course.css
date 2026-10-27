@@ -381,6 +381,26 @@
   }
 }
 
+@media (max-width: 640px) {
+  .practice-workspace--epub .practice-workspace-top-bar {
+    min-height: 72px;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+    grid-template-rows: minmax(var(--pmp-nav-btn-size), 1fr);
+    align-items: center !important;
+    align-content: center;
+  }
+
+  .practice-workspace--epub .chapter-nav-side,
+  .practice-workspace--epub .chapter-nav-center {
+    align-self: center;
+  }
+
+  .practice-workspace--epub .practice-settings-bar {
+    min-height: 48px;
+  }
+}
+
 .practice-workspace-toolbar {
   display: flex;
   align-items: center;

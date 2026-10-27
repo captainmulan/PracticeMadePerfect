@@ -26,11 +26,10 @@ import { canonicalAuthorName } from "../utils/authorName";
 import { getCourseProgressKey } from "../utils/courseUtils";
 import { loadShelfItemSettings } from "../utils/shelfItemIndexes";
 import { useAnnouncements } from "../utils/useAnnouncements";
+import { getLibraryAudience, saveLibraryAudience, type LibraryAudience } from "../utils/libraryAudience";
 import "../styles/home-test-showcase.css";
 
 type HomeShelfTab = "Search" | "Category" | "Login";
-type HomeAudience = "Other" | "Kid";
-
 function filterCoursesByQuery(courses: ReturnType<typeof useCourseCatalog>["courses"], query: string) {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return courses;
@@ -73,7 +72,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const [categoryPath, setCategoryPath] = useState<string[]>(initialShelf.categoryPath);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(initialShelf.selectedAuthorName);
   const [searchQuery, setSearchQuery] = useState(initialShelf.searchQuery);
-  const [selectedAudience, setSelectedAudience] = useState<HomeAudience>("Other");
+  const [selectedAudience, setSelectedAudience] = useState<LibraryAudience>(getLibraryAudience);
   const [shelfReady, setShelfReady] = useState(false);
   const [shelfSettingsVersion, setShelfSettingsVersion] = useState(0);
   const [shelfTransitioning, setShelfTransitioning] = useState(() => {
@@ -235,6 +234,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     if (selectedTab === "Login") return;
     saveShelfReturn({
       tab: selectedTab,
+      source: "home",
       categoryPath,
       selectedAuthorName,
       searchQuery,
@@ -312,6 +312,9 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
         }}
         selectedAudience={selectedAudience}
         onAudienceChange={(audience) => {
+          if (audience === selectedAudience) return;
+          saveLibraryAudience(audience);
+          setShelfTransitioning(true);
           setSelectedAudience(audience);
           setSelectedTab("Search");
           setCategoryPath([]);

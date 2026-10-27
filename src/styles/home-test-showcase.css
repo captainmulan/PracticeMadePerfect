@@ -507,20 +507,21 @@
 }
 
 .library-coming-soon {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 2px;
-  z-index: 31;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10000;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 9px 10px 9px 12px;
+  padding: 14px 16px 14px 18px;
   border: 1px solid rgba(244, 201, 74, 0.3);
   border-radius: 8px;
   background: #100d2b;
   color: var(--magic-ink, #f5efd6);
-  font-size: 0.8rem;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+  font-size: 1rem;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.42);
+  transform: translate(-50%, -50%);
 }
 
 .library-coming-soon button {
@@ -606,9 +607,9 @@
 }
 
 .library-audience-switch button.active {
-  background: linear-gradient(180deg, #ffffff, #d9dee7);
+  background: linear-gradient(180deg, #ffe27a, #f4c94a);
   color: #111827;
-  box-shadow: 0 1px 4px rgba(17, 24, 39, 0.32), inset 0 1px 0 #ffffff;
+  box-shadow: 0 1px 4px rgba(17, 24, 39, 0.32), inset 0 1px 0 #fff2b8;
 }
 
 .library-audience-switch button:focus-visible {

@@ -1,16 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { useState, type MouseEvent } from "react";
-
-type HomeAudience = "Other" | "Kid";
+import type { LibraryAudience } from "../utils/libraryAudience";
 
 type LibraryTopBarProps = {
   onHome?: () => void;
   onCategory?: () => void;
   onLogin?: () => void;
   showHomeMenu?: boolean;
-  selectedAudience?: HomeAudience | null;
-  onAudienceChange?: (audience: HomeAudience) => void;
+  selectedAudience?: LibraryAudience | null;
+  onAudienceChange?: (audience: LibraryAudience) => void;
 };
 
 export default function LibraryTopBar({ onHome, onCategory, onLogin, showHomeMenu = false, selectedAudience = null, onAudienceChange }: LibraryTopBarProps) {
@@ -113,12 +112,15 @@ export default function LibraryTopBar({ onHome, onCategory, onLogin, showHomeMen
           </div>
         ) : null}
       </nav>
-      {showComingSoon ? (
-        <div className="library-coming-soon" role="status" aria-live="polite">
-          Coming Soon...
-          <button type="button" aria-label="Dismiss message" onClick={() => setShowComingSoon(false)}>×</button>
-        </div>
-      ) : null}
+      {showComingSoon && typeof document !== "undefined"
+        ? createPortal(
+            <div className="library-coming-soon" role="status" aria-live="polite">
+              Coming Soon...
+              <button type="button" aria-label="Dismiss message" onClick={() => setShowComingSoon(false)}>×</button>
+            </div>,
+            document.body,
+          )
+        : null}
     </header>
   );
 }

@@ -5,7 +5,7 @@ import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
 import { formatCategoryPath } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
-import { getShelfReturnLabel, SHELF_RETURN_HREF } from "../utils/shelfReturn";
+import { getShelfReturnHref, getShelfReturnLabel } from "../utils/shelfReturn";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import CourseBookCard from "./CourseBookCard";
 import PdfFunLoader from "./PdfFunLoader";
@@ -40,11 +40,12 @@ export default function CourseAboutStep({
   const pageCount = course.stepCount ?? course.chapters.reduce((sum, chapter) => sum + chapter.steps.length, 0);
   const relatedItems = related.slice(0, 12).map((item) => createShelfItemFromCourse(item, item.category));
   const shelfReturnLabel = getShelfReturnLabel();
+  const shelfReturnHref = getShelfReturnHref();
 
   const openShelf = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     setLeavingDestination("search");
-    window.setTimeout(() => navigate(SHELF_RETURN_HREF), 80);
+    window.setTimeout(() => navigate(shelfReturnHref), 80);
   };
 
   const openHome = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -118,7 +119,7 @@ export default function CourseAboutStep({
             </div>
           ) : null}
           <div className="book-about-actions">
-            <Link to={SHELF_RETURN_HREF} className="book-about-action" onClick={openShelf}>
+            <Link to={shelfReturnHref} className="book-about-action" onClick={openShelf}>
               {shelfReturnLabel.about}
             </Link>
             <Link to="/" className="book-about-action" onClick={openHome}>

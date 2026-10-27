@@ -6,7 +6,7 @@ import DictionaryPanel from "./DictionaryPanel";
 import PdfFunLoader from "./PdfFunLoader";
 import { usePageSwipeNavigation } from "../hooks/usePageSwipeNavigation";
 import { getHomePageData } from "../utils/contentStore";
-import { getShelfReturnLabel, SHELF_RETURN_HREF } from "../utils/shelfReturn";
+import { getShelfReturnHref, getShelfReturnLabel } from "../utils/shelfReturn";
 import type { PageViewType } from "../data/pageViewType";
 import "../styles/course.css";
 
@@ -124,6 +124,7 @@ export default function PracticeWorkspace({
   const hasEditor = Boolean(onChange) && children === undefined;
   const style = homeData.style;
   const shelfReturnLabel = getShelfReturnLabel();
+  const shelfReturnHref = getShelfReturnHref();
   const swipe = usePageSwipeNavigation({
     canPrevious,
     canNext,
@@ -161,7 +162,7 @@ export default function PracticeWorkspace({
   const openShelf = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     setLeavingDestination("search");
-    window.setTimeout(() => navigate(SHELF_RETURN_HREF), 40);
+    window.setTimeout(() => navigate(shelfReturnHref), 40);
   };
 
   const openHome = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -234,7 +235,7 @@ export default function PracticeWorkspace({
       >
         <div className="chapter-nav-side chapter-nav-side-left">
           <Link
-            to={SHELF_RETURN_HREF}
+            to={shelfReturnHref}
             className="chapter-nav-icon-btn"
             onClick={openShelf}
             aria-label={shelfReturnLabel.nav}

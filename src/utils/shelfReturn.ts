@@ -2,6 +2,7 @@ const SHELF_RETURN_KEY = "pmp-shelf-return-v2";
 
 export type ShelfReturnState = {
   tab: string;
+  source?: "home" | "search";
   categoryPath: string[];
   selectedAuthorName: string | null;
   searchQuery: string;
@@ -23,6 +24,7 @@ export function readShelfReturn(): ShelfReturnState | null {
     if (!parsed || typeof parsed !== "object") return null;
     return {
       tab: parsed.tab || "Category",
+      source: parsed.source === "search" ? "search" : "home",
       categoryPath: Array.isArray(parsed.categoryPath)
         ? parsed.categoryPath.filter((part) => typeof part === "string" && part.length > 0)
         : [],
@@ -36,10 +38,14 @@ export function readShelfReturn(): ShelfReturnState | null {
 
 export function getShelfReturnLabel(): { nav: string; about: string } {
   const saved = readShelfReturn();
-  if (saved?.tab === "Search") {
+  if (saved?.source === "search") {
     return { nav: "Search", about: "Search" };
   }
   return { nav: "Previous category", about: "Category" };
+}
+
+export function getShelfReturnHref(): string {
+  return readShelfReturn()?.source === "search" ? "/search" : SHELF_RETURN_HREF;
 }
 
 export const SHELF_RETURN_HREF = "/?restoreShelf=1";
