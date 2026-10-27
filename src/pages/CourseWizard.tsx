@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import CourseAboutStep from "../components/CourseAboutStep";
+import LibraryTopBar from "../components/LibraryTopBar";
 import CourseCodeStep from "../components/CourseCodeStep";
 import CourseHtmlStep from "../components/CourseHtmlStep";
 import CoursePdfStep from "../components/CoursePdfStep";
@@ -27,6 +28,7 @@ import { warmupPdfReaderAssets } from "../utils/pdfCache";
 
 export default function CourseWizard() {
   const { courseId } = useParams<{ courseId: string }>();
+  const navigate = useNavigate();
   const account = useAccountOptional();
   const { courses } = useCourseCatalog();
   const {
@@ -273,6 +275,13 @@ export default function CourseWizard() {
         viewingIntro ? " course-wizard-page--about" : ""
       }${viewingIntro && isPdfBook ? " course-wizard-page--pdf-warm" : ""}`}
     >
+      {viewingIntro ? (
+        <LibraryTopBar
+          showHomeMenu
+          onHome={() => navigate("/")}
+          onCategory={() => navigate("/?view=category")}
+        />
+      ) : null}
       {pdfProps ? (
         <div className="pdf-reader-layer" aria-hidden={viewingIntro}>
           <CoursePdfStep {...pdfProps} />

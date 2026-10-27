@@ -1,11 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import type { Course } from "../data/courses";
 import HomeSpaceDecor from "./HomeSpaceDecor";
 import { createShelfItemFromCourse } from "../utils/courseShelf";
 import { formatCategoryPath } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
-import { getShelfReturnHref, getShelfReturnLabel } from "../utils/shelfReturn";
 import { resolveBookCoverUrl } from "../utils/bookCoverSeeds";
 import CourseBookCard from "./CourseBookCard";
 import PdfFunLoader from "./PdfFunLoader";
@@ -31,28 +29,12 @@ export default function CourseAboutStep({
   const fullCoverUrl = resolveBookCoverUrl(course, { variant: "full" });
   const thumbCoverUrl = resolveBookCoverUrl(course, { variant: "thumb" });
   const [coverUrl, setCoverUrl] = useState(fullCoverUrl || thumbCoverUrl);
-  const [leavingDestination, setLeavingDestination] = useState<"search" | "home" | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     setCoverUrl(fullCoverUrl || thumbCoverUrl);
   }, [fullCoverUrl, thumbCoverUrl]);
   const pageCount = course.stepCount ?? course.chapters.reduce((sum, chapter) => sum + chapter.steps.length, 0);
   const relatedItems = related.slice(0, 12).map((item) => createShelfItemFromCourse(item, item.category));
-  const shelfReturnLabel = getShelfReturnLabel();
-  const shelfReturnHref = getShelfReturnHref();
-
-  const openShelf = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    setLeavingDestination("search");
-    window.setTimeout(() => navigate(shelfReturnHref), 80);
-  };
-
-  const openHome = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    setLeavingDestination("home");
-    window.setTimeout(() => navigate("/"), 80);
-  };
 
   return (
     <div className="book-about-page">
@@ -75,65 +57,41 @@ export default function CourseAboutStep({
               ) : (
                 <div className="book-about-cover book-about-cover--fallback">{course.icon}</div>
               )}
-              <span className="book-about-cover-badge book-about-cover-badge--language">
-                {course.language === "MM" ? "MM" : "Eng"}
-              </span>
-              <span className={`book-about-cover-badge book-about-cover-badge--type book-about-cover-badge--${bookType.toLowerCase()}`}>
-                {bookType}
-              </span>
               <div className="book-spine" aria-hidden="true" />
             </div>
-            <dl className="book-about-meta">
-              <div>
-                <dt>Title</dt>
-                <dd>{course.title || "Untitled"}</dd>
+            <div className="book-about-meta">
+              <h1 className="book-about-title">{course.title || "Untitled"}</h1>
+              <p className="book-about-author">{canonicalAuthorName(course.authorName)}</p>
+              <div className="book-about-tags">
+                <span className="book-about-tag book-about-tag--category">{formatCategoryPath(course)}</span>
+                <span className="book-about-tag">{pageCount || "—"} pages</span>
               </div>
-              <div>
-                <dt>Author</dt>
-                <dd>{canonicalAuthorName(course.authorName)}</dd>
+              <div className="book-about-tags book-about-tags--format">
+                <span className="book-about-tag book-about-tag--language">
+                  {course.language === "MM" ? "Myanmar" : "English"}
+                </span>
+                <span className={`book-about-tag book-about-tag--${bookType.toLowerCase()}`}>{bookType}</span>
               </div>
-              <div>
-                <dt>Category</dt>
-                <dd>{formatCategoryPath(course)}</dd>
-              </div>
-              <div>
-                <dt>Pages</dt>
-                <dd>{pageCount || "—"}</dd>
-              </div>
-            </dl>
+              <button
+                type="button"
+                className="book-about-action book-about-read"
+                onClick={onRead}
+                disabled={readDisabled}
+              >
+                Read
+              </button>
+            </div>
           </div>
-          {course.description?.trim() ? (
-            <p className="book-about-blurb" tabIndex={0}>{course.description}</p>
-          ) : (
-            <p className="book-about-blurb book-about-blurb--empty" tabIndex={0}>No description yet.</p>
-          )}
+          <section className="book-about-description-panel" aria-label="Book description">
+            {course.description?.trim() ? (
+              <p className="book-about-blurb">{course.description}</p>
+            ) : (
+              <p className="book-about-blurb book-about-blurb--empty">No description yet.</p>
+            )}
+          </section>
           {pdfLoading ? (
             <PdfFunLoader compact label="Getting your book ready…" />
           ) : null}
-          {leavingDestination ? (
-            <div className="book-about-navigation-loader">
-              <PdfFunLoader
-                compact
-                label={leavingDestination === "search" ? "Opening Search…" : "Opening Home…"}
-              />
-            </div>
-          ) : null}
-          <div className="book-about-actions">
-            <Link to={shelfReturnHref} className="book-about-action" onClick={openShelf}>
-              {shelfReturnLabel.about}
-            </Link>
-            <Link to="/" className="book-about-action" onClick={openHome}>
-              Home
-            </Link>
-            <button
-              type="button"
-              className="book-about-action book-about-action--primary"
-              onClick={onRead}
-              disabled={readDisabled}
-            >
-              Read
-            </button>
-          </div>
         </div>
         {relatedItems.length > 0 ? (
           <section className="book-about-related">
