@@ -183,7 +183,7 @@ export default function PracticeWorkspace({
     <section
       className={`practice-workspace panel ${showPeek ? "peek-open" : "peek-closed"}${
         typeof pageZoom === "number" ? " practice-workspace--pdf" : ""
-      }${pageType?.toLowerCase() === "epub" ? " practice-workspace--epub" : ""}`}
+      }${pageType?.toLowerCase() === "epub" ? " practice-workspace--epub" : ""}${dictionaryMode ? " dictionary-mode-open" : ""}`}
       style={{
         background: buildGradient(
           style?.wizardWorkspace?.panelBackgroundColorGradientStart,
@@ -727,9 +727,9 @@ export default function PracticeWorkspace({
         selectionText={dictionarySelection}
         onClose={() => updateDictionaryMode(false)}
         styleConfig={{
-          backgroundColor: style?.wizardTopInfo?.backgroundColor,
-          borderColor: style?.wizardTopInfo?.borderBottomColor,
-          textColor: style?.wizardTopInfo?.chapterLabel?.color,
+          backgroundColor: "rgba(248, 250, 252, 0.96)",
+          borderColor: "rgba(15, 23, 42, 0.22)",
+          textColor: "#111827",
         }}
       />
     </section>

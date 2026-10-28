@@ -171,164 +171,42 @@ export default function DictionaryPanel({
   return (
     <div
       ref={panelRef}
+      className="dictionary-panel"
       style={{
-        position: "absolute",
-        bottom: "20px",
-        left: "50%",
-        transform: "translateX(-50%)",
         background: styleConfig?.backgroundColor ?? "#ffffff",
-        border: `1px solid ${styleConfig?.borderColor ?? "#e2e8f0"}`,
-        borderRadius: "12px",
-        padding: "16px 20px",
-        boxShadow: "0 6px 30px rgba(15, 23, 42, 0.2)",
-        zIndex: 55,
-        maxWidth: "400px",
-        minWidth: "280px",
-        animation: "slideUp 0.2s ease-out",
+        borderColor: styleConfig?.borderColor ?? "rgba(30, 41, 59, 0.18)",
+        color: styleConfig?.textColor ?? "#17212b",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "12px",
-        }}
+      <button
+        type="button"
+        onClick={onClose}
+        className="dictionary-panel-close"
+        aria-label="Close dictionary"
+        title="Close dictionary"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontSize: "18px" }}>🔍</span>
-          <span
-            style={{
-              fontSize: "15px",
-              fontWeight: 700,
-              color: styleConfig?.textColor ?? "#0f172a",
-            }}
-          >
-            Dictionary
+        ✕
+      </button>
+      <div className="dictionary-panel-content" role="status" aria-live="polite">
+        {!selectedWord ? (
+          <span className="dictionary-panel-message" title="Select any word in the content to see its definition.">
+            Select a word to see its definition.
           </span>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          style={{
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "16px",
-            padding: "4px 8px",
-            borderRadius: "6px",
-            color: styleConfig?.textColor ?? "#0f172a",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(15, 23, 42, 0.08)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "transparent";
-          }}
-        >
-          ✕
-        </button>
-      </div>
-
-      {!selectedWord ? (
-        <p
-          style={{
-            margin: 0,
-            fontSize: "13px",
-            color: "#64748b",
-            lineHeight: 1.6,
-            textAlign: "center",
-          }}
-        >
-          Select any word in the content to see its definition.
-        </p>
-      ) : isLoading ? (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px 0",
-          }}
-        >
-          <span style={{ fontSize: "24px", animation: "spin 1s linear infinite" }}>
-            ⏳
-          </span>
-        </div>
-      ) : error ? (
-        <div
-          style={{
-            padding: "12px",
-            background: "rgba(239, 68, 68, 0.1)",
-            borderRadius: "8px",
-            border: "1px solid rgba(239, 68, 68, 0.2)",
-          }}
-        >
-          <p
-            style={{
-              margin: 0,
-              fontSize: "13px",
-              color: "#dc2626",
-              lineHeight: 1.5,
-            }}
-          >
-            {error}
-          </p>
-        </div>
-      ) : definition ? (
-        <div>
-          <div
-            style={{
-              marginBottom: "12px",
-              paddingBottom: "12px",
-              borderBottom: "1px solid rgba(15, 23, 42, 0.08)",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "18px",
-                fontWeight: 700,
-                color: styleConfig?.textColor ?? "#0f172a",
-              }}
-            >
-              {definition.word}
-            </span>
-            <span
-              style={{
-                fontSize: "13px",
-                color: "#64748b",
-                fontStyle: "italic",
-                marginLeft: "8px",
-              }}
-            >
-              {definition.partOfSpeech}
-            </span>
+        ) : isLoading ? (
+          <span className="dictionary-panel-loading" aria-label="Loading definition">⏳</span>
+        ) : error ? (
+          <span className="dictionary-panel-error" title={error}>{error}</span>
+        ) : definition ? (
+          <div className="dictionary-result">
+            <div className="dictionary-result-heading">
+              <strong className="dictionary-term">{definition.word}</strong>
+              {definition.partOfSpeech && <span className="dictionary-part-of-speech">{definition.partOfSpeech}</span>}
+            </div>
+            <p className="dictionary-definition-text">{definition.definition}</p>
+            {definition.example && <p className="dictionary-example">“{definition.example}”</p>}
           </div>
-          <p
-            style={{
-              margin: "0 0 8px 0",
-              fontSize: "14px",
-              color: "#475569",
-              lineHeight: 1.6,
-            }}
-          >
-            {definition.definition}
-          </p>
-          {definition.example && (
-            <p
-              style={{
-                margin: 0,
-              fontSize: "13px",
-                color: "#64748b",
-                fontStyle: "italic",
-                lineHeight: 1.5,
-              }}
-            >
-              <em>"{definition.example}"</em>
-            </p>
-          )}
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }
