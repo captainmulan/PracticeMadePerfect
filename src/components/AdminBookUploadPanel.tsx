@@ -170,7 +170,7 @@ export default function AdminBookUploadPanel({
           ? `Updated ${result.updatedCount} page(s) in "${targetBookFull.title}".${unmatchedNote}`
           : `Loaded ${result.updatedCount} updated page(s) for "${targetBookFull.title}". Review pages, then click Save Book.${unmatchedNote}`;
 
-        onImported(result.course, summary, saveImmediately);
+        await onImported(result.course, summary, saveImmediately);
         return;
       }
 
@@ -198,7 +198,7 @@ export default function AdminBookUploadPanel({
       ? `Uploaded and saved "${course.title}" with ${preview.pages.length} pages.`
       : `Loaded "${course.title}" with ${preview.pages.length} pages. Review pages, then click Save Book.`;
 
-    onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
+    await onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
     } catch (err) {
       setError(String(err));
     }

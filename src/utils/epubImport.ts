@@ -110,12 +110,17 @@ async function loadJsZip(): Promise<EpubZipConstructor | null> {
   const existingScript = document.querySelector<HTMLScriptElement>("script[data-jszip-loader='true']");
   if (existingScript) {
     await new Promise<void>((resolve) => {
-      if (window.JSZip) {
+      const timeoutId = window.setTimeout(resolve, 15000);
+      const finish = () => {
+        window.clearTimeout(timeoutId);
         resolve();
+      };
+      if (window.JSZip) {
+        finish();
         return;
       }
-      existingScript.addEventListener("load", () => resolve(), { once: true });
-      existingScript.addEventListener("error", () => resolve(), { once: true });
+      existingScript.addEventListener("load", finish, { once: true });
+      existingScript.addEventListener("error", finish, { once: true });
     });
     return window.JSZip ?? null;
   }
@@ -126,8 +131,15 @@ async function loadJsZip(): Promise<EpubZipConstructor | null> {
       script.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
       script.async = true;
       script.setAttribute("data-jszip-loader", "true");
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error("Unable to load JSZip from CDN."));
+      const timeoutId = window.setTimeout(() => reject(new Error("Timed out loading the EPUB archive reader.")), 15000);
+      script.onload = () => {
+        window.clearTimeout(timeoutId);
+        resolve();
+      };
+      script.onerror = () => {
+        window.clearTimeout(timeoutId);
+        reject(new Error("Unable to load JSZip from CDN."));
+      };
       document.head.appendChild(script);
     });
   } catch {
@@ -502,6 +514,82 @@ function normalizeHref(href: string | undefined): string {
   return (href ?? "").trim().replace(/^\.\//, "");
 }
 
+function cleanEpubText(value: string): string {
+  return value
+    .replace(/[\u00a0\u200b\ufeff]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function extractEpubPageText(zip: EpubZip, href: string, opfDir: string): Promise<string[]> {
+  const entryName = resolveZipEntryName(zip, href, opfDir);
+  if (!entryName) return [];
+  const file = zip.file(entryName);
+  if (!file) return [];
+
+  try {
+    const parser = new DOMParser();
+    const document = parser.parseFromString(String(await file.async("string")), "text/html");
+    document.querySelectorAll("script,style,nav,header,footer,noscript").forEach((element) => element.remove());
+
+    let fragment = href.split("#")[1] ?? "";
+    try {
+      fragment = decodeURIComponent(fragment);
+    } catch {
+      /* Keep the literal fragment if it is not URI-encoded. */
+    }
+    const target = fragment ? document.getElementById(fragment) : null;
+    if (target) {
+      const paragraph = target.closest("p,li,blockquote,section,article") ?? target;
+      const selectedText = cleanEpubText(paragraph.textContent ?? "");
+      if (selectedText) return [selectedText];
+    }
+
+    const blocks = [...document.querySelectorAll("p,li,blockquote")]
+      .map((element) => cleanEpubText(element.textContent ?? ""))
+      .filter(Boolean);
+    if (blocks.length) return blocks;
+
+    const bodyText = cleanEpubText(document.body?.textContent ?? "");
+    return bodyText ? [bodyText] : [];
+  } catch {
+    return [];
+  }
+}
+
+export function inferEpubAuthorFromPages(pageTexts: string[][]): string {
+  const text = pageTexts.slice(0, 2).flat().join("\n");
+  const patterns = [
+    /(?:^|\n)\s*(?:written\s+by|author(?:\s+name)?)\s*[:\-]?\s*([^\n.!?]{2,80})/im,
+    /(?:^|\n)\s*by\s+([^\n.!?]{2,80})/im,
+    /(?:^|\n)\s*စာရေးသူ\s*[:：]?\s*([^\n.!?]{2,80})/m,
+  ];
+  for (const pattern of patterns) {
+    const match = pattern.exec(text);
+    const author = cleanEpubText(match?.[1] ?? "").replace(/[,:;\-]+$/, "");
+    if (author && !/^(?:the author|unknown|contents|all rights reserved)$/i.test(author)) return author;
+  }
+  return "UNKNOWN";
+}
+
+export function inferEpubDescriptionFromPages(pageTexts: string[][]): string {
+  const candidates = pageTexts.slice(0, 4).flat();
+  const ignored = /^(?:contents|table of contents|copyright|all rights reserved|isbn|publisher|www\.|https?:\/\/)/i;
+  const candidate = candidates.find((text) => {
+    const normalized = cleanEpubText(text);
+    const words = normalized.split(/\s+/).filter(Boolean);
+    return normalized.length >= 80 && words.length >= 12 && !ignored.test(normalized);
+  });
+  if (!candidate) return "";
+
+  const text = cleanEpubText(candidate);
+  const maxLength = 280;
+  const clipped = text.length > maxLength
+    ? `${text.slice(0, maxLength).replace(/\s+\S*$/, "").trimEnd()}...`
+    : `${text.replace(/[.…]+$/, "")}...`;
+  return clipped;
+}
+
 function cleanTocLabel(label: string | undefined): string {
   return (label ?? "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 }
@@ -819,6 +907,7 @@ export interface EpubImportPreviewOptions {
   courseIndex?: number;
   existingBookIds?: string[];
   preferSpine?: boolean;
+  zipOnly?: boolean;
 }
 
 export type EpubImportPreview = BookImportPreview;
@@ -845,6 +934,9 @@ export async function buildEpubImportPreview(
   const arrayBuffer = await file.arrayBuffer();
   console.log('[EPUB] Array buffer size:', arrayBuffer.byteLength);
   const zip = await loadEpubZip(arrayBuffer.slice(0));
+  if (options?.zipOnly && !zip) {
+    throw new Error("Unable to open this EPUB archive. Check the file and retry.");
+  }
   console.log('[EPUB] ZIP loaded:', !!zip);
   const opfDir = (await (zip ? readOpfInfo(zip) : null))?.opfDir ?? "";
 
@@ -852,9 +944,10 @@ export async function buildEpubImportPreview(
   let tocTree: EpubTocEntry[] = [];
   let tocFlat: Array<{ label: string; href: string }> = [];
 
-  try {
-    const ePub = await loadEpubJsLib();
-    if (ePub) {
+  if (!options?.zipOnly) {
+    try {
+      const ePub = await loadEpubJsLib();
+      if (ePub) {
       /*
         Use ePub(buffer) — same as epub-viewer.html. Calling ePub.Book(buffer)
         without `new` leaves spine empty and the import falls back to 1 page.
@@ -863,23 +956,24 @@ export async function buildEpubImportPreview(
       if (typeof book.ready?.then === "function") {
         await book.ready;
       }
-      spineItems = collectSpineFromBook(book);
-      try {
-        const navigation = await book.loaded?.navigation;
-        tocTree = navigation?.toc ?? [];
-        tocFlat = dedupeTocEntries(flattenToc(navigation?.toc));
-      } catch {
-        tocTree = [];
-        tocFlat = [];
+        spineItems = collectSpineFromBook(book);
+        try {
+          const navigation = await book.loaded?.navigation;
+          tocTree = navigation?.toc ?? [];
+          tocFlat = dedupeTocEntries(flattenToc(navigation?.toc));
+        } catch {
+          tocTree = [];
+          tocFlat = [];
+        }
+        try {
+          book.destroy?.();
+        } catch {
+          /* ignore */
+        }
       }
-      try {
-        book.destroy?.();
-      } catch {
-        /* ignore */
-      }
+    } catch {
+      spineItems = [];
     }
-  } catch {
-    spineItems = [];
   }
 
   if (!spineItems.length && zip) {
@@ -915,6 +1009,13 @@ export async function buildEpubImportPreview(
   if (!chapterPlans.length) {
     chapterPlans.push({ title: folderName, pages: [{ title: folderName, href: "" }] });
   }
+
+  const firstFourPages = chapterPlans.flatMap((chapter) => chapter.pages).slice(0, 4);
+  const firstPageTexts = zip
+    ? await Promise.all(firstFourPages.map((page) => extractEpubPageText(zip, page.href, opfDir)))
+    : [];
+  const authorName = inferEpubAuthorFromPages(firstPageTexts);
+  const description = inferEpubDescriptionFromPages(firstPageTexts);
 
   /* Flatten first so every page knows its successor, even across chapter borders. */
   const sequence: Array<{ title: string; href: string }> = [];
@@ -963,6 +1064,8 @@ export async function buildEpubImportPreview(
     folderName,
     bookId,
     bookTitle: folderName,
+    authorName,
+    description,
     pages,
     chapters,
     existingBookId: existingBookIds.includes(bookId) ? bookId : undefined,

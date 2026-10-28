@@ -269,7 +269,7 @@ export default function AdminPdfUploadPanel({
           ? `Updated ${merged.updatedCount} page(s) in "${targetBookFull.title}" from PDF.${merged.unmatchedFiles.length ? ` Skipped ${merged.unmatchedFiles.length} file(s).` : ""}`
           : `Loaded ${merged.updatedCount} updated page(s) for "${targetBookFull.title}" from PDF. Review pages, then click Save Book.`;
 
-        onImported(merged.course, summary, saveImmediately);
+        await onImported(merged.course, summary, saveImmediately);
         return;
       }
 
@@ -299,7 +299,7 @@ export default function AdminPdfUploadPanel({
         ? `Uploaded and saved "${course.title}" with ${preview.pages.length} page(s) from PDF.`
         : `Loaded "${course.title}" with ${preview.pages.length} page(s) from PDF. Review pages, then click Save Book.`;
 
-      onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
+      await onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
     } catch (err) {
       setError(String(err));
     } finally {

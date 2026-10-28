@@ -17,7 +17,7 @@ interface AdminEpubUploadPanelProps {
   selectedBookId: string | null;
   loadedBook?: Course | null;
   forcedMode?: UploadMode;
-  onImported: (course: Course, summary: string, saveImmediately: boolean) => void;
+  onImported: (course: Course, summary: string, saveImmediately: boolean, keepUploadOpen?: boolean) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -96,6 +96,7 @@ export default function AdminEpubUploadPanel({
 }: AdminEpubUploadPanelProps) {
   const epubInputRef = useRef<HTMLInputElement>(null);
   const [uploadMode, setUploadMode] = useState<UploadMode>(forcedMode ?? "new");
+  const [multipleUpload, setMultipleUpload] = useState(false);
   const [targetBookId, setTargetBookId] = useState(selectedBookId ?? "");
   const [targetBookFull, setTargetBookFull] = useState<Course | null>(null);
   const [targetBookLoading, setTargetBookLoading] = useState(false);
@@ -107,6 +108,10 @@ export default function AdminEpubUploadPanel({
   const [bookTitle, setBookTitle] = useState("");
   const [bookId, setBookId] = useState("");
   const [selectedEpub, setSelectedEpub] = useState<File | null>(null);
+  const [selectedEpubs, setSelectedEpubs] = useState<File[]>([]);
+  const [isBatchUploading, setIsBatchUploading] = useState(false);
+  const [batchProgress, setBatchProgress] = useState(0);
+  const [batchStatus, setBatchStatus] = useState("");
   const [isReading, setIsReading] = useState(false);
   const [isExportingAssets, setIsExportingAssets] = useState(false);
   const [assetExportProgress, setAssetExportProgress] = useState<EpubAssetExportProgress | null>(null);
@@ -182,6 +187,24 @@ export default function AdminEpubUploadPanel({
   }, [uploadMode, targetBookId, loadedBook]);
 
   async function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
+    if (multipleUpload && uploadMode === "new") {
+      const files = Array.from(event.target.files ?? []).filter((file) =>
+        file.name.toLowerCase().endsWith(".epub") || file.type === "application/epub+zip",
+      );
+      event.target.value = "";
+      setSelectedEpubs((current) => {
+        const next = [...current];
+        for (const file of files) {
+          if (!next.some((existing) => existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified)) {
+            next.push(file);
+          }
+        }
+        return next;
+      });
+      setError(files.length ? "" : "Choose one or more EPUB files.");
+      return;
+    }
+
     const file = event.target.files?.[0] ?? null;
     event.target.value = "";
     if (!file) {
@@ -213,6 +236,176 @@ export default function AdminEpubUploadPanel({
     }
   }
 
+  async function exportEpubAssets(
+    file: File,
+    epubPreview: EpubImportPreview,
+    safeId: string,
+    categoryValue: string,
+    storageRootValue: "Other" | "Comic",
+    targetCourse: Course | null = null,
+  ) {
+    const safeEpubFileName = `${slugify((epubPreview.epubFileName || "book").replace(/\.epub$/i, "")) || (epubPreview.epubFileName || "book").replace(/\.epub$/i, "")}.epub`;
+    const folder = resolveImportBookHtmlFolder(targetCourse, safeId, categoryValue, storageRootValue);
+    const assetDirectory = await resolveEpubAssetDirectory();
+    if (!assetDirectory?.directoryHandle) {
+      throw new Error("EPUB was not saved: grant access to the project's root folder and retry.");
+    }
+
+    const coverFileName = `${safeId}.webp`;
+    const coverFolder = "/book_covers/thumbs";
+    const assetCount = epubPreview.coverImageUrl?.startsWith("data:") ? 2 : 1;
+    if (multipleUpload) setBatchStatus(`Saving EPUB assets: ${file.name}`);
+    setAssetExportProgress({ completed: 0, total: assetCount, currentFileName: file.name });
+    const assetResult = await writeEpubAssetToDirectory(
+      assetDirectory.directoryHandle,
+      folder,
+      safeEpubFileName,
+      epubPreview.modifiedEpubData
+        ? new File([epubPreview.modifiedEpubData.buffer as ArrayBuffer], safeEpubFileName, { type: "application/epub+zip" })
+        : file,
+      epubPreview.coverImageUrl,
+      (progress) => setAssetExportProgress({ ...progress, currentFileName: file.name }),
+      { folder: coverFolder, fileName: coverFileName },
+    );
+
+    if (assetResult.written > 0) {
+      evictEpubBuffer(getBookAssetUrl(`${folder}/${safeEpubFileName}`));
+    }
+    if (assetResult.written !== assetCount || assetResult.errors.length > 0) {
+      throw new Error(`EPUB was not saved: ${assetResult.errors.join("; ") || "asset write did not complete."}`);
+    }
+
+    return {
+      folder,
+      safeEpubFileName,
+      savedCoverPath: assetResult.written >= assetCount && epubPreview.coverImageUrl?.startsWith("data:")
+        ? `${coverFolder}/${coverFileName}`
+        : epubPreview.coverImageUrl,
+    };
+  }
+
+  async function createNewEpubCourse(
+    file: File,
+    epubPreview: EpubImportPreview,
+    title: string,
+    id: string,
+    courseIndex: number,
+    categoryValue: string,
+    root: "Other" | "Comic",
+    selectedLanguage: "Eng" | "MM",
+    selectedCatalogPath: string[],
+  ): Promise<Course> {
+    const safeId = slugify(id) || id;
+    const assets = await exportEpubAssets(file, epubPreview, safeId, categoryValue, root);
+    const course = buildCourseFromEpubPreview(
+      {
+        ...epubPreview,
+        bookTitle: title,
+        epubFileName: assets.safeEpubFileName,
+        pages: epubPreview.pages.map((page) => ({ ...page, assets: [] })),
+      },
+      courseIndex,
+      categoryValue,
+      safeId,
+      {
+        coverImageUrl: assets.savedCoverPath,
+        epubAssetUrl: getBookAssetUrl(`${assets.folder}/${assets.safeEpubFileName}`),
+        language: selectedLanguage,
+        cat1: selectedCatalogPath[0] || undefined,
+        cat2: selectedCatalogPath[1] || undefined,
+        cat3: selectedCatalogPath[2] || undefined,
+        cat4: selectedCatalogPath[3] || undefined,
+      },
+    );
+    return { ...course, bookHtmlFolder: assets.folder };
+  }
+
+  function makeUniqueBookId(baseId: string, reservedIds: Set<string>) {
+    const safeBaseId = slugify(baseId) || "imported-book";
+    let candidate = safeBaseId;
+    let suffix = 2;
+    while (reservedIds.has(candidate.toLowerCase())) {
+      candidate = `${safeBaseId}-${suffix}`;
+      suffix += 1;
+    }
+    reservedIds.add(candidate.toLowerCase());
+    return candidate;
+  }
+
+  async function handleBatchUpload() {
+    if (!selectedEpubs.length || isBatchUploading) return;
+    setIsBatchUploading(true);
+    setIsExportingAssets(true);
+    setError("");
+    setBatchStatus("");
+    setBatchProgress(0);
+
+    const reservedIds = new Set(books.map((book) => book.id.toLowerCase()));
+    const successfulTitles: string[] = [];
+    const failures: string[] = [];
+    const failedFiles: File[] = [];
+    const batchCategory = "Other, Novel";
+    const batchCatalogPath = ["Other", "Novel", "", ""];
+
+    try {
+      const assetDirectory = await resolveEpubAssetDirectory();
+      if (!assetDirectory?.directoryHandle) {
+        throw new Error("EPUBs were not saved: grant access to the project's root folder and retry.");
+      }
+      setBatchStatus("Project folder is ready. Starting EPUB batch...");
+
+      for (let index = 0; index < selectedEpubs.length; index += 1) {
+        const file = selectedEpubs[index];
+        try {
+          setBatchStatus(`Parsing EPUB ${index + 1}/${selectedEpubs.length}: ${file.name}`);
+          const parsed = await buildEpubImportPreview(
+            file,
+            books.length + successfulTitles.length,
+            [...reservedIds],
+            { preferredFolder: file.name.replace(/\.epub$/i, ""), preferSpine: false, zipOnly: true },
+          );
+          if (!parsed) throw new Error("No pages could be read from this EPUB.");
+
+          const uniqueId = makeUniqueBookId(parsed.bookId || file.name.replace(/\.epub$/i, ""), reservedIds);
+          const course = await createNewEpubCourse(
+            file,
+            parsed,
+            parsed.bookTitle || file.name.replace(/\.epub$/i, ""),
+            uniqueId,
+            books.length + successfulTitles.length,
+            batchCategory,
+            "Other",
+            "MM",
+            batchCatalogPath,
+          );
+          setBatchStatus(`Saving book ${index + 1}/${selectedEpubs.length}: ${course.title}`);
+          await onImported(
+            course,
+            `Uploaded and saved "${course.title}" with ${course.chapters.length} chapter(s) / ${parsed.pageCount} page(s) from EPUB.`,
+            true,
+            true,
+          );
+          successfulTitles.push(course.title);
+        } catch (err) {
+          failures.push(`${file.name}: ${String(err)}`);
+          failedFiles.push(file);
+        }
+        setBatchProgress(index + 1);
+      }
+
+      const result = `${successfulTitles.length} of ${selectedEpubs.length} EPUBs saved.`;
+      setBatchStatus(result);
+      setError(failures.join("\n"));
+      setSelectedEpubs(failedFiles);
+    } catch (err) {
+      setError(String(err));
+    } finally {
+      setIsBatchUploading(false);
+      setIsExportingAssets(false);
+      setAssetExportProgress(null);
+    }
+  }
+
   async function handleApply(saveImmediately: boolean) {
     if (!preview || !selectedEpub) {
       setError("Choose an EPUB file before applying.");
@@ -235,48 +428,8 @@ export default function AdminEpubUploadPanel({
         return;
       }
 
-      const safeId = slugify(trimmedId) || trimmedId;
-      const safeEpubFileName = `${slugify((preview.epubFileName || "book").replace(/\.epub$/i, "")) || (preview.epubFileName || "book").replace(/\.epub$/i, "")}.epub`;
-
-      const folder = resolveImportBookHtmlFolder(
-        uploadMode === "existing" ? targetBookFull : null,
-        safeId,
-        category,
-        storageRoot,
-      );
-      const assetDirectory = await resolveEpubAssetDirectory();
-      if (!assetDirectory?.directoryHandle) {
-        throw new Error("EPUB was not saved: grant access to the project's root folder and retry.");
-      }
-
-      const coverFileName = `${safeId}.webp`;
-      const coverFolder = "/book_covers/thumbs";
-
-      const assetCount = preview.coverImageUrl?.startsWith("data:") ? 2 : 1;
-      setAssetExportProgress({ completed: 0, total: assetCount });
-      const assetResult = await writeEpubAssetToDirectory(
-        assetDirectory.directoryHandle,
-        folder,
-        safeEpubFileName,
-        preview.modifiedEpubData
-          ? new File([preview.modifiedEpubData.buffer as ArrayBuffer], safeEpubFileName, { type: "application/epub+zip" })
-          : selectedEpub,
-        preview.coverImageUrl,
-        (progress: EpubAssetExportProgress) => {
-          setAssetExportProgress(progress);
-        },
-        { folder: coverFolder, fileName: coverFileName }
-      );
-
-      /* Ensure the reader fetches the fresh EPUB with new anchors, not the cached version. */
-      if (assetResult.written > 0) {
-        evictEpubBuffer(getBookAssetUrl(`${folder}/${safeEpubFileName}`));
-      }
-      if (assetResult.written !== assetCount || assetResult.errors.length > 0) {
-        throw new Error(`EPUB was not saved: ${assetResult.errors.join("; ") || "asset write did not complete."}`);
-      }
-
       if (uploadMode === "existing") {
+        const safeId = slugify(trimmedId) || trimmedId;
         if (!targetBookSummary) {
           setError("Select an existing book to update.");
           return;
@@ -286,43 +439,38 @@ export default function AdminEpubUploadPanel({
           return;
         }
 
-        const savedCoverPath = assetResult.written >= assetCount && preview.coverImageUrl?.startsWith("data:")
-          ? `${coverFolder}/${coverFileName}`
-          : preview.coverImageUrl;
+        const assets = await exportEpubAssets(selectedEpub, preview, safeId, category, storageRoot, targetBookFull);
 
-        const replacement = buildEpubReplacementCourse(targetBookFull, { ...preview, epubFileName: safeEpubFileName }, folder, savedCoverPath);
+        const replacement = buildEpubReplacementCourse(
+          targetBookFull,
+          { ...preview, epubFileName: assets.safeEpubFileName },
+          assets.folder,
+          assets.savedCoverPath,
+        );
         const summary = saveImmediately
           ? `Replaced "${targetBookFull.title}" with ${replacement.stepCount} sequential EPUB page(s).`
           : `Loaded ${replacement.stepCount} sequential EPUB page(s) for "${targetBookFull.title}". Review, then click Save Book.`;
 
-        onImported(replacement, summary, saveImmediately);
+        await onImported(replacement, summary, saveImmediately);
         return;
       }
 
-      const savedCoverPath = assetResult.written >= assetCount && preview.coverImageUrl?.startsWith("data:")
-        ? `${coverFolder}/${coverFileName}`
-        : preview.coverImageUrl;
-
-      const course = buildCourseFromEpubPreview(
-        { ...preview, bookTitle: trimmedTitle, epubFileName: safeEpubFileName, pages: preview.pages.map((page) => ({ ...page, content: page.content, assets: [] })) },
+      const course = await createNewEpubCourse(
+        selectedEpub,
+        preview,
+        trimmedTitle,
+        trimmedId,
         books.length,
         category,
-        safeId,
-        {
-          coverImageUrl: savedCoverPath,
-          epubAssetUrl: getBookAssetUrl(`${folder}/${safeEpubFileName}`),
-          language,
-          cat1: catalogPath[0] || undefined,
-          cat2: catalogPath[1] || undefined,
-          cat3: catalogPath[2] || undefined,
-          cat4: catalogPath[3] || undefined,
-        },
+        storageRoot,
+        language,
+        catalogPath,
       );
       const summary = saveImmediately
         ? `Uploaded and saved "${course.title}" with ${course.chapters.length} chapter(s) / ${preview.pageCount} page(s) from EPUB.`
         : `Loaded "${course.title}" with ${course.chapters.length} chapter(s) / ${preview.pageCount} page(s) from EPUB. Review pages, then click Save Book.`;
 
-      onImported({ ...course, bookHtmlFolder: folder }, summary, saveImmediately);
+      await onImported(course, summary, saveImmediately);
     } catch (err) {
       setError(String(err));
     } finally {
@@ -371,6 +519,40 @@ export default function AdminEpubUploadPanel({
         </div>
       ) : null}
 
+      {uploadMode === "new" ? (
+        <div className="admin-book-upload-mode" role="group" aria-label="EPUB upload type">
+          <button
+            type="button"
+            className={`admin-btn admin-btn-book small${multipleUpload ? " secondary" : ""}`}
+            aria-pressed={!multipleUpload}
+            disabled={isBatchUploading}
+            onClick={() => {
+              setMultipleUpload(false);
+              setSelectedEpubs([]);
+              setBatchStatus("");
+              setError("");
+            }}
+          >
+            Single EPUB
+          </button>
+          <button
+            type="button"
+            className={`admin-btn admin-btn-book small${multipleUpload ? "" : " secondary"}`}
+            aria-pressed={multipleUpload}
+            disabled={isBatchUploading}
+            onClick={() => {
+              setMultipleUpload(true);
+              setPreview(null);
+              setSelectedEpub(null);
+              setBatchStatus("");
+              setError("");
+            }}
+          >
+            Multiple EPUBs
+          </button>
+        </div>
+      ) : null}
+
       {uploadMode === "existing" ? (
         <label className="admin-task-editor-field admin-task-editor-full">
           <span className="admin-task-editor-label">Book to update</span>
@@ -389,7 +571,9 @@ export default function AdminEpubUploadPanel({
 
       <p className="admin-book-upload-help">
         {uploadMode === "new"
-          ? "Choose an EPUB file. The original EPUB is stored in the book folder and rendered through the built-in EPUB viewer."
+          ? multipleUpload
+            ? "Select multiple EPUB files and save them as separate books."
+            : "Choose an EPUB file. The original EPUB is stored in the book folder and rendered through the built-in EPUB viewer."
           : "Choose an EPUB file to update an existing book. The selected book will keep the original EPUB asset and open it through the built-in EPUB viewer."}
       </p>
 
@@ -398,18 +582,79 @@ export default function AdminEpubUploadPanel({
           ref={epubInputRef}
           type="file"
           accept=".epub,application/epub+zip"
+          multiple={multipleUpload && uploadMode === "new"}
           hidden
           onChange={handleFileSelect}
         />
-        <button
-          type="button"
-          className="admin-btn admin-btn-book small"
-          onClick={() => epubInputRef.current?.click()}
-          disabled={isReading}
-        >
-          {isReading ? "Reading EPUB..." : selectedEpub ? selectedEpub.name : "Choose EPUB"}
-        </button>
+        {multipleUpload && uploadMode === "new" ? (
+          <>
+            <button
+              type="button"
+              className="admin-btn admin-btn-book small"
+              onClick={() => epubInputRef.current?.click()}
+              disabled={isBatchUploading}
+            >
+              Choose EPUB files
+            </button>
+            <span className="admin-task-editor-hint">
+              {selectedEpubs.length ? `${selectedEpubs.length} EPUB file(s) selected` : "Select multiple .epub files in one go."}
+            </span>
+            <span className="admin-task-editor-hint" style={{ gridColumn: "1 / -1" }}>
+              Defaults: Storage Other · Category Other, Novel · Language MM · Catalog Other / Novel
+            </span>
+          </>
+        ) : (
+          <button
+            type="button"
+            className="admin-btn admin-btn-book small"
+            onClick={() => epubInputRef.current?.click()}
+            disabled={isReading || isExportingAssets}
+          >
+            {isReading ? "Reading EPUB..." : selectedEpub ? selectedEpub.name : "Choose EPUB"}
+          </button>
+        )}
       </div>
+
+      {multipleUpload && uploadMode === "new" && selectedEpubs.length ? (
+        <div className="admin-book-upload-batch-list" aria-label="Selected EPUB files">
+          {selectedEpubs.map((file) => <span key={`${file.name}-${file.size}`}>{file.name}</span>)}
+          <button
+            type="button"
+            className="admin-btn admin-btn-book secondary small"
+            onClick={() => epubInputRef.current?.click()}
+            disabled={isBatchUploading}
+          >
+            Add more
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn-book secondary small"
+            onClick={() => setSelectedEpubs([])}
+            disabled={isBatchUploading}
+          >
+            Clear
+          </button>
+        </div>
+      ) : null}
+
+      {multipleUpload && uploadMode === "new" ? (
+        <div className="admin-book-upload-footer">
+          <button
+            type="button"
+            className="admin-btn admin-btn-book small"
+            onClick={() => void handleBatchUpload()}
+            disabled={!selectedEpubs.length || isBatchUploading}
+          >
+            {isBatchUploading
+              ? `Processing ${Math.min(batchProgress + 1, selectedEpubs.length)}/${selectedEpubs.length}...`
+              : selectedEpubs.length
+                ? `Upload ${selectedEpubs.length} EPUBs`
+                : "Upload EPUBs"}
+          </button>
+        </div>
+      ) : null}
+
+      {batchStatus ? <div className="admin-course-message" role="status">{batchStatus}</div> : null}
 
       {error ? <div className="admin-course-message admin-book-upload-error">{error}</div> : null}
 

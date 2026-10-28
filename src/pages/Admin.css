@@ -897,7 +897,32 @@
 }
 
 .admin-book-upload-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 12px;
+}
+
+.admin-book-upload-batch-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.admin-book-upload-batch-list > span {
+  max-width: min(100%, 360px);
+  overflow: hidden;
+  padding: 5px 9px;
+  border: 1px solid var(--admin-border-soft, #b8c3d0);
+  border-radius: 6px;
+  background: var(--admin-input, #fff);
+  color: #334155;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-book-upload-mode {
@@ -984,6 +1009,7 @@
 .admin-book-upload-error {
   background: #fef2f2;
   color: #b91c1c;
+  white-space: pre-line;
 }
 
 .admin-book-upload-warning {

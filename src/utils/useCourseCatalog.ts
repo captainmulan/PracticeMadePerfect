@@ -33,6 +33,33 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
 
   useEffect(() => {
     let active = true;
+    let dbRefreshVersion = 0;
+
+    const refreshFromBrowserDb = () => {
+      const version = ++dbRefreshVersion;
+      void loadCourseSummariesFromBrowserDb()
+        .then((data) => {
+          if (!active || version !== dbRefreshVersion) return;
+          if (data.length > 0) {
+            catalogFromIdb = true;
+            catalogCache = data;
+          }
+          const refreshed = applyPublishedFilter(catalogCache ?? data, publishedMode);
+          setCourses(refreshed);
+          setLoaded(true);
+          setError(null);
+        })
+        .catch((err) => {
+          if (!active) return;
+          console.error("Error refreshing books:", err);
+          setError(String(err));
+        });
+    };
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "pmp-course-catalog-updated") refreshFromBrowserDb();
+    };
+    window.addEventListener("storage", handleStorage);
 
     void (async () => {
       try {
@@ -49,9 +76,10 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
     })();
 
     void (async () => {
+      const version = dbRefreshVersion;
       try {
         const data = await loadCourseSummariesFromBrowserDb();
-        if (!active) return;
+        if (!active || version !== dbRefreshVersion) return;
         if (data.length > 0) {
           catalogFromIdb = true;
           catalogCache = data;
@@ -70,6 +98,7 @@ export function useCourseCatalog(options: { publishedMode?: "published" | "unpub
 
     return () => {
       active = false;
+      window.removeEventListener("storage", handleStorage);
     };
   }, [publishedMode]);
 

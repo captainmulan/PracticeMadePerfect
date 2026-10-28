@@ -540,7 +540,7 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
     return steps[0]?.id ?? null;
   }
 
-  async function handleImportedBook(course: Course, summary: string, saveImmediately: boolean) {
+  async function handleImportedBook(course: Course, summary: string, saveImmediately: boolean, keepUploadOpen = false) {
     const trimmedId = course.id.trim() || slugify(course.title);
     const normalized: Course = {
       ...course,
@@ -561,9 +561,17 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
     if (saveImmediately) {
       try {
         await persistCourse(normalized);
+        try {
+          localStorage.setItem("pmp-course-catalog-updated", String(Date.now()));
+        } catch {
+          /* Catalog refresh in this tab still works when storage is unavailable. */
+        }
         const reloadedBooks = await loadCourseSummariesFromBrowserDb();
-        const courseSummary = toCourseSummary(normalized);
         setBooks(reloadedBooks);
+        if (keepUploadOpen) {
+          setMessage(summary);
+          return;
+        }
         setLoadedBook(normalized);
         setDraftBook(null);
         skipBookReloadRef.current = normalized.id;
@@ -575,6 +583,7 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
         setMessage(summary);
       } catch (err) {
         setMessage(String(err));
+        throw err;
       }
       return;
     }

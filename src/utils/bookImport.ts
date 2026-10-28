@@ -35,6 +35,8 @@ export interface BookImportPreview {
   folderName: string;
   bookId: string;
   bookTitle: string;
+  authorName?: string;
+  description?: string;
   pages: ParsedHtmlPage[];
   existingBookId?: string;
   /** EPUB only: chapter/page grouping read from the spine + TOC. */
@@ -498,6 +500,8 @@ export function buildCourseFromEpubPreview(
 
   return {
     ...createDefaultBookFields(courseIndex, preview.bookTitle, bookId, category),
+    ...(preview.authorName ? { authorName: preview.authorName } : {}),
+    ...(preview.description ? { description: preview.description } : {}),
     ...(extras?.coverImageUrl ? { coverImageUrl: extras.coverImageUrl } : {}),
     ...(extras?.language ? { language: extras.language } : {}),
     ...(extras?.cat1 ? { cat1: extras.cat1 } : {}),

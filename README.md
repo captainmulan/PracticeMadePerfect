@@ -34,7 +34,7 @@ npm run dev
 
 ### EPUB Import Workflow
 - **Only method**: Use the Admin EPUB uploader in the browser at `http://localhost:4173/admin`
-- **No batch import scripts**: Do not create custom scripts for importing EPUBs from local folders
+- **Multiple EPUBs**: Use the uploader's built-in **Multiple EPUBs** mode for batch imports; do not create custom import scripts
 - **EPUB upload**: Uses browser's folder-access picker to save EPUBs to `book_html/Comic` or `book_html/Other`
 - **Metadata storage**: Course metadata is stored in browser IndexedDB, not in static JSON files for EPUBs
 - **See "Import an EPUB in Admin (local)" section below for detailed steps**
@@ -66,18 +66,19 @@ The `deploy/` folder contains **minimal configuration only**. Do NOT add large d
 
 ## Import an EPUB in Admin (local)
 
-**IMPORTANT: This is the ONLY supported method for importing EPUBs.** Do not create custom batch import scripts or manually manipulate catalog files for EPUB books. The Admin uploader handles all necessary metadata generation and file placement automatically.
+**IMPORTANT: This is the ONLY supported method for importing EPUBs.** Use the Admin uploader for single-file and multiple-file imports. Do not create custom batch import scripts or manually manipulate catalog files for EPUB books. The uploader handles metadata generation and file placement.
 
-Use the Admin EPUB uploader to add an EPUB to this browser's library and save its source file in the project. This workflow does not deploy or publish the book.
+Use the Admin EPUB uploader to add EPUBs to this browser's library and save their source files in the project. This workflow does not deploy or publish the books.
 
 1. Start the local app with `npm run dev` and open `http://localhost:4173/admin` in Chrome or Edge. The uploader uses the browser's folder-access picker, which is available on localhost in supported browsers.
 2. Open **Book Builder**, choose **New Book** to add a book or select an existing book to replace, then choose **EPUB upload**.
-3. Click **Choose EPUB** and select the `.epub` file. For a new book, review/edit its book ID and category. For an existing book, confirm the selected target; the EPUB will replace its page list.
-4. When the folder picker appears, grant write access to the destination category folder in this workspace: choose `book_html/Comic` for a Comic category or `book_html/Other` for other categories. The original EPUB is saved under a book-specific folder there. If access is denied or the wrong folder is selected, the uploader reports that the EPUB was not saved.
-5. Review the detected page count and preview. **Load as Draft** or **Apply to Draft** stages the metadata for review; inspect the pages and click **Save Book** in Book Builder. **Create & Save Book** or **Apply & Save Book** saves the metadata immediately to this browser's IndexedDB.
-6. Verify the saved book from `/courses/<book-id>`. Check the first page, page count, a few page turns, and the last page. For Comic books, check on a phone-sized viewport as well as a wider tablet/desktop viewport.
+3. For a single new book, keep **Single EPUB**, click **Choose EPUB**, and select the `.epub` file. Review its ID and metadata, then choose **Load as Draft** or **Create & Save Book**. Existing-book replacement is a single-file operation; confirm the target before applying.
+4. For multiple new books, choose **Multiple EPUBs**, click **Choose EPUB files**, select the files, then click **Upload EPUBs**. The batch parses and saves each book sequentially; progress and per-file failures appear in the uploader. Failed files remain selected for retry. Duplicate book IDs are made unique automatically.
+5. Multi-EPUB defaults are Storage Root `Other`, Category Tags `Other, Novel`, Language `MM`, Catalog1 `Other`, and Catalog2 `Novel`. Batch author metadata is detected from the first two reading pages and defaults to `UNKNOWN`; a relevant description is selected from the first four pages, shortened to about six lines ending in `...`, or left empty if none is found.
+6. When the browser asks for folder access, grant write permission to the project folder. EPUB files are stored under `book_html/Other/<book-id>/` (or `book_html/Comic/<book-id>/` for Comic uploads), and generated thumbnails are stored under `public/book_covers/thumbs/`. The batch requests folder access before processing. If access is denied or a file cannot be saved, read the uploader's error message and retry the failed file(s).
+7. Verify each saved book from `/courses/<book-id>`. Check the first page, page count, a few page turns, and the last page. For Comic books, check on a phone-sized viewport as well as a wider tablet/desktop viewport.
 
-New-book preview uses the EPUB table of contents; replacing an existing book reads sequential pages from the EPUB spine. Course metadata is stored in the current browser's IndexedDB, while the EPUB asset is stored in `book_html/`. Other browser profiles do not automatically share this local database or folder permission. Keep the EPUB source file and back up library data separately if you need to move the book to another machine.
+New-book preview uses the EPUB table of contents; replacing an existing book reads sequential pages from the EPUB spine. Course metadata is stored in the current browser's IndexedDB, while EPUB assets are stored in `book_html/`. An already-open presentation tab on the same origin refreshes its catalog after Admin saves. Other browser profiles and devices do not share the local database or folder permission. Uploading does not deploy books to the live site; deployment is a separate workflow. Keep the EPUB source files and back up library data separately if you need to move books to another machine.
 
 ### EPUB XHTML troubleshooting
 
@@ -340,7 +341,7 @@ Age 7–8 ebooks (Solar System, Ocean Adventure, etc.) live in [book_html/](book
 
 After editing book HTML, sync into `deploy/indexeddb-export.json` and re-import in admin if the reader loads from the database.
 
-**Note about EPUB books:** EPUB files (.epub) should be imported using the Admin EPUB uploader at `/admin`. Do not manually copy EPUB files into `book_html/` folders or attempt to batch-import them via custom scripts. The Admin uploader ensures proper metadata generation, folder structure, and IndexedDB integration.
+**Note about EPUB books:** EPUB files (.epub) should be imported using the Admin EPUB uploader at `/admin`. Do not manually copy EPUB files into `book_html/` folders or batch-import them via custom scripts. For multiple files, use the uploader's built-in **Multiple EPUBs** mode. The Admin uploader handles metadata, folder placement, and IndexedDB integration.
 
 ## Mobile-First HTML Lesson Design
 
