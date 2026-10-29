@@ -24,6 +24,7 @@ export type ShelfCatalogItem = {
   pathLabel: string;
   browsePath: string[];
   bookId?: string;
+  authorName?: string;
 } & ShelfIndexValues;
 
 const SHELF_ITEM_SETTINGS_KEY = "pmp-shelf-item-settings";
@@ -224,6 +225,7 @@ export function listShelfCatalogItems(courses: Course[]): ShelfCatalogItem[] {
       pathLabel: path.map(formatCategoryLabel).join(" > ") || "—",
       browsePath: path,
       bookId: course.id,
+      authorName: course.authorName,
       pIndex: course.pIndex,
       scIndex: course.scIndex,
       sIndex: course.sIndex,

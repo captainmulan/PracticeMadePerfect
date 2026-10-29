@@ -73,7 +73,7 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
     });
   }, [kindFilter, query, rows]);
 
-  const updateRow = (key: string, patch: ShelfIndexValues) => {
+  const updateRow = (key: string, patch: Partial<ShelfIndexValues> & { authorName?: string }) => {
     setRows((current) => current.map((row) => (row.key === key ? { ...row, ...patch } : row)));
   };
 
@@ -226,6 +226,13 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
           scIndex: parseIndex(indexInput(row.scIndex)),
           sIndex: parseIndex(indexInput(row.sIndex)),
         };
+        if (row.bookId) {
+          const currentBook = books.find((book) => book.id === row.bookId);
+          const authorName = row.authorName?.trim() || undefined;
+          if (currentBook && currentBook.authorName !== authorName) {
+            await persistCourseSummary({ ...currentBook, authorName });
+          }
+        }
         if (row.kind === "book" && row.bookId) {
           await persistCourseIndexes(row.bookId, indexes);
         } else if (row.kind === "author") {
@@ -289,7 +296,7 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
           <option value="author">Authors</option>
         </select>
         <button type="button" className="admin-btn admin-btn-page" onClick={() => void handleSave()} disabled={saving}>
-          {saving ? "Saving…" : "Save indexes"}
+          {saving ? "Saving…" : "Save changes"}
         </button>
       </div>
       <div className="admin-shelf-items-table-wrap">
@@ -298,11 +305,11 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
             <tr>
               <th>Type</th>
               <th>Item</th>
+              <th>Author</th>
               <th>Path</th>
               <th>Popular</th>
               <th>Category</th>
               <th>Series</th>
-              <th>Series cover</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -326,6 +333,17 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
                   )}
                 </td>
                 <td>{row.title}</td>
+                <td>
+                  {row.bookId ? (
+                    <input
+                      type="text"
+                      className="admin-grid-input admin-shelf-author-input"
+                      value={row.authorName ?? ""}
+                      onChange={(event) => updateRow(row.key, { authorName: event.target.value })}
+                      aria-label={`Author for ${row.title}`}
+                    />
+                  ) : null}
+                </td>
                 <td>{row.pathLabel}</td>
                 <td>
                   <input
@@ -353,31 +371,6 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
                     value={indexInput(row.sIndex)}
                     onChange={(event) => updateRow(row.key, { sIndex: parseIndex(event.target.value) })}
                   />
-                </td>
-                <td>
-                  {row.kind === "series" ? (
-                    <div>
-                      <input
-                        type="text"
-                        className="admin-grid-input"
-                        placeholder="/flags/series.webp or image URL"
-                        value={folderCovers[row.browsePath.join("/")] ?? ""}
-                        onChange={(event) => updateFolderCover(row.browsePath, event.target.value)}
-                      />
-                      <input
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp,image/gif"
-                        onChange={(event) => {
-                          const file = event.target.files?.[0];
-                          if (!file) return;
-                          const reader = new FileReader();
-                          reader.onload = () => updateFolderCover(row.browsePath, String(reader.result));
-                          reader.readAsDataURL(file);
-                          event.target.value = "";
-                        }}
-                      />
-                    </div>
-                  ) : null}
                 </td>
                 <td>
                   {row.bookId ? (

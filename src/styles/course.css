@@ -1338,23 +1338,22 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   min-width: 0;
   min-height: 40px;
   padding: 0 18px;
-  border: 1px solid rgba(226, 232, 240, 0.35);
+  border: 0;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #f8fafc;
-  box-shadow: none;
+  background: #e8c86a;
+  color: #201b36;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
   font-size: 0.9rem;
   font-weight: 800;
   transition: background 140ms ease, border-color 140ms ease;
 }
 
 .book-about-read:hover:not(:disabled) {
-  border-color: rgba(226, 232, 240, 0.7);
-  background: rgba(255, 255, 255, 0.17);
+  background: #f2d985;
 }
 
 .book-about-read:focus-visible {
-  outline: 2px solid rgba(226, 232, 240, 0.8);
+  outline: 2px solid #f2d985;
   outline-offset: 2px;
 }
 
@@ -1387,6 +1386,123 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
     margin-left: auto;
     margin-right: auto;
     width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  .course-wizard-page--about .book-about {
+    gap: 12px;
+    padding: 16px 28px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .course-wizard-page--about .book-about-inner {
+    display: grid;
+    grid-template-columns: minmax(190px, 230px) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: clamp(28px, 4vw, 56px);
+    row-gap: 16px;
+    max-width: 1120px;
+    padding-top: 0;
+    overflow: hidden;
+  }
+
+  .course-wizard-page--about .book-about-hero {
+    display: contents;
+  }
+
+  .course-wizard-page--about .book-about-cover-wrap {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+    justify-self: center;
+    width: min(100%, 230px);
+    max-width: 230px;
+  }
+
+  .course-wizard-page--about .book-about-meta {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    gap: 10px;
+    padding: 0;
+  }
+
+  .course-wizard-page--about .book-about-title {
+    font-size: clamp(1.6rem, 2.4vw, 2.35rem);
+    line-height: 1.18;
+  }
+
+  .course-wizard-page--about .book-about-author {
+    font-size: 1rem;
+  }
+
+  .course-wizard-page--about .book-about-tag {
+    min-height: 28px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+  }
+
+  .course-wizard-page--about .book-about-read {
+    position: static;
+    width: 176px;
+    min-height: 48px;
+    margin-top: 8px;
+    border: 0;
+    background: #e8c86a;
+    color: #201b36;
+    font-size: 1rem;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+  }
+
+  .course-wizard-page--about .book-about-read:hover:not(:disabled) {
+    border-color: transparent;
+    background: #f2d985;
+  }
+
+  .course-wizard-page--about .book-about-read:focus-visible {
+    outline-color: #f2d985;
+  }
+
+  .course-wizard-page--about .book-about-description-panel {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 14px 0 0;
+    overflow-y: auto;
+    border-top: 1px solid rgba(226, 232, 240, 0.24);
+  }
+
+  .course-wizard-page--about .book-about-blurb {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .course-wizard-page--about .book-about-related {
+    max-width: 1120px;
+    margin-top: 0;
+    padding-top: 8px;
+  }
+
+  .course-wizard-page--about .book-about-related-scroller {
+    gap: 10px;
+  }
+
+  .course-wizard-page--about .book-about-related-item {
+    flex-basis: 84px;
+    width: 84px;
+  }
+
+  .course-wizard-page--about .book-about-related-item .book,
+  .course-wizard-page--about .book-about-related-item .book-cover {
+    width: 84px !important;
+    max-width: 84px;
+  }
+
+  .course-wizard-page--about .book-about-related-item .book-cover {
+    height: 118px !important;
   }
 }
 
@@ -1599,6 +1715,74 @@ body[data-bookshelf-theme="space"] .chapter-settings-gear:hover {
   font-weight: 800;
   font-size: 1.18rem;
   color: #f8fafc;
+}
+
+@media (min-width: 900px) and (max-height: 560px) and (orientation: landscape) {
+  .course-wizard-page--about .book-about-inner {
+    grid-template-columns: minmax(120px, 18vh) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: 24px;
+  }
+
+  .course-wizard-page--about .book-about-hero {
+    display: contents;
+  }
+
+  .course-wizard-page--about .book-about-cover-wrap {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: min(100%, 18vh);
+    max-width: 18vh;
+  }
+
+  .course-wizard-page--about .book-about-meta {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 5px;
+    padding: 0;
+  }
+
+  .course-wizard-page--about .book-about-title {
+    font-size: 1.3rem;
+  }
+
+  .course-wizard-page--about .book-about-read {
+    position: static;
+    width: 140px;
+    min-height: 42px;
+    margin-top: 3px;
+  }
+
+  .course-wizard-page--about .book-about-description-panel {
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    max-height: none;
+    margin: 0;
+    padding: 8px 0 0;
+    overflow-y: auto;
+    border-top: 1px solid rgba(226, 232, 240, 0.24);
+  }
+
+  .course-wizard-page--about .book-about-related {
+    margin-top: 0;
+    padding-top: 2px;
+  }
+
+  .course-wizard-page--about .book-about-related-item {
+    flex-basis: 64px;
+    width: 64px;
+  }
+
+  .course-wizard-page--about .book-about-related-item .book,
+  .course-wizard-page--about .book-about-related-item .book-cover {
+    width: 64px !important;
+    max-width: 64px;
+  }
+
+  .course-wizard-page--about .book-about-related-item .book-cover {
+    height: 88px !important;
+  }
 }
 
 .course-wizard-page--about .home-space-decor .space-float,

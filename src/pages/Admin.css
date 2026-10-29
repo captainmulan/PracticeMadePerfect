@@ -1185,6 +1185,10 @@
   width: 88px;
 }
 
+.admin-shelf-author-input {
+  min-width: 150px;
+}
+
 .admin-shelf-item-actions {
   display: flex;
   align-items: center;

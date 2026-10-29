@@ -618,6 +618,49 @@ function collectDescendantPages(
   }
 }
 
+function hrefDocumentKey(href: string) {
+  let documentPath = normalizeHref(href).split(/[?#]/)[0].replace(/^\/+/, "");
+  try {
+    documentPath = decodeURIComponent(documentPath);
+  } catch {
+    // Keep the original path when it contains invalid URI escapes.
+  }
+  return documentPath.toLowerCase();
+}
+
+function sameEpubDocument(firstHref: string, secondHref: string) {
+  const first = hrefDocumentKey(firstHref);
+  const second = hrefDocumentKey(secondHref);
+  return first === second || first.endsWith(`/${second}`) || second.endsWith(`/${first}`);
+}
+
+export function supplementChapterPlansWithSpine(
+  plans: ChapterPlanDraft[],
+  spinePages: Array<{ title: string; href: string }>,
+): ChapterPlanDraft[] {
+  const supplementPlans = spinePages
+    .filter((spinePage) => spinePage.href)
+    .filter((spinePage) => !plans.some((plan) =>
+      plan.pages.some((page) => sameEpubDocument(page.href, spinePage.href)),
+    ))
+    .map((page) => ({ title: page.title, pages: [page] }));
+
+  return [...plans, ...supplementPlans]
+    .map((plan, originalIndex) => ({
+      plan,
+      originalIndex,
+      spineIndex: spinePages.findIndex((spinePage) =>
+        plan.pages.some((page) => sameEpubDocument(page.href, spinePage.href)),
+      ),
+    }))
+    .sort((first, second) => {
+      const firstIndex = first.spineIndex < 0 ? Number.POSITIVE_INFINITY : first.spineIndex;
+      const secondIndex = second.spineIndex < 0 ? Number.POSITIVE_INFINITY : second.spineIndex;
+      return firstIndex - secondIndex || first.originalIndex - second.originalIndex;
+    })
+    .map(({ plan }) => plan);
+}
+
 /** Split a chapter document into one page per page-break anchor, bounded by the next chapter. */
 async function expandChapterAnchors(
   zip: EpubZip,
@@ -736,6 +779,9 @@ async function buildChapterPlans(options: {
 
   if (!usedToc) {
     addChapter(bookTitle, spinePages);
+  } else {
+    const supplementedPlans = supplementChapterPlansWithSpine(plans, spinePages);
+    plans.splice(0, plans.length, ...supplementedPlans);
   }
 
   if (!plans.length) {
