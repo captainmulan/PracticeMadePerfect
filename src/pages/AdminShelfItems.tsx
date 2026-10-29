@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import type { Course } from "../data/courses";
 import {
   loadCourseSummariesFromBrowserDb,
+  loadFullCourseById,
   persistCourseIndexes,
   persistCourseSummary,
   removeCourse,
 } from "../utils/sqliteBrowserCourses";
+import { deleteLocalBookAssets, selectProjectAssetDirectory } from "../utils/bookAssetStorage";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import {
   courseMatchesCategoryPath,
@@ -86,6 +88,15 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
 
   const handleDeleteBook = async (row: ShelfCatalogItem) => {
     if (!row.bookId || deletingBookId) return;
+
+    let projectRoot: FileSystemDirectoryHandle;
+    try {
+      projectRoot = await selectProjectAssetDirectory();
+    } catch (err) {
+      setMessage(String(err));
+      return;
+    }
+
     if (!window.confirm(`Delete "${row.title}" and all of its pages? This cannot be undone.`)) return;
 
     const enteredPassword = window.prompt("Enter admin password to confirm book deletion:", "");
@@ -98,6 +109,9 @@ export default function AdminShelfItems({ onEditBook }: { onEditBook: (bookId: s
     setDeletingBookId(row.bookId);
     setMessage("Deleting book...");
     try {
+      const course = await loadFullCourseById(row.bookId);
+      if (!course) throw new Error("Book data could not be loaded; nothing was deleted.");
+      await deleteLocalBookAssets(course, projectRoot);
       await removeCourse(row.bookId);
       const refreshed = await loadCourseSummariesFromBrowserDb();
       setBooks(refreshed);

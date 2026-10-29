@@ -1,6 +1,7 @@
 import type { Course } from "../data/courses";
 import { createDefaultBookFields, type BookImportPreview, type ParsedHtmlPage } from "./bookImport";
 import { getBookAssetUrl } from "../config/externalHosting";
+import { assertProjectAssetRoot, resolveProjectBookDirectory } from "./bookAssetStorage";
 
 const DEFAULT_BOOK_HTML_DIRECTORY_PATH = "book_html";
 let cachedPdfAssetDirectory: FileSystemDirectoryHandle | null = null;
@@ -198,25 +199,7 @@ export async function writePdfAssetToDirectory(
   }
 
   try {
-    let pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
-    const rootName = rootDirectory.name.toLowerCase();
-    if (rootName === "book_html") {
-      if (pathParts[0]?.toLowerCase() === "other" || pathParts[0]?.toLowerCase() === "comic") pathParts.shift();
-    } else if (rootName === "other" || rootName === "comic") {
-      if (pathParts[0]?.toLowerCase() === rootName) pathParts.shift();
-    }
-    let bookRoot = rootDirectory;
-    if (rootName !== "book_html" && rootName !== "other" && rootName !== "comic") {
-      try {
-        bookRoot = await rootDirectory.getDirectoryHandle("book_html", { create: false });
-      } catch {
-        bookRoot = rootDirectory;
-      }
-    }
-    const bookDirectory = await pathParts.reduce(
-      (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
-      Promise.resolve(bookRoot),
-    );
+    const bookDirectory = await resolveProjectBookDirectory(rootDirectory, folderName, true);
     const fileHandle = await bookDirectory.getFileHandle(fileName, { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(file);
@@ -261,6 +244,7 @@ export async function resolvePdfAssetDirectory(): Promise<{ directoryHandle: Fil
   }
 
   if (cachedPdfAssetDirectory) {
+    await assertProjectAssetRoot(cachedPdfAssetDirectory);
     return { directoryHandle: cachedPdfAssetDirectory, resolvedPath: DEFAULT_BOOK_HTML_DIRECTORY_PATH };
   }
 
@@ -270,6 +254,7 @@ export async function resolvePdfAssetDirectory(): Promise<{ directoryHandle: Fil
 
   try {
     const directoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+    await assertProjectAssetRoot(directoryHandle);
     cachedPdfAssetDirectory = directoryHandle;
     return { directoryHandle, resolvedPath: DEFAULT_BOOK_HTML_DIRECTORY_PATH };
   } catch {

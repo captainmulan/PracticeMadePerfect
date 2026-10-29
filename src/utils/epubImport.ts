@@ -2,6 +2,7 @@ import type { BookImportChapterPlan, BookImportPagePlan, BookImportPreview, Pars
 import { createDefaultBookFields } from "./bookImport";
 import type { Course } from "../data/courses";
 import { getBookAssetUrl } from "../config/externalHosting";
+import { assertProjectAssetRoot, resolveProjectBookDirectory } from "./bookAssetStorage";
 
 const DEFAULT_BOOK_HTML_DIRECTORY_PATH = "book_html";
 let cachedEpubAssetDirectory: FileSystemDirectoryHandle | null = null;
@@ -438,8 +439,8 @@ function injectPageAnchors(html: string): string {
     return html;
   }
 
-  const targetChars = 1600;
-  const minChars = 350;
+  const targetChars = 800;
+  const minChars = 200;
   let pageNumber = 1;
   let currentChars = 0;
 
@@ -478,7 +479,7 @@ function injectPageAnchors(html: string): string {
     console.log('[EPUB] Dense prose fallback: splitting body text into page-sized chunks.');
     const fullText = body.textContent ?? "";
     const cleanText = fullText.replace(/\s+/g, " ").trim();
-    const chunkSize = 1800;
+    const chunkSize = 900;
     body.replaceChildren();
     const firstAnchor = doc.createElementNS(body.namespaceURI, "a");
     firstAnchor.id = "pmp-p1";
@@ -642,7 +643,7 @@ async function expandChapterAnchors(
   let anchors = collectPageAnchors(html);
   console.log('[EPUB] Initial anchors found:', anchors.length);
 
-  /* Fallback: if no physical anchors exist, inject them every ~1400 chars. */
+  /* Fallback: if no physical anchors exist, estimate shorter reading pages. */
   if (anchors.length < 2) {
     console.log('[EPUB] Less than 2 anchors, injecting page anchors');
     const injected = injectPageAnchors(html);
@@ -1097,35 +1098,7 @@ export async function writeEpubAssetToDirectory(
   }
 
   try {
-    // 1. Write EPUB to book_html/[category]/[book]
-    let pathParts = folderName.replace(/\\/g, "/").split("/").filter(Boolean);
-    const rootName = rootDirectory.name.toLowerCase();
-
-    // If user picked a subfolder (e.g. 'book_html', 'Other', 'Comic'), adjust pathParts
-    if (rootName === "book_html") {
-      // Already in book_html, no need to navigate into it
-    } else if (rootName === "other" || rootName === "comic") {
-      // Already in the category folder, skip the first part if it matches
-      if (pathParts.length > 0 && pathParts[0].toLowerCase() === rootName) {
-        pathParts = pathParts.slice(1);
-      }
-    }
-
-    // If user picked project root, we might need to go into book_html first
-    let bookHtmlRoot = rootDirectory;
-    if (rootName !== "book_html" && rootName !== "other" && rootName !== "comic") {
-      try {
-        bookHtmlRoot = await rootDirectory.getDirectoryHandle("book_html", { create: false });
-      } catch {
-        // Fallback: assume rootDirectory IS book_html or we just create folders relative to it
-        bookHtmlRoot = rootDirectory;
-      }
-    }
-
-    const bookDirectory = await pathParts.reduce(
-      (directory, part) => directory.then((current) => current.getDirectoryHandle(part, { create: true })),
-      Promise.resolve(bookHtmlRoot),
-    );
+    const bookDirectory = await resolveProjectBookDirectory(rootDirectory, folderName, true);
 
     const fileHandle = await bookDirectory.getFileHandle(fileName, { create: true });
     const writable = await fileHandle.createWritable();
@@ -1188,6 +1161,7 @@ export async function resolveEpubAssetDirectory(): Promise<{ directoryHandle: Fi
   }
 
   if (cachedEpubAssetDirectory) {
+    await assertProjectAssetRoot(cachedEpubAssetDirectory);
     return { directoryHandle: cachedEpubAssetDirectory, resolvedPath: DEFAULT_BOOK_HTML_DIRECTORY_PATH };
   }
 
@@ -1197,6 +1171,7 @@ export async function resolveEpubAssetDirectory(): Promise<{ directoryHandle: Fi
 
   try {
     const directoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+    await assertProjectAssetRoot(directoryHandle);
     cachedEpubAssetDirectory = directoryHandle;
     return { directoryHandle, resolvedPath: DEFAULT_BOOK_HTML_DIRECTORY_PATH };
   } catch {

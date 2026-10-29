@@ -6,6 +6,7 @@ import { buildEpubImportPreview, resolveEpubAssetDirectory, slugify, writeEpubAs
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 import { evictEpubBuffer } from "../utils/epubCache";
 import { getBookAssetUrl } from "../config/externalHosting";
+import { rememberBookAssetDirectory } from "../utils/bookAssetStorage";
 import { collectCategoryChildren, collectTopCategoryNames, formatCategoryLabel } from "../utils/bookCategories";
 
 type UploadMode = "new" | "existing";
@@ -250,6 +251,7 @@ export default function AdminEpubUploadPanel({
     if (!assetDirectory?.directoryHandle) {
       throw new Error("EPUB was not saved: grant access to the project's root folder and retry.");
     }
+    await rememberBookAssetDirectory(assetDirectory.directoryHandle);
 
     const coverFileName = `${safeId}.webp`;
     const coverFolder = "/book_covers/thumbs";
@@ -352,6 +354,7 @@ export default function AdminEpubUploadPanel({
       if (!assetDirectory?.directoryHandle) {
         throw new Error("EPUBs were not saved: grant access to the project's root folder and retry.");
       }
+      await rememberBookAssetDirectory(assetDirectory.directoryHandle);
       setBatchStatus("Project folder is ready. Starting EPUB batch...");
 
       for (let index = 0; index < selectedEpubs.length; index += 1) {

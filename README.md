@@ -473,3 +473,22 @@ The quiz end screen has been updated to provide a clean, engaging experience:
 5. **For covers**: Let the Admin uploader generate covers, do not manually add them
 
 These constraints ensure the project remains maintainable and follows the established architecture.
+
+## Current Session Handoff (2026-10-29)
+
+### EPUB page count
+- EPUBs with no explicit page-break anchors use synthetic reading-page anchors. The fallback target was reduced from about 1,600 to 800 text characters per step (dense-text fallback: 900 characters) to produce more granular reader steps. This is an estimate, not the EPUB's exact printed-page count.
+- The example Myanmar EPUB inspected in this session had 13 spine XHTML documents and no explicit page-break markers.
+
+### Admin book deletion and local assets
+- Shelf Items → Delete and Book Builder → Delete Entire Book remove local assets before removing the course and its chapters/steps from IndexedDB.
+- The browser folder picker must select the `PracticeMadePerfect` project root. Upload and delete paths are restricted to `book_html/Comic/<book>/` or `book_html/Other/<book>/`; arbitrary roots such as Downloads are rejected.
+- Shelf deletion opens the folder picker directly from the Delete click, before the confirmation and password dialogs, because browsers require user activation for the picker. Confirm/password cancellation does not delete catalog or asset data.
+- Asset identification uses the EPUB/PDF step source URL, including an iframe `src` and configured external hosts such as `magiclibrary-daw.pages.dev`. The URL's category and any saved `bookHtmlFolder` must agree. Display title alone is never used to choose a file. Legacy books can be resolved from their source URL without batch-upload metadata.
+- After resolving the exact book folder, deletion recursively removes that folder and its contents, then removes the course record. It does not remove the sibling category folder or other books. If source/path validation or folder access fails, deletion stops and the catalog record is retained.
+- Shared implementation: `src/utils/bookAssetStorage.ts`. Upload paths use the same validated resolver from `src/utils/epubImport.ts` and `src/utils/pdfImport.ts`.
+
+### Verification from this session
+- `pnpm exec playwright test test-book-asset-path.spec.ts --project=chromium --reporter=line` passed. Tests cover legacy direct/iframe hosted URLs, metadata mismatch rejection, and mocked recursive removal of only the resolved book folder.
+- `pnpm run build` passed. The build still prints an existing CSS minifier warning (`Unexpected "}"`) and a large-chunk warning; these were not investigated as part of this work.
+- No real book deletion was performed by the coding agent. Confirm the selected project's exact `book_html` contents before testing a destructive admin delete.

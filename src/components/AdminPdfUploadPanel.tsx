@@ -6,6 +6,7 @@ import { buildCourseFromPreview, type BookImportPreview, type ParsedHtmlPage } f
 import { buildPdfImportPreview, resolvePdfAssetDirectory, writePdfAssetToDirectory, type PdfAssetExportProgress, type PdfImportPreview } from "../utils/pdfImport";
 import { loadFullCourseById } from "../utils/sqliteBrowserCourses";
 import { getBookAssetUrl } from "../config/externalHosting";
+import { rememberBookAssetDirectory } from "../utils/bookAssetStorage";
 import { collectCategoryChildren, collectTopCategoryNames, formatCategoryLabel } from "../utils/bookCategories";
 
 type UploadMode = "new" | "existing";
@@ -228,6 +229,7 @@ export default function AdminPdfUploadPanel({
       if (!assetDirectory?.directoryHandle) {
         throw new Error("PDF was not saved: grant access to the project's root folder and retry.");
       }
+      await rememberBookAssetDirectory(assetDirectory.directoryHandle);
       const coverFolder = "/book_covers/thumbs";
       const coverFileName = `${safeId}.webp`;
       const assetCount = preview.coverImageUrl?.startsWith("data:") ? 2 : 1;

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import type { Course, CourseChapter, CourseStep, CourseStepType } from "../data/courses";
 import { flattenCourseSteps } from "../data/courses";
 import { loadCourseSummariesFromBrowserDb, loadFullCourseById, persistCourse, removeCourse, toCourseSummary } from "../utils/sqliteBrowserCourses";
+import { deleteLocalBookAssets, selectProjectAssetDirectory } from "../utils/bookAssetStorage";
 import { MAX_INLINE_HTML_BYTES } from "../utils/bookImport";
 import { loadAdminData, saveAdminData } from "../utils/contentStore";
 import AdminBookUploadPanel from "../components/AdminBookUploadPanel";
@@ -601,6 +602,14 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
     const targetBookId = activeBook?.id?.trim();
     if (!targetBookId || draftBook || isDeletingBook) return;
 
+    let projectRoot: FileSystemDirectoryHandle;
+    try {
+      projectRoot = await selectProjectAssetDirectory();
+    } catch (err) {
+      setMessage(String(err));
+      return;
+    }
+
     const confirmed = window.confirm(`Delete "${activeBook?.title ?? targetBookId}" and all of its chapters? This cannot be undone.`);
     if (!confirmed) {
       setMessage("Deletion cancelled.");
@@ -622,6 +631,7 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
     setMessage("Deleting book...");
 
     try {
+      await deleteLocalBookAssets(activeBook!, projectRoot);
       await removeCourse(targetBookId);
       const remaining = books.filter((book) => book.id !== targetBookId);
       setBooks(remaining);
