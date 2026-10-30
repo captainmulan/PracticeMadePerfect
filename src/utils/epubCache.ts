@@ -197,6 +197,35 @@ export function extractEpubLocation(source: string): string | null {
   return locationMatch ? locationMatch[1] : null;
 }
 
+function normalizedSpinePath(value: string): string {
+  let path = value.split(/[?#]/)[0].replace(/\\/g, "/").replace(/^\.\//, "");
+  try {
+    path = decodeURIComponent(path);
+  } catch {
+    // Keep literal paths that contain malformed URI escapes.
+  }
+  return path.toLowerCase();
+}
+
+/** Resolve short document paths against EPUB package-relative spine hrefs. */
+export function resolveEpubLocation(location: string, spineHrefs: string[]): string {
+  const hashIndex = location.lastIndexOf("#");
+  if (hashIndex < 0) return location;
+
+  const requestedPath = location.slice(0, hashIndex);
+  const fragment = location.slice(hashIndex + 1);
+  const normalizedRequest = normalizedSpinePath(requestedPath);
+  const exactMatch = spineHrefs.find((href) => normalizedSpinePath(href) === normalizedRequest);
+  if (exactMatch) return `${exactMatch}#${fragment}`;
+
+  const suffixMatches = spineHrefs.filter((href) =>
+    normalizedSpinePath(href).endsWith(`/${normalizedRequest}`),
+  );
+  if (suffixMatches.length === 1) return `${suffixMatches[0]}#${fragment}`;
+
+  return location;
+}
+
 /**
  * Fetch an EPUB file once per URL.
  * 1. Try in-memory cache first (instant).

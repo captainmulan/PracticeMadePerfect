@@ -82,6 +82,8 @@ New-book preview uses the EPUB table of contents; replacing an existing book rea
 
 ### EPUB XHTML troubleshooting
 
+The reader resolves an EPUB page's document path against the EPUB spine when a saved location omits a directory prefix. It applies the correction only when exactly one spine href matches, so existing exact paths and ambiguous paths are left unchanged. This is a read-time compatibility fallback and does not rewrite course metadata. If a page shows `No Section Found`, verify that the location's document exists in the EPUB spine and that its fragment anchor exists in that XHTML document.
+
 The local EPUB `book_html/Other/ခမည်းကြိုး/ခမည်းကြိုး.epub` had chapter files containing HTML fragments instead of complete XHTML documents. The fragments were wrapped in XHTML document roots, and HTML-only `&nbsp;` entities were converted to the XML-compatible `&#160;` form. The original EPUB is preserved outside the deployable book tree at `book_html_temp_problematic/ခမည်းကြိုး.epub.original`.
 
 For similar `Extra content at the end of the document` or XML parser errors, inspect the EPUB's `.xhtml` files for a single `<html>` document root and XML-valid entities. Verify by opening the actual course at a mobile-sized viewport, checking that the local EPUB request returns `200`, and confirming that chapter text renders without a parser-error page. Run `npm run build` afterward to confirm the updated EPUB is copied into `dist/book_html`.

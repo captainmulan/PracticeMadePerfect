@@ -9,6 +9,7 @@ test("batch EPUB metadata inference respects page limits and fallbacks", async (
       supplementChapterPlansWithSpine,
     } =
       await import("/src/utils/epubImport.ts");
+    const { resolveEpubLocation } = await import("/src/utils/epubCache.ts");
     const longDescription = Array.from({ length: 60 }, (_, index) => `storyword${index}`).join(" ");
     const spineSupplement = supplementChapterPlansWithSpine(
       [
@@ -27,6 +28,18 @@ test("batch EPUB metadata inference respects page limits and fallbacks", async (
         title: chapter.title,
         href: chapter.pages[0]?.href,
       })),
+      resolvedShortLocation: resolveEpubLocation("Section0001.xhtml#pmp-p2", [
+        "Text/Title.xhtml",
+        "Text/Section0001.xhtml",
+      ]),
+      unchangedLocation: resolveEpubLocation("Text/Title.xhtml#pmp-p2", [
+        "Text/Title.xhtml",
+        "Text/Section0001.xhtml",
+      ]),
+      ambiguousLocation: resolveEpubLocation("Section0001.xhtml#pmp-p2", [
+        "Text/Section0001.xhtml",
+        "Other/Section0001.xhtml",
+      ]),
       authorFromSecondPage: inferEpubAuthorFromPages([
         ["A story begins."],
         ["Author: Jane Austen"],
@@ -59,6 +72,9 @@ test("batch EPUB metadata inference respects page limits and fallbacks", async (
     { title: "Part B", href: "Text/part-b.xhtml" },
     { title: "Chapter C", href: "Text/part-c.xhtml#start" },
   ]);
+  expect(result.resolvedShortLocation).toBe("Text/Section0001.xhtml#pmp-p2");
+  expect(result.unchangedLocation).toBe("Text/Title.xhtml#pmp-p2");
+  expect(result.ambiguousLocation).toBe("Section0001.xhtml#pmp-p2");
   expect(result.authorFallback).toBe("UNKNOWN");
   expect(result.description).toMatch(/\.\.\.$/);
   expect(result.description.length).toBeLessThanOrEqual(283);

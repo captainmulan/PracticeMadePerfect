@@ -8,7 +8,7 @@ import {
   normalizePageViewType,
   type PageViewType,
 } from "../data/pageViewType";
-import { extractEpubLocation, getEpubBuffer, resolveEpubFileUrl } from "../utils/epubCache";
+import { extractEpubLocation, getEpubBuffer, resolveEpubFileUrl, resolveEpubLocation } from "../utils/epubCache";
 import { watchEpubDictionarySelection } from "../utils/epubDictionarySelection";
 import "../styles/course.css";
 
@@ -26,8 +26,11 @@ type EpubRendition = {
   resize?: () => void;
 };
 
+type EpubSpineItem = { href?: string };
+
 type EpubBook = {
   ready?: Promise<unknown>;
+  spine?: { items?: EpubSpineItem[] };
   renderTo: (target: string, options: Record<string, string>) => EpubRendition;
   packaging?: { metadata?: { layout?: string } };
   destroy?: () => void;
@@ -1020,21 +1023,23 @@ export default function CourseEpubStep({
           displayedLocationRef.current = target;
           setContentLoading(true);
           const sequence = ++displaySequence;
+          const spineHrefs = bookRef.current?.spine?.items?.flatMap((item) => item.href ? [item.href] : []) ?? [];
+          const resolvedTarget = resolveEpubLocation(target, spineHrefs);
           for (const contents of contentsList()) {
             if (contents.document) clearChapterIsolation(contents.document);
           }
-          return rendition.display(target).then(() => {
+          return rendition.display(resolvedTarget).then(() => {
             if (!active || sequence !== displaySequence) return;
-            applyContents(locationFragment(target));
+            applyContents(locationFragment(resolvedTarget));
             window.requestAnimationFrame(() => {
-              if (active && sequence === displaySequence) applyContents(locationFragment(target));
+              if (active && sequence === displaySequence) applyContents(locationFragment(resolvedTarget));
             });
             window.setTimeout(() => {
               if (active && sequence === displaySequence) {
                 rendition.resize?.();
                 window.requestAnimationFrame(() => {
                   if (active && sequence === displaySequence) {
-                    applyContents(locationFragment(target));
+                    applyContents(locationFragment(resolvedTarget));
                   }
                 });
               }
