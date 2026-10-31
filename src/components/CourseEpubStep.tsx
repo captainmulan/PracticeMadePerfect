@@ -9,6 +9,7 @@ import {
   type PageViewType,
 } from "../data/pageViewType";
 import { extractEpubLocation, getEpubBuffer, resolveEpubFileUrl, resolveEpubLocation } from "../utils/epubCache";
+import { decryptAdobeObfuscatedEpubFonts } from "../utils/epubFontObfuscation";
 import { watchEpubDictionarySelection } from "../utils/epubDictionarySelection";
 import "../styles/course.css";
 
@@ -873,7 +874,7 @@ export default function CourseEpubStep({
         const createEpub = await loadEpubLibrary();
         if (!active || !viewerRef.current) return;
 
-        const epubBuffer = await getEpubBuffer(fileUrl);
+        const epubBuffer = await decryptAdobeObfuscatedEpubFonts(await getEpubBuffer(fileUrl));
         if (!active || !viewerRef.current) return;
         const book = createEpub(new Uint8Array(epubBuffer), { storage: false });
         bookRef.current = book;
