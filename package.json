@@ -34,9 +34,11 @@
   },
   "dependencies": {
     "firebase": "11.10.0",
+    "i18next": "^26.5.12",
     "jszip": "^3.10.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-i18next": "^17.1.9",
     "react-router-dom": "^7.17.0",
     "sql.js": "^1.8.0"
   },

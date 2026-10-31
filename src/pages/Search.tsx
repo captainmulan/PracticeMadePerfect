@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import LibraryTopBar from "../components/LibraryTopBar";
 import HomeCourseShelves from "../components/HomeCourseShelves";
@@ -20,6 +21,7 @@ function filterCourses(courses: ReturnType<typeof useCourseCatalog>["courses"], 
 }
 
 export default function Search() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [query, setQuery] = useState(() => {
     const saved = readShelfReturn();
@@ -34,8 +36,8 @@ export default function Search() {
   );
   const results = useMemo(() => filterCourses(audienceCourses, query), [audienceCourses, query]);
   const row = useMemo(
-    () => ({ title: "Search results", items: results.slice().sort((a, b) => a.title.localeCompare(b.title)).map((course) => createShelfItemFromCourse(course, "Search results")) }),
-    [results],
+    () => ({ title: t("search.results"), items: results.slice().sort((a, b) => a.title.localeCompare(b.title)).map((course) => createShelfItemFromCourse(course, t("search.results"))) }),
+    [results, t],
   );
 
   const openHome = () => {
@@ -63,7 +65,7 @@ export default function Search() {
       {audienceLoading ? (
         <div className="home-return-loader" role="status" aria-live="polite">
           <span className="home-return-loader-emoji" aria-hidden="true">📚</span>
-          <span>Loading shelf</span>
+          <span>{t("practice.loadingShelf")}</span>
           <span className="home-return-loader-dots" aria-hidden="true">...</span>
         </div>
       ) : null}
@@ -81,17 +83,19 @@ export default function Search() {
       <main className="search-page-content">
         <label className="search-page-field">
           <span className="search-page-icon" aria-hidden="true">⌕</span>
-          <span className="sr-only">Search</span>
+          <span className="sr-only">{t("search.inputLabel")}</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            aria-label={t("search.inputLabel")}
+            placeholder={t("search.inputLabel")}
             autoFocus
           />
         </label>
         {!loaded ? (
-          <div className="home-course-loading">Loading books...</div>
+          <div className="home-course-loading">{t("search.loadingBooks")}</div>
         ) : query.trim() && row.items.length === 0 ? (
-          <div className="home-course-loading">No books matched your search.</div>
+          <div className="home-course-loading">{t("search.noResults")}</div>
         ) : (
           <HomeCourseShelves row={row} useCoverImages horizontal horizontalItemsPerRow={5} />
         )}

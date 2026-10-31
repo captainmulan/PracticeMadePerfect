@@ -1,5 +1,6 @@
 import type { ChangeEvent, MouseEvent, ReactNode, RefObject } from "react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import PracticeCodeEditor from "./PracticeCodeEditor";
 import DictionaryPanel from "./DictionaryPanel";
@@ -119,6 +120,7 @@ export default function PracticeWorkspace({
   dictionarySelection = null,
   onDictionaryModeChange,
 }: PracticeWorkspaceProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const homeData = getHomePageData();
   const hasEditor = Boolean(onChange) && children === undefined;
@@ -202,7 +204,7 @@ export default function PracticeWorkspace({
         <div className="book-about-navigation-loader practice-navigation-loader">
           <PdfFunLoader
             compact
-            label={leavingDestination === "search" ? "Opening Search…" : "Opening Home…"}
+            label={leavingDestination === "search" ? t("reader.openingSearch") : t("reader.openingHome")}
           />
         </div>
       ) : null}
@@ -249,7 +251,7 @@ export default function PracticeWorkspace({
             to="/"
             className="chapter-nav-icon-btn"
             onClick={openHome}
-            aria-label="Home"
+            aria-label={t("reader.home")}
             style={{ color: style?.wizardTopInfo?.homeButton?.color ?? "#0f172a" }}
           >
             🏠
@@ -261,7 +263,7 @@ export default function PracticeWorkspace({
               min={1}
               max={totalPages}
               value={pageDraft}
-              aria-label={`Current page, from 1 to ${totalPages ?? 1}`}
+              aria-label={t("reader.currentPage", { max: totalPages ?? 1 })}
               onChange={(event) => setPageDraft(event.target.value)}
               onBlur={commitPageJump}
               onKeyDown={(event) => {
@@ -282,7 +284,7 @@ export default function PracticeWorkspace({
             type="button"
             className="chapter-nav-icon-btn chapter-settings-gear"
             onClick={() => setShowSettingsBar(!showSettingsBar)}
-            aria-label="Settings"
+            aria-label={t("reader.settings")}
             style={{ color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a" }}
           >
             ⚙️
@@ -301,8 +303,8 @@ export default function PracticeWorkspace({
                 : Promise.resolve();
               void persist.finally(() => setShowBookmarkHistory(true));
             }}
-            aria-label={bookmarked ? "Open bookmarks" : "Save bookmark"}
-            title={bookmarked ? "Bookmarks" : "Save bookmark"}
+            aria-label={bookmarked ? t("reader.openBookmarks") : t("reader.saveBookmark")}
+            title={bookmarked ? t("reader.bookmarks") : t("reader.saveBookmark")}
             style={{
               color: bookmarked
                 ? "#d97706"
@@ -346,10 +348,10 @@ export default function PracticeWorkspace({
                 justifyContent: "center",
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
-              title="Bookmark list"
+              title={t("reader.bookmarks")}
             >
               📜
-              <span className="practice-settings-label">Bookmark</span>
+              <span className="practice-settings-label">{t("reader.bookmark")}</span>
             </button>
             <button
               type="button"
@@ -370,38 +372,33 @@ export default function PracticeWorkspace({
                 justifyContent: "center",
                 color: style?.wizardTopInfo?.navButton?.color ?? "#0f172a",
               }}
-              title="Dictionary"
+              title={t("reader.dictionary")}
             >
               🔍
-              <span className="practice-settings-label">Dictionary</span>
+              <span className="practice-settings-label">{t("reader.dictionary")}</span>
             </button>
             {readingAssistanceAvailable && onReadingAssistanceChange ? (
-              <label className="practice-reading-assist-toggle" title="Show directional scroll keys and reading line">
+              <label className="practice-reading-assist-toggle" title={t("reader.readingAssistTitle")}>
                 <input
                   type="checkbox"
                   checked={readingAssistanceEnabled}
                   onChange={(event) => onReadingAssistanceChange(event.target.checked)}
                 />
-                <span className="practice-settings-label">Reading assist</span>
+                <span className="practice-settings-label">{t("reader.readingAssist")}</span>
               </label>
             ) : null}
             {viewMode && onViewModeChange ? (
-              <label className="pdf-zoom-control" title="View mode">
-                <span className="practice-settings-label pdf-zoom-label">View</span>
+              <label className="pdf-zoom-control" title={t("reader.viewMode")}>
+                <span className="practice-settings-label pdf-zoom-label">{t("reader.viewMode")}</span>
                 <select
                   className="pdf-zoom-select"
-                  aria-label="View mode"
+                  aria-label={t("reader.viewMode")}
                   value={viewMode}
                   onChange={(event) => onViewModeChange(event.target.value as PageViewType)}
                 >
                   {(["Normal", "Crop", "Dark", "Night", "Sepia", "Comfort"] as PageViewType[]).map((mode) => (
                     <option key={mode} value={mode}>
-                      {mode === "Normal" ? "Normal"
-                        : mode === "Dark" ? "Dark"
-                        : mode === "Night" ? "Night"
-                        : mode === "Sepia" ? "Sepia"
-                        : mode === "Comfort" ? "Comfort"
-                        : mode}
+                      {t(`viewModes.${mode}`)}
                     </option>
                   ))}
                 </select>
@@ -449,7 +446,7 @@ export default function PracticeWorkspace({
             children
           ) : hasEditor ? (
             <PracticeCodeEditor
-              label={toolbarLabel ?? "Answer"}
+              label={toolbarLabel ?? t("reader.answer")}
               value={value}
               placeholder={placeholder}
               isText={isText}
@@ -466,14 +463,14 @@ export default function PracticeWorkspace({
         </div>
 
         {showPeek && onTogglePeek && !isMobileView ? (
-          <section className="practice-peek-desktop" aria-label="Example code peek">
+          <section className="practice-peek-desktop" aria-label={t("reader.peekCode")}>
             <div className="practice-preview-header">
-              <span>Peek Code</span>
+              <span>{t("reader.peekCode")}</span>
               <button
                 type="button"
                 className="practice-peek-close"
                 onClick={onTogglePeek}
-                aria-label="Close peek"
+                aria-label={t("reader.closePeek")}
               >
                 ✕
               </button>
@@ -492,7 +489,7 @@ export default function PracticeWorkspace({
               e.stopPropagation();
               onPrevious?.();
             }}
-            aria-label="Previous page"
+            aria-label={t("reader.previousPage")}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M15 18l-6-6 6-6" />
@@ -507,7 +504,7 @@ export default function PracticeWorkspace({
               e.stopPropagation();
               onNext?.();
             }}
-            aria-label="Next page"
+            aria-label={t("reader.nextPage")}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M9 18l6-6-6-6" />
@@ -520,8 +517,8 @@ export default function PracticeWorkspace({
         <div className="modal-backdrop practice-peek-mobile-modal" onClick={onTogglePeek}>
           <div className="modal practice-peek-modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal-header">
-              <h3>Peek Code</h3>
-              <button type="button" className="modal-close" onClick={onTogglePeek} aria-label="Close peek">
+              <h3>{t("reader.peekCode")}</h3>
+              <button type="button" className="modal-close" onClick={onTogglePeek} aria-label={t("reader.closePeek")}>
                 ✕
               </button>
             </div>

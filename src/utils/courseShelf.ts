@@ -545,6 +545,7 @@ export function getHomeCategoryBookRow(
   category: string,
   exactPath?: string[],
   includeNestedPath = false,
+  displayTitle = category,
 ): CourseShelfRow {
   const items = courses
     .filter((course) =>
@@ -559,14 +560,14 @@ export function getHomeCategoryBookRow(
         || (b.courseIndex ?? 0) - (a.courseIndex ?? 0)
         || a.title.localeCompare(b.title);
     })
-    .map((course) => createShelfItemFromCourse(course, category));
-  return buildShelfRow(category, items);
+    .map((course) => createShelfItemFromCourse(course, displayTitle));
+  return buildShelfRow(displayTitle, items);
 }
 
 export function getCategoryPickerRow(courses: Course[]): CourseShelfRow {
   const authorStyle = getCategoryShelfStyle(AUTHOR_SHELF_ID);
   const authorItem = makeCategoryFolderItem(AUTHOR_SHELF_ID, "category", false, [AUTHOR_SHELF_ID]);
-  authorItem.title = "Author";
+  authorItem.title = formatCategoryLabel(AUTHOR_SHELF_ID);
   authorItem.description = "Browse books by author";
   authorItem.icon = authorStyle.icon;
   authorItem.coverColorStart = authorStyle.coverColorStart;

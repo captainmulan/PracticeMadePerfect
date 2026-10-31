@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { readShelfReturn, saveShelfReturn, type ShelfReturnState } from "../utils/shelfReturn";
 import HomeCourseShelves from "../components/HomeCourseShelves";
@@ -22,7 +23,7 @@ import {
   getUnpublishedBooksRow,
   type CourseShelfRow,
 } from "../utils/courseShelf";
-import { AUTHOR_SHELF_ID, bookHasCategoryTag, courseMatchesCategoryPath } from "../utils/bookCategories";
+import { AUTHOR_SHELF_ID, bookHasCategoryTag, courseMatchesCategoryPath, formatCategoryLabel } from "../utils/bookCategories";
 import { canonicalAuthorName } from "../utils/authorName";
 import { getCourseProgressKey } from "../utils/courseUtils";
 import { loadShelfItemSettings } from "../utils/shelfItemIndexes";
@@ -65,6 +66,8 @@ function getInitialShelfState(): ShelfReturnState {
 }
 
 export default function Home({ showUnpublishedOnly = false }: HomeProps) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage;
   const navigate = useNavigate();
   const location = useLocation();
   const initialShelf = getInitialShelfState();
@@ -98,7 +101,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   }, []);
   const rows = useMemo(
     () => (showUnpublishedOnly ? [getUnpublishedBooksRow(courses)] : getHomeCourseShelfRows(courses)),
-    [courses, showUnpublishedOnly]
+    [courses, locale, showUnpublishedOnly]
   );
   const kidCourses = useMemo(
     () => courses.filter((course) => courseMatchesCategoryPath(course, ["Kid"])),
@@ -111,29 +114,29 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       : courses.filter((course) => courseMatchesCategoryPath(course, ["Other"]));
     const popularCourses = getPopularCourses(courses);
     const selection = buildShelfRow(
-      "Selection",
-      popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
+      t("home.selection"),
+      popularCourses.map((course) => createShelfItemFromCourse(course, t("home.selection"))),
     );
     const categoryRows = selectedAudience === "Kid"
       ? [
-          getHomeCategoryBookRow(audienceCourses, "Junior Novel", ["Kid", "JuniorNovel"], true),
-          getHomeCategoryBookRow(audienceCourses, "Comic"),
-          getHomeCategoryBookRow(audienceCourses, "Interactive"),
-          getHomeCategoryBookRow(audienceCourses, "Science"),
-          getHomeCategoryBookRow(audienceCourses, "Short Stories"),
-          getHomeCategoryBookRow(audienceCourses, "Biography"),
+          getHomeCategoryBookRow(audienceCourses, "JuniorNovel", ["Kid", "JuniorNovel"], true, t("home.juniorNovel")),
+          getHomeCategoryBookRow(audienceCourses, "Comic", undefined, false, t("home.comic")),
+          getHomeCategoryBookRow(audienceCourses, "Interactive", undefined, false, t("home.interactive")),
+          getHomeCategoryBookRow(audienceCourses, "Science", undefined, false, t("home.science")),
+          getHomeCategoryBookRow(audienceCourses, "Short Stories", undefined, false, t("home.shortStories")),
+          getHomeCategoryBookRow(audienceCourses, "Biography", undefined, false, t("home.biography")),
         ]
       : [
-          getHomeCategoryBookRow(audienceCourses, "IT"),
-          getHomeCategoryBookRow(audienceCourses, "Personal Growth", ["Other", "Personal Growth"]),
-          getHomeCategoryBookRow(audienceCourses, "Novel", ["Other", "Novel"], true),
-          getHomeCategoryBookRow(audienceCourses, "Biography"),
-          getHomeCategoryBookRow(audienceCourses, "Fiction"),
-          getHomeCategoryBookRow(audienceCourses, "Short Stories"),
-          getHomeCategoryBookRow(audienceCourses, "Language"),
+          getHomeCategoryBookRow(audienceCourses, "Personal Growth", ["Other", "Personal Growth"], false, t("home.personalGrowth")),
+          getHomeCategoryBookRow(audienceCourses, "Novel", ["Other", "Novel"], true, t("home.novel")),
+          getHomeCategoryBookRow(audienceCourses, "IT", undefined, false, t("home.it")),
+          getHomeCategoryBookRow(audienceCourses, "Biography", undefined, false, t("home.biography")),
+          getHomeCategoryBookRow(audienceCourses, "Fiction", undefined, false, t("home.fiction")),
+          getHomeCategoryBookRow(audienceCourses, "Short Stories", undefined, false, t("home.shortStories")),
+          getHomeCategoryBookRow(audienceCourses, "Language", undefined, false, t("home.language")),
         ];
     const myanmarBooks = buildShelfRow(
-      "Myanmar Books",
+      t("home.myanmarBooks"),
       audienceCourses
         .filter((course) =>
         course.language === "MM" ||
@@ -142,20 +145,20 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
         bookHasCategoryTag(course.category, "Shwe Thway") ||
         bookHasCategoryTag(course.category, "Tootpee"),
         )
-        .map((course) => createShelfItemFromCourse(course, "Myanmar Books")),
+        .map((course) => createShelfItemFromCourse(course, t("home.myanmarBooks"))),
     );
     const newlyAdded = buildShelfRow(
-      "Newly Added",
+      t("home.newlyAdded"),
       audienceCourses
         .slice()
         .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
-        .map((course) => createShelfItemFromCourse(course, "Newly Added")),
+        .map((course) => createShelfItemFromCourse(course, t("home.newlyAdded"))),
     );
     const currentReading = buildShelfRow(
-      "Current Reading",
+      t("home.currentReading"),
       audienceCourses
         .filter((course) => hasSavedProgress(course.id))
-        .map((course) => createShelfItemFromCourse(course, "Current Reading")),
+        .map((course) => createShelfItemFromCourse(course, t("home.currentReading"))),
     );
     return [
       selection,
@@ -164,7 +167,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       newlyAdded,
       currentReading,
     ];
-  }, [courses, kidCourses, rows, selectedAudience, shelfSettingsVersion, showUnpublishedOnly]);
+  }, [courses, kidCourses, rows, selectedAudience, shelfSettingsVersion, showUnpublishedOnly, t]);
   const authorGroups = useMemo(() => {
     const groups = new Map<string, { authorName: string; authorPicture?: string }>();
     for (const course of courses) {
@@ -275,13 +278,13 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
       return { title: "Selection", items: searchItems };
     }
     return rows.find((row) => row.title === "Selection") || rows[0];
-  }, [authorGroups, categoryPath, courses, isSearching, rows, searchQuery, selectedAuthorName, selectedTab, shelfSettingsVersion, showUnpublishedOnly]);
+  }, [authorGroups, categoryPath, courses, isSearching, locale, rows, searchQuery, selectedAuthorName, selectedTab, shelfSettingsVersion, showUnpublishedOnly]);
   return (
     <div className="page-content page-home page-home-showcase">
       {!coursesLoaded || !shelfReady || shelfTransitioning ? (
         <div className="home-return-loader" role="status" aria-live="polite">
           <span className="home-return-loader-emoji" aria-hidden="true">📚</span>
-          <span>Opening your library</span>
+          <span>{t("common.openingLibrary")}</span>
           <span className="home-return-loader-dots" aria-hidden="true">...</span>
         </div>
       ) : null}
@@ -335,7 +338,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
         <HomeSpaceDecor />
         <div className="container">
           {featuredAnnouncement && !showUnpublishedOnly ? (
-            <aside className="home-featured-banner" aria-label="Featured announcement">
+            <aside className="home-featured-banner" aria-label={t("home.featuredAnnouncement", { defaultValue: "Featured announcement" })}>
               <span className="home-featured-banner-mark" aria-hidden="true">✦</span>
               <div>
                 <strong>{featuredAnnouncement.title}</strong>
@@ -364,7 +367,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
                       setSelectedAuthorName(null);
                     }}
                   >
-                    {category}
+                    {formatCategoryLabel(category)}
                   </button>
                 </span>
               ))}
@@ -447,19 +450,15 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
           <button
             className="home-author-notice-close"
             type="button"
-            aria-label="Close author and publisher notice"
+            aria-label={t("common.closeNotice")}
             onClick={() => setShowAuthorNotice(false)}
           >
             ×
           </button>
           <div className="home-author-notice-inner">
-            <h2 id="home-author-notice-title">စာရေးဆရာများနှင့် စာပေထုတ်ဝေသူများသို့ မေတ္တာရပ်ခံချက်</h2>
-            <p>
-              ဒီ Library လေးကို ကျေးလက်ဒေသအပါအဝင် စာအုပ်တွေနဲ့ အလှမ်းဝေးနေသူတွေပါ ဖုန်း Browser ကနေတစ်ဆင့် မြန်မာစာပေကောင်းတွေကို <strong>အခမဲ့ ဖတ်ရှုနိုင်စေဖို့</strong> ရည်ရွယ်ထားပါတယ်။ စာအုပ်ကောင်းတွေကို မသိသေးသူတွေနဲ့လည်း မိတ်ဆက်ပေးချင်ပါတယ်။
-            </p>
-            <p>
-              မူပိုင်ခွင့်နဲ့ ပတ်သက်ပြီး ထိခိုက်နစ်နာမှု တစ်စုံတစ်ရာရှိခဲ့ပါက အနူးအညွတ် တောင်းပန်ပါတယ်။ စာရေးဆရာများနဲ့ ထုတ်ဝေသူများရဲ့ စေတနာ၊ ကြိုးစားအားထုတ်မှုတွေကို လေးစားစွာဖြင့် ကျွန်တော်တို့ရဲ့ ရည်ရွယ်ချက်လေးကို နားလည်ခွင့်လွှတ်ပေးကြပါရန် မေတ္တာရပ်ခံအပ်ပါတယ်။
-            </p>
+            <h2 id="home-author-notice-title">{t("home.noticeTitle")}</h2>
+            <p><Trans i18nKey="home.noticeBody" components={{ 1: <strong /> }} /></p>
+            <p>{t("home.noticeCopyright")}</p>
           </div>
         </aside>
       ) : null}

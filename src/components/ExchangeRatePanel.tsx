@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Rates = {
   NZD?: number;
@@ -13,6 +14,7 @@ const CACHE_EXPIRY_KEY = "exchangeRates_expiry";
 const CACHE_DURATION_MS = 3600000; // 1 hour
 
 export default function ExchangeRatePanel() {
+  const { t } = useTranslation();
   const [rates, setRates] = useState<Rates | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,12 +92,12 @@ export default function ExchangeRatePanel() {
     <div className="exchange-rate-panel">
       <div className="exchange-rate-panel-inner">
         <div className="exchange-rate-heading">
-          <strong>Exchange (base USD)</strong>
-          {isCached && <span>cached</span>}
+          <strong>{t("exchange.title")}</strong>
+          {isCached && <span>{t("exchange.cached")}</span>}
           {rates?.date && <span>{rates.date}</span>}
         </div>
         <div className="exchange-rate-values">
-          {loading && !rates && <div>Loading...</div>}
+          {loading && !rates && <div>{t("exchange.loading")}</div>}
           {error && !rates && <div className="exchange-rate-error">{error}</div>}
           {rates && (
             <>

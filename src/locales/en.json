@@ -1,0 +1,109 @@
+{
+  "language": {
+    "switchTo": "မြန်မာဘာသာသို့ ပြောင်းရန်",
+    "current": "English"
+  },
+  "common": {
+    "openingLibrary": "Opening your library",
+    "comingSoon": "Coming Soon...",
+    "dismiss": "Dismiss message",
+    "closeNotice": "Close author and publisher notice"
+  },
+  "nav": {
+    "category": "Category",
+    "search": "Search",
+    "login": "Login",
+    "other": "Other",
+    "kid": "Kid",
+    "browseAudience": "Browse audience",
+    "openMenu": "Open menu",
+    "moreOptions": "More options",
+    "settings": "Settings",
+    "about": "About",
+    "libraryNavigation": "Library navigation"
+  },
+  "home": {
+    "selection": "Selection",
+    "personalGrowth": "Personal Growth",
+    "novel": "Novel",
+    "it": "IT",
+    "biography": "Biography",
+    "fiction": "Fiction",
+    "shortStories": "Short Stories",
+    "language": "Language",
+    "myanmarBooks": "Myanmar Books",
+    "newlyAdded": "Newly Added",
+    "currentReading": "Current Reading",
+    "juniorNovel": "Junior Novel",
+    "comic": "Comic",
+    "interactive": "Interactive",
+    "science": "Science",
+    "noticeTitle": "A Note to Authors and Publishers",
+    "noticeBody": "This library aims to help people with limited access to books, including those in rural areas, read quality Myanmar literature <1>for free</1> through a phone browser. We also hope to introduce readers to books they may not have discovered yet.",
+    "noticeCopyright": "We sincerely apologize if this library has caused any harm regarding copyright. We respectfully ask authors and publishers to understand and forgive our intentions, and we deeply respect your generosity and hard work."
+  },
+  "search": {
+    "results": "Search results",
+    "inputLabel": "Search books",
+    "loadingBooks": "Loading books...",
+    "noResults": "No books matched your search."
+  },
+  "practice": {
+    "loadingShelf": "Loading shelf"
+  },
+  "exchange": {
+    "title": "Exchange (base USD)",
+    "cached": "cached",
+    "loading": "Loading..."
+  },
+  "reader": {
+    "openingSearch": "Opening Search…",
+    "openingHome": "Opening Home…",
+    "home": "Home",
+    "currentPage": "Current page, from 1 to {{max}}",
+    "settings": "Settings",
+    "openBookmarks": "Open bookmarks",
+    "saveBookmark": "Save bookmark",
+    "bookmarks": "Bookmarks",
+    "bookmark": "Bookmark",
+    "dictionary": "Dictionary",
+    "readingAssistTitle": "Show directional scroll keys and reading line",
+    "readingAssist": "Reading assist",
+    "viewMode": "View mode",
+    "answer": "Answer",
+    "peekCode": "Peek Code",
+    "closePeek": "Close peek",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  },
+  "viewModes": {
+    "Normal": "Normal",
+    "Crop": "Crop",
+    "Dark": "Dark",
+    "Night": "Night",
+    "Sepia": "Sepia",
+    "Comfort": "Comfort"
+  },
+  "categoryLabels": {
+    "PersonalDevelopment": "Personal Dev",
+    "Shwe Thway": "Shwe Thway",
+    "Tootpee": "Tootpee",
+    "Short Stories": "Short Stories",
+    "HarryPotter": "Harry Potter",
+    "ReadAtHome": "Read at Home",
+    "ScoobyDoo": "Scooby-Doo",
+    "TinTin": "Tintin",
+    "JuniorNovel": "Junior Novel",
+    "Biography": "Biography",
+    "Fiction": "Fiction",
+    "Novel": "Novel",
+    "Comic": "Comic",
+    "Language": "Language",
+    "IT": "IT",
+    "Author": "Author",
+    "Translation": "Translation",
+    "Migration": "Migration",
+    "Myanmar": "Myanmar",
+    "Science": "Science"
+  }
+}

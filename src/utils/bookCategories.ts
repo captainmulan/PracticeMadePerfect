@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+
 /** Suggested tags for Admin; any comma-separated value can be stored. */
 export const BOOK_CATEGORIES = [
   "Kid",
@@ -220,15 +222,25 @@ export function collectCategoryTagsFromCourses(courses: Array<{ category?: strin
 }
 
 export function formatCategoryLabel(tag: string): string {
-  if (tag === "PersonalDevelopment") return "Personal Dev";
-  if (tag === "Shwe Thway") return "ရွှေသွေး";
-  if (tag === "Tootpee") return "တွတ်ပီ";
-  if (tag === "Short Stories") return "Short Stories";
-  if (tag === "HarryPotter") return "Harry Potter";
-  if (tag === "ReadAtHome") return "Read at Home";
-  if (tag === "ScoobyDoo") return "Scooby-Doo";
-  if (tag === "TinTin") return "Tintin";
-  return LANGUAGE_SUBCATEGORY_FLAGS[tag]?.label ?? tag;
+  const sharedKeys: Record<string, string> = {
+    Biography: "home.biography",
+    Comic: "home.comic",
+    Fiction: "home.fiction",
+    IT: "home.it",
+    Interactive: "home.interactive",
+    Kid: "nav.kid",
+    Language: "home.language",
+    Myanmar: "home.myanmarBooks",
+    Novel: "home.novel",
+    Other: "nav.other",
+    "Personal Growth": "home.personalGrowth",
+    "Short Stories": "home.shortStories",
+    Science: "home.science",
+  };
+  const sharedKey = sharedKeys[tag];
+  if (sharedKey) return i18n.t(sharedKey);
+  const defaultLabel = LANGUAGE_SUBCATEGORY_FLAGS[tag]?.label ?? tag;
+  return i18n.t(`categoryLabels.${tag}`, { defaultValue: defaultLabel });
 }
 
 export type CategoryCourse = {

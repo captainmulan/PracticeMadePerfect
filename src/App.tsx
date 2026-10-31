@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { AccountProvider } from "./context/AccountContext";
 import { StageNavProvider } from "./context/StageNavContext";
+import "./i18n";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import { getHomePageData } from "./utils/contentStore";
