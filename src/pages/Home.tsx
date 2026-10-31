@@ -134,6 +134,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
     };
     const categoryRows = [
       getHomeCategoryBookRow(courses, "IT"),
+      getHomeCategoryBookRow(courses, "Personal Growth", ["Other", "Finance"]),
       getHomeCategoryBookRow(courses, "Kid_JuniorNovel", ["Kid", "JuniorNovel"], true),
       getHomeCategoryBookRow(courses, "Interactive"),
       getHomeCategoryBookRow(courses, "Kid_OxfordReading", ["Kid", "Comic", "OxfordReading"]),

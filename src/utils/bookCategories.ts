@@ -216,6 +216,7 @@ export function collectCategoryTagsFromCourses(courses: Array<{ category?: strin
 
 export function formatCategoryLabel(tag: string): string {
   if (tag === "PersonalDevelopment") return "Personal Dev";
+  if (tag === "Finance") return "Personal Growth";
   if (tag === "Shwe Thway") return "ရွှေသွေး";
   if (tag === "Tootpee") return "တွတ်ပီ";
   if (tag === "Short Stories") return "Short Stories";
