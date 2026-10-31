@@ -1,7 +1,10 @@
 {
   "language": {
     "switchTo": "မြန်မာဘာသာသို့ ပြောင်းရန်",
-    "current": "English"
+    "current": "English",
+    "myanmar": "မြန်မာ",
+    "english": "English",
+    "choose": "Choose language"
   },
   "common": {
     "openingLibrary": "Opening your library",

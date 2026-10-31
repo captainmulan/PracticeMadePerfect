@@ -19,11 +19,13 @@ export default function LibraryTopBar({ onHome, onCategory, onLogin, showHomeMen
   const isSearch = location.pathname === "/search";
   const [leavingHome, setLeavingHome] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [localeMenuOpen, setLocaleMenuOpen] = useState(false);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const locale = i18n.resolvedLanguage?.startsWith("mm") ? "mm" : "en";
 
-  const toggleLocale = () => {
-    void i18n.changeLanguage(locale === "mm" ? "en" : "mm");
+  const selectLocale = (nextLocale: "mm" | "en") => {
+    void i18n.changeLanguage(nextLocale);
+    setLocaleMenuOpen(false);
   };
 
   const openHome = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -64,16 +66,21 @@ export default function LibraryTopBar({ onHome, onCategory, onLogin, showHomeMen
           </button>
           {menuOpen ? (
             <div className="library-menu-panel" role="menu" aria-label={t("nav.moreOptions")}>
-              {[t("nav.login"), t("nav.settings"), t("nav.about")].map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    setShowComingSoon(true);
-                    setMenuOpen(false);
-                  }}
-                >
+              {onCategory ? (
+                <button type="button" role="menuitem" onClick={() => { onCategory(); setMenuOpen(false); }}>
+                  {t("nav.category")}
+                </button>
+              ) : (
+                <Link role="menuitem" to="/?view=category" onClick={() => setMenuOpen(false)}>{t("nav.category")}</Link>
+              )}
+              <Link role="menuitem" to="/search" onClick={() => setMenuOpen(false)}>{t("nav.search")}</Link>
+              {showHomeMenu && (onLogin ? (
+                <button type="button" role="menuitem" onClick={() => { onLogin(); setMenuOpen(false); }}>{t("nav.login")}</button>
+              ) : (
+                <Link role="menuitem" to="/?view=login" onClick={() => setMenuOpen(false)}>{t("nav.login")}</Link>
+              ))}
+              {[t("nav.settings"), t("nav.about")].map((item) => (
+                <button key={item} type="button" role="menuitem" onClick={() => { setShowComingSoon(true); setMenuOpen(false); }}>
                   {item}
                 </button>
               ))}
@@ -86,48 +93,55 @@ export default function LibraryTopBar({ onHome, onCategory, onLogin, showHomeMen
       </Link>
       </div>
       <nav className="library-top-bar-nav" aria-label={t("nav.libraryNavigation", { defaultValue: "Library navigation" })}>
-        {onCategory ? (
-          <button type="button" className="library-top-bar-link" onClick={onCategory}>
-            {t("nav.category")}
+        <div className="library-top-bar-primary">
+          {onCategory ? (
+            <button type="button" className="library-top-bar-link" onClick={onCategory}>{t("nav.category")}</button>
+          ) : (
+            <Link className="library-top-bar-link" to="/?view=category">{t("nav.category")}</Link>
+          )}
+          <Link className={`library-top-bar-link ${isSearch ? "active" : ""}`} to="/search" aria-current={isSearch ? "page" : undefined}>
+            {t("nav.search")}
+          </Link>
+          {showHomeMenu ? null : onLogin ? (
+            <button type="button" className="library-top-bar-link library-top-bar-login" onClick={onLogin}>{t("nav.login")}</button>
+          ) : (
+            <Link className="library-top-bar-link library-top-bar-login" to="/?view=login">{t("nav.login")}</Link>
+          )}
+        </div>
+        <div className="library-locale-wrap">
+          <button
+            type="button"
+            className="library-locale-toggle"
+            onClick={() => setLocaleMenuOpen((open) => !open)}
+            aria-label={t("language.switchTo")}
+            aria-expanded={localeMenuOpen}
+            aria-haspopup="menu"
+            title={t("language.switchTo")}
+          >
+            <span className="library-locale-short" aria-hidden="true">{locale === "mm" ? "မြ" : "EN"}</span>
+            <span className="library-locale-full">{t("language.current")}</span>
           </button>
-        ) : (
-          <Link className="library-top-bar-link" to="/?view=category">{t("nav.category")}</Link>
-        )}
-        <Link className={`library-top-bar-link ${isSearch ? "active" : ""}`} to="/search" aria-current={isSearch ? "page" : undefined}>
-          {t("nav.search")}
-        </Link>
-        {showHomeMenu ? null : onLogin ? (
-          <button type="button" className="library-top-bar-link library-top-bar-login" onClick={onLogin}>
-            {t("nav.login")}
-          </button>
-        ) : (
-          <Link className="library-top-bar-link library-top-bar-login" to="/?view=login">{t("nav.login")}</Link>
-        )}
-        <button
-          type="button"
-          className="library-locale-toggle"
-          onClick={toggleLocale}
-          aria-label={t("language.switchTo")}
-          title={t("language.switchTo")}
-        >
-          {t("language.current")}
-        </button>
-        {onAudienceChange ? (
-          <div className="library-audience-switch" role="group" aria-label={t("nav.browseAudience")}>
-            {(["Other", "Kid"] as const).map((audience) => (
-              <button
-                key={audience}
-                type="button"
-                className={selectedAudience === audience ? "active" : ""}
-                aria-pressed={selectedAudience === audience}
-                onClick={() => onAudienceChange(audience)}
-              >
-                {t(audience === "Other" ? "nav.other" : "nav.kid")}
-              </button>
-            ))}
-          </div>
-        ) : null}
+          {localeMenuOpen ? (
+            <div className="library-locale-menu" role="menu" aria-label={t("language.choose")}>
+              {(["mm", "en"] as const).map((option) => (
+                <button key={option} type="button" role="menuitemradio" aria-checked={locale === option} onClick={() => selectLocale(option)}>
+                  <span>{t(option === "mm" ? "language.myanmar" : "language.english")}</span>
+                  {locale === option ? <span aria-hidden="true">✓</span> : null}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
       </nav>
+      {onAudienceChange ? (
+        <div className="library-audience-switch" role="group" aria-label={t("nav.browseAudience")}>
+          {(["Other", "Kid"] as const).map((audience) => (
+            <button key={audience} type="button" className={selectedAudience === audience ? "active" : ""} aria-pressed={selectedAudience === audience} onClick={() => onAudienceChange(audience)}>
+              {t(audience === "Other" ? "nav.other" : "nav.kid")}
+            </button>
+          ))}
+        </div>
+      ) : null}
       {showComingSoon && typeof document !== "undefined"
         ? createPortal(
             <div className="library-coming-soon" role="status" aria-live="polite">
