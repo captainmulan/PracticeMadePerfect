@@ -1516,12 +1516,78 @@ body[data-bookshelf-theme] .page-home-showcase .home-categories {
   }
 }
 
+.home-author-notice {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: 0;
+  left: max(12px, env(safe-area-inset-left));
+  z-index: 9998;
+  width: min(760px, calc(100vw - 24px));
+  max-height: min(38vh, 300px);
+  overflow-y: auto;
+  margin: 0 auto;
+  padding: 14px 42px 14px 18px;
+  background: rgba(7, 28, 35, 0.97);
+  border: 1px solid rgba(244, 201, 74, 0.55);
+  border-radius: 10px;
+  color: #f5efd6;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.38);
+}
+
+.home-author-notice-inner {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.home-author-notice h2 {
+  margin: 0 0 5px;
+  color: #f6d675;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.home-author-notice p {
+  margin: 0;
+  color: #f5efd6;
+}
+
+.home-author-notice p + p { margin-top: 4px; }
+.home-author-notice strong { color: #fff0ae; }
+
+.home-author-notice-close {
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #f6d675;
+  font: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.home-author-notice-close:hover,
+.home-author-notice-close:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  outline: 2px solid rgba(246, 214, 117, 0.8);
+  outline-offset: 1px;
+}
+
 .exchange-rate-panel {
   position: fixed;
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 9999;
+  z-index: 9997;
   min-height: 44px;
   padding: 5px max(10px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
   background: rgba(7, 28, 35, 0.97);
@@ -1568,6 +1634,13 @@ body[data-bookshelf-theme] .page-home-showcase .home-categories {
   .page-home-showcase .home-cover-carousel-track { gap: 6px; }
   .page-home-showcase .home-cover-tile--1 { transform: translateY(-2px); }
   .page-home-showcase .course-book-card { min-height: 180px; }
+  .home-author-notice {
+    bottom: 0;
+    max-height: min(45vh, 340px);
+    padding: 11px 38px 11px 12px;
+    font-size: 0.72rem;
+  }
+  .home-author-notice h2 { font-size: 0.84rem; }
   .exchange-rate-panel-inner { align-items: flex-start; }
   .exchange-rate-values { gap: 7px; font-size: 0.62rem; }
 }

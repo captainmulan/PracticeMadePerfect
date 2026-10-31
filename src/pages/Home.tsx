@@ -69,6 +69,7 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   const location = useLocation();
   const initialShelf = getInitialShelfState();
   const [dismissedAnnouncementId, setDismissedAnnouncementId] = useState<string | null>(null);
+  const [showAuthorNotice, setShowAuthorNotice] = useState(true);
   const [selectedTab, setSelectedTab] = useState<HomeShelfTab>(initialShelf.tab as HomeShelfTab);
   const [categoryPath, setCategoryPath] = useState<string[]>(initialShelf.categoryPath);
   const [selectedAuthorName, setSelectedAuthorName] = useState<string | null>(initialShelf.selectedAuthorName);
@@ -441,6 +442,27 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
           )}
         </div>
       </section>
+      {showAuthorNotice ? (
+        <aside className="home-author-notice" aria-labelledby="home-author-notice-title">
+          <button
+            className="home-author-notice-close"
+            type="button"
+            aria-label="Close author and publisher notice"
+            onClick={() => setShowAuthorNotice(false)}
+          >
+            ×
+          </button>
+          <div className="home-author-notice-inner">
+            <h2 id="home-author-notice-title">စာရေးဆရာများနှင့် စာပေထုတ်ဝေသူများသို့ မေတ္တာရပ်ခံချက်</h2>
+            <p>
+              ဒီ Library လေးကို ကျေးလက်ဒေသအပါအဝင် စာအုပ်တွေနဲ့ အလှမ်းဝေးနေသူတွေပါ ဖုန်း Browser ကနေတစ်ဆင့် မြန်မာစာပေကောင်းတွေကို <strong>အခမဲ့ ဖတ်ရှုနိုင်စေဖို့</strong> ရည်ရွယ်ထားပါတယ်။ စာအုပ်ကောင်းတွေကို မသိသေးသူတွေနဲ့လည်း မိတ်ဆက်ပေးချင်ပါတယ်။
+            </p>
+            <p>
+              မူပိုင်ခွင့်နဲ့ ပတ်သက်ပြီး ထိခိုက်နစ်နာမှု တစ်စုံတစ်ရာရှိခဲ့ပါက အနူးအညွတ် တောင်းပန်ပါတယ်။ စာရေးဆရာများနဲ့ ထုတ်ဝေသူများရဲ့ စေတနာ၊ ကြိုးစားအားထုတ်မှုတွေကို လေးစားစွာဖြင့် ကျွန်တော်တို့ရဲ့ ရည်ရွယ်ချက်လေးကို နားလည်ခွင့်လွှတ်ပေးကြပါရန် မေတ္တာရပ်ခံအပ်ပါတယ်။
+            </p>
+          </div>
+        </aside>
+      ) : null}
       <ExchangeRatePanel />
     </div>
   );
