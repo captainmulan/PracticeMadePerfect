@@ -1,3 +1,4 @@
+import { useRef, type PointerEvent, type ReactNode } from "react";
 import { getHomePageData } from "../utils/contentStore";
 import type { CourseShelfRow, CourseShelfItem } from "../utils/courseShelf";
 import CourseBookCard from "./CourseBookCard";
@@ -37,6 +38,59 @@ function createPlaceholderItem(category: string, index: number): CourseShelfItem
     category,
     actionType: isAuthor ? "author" : undefined,
   } as CourseShelfItem;
+}
+
+function HorizontalShelfTrack({ children }: { children: ReactNode }) {
+  const dragStart = useRef<{ pointerId: number; x: number; scrollLeft: number } | null>(null);
+  const didDrag = useRef(false);
+
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    const track = event.currentTarget;
+    dragStart.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      scrollLeft: track.scrollLeft,
+    };
+    didDrag.current = false;
+    const onMove = (moveEvent: globalThis.PointerEvent) => {
+      const start = dragStart.current;
+      if (!start || start.pointerId !== moveEvent.pointerId) return;
+      const deltaX = moveEvent.clientX - start.x;
+      if (Math.abs(deltaX) > 5) {
+        didDrag.current = true;
+        track.classList.add("is-pointer-dragging");
+        moveEvent.preventDefault();
+      }
+      if (didDrag.current) track.scrollLeft = start.scrollLeft - deltaX;
+    };
+    const onFinish = (finishEvent: globalThis.PointerEvent) => {
+      if (dragStart.current?.pointerId !== finishEvent.pointerId) return;
+      dragStart.current = null;
+      track.classList.remove("is-pointer-dragging");
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onFinish);
+      document.removeEventListener("pointercancel", onFinish);
+    };
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onFinish);
+    document.addEventListener("pointercancel", onFinish);
+  };
+
+  return (
+    <div
+      className="shelf-track shelf-track--horizontal"
+      onPointerDown={onPointerDown}
+      onClickCapture={(event) => {
+        if (!didDrag.current) return;
+        didDrag.current = false;
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+    >
+      {children}
+    </div>
+  );
 }
 
 export default function HomeCourseShelves({ 
@@ -99,19 +153,25 @@ export default function HomeCourseShelves({
           key={`book-row-wrap-${rowIndex}`}
           className={`shelf${horizontalItemsPerRow ? " shelf--fixed-row" : ""}`}
         >
-          <div className={`shelf-track${horizontal ? " shelf-track--horizontal" : ""}`}>
-            <div className="shelf-track-content">
-              <div
-                className="books"
-                key={`book-row-${rowIndex}`}
-              >
-                {group.map((item) => renderCard(item))}
+          {horizontal ? (
+            <HorizontalShelfTrack>
+              <div className="shelf-track-content">
+                <div className="books" key={`book-row-${rowIndex}`}>
+                  {group.map((item) => renderCard(item))}
+                </div>
+                {horizontalItemsPerRow ? <div className="shelf-board" aria-hidden="true" /> : null}
               </div>
-              {horizontalItemsPerRow || !horizontal ? (
+            </HorizontalShelfTrack>
+          ) : (
+            <div className="shelf-track">
+              <div className="shelf-track-content">
+                <div className="books" key={`book-row-${rowIndex}`}>
+                  {group.map((item) => renderCard(item))}
+                </div>
                 <div className="shelf-board" aria-hidden="true" />
-              ) : null}
+              </div>
             </div>
-          </div>
+          )}
           {!horizontalItemsPerRow && horizontal ? <h2 className="home-shelf-title">{row.title}</h2> : null}
         </div>
       ))}

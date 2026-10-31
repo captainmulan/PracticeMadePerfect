@@ -1361,6 +1361,17 @@ body[data-bookshelf-theme] .page-home-showcase .home-categories {
   box-sizing: border-box;
   padding: 0 8px;
   scrollbar-width: none;
+  cursor: grab;
+}
+
+.page-home-showcase .bookshelf-container--horizontal .shelf-track--horizontal .book {
+  cursor: grab;
+}
+
+.page-home-showcase .bookshelf-container--horizontal .shelf-track--horizontal.is-pointer-dragging,
+.page-home-showcase .bookshelf-container--horizontal .shelf-track--horizontal.is-pointer-dragging * {
+  cursor: grabbing !important;
+  user-select: none;
 }
 
 .page-home-showcase .bookshelf-container--horizontal .shelf--fixed-row .shelf-track--horizontal {
