@@ -118,7 +118,6 @@ export default function LibraryTopBar({ onHome, onCategory, onLogin, showHomeMen
             aria-haspopup="menu"
             title={t("language.switchTo")}
           >
-            <span className="library-locale-short" aria-hidden="true">{locale === "mm" ? "မြ" : "EN"}</span>
             <span className="library-locale-full">{t("language.current")}</span>
           </button>
           {localeMenuOpen ? (
@@ -132,16 +131,16 @@ export default function LibraryTopBar({ onHome, onCategory, onLogin, showHomeMen
             </div>
           ) : null}
         </div>
+        {onAudienceChange ? (
+          <div className="library-audience-switch" role="group" aria-label={t("nav.browseAudience")}>
+            {(["Other", "Kid"] as const).map((audience) => (
+              <button key={audience} type="button" className={selectedAudience === audience ? "active" : ""} aria-pressed={selectedAudience === audience} onClick={() => onAudienceChange(audience)}>
+                {t(audience === "Other" ? "nav.other" : "nav.kid")}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </nav>
-      {onAudienceChange ? (
-        <div className="library-audience-switch" role="group" aria-label={t("nav.browseAudience")}>
-          {(["Other", "Kid"] as const).map((audience) => (
-            <button key={audience} type="button" className={selectedAudience === audience ? "active" : ""} aria-pressed={selectedAudience === audience} onClick={() => onAudienceChange(audience)}>
-              {t(audience === "Other" ? "nav.other" : "nav.kid")}
-            </button>
-          ))}
-        </div>
-      ) : null}
       {showComingSoon && typeof document !== "undefined"
         ? createPortal(
             <div className="library-coming-soon" role="status" aria-live="polite">

@@ -429,24 +429,19 @@ function injectPageAnchors(html: string): string {
     return html;
   }
   const body = doc.getElementsByTagName("body")[0];
-  if (!body) {
-    return html;
-  }
+  if (!body) return html;
 
-  const blockSelector = "p, div, h1, h2, h3, h4, h5, h6, section, article, blockquote, li, figure, table, img";
-  const blocks = Array.from(body.querySelectorAll(blockSelector));
-  if (!blocks.length) {
-    return html;
-  }
-
-  const targetChars = 800;
-  const minChars = 200;
+  const targetChars = 500;
+  const minChars = 150;
   let pageNumber = 1;
   let currentChars = 0;
 
-  const addAnchor = (before: Node | null) => {
-    const parent = before?.parentNode;
-    if (!before || !parent || !body.contains(before)) return;
+  const addAnchor = (before: Node) => {
+    const parent = before.parentNode;
+    if (!parent || !body.contains(before)) return;
+    /* Avoid redundant anchors */
+    if (before.previousSibling && (before.previousSibling as Element).id?.startsWith('pmp-p')) return;
+
     const anchor = doc.createElementNS(body.namespaceURI, "a");
     anchor.id = `pmp-p${pageNumber}`;
     anchor.setAttribute("name", `pmp-p${pageNumber}`);
@@ -454,56 +449,60 @@ function injectPageAnchors(html: string): string {
     pageNumber += 1;
   };
 
-  addAnchor(body.firstChild);
+  /* Always start with p1 */
+  addAnchor(body.firstChild || body);
 
-  for (const block of blocks) {
-    const tag = block.tagName.toLowerCase();
-    const textLength = (block.textContent ?? "").replace(/\s+/g, " ").trim().length;
-    const weight = tag === "img" ? 1800 : Math.max(textLength, 120);
-    currentChars += weight;
-
-    const isHeading = /^h[1-6]$/.test(tag);
-    const shouldSplit =
-      currentChars >= targetChars ||
-      (currentChars >= minChars && isHeading) ||
-      (currentChars >= minChars && block.tagName.toLowerCase() === "img");
-
-    if (shouldSplit) {
-      addAnchor(block);
-      currentChars = 0;
+  const walk = (node: Node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent || "";
+      const len = text.replace(/\s+/g, " ").trim().length;
+      
+      if (currentChars + len > targetChars * 1.5) {
+        /* Giant text node - split it */
+        const parts = [];
+        for (let i = 0; i < text.length; i += targetChars) {
+          parts.push(text.slice(i, i + targetChars));
+        }
+        const fragment = doc.createDocumentFragment();
+        parts.forEach((part, i) => {
+          if (i > 0) {
+            const anchor = doc.createElementNS(body.namespaceURI, "a");
+            anchor.id = `pmp-p${pageNumber}`;
+            anchor.setAttribute("name", `pmp-p${pageNumber}`);
+            fragment.appendChild(anchor);
+            pageNumber += 1;
+          }
+          fragment.appendChild(doc.createTextNode(part));
+        });
+        node.parentNode?.replaceChild(fragment, node);
+        currentChars = 0;
+      } else {
+        currentChars += len;
+        if (currentChars >= targetChars) {
+          addAnchor(node);
+          currentChars = 0;
+        }
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node as Element;
+      const tag = el.tagName.toLowerCase();
+      
+      const isBreak = /^(h[1-6]|img|br|hr|blockquote|table|figure)$/.test(tag);
+      if (isBreak && currentChars >= minChars) {
+        addAnchor(node);
+        currentChars = 0;
+      }
+      
+      /* Recursively walk children */
+      const children = Array.from(node.childNodes);
+      children.forEach(walk);
     }
-  }
+  };
 
-  const anchorCount = body.querySelectorAll("[id^='pmp-p']").length;
-  if (anchorCount <= 2 && (body.textContent ?? "").replace(/\s+/g, " ").trim().length > 4000) {
-    console.log('[EPUB] Dense prose fallback: splitting body text into page-sized chunks.');
-    const fullText = body.textContent ?? "";
-    const cleanText = fullText.replace(/\s+/g, " ").trim();
-    const chunkSize = 900;
-    body.replaceChildren();
-    const firstAnchor = doc.createElementNS(body.namespaceURI, "a");
-    firstAnchor.id = "pmp-p1";
-    firstAnchor.setAttribute("name", "pmp-p1");
-    body.appendChild(firstAnchor);
-
-    const textParts = [] as string[];
-    for (let i = 0; i < cleanText.length; i += chunkSize) {
-      textParts.push(cleanText.slice(i, i + chunkSize));
-    }
-
-    for (let i = 0; i < textParts.length; i += 1) {
-      const p = doc.createElementNS(body.namespaceURI, "p");
-      p.textContent = textParts[i];
-      const anchor = doc.createElementNS(body.namespaceURI, "a");
-      anchor.id = `pmp-p${i + 2}`;
-      anchor.setAttribute("name", `pmp-p${i + 2}`);
-      body.appendChild(p);
-      body.appendChild(anchor);
-    }
-  }
+  Array.from(body.childNodes).forEach(walk);
 
   const serialized = new XMLSerializer().serializeToString(doc);
-  console.log('[EPUB] Anchor injection complete. Page anchors created:', body.querySelectorAll("[id^='pmp-p']").length);
+  console.log('[EPUB] Universal injection complete. Page anchors created:', body.querySelectorAll("[id^='pmp-p']").length);
   return serialized;
 }
 
@@ -682,21 +681,25 @@ async function expandChapterAnchors(
   }
 
   let html = String(await file.async("string"));
-  console.log('[EPUB] HTML length:', html.length, 'for:', entryName);
+  const textLen = html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim().length;
+  console.log('[EPUB] HTML length:', html.length, 'Text length:', textLen, 'for:', entryName);
+  
   let anchors = collectPageAnchors(html);
   console.log('[EPUB] Initial anchors found:', anchors.length);
 
-  /* Fallback: if no physical anchors exist, estimate shorter reading pages. */
-  if (anchors.length < 2) {
-    console.log('[EPUB] Less than 2 anchors, injecting page anchors');
+  /* 
+    Aggressive Splitting: If no physical anchors exist, or they are too sparse 
+    (e.g. 5000 chars with only 2 anchors), inject page anchors.
+  */
+  const isSparse = anchors.length > 0 && textLen / anchors.length > 1000;
+  if (anchors.length < 2 || isSparse) {
+    console.log('[EPUB] Anchors sparse or missing, injecting page anchors. Sparse:', isSparse);
     const injected = injectPageAnchors(html);
     if (injected !== html) {
       html = injected;
       zip.file(entryName, html);
       anchors = collectPageAnchors(html);
       console.log('[EPUB] After injection, anchors:', anchors.length);
-    } else {
-      console.log('[EPUB] Injection did not change HTML');
     }
   }
 

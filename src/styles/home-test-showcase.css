@@ -612,8 +612,6 @@
   cursor: pointer;
 }
 
-.library-locale-short { display: none; }
-
 .library-locale-menu {
   position: absolute;
   top: calc(100% + 7px);
@@ -662,9 +660,8 @@
 .library-audience-switch {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  margin-left: 4px;
-  padding: 3px;
+  gap: 1px;
+  padding: 2px;
   border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: 999px;
   background: linear-gradient(180deg, #f8fafc, #aeb6c4);
@@ -672,15 +669,17 @@
 }
 
 .library-audience-switch button {
-  min-width: 48px;
-  padding: 6px 11px;
+  min-width: 34px;
+  padding: 3px 8px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: #344052;
   font: inherit;
-  font-size: 0.74rem;
+  font-size: 0.64rem;
   font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -699,28 +698,19 @@
   .library-top-bar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "start nav" "audience audience";
+    grid-template-areas: "start nav";
     gap: 7px 5px;
     padding: 8px 7px 9px;
   }
   .library-top-bar-start { grid-area: start; }
   .library-top-bar-nav { grid-area: nav; gap: 5px; }
   .library-top-bar-primary { display: none; }
-  .library-audience-switch {
-    grid-area: audience;
-    justify-self: stretch;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin: 0;
-    padding: 2px;
-  }
-  .library-audience-switch button { min-width: 0; padding: 6px 8px; }
+  .library-audience-switch { padding: 1px; }
+  .library-audience-switch button { min-width: 0; padding: 3px 6px; font-size: 0.6rem; }
   .library-top-bar-start { gap: 6px; }
   .library-top-bar-brand { gap: 4px; font-size: 0.88rem; }
   .library-menu-trigger { width: 32px; height: 32px; }
-  .library-locale-toggle { min-width: 38px; padding: 5px 7px; font-size: 0.66rem; }
-  .library-locale-short { display: inline; }
-  .library-locale-full { display: none; }
+  .library-locale-toggle { min-width: 0; padding: 5px 7px; font-size: 0.66rem; }
 }
 
 .page-search-showcase { min-height: 100vh; }
