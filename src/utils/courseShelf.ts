@@ -387,7 +387,7 @@ const placeholderRows: CourseShelfRow[] = [
 ];
 
 
-function buildShelfRow(title: string, items: CourseShelfItem[]): CourseShelfRow {
+export function buildShelfRow(title: string, items: CourseShelfItem[]): CourseShelfRow {
   const CHUNK = 7;
   const placeholder = placeholderRows.find((row) => row.title === title);
   const base = items.length > 0

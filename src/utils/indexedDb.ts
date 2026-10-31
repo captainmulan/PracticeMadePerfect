@@ -2,7 +2,7 @@ import type { Course, CourseChapter, CourseStep, CourseStepOutline } from "../da
 import type { PracticeTask } from "../data/tasks";
 import type { Announcement } from "../types/announcement";
 import { BOOK_COVER_SEEDS } from "./bookCoverSeeds";
-import { normalizeBookCategory } from "./bookCategories";
+import { normalizeBookCategory, normalizeCategoryTag } from "./bookCategories";
 import { canonicalAuthorName } from "./authorName";
 import { bookStorageCategory, normalizeBookStorageFolder } from "./htmlStepContent";
 import { getBookAssetUrl } from "../config/externalHosting";
@@ -293,10 +293,10 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     courseIndex: raw.courseIndex,
     category: normalizeBookCategory(raw.category),
     language: normalizeBookLanguage(raw.language, raw.category),
-    cat1: raw.cat1,
-    cat2: raw.cat2,
-    cat3: raw.cat3,
-    cat4: raw.cat4,
+    cat1: raw.cat1 ? normalizeCategoryTag(raw.cat1) : raw.cat1,
+    cat2: raw.cat2 ? normalizeCategoryTag(raw.cat2) : raw.cat2,
+    cat3: raw.cat3 ? normalizeCategoryTag(raw.cat3) : raw.cat3,
+    cat4: raw.cat4 ? normalizeCategoryTag(raw.cat4) : raw.cat4,
     pIndex: raw.pIndex,
     scIndex: raw.scIndex,
     sIndex: raw.sIndex,
@@ -531,6 +531,10 @@ export async function saveCourse(course: Course): Promise<void> {
     writeTransaction.objectStore(STORE_COURSES).put({
       ...courseMeta,
       category: normalizeBookCategory(course.category),
+      cat1: course.cat1 ? normalizeCategoryTag(course.cat1) : course.cat1,
+      cat2: course.cat2 ? normalizeCategoryTag(course.cat2) : course.cat2,
+      cat3: course.cat3 ? normalizeCategoryTag(course.cat3) : course.cat3,
+      cat4: course.cat4 ? normalizeCategoryTag(course.cat4) : course.cat4,
       language: normalizeBookLanguage(course.language, course.category),
       chapters: [],
       stepOutline,
@@ -575,6 +579,10 @@ export async function saveCourseSummary(course: Course): Promise<void> {
     ...(existing ?? {} as CourseRecord),
     ...summary,
     category: normalizeBookCategory(course.category),
+    cat1: course.cat1 ? normalizeCategoryTag(course.cat1) : course.cat1,
+    cat2: course.cat2 ? normalizeCategoryTag(course.cat2) : course.cat2,
+    cat3: course.cat3 ? normalizeCategoryTag(course.cat3) : course.cat3,
+    cat4: course.cat4 ? normalizeCategoryTag(course.cat4) : course.cat4,
     language: normalizeBookLanguage(course.language, course.category),
     chapters: [],
     detailLoaded: stepOutlineIsStale ? false : existing?.detailLoaded ?? Boolean(existing?.stepOutline?.length),
@@ -1160,8 +1168,18 @@ async function migrateLegacyBookCategories(): Promise<void> {
   const courses = await promisifyRequest(store.getAll()) as CourseRecord[];
   for (const course of courses) {
     const next = normalizeBookCategory(course.category);
-    if (next && next !== course.category) {
-      store.put({ ...course, category: next });
+    const nextCat1 = course.cat1 ? normalizeCategoryTag(course.cat1) : course.cat1;
+    const nextCat2 = course.cat2 ? normalizeCategoryTag(course.cat2) : course.cat2;
+    const nextCat3 = course.cat3 ? normalizeCategoryTag(course.cat3) : course.cat3;
+    const nextCat4 = course.cat4 ? normalizeCategoryTag(course.cat4) : course.cat4;
+    if (
+      next !== course.category ||
+      nextCat1 !== course.cat1 ||
+      nextCat2 !== course.cat2 ||
+      nextCat3 !== course.cat3 ||
+      nextCat4 !== course.cat4
+    ) {
+      store.put({ ...course, category: next, cat1: nextCat1, cat2: nextCat2, cat3: nextCat3, cat4: nextCat4 });
     }
   }
 }

@@ -15,6 +15,7 @@ import {
   getCategoryBrowseRow,
   getCategoryPickerRow,
   getCourseShelfRowForAuthor,
+  buildShelfRow,
   getHomeCategoryBookRow,
   getHomeCourseShelfRows,
   getPopularCourses,
@@ -104,67 +105,64 @@ export default function Home({ showUnpublishedOnly = false }: HomeProps) {
   );
   const homeRows = useMemo(() => {
     if (showUnpublishedOnly) return [];
-    if (selectedAudience === "Kid") {
-      const selection = {
-        title: "Selection",
-        items: getPopularCourses(kidCourses).map((course) => createShelfItemFromCourse(course, "Selection")),
-      };
-      const categories = ["JuniorNovel", "Comic", "Interactive", "IT", "Science", "Biography", "Short Stories"]
-        .map((category) => getHomeCategoryBookRow(kidCourses, category));
-      const newlyAdded = {
-        title: "Newly Added",
-        items: kidCourses
-          .slice()
-          .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
-          .map((course) => createShelfItemFromCourse(course, "Newly Added")),
-      };
-      const currentReading = {
-        title: "Current Reading",
-        items: kidCourses
-          .filter((course) => hasSavedProgress(course.id))
-          .map((course) => createShelfItemFromCourse(course, "Current Reading")),
-      };
-      return [selection, ...categories, newlyAdded, currentReading]
-        .filter((row) => row.items.length > 0);
-    }
+    const audienceCourses = selectedAudience === "Kid"
+      ? kidCourses
+      : courses.filter((course) => courseMatchesCategoryPath(course, ["Other"]));
     const popularCourses = getPopularCourses(courses);
-    const selection = {
-      title: "Selection",
-      items: popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
-    };
-    const categoryRows = [
-      getHomeCategoryBookRow(courses, "IT"),
-      getHomeCategoryBookRow(courses, "Personal Growth", ["Other", "Finance"]),
-      getHomeCategoryBookRow(courses, "Kid_JuniorNovel", ["Kid", "JuniorNovel"], true),
-      getHomeCategoryBookRow(courses, "Interactive"),
-      getHomeCategoryBookRow(courses, "Kid_OxfordReading", ["Kid", "Comic", "OxfordReading"]),
-      getHomeCategoryBookRow(courses, "Kid_Comic", ["Kid", "Comic"]),
-      getHomeCategoryBookRow(courses, "Other_Novel", ["Other", "Novel"]),
-      getHomeCategoryBookRow(courses, "Language"),
-    ];
-    const newlyAdded = courses
-      .slice()
-      .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
-      .map((course) => createShelfItemFromCourse(course, "Newly added"));
-    const myanmarBooks = courses
-      .filter((course) =>
+    const selection = buildShelfRow(
+      "Selection",
+      popularCourses.map((course) => createShelfItemFromCourse(course, "Selection")),
+    );
+    const categoryRows = selectedAudience === "Kid"
+      ? [
+          getHomeCategoryBookRow(audienceCourses, "Junior Novel", ["Kid", "JuniorNovel"], true),
+          getHomeCategoryBookRow(audienceCourses, "Comic"),
+          getHomeCategoryBookRow(audienceCourses, "Interactive"),
+          getHomeCategoryBookRow(audienceCourses, "Science"),
+          getHomeCategoryBookRow(audienceCourses, "Short Stories"),
+          getHomeCategoryBookRow(audienceCourses, "Biography"),
+        ]
+      : [
+          getHomeCategoryBookRow(audienceCourses, "IT"),
+          getHomeCategoryBookRow(audienceCourses, "Personal Growth", ["Other", "Personal Growth"]),
+          getHomeCategoryBookRow(audienceCourses, "Novel", ["Other", "Novel"], true),
+          getHomeCategoryBookRow(audienceCourses, "Biography"),
+          getHomeCategoryBookRow(audienceCourses, "Fiction"),
+          getHomeCategoryBookRow(audienceCourses, "Short Stories"),
+          getHomeCategoryBookRow(audienceCourses, "Language"),
+        ];
+    const myanmarBooks = buildShelfRow(
+      "Myanmar Books",
+      audienceCourses
+        .filter((course) =>
         course.language === "MM" ||
         bookHasCategoryTag(course.category, "MM") ||
         bookHasCategoryTag(course.category, "Myanmar") ||
         bookHasCategoryTag(course.category, "Shwe Thway") ||
         bookHasCategoryTag(course.category, "Tootpee"),
-      )
-      .map((course) => createShelfItemFromCourse(course, "Myanmar books"));
-    const currentReading = courses
-      .filter((course) => hasSavedProgress(course.id))
-      .map((course) => createShelfItemFromCourse(course, "Current reading"));
+        )
+        .map((course) => createShelfItemFromCourse(course, "Myanmar Books")),
+    );
+    const newlyAdded = buildShelfRow(
+      "Newly Added",
+      audienceCourses
+        .slice()
+        .sort((a, b) => (b.courseIndex ?? 0) - (a.courseIndex ?? 0) || a.title.localeCompare(b.title))
+        .map((course) => createShelfItemFromCourse(course, "Newly Added")),
+    );
+    const currentReading = buildShelfRow(
+      "Current Reading",
+      audienceCourses
+        .filter((course) => hasSavedProgress(course.id))
+        .map((course) => createShelfItemFromCourse(course, "Current Reading")),
+    );
     return [
-      ...(selection.items.length > 0 ? [selection] : []),
+      selection,
       ...categoryRows,
-      ...(myanmarBooks.length > 0 ? [{ title: "Myanmar books", items: myanmarBooks }] : []),
-      { title: "Newly added", items: newlyAdded },
-      ...(currentReading.length > 0 ? [{ title: "Current reading", items: currentReading }] : []),
-    ].filter((row): row is NonNullable<typeof row> => Boolean(row && row.items.length > 0));
+      myanmarBooks,
+      newlyAdded,
+      currentReading,
+    ];
   }, [courses, kidCourses, rows, selectedAudience, shelfSettingsVersion, showUnpublishedOnly]);
   const authorGroups = useMemo(() => {
     const groups = new Map<string, { authorName: string; authorPicture?: string }>();

@@ -135,7 +135,7 @@ const CATEGORY_STYLES: Record<
   Biography: { icon: "🪪", coverColorStart: "#fcd34d", coverColorMiddle: "#f59e0b", coverColorEnd: "#b45309" },
   Author: { icon: "👤", coverColorStart: "#c4b5fd", coverColorMiddle: "#8b5cf6", coverColorEnd: "#6d28d9" },
   Fiction: { icon: "📖", coverColorStart: "#fda4af", coverColorMiddle: "#fb7185", coverColorEnd: "#e11d48" },
-  Finance: { icon: "💰", coverColorStart: "#86efac", coverColorMiddle: "#22c55e", coverColorEnd: "#15803d" },
+  "Personal Growth": { icon: "💰", coverColorStart: "#86efac", coverColorMiddle: "#22c55e", coverColorEnd: "#15803d" },
   Novel: { icon: "🪶", coverColorStart: "#fda4af", coverColorMiddle: "#e879f9", coverColorEnd: "#a21caf" },
   Asterix: { icon: "🛡️", coverColorStart: "#fde047", coverColorMiddle: "#facc15", coverColorEnd: "#ca8a04" },
   BoBo: { icon: "🐰", coverColorStart: "#fdba74", coverColorMiddle: "#fb923c", coverColorEnd: "#c2410c" },
@@ -153,6 +153,11 @@ const STYLE_PALETTE = [
 
 function normalizeTag(tag: string): string {
   return tag.trim();
+}
+
+export function normalizeCategoryTag(tag: string | null | undefined): string {
+  const normalized = normalizeTag(String(tag ?? ""));
+  return normalized.toLowerCase() === "finance" ? "Personal Growth" : normalized;
 }
 
 /** Split IndexedDB category column into tags (comma-separated). */
@@ -176,7 +181,7 @@ export function serializeCategoryTags(tags: string[]): string {
 
 /** Normalize a full category cell (one or many tags) for storage. */
 export function normalizeBookCategory(category: string | null | undefined): string {
-  return serializeCategoryTags(parseCategoryTags(category));
+  return serializeCategoryTags(parseCategoryTags(category).map(normalizeCategoryTag));
 }
 
 export function bookHasCategoryTag(category: string | null | undefined, tag: string): boolean {
@@ -216,7 +221,6 @@ export function collectCategoryTagsFromCourses(courses: Array<{ category?: strin
 
 export function formatCategoryLabel(tag: string): string {
   if (tag === "PersonalDevelopment") return "Personal Dev";
-  if (tag === "Finance") return "Personal Growth";
   if (tag === "Shwe Thway") return "ရွှေသွေး";
   if (tag === "Tootpee") return "တွတ်ပီ";
   if (tag === "Short Stories") return "Short Stories";
@@ -256,12 +260,12 @@ function audienceTag(has: (name: string) => boolean, storedCat1?: string | null,
 
 /** Kid | Other at the top, then type (Biography, Comic, …), then optional series. */
 export function inferCategoryLevels(course: CategoryCourse): [string, string, string, string] {
-  const tags = parseCategoryTags(course.category);
+  const tags = parseCategoryTags(course.category).map(normalizeCategoryTag);
   const id = String(course.id ?? "").toLowerCase();
   const has = (name: string) => tags.some((tag) => tag.toLowerCase() === name.toLowerCase());
-  const cat1 = course.cat1?.trim() ?? "";
-  const cat2 = course.cat2?.trim() ?? "";
-  const cat3 = course.cat3?.trim() ?? "";
+  const cat1 = normalizeCategoryTag(course.cat1);
+  const cat2 = normalizeCategoryTag(course.cat2);
+  const cat3 = normalizeCategoryTag(course.cat3);
 
   if (has("Interactive") || cat1 === "Interactive" || cat2 === "Interactive") {
     return ["Kid", "Interactive", "", ""];
@@ -301,7 +305,7 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
 
   if (has("Language") || cat1 === "Language" || cat2 === "Language") {
     const languageSubcategory = cat3 || tags.find((tag) => isLanguageSubcategoryTag(tag)) || "";
-    const seriesOrSubcategory = (course.cat4 ?? "").trim();
+    const seriesOrSubcategory = normalizeCategoryTag(course.cat4);
     return [audienceTag(has, cat1, cat2), "Language", languageSubcategory, seriesOrSubcategory];
   }
 
@@ -323,7 +327,7 @@ export function inferCategoryLevels(course: CategoryCourse): [string, string, st
   }
 
   if (cat1 === "Kid" || cat1 === "Other") {
-    return [cat1, cat2, cat3, (course.cat4 ?? "").trim()];
+    return [cat1, cat2, cat3, normalizeCategoryTag(course.cat4)];
   }
 
   return [audienceTag(has, cat1, cat2), tags[0] ?? cat1, tags[1] ?? cat2, ""];
@@ -386,7 +390,7 @@ export function collectCategoryChildren(courses: CategoryCourse[], path: string[
     seen.add(key);
     children.push(next);
   }
-  const rank = ["Kid", "Other", "Interactive", "Biography", "Comic", "Fiction", "Finance", "IT", "Language", "Novel", "Short Stories", "PersonalDevelopment", "Translation", "AI", "Asterix", "BoBo", "Shwe Thway", "Tootpee"];
+  const rank = ["Kid", "Other", "Interactive", "Biography", "Comic", "Fiction", "Personal Growth", "IT", "Language", "Novel", "Short Stories", "PersonalDevelopment", "Translation", "AI", "Asterix", "BoBo", "Shwe Thway", "Tootpee"];
   return children.sort((a, b) => {
     const ia = rank.indexOf(a);
     const ib = rank.indexOf(b);
