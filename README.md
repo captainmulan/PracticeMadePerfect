@@ -28,6 +28,21 @@ npm run dev
 
 3. Open the app at: `http://localhost:4173`
 
+## Capture a sharp Facebook app-page image
+
+For a Facebook public-group post that should show the real app page, capture the live route instead of resizing an old screenshot. The old course screenshot was only `384 x 502` pixels, so enlarging it causes blur.
+
+1. Start the local app with `npm run dev`.
+2. Use Playwright with an `800 x 1000` CSS viewport and `deviceScaleFactor: 1.5`. This produces a sharp `1200 x 1500` PNG with the mobile/tablet page composition:
+
+```powershell
+node -e "const { chromium } = require('playwright'); (async () => { const browser = await chromium.launch({ headless: true }); const page = await browser.newPage({ viewport: { width: 800, height: 1000 }, deviceScaleFactor: 1.5 }); const url = 'http://localhost:4173/courses/' + encodeURIComponent('ဂရုမစိုက်ခြင်းအနုပညာ'); await page.goto(url); await page.waitForTimeout(5000); await page.addStyleTag({ content: 'html,body{overflow-x:hidden!important}' }); await page.screenshot({ path: 'C:/Users/65966/Downloads/Temp book related/Image/practice-made-perfect-app-page-1200x1500.png', type: 'png' }); await browser.close(); })();"
+```
+
+3. Verify the output is `1200 x 1500` PNG before uploading. The capture should include the actual navigation, cover, title, Read button, description, and related books.
+
+If a designed promotional card is needed instead, use the original cover from the EPUB (`cover.jpeg`, typically `918 x 1388`) or the course WebP thumbnail. Do not use the low-resolution page screenshot as the source for either workflow.
+
 ## Important: Project Structure Constraints
 
 **DO NOT introduce new deployment workflows or scripts.** The project follows these established patterns:

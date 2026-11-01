@@ -703,7 +703,14 @@
 
 @media (max-width: 640px) {
   .practice-settings-buttons {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .practice-settings-buttons::-webkit-scrollbar {
+    display: none;
   }
 
   .practice-settings-buttons .pdf-zoom-control {

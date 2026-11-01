@@ -65,10 +65,8 @@ function loadEpubLibrary(): Promise<EpubFactory> {
   const globals = window as Window & { ePub?: EpubFactory; JSZip?: unknown };
   if (!epubLibraryPromise) {
     epubLibraryPromise = (async () => {
-      await Promise.all([
-        loadScript("https://unpkg.com/jszip@3.10.1/dist/jszip.min.js", () => typeof globals.JSZip === "function"),
-        loadScript("https://unpkg.com/epubjs@0.3.93/dist/epub.min.js", () => typeof globals.ePub === "function"),
-      ]);
+      await loadScript("https://unpkg.com/jszip@3.10.1/dist/jszip.min.js", () => typeof globals.JSZip === "function");
+      await loadScript("https://unpkg.com/epubjs@0.3.93/dist/epub.min.js", () => typeof globals.ePub === "function");
       if (typeof globals.ePub !== "function") throw new Error("EPUB.js failed to load. Please retry.");
       return globals.ePub;
     })();
