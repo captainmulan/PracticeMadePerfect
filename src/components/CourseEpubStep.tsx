@@ -179,6 +179,7 @@ function findChapterAnchor(doc: Document, fragment: string) {
 function clearChapterIsolation(doc: Document) {
   doc.getElementById("pmp-isolate-style")?.remove();
   doc.querySelectorAll("[data-pmp-hide='1']").forEach((element) => element.removeAttribute("data-pmp-hide"));
+  delete doc.documentElement.dataset.pmpIsolationKey;
 }
 
 function hideAnchorSiblings(anchor: Element, hideBefore: boolean) {
@@ -186,7 +187,7 @@ function hideAnchorSiblings(anchor: Element, hideBefore: boolean) {
   const following = Node.DOCUMENT_POSITION_FOLLOWING;
 
   let current: Element | null = anchor;
-  while (current && current.parentElement && current.parentElement.tagName.toLowerCase() !== "body") {
+  while (current && current !== anchor.ownerDocument.body && current.parentElement) {
     const parent: Element = current.parentElement;
     const siblings = Array.from(parent.childNodes);
     const index = siblings.indexOf(current);
@@ -216,6 +217,8 @@ function applyChapterIsolation(
   imageIndex?: number,
 ) {
   if (!doc.body) return;
+  const isolationKey = JSON.stringify([fragment, nextFragment ?? "", imageIndex ?? null]);
+  if (doc.documentElement.dataset.pmpIsolationKey === isolationKey) return;
   clearChapterIsolation(doc);
   const anchors = [...doc.querySelectorAll("[id], a[name]")];
   const start = findChapterAnchor(doc, fragment) ?? 
@@ -229,45 +232,20 @@ function applyChapterIsolation(
     return;
   }
 
-  const startIndex = anchors.indexOf(start);
   const requestedEnd = nextFragment ? findChapterAnchor(doc, nextFragment) : null;
-  const endIndex = requestedEnd ? anchors.indexOf(requestedEnd) : -1;
   const marker = /^(?:p\d+|pgepubid|chap|chapter|part|sec|section|pmp-p)[-_]?\d*/i;
-  const end = endIndex > startIndex
+  const end = requestedEnd && start.compareDocumentPosition(requestedEnd) & Node.DOCUMENT_POSITION_FOLLOWING
     ? requestedEnd
-    : anchors.slice(startIndex + 1).find((element) => marker.test(element.id || element.getAttribute("name") || ""));
+    : anchors.find((element) =>
+      Boolean(start.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+      marker.test(element.id || element.getAttribute("name") || ""),
+    );
 
   const style = doc.createElement("style");
   style.id = "pmp-isolate-style";
   style.textContent = "[data-pmp-hide='1']{display:none!important;}";
   (doc.head || doc.documentElement).appendChild(style);
 
-  const preceding = doc.defaultView?.Node.DOCUMENT_POSITION_PRECEDING ?? 2;
-  const following = doc.defaultView?.Node.DOCUMENT_POSITION_FOLLOWING ?? 4;
-
-  /* 
-    Isolate the page content by hiding everything outside the [start, end) range.
-    We check every element's position relative to our anchors.
-  */
-  for (const element of doc.body.querySelectorAll("*")) {
-    if (element.contains(start)) continue;
-    if (end && element.contains(end)) continue;
-
-    const posToStart = start.compareDocumentPosition(element);
-    if (posToStart & preceding) {
-      element.setAttribute("data-pmp-hide", "1");
-      continue;
-    }
-
-    if (end) {
-      const posToEnd = end.compareDocumentPosition(element);
-      if (element === end || (posToEnd & following)) {
-        element.setAttribute("data-pmp-hide", "1");
-      }
-    }
-  }
-
-  /* Clip text nodes at the start and end boundaries. */
   hideAnchorSiblings(start, true);
   if (end) hideAnchorSiblings(end, false);
 
@@ -283,6 +261,7 @@ function applyChapterIsolation(
     doc.documentElement.scrollTop = 0;
     doc.body.scrollTop = 0;
   }
+  doc.documentElement.dataset.pmpIsolationKey = isolationKey;
 }
 
 const comicSpreadOriginalStyles = new WeakMap<Element, string | null>();
@@ -1089,7 +1068,9 @@ export default function CourseEpubStep({
         rendition.hooks?.content?.register(async (contents) => {
           if (!contents.document) return;
           const doc = contents.document;
-          if (/[\u1000-\u109F]/.test(doc.body?.textContent ?? "")) {
+          if (myanmarTextEncoding === "unicode") {
+            if (doc.documentElement) doc.documentElement.dataset.pmpMyanmarTextChecked = "1";
+          } else if (/[\u1000-\u109F]/.test(doc.body?.textContent ?? "")) {
             try {
               const tools = await loadMyanmarTools();
               if (!active || !doc.body) return;
