@@ -29,6 +29,7 @@ const SUMMARY_KEYS = [
     "authorName",
     "category",
     "language",
+  "myanmarTextEncoding",
   "isPublished",
   "cat1",
   "cat2",

@@ -331,6 +331,7 @@ export default function CourseWizard() {
           bookHtmlFolder={outline.bookHtmlFolder}
           category={outline.category}
           pageViewType={outline.pageViewType}
+          myanmarTextEncoding={outline.myanmarTextEncoding}
           courseId={outline.id}
           onPrevious={handlePrevious}
           onNext={handleNext}

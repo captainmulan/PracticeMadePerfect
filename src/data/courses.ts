@@ -90,6 +90,8 @@ export interface Course {
   category: string;
   /** Primary language stored for catalog filtering and display. */
   language?: "Eng" | "MM";
+  /** Myanmar text encoding for EPUB content. Auto uses confidence-based detection. */
+  myanmarTextEncoding?: "auto" | "unicode" | "zawgyi";
   /** Category tree: Comic > Kid > Shwe Thway */
   cat1?: string;
   cat2?: string;

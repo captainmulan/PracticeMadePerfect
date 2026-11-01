@@ -39,8 +39,15 @@ type EpubBook = {
 
 type EpubFactory = (source: string | Uint8Array, options?: Record<string, unknown>) => EpubBook;
 
+type MyanmarTools = {
+  ZawgyiDetector: new () => { getZawgyiProbability: (text: string) => number };
+  ZawgyiConverter: new () => { zawgyiToUnicode: (text: string) => string };
+};
+
 let epubLibraryPromise: Promise<EpubFactory> | null = null;
+let myanmarToolsPromise: Promise<MyanmarTools> | null = null;
 const EPUB_LOADING_INDICATOR_DELAY_MS = 300;
+const MYANMAR_TEXT_BLOCK_SELECTOR = "p,li,td,th,h1,h2,h3,h4,h5,h6,blockquote,figcaption,dt,dd";
 
 function loadScript(src: string, ready: () => boolean): Promise<void> {
   if (ready()) return Promise.resolve();
@@ -67,6 +74,74 @@ function loadEpubLibrary(): Promise<EpubFactory> {
     })();
   }
   return epubLibraryPromise;
+}
+
+function loadMyanmarTools(): Promise<MyanmarTools> {
+  const globals = window as Window & { google_myanmar_tools?: MyanmarTools };
+  if (!myanmarToolsPromise) {
+    myanmarToolsPromise = (async () => {
+      await Promise.all([
+        loadScript(
+          "https://ajax.googleapis.com/ajax/libs/myanmar-tools/1.1.3/zawgyi_detector.min.js",
+          () => typeof globals.google_myanmar_tools?.ZawgyiDetector === "function",
+        ),
+        loadScript(
+          "https://ajax.googleapis.com/ajax/libs/myanmar-tools/1.1.3/zawgyi_converter.min.js",
+          () => typeof globals.google_myanmar_tools?.ZawgyiConverter === "function",
+        ),
+      ]);
+      if (!globals.google_myanmar_tools?.ZawgyiDetector || !globals.google_myanmar_tools.ZawgyiConverter) {
+        throw new Error("Myanmar text conversion tools did not initialize.");
+      }
+      return globals.google_myanmar_tools;
+    })();
+  }
+  return myanmarToolsPromise;
+}
+
+function convertConfidentZawgyiBlocks(
+  doc: Document,
+  tools: MyanmarTools,
+  encoding: "auto" | "unicode" | "zawgyi",
+) {
+  if (!doc.body || doc.documentElement.dataset.pmpMyanmarTextChecked === "1") return;
+  if (encoding === "unicode") {
+    doc.documentElement.dataset.pmpMyanmarTextChecked = "1";
+    return;
+  }
+
+  const detector = new tools.ZawgyiDetector();
+  const converter = new tools.ZawgyiConverter();
+  const candidates = [...doc.body.querySelectorAll(MYANMAR_TEXT_BLOCK_SELECTOR)];
+  const blocks = candidates.filter((block) => !block.parentElement?.closest(MYANMAR_TEXT_BLOCK_SELECTOR));
+  if (!blocks.length) blocks.push(doc.body);
+  let convertedAnyBlock = false;
+
+  for (const block of blocks) {
+    const text = block.textContent?.trim() ?? "";
+    if ([...text].length < 4) continue;
+    if (encoding === "auto" && detector.getZawgyiProbability(text) < 0.95) continue;
+
+    const walker = doc.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+    let node = walker.nextNode();
+    while (node) {
+      const original = node.textContent ?? "";
+      if (original.trim()) node.textContent = converter.zawgyiToUnicode(original);
+      node = walker.nextNode();
+    }
+    block.setAttribute("data-pmp-zawgyi-converted", "1");
+    convertedAnyBlock = true;
+  }
+
+  if (convertedAnyBlock && doc.head && !doc.getElementById("pmp-myanmar-unicode-font")) {
+    const fontStylesheet = doc.createElement("link");
+    fontStylesheet.id = "pmp-myanmar-unicode-font";
+    fontStylesheet.rel = "stylesheet";
+    fontStylesheet.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;500;600;700;800&display=swap";
+    doc.head.appendChild(fontStylesheet);
+  }
+
+  doc.documentElement.dataset.pmpMyanmarTextChecked = "1";
 }
 
 function locationFragment(location: string | null) {
@@ -619,6 +694,7 @@ function styleEpubContents(
   style.textContent = `
     html,body{margin:0!important;padding:0!important;width:100%!important;max-width:none!important;overflow-x:hidden!important}
     body,body *{-webkit-user-select:text!important;user-select:text!important;-webkit-touch-callout:default!important}
+    [data-pmp-zawgyi-converted="1"],[data-pmp-zawgyi-converted="1"] *{font-family:"Noto Sans Myanmar","Myanmar Text",Padauk,sans-serif!important}
     body{padding:.5em 12px 1.5em!important;box-sizing:border-box!important;line-height:1.55!important}
     body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:16px!important;line-height:1.65!important}
     @media(max-width:640px){body:not(.pmp-fixed-epub-layout) p,body:not(.pmp-fixed-epub-layout) li,body:not(.pmp-fixed-epub-layout) td,body:not(.pmp-fixed-epub-layout) th,body:not(.pmp-fixed-epub-layout) blockquote,body:not(.pmp-fixed-epub-layout) p *,body:not(.pmp-fixed-epub-layout) li *,body:not(.pmp-fixed-epub-layout) td *,body:not(.pmp-fixed-epub-layout) th *,body:not(.pmp-fixed-epub-layout) blockquote *{font-size:20px!important;line-height:1.7!important}}
@@ -707,6 +783,7 @@ interface CourseEpubStepProps {
   category?: string | null;
   pageViewType?: PageViewType | null;
   courseId?: string | null;
+  myanmarTextEncoding?: "auto" | "unicode" | "zawgyi";
   onPrevious?: () => void;
   onNext?: () => void;
   onNavigateToPage?: (pageIndex: number) => void;
@@ -732,6 +809,7 @@ export default function CourseEpubStep({
   pageBrief,
   category,
   pageViewType: pageViewTypeProp,
+  myanmarTextEncoding = "auto",
   onPrevious,
   onNext,
   onNavigateToPage,
@@ -1008,9 +1086,19 @@ export default function CourseEpubStep({
           (doc as Document & { __pmpDictionaryBound?: boolean }).__pmpDictionaryBound = true;
         };
 
-        rendition.hooks?.content?.register((contents) => {
+        rendition.hooks?.content?.register(async (contents) => {
           if (!contents.document) return;
           const doc = contents.document;
+          if (/[\u1000-\u109F]/.test(doc.body?.textContent ?? "")) {
+            try {
+              const tools = await loadMyanmarTools();
+              if (!active || !doc.body) return;
+              convertConfidentZawgyiBlocks(doc, tools, myanmarTextEncoding);
+            } catch (error) {
+              console.warn("Myanmar text detection failed; keeping the EPUB text unchanged.", error);
+            }
+          }
+          if (!active) return;
           doc.defaultView?.requestAnimationFrame(() => {
             removeObjectReplacementCharacters(doc);
             applyPagePresentation(doc, locationFragment(locationRef.current));

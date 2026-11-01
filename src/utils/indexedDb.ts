@@ -293,6 +293,7 @@ function toCourseSummaryRecord(raw: CourseRecord): Course {
     courseIndex: raw.courseIndex,
     category: normalizeBookCategory(raw.category),
     language: normalizeBookLanguage(raw.language, raw.category),
+    myanmarTextEncoding: raw.myanmarTextEncoding ?? "auto",
     cat1: raw.cat1 ? normalizeCategoryTag(raw.cat1) : raw.cat1,
     cat2: raw.cat2 ? normalizeCategoryTag(raw.cat2) : raw.cat2,
     cat3: raw.cat3 ? normalizeCategoryTag(raw.cat3) : raw.cat3,

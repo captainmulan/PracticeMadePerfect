@@ -1137,6 +1137,24 @@ export default function AdminCourses({ initialBookId }: { initialBookId?: string
                         <option value="MM">MM</option>
                       </select>
                     </label>
+                    <label className="admin-task-editor-field admin-task-editor-full">
+                      <span className="admin-task-editor-label">Myanmar text encoding</span>
+                      <select
+                        value={activeBook.myanmarTextEncoding ?? "auto"}
+                        onChange={(e) => updateActiveBook((c) => ({
+                          ...c,
+                          myanmarTextEncoding: e.target.value as Course["myanmarTextEncoding"],
+                        }))}
+                        className="admin-grid-select"
+                      >
+                        <option value="auto">Auto-detect (recommended)</option>
+                        <option value="unicode">Unicode</option>
+                        <option value="zawgyi">Zawgyi</option>
+                      </select>
+                      <span className="admin-task-editor-hint" style={{ display: "block", marginTop: 6, opacity: 0.75, fontSize: 12 }}>
+                        EPUB only. Save Book, then refresh the reader.
+                      </span>
+                    </label>
                     <label className="admin-task-editor-field">
                       <span className="admin-task-editor-label">Cat 1</span>
                       <input
